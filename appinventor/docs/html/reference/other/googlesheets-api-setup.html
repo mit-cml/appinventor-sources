@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Google Sheets API Setup</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Google Sheets API Setup</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<ul>
+  <li><a href="#create-a-service-account">Create a Service Account</a>
+    <ul>
+      <li><a href="#1-create-a-google-developer-account">1. Create a Google Developer Account</a></li>
+      <li><a href="#2-create-a-google-developer-project">2. Create a Google Developer Project</a></li>
+      <li><a href="#3-enable-the-google-sheeets-api">3. Enable the Google Sheeets API</a></li>
+      <li><a href="#4-creating-a-service-acccount">4. Creating a Service Acccount</a></li>
+    </ul>
+  </li>
+  <li><a href="#linking-the-google-sheets-document">Linking the Google Sheets Document</a>
+    <ul>
+      <li><a href="#1-create-the-google-sheets-document">1. Create the Google Sheets Document</a></li>
+      <li><a href="#2-share-the-google-sheets-document">2. Share the Google Sheets Document</a></li>
+      <li><a href="#3-record-relevant-information">3. Record Relevant Information</a>
+        <ul>
+          <li><a href="#the-spreadsheet-id">The Spreadsheet ID</a></li>
+          <li><a href="#the-sheet-name">The Sheet Name</a></li>
+          <li><a href="#the-grid-id">The Grid ID</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Note: If you are only going to read from the Google Sheets document, and not
+edit or write data to the document, you can skip the process of making a Service
+Account. The only requirement is that the Google Sheets document is shared such
+that anyone with the link can read the document.</p>
+
+<h1 id="create-a-service-account">Create a Service Account</h1>
+
+<p>In this tutorial, we will be creating a Service Account, a user account that’s
+created to interact with a specific piece of software or service. In our case,
+this specific piece of software is the Google Sheets API. You can then reuse
+this Service account for other apps made with App Inventor.</p>
+
+<h2 id="1-create-a-google-developer-account">1. Create a Google Developer Account</h2>
+
+<p>The first step to use the Google Sheets API is to create a Google Developer
+Account. A Google Developer Account is a Google Account that is activated to use
+developer tools, so if you have not already done so, begin by navigating to
+https://www.google.com and create a google account. Once you have done so,
+navigate to https://developers.google.com and sign in to your desired Google
+Account. This does not need to be the google account which will own the Google
+Sheets that you intend to use.</p>
+
+<h2 id="2-create-a-google-developer-project">2. Create a Google Developer Project</h2>
+
+<p>Our next step is to create a coding project. Once you have logged into your
+Google Developer Account, navigate to https://console.developers.google.com/. If
+this is your first time using your Google Developer Account, you will be
+prompted to agree to the Terms of Service. Check the box and continue.</p>
+
+<p><img src="images/googlesheets-setup-01.png" width="50%" /></p>
+
+<p>Next, you will be on the Developer Dashboard. If you have not created a project
+before, you can create your first project by selecting [CREATE PROJECT].</p>
+
+<p><img src="images/googlesheets-setup-02.png" alt="" /></p>
+
+<p>If you are using an existing Developer Account and already have a Project, you
+will be on a Project’s Dashboard. To create a new Project, click on the drop
+down menu at the top of the webpage.</p>
+
+<p><img src="images/googlesheets-setup-03.png" alt="" /></p>
+
+<p>At the top of the pop-up menu, select NEW PROJECT.</p>
+
+<p>On the Creation page, give the project a name. For this tutorial, we will name
+it “App Inventor.” We don’t need to provide an organization, so we will leave it
+as No organization.</p>
+
+<p><img src="images/googlesheets-setup-04.png" alt="" /></p>
+
+<p>Click ‘Create’ to finish creating the project.</p>
+
+<h2 id="3-enable-the-google-sheeets-api">3. Enable the Google Sheeets API</h2>
+
+<p>The next step is to enable the Google Sheets API for your project. Click on the
+“+ Enable APIs and Services” button next to APIs &amp; Services.</p>
+
+<p><img src="images/googlesheets-setup-05.png" alt="" /></p>
+
+<p>Enter in the search bar “Google Sheets API” and select the resulting API that
+appears. Then click the Enable button for the API Library.</p>
+
+<p><img src="images/googlesheets-setup-06.png" alt="" />
+<img src="images/googlesheets-setup-07.png" alt="" />
+<img src="images/googlesheets-setup-08.png" alt="" /></p>
+
+<h2 id="4-creating-a-service-acccount">4. Creating a Service Acccount</h2>
+
+<p>Now that we have enabled the Google Sheets API for this project, we want to
+create a service account. Simply put, this service account will look a lot like
+a google email account. After selecting the ‘Enable’ button for the Google
+Sheets API, you will be sent to the Overview tab for the Google Sheets API in
+your project. To the right of the screen, click ‘Create Credentials’ to get
+started with creating the Service Account.</p>
+
+<p><img src="images/googlesheets-setup-09.png" alt="" /></p>
+
+<p>On the next page, we are presented with a guide that will ask various questions
+about what kind of project we are making. In the first drop down menu under
+‘Which API are you using?’, select the Google Sheets API.</p>
+
+<p><img src="images/googlesheets-setup-10.png" alt="" /></p>
+
+<p>After you select that, a follow-up question will appear below. Under the
+question “Where will you be calling the API from?”, select Other UI. Finally,
+under what data will you be accessing, select Application Data.</p>
+
+<p><img src="images/googlesheets-setup-11.png" alt="" /></p>
+
+<p>After entering the above information, click on the blue button labeled “What
+credentials do I need?” This will take you to the second part of creating the
+credentials. This part will allow you to customize the service account and
+should look like the figure below.</p>
+
+<p><img src="images/googlesheets-setup-12.png" alt="" /></p>
+
+<p>The name of the service account is not important. For this tutorial, I will name
+it “example-service.” You then set the role to Selecting Project &gt; Editor, which
+should provide this service account with enough permissions. Make sure to save
+the entire text in the box labeled Service Account ID. You should notice that
+this will look a lot like an email address. You will want to copy this Service
+Account ID someplace so that we can use it later.</p>
+
+<p><img src="images/googlesheets-setup-13.png" alt="" /></p>
+
+<p>Make sure that “JSON” is selected under Key Type like it is above before
+pressing ‘Continue’. This will download a JSON file with the name
+“AppInventor-####.json.”</p>
+
+<p>When using the Google Sheets API component, we will upload this json file in
+order to work properly. Make sure to keep this JSON safe!</p>
+
+<h1 id="linking-the-google-sheets-document">Linking the Google Sheets Document</h1>
+
+<p>Now that we have created a Service Account, we want to provide the service account access to the Google Sheets files we will or read from.</p>
+
+<h2 id="1-create-the-google-sheets-document">1. Create the Google Sheets Document</h2>
+
+<p>The first step, if you haven’t already, is to create a Google Sheets document.
+The name of the Google Sheets document can be anything you’d like. If you
+already have a Google Sheets file you would like to use, then simply go to your
+Google Drive and navigate anywhere you would like to create the document. Then
+click New and select New Sheet.</p>
+
+<h2 id="2-share-the-google-sheets-document">2. Share the Google Sheets Document</h2>
+
+<p>After you have created the Google Sheets file that you would like to use, you
+simply need to share the Google Sheets file with the service account email we
+saved from earlier. This will provide the service account with the permissions
+you need. You can specify whether the service account can only read the data or
+whether the service account can read and write the data by changing the
+permissions between Viewer and Editor respectively.</p>
+
+<h2 id="3-record-relevant-information">3. Record Relevant Information</h2>
+
+<p>Finally, there are a handful of pieces of information about the google sheets
+document which you would need to record in order to properly access the file.
+You can also use this portion of the instructions as a reference for where to
+find the information later.</p>
+
+<p>You can read more about these terms <a href="https://developers.google.com/sheets/api/guides/concepts#common_terms">here</a>.</p>
+
+<h3 id="the-spreadsheet-id">The Spreadsheet ID</h3>
+
+<p>The spreadsheet ID can be found in the url of the Google Sheets Document. The url of the Google Sheets Document is typically in the form:</p>
+
+<p><tt>https://docs.google.com/spreadsheets/d/<b>&lt;Spreadsheet ID&gt;</b>/edit#gid=<b>&lt;Grid ID&gt;</b></tt></p>
+
+<p>The spreadsheet ID corresponds to the ID of the Google Sheets File.</p>
+
+<h3 id="the-sheet-name">The Sheet Name</h3>
+
+<p>Within a spreadsheet are individual sheets, each of which have unique titles and ID numbers. In this component, the title of the page is called the <tt>sheetName</tt>.</p>
+
+<p>A single spreadsheet document can have multiple pages. By default, when you
+create a new Google Sheets document, the spreadsheet has a single page with the
+name “Sheet1”. You can find this in the tabs at the bottom left corner of the
+screen like so:</p>
+
+<p><img src="images/googlesheets-setup-14.png" alt="" /></p>
+
+<p>You can add a new page to the document by pressing the “+” symbol. Doing so
+will create a new tab next to Sheet1 that will read Sheet2.</p>
+
+<p><img src="images/googlesheets-setup-15.png" alt="" /></p>
+
+<p>Each block in the Google Sheets Component will ask you to specify the title of the page (or the “Sheet Name”) you want to read from or edit. For example, if I want to edit values on Sheet2, then I would provide the text “Sheet2” in the sheetName slot.</p>
+
+<p>Additionally, you can rename the sheet to whatever you’d like by right clicking
+on the tab and clicking rename. Note, doing so would require that you change
+the sheet name in the project as well to match.</p>
+
+<h3 id="the-grid-id">The Grid ID</h3>
+
+<p>Similarly to the sheet name, this is used to refer to which page you would like
+to edit. However, unlike the sheet name, the grid ID cannot be customized by
+the user. Certain blocks require that the grid ID is provided instead of a
+sheet name. To find the grid ID, navigate to the page you want to reference by
+clicking on the tab. In the URL, you should see that the end should have “gid=”
+followed by a number.</p>
+
+<p><tt>https://docs.google.com/spreadsheets/d/<b>&lt;Spreadsheet ID&gt;</b>/edit#gid=<b>&lt;Grid ID&gt;</b></tt></p>
+
+<h1 id="debugging-tips">Debugging Tips</h1>
+
+<p><code>Unable to resolve host "oauth2.googleapis.com"</code></p>
+
+<p>If you get this error message, double check your device’s connection to the
+internet. This is a sign that the Android networking subsystem can’t resolve
+the hostname, so it’s not able to talk to DNS.</p>
+
+<p><code>Attempt to invoke virtual method … on a null object reference. </code></p>
+
+<p>If you get this error message, double check that you have linked your
+credentials in the designer properties. If your Designer property reads
+“None…” like it says in the image below, click on the box and select the .json
+file you got from the Service Account setup steps.</p>
+
+<p><img src="images/googlesheets-setup-16.png" alt="" /></p>
+
+<p><code>Unable to parse range: ______ </code></p>
+
+<p>If you get this error message, there may be an error with the range that you
+provided. This could mean that the sheetName you’ve provided does not actually
+exist, or that the reference you provided is not valid A1-notation. To learn
+more about A1 notation, see this reference:
+https://developers.google.com/sheets/api/guides/concepts#a1_notation</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

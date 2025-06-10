@@ -20,6 +20,7 @@
   <!--inherits name="com.google.gwt.i18n.CldrLocales"/-->
   <inherits name="com.google.gwt.json.JSON" />
   <inherits name="com.google.gwt.libideas.ImmutableResources" />
+  <inherits name="com.google.gwt.logging.Logging"/>
   <inherits name="com.google.gwt.resources.Resources" />
   <inherits name="com.google.gwt.widgetideas.WidgetIdeas" />
   <inherits name="com.google.gwt.widgetideas.GWTCanvas" />
@@ -31,7 +32,12 @@
   <inherits name="com.google.appinventor.common.CommonVersion" />
   <inherits name="com.google.common.annotations.Annotations" />
   <inherits name="com.google.gwt.query.Query" />
+  <inherits name="org.pepstock.charba.Charba"/>
   <inherits name="com.google.gwt.xml.XML" />
+
+  <set-property name="gwt.logging.logLevel" value="INFO"/>
+  <set-property name="gwt.logging.enabled" value="TRUE"/>
+  <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
 
   <!-- servlets -->
   <servlet path="/components" class="com.google.appinventor.server.ComponentServiceImpl" />
@@ -147,6 +153,54 @@
   <extend-property name="locale" values="pl"/>
   <!-- Lithuanian -->
   <extend-property name="locale" values="lt"/>
+  <!-- Turkish -->
+  <extend-property name="locale" values="tr"/>
+  <!-- Armenian -->
+  <extend-property name="locale" values="hy"/>
+  <!-- Catalan -->
+  <extend-property name="locale" values="ca"/>
+  <!-- Ukrainian -->
+  <extend-property name="locale" values="uk"/>
+  <!-- Japanese -->
+  <extend-property name="locale" values="ja"/>
 
   <set-property-fallback name="locale" value="en"/>
+
+  <set-configuration-property name="includeSourceMapUrl" value="/ode/__HASH___sourceMap__FRAGMENT__.json"/>
+  <set-property name="compiler.useSourceMaps" value="true"/>
+
+  <!-- Support for running App Inventor client side without a backend server -->
+
+  <define-property name="local.services" values="false,true"/>
+  <set-property name="local.services" value="false"/>
+
+  <replace-with class="com.google.appinventor.client.local.LocalProjectService">
+    <when-type-is class="com.google.appinventor.shared.rpc.project.ProjectService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalUserInfoService">
+    <when-type-is class="com.google.appinventor.shared.rpc.user.UserInfoService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalGetMotdService">
+    <when-type-is class="com.google.appinventor.shared.rpc.GetMotdService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalTokenAuthService">
+    <when-type-is class="com.google.appinventor.shared.rpc.user.TokenAuthService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalDownloader">
+    <when-type-is class="com.google.appinventor.client.utils.Downloader"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalUploader">
+    <when-type-is class="com.google.appinventor.client.utils.Uploader"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
 </module>

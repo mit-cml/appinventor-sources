@@ -7,8 +7,9 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -18,13 +19,15 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.Image;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for button based mock components.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-abstract class MockButtonBase extends MockVisibleComponent {
+abstract class MockButtonBase extends MockVisibleComponent implements FormChangeListener {
+  private static final Logger LOG = Logger.getLogger(MockButtonBase.class.getName());
   // Property names
   private static final String PROPERTY_NAME_IMAGE = "Image";
 
@@ -58,7 +61,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
       @Override
       public void onError(ErrorEvent event) {
         if (imagePropValue != null && !imagePropValue.isEmpty()) {
-          OdeLog.elog("Error occurred while loading image " + imagePropValue);
+          LOG.severe("Error occurred while loading image " + imagePropValue);
         }
         refreshForm();
       }
@@ -75,6 +78,18 @@ abstract class MockButtonBase extends MockVisibleComponent {
     deckPanel.add(image);
     deckPanel.showWidget(0);
     initComponent(deckPanel);
+  }
+
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+  }
+
+  @Override
+  protected void onDetach() {
+    super.onDetach();
+    ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
   }
 
   /**
@@ -118,9 +133,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
     shape = Integer.parseInt(text);
     // Android Buttons with images take the shape of the image and do not
     // use one of the defined Shapes.
-    if (hasImage) {
-      return;
-    }
     switch(shape) {
       case 0:
         // Default Button
@@ -159,7 +171,12 @@ abstract class MockButtonBase extends MockVisibleComponent {
       return;
     }
     if (MockComponentsUtil.isDefaultColor(text)) {
-      MockComponentsUtil.resetWidgetBackgroundColor(buttonWidget);
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        MockComponentsUtil.setWidgetBackgroundColor(buttonWidget, "&HFF000000");
+      } else {
+        MockComponentsUtil.resetWidgetBackgroundColor(buttonWidget);
+      }
     } else {
       MockComponentsUtil.setWidgetBackgroundColor(buttonWidget, text);
     }
@@ -192,7 +209,14 @@ abstract class MockButtonBase extends MockVisibleComponent {
    * Sets the button's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
+    float convertedText = Float.parseFloat(text);
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (convertedText == FONT_DEFAULT_SIZE && form != null
+        && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(buttonWidget, "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(buttonWidget, text);
+    }
     updatePreferredSizeOfButton();
   }
 
@@ -200,7 +224,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
    * Sets the button's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(buttonWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, buttonWidget, text);
     updatePreferredSizeOfButton();
   }
 
@@ -214,7 +238,6 @@ abstract class MockButtonBase extends MockVisibleComponent {
       hasImage = false;
       url = "";
       setBackgroundColorProperty(backgroundColor);
-      setShapeProperty(Integer.toString(shape));
     } else {
       hasImage = true;
       // Android Buttons do not show a background color if they have an image.
@@ -225,6 +248,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
           "&H" + COLOR_NONE);
       DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
     }
+    setShapeProperty(Integer.toString(shape));
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);
   }
@@ -242,7 +266,12 @@ abstract class MockButtonBase extends MockVisibleComponent {
    */
   private void setTextColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      MockComponentsUtil.resetWidgetTextColor(buttonWidget);
+      MockForm form = ((YaFormEditor) editor).getForm();
+      if (form != null && form.getPropertyValue("HighContrast").equals("True")) {
+        MockComponentsUtil.setWidgetTextColor(buttonWidget, "&HFFFFFFFF");
+      } else {
+        MockComponentsUtil.resetWidgetTextColor(buttonWidget);
+      }
     } else {
       MockComponentsUtil.setWidgetTextColor(buttonWidget, text);
     }
@@ -285,6 +314,19 @@ abstract class MockButtonBase extends MockVisibleComponent {
     return height;
   }
 
+  /*
+   * Update widget's text content appearances according to width property value.
+   */
+  private void updateTextAppearances(String width) {
+    if (width.equals("-1")) {
+      // for width = Automatic
+      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "nowrap");
+    } else {
+      // for width = Fill Parent, Pixels or Percentage
+      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "normal");
+    }
+  }
+
   // PropertyChangeListener implementation
 
   @Override
@@ -320,6 +362,45 @@ abstract class MockButtonBase extends MockVisibleComponent {
       setTextColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_BUTTONSHAPE)){
       setShapeProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      updateTextAppearances(newValue);
+      refreshForm();
     }
+  }
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getType().equals(MockForm.TYPE) && propertyName.equals("HighContrast")) {
+      setBackgroundColorProperty(getPropertyValue(PROPERTY_NAME_BACKGROUNDCOLOR));
+      setTextColorProperty(getPropertyValue(PROPERTY_NAME_TEXTCOLOR));
+      updatePreferredSizeOfButton();
+      refreshForm();
+    }
+    else if (component.getType().equals(MockForm.TYPE) && propertyName.equals("BigDefaultText")) {
+      setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      updatePreferredSizeOfButton();
+      refreshForm();
+    }
+
+  }
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
   }
 }

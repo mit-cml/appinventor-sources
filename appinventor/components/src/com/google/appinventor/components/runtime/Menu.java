@@ -20,6 +20,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -137,7 +138,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ShowAbout(boolean showAboutItem) {
     this.showAboutItem = showAboutItem;
     if (aboutItem != null) {
@@ -162,7 +163,7 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ShowStop(boolean showStopItem) {
     this.showStopItem = showStopItem;
     if (stopItem != null) {
@@ -240,6 +241,16 @@ public class Menu implements Component, ComponentContainer, OnCreateOptionsMenuL
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
     throw new UnsupportedOperationException("Menu.setChildHeight() called");
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    throw new UnsupportedOperationException("Menu.setChildNeedsLayout() called");
+  }
+
+  @Override
+  public List<? extends Component> getChildren() {
+    return Collections.unmodifiableList(items);
   }
 
   @Override

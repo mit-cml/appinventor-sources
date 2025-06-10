@@ -12,12 +12,14 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
@@ -50,7 +52,8 @@ import org.osmdroid.util.GeoPoint;
  */
 @DesignerComponent(version = YaVersion.POLYGON_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
-    description = "Polygon")
+    description = "Polygon encloses an arbitrary 2-dimensional area on a Map. Polygons can be used for drawing a perimeter, such as a campus, city, or country. Polygons begin as basic triangles. New vertices can be created by dragging the midpoint of a polygon away from the edge. Clicking on a vertex will remove the vertex, but a minimum of 3 vertices must exist at all times.",
+    iconName = "images/polygon.png")
 @SimpleObject
 public class Polygon extends PolygonBase implements MapPolygon {
   private static final String TAG = Polygon.class.getSimpleName();
@@ -122,10 +125,20 @@ public class Polygon extends PolygonBase implements MapPolygon {
 
   @Override
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Returns the type of the feature. For polygons, this returns the text "
-          + "\"Polygon\".")
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_POLYGON;
+      description = "Returns the type of the feature. For polygons, this returns "
+          + "MapFeature.Polygon (\"Polygon\").")
+  public @Options(MapFeature.class) String Type() {
+    return TypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Gets the type of the feature, as a {@link MapFeature} enum.
+   *
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.Polygon.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public MapFeature TypeAbstract() {
+    return MapFeature.Polygon;
   }
 
   @Override
@@ -185,7 +198,8 @@ public class Polygon extends PolygonBase implements MapPolygon {
    */
   @SuppressWarnings("squid:S00100")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
-  @SimpleProperty(description = "Constructs a polygon from the given list of coordinates.")
+  @SimpleProperty(description = "Constructs a polygon from the given list of coordinates.",
+      category = PropertyCategory.APPEARANCE)
   public void PointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
       points = new ArrayList<List<GeoPoint>>();  // create a new list in case the user has saved a reference
@@ -273,7 +287,8 @@ public class Polygon extends PolygonBase implements MapPolygon {
    */
   @SuppressWarnings("squid:S00100")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
-  @SimpleProperty(description = "Constructs holes in a polygon from a given list of coordinates per hole.")
+  @SimpleProperty(description = "Constructs holes in a polygon from a given list of coordinates per hole.",
+      category = PropertyCategory.APPEARANCE)
   public void HolePointsFromString(String pointString) {
     if (TextUtils.isEmpty(pointString)) {
       holePoints = new ArrayList<List<List<GeoPoint>>>();  // create a new list in case the user has saved a reference

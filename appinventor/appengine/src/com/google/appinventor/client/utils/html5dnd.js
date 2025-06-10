@@ -26,7 +26,9 @@ top.HTML5DragDrop_confirmOverwriteKey = function(callback) {};
 top.HTML5DragDrop_getNewProjectName = function(filename, callback) {};
 top.HTML5DragDrop_confirmOverwriteAsset = function(proejctId, name, callback) {};
 top.HTML5DragDrop_checkProjectNameForCollision = function(name) {};
-top.HTML5DragDrop_shouldShowDropTarget = function(target) {};s
+top.HTML5DragDrop_shouldShowDropTarget = function(target) {};
+
+top.HTML5DragDrop_importProject = importProject;
 
 var dropdiv = document.createElement('div');
 dropdiv.className = 'dropdiv';
@@ -49,7 +51,7 @@ function readUrl(item, cb) {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
         if (xhr.response.name === undefined) {
-          var name = item.substr(item.lastIndexOf('/') + 1);
+          var name = item.substring(item.lastIndexOf('/') + 1);
           // Discourse generates random names that sometimes begin with numbers. The actual file
           // name is given in a Content-Disposition header, but browsers block access to it on
           // security grounds. Instead, we prepend Project_ to make it a valid project name.
@@ -82,9 +84,12 @@ function handleDroppedItem(item, cb) {
 }
 
 function importProject(droppedItem) {
+  if (typeof droppedItem == "string") {
+    droppedItem = {"name": droppedItem} // stop gap for handling different sources
+  }
   var filename = droppedItem.name;
-  filename = filename.substr(filename.lastIndexOf('/') + 1);
-  var projectName = filename.substr(0, filename.length - 4);
+  filename = filename.substring(filename.lastIndexOf('/') + 1);
+  var projectName = filename.substring(0, filename.length - 4);
   function doUploadProject(blob) {
     // Upload project
     var xhr = new XMLHttpRequest();
@@ -189,15 +194,15 @@ function uploadKeystore(droppedItem) {
 }
 
 function isProject(item) {
-  return goog.string.endsWith(item.name, '.aia');
+  return top.goog.string.endsWith(item.name, '.aia');
 }
 
 function isExtension(item) {
-  return goog.string.endsWith(item.name, '.aix');
+  return top.goog.string.endsWith(item.name, '.aix');
 }
 
 function isKeystore(item) {
-  return goog.string.endsWith(item.name, 'android.keystore');
+  return top.goog.string.endsWith(item.name, 'android.keystore');
 }
 
 function checkValidDrag(e) {
@@ -229,7 +234,7 @@ function checkValidDrop(e) {
       top.HTML5DragDrop_confirmOverwriteKey(doUploadKeystore(item));
     } else if (isExtension(item) && top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadExtension(item);
-    } else if (goog.string.endsWith(item.name, '.apk') || goog.string.endsWith(item.name, '.aab')) {
+    } else if (top.goog.string.endsWith(item.name, '.apk') || top.goog.string.endsWith(item.name, '.aab')) {
       top.HTML5DragDrop_reportError(2);
     } else if (top.HTML5DragDrop_isProjectEditorOpen()) {
       uploadAsset(item);
@@ -264,9 +269,10 @@ function targetIsBlocksEditor(el) {
 }
 
 function targetIsGwtDialogBox(e) {
-  if (e.path) {
-    for (var i = e.path.length - 1; i > 0; i--) {
-      if (e.path[i].classList && e.path[i].classList.contains('ode-DialogBox')) {
+  var path = e.composedPath();
+  if (path) {
+    for (var i = path.length - 1; i > 0; i--) {
+      if (path[i].classList && path[i].classList.contains('ode-DialogBox')) {
         return true;
       }
     }
@@ -346,9 +352,10 @@ function onDragOver(e) {
 
 function onDragLeave(e) {
   var node = e.target;
+  var path = e.composedPath();
   if (node === dropdiv
       || (node.nodeType === Node.ELEMENT_NODE && node.querySelector('.ode-DeckPanel'))
-      || (e.path && e.path.length <= 10)) {
+      || (path && path.length <= 10)) {
     hideDropDiv();
   }
 }

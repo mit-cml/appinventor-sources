@@ -295,7 +295,7 @@ public @interface ActivityElement {
    *
    * @return  the activity exported attribute
    */
-  String exported() default "";
+  String exported() default "true";
 
   /**
    * Whether or not an existing instance of the activity should be shut down
@@ -622,9 +622,9 @@ public @interface ActivityElement {
    *
    * This attribute was added in API level 24.
    *
-   * @return  the activity resizableActivity attribute
+   * @return  the activity resizeableActivity attribute
    */
-  String resizableActivity() default "";
+  String resizeableActivity() default "";
 
   /**
    * The orientation of the activity's display on the device. The system ignores
@@ -683,7 +683,7 @@ public @interface ActivityElement {
 
   /**
    * Specifies whether the activity supports Picture-in-Picture display. The system
-   * ignores this attribute if {@link #resizableActivity()} is false.
+   * ignores this attribute if {@link #resizeableActivity()} is false.
    *
    * This attribute was added in API level 24.
    *

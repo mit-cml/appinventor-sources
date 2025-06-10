@@ -13,6 +13,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -92,6 +93,11 @@ public class ContextMenu implements Component, ComponentContainer, View.OnCreate
   }
 
   @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    throw new UnsupportedOperationException("Menu.setChildNeedsLayout() called");
+  }
+
+  @Override
   public int Width() {
     return 0;
   }
@@ -99,6 +105,11 @@ public class ContextMenu implements Component, ComponentContainer, View.OnCreate
   @Override
   public int Height() {
     return 0;
+  }
+
+  @Override
+  public List<? extends Component> getChildren() {
+    return Collections.unmodifiableList(items);
   }
 
   // Component implementation

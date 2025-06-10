@@ -171,6 +171,30 @@ public class QUtil {
   }
 
   /**
+   * Get the SDK-specific path where the REPL databases live. On Android Q and later, this is always
+   * an app-private directory on the "external" storage. On earlier versions of Android, this
+   * returns the external storage path for all apps (although possibly user-specific).
+   * If the {@code forcePrivate} flag is true, then the app-private directory will always be
+   * returned on devices running Android 2.2 Froyo or later.
+   *
+   * <p>
+   * For more details on why this is needed, see the deprecation notice at
+   * https://developer.android.com/reference/android/os/Environment#getExternalStorageDirectory()
+   * </p>
+   *
+   * @param context a context, such as a Form
+   * @param forcePrivate force the use of the context-specific path
+   * @return the path to the REPL's database storage
+   */
+  public static String getReplDatabasePath(Context context, boolean forcePrivate) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return getExternalStoragePath(context, forcePrivate) + "/databases/";
+    } else {
+      return getExternalStoragePath(context, forcePrivate) + "/AppInventor/databases/";
+    }
+  }
+
+  /**
    * Get the SDK-specific path to where the REPL assets live. On Android Q and later, this is always
    * an app-private directory on the "external" storage. On earlier versions of Android, this
    * returns the external storage path for all apps (although possibly user-specific).

@@ -1,8 +1,8 @@
 annotation.jar
+annotation-experimental.jar
 appcompat.jar
 appcompat-resources.jar
 asynclayoutinflater.jar
-cardview.jar
 collection.jar
 constraintlayout.jar
 constraintlayout-solver.jar
@@ -27,7 +27,6 @@ loader.jar
 localbroadcastmanager.jar
 material.jar
 print.jar
-recyclerview.jar
 slidingpanelayout.jar
 swiperefreshlayout.jar
 vectordrawable.jar

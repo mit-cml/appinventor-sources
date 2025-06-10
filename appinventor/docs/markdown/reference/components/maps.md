@@ -82,7 +82,7 @@ The `Circle` component visualizes a circle of a given [`Radius`](#Circle.Radius)
  map feature.
 
 {:id="Circle.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For Circles, this returns the text "Circle".
+: Returns the type of the feature. For Circles, this returns MapFeature.Circle ("Circle").
 
 {:id="Circle.Visible" .boolean} *Visible*
 : Specifies whether the `Circle` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -154,7 +154,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 {:.properties}
 
 {:id="FeatureCollection.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="FeatureCollection.Features" .list .bo} *Features*
 : Gets the list of features attached to the `FeatureCollection` (without regard to the value of the
@@ -173,8 +173,16 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 : Specifies the `FeatureCollection`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="FeatureCollection.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="FeatureCollection.Source" .text .ro} *Source*
 : Specifies the source URL used to populate the feature collection. If the feature collection was not loaded from a URL, this will be the empty string.
+
+{:id="FeatureCollection.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="FeatureCollection.Visible" .boolean} *Visible*
 : Specifies whether the `FeatureCollection` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -308,7 +316,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
  map feature.
 
 {:id="LineString.Type" .text .ro .bo} *Type*
-: Returns the type of the map feature. For LineString, this returns the text "LineString".
+: Returns the type of the map feature. For LineString, this returns MapFeature.LineString ("LineString").
 
 {:id="LineString.Visible" .boolean} *Visible*
 : Specifies whether the `LineString` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -366,7 +374,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 
 A two-dimensional container that renders map tiles in the background and allows for multiple
  [`Marker`](#Marker) elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- contributors and the the United States Geological Survey.
+ contributors and the the United States Geological Survey, or a custom basemap URL can be provided.
 
  The `Map` component provides three utilities for manipulating its boundaries with App Inventor.
  First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -397,7 +405,12 @@ A two-dimensional container that renders map tiles in the background and allows 
  to the string representation for use with this property.
 
 {:id="Map.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
+
+{:id="Map.CustomUrl" .text} *CustomUrl*
+: Update the custom URL of the base tile layer in use by the map.
+ e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+ e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername
 
 {:id="Map.EnablePan" .boolean} *EnablePan*
 : Enables or disables the ability of the user to move the Map.
@@ -424,6 +437,10 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Gets the latitude of the center of the Map. To change the latitude, use the
  [`PanTo`](#Map.PanTo) method.
 
+{:id="Map.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Map.LocationSensor" .component .wo} *LocationSensor*
 : Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
  rather than the built-in location provider.
@@ -439,6 +456,7 @@ A two-dimensional container that renders map tiles in the background and allows 
    1. Roads
    2. Aerial
    3. Terrain
+   4. Custom
 
    **Note:** Road layers are provided by OpenStreetMap and aerial and terrain layers are
  provided by the U.S. Geological Survey.
@@ -463,9 +481,11 @@ A two-dimensional container that renders map tiles in the background and allows 
  services enabled and which location providers are available.
 
 {:id="Map.ShowZoom" .boolean} *ShowZoom*
-: Shows or hides an icon indicating the user's current location on the [`Map`](#Map). The
- availability and accuracy of this feature will depend on whether the user has location
- services enabled and which location providers are available.
+: Specifies whether to show zoom controls or not.
+
+{:id="Map.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Map.UserLatitude" .number .ro .bo} *UserLatitude*
 : Returns the user's latitude if ShowUser is enabled.
@@ -536,7 +556,7 @@ A two-dimensional container that renders map tiles in the background and allows 
  `when any ... StopDrag` event if one is provided.
 
 {:id="Map.GotFeatures"} GotFeatures(*url*{:.text},*features*{:.list})
-: The `GotFeatures` event is run when when a feature collection is successfully read from the
+: The `GotFeatures` event is run when a feature collection is successfully read from the
  given `url`{:.variable.block}. The `features`{:.variable.block} parameter will be a list of
  feature descriptions that can be converted into components using the
  [`FeatureFromDescription`](#Map.FeatureFromDescription) method.
@@ -894,7 +914,7 @@ The Navigation component generates directions between two locations using a serv
  map feature.
 
 {:id="Polygon.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For polygons, this returns the text "Polygon".
+: Returns the type of the feature. For polygons, this returns MapFeature.Polygon ("Polygon").
 
 {:id="Polygon.Visible" .boolean} *Visible*
 : Specifies whether the `Polygon` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1004,7 +1024,7 @@ The Navigation component generates directions between two locations using a serv
  map feature.
 
 {:id="Rectangle.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For rectangles, this returns the text "Rectangle".
+: Returns the type of the feature. For rectangles, this returns MapFeature.Rectangle ("Rectangle").
 
 {:id="Rectangle.Visible" .boolean} *Visible*
 : Specifies whether the `Rectangle` should be visible on the screen.  Value is `true`{:.logic.block}

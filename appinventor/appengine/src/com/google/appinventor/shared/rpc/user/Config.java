@@ -44,6 +44,9 @@ public class Config implements IsSerializable, Serializable {
   private boolean galleryReadOnly;
   private List<String> tutorialUrlAllowed;
   private boolean serverExpired;
+  private boolean deleteAccountAllowed;
+  private String iosExtensions;
+  private String surveyUrl;
 
   public Config() {
   }
@@ -238,6 +241,30 @@ public class Config implements IsSerializable, Serializable {
 
   public void setServerExpired(boolean value) {
     serverExpired = value;
+  }
+
+  public boolean getDeleteAccountAllowed() {
+    return deleteAccountAllowed;
+  }
+
+  public void setDeleteAccountAllowed(boolean value) {
+    deleteAccountAllowed = value;
+  }
+
+  public String getIosExtensions() {
+    return iosExtensions;
+  }
+
+  public void setIosExtensions(String value) {
+    iosExtensions = value;
+  }
+
+  public String getSurveyUrl() {
+    return surveyUrl;
+  }
+
+  public void setSurveyUrl(String value) {
+    surveyUrl = value;
   }
 
 }

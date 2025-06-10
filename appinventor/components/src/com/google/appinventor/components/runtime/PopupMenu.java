@@ -17,6 +17,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -112,6 +113,11 @@ public class PopupMenu implements Component, ComponentContainer {
   }
 
   @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    throw new UnsupportedOperationException("Menu.setChildNeedsLayout() called");
+  }
+
+  @Override
   public int Width() {
     return 0;
   }
@@ -119,6 +125,11 @@ public class PopupMenu implements Component, ComponentContainer {
   @Override
   public int Height() {
     return 0;
+  }
+
+  @Override
+  public List<? extends Component> getChildren() {
+    return Collections.unmodifiableList(items);
   }
 
   // Component implementation

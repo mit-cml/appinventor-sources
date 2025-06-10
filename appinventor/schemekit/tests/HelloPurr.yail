@@ -1,0 +1,31 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_test.HelloPurr.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "HelloPurr" 'text)
+ (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; Button1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1 
+(set-and-coerce-property! 'Button1 'Image "kitty.png" 'text)
+
+)
+
+(define-event Button1 Click()(set-this-form)
+    (call-component-method 'Sound1 'Play (*list-for-runtime*) '())(call-component-method 'Sound1 'Vibrate (*list-for-runtime* 500) '(number)))
+;;; Sound1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Sound Sound1 
+(set-and-coerce-property! 'Sound1 'Source "meow.mp3" 'text)
+
+)
+
+(init-runtime)

@@ -15,6 +15,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -88,11 +89,18 @@ public class Sidebar extends AndroidViewComponent implements Component, Componen
 
   @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
-
   }
 
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
+  }
 
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+  }
+
+  @Override
+  public List<? extends Component> getChildren() {
+    return Collections.unmodifiableList(items);
   }
 }

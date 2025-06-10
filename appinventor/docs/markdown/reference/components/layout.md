@@ -8,6 +8,7 @@ title: Layout
 
 Table of Contents:
 
+* [AbsoluteArrangement](#AbsoluteArrangement)
 * [ContextMenu](#ContextMenu)
 * [HorizontalArrangement](#HorizontalArrangement)
 * [HorizontalScrollArrangement](#HorizontalScrollArrangement)
@@ -18,6 +19,66 @@ Table of Contents:
 * [TableArrangement](#TableArrangement)
 * [VerticalArrangement](#VerticalArrangement)
 * [VerticalScrollArrangement](#VerticalScrollArrangement)
+
+## AbsoluteArrangement  {#AbsoluteArrangement}
+
+Container for components that arranges them absolutely.
+
+
+
+### Properties  {#AbsoluteArrangement-Properties}
+
+{:.properties}
+
+{:id="AbsoluteArrangement.BackgroundColor" .color} *BackgroundColor*
+: Specifies the button's background color as an alpha-red-green-blue integer.
+ If the parameter is [`Component`'s `COLOR`](#Component.COLOR), the original beveling is
+ restored. If an Image has been set, the color change will not be visible
+ until the Image is removed.
+
+{:id="AbsoluteArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
+
+{:id="AbsoluteArrangement.Height" .number .bo} *Height*
+: Specifies the `AbsoluteArrangement`'s vertical height, measured in pixels.
+
+{:id="AbsoluteArrangement.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `AbsoluteArrangement`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="AbsoluteArrangement.Image" .text} *Image*
+: Specifies the path of the button's image.
+
+{:id="AbsoluteArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="AbsoluteArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="AbsoluteArrangement.Visible" .boolean} *Visible*
+: Specifies whether the `AbsoluteArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `AbsoluteArrangement` is showing and `false`{:.logic.block} if hidden.
+
+{:id="AbsoluteArrangement.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `AbsoluteArrangement`, measured in pixels.
+
+{:id="AbsoluteArrangement.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `AbsoluteArrangement` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#AbsoluteArrangement-Events}
+
+{:.events}
+None
+
+
+### Methods  {#AbsoluteArrangement-Methods}
+
+{:.methods}
+None
+
 
 ## ContextMenu  {#ContextMenu}
 
@@ -89,7 +150,7 @@ None
 
 {:id="HorizontalArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `HorizontalArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `HorizontalArrangement`'s [`Height`](#HorizontalArrangement.Height) is `Automatic`.
 
 {:id="HorizontalArrangement.BackgroundColor" .color} *BackgroundColor*
@@ -98,7 +159,7 @@ None
  until the Image is removed.
 
 {:id="HorizontalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="HorizontalArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalArrangement`'s vertical height, measured in pixels.
@@ -109,6 +170,14 @@ None
 
 {:id="HorizontalArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `HorizontalArrangement`.
+
+{:id="HorizontalArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="HorizontalArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="HorizontalArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `HorizontalArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -154,7 +223,7 @@ A formatting element in which to place components that should be displayed from 
 
 {:id="HorizontalScrollArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `HorizontalScrollArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `HorizontalScrollArrangement`'s [`Height`](#HorizontalScrollArrangement.Height) is `Automatic`.
 
 {:id="HorizontalScrollArrangement.BackgroundColor" .color} *BackgroundColor*
@@ -163,7 +232,7 @@ A formatting element in which to place components that should be displayed from 
  until the Image is removed.
 
 {:id="HorizontalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="HorizontalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `HorizontalScrollArrangement`'s vertical height, measured in pixels.
@@ -174,6 +243,14 @@ A formatting element in which to place components that should be displayed from 
 
 {:id="HorizontalScrollArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `HorizontalScrollArrangement`.
+
+{:id="HorizontalScrollArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="HorizontalScrollArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="HorizontalScrollArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `HorizontalScrollArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -278,7 +355,7 @@ Component for sidebar used to hold MenuItems. Sidebar appears on touching
 {:.properties}
 
 {:id="Sidebar.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="Sidebar.Height" .number .bo} *Height*
 : Specifies the `Sidebar`'s vertical height, measured in pixels.
@@ -286,6 +363,14 @@ Component for sidebar used to hold MenuItems. Sidebar appears on touching
 {:id="Sidebar.HeightPercent" .number .wo .bo} *HeightPercent*
 : Specifies the `Sidebar`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="Sidebar.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="Sidebar.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Sidebar.Visible" .boolean} *Visible*
 : Specifies whether the `Sidebar` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -329,7 +414,7 @@ Container for SidebarHeader placed inside Sidebar. This area of sidebar
 
 {:id="SidebarHeader.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `SidebarHeader` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `SidebarHeader`'s [`Height`](#SidebarHeader.Height) is `Automatic`.
 
 {:id="SidebarHeader.BackgroundColor" .color} *BackgroundColor*
@@ -338,7 +423,7 @@ Container for SidebarHeader placed inside Sidebar. This area of sidebar
  until the Image is removed.
 
 {:id="SidebarHeader.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="SidebarHeader.Height" .number .bo} *Height*
 : Specifies the `SidebarHeader`'s vertical height, measured in pixels.
@@ -349,6 +434,14 @@ Container for SidebarHeader placed inside Sidebar. This area of sidebar
 
 {:id="SidebarHeader.Image" .text} *Image*
 : Specifies the path of the background image of the `SidebarHeader`.
+
+{:id="SidebarHeader.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="SidebarHeader.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="SidebarHeader.Visible" .boolean} *Visible*
 : Specifies whether the `SidebarHeader` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -406,7 +499,7 @@ Use a table arrangement component to display a group of components in a tabular 
 : Determines the number of columns in the table.
 
 {:id="TableArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="TableArrangement.Height" .number .bo} *Height*
 : Specifies the `TableArrangement`'s vertical height, measured in pixels.
@@ -415,8 +508,16 @@ Use a table arrangement component to display a group of components in a tabular 
 : Specifies the `TableArrangement`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="TableArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="TableArrangement.Rows" .number .do} *Rows*
 : Determines the number of rows in the table.
+
+{:id="TableArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TableArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `TableArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -485,7 +586,7 @@ None
 
 {:id="VerticalArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `VerticalArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `VerticalArrangement`'s [`Height`](#VerticalArrangement.Height) is `Automatic`.
 
 {:id="VerticalArrangement.BackgroundColor" .color} *BackgroundColor*
@@ -494,7 +595,7 @@ None
  until the Image is removed.
 
 {:id="VerticalArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="VerticalArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalArrangement`'s vertical height, measured in pixels.
@@ -505,6 +606,14 @@ None
 
 {:id="VerticalArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `VerticalArrangement`.
+
+{:id="VerticalArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="VerticalArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="VerticalArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `VerticalArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -550,7 +659,7 @@ A formatting element in which to place components that should be displayed one b
 
 {:id="VerticalScrollArrangement.AlignVertical" .number} *AlignVertical*
 : A number that encodes how the contents of the `VerticalScrollArrangement` are aligned vertically. The choices
- are: `1` = aligned at the top, `2` = aligned at the bottom, `3` = vertically centered.
+ are: `1` = aligned at the top, `2` = vertically centered, `3` = aligned at the bottom.
  Alignment has no effect if the `VerticalScrollArrangement`'s [`Height`](#VerticalScrollArrangement.Height) is `Automatic`.
 
 {:id="VerticalScrollArrangement.BackgroundColor" .color} *BackgroundColor*
@@ -559,7 +668,7 @@ A formatting element in which to place components that should be displayed one b
  until the Image is removed.
 
 {:id="VerticalScrollArrangement.ContextMenuSelector" .component .wo} *ContextMenuSelector*
-: Property for ContextMenuSelector
+: Specifies the ContextMenu for this component.  The ContextMenu is a menu that appears when the user long-presses on the component.
 
 {:id="VerticalScrollArrangement.Height" .number .bo} *Height*
 : Specifies the `VerticalScrollArrangement`'s vertical height, measured in pixels.
@@ -570,6 +679,14 @@ A formatting element in which to place components that should be displayed one b
 
 {:id="VerticalScrollArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `VerticalScrollArrangement`.
+
+{:id="VerticalScrollArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="VerticalScrollArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="VerticalScrollArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `VerticalScrollArrangement` should be visible on the screen.  Value is `true`{:.logic.block}

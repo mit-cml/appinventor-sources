@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.common.base.Preconditions;
@@ -18,6 +19,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -91,11 +93,26 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   @Override
   protected TreeItem buildTree() {
+    return this.buildTree(1);
+  }
+
+  protected TreeItem buildTree(Integer view) {
     TreeItem itemNode = super.buildTree();
+    //hide all containers except form if only nonvisible components are to be shown
+    //in such a case, we need only the form's treeItem because all non-visible components are attached to it
+    itemNode.setVisible(view != 3 || isForm());
 
     // Recursively build the tree for child components
     for (MockComponent child : children) {
-      itemNode.addItem(child.buildTree());
+      TreeItem childNode = child.buildTree();
+      boolean isVisible = true;
+      if (view == 2 && child instanceof MockNonVisibleComponent) {
+        isVisible = false;
+      } else if (view == 3 && child instanceof MockVisibleComponent) {
+        isVisible = false;
+      }
+      childNode.setVisible(isVisible);
+      itemNode.addItem(childNode);
     }
 
     itemNode.setState(expanded);
@@ -111,7 +128,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
   }
 
-  
+
   /**
    * Adds a new component to the end of this container.
    *
@@ -149,6 +166,16 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   }
 
   /**
+   * Called when a component is pasted into this container in case additional
+   * processing is needed.
+   *
+   * @param child the child component that was pasted
+   */
+  public void onPaste(MockComponent child) {
+    // Provided for subclasses
+  }
+
+  /**
    * Adds a new component to the container at the specified index.
    *
    * @param component  component to be added
@@ -156,6 +183,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *                     or {@code -1} to insert the component at the end
    */
   protected void addComponent(MockComponent component, int beforeIndex) {
+
     // Set the container to be the parent of the component
     component.setContainer(this);
 
@@ -202,6 +230,36 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   }
 
   /**
+   * Adds a new component to the container at the specified left and top margins.
+   *
+   * @param component component to be added
+   * @param left left margin of the component inside the container
+   * @param top top margin of the component inside the container
+   */
+  public final void addComponent(MockComponent component, int left, int top) {
+    List<MockComponent> visibleChildren = getShowingVisibleChildren();
+
+    int beforeActualIndex;
+
+    if (visibleChildren.size() == 0) {
+      beforeActualIndex = 0;
+    } else {
+      beforeActualIndex = getChildren().indexOf(visibleChildren.get(visibleChildren.size() - 1))
+          + 1;
+    }
+
+    component.setContainer(this);
+    children.add(beforeActualIndex, component);
+
+    if (component.isVisibleComponent()) {
+      rootPanel.add(component, left, top);
+      refreshForm();
+    }
+
+    getForm().fireComponentAdded(component);
+  }
+
+  /**
    * Removes a component from the container (assumes that component is a child
    * component of the container).  If the component itself contains other
    * components, we first ask for confirmation.
@@ -215,6 +273,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     if (component instanceof MockFloatingActionButton) {
       containsFloatingActionButton = false;
     }
+
     // Remove the component from the list of child components
     children.remove(component);
 
@@ -289,10 +348,9 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       }
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
-      // Menu Items are only allowed in Menu, not other containers.
-      if (!(component instanceof MockSprite) &&
-          !(component instanceof MockMapFeature) &&
-          !(component instanceof MockMenuItem)) {
+      // Chart Data components are only allowed on Charts, not other containers.
+      if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)
+          && !(component instanceof MockChartData) && !(component instanceof MockMenuItem)) {
         return true;
       }
     }
@@ -301,6 +359,18 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   public boolean willAcceptComponentType(String type) {
     return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);
+  }
+
+  /**
+   * Indicates whether a component of the given type can be pasted into this container. By default,
+   * this is the same as {@link #willAcceptComponentType(String)}. Subclasses may override this
+   * behavior if they have custom rules.
+   *
+   * @param type the type of the component being considered for pasting
+   * @return true if the component can be pasted, false otherwise
+   */
+  public boolean canPasteComponentOfType(String type) {
+    return willAcceptComponentType(type);
   }
 
   // TODO(user): Draw a colored border around the edges of the container
@@ -329,9 +399,12 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     Preconditions.checkArgument(acceptableSource(source));
 
     MockComponent sourceComponent;
+    MockContainer sourceContainer = null;
+    boolean updatePropertiesPanel = false;
     if (source instanceof MockComponent) {
       // preexisting component already elsewhere in the form
       sourceComponent = (MockComponent) source;
+      sourceContainer = sourceComponent.getContainer();
     } else if (source instanceof SimplePaletteItem) {
       // new component generated by a palette item
       sourceComponent = ((SimplePaletteItem) source).createMockComponent();
@@ -339,8 +412,29 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       throw new IllegalArgumentException();
     }
 
+    // handle change of visibility of x and y coordinate properties if
+    // component is visible
+    if (this instanceof MockAbsoluteArrangement
+        && sourceComponent instanceof MockVisibleComponent) {
+      ((MockVisibleComponent) sourceComponent).setCoordPropertiesVisible(true);
+      if (editor instanceof YaFormEditor) {
+        updatePropertiesPanel = true;
+      }
+    } else if (sourceComponent instanceof MockVisibleComponent) {
+      ((MockVisibleComponent) sourceComponent).setCoordPropertiesVisible(false);
+      if (sourceContainer instanceof MockAbsoluteArrangement) {
+        if (editor instanceof YaFormEditor) {
+          updatePropertiesPanel = true;
+        }
+      }
+    }
+
     if (layout.onDrop(sourceComponent, x, y, offsetX, offsetY)) {
       sourceComponent.select(null);
+      if (updatePropertiesPanel) {
+        // update properties panel using YaFormEditor
+        ((YaFormEditor) editor).refreshCurrentPropertiesPanel();
+      }
     }
   }
 
