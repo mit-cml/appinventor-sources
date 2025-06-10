@@ -138,7 +138,29 @@ import android.util.Log;
       "number, such as ModelNode1-1.")
     public List<String> NamesOfNodes() { return new ArrayList<String>(); }
 
-    // FUNCTIONS
+    @SimpleProperty(description = "Set the current pose of the object from property",
+        category = PropertyCategory.APPEARANCE)
+    @Override
+    public void PoseFromPropertyPosition(String positionFromProperty) {
+      Log.i("setting Capsule pose", "with position" +positionFromProperty);
+
+
+      String[] positionArray = positionFromPropery.split(",");
+      float[] position = {0f,0f,0f};
+
+      for (int i = 0; i < positionArray.length; i++) {
+        position[i] = Float.parseFloat(positionArray[i]);
+      }
+      float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+      if (this.trackable != null) {
+        Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+        Anchor(myAnchor);
+      }
+    }
+
+
+
+  // FUNCTIONS
     @SimpleFunction(description = "Sets the color of all nodes with the given opacity.  " +
       "Opacity vales less than 0 will be treated as 0, and values greater than 100 will be " +
       "treated as 100.")

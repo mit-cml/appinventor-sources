@@ -60,6 +60,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void Pose(Object p) {}
 
   @Override
+  public void PoseFromPropertyPosition(String positionFromProperty){} ;
+  @Override
+  public void PoseFromPropertyPositions(String x, String y, String z){} ;
+
+  @Override
   public Trackable Trackable() { return null; }
 
   @Override

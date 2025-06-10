@@ -69,7 +69,43 @@ import android.util.Log;
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
     public void Model(String model) {this.objectModel = model;}
 
+    @SimpleProperty(description = "Set the current pose of the object",
+        category = PropertyCategory.APPEARANCE)
     @Override
+    public void Pose(Object p) {
+      Log.i("setting Capsule pose", "with " +p);
+      Pose pose = (Pose) p;
+
+      float[] position = {pose.tx(), pose.ty(), pose.tz()};
+      float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+      if (this.trackable != null) {
+        Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+        Anchor(myAnchor);
+      }
+    }
+
+    @SimpleProperty(description = "Set the current pose of the object from property",
+        category = PropertyCategory.APPEARANCE)
+    @Override
+    public void PoseFromPropertyPosition(String positionFromProperty) {
+      Log.i("setting Capsule pose", "with position" +positionFromProperty);
+
+
+      String[] positionArray = positionFromPropery.split(",");
+      float[] position = {0f,0f,0f};
+
+      for (int i = 0; i < positionArray.length; i++) {
+        position[i] = Float.parseFloat(positionArray[i]);
+      }
+      float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+      if (this.trackable != null) {
+        Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+        Anchor(myAnchor);
+      }
+    }
+
+
+  @Override
     @SimpleProperty(description = "The ring radius defines the size of the overall " +
       "torus (or major radius) in centimeters.  Values less than zero will be treated " +
       "as their absolute value.  When set to zero, the TorusNode will not be shown.")

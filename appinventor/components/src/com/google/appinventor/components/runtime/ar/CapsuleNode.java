@@ -42,6 +42,7 @@ import java.util.Locale;
 
 
   private Anchor anchor = null;
+  private String position = "0, 0, 0";
   private Trackable trackable = null;
   private String texture = "";
   private String objectModel = Form.ASSETS_PREFIX + "pawn.obj";
@@ -103,6 +104,26 @@ import java.util.Locale;
     Pose pose = (Pose) p;
 
     float[] position = {pose.tx(), pose.ty(), pose.tz()};
+    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }
+
+  @SimpleProperty(description = "Set the current pose of the object from property",
+      category = PropertyCategory.APPEARANCE)
+  @Override
+  public void PoseFromPropertyPosition(String positionFromPropery) {
+    Log.i("setting Capsule pose", "with position" +positionFromPropery);
+
+
+    String[] positionArray = positionFromPropery.split(",");
+    float[] position = {0f,0f,0f};
+
+    for (int i = 0; i < positionArray.length; i++) {
+      position[i] = Float.parseFloat(positionArray[i]);
+    }
     float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
@@ -215,7 +236,9 @@ import java.util.Locale;
     @SimpleProperty(category = PropertyCategory.APPEARANCE)
     public void CapRadiusInCentimeters(float capRadiusInCentimeters) {}
 
-    @Override
+
+
+  @Override
     @SimpleProperty(description = "Gets the 3D texture",
             category = PropertyCategory.APPEARANCE)
     public String Texture()  {
