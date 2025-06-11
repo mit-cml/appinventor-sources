@@ -608,7 +608,9 @@ public class YaVersion {
   // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
   // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
   // - CHART_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 232;
+  // For YOUNG_ANDROID_VERSION 233:
+  // - CHATBOT_COMPONENT_VERSION was incremented to 4
+  public static final int YOUNG_ANDROID_VERSION = 233;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -911,7 +913,9 @@ public class YaVersion {
   // For CHATBOT_COMPONENT_VERSION 3:
   // - GPT-4 with Vision can be used to handle image inputs
   // - The ConverseWithImage method was added
-  public static final int CHATBOT_COMPONENT_VERSION = 3;
+  // For CHATBOT_COMPONENT_VERSION 4:
+  // - Added CreateImage and GotResponseWithImage blocks
+  public static final int CHATBOT_COMPONENT_VERSION = 4;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

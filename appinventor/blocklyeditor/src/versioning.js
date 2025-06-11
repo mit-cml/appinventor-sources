@@ -1873,6 +1873,8 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The ConverseWithImage method was added
     3: "noUpgrade",
+    // Added CreateImage and GotResponseWithImage
+    4: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
