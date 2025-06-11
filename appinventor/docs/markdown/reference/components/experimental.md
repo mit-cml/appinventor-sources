@@ -58,7 +58,7 @@ The ChatBot component is a non-visible component for chatting with an AI
 {:id="ChatBot.GotResponse"} GotResponse(*responseText*{:.text})
 : Event indicating that a request has finished and has returned data (output from ChatBot).
 
-{:id="ChatBot.GotResponseWithImage"} GotResponseWithImage(*responseText*{:.text},*responseImage*{:.text})
+{:id="ChatBot.GotResponseWithImage"} GotResponseWithImage(*responseText*{:.text},*fileName*{:.text})
 : Event indicating that we have received a response from the chatbot proxy which
  includes an Image and possibly text to go with it.
 
@@ -72,7 +72,7 @@ The ChatBot component is a non-visible component for chatting with an AI
 {:id="ChatBot.ConverseWithImage" class="method"} <i/> ConverseWithImage(*question*{:.text},*source*{:.any})
 : Ask a question of the Chat Bot using an Image. Successive calls will remember information from earlier in the conversation. Use the "ResetConversation" function to reset for a new conversation.
 
-{:id="ChatBot.CreateImage" class="method"} <i/> CreateImage(*prompt*{:.text})
+{:id="ChatBot.CreateImage" class="method"} <i/> CreateImage(*description*{:.text})
 : Create an Image. Note: Only Gemini is currently supported. Do not specify a model in order to get the most up-to-date model to use.
 
 {:id="ChatBot.ResetConversation" class="method"} <i/> ResetConversation()
