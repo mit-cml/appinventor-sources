@@ -252,6 +252,9 @@ public class JsonUtil {
     if (value instanceof FString) {
       return JSONObject.quote(value.toString());
     }
+    if (value instanceof YailMatrix) {
+      return ((YailMatrix) value).toJSONString();
+    }
     if (value instanceof YailList) {
       return ((YailList) value).toJSONString();
     }
@@ -348,7 +351,12 @@ public class JsonUtil {
           (value instanceof Boolean)) {
         return value;
       } else if (value instanceof JSONArray) {
-        return getListFromJsonArray((JSONArray)value, useDicts);
+        JSONArray arr = (JSONArray) value;
+        try {
+          return YailMatrix.fromJsonArray(arr);
+        } catch (JSONException e) {
+          return getListFromJsonArray(arr, useDicts);
+        }
       } else if (value instanceof JSONObject) {
         if (useDicts) {
           return getDictionaryFromJsonObject((JSONObject) value);
