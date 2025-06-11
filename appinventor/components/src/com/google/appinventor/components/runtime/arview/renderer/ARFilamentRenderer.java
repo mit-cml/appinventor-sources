@@ -728,7 +728,7 @@ public class ARFilamentRenderer {
                     Log.d(LOG_TAG, "COLOR  tex parameter set successfully");
                 }
 
-                occlusionMaterialInstance.setParameter("debugMode", 26);
+                occlusionMaterialInstance.setParameter("debugMode", 0);
                 occlusionMaterialInstance.setParameter("baseColor", 0.0f, 0.0f, 1.0f, 1.0f);
 
 
