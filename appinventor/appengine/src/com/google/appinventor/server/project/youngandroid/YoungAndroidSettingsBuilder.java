@@ -21,6 +21,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING;
 import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.ASSETS_FOLDER;
 import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.SRC_FOLDER;
 
@@ -49,6 +50,7 @@ public class YoungAndroidSettingsBuilder {
   private String primaryColorDark = "0";
   private String accentColor = "0";
   private String defaultFileScope = "App";
+  private String aiVersioning = "";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -89,6 +91,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
     defaultFileScope = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
+    aiVersioning = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_AIVERSIONING));
   }
 
   /**
@@ -114,6 +118,7 @@ public class YoungAndroidSettingsBuilder {
     primaryColorDark = properties.getProperty("color.primary.dark", "");
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
+    aiVersioning = properties.getProperty("aiversioning", "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -200,7 +205,10 @@ public class YoungAndroidSettingsBuilder {
     this.defaultFileScope = defaultFileScope;
     return this;
   }
-
+  public YoungAndroidSettingsBuilder setAIVersioning(String aiVersioning) {
+    this.aiVersioning = aiVersioning;
+    return this;
+  }
   /**
    * Convert the internal settings into a JSON structure.
    *
@@ -223,6 +231,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, primaryColorDark);
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
+    object.put(YOUNG_ANDROID_SETTINGS_AIVERSIONING, aiVersioning);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -255,6 +264,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "color.primary.dark", primaryColorDark);
     addPropertyIfSet(result, "color.accent", accentColor);
     addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
+    addPropertyIfSet(result, "aiversioning", aiVersioning);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
@@ -299,6 +309,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.primaryColorDark.equals(primaryColorDark);
       result &= other.accentColor.equals(accentColor);
       result &= other.defaultFileScope.equals(defaultFileScope);
+      result &= other.aiVersioning.equals(aiVersioning);
       return result;
     }
     return false;
