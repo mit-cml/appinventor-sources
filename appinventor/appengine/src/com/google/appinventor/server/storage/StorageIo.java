@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
@@ -682,6 +683,19 @@ public interface StorageIo {
   boolean deleteAccount(String userId);
 
   String getIosExtensionsConfig();
+
+  /**
+   * Uploads a global asset (e.g., extension, media file not tied to a project) for a user and stores its metadata.
+   *
+   * @param userId        the ID of the user uploading the asset
+   * @param assetName     the name of the asset file
+   * @param assetType     the MIME type or general category of the asset (e.g., "image/png", "audio/mpeg", "extension")
+   * @param folder        an optional folder for user organization (can be null)
+   * @param contentStream an InputStream containing the content of the asset file
+   * @return StoredData.UserGlobalAssetData object representing the persisted metadata, including its generated ID
+   * @throws IOException if there is an error during file upload or GCS interaction
+   */
+  StoredData.UserGlobalAssetData uploadGlobalAsset(String userId, String assetName, String assetType, String folder, InputStream contentStream) throws IOException;
 
 }
 

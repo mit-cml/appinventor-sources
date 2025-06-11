@@ -5788,4 +5788,108 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Time")
   @Description("Set x-axis label values Type as Time")
   String labelTime();
+
+  @DefaultMessage("Asset Manager")
+  @Description("Title for the Asset Manager panel")
+  String assetManagerTitle();
+
+  @DefaultMessage("Upload Asset")
+  @Description("Text for the upload asset button")
+  String uploadAssetButton();
+
+  @DefaultMessage("Search Assets")
+  @Description("Placeholder text for asset search box")
+  String searchAssetsPlaceholder();
+
+  @DefaultMessage("Folders")
+  @Description("Title for the folders section")
+  String foldersSectionTitle();
+
+  @DefaultMessage("Tags")
+  @Description("Title for the tags section")
+  String tagsSectionTitle();
+
+  @DefaultMessage("Recent")
+  @Description("Title for the recent assets section")
+  String recentAssetsTitle();
+
+  @DefaultMessage("Drag and drop files here")
+  @Description("Text shown in the upload drop zone")
+  String dragDropText();
+
+  @DefaultMessage("or click to browse")
+  @Description("Text shown next to drag and drop message")
+  String clickToBrowseText();
+
+  @DefaultMessage("Preview")
+  @Description("Title for the asset preview panel")
+  String previewTitle();
+
+  @DefaultMessage("Properties")
+  @Description("Title for the asset properties panel")
+  String propertiesTitle();
+
+  @DefaultMessage("Name")
+  @Description("Label for asset name property")
+  String assetNameLabel();
+
+  @DefaultMessage("Type")
+  @Description("Label for asset type property")
+  String assetTypeLabel();
+
+  @DefaultMessage("Size")
+  @Description("Label for asset size property")
+  String assetSizeLabel();
+
+  @DefaultMessage("Date Added")
+  @Description("Label for asset date added property")
+  String assetDateAddedLabel();
+
+  @DefaultMessage("Tags")
+  @Description("Label for asset tags property")
+  String assetTagsLabel();
+
+  @DefaultMessage("Add to Project")
+  @Description("Text for the add to project button")
+  String addToProjectButton();
+
+  @DefaultMessage("Delete")
+  @Description("Text for the delete asset button")
+  String deleteAssetButton();
+
+  @DefaultMessage("Edit")
+  @Description("Text for the edit asset button")
+  String editAssetButton();
+
+  @DefaultMessage("Create Folder")
+  @Description("Text for the create folder button")
+  String createFolderButton();
+
+  @DefaultMessage("Add Tag")
+  @Description("Text for the add tag button")
+  String addTagButton();
+
+  @DefaultMessage("Filter by Type")
+  @Description("Label for the asset type filter")
+  String filterByTypeLabel();
+
+  @DefaultMessage("All Types")
+  @Description("Text for the all types filter option")
+  String allTypesFilter();
+
+  @DefaultMessage("Images")
+  @Description("Text for the images filter option")
+  String imagesFilter();
+
+  @DefaultMessage("Audio")
+  @Description("Text for the audio filter option")
+  String audioFilter();
+
+  @DefaultMessage("Video")
+  @Description("Text for the video filter option")
+  String videoFilter();
+
+  @DefaultMessage("Other")
+  @Description("Text for the other files filter option")
+  String otherFilter();
 }

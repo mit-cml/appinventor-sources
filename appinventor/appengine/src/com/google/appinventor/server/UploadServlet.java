@@ -16,6 +16,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -158,6 +159,71 @@ public class UploadServlet extends OdeServlet {
 
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,
           fileImporter.importTempFile(uploadedStream));
+      } else if (uploadKind.equals(ServerLayout.UPLOAD_GLOBAL_ASSET)) {
+        String assetName = null;
+        String assetType = null;
+        String assetFolder = null;
+        InputStream uploadedStream = null;
+        long assetId = 0;
+
+        try {
+          ServletFileUpload upload = new ServletFileUpload();
+          FileItemIterator iterator = upload.getItemIterator(req);
+          while (iterator.hasNext()) {
+            FileItemStream item = iterator.next();
+            InputStream stream = item.openStream();
+            if (item.isFormField()) {
+              String fieldName = item.getFieldName();
+              String value = Streams.asString(stream); // Consume the stream
+              if ("assetName".equals(fieldName)) {
+                assetName = value;
+              } else if ("assetType".equals(fieldName)) {
+                assetType = value;
+              } else if ("assetFolder".equals(fieldName)) {
+                assetFolder = value;
+              }
+            } else {
+              if (ServerLayout.UPLOAD_GLOBAL_ASSET_FORM_ELEMENT.equals(item.getFieldName())) {
+                // Check if we already have a stream, which would be an error (e.g. multiple files)
+                if (uploadedStream != null) {
+                  LOG.warning("Multiple files found for field: " + item.getFieldName() + ". Ignoring subsequent ones.");
+                  stream.close(); // Close the new stream as we are ignoring it
+                } else {
+                  uploadedStream = stream; // Don't close this stream here, importer will
+                }
+              } else {
+                LOG.warning("Unexpected file field in global asset upload: " + item.getFieldName());
+                stream.close(); // Close unused file streams
+              }
+            }
+          }
+
+          if (assetName == null || assetType == null || uploadedStream == null) {
+            LOG.severe("Missing required fields for global asset upload (name, type, or file).");
+            uploadResponse = new UploadResponse(UploadResponse.Status.IO_EXCEPTION, 0, "Missing required fields for global asset upload (name, type, or file).");
+          } else {
+            assetId = fileImporter.importGlobalAsset(userInfoProvider.getUserId(), assetName,
+                assetType, assetFolder, uploadedStream);
+            uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, assetId);
+          }
+        } catch (FileImporterException e) {
+          LOG.warning("FileImporterException during global asset upload: " + e.getMessage());
+          uploadResponse = e.uploadResponse;
+        } catch (IOException e) {
+          LOG.severe("IOException during global asset upload: " + e.getMessage());
+          uploadResponse = new UploadResponse(UploadResponse.Status.IO_EXCEPTION, 0, "IO Error during global asset upload: " + e.getMessage());
+          throw CrashReport.createAndLogError(LOG, req, "IOException during global asset upload", e);
+        } catch (Exception e) { // Catch other general exceptions from fileupload
+          LOG.severe("Exception during global asset upload processing: " + e.getMessage());
+          uploadResponse = new UploadResponse(UploadResponse.Status.IO_EXCEPTION, 0, "Server error during global asset upload: " + e.getMessage());
+          throw CrashReport.createAndLogError(LOG, req, "Exception during global asset upload processing", e);
+        } finally {
+          // Ensure uploadedStream is closed if it was opened and not passed to importer
+          // However, the importer is responsible for closing the stream it receives.
+          // If an exception occurred before calling the importer, and uploadedStream was assigned,
+          // it might need closing here, but typical stream handling in importer should cover it.
+        }
+
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,
             new IllegalArgumentException("Unknown upload kind: " + uploadKind));

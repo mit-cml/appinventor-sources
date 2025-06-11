@@ -34,6 +34,7 @@
               <g:FlowPanel>
                 <g:Label text="{messages.assetListBoxCaption}" styleName="ode-AssetsTitle" />
                 <box:AssetListBox  ui:field="assetListBox" />
+                <ed:AssetManagerPanel ui:field="assetManagerPanel" />
               </g:FlowPanel>
             </g:FlowPanel>
             <box:PropertiesBox ui:field="propertiesBox"  styleName="ode-Designer-RightColumns" />

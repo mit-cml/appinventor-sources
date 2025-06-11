@@ -328,6 +328,25 @@ public class StoredData {
     String allowedExtensions;
   }
 
+  @Unindexed
+  @Cached
+  public static class UserGlobalAssetData {
+    @Id public Long id;
+    @Parent public Key<UserData> userKey;
+    @Indexed public String name; // Indexed for searching/listing by name
+    public String type; // e.g., "library", "extension"
+    public String folder; // Nullable, for user organization
+    @Indexed public long uploadDate; // Indexed for sorting by date
+    public String gcsPath; // Path to the file in Google Cloud Storage
+  }
+
+  // TODO(ewpatton): Remove LibraryFileData after merge (deprecated)
+  @Deprecated
+  @Unindexed
+  @Cached
+  public static final class LibraryFileData extends UserGlobalAssetData {
+  }
+
   public static final class ProjectNotFoundException extends IOException {
     ProjectNotFoundException(String message) {
       super(message);
