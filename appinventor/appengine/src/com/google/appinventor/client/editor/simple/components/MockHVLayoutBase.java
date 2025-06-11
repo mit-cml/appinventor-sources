@@ -553,7 +553,20 @@ abstract class MockHVLayoutBase extends MockLayout {
 
       // If the child is a container then call layoutChildren for it.
       if (child instanceof MockContainer) {
-        ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
+        // If the child is a tab, its children should get the
+        // parent height as (height of tab arrangement - tab height)
+        // and parent width as (width of tab arrangement).
+        if (child instanceof MockTab) {
+          int tabHeight = childLayoutInfo.height;
+          int tabWidth = childLayoutInfo.width;
+          childLayoutInfo.height = containerLayoutInfo.height - tabHeight;
+          childLayoutInfo.width = containerLayoutInfo.width;
+          ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
+          childLayoutInfo.height = tabHeight;
+          childLayoutInfo.width = tabWidth;
+        } else {
+          ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
+        }
       }
     }
 
@@ -662,8 +675,8 @@ abstract class MockHVLayoutBase extends MockLayout {
       setDividerLocation(-1);
 
       // Calculate drop information
-      MockContainer srcContainer = source.getContainer();
-      MockContainer dstContainer = container;
+      MockContainer<?> srcContainer = source.getContainer();
+      MockContainer<?> dstContainer = container;
       if (srcContainer == dstContainer) {
         final int srcPos = srcContainer.getShowingVisibleChildren().indexOf(source);
         if (dstPos > srcPos) {

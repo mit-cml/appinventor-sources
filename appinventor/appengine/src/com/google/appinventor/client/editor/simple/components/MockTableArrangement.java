@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class MockTableArrangement extends MockContainer {
+public final class MockTableArrangement extends MockContainer<MockTableLayout> {
 
   /**
    * Component type name.

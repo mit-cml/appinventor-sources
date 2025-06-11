@@ -56,6 +56,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSizingChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteOriginPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidStrokeStylePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTabBarPositionChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor;
@@ -350,6 +351,8 @@ public class PropertiesUtil {
       return new YoungAndroidChatbotProviderPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_MODEL)) {
       return new YoungAndroidChatbotModelPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TAB_BAR_POSITION)) {
+      return new YoungAndroidTabBarPositionChoicePropertyEditor();
     } else {
       return new TextPropertyEditor();
     }

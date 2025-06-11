@@ -5788,4 +5788,23 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Time")
   @Description("Set x-axis label values Type as Time")
   String labelTime();
+
+  // Used in
+  // editor/youngandroid/properties/YoungAndroidTabBarPositionChoicePropertyEditor.java
+
+  @DefaultMessage("Default")
+  @Description("Text for tab bar position choice 'Default'")
+  String tabBarPositionChoiceDefault();
+
+  @DefaultMessage("Top")
+  @Description("Text for tab bar position choice 'Top'")
+  String tabBarPositionChoiceTop();
+
+  @DefaultMessage("Bottom")
+  @Description("Text for tab bar position choice 'Bottom'")
+  String tabBarPositionChoiceBottom();
+
+  @DefaultMessage("System error: Bad value - {0} - for Tab Bar Position.")
+  @Description("Default message for bad value for Tab Bar Position")
+  String badValueForTabBarPosition(String componentName);  
 }

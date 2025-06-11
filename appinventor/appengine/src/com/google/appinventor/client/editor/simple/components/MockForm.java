@@ -50,7 +50,7 @@ import java.util.Map;
  * Normal size is a 1:1 with pixels on a device with dpi:160. We use that as the baseline for the
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
-public final class MockForm extends MockContainer {
+public final class MockForm extends MockContainer<MockFormLayout> {
   private static final Logger LOG = Logger.getLogger(MockForm.class.getName());
 
   private Integer view = 1;

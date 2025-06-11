@@ -52,14 +52,13 @@ import java.util.List;
 
 @SuppressWarnings("AbbreviationAsWordInName")
 @SimpleObject
-public class HVArrangement extends AndroidViewComponent implements Component, ComponentContainer {
+public class HVArrangement<T extends ViewGroup> extends AndroidViewComponent<T> implements Component, ComponentContainer {
   private final Activity context;
 
   // Layout
   private final int orientation;
-  private final LinearLayout viewLayout;
-  private ViewGroup frameContainer;
-  private boolean scrollable = false;
+  protected final LinearLayout viewLayout;
+  protected T frameContainer;
   // translates App Inventor alignment codes to Android gravity
   private AlignmentUtil alignmentSetter;
 
@@ -91,12 +90,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL}.
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL}
   */
-  public HVArrangement(ComponentContainer container, int orientation, boolean scrollable) {
+  public HVArrangement(ComponentContainer container, int orientation, T view) {
     super(container);
     context = container.$context();
+    frameContainer = view;
 
     this.orientation = orientation;
-    this.scrollable = scrollable;
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
@@ -106,22 +105,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     alignmentSetter.setVerticalAlignment(verticalAlignment);
 
-    if (scrollable) {
-      switch (orientation) {
-        case ComponentConstants.LAYOUT_ORIENTATION_VERTICAL:
-          Log.d(LOG_TAG, "Setting up frameContainer = ScrollView()");
-          frameContainer = new ScrollView(context);
-          break;
-        case ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL:
-          Log.d(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
-          frameContainer = new HorizontalScrollView(context);
-          break;
-      }
-    } else {
-      Log.d(LOG_TAG, "Setting up frameContainer = FrameLayout()");
-      frameContainer = new FrameLayout(context);
-    }
-
     frameContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
     frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -130,7 +113,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       // Save the default values in case the user wants them back later.
     defaultButtonDrawable = getView().getBackground();
 
-    container.$add(this);
     BackgroundColor(Component.COLOR_DEFAULT);
 
   }
@@ -150,7 +132,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void $add(AndroidViewComponent component) {
+  public void $add(AndroidViewComponent<? extends View> component) {
     viewLayout.add(component);
     allChildren.add(component);
   }
@@ -161,11 +143,11 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void setChildWidth(final AndroidViewComponent component, int width) {
+  public void setChildWidth(final AndroidViewComponent<? extends View> component, int width) {
     setChildWidth(component, width, 0);
   }
 
-  public void setChildWidth(final AndroidViewComponent component, int width, final int trycount) {
+  public void setChildWidth(final AndroidViewComponent<? extends View> component, int width, final int trycount) {
     int cWidth = container.$form().Width();
     if (cWidth == 0 && trycount < 2) {     // We're not really ready yet...
       final int fWidth = width;            // but give up after two tries...
@@ -192,7 +174,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void setChildHeight(final AndroidViewComponent component, int height) {
+  public void setChildHeight(final AndroidViewComponent<? extends View> component, int height) {
     int cHeight = container.$form().Height();
     if (cHeight == 0) {         // Not ready yet...
       final int fHeight = height;
@@ -225,7 +207,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // AndroidViewComponent implementation
 
   @Override
-  public View getView() {
+  public T getView() {
     return frameContainer; //: viewLayout.getLayoutManager();
   }
 
@@ -389,7 +371,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
      *
      * @param path  the path of the background image
      */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
     @SimpleProperty(description = "Specifies the path of the background image for the %type%.  " +
             "If there is both an Image and a BackgroundColor, only the Image will be visible.")
     public void Image(@Asset String path) {

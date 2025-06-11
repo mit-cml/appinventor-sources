@@ -31,6 +31,7 @@ public final class MockScrollHorizontalArrangement extends MockHVArrangement {
     super(editor, TYPE, images.horizontal(),
       ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL,
       ComponentConstants.SCROLLABLE_ARRANGEMENT);
+    initComponent(layoutWidget);
   }
 
 }

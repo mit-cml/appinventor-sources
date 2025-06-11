@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.widget.HorizontalScrollView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -31,10 +32,11 @@ import com.google.appinventor.components.common.YaVersion;
     category = ComponentCategory.LAYOUT,
     iconName = "images/horizontal.png")
 @SimpleObject
-public class HorizontalScrollArrangement extends HVArrangement {
+public class HorizontalScrollArrangement extends HVArrangement<HorizontalScrollView> {
   public HorizontalScrollArrangement(ComponentContainer container) {
     super(container, ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL,
-      ComponentConstants.SCROLLABLE_ARRANGEMENT);
+        new HorizontalScrollView(container.$context()));
+    container.$add(this);
   }
 
 }

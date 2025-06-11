@@ -106,10 +106,19 @@ public final class LinearLayout implements Layout {
   }
 
   public void add(AndroidViewComponent component) {
-    layoutManager.addView(component.getView(), new android.widget.LinearLayout.LayoutParams(
-        ViewGroup.LayoutParams.WRAP_CONTENT,  // width
-        ViewGroup.LayoutParams.WRAP_CONTENT,  // height
-        0f));                                 // weight
+    if (component instanceof TabArrangement) {
+      layoutManager.addView(component.getView(), new android.widget.LinearLayout.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          0,
+          1f
+      ));
+    }
+    else {
+      layoutManager.addView(component.getView(), new android.widget.LinearLayout.LayoutParams(
+          ViewGroup.LayoutParams.WRAP_CONTENT,  // width
+          ViewGroup.LayoutParams.WRAP_CONTENT,  // height
+          0f));                                 // weight
+    }
   }
 
   public void setHorizontalGravity(int gravity) {
