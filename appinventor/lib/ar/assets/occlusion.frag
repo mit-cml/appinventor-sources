@@ -25,6 +25,7 @@ uniform sampler2D u_VirtualSceneColorTexture;
 
 uniform samplerExternalOES u_CameraColorTexture;
 
+uniform int u_ShouldDiscard;
 #if USE_OCCLUSION
 // The AR camera depth texture.
 uniform sampler2D u_CameraDepthTexture;
@@ -163,12 +164,16 @@ const vec2 uv, float assetDepthMm) {
 #endif  // USE_OCCLUSION
 
 void main() {
+
     vec4 virtualSceneColor = texture(u_VirtualSceneColorTexture, v_VirtualSceneTexCoord);
     vec4 cameraColor = texture(u_CameraColorTexture, v_CameraTexCoord);
 
-    // If no virtual content, show camera background
     if (virtualSceneColor.a <= 0.1) {
-        o_FragColor = cameraColor;
+        if (u_ShouldDiscard == 1) {
+            discard; // Second pass: preserve existing pixels
+        } else {
+            o_FragColor = cameraColor; // First pass: show camera background
+        }
         return;
     }
 

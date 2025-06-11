@@ -59,6 +59,7 @@ public class BackgroundRenderer {
     private final VertexBuffer cameraTexCoordsVertexBuffer;
     private Shader backgroundShader;
     private Shader occlusionShader;
+    private Shader occlusionShader2;
     private final Texture cameraDepthTexture;
     private final Texture cameraColorTexture;
     private Texture placeHolderTexture;
@@ -144,7 +145,17 @@ public class BackgroundRenderer {
                 .setTexture("u_CameraColorTexture", cameraColorTexture)
                 .setDepthTest(false)
                 .setDepthWrite(false)
-                .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+                .setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ZERO);
+
+        occlusionShader2 = Shader.createFromAssets(
+                render,
+                Form.ASSETS_PREFIX +"occlusion.vert",
+                Form.ASSETS_PREFIX +"occlusion.frag",
+                defines)
+            .setTexture("u_CameraColorTexture", cameraColorTexture)
+            .setDepthTest(false)
+            .setDepthWrite(false)
+            .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
 
         // Set default aspect ratio
         aspectRatio = 1.0f;
@@ -220,11 +231,23 @@ public class BackgroundRenderer {
         occlusionShader =
             Shader.createFromAssets(render,  Form.ASSETS_PREFIX +"occlusion.vert",  Form.ASSETS_PREFIX +"occlusion.frag", defines)
                     .setTexture("u_CameraDepthTexture", cameraDepthTexture)
-                    .setTexture("u_CameraColorTexture", cameraColorTexture)
+                   // .setTexture("u_CameraColorTexture", cameraColorTexture)
                     .setFloat("u_DepthAspectRatio", aspectRatio)
                 .setDepthTest(true)
                 .setDepthWrite(false)
-                .setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ZERO); // Add this line
+                .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+
+        occlusionShader2 = Shader.createFromAssets(
+                render,
+                Form.ASSETS_PREFIX +"occlusion.vert",
+                Form.ASSETS_PREFIX +"occlusion.frag",
+                defines)
+            .setTexture("u_CameraDepthTexture", cameraDepthTexture)
+            // .setTexture("u_CameraColorTexture", cameraColorTexture)
+            .setFloat("u_DepthAspectRatio", aspectRatio)
+            .setDepthTest(true)
+            .setDepthWrite(false)
+            .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
        // }
     }
 
@@ -293,6 +316,7 @@ public class BackgroundRenderer {
         if (useOcclusion) {
             aspectRatio = (float) image.getWidth() / (float) image.getHeight();
             occlusionShader.setFloat("u_DepthAspectRatio", aspectRatio);
+            occlusionShader2.setFloat("u_DepthAspectRatio", aspectRatio);
         }
     }
 
@@ -320,9 +344,10 @@ public class BackgroundRenderer {
      * com.google.ar.core.Camera#getViewMatrix(float[], int)} and {@link
      * com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)}.
      */
-    public void drawVirtualScene(
+   /* this works fine if you are only rendering to one framebuffer (and not consecutively to another
+     public void drawVirtualScene(
             ARViewRender render, Framebuffer framebuffer,
-            float zNear, float zFar) {
+            float zNear, float zFar, int shouldDiscard) {
 
         if (occlusionShader == null) {
             Log.e(LOG_TAG, "Cannot draw virtual scene: backgroundShader is null");
@@ -338,7 +363,8 @@ public class BackgroundRenderer {
                 .setFloat("u_ZNear", zNear)
                 .setFloat("u_ZFar", zFar)
                 .setTexture("u_CameraDepthTexture", cameraDepthTexture)
-                .setTexture("u_CameraColorTexture", cameraColorTexture);
+                .setTexture("u_CameraColorTexture", cameraColorTexture)
+                .setInt("u_ShouldDiscard", shouldDiscard);
 
             // check framebuffer.getDepthTexture();
         } catch (java.lang.Exception e) {
@@ -353,31 +379,44 @@ public class BackgroundRenderer {
 
     }
 
-    public void drawVirtualSceneWithTextures(ARViewRender render,
-                                             Texture virtualSceneColorTexture,
-                                             Texture virtualSceneDepthTexture,
-                                             float zNear, float zFar) {
+    */
 
-        if (occlusionShader == null) {
-            Log.e(LOG_TAG, "Cannot draw virtual scene: occlusionShader is null");
-            return;
-        }
+    /* render each framebuffer with it's own shader instance using u_ShouldDiscard for two passes
+    */
 
+    public void drawVirtualSceneComposite(ARViewRender render,
+                                          Framebuffer framebuffer1,
+                                          Framebuffer framebuffer2,
+                                          float zNear, float zFar) {
         try {
-            // Set the Filament textures directly in the occlusion shader
-            occlusionShader.setTexture("u_VirtualSceneColorTexture", virtualSceneColorTexture);
-            occlusionShader.setTexture("u_VirtualSceneDepthTexture", virtualSceneDepthTexture);
-            occlusionShader.setFloat("u_ZNear", zNear)
+            // First pass
+            GLES30.glDisable(GLES30.GL_BLEND);
+
+            occlusionShader.setTexture("u_VirtualSceneColorTexture", framebuffer1.getColorTexture());
+            occlusionShader.setTexture("u_VirtualSceneDepthTexture", framebuffer1.getDepthTexture())
+                .setFloat("u_ZNear", zNear)
                 .setFloat("u_ZFar", zFar)
-                .setTexture("u_CameraColorTexture", cameraColorTexture);
+                .setTexture("u_CameraColorTexture", cameraColorTexture)
+                .setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ZERO)
+                .setInt("u_ShouldDiscard", 0); // Show camera background
 
-            Log.d(LOG_TAG, "Drawing virtual scene with DIRECT Filament textures with DEPTH");
-
-            // Draw to default framebuffer (screen)
             render.draw(mesh, occlusionShader, null);
 
+            // Second pass - alpha blending, preserves existing content where no new content
+
+            occlusionShader2.setTexture("u_CameraDepthTexture", cameraDepthTexture)
+                .setTexture("u_VirtualSceneColorTexture", framebuffer2.getColorTexture())
+                .setTexture("u_VirtualSceneDepthTexture", framebuffer2.getDepthTexture())
+                .setFloat("u_ZNear", zNear)
+                .setFloat("u_ZFar", zFar)
+                .setTexture("u_CameraColorTexture", cameraColorTexture)
+                .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA)
+                .setInt("u_ShouldDiscard", 1); // discard empty pixels
+
+            render.draw(mesh, occlusionShader2, null);
+
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Error drawing virtual scene with textures", e);
+            Log.e(LOG_TAG, "Error drawing composite virtual scene", e);
         }
     }
     /**

@@ -3,7 +3,6 @@ package com.google.appinventor.components.runtime.ar;
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
 
-
 import android.app.Activity;
 import android.opengl.GLES30;
 import android.view.SurfaceView;
@@ -43,7 +42,6 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
-import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Config;
 import com.google.ar.core.Config.InstantPlacementMode;
 import com.google.ar.core.DepthPoint;
@@ -59,6 +57,7 @@ import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.*;
 
+import com.google.ar.core.Coordinates2d;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -288,7 +287,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
         // Create or resize framebuffer
-       /* if (virtualSceneFramebuffer != null) {
+        if (virtualSceneFramebuffer != null) {
             virtualSceneFramebuffer.resize(width, height);
         } else {
             // Create the virtual scene framebuffer
@@ -299,24 +298,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Failed to create framebuffer: " + e.getMessage());
             }
-        }*/
+        }
 
 
-// Instead of resize, recreate the framebuffer
+        // Create or resize framebuffer
         if (filamentFramebuffer != null) {
-            filamentFramebuffer.close(); // Clean up old framebuffer
-            filamentFramebuffer = null;
+            filamentFramebuffer.resize(width, height);
+        } else {
+            // Create the virtual scene framebuffer
+            try {
+                filamentFramebuffer = new Framebuffer(render, width, height);
+                Log.d(LOG_TAG, "Created filamentFramebuffer: " +
+                    filamentFramebuffer.getFramebufferId() + " " + width + "x" + height);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to create filamentFramebuffer: " + e.getMessage());
+            }
         }
-
-// Always create fresh framebuffer, NOT resizing it as that seems to cause GL Errors? bc the framebuffer is given the display and depth textures from filament..
-        try {
-            filamentFramebuffer = new Framebuffer(render, width, height);
-            Log.d(LOG_TAG, "Created fresh filamentFramebuffer: " +
-                filamentFramebuffer.getFramebufferId() + " " + width + "x" + height);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Failed to create filamentFramebuffer: " + e.getMessage());
-        }
-
 
         currentViewportWidth = width;
         currentViewportHeight = height;
@@ -669,7 +666,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             GLES30.glEnable(GLES30.GL_BLEND);
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
-
+            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
             //emitPlaneDetectedEvent();
 
 
@@ -685,15 +682,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
             GLES30.glFinish();
 
-            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
-            GLES30.glDisable(GLES30.GL_DEPTH_TEST);
-            GLES30.glEnable(GLES30.GL_BLEND);
-            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
-            //backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
-            backgroundRenderer.drawVirtualScene(render, filamentFramebuffer, Z_NEAR, Z_FAR);
-
+            backgroundRenderer.drawVirtualSceneComposite(render, filamentFramebuffer, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             error = GLES30.glGetError();
             if (error != GLES30.GL_NO_ERROR) {
@@ -702,8 +694,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
             handleTap(frame, camera);
-
-            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
 
             GLES30.glDisable(GLES30.GL_BLEND);
             GLES30.glFinish();
@@ -744,8 +734,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     // Create a default anchor for placing objects
     public Anchor CreateDefaultAnchor() {
-        float[] position = {0f, 0f, -2};
-        float[] rotation = {0, 2, 1, 1};
+        float[] position = {0f, 0f, 1};
+        float[] rotation = {0, 2, -2, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
         Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
 
