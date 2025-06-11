@@ -39,7 +39,7 @@ float linearizeDepth(float ndcDepth, float nearPlane, float farPlane) {
         prepareMaterial(material);
         
         vec2 screenUV = gl_FragCoord.xy / getResolution().xy;
-        vec2 rotatedUV = vec2(1.0 - screenUV.y, screenUV.x);
+        vec2 rotatedUV = vec2(screenUV.y, 1.0 - screenUV.x);
 
 
         // ✅ Get linear view-space depth directly
@@ -56,7 +56,7 @@ float linearizeDepth(float ndcDepth, float nearPlane, float farPlane) {
             materialParams.uvTransformRow3
         );
         
-        vec4 depthUV4 = depthUvTransform * vec4(screenUV, 0.0, 1.0);
+        vec4 depthUV4 = depthUvTransform * vec4(rotatedUV, 0.0, 1.0);
         vec2 depthUV = clamp(depthUV4.xy / depthUV4.w, 0.0, 1.0);
 
 
@@ -96,57 +96,7 @@ float linearizeDepth(float ndcDepth, float nearPlane, float farPlane) {
                 material.baseColor.rgb = vec3(0.0, 1.0, 0.0); // Should be visible
             }
             return;
-        }else if (materialParams.debugMode == 14) {
-    // Show ARCore depth with validity checking
-    vec4 ardepthSample = texture(materialParams_depthTexture, depthUV);
-    float arCoreDepthMm = ardepthSample.r * 255.0 + ardepthSample.g * 255.0 * 256.0;
-    float arCoreDepthMeters = arCoreDepthMm * 0.001;
-    
-    if (arCoreDepthMm < 1.0) {
-        material.baseColor.rgb = vec3(1.0, 0.0, 1.0); // Magenta = no depth data
-    } else if (arCoreDepthMeters < 0.5) {
-        material.baseColor.rgb = vec3(0.0, 0.0, 1.0); // Blue = very close (suspicious)
-    } else if (arCoreDepthMeters > 10.0) {
-        material.baseColor.rgb = vec3(1.0, 1.0, 0.0); // Yellow = very far (suspicious)
-    } else {
-        // Green intensity based on distance
-        float intensity = clamp(arCoreDepthMeters / 5.0, 0.0, 1.0);
-        material.baseColor.rgb = vec3(0.0, intensity, 0.0);
-    }
-    return;
-}else if (materialParams.debugMode == 17) {
-    // Show model's world Y position as color
-    vec3 worldPos = getWorldPosition();
-    float yPos = worldPos.y;
-    
-    if (yPos > 1.0) {
-        material.baseColor.rgb = vec3(1.0, 0.0, 0.0); // Red = high Y
-    } else if (yPos > 0.0) {
-        material.baseColor.rgb = vec3(1.0, 1.0, 0.0); // Yellow = mid Y  
-    } else {
-        material.baseColor.rgb = vec3(0.0, 1.0, 0.0); // Green = low Y
-    }
-    return;
-}else if (materialParams.debugMode == 18) {
-    vec3 worldPos = getWorldPosition();
-    vec3 cameraPos = getWorldCameraPosition();
-    float virtualDepthMeters = distance(worldPos, cameraPos);
-    
-    vec4 ardepthSample = texture(materialParams_depthTexture, depthUV);
-    float arCoreDepthMm = ardepthSample.r * 255.0 + ardepthSample.g * 255.0 * 256.0;
-    float arCoreDepthMeters = arCoreDepthMm * 0.001;
-    
-    // Show which depth is closer
-    if (arCoreDepthMeters < virtualDepthMeters) {
-        // ARCore is closer - should be occluded (red in debug 11)
-        float ratio = arCoreDepthMeters / virtualDepthMeters;
-        material.baseColor.rgb = vec3(1.0, 0.0, ratio); // Red with blue based on ratio
-    } else {
-        // Virtual is closer - should be visible (green in debug 11)  
-        float ratio = virtualDepthMeters / arCoreDepthMeters;
-        material.baseColor.rgb = vec3(0.0, 1.0, ratio); // Green with blue based on ratio
-    }
-    return;
+        
 }else if (materialParams.debugMode == 26) {
     vec3 worldPos = getWorldPosition();
     vec3 cameraPos = getWorldCameraPosition();
