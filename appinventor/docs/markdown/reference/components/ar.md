@@ -315,6 +315,12 @@ Component for BoxNode
 {:id="BoxNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="BoxNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="BoxNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property
+
 {:id="BoxNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
@@ -473,6 +479,9 @@ Component for CapsuleNode
 
 {:id="CapsuleNode.Pose" .any .bo} *Pose*
 : Set the current pose of the object
+
+{:id="CapsuleNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="CapsuleNode.PoseToJson" .any .ro .bo} *PoseToJson*
 : Get the current pose of the object
@@ -1072,6 +1081,9 @@ Component for ModelNode
 {:id="ModelNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="ModelNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
+
 {:id="ModelNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
@@ -1650,6 +1662,12 @@ Component for SphereNode
 {:id="SphereNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="SphereNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="SphereNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
+
 {:id="SphereNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
@@ -2123,6 +2141,12 @@ Component for TorusNode
 {:id="TorusNode.PipeRadiusInCentimeters" .number} *PipeRadiusInCentimeters*
 : The pipe radius defines the size of the surface that encircles the ring, or the pipe radius.  This can be thought of as the band of the ring.  Values less than zero will be treated as their absolute value.  When set to zero, the TorusNode will not be shown.
 
+{:id="TorusNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="TorusNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property
+
 {:id="TorusNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
@@ -2435,6 +2459,12 @@ Component for VideoNode
 {:id="VideoNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="VideoNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="VideoNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property
+
 {:id="VideoNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
@@ -2611,6 +2641,12 @@ Component for WebViewNode
 
 {:id="WebViewNode.PinchToScale" .boolean .do} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="WebViewNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="WebViewNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property
 
 {:id="WebViewNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail

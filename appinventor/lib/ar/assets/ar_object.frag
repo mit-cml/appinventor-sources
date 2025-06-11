@@ -43,6 +43,7 @@ void main() {
     vec3 color = objectColor.rgb ;
 
     gl_FragColor= vec4(color, objectColor.a > .1 ? 1.0 : 0.0);
+    //gl_FragColor= vec4(color, objectColor.a);
     
 
 }
