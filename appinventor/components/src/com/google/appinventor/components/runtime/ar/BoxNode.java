@@ -110,7 +110,7 @@ import com.google.ar.core.Trackable;
         for (int i = 0; i < positionArray.length; i++) {
             position[i] = Float.parseFloat(positionArray[i]);
         }
-        float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+        float[] rotation = {0,0,0, 1}; // no rotation TBD
         if (this.trackable != null) {
             Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
             Anchor(myAnchor);

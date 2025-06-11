@@ -42,7 +42,6 @@ import java.util.Locale;
 
 
   private Anchor anchor = null;
-  private String position = "0, 0, 0";
   private Trackable trackable = null;
   private String texture = "";
   private String objectModel = Form.ASSETS_PREFIX + "pawn.obj";
@@ -111,26 +110,41 @@ import java.util.Locale;
     }
   }
 
-  @SimpleProperty(description = "Set the current pose of the object from property",
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
       category = PropertyCategory.APPEARANCE)
   @Override
-  public void PoseFromPropertyPosition(String positionFromPropery) {
-    Log.i("setting Capsule pose", "with position" +positionFromPropery);
+  public void PoseFromPropertyPosition(String positionFromProperty) {
+    Log.i("setting Capsule pose", "with position" +positionFromProperty);
 
 
-    String[] positionArray = positionFromPropery.split(",");
+    String[] positionArray = positionFromProperty.split(",");
     float[] position = {0f,0f,0f};
 
     for (int i = 0; i < positionArray.length; i++) {
       position[i] = Float.parseFloat(positionArray[i]);
     }
-    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
   }
 
+  /*@Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT, defaultValue = "")
+  public void PoseFromPropertyPositions(String x, String y, String z) {
+    Log.i("setting Capsule pose", "with position" + x + " " + y  + " " + z);
+
+    float[] position = { Float.parseFloat(x), Float.parseFloat(y), Float.parseFloat(z)};
+
+    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }*/
 
 
 

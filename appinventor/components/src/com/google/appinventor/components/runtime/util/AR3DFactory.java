@@ -57,7 +57,8 @@ public final class AR3DFactory {
 
      Object Pose();
      void Pose(Object o);
-
+     void PoseFromPropertyPosition(String positionFromProperty) ;
+     void PoseFromPropertyPositions(String x, String y, String z) ;
 
      YailDictionary PoseToYailDictionary();
      YailDictionary ARNodeToYail();
@@ -77,7 +78,7 @@ public final class AR3DFactory {
      int FillColorOpacity();
      void FillColorOpacity(int colorOpacity);
 
-     String Texture();
+    String Texture();
      void Texture(String texture);
 
      int TextureOpacity();

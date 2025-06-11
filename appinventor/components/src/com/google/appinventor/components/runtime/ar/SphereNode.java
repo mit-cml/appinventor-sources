@@ -21,6 +21,7 @@ import com.google.ar.core.Trackable;
 import android.util.Log;
 
 
+
 @UsesAssets(fileNames = "sphere.obj, Palette.png")
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a 3D model in an ARView3D.  " +
@@ -82,41 +83,55 @@ import android.util.Log;
     }
 
 
-  @SimpleProperty(description = "Set the current pose of the object",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void Pose(Object p) {
-    Log.i("setting Capsule pose", "with " +p);
-    Pose pose = (Pose) p;
+    @SimpleProperty(description = "Set the current pose of the object",
+        category = PropertyCategory.APPEARANCE)
+    @Override
+    public void Pose(Object p) {
+      Log.i("setting Capsule pose", "with " +p);
+      Pose pose = (Pose) p;
 
-    float[] position = {pose.tx(), pose.ty(), pose.tz()};
-    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
+      float[] position = {pose.tx(), pose.ty(), pose.tz()};
+      float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+      if (this.trackable != null) {
+        Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+        Anchor(myAnchor);
+      }
     }
-  }
 
-  @SimpleProperty(description = "Set the current pose of the object from property",
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
       category = PropertyCategory.APPEARANCE)
   @Override
-  public void PoseFromPropertyPosition(String positionFromPropery) {
-    Log.i("setting Capsule pose", "with position" +positionFromPropery);
+  public void PoseFromPropertyPosition(String positionFromProperty) {
+    Log.i("setting Capsule pose", "with position" +positionFromProperty);
 
 
-    String[] positionArray = positionFromPropery.split(",");
+    String[] positionArray = positionFromProperty.split(",");
     float[] position = {0f,0f,0f};
 
     for (int i = 0; i < positionArray.length; i++) {
       position[i] = Float.parseFloat(positionArray[i]);
     }
-    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
   }
 
+  /*@Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT, defaultValue = "")
+  public void PoseFromPropertyPositions(String x, String y, String z) {
+    Log.i("setting Capsule pose", "with position" + x + " " + y  + " " + z);
+
+    float[] position = { Float.parseFloat(x), Float.parseFloat(y), Float.parseFloat(z)};
+
+    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }*/
   @Override
   public float Scale() { return this.scale; }
 

@@ -48,11 +48,7 @@ import android.util.Log;
 
     public ModelNode(final ARNodeContainer container) {
       super(container);
-      //Log.i("ADDING MODEL NODE", "");
       container.addNode(this);
-      //Log.i("ADDED MODEL NODE", "");
-      // Additional updates
-
     }
     @Override // wht is the significance?
     public Anchor Anchor() { return this.anchor; }
@@ -138,26 +134,40 @@ import android.util.Log;
       "number, such as ModelNode1-1.")
     public List<String> NamesOfNodes() { return new ArrayList<String>(); }
 
-    @SimpleProperty(description = "Set the current pose of the object from property",
-        category = PropertyCategory.APPEARANCE)
-    @Override
-    public void PoseFromPropertyPosition(String positionFromProperty) {
-      Log.i("setting Capsule pose", "with position" +positionFromProperty);
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
+      category = PropertyCategory.APPEARANCE)
+  @Override
+  public void PoseFromPropertyPosition(String positionFromProperty) {
+    Log.i("setting Capsule pose", "with position" +positionFromProperty);
 
 
-      String[] positionArray = positionFromPropery.split(",");
-      float[] position = {0f,0f,0f};
+    String[] positionArray = positionFromProperty.split(",");
+    float[] position = {0f,0f,0f};
 
-      for (int i = 0; i < positionArray.length; i++) {
-        position[i] = Float.parseFloat(positionArray[i]);
-      }
-      float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-      if (this.trackable != null) {
-        Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-        Anchor(myAnchor);
-      }
+    for (int i = 0; i < positionArray.length; i++) {
+      position[i] = Float.parseFloat(positionArray[i]);
     }
+    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }
 
+  /*@Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT, defaultValue = "")
+  public void PoseFromPropertyPositions(String x, String y, String z) {
+    Log.i("setting Capsule pose", "with position" + x + " " + y  + " " + z);
+
+    float[] position = { Float.parseFloat(x), Float.parseFloat(y), Float.parseFloat(z)};
+
+    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }*/
 
 
   // FUNCTIONS
