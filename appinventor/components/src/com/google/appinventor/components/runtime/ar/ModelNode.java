@@ -139,7 +139,7 @@ import android.util.Log;
       category = PropertyCategory.APPEARANCE)
   @Override
   public void PoseFromPropertyPosition(String positionFromProperty) {
-    Log.i("setting Capsule pose", "with position" +positionFromProperty);
+    Log.i("setting model pose", "with position" +positionFromProperty);
 
 
     String[] positionArray = positionFromProperty.split(",");
@@ -148,11 +148,12 @@ import android.util.Log;
     for (int i = 0; i < positionArray.length; i++) {
       position[i] = Float.parseFloat(positionArray[i]);
     }
-    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
+    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
+    Log.i("set model pose", "with position" +positionFromProperty);
   }
 
   /*@Override

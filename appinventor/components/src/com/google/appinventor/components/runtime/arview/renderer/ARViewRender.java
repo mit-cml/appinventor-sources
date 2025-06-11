@@ -156,8 +156,8 @@ public class ARViewRender {
         }
 
 
-        EGLContext currentGLContext = EGL14.eglGetCurrentContext();
-        Log.d(LOG_TAG, "GL Thread Context for drawing: " + currentGLContext);
+        //EGLContext currentGLContext = EGL14.eglGetCurrentContext();
+        //Log.d(LOG_TAG, "GL Thread Context for drawing: " + currentGLContext);
         useFramebuffer(arframebuffer);
         shader.lowLevelUse();
         mesh.lowLevelDraw();
@@ -238,8 +238,6 @@ public class ARViewRender {
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, framebufferId);
             GLES30.glViewport(0, 0, viewportWidth, viewportHeight);
 
-            Log.d(LOG_TAG, "Binding to framebuffer: " + framebufferId +
-                    ", viewport: " + viewportWidth + "x" + viewportHeight);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error in useFramebuffer: " + e.getMessage(), e);
         }

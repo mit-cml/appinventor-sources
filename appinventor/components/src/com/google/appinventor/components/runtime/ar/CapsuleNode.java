@@ -125,11 +125,12 @@ import java.util.Locale;
     for (int i = 0; i < positionArray.length; i++) {
       position[i] = Float.parseFloat(positionArray[i]);
     }
-    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
+    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
+    Log.i("set Capsule pose", "with position" +positionFromProperty);
   }
 
   /*@Override
@@ -256,7 +257,6 @@ import java.util.Locale;
     @SimpleProperty(description = "Gets the 3D texture",
             category = PropertyCategory.APPEARANCE)
     public String Texture()  {
-        Log.d("capnode","get texture on capnode" + this.texture);
         return this.texture; }
 
     @Override

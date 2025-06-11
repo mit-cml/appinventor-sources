@@ -219,8 +219,6 @@ public class ObjectRenderer {
       shader.setMat4("u_ModelView", localModelViewMatrix);
       shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
 
-      Log.d(TAG, "Drawing arnode: " + arNode.toString());
-      // Draw this single object
       render.draw(nodeMesh, shader, virtualFrameBuffer);
 
     } catch (Exception e) {

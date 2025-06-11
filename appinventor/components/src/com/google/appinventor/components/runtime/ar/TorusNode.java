@@ -91,13 +91,13 @@ import android.util.Log;
       Log.i("setting Capsule pose", "with position" +positionFromProperty);
 
 
-      String[] positionArray = positionFromPropery.split(",");
+      String[] positionArray = positionFromProperty.split(",");
       float[] position = {0f,0f,0f};
 
       for (int i = 0; i < positionArray.length; i++) {
         position[i] = Float.parseFloat(positionArray[i]);
       }
-      float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+      float[] rotation = {0,0,0, 1}; // no rotation TBD
       if (this.trackable != null) {
         Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
         Anchor(myAnchor);
