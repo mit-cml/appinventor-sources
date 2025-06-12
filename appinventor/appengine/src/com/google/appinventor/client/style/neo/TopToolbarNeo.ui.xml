@@ -63,6 +63,10 @@
       <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
         <yaactions:UsbAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name ="Browser" caption="{messages.browserMenuItem}"
+                       dependentStyleName="needsAiStarter">
+        <yaactions:BrowserAction/>
+      </ai:DropDownItem>
       <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
                        dependentStyleName="needsChromebook">
         <yaactions:ChromebookAction/>

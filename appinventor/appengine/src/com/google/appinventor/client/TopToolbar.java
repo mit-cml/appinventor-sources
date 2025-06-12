@@ -50,6 +50,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_CHROMEBOOK = "Chromebook";
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
+  private static final String WIDGET_NAME_WEBTEST_BUTTON = "Browser";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_REFRESHCOMPANION_BUTTON = "RefreshCompanion";
@@ -198,14 +199,15 @@ public class TopToolbar extends Composite {
   }
 
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
-      boolean isUsbRunning) {
-    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
+      boolean isUsbRunning, boolean isBrowserRunning) {
+    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning && !isBrowserRunning) {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
       if (iamChromebook) {
         connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
       } else {
         connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
+        connectDropDown.setItemEnabled(MESSAGES.browserMenuItem(), true);
       }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
     } else {
@@ -215,6 +217,7 @@ public class TopToolbar extends Composite {
       } else {
         connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+        connectDropDown.setItemEnabled(MESSAGES.browserMenuItem(), false);
       }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
     }
@@ -226,7 +229,7 @@ public class TopToolbar extends Composite {
    */
   public static void indicateDisconnect() {
     TopToolbar instance = Ode.getInstance().getTopToolbar();
-    instance.updateConnectToDropDownButton(false, false, false);
+    instance.updateConnectToDropDownButton(false, false, false, false);
   }
 
   /**
@@ -240,7 +243,7 @@ public class TopToolbar extends Composite {
    * @param forUsb -- true if this is a USB connection.
    */
 
-  public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+  public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb, boolean forBrowser) {
     DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
@@ -251,14 +254,16 @@ public class TopToolbar extends Composite {
     screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb);
     if (start) {
       if (forEmulator) {        // We are starting the emulator...
-        updateConnectToDropDownButton(true, false, false);
+        updateConnectToDropDownButton(true, false, false, false);
       } else if (forUsb) {      // We are starting the usb connection
-        updateConnectToDropDownButton(false, false, true);
+        updateConnectToDropDownButton(false, false, true, false);
+      } else if (forBrowser) {  // We are testing on the web
+        updateConnectToDropDownButton(false, false, false, true);
       } else {                  // We are connecting via wifi to a Companion
-        updateConnectToDropDownButton(false, true, false);
+        updateConnectToDropDownButton(false, true, false, false);
       }
     } else {
-      updateConnectToDropDownButton(false, false, false);
+      updateConnectToDropDownButton(false, false, false, false);
     }
   }
 
@@ -271,7 +276,7 @@ public class TopToolbar extends Composite {
     }
     Screen screen = currentProject.screens.get(currentProject.currentScreen);
     ((YaBlocksEditor)screen.blocksEditor).hardReset();
-    updateConnectToDropDownButton(false, false, false);
+    updateConnectToDropDownButton(false, false, false, false);
   }
 
   public void replUpdate() {

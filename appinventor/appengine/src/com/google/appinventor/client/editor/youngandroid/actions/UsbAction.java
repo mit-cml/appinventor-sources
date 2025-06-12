@@ -13,7 +13,7 @@ public class UsbAction implements Command {
   @Override
   public void execute() {
     if (Ode.getInstance().okToConnect()) {
-      Ode.getInstance().getTopToolbar().startRepl(true, false, false, true);
+      Ode.getInstance().getTopToolbar().startRepl(true, false, false, true, false);
     }
   }
 }

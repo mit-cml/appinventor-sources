@@ -12,7 +12,7 @@ public class ChromebookAction implements Command {
   @Override
   public void execute() {
     if (Ode.getInstance().okToConnect()) {
-      Ode.getInstance().getTopToolbar().startRepl(true, true, false, false);
+      Ode.getInstance().getTopToolbar().startRepl(true, true, false, false, false);
     }
   }
 }
