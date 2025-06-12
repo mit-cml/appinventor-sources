@@ -241,6 +241,7 @@ public class TopToolbar extends Composite {
    * @param forChromebook -- true if we are connecting to a chromebook.
    * @param forEmulator -- true if we are connecting to the emulator.
    * @param forUsb -- true if this is a USB connection.
+   * @param forBrowser -- true if testing on web emulator
    */
 
   public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb, boolean forBrowser) {
@@ -251,7 +252,7 @@ public class TopToolbar extends Composite {
       return;
     }
     Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb);
+    screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb, forBrowser);
     if (start) {
       if (forEmulator) {        // We are starting the emulator...
         updateConnectToDropDownButton(true, false, false, false);

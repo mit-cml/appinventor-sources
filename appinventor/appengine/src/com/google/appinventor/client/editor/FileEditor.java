@@ -156,7 +156,7 @@ public abstract class FileEditor extends Composite {
    * but the YaBlocksEditor overrides this version with one that start the
    * Repl going.
    */
-  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb, boolean forBrowser) {
   }
 
   /**

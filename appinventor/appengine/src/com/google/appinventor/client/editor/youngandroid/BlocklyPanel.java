@@ -271,9 +271,9 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
 
-  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) { // Start the Repl
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb, boolean forBrowser) { // Start the Repl
     makeActive();
-    doStartRepl(alreadyRunning, forChromebook, forEmulator, forUsb);
+    doStartRepl(alreadyRunning, forChromebook, forEmulator, forUsb, forBrowser);
   }
 
   public void hardReset() {
@@ -879,8 +879,8 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }-*/;
 
-  public native void doStartRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) /*-{
-    $wnd.Blockly.ReplMgr.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb);
+  public native void doStartRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb, boolean forBrowser) /*-{
+    $wnd.Blockly.ReplMgr.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb, forBrowser);
   }-*/;
 
   public native void doHardReset() /*-{
