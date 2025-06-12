@@ -475,7 +475,7 @@ public class LocalProjectService implements ProjectServiceAsync {
 
   @Override
   public void build(long projectId, String nonce, String target, boolean secondBuildserver,
-      boolean isAab, AsyncCallback<RpcResult> callback) {
+      boolean isAab, boolean foriOS, boolean forAppStore, AsyncCallback<RpcResult> callback) {
 
   }
 

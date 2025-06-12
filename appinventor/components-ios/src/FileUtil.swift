@@ -50,7 +50,7 @@ open class FileUtil {
         let file = String(fileName[postSlashIndex...])
         filePath = AssetManager.shared.pathForExistingFileAsset(file)
       } else {
-        filePath = AssetManager.shared.pathForAssetInBundle(filename: String(fileName[postSlashIndex...]))
+        filePath = AssetManager.shared.pathForAssetInApp(String(fileName[postSlashIndex...])) ?? ""
       }
     } else if fileName.starts(with: "/") {
       let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]

@@ -13,7 +13,7 @@ class AssetLoadError: Error {
   fileprivate static var inError: Bool = false
   
   @objc public static func fetchAssets(_ cookieValue: String, _ projectId: String, _ uri: String, _ asset: String) {
-    DispatchQueue.global(qos: .background).async {
+    DispatchQueue.main.async {
       let fileName = uri + "/ode/download/file/" + projectId + "/" + asset;
       getFile(fileName: fileName, cookieValue: cookieValue, asset: asset, depth: 0) { success, error in
         if success {
@@ -54,7 +54,7 @@ class AssetLoadError: Error {
     }
     var request = URLRequest(url: url)
     request.setValue("AppInventor = " + cookieValue, forHTTPHeaderField: "Cookie")
-    URLSession.shared.dataTask(with: request) { (data, response, responseerror) in
+    let task = URLSession.shared.dataTask(with: request) { (data, response, responseerror) in
       let filename = asset.chopPrefix(count: "assets/".count)
       let destination = URL(fileURLWithPath: AssetManager.shared.pathForPublicAsset(filename),
                             isDirectory: false)
@@ -74,7 +74,9 @@ class AssetLoadError: Error {
       } else if let error = responseerror {
         completionHandler(false, error)
       }
-    }.resume()
+    }
+    task.priority = 1.0
+    task.resume()
   }
 }
 
