@@ -19,7 +19,14 @@
       response.setHeader("Strict-Transport-Security", "max-age=3600");
   }
   if (OdeAuthFilter.getUserInfo(request) == null) {
-      response.sendRedirect("/login");
+      String qs = request.getQueryString();
+      if (qs != null) {
+         String redirect = "/login?" + qs;
+         response.sendRedirect(redirect);
+      } else {
+         String redirect = "/login";
+         response.sendRedirect(redirect);
+      }
       return;
   }
   String cachePostfix = "@blocklyeditor_isRelease@".equals("true") ? "cache" : "nocache";
