@@ -102,8 +102,8 @@ import java.util.Set;
 
 import org.json.JSONException;
 
-import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
 
 /**
  * Top-level component containing all other components in the program.

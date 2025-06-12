@@ -82,6 +82,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * Spreadsheet is a non-visible component for storing and receiving data from
  * a Google Sheets document using the Google Sheets API.
@@ -226,6 +229,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   /* Getter and Setters for Properties */
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "CredentialsJson")
   public String CredentialsJson() {
     return credentialsPath;
   }
@@ -233,11 +237,13 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(description = "The JSON File with credentials for the Service Account")
+  @JsProperty(name = "CredentialsJson")
   public void CredentialsJson(String credentialsPath) {
     this.credentialsPath = credentialsPath;
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "SpreadsheetID")
   public String SpreadsheetID() {
     return spreadsheetID;
   }
@@ -246,6 +252,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       defaultValue = "")
   @SimpleProperty(description = "The ID for the Google Sheets file you want to edit. You can "
       + "find the spreadsheetID in the URL of the Google Sheets file.")
+  @JsProperty(name = "SpreadsheetID")
   public void SpreadsheetID(String spreadsheetID) {
     if (spreadsheetID.startsWith("https:")) {
       // URL: https://docs.google.com/spreadsheets/d/<id>/edit#gid=0
@@ -264,6 +271,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    * and consists of the current App Inventor project name.
    */
   @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ApplicationName")
   public String ApplicationName() {
     return applicationName;
   }
@@ -271,6 +279,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "App Inventor")
   @SimpleProperty(description = "The name of your application, used when making API calls.")
+  @JsProperty(name = "ApplicationName")
   public void ApplicationName(String applicationName) {
     this.applicationName = applicationName;
   }
@@ -378,6 +387,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Converts the integer representation of rows and columns to " +
       "A1-Notation used in Google Sheets for a single cell.")
+  @JsMethod(name = "GetCellReference")
   public String GetCellReference(int row, int column) {
     String colRange = getColString(column);
     return colRange + row;
@@ -391,6 +401,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Converts the integer representation of rows and columns for " +
       "the corners of the range to A1-Notation used in Google Sheets.")
+  @JsMethod(name = "GetRangeReference")
   public String GetRangeReference(int row1, int column1, int row2, int column2) {
     return GetCellReference(row1, column1) + ":" + GetCellReference(row2, column2);
   }
@@ -457,6 +468,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
       description="Filters a Google Sheet for rows where the given column number "
                       + "matches the provided value.")
+  @JsMethod(name = "ReadWithExactFilter")
   public void ReadWithExactFilter(final String sheetName, final int colID, final String value) {
     Log.d(LOG_TAG, "ReadRowsWithFilter colID " + colID + ", value " + value);
 
@@ -474,6 +486,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
       description="Filters a Google Sheet for rows where the given column number "
                       + "contains the provided value string.")
+  @JsMethod(name = "ReadWithPartialFilter")
   public void ReadWithPartialFilter(final String sheetName, final int colID, final String value) {
     Log.d(LOG_TAG, "ReadWithPartialFilter colID " + colID + ", value " + value);
 
@@ -495,6 +508,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="On the page with the provided sheetName, this method will " +
       "read the row at the given rowNumber and trigger the GotRowData " +
       "callback event.")
+  @JsMethod(name = "ReadRow")
   public void ReadRow (String sheetName, int rowNumber) {
 
     if (spreadsheetID == "" || spreadsheetID == null) {
@@ -618,6 +632,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Given a list of values as `data`, writes the values to the " +
       "row of the sheet with the given row number.")
+  @JsMethod(name = "WriteRow")
   public void WriteRow (String sheetName, int rowNumber, YailList data) {
 
     if (spreadsheetID == "" || spreadsheetID == null) {
@@ -686,6 +701,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    * @param sheetName the name of the new sheet to create
    */
   @SimpleFunction
+  @JsMethod(name = "AddSheet")
   public void AddSheet(final String sheetName) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("AddSheet: " + "SpreadsheetID is empty.");
@@ -748,6 +764,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    * @param sheetName the name of the sheet to delete
    */
   @SimpleFunction
+  @JsMethod(name = "DeleteSheet")
   public void DeleteSheet(final String sheetName) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("DeleteSheet: " + "SpreadsheetID is empty.");
@@ -809,6 +826,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="Given a list of values as `data`, appends the values " +
       "to the next empty row of the sheet. Additionally, this returns " +
       "the row number for the new row.")
+  @JsMethod(name = "AddRow")
   public void AddRow(final String sheetName, YailList data) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("AddRow: " + "SpreadsheetID is empty.");
@@ -895,6 +913,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Deletes the row with the given row number from the table." +
       "This does not clear the row, but removes it entirely.")
+  @JsMethod(name = "RemoveRow")
   public void RemoveRow (final String sheetName, final int rowNumber) {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
@@ -958,6 +977,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    */
   @SimpleFunction(description = "On the page with the provided sheetName, reads the column at "
       + "the given index and triggers the GotColumnData callback event.")
+  @JsMethod(name = "ReadColumn")
   public void ReadColumn(String sheetName, String column) {
 
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
@@ -1084,6 +1104,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description = "Given a list of values as `data`, this method will write the "
       + "values to the column of the sheet and calls the FinishedWriteColumn event "
       + "once complete.")
+  @JsMethod(name = "WriteColumn")
   public void WriteColumn(String sheetName, String column, YailList data) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("WriteColumn: " + "SpreadsheetID is empty.");
@@ -1159,6 +1180,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    */
   @SimpleFunction(description = "Given a list of values as `data`, appends the values to the "
       + "next empty column of the sheet.")
+  @JsMethod(name = "AddColumn")
   public void AddColumn(final String sheetName, YailList data) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("AddColumn: " + "SpreadsheetID is empty.");
@@ -1253,6 +1275,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    */
   @SimpleFunction(description = "Deletes the column with the given column number from the table."
       + "This does not clear the column, but removes it entirely.")
+  @JsMethod(name = "RemoveColumn")
   public void RemoveColumn(final String sheetName, final String column) {
     final int columnNumber;
     if (Pattern.compile("^[0-9]+$").matcher(column).find()) {
@@ -1322,6 +1345,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
    */
   @SimpleFunction(description = "On the page with the provided sheetName, reads the cell at "
       + "the given cellReference and triggers the GotCellData callback event.")
+  @JsMethod(name = "ReadCell")
   public void ReadCell(final String sheetName, final String cellReference) {
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ReadCell: " + "SpreadsheetID is empty.");
@@ -1462,6 +1486,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Given text or a number as `data`, writes the value into the " +
       "cell. Once complete, it triggers the FinishedWriteCell callback event")
+  @JsMethod(name = "WriteCell")
   public void WriteCell (String sheetName, String cellReference, Object data) {
     if (spreadsheetID == "") {
       ErrorOccurred("WriteCell: " + "SpreadsheetID is empty.");
@@ -1543,6 +1568,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="On the page with the provided sheetName, reads the cells at " +
       "the given range. Triggers the getRangeReference once complete.")
+  @JsMethod(name = "ReadRange")
   public void ReadRange (final String sheetName, final String rangeReference) {
     if (spreadsheetID == "" || spreadsheetID == null) {
       ErrorOccurred("ReadRange: " + "SpreadsheetID is empty.");
@@ -1663,6 +1689,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="Given list of lists as `data`, writes the values into the " +
       "range. The number of rows and columns in the range reference must " +
       "match the dimensions of the data.")
+  @JsMethod(name = "WriteRange")
   public void WriteRange (String sheetName, String rangeReference, YailList data) {
     if (spreadsheetID == "" || spreadsheetID == null) {
       ErrorOccurred("WriteRange: " + "SpreadsheetID is empty.");
@@ -1756,6 +1783,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Empties the cells in the given range. Once complete, this " +
       "block triggers the FinishedClearRange callback event.")
+  @JsMethod(name = "ClearRange")
   public void ClearRange (String sheetName, String rangeReference) {
     if (spreadsheetID == "" || spreadsheetID == null) {
       ErrorOccurred("ClearRange: " + "SpreadsheetID is empty.");
@@ -1820,6 +1848,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(
     description="Reads the *entire* Google Sheet document and triggers the " +
       "GotSheetData callback event.")
+  @JsMethod(name = "ReadSheet")
   public void ReadSheet (final String sheetName) {
 
     if (spreadsheetID == null || spreadsheetID.isEmpty()) {

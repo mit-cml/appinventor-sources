@@ -26,6 +26,8 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * This class is used to display a `Slider`.
  *
@@ -200,6 +202,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     defaultValue = "True")
   @SimpleProperty(description = "Sets whether or not to display the slider thumb.",
      userVisible = true)
+  @JsProperty(name = "ThumbEnabled")
   public void ThumbEnabled(boolean enabled) {
     thumbEnabled = enabled;
     int alpha = thumbEnabled ? 255 : 0;
@@ -224,6 +227,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Returns whether or not the slider thumb is being be shown",
       userVisible = true)
+  @JsProperty(name = "ThumbEnabled")
   public boolean ThumbEnabled() {
     return thumbEnabled;
   }
@@ -243,6 +247,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
       "If this value is greater than MaxValue, then it will be set to same value as MaxValue. " +
       "If this value is less than MinValue, then it will be set to same value as MinValue.",
       userVisible = true)
+  @JsProperty(name = "ThumbPosition")
   public void ThumbPosition(float position) {
     // constrain thumbPosition between minValue and maxValue
     thumbPosition = Math.max(Math.min(position, maxValue), minValue);
@@ -260,6 +265,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Returns the position of slider thumb", userVisible = true)
+  @JsProperty(name = "ThumbPosition")
   public float ThumbPosition() {
     return thumbPosition;
   }
@@ -280,6 +286,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
       "both be set to this value.  Setting MinValue resets the thumb position to halfway " +
       "between MinValue and MaxValue and signals the PositionChanged event.",
       userVisible = true)
+  @JsProperty(name = "MinValue")
   public void MinValue(float value) {
     minValue = value;
     // increase maxValue if necessary to accommodate the new minimum
@@ -300,6 +307,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Returns the value of slider min value.", userVisible = true)
+  @JsProperty(name = "MinValue")
   public float MinValue() {
     return minValue;
   }
@@ -318,6 +326,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
       "be set to this value.  Setting MaxValue resets the thumb position to halfway " +
       "between MinValue and MaxValue and signals the PositionChanged event.",
       userVisible = true)
+  @JsProperty(name = "MaxValue")
   public void MaxValue(float value) {
     maxValue = value;
     minValue = Math.min(value, minValue);
@@ -336,6 +345,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Returns the slider max value.", userVisible = true)
+  @JsProperty(name = "MaxValue")
   public float MaxValue() {
     return maxValue;
   }
@@ -352,6 +362,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @SimpleProperty(
       description = "The color of slider to the left of the thumb.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ColorLeft")
   @IsColor
   public int ColorLeft() {
     return leftColor;
@@ -368,6 +379,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = initialLeftColorString)
   @SimpleProperty
+  @JsProperty(name = "ColorLeft")
   public void ColorLeft(int argb) {
     leftColor = argb;
     setSliderColors();
@@ -384,6 +396,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @SimpleProperty(
       description = "The color of slider to the right of the thumb.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ColorRight")
   @IsColor
   public int ColorRight() {
     return rightColor;
@@ -400,6 +413,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = initialRightColorString)
   @SimpleProperty
+  @JsProperty(name = "ColorRight")
   public void ColorRight(int argb) {
     rightColor = argb;
     setSliderColors();

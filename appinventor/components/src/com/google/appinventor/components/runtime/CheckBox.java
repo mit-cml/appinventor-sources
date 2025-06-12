@@ -16,6 +16,8 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * ![Example of a CheckBox](images/checkbox.png)
  *
@@ -53,6 +55,7 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
       description = "True if the box is checked, false otherwise.")
+  @JsProperty(name = "Checked")
   public boolean Checked() {
     return view.isChecked();
   }
@@ -66,6 +69,7 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty
+  @JsProperty(name = "Checked")
   public void Checked(boolean value) {
     view.setChecked(value);
     view.invalidate();

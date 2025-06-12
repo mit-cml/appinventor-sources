@@ -21,9 +21,11 @@ import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.TimerInternal;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
 
 /**
  * ![Image of the Clock component](images/clock.png)
@@ -128,6 +130,7 @@ public class Clock extends AndroidNonvisibleComponent
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
       description ="Interval between timer events in ms")
+  @JsProperty(name = "TimerInterval")
   public int TimerInterval() {
     return timerInternal.Interval();
   }
@@ -144,6 +147,7 @@ public class Clock extends AndroidNonvisibleComponent
       editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_INTERVAL + "")
   @SimpleProperty
+  @JsProperty(name = "TimerInterval")
   public void TimerInterval(int interval) {
     timerInternal.Interval(interval);
   }
@@ -157,6 +161,7 @@ public class Clock extends AndroidNonvisibleComponent
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
       description = "Fires timer if true")
+  @JsProperty(name = "TimerEnabled")
   public boolean TimerEnabled() {
     return timerInternal.Enabled();
   }
@@ -170,6 +175,7 @@ public class Clock extends AndroidNonvisibleComponent
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
+  @JsProperty(name = "TimerEnabled")
   public void TimerEnabled(boolean enabled) {
     timerInternal.Enabled(enabled);
   }
@@ -185,6 +191,7 @@ public class Clock extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR,
       description = "Will fire even when application is not showing on the "
       + "screen if true")
+  @JsProperty(name = "TimerAlwaysFires")
   public boolean TimerAlwaysFires() {
     return timerAlwaysFires;
   }
@@ -198,6 +205,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
   @SimpleProperty
+  @JsProperty(name = "TimerAlwaysFires")
   public void TimerAlwaysFires(boolean always) {
     timerAlwaysFires = always;
   }
@@ -216,12 +224,14 @@ public class Clock extends AndroidNonvisibleComponent
    * @suppressdoc
    */
   @SimpleFunction (description = "Returns the phone's internal time.")
+  @JsMethod(name = "SystemTime")
   public static long SystemTime() {
     return Dates.Timer();
   }
 
   @SimpleFunction(description = "Returns the current instant in time read from "
       + "phone's clock.")
+  @JsMethod(name = "Now")
   public static Calendar Now() {
     return Dates.Now();
   }
@@ -239,6 +249,7 @@ public class Clock extends AndroidNonvisibleComponent
   @SimpleFunction(
       description = "Returns an instant in time specified by MM/dd/YYYY hh:mm:ss or "
           + "MM/dd/YYYY or hh:mm.")
+  @JsMethod(name = "MakeInstant")
   public static Calendar MakeInstant(String from) {
     try {
       return Dates.DateValue(from);
@@ -259,6 +270,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction(description = "Returns an instant in time specified by year, month, date in "
       + "UTC.\nValid values for the month field are 1-12 and 1-31 for the day field.")
+  @JsMethod(name = "MakeDate")
   public Calendar MakeDate(int year, int month, int day) {
     int jMonth = month - 1;
     try {
@@ -286,6 +298,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction(description = "Returns an instant in time specified by hour, minute, second in "
       + "UTC.")
+  @JsMethod(name = "MakeTime")
   public Calendar MakeTime(int hour, int minute, int second) {
     Calendar instant = new GregorianCalendar();
     try {
@@ -313,6 +326,7 @@ public class Clock extends AndroidNonvisibleComponent
   @SimpleFunction(
     description = "Returns an instant in time specified by year, month, date, hour, minute, "
         + "second in UTC.")
+  @JsMethod(name = "MakeInstantFromParts")
   public Calendar MakeInstantFromParts(int year, int month, int day, int hour, int minute, int second) {
     int jMonth = month - 1;
     Calendar instant = null;
@@ -351,6 +365,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction(description = "Returns an instant in time specified by the milliseconds since "
       + "1970 in UTC.")
+  @JsMethod(name = "MakeInstantFromMillis")
   public static Calendar MakeInstantFromMillis(long millis) {
     Calendar instant = Dates.Now(); // just to get our hands on an instant
     instant.setTimeInMillis(millis);
@@ -365,11 +380,13 @@ public class Clock extends AndroidNonvisibleComponent
    * @suppressdoc
    */
   @SimpleFunction (description = "Returns the instant in time measured as milliseconds since 1970.")
+  @JsMethod(name = "GetMillis")
   public static long GetMillis(Calendar instant) {
     return instant.getTimeInMillis();
   }
 
   @SimpleFunction(description = "Returns an instant in time some duration after the argument")
+  @JsMethod(name = "AddDuration")
   public static Calendar AddDuration(Calendar instant, long quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAddInMillis(newInstant, quantity);
@@ -377,6 +394,7 @@ public class Clock extends AndroidNonvisibleComponent
   }
 
   @SimpleFunction(description = "Returns an instant in time some seconds after the given instant.")
+  @JsMethod(name = "AddSeconds")
   public static Calendar AddSeconds(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.SECOND, quantity);
@@ -384,6 +402,7 @@ public class Clock extends AndroidNonvisibleComponent
   }
 
   @SimpleFunction(description = "Returns an instant in time some minutes after the given instant.")
+  @JsMethod(name = "AddMinutes")
   public static Calendar AddMinutes(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.MINUTE, quantity);
@@ -391,6 +410,7 @@ public class Clock extends AndroidNonvisibleComponent
   }
 
   @SimpleFunction(description = "Returns an instant in time some hours after the given instant.")
+  @JsMethod(name = "AddHours")
   public static Calendar AddHours(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.HOUR_OF_DAY, quantity);
@@ -398,6 +418,7 @@ public class Clock extends AndroidNonvisibleComponent
   }
 
   @SimpleFunction(description = "Returns an instant in time some days after the given instant.")
+  @JsMethod(name = "AddDays")
   public static Calendar AddDays(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.DATE, quantity);
@@ -405,6 +426,7 @@ public class Clock extends AndroidNonvisibleComponent
   }
 
   @SimpleFunction(description = "Returns An instant in time some weeks after the given instant.")
+  @JsMethod(name = "AddWeeks")
   public static Calendar AddWeeks(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.WEEK_OF_YEAR, quantity);
@@ -412,6 +434,7 @@ public class Clock extends AndroidNonvisibleComponent
  }
 
   @SimpleFunction(description = "Returns an instant in time some months after the given instant.")
+  @JsMethod(name = "AddMonths")
   public static Calendar AddMonths(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.MONTH, quantity);
@@ -419,6 +442,7 @@ public class Clock extends AndroidNonvisibleComponent
  }
 
   @SimpleFunction(description = "Returns an instant in time some years after the given instant.")
+  @JsMethod(name = "AddYears")
   public static Calendar AddYears(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.YEAR, quantity);
@@ -434,6 +458,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction (description = "Returns duration, which is milliseconds elapsed between "
       + "instants.")
+  @JsMethod(name = "Duration")
   public static long Duration(Calendar start, Calendar end) {
     return end.getTimeInMillis() - start.getTimeInMillis();
   }
@@ -445,6 +470,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  duration in seconds
    */
   @SimpleFunction (description = "Converts the duration to the number of seconds.")
+  @JsMethod(name = "DurationToSeconds")
   public static long DurationToSeconds(long duration) {
           return Dates.ConvertDuration(duration, Calendar.SECOND);
   }
@@ -456,6 +482,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  duration in minutes
    */
   @SimpleFunction (description = "Converts the duration to the number of minutes.")
+  @JsMethod(name = "DurationToMinutes")
   public static long DurationToMinutes(long duration) {
           return Dates.ConvertDuration(duration, Calendar.MINUTE);
   }
@@ -467,6 +494,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  duration in hours
    */
   @SimpleFunction (description = "Converts the duration to the number of hours.")
+  @JsMethod(name = "DurationToHours")
   public static long DurationToHours(long duration) {
           return Dates.ConvertDuration(duration, Calendar.HOUR_OF_DAY);
   }
@@ -478,6 +506,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  duration in days
    */
   @SimpleFunction (description = "Converts the duration to the number of days.")
+  @JsMethod(name = "DurationToDays")
   public static long DurationToDays(long duration) {
           return Dates.ConvertDuration(duration, Calendar.DATE);
   }
@@ -489,6 +518,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  duration in weeks
    */
   @SimpleFunction (description = "Converts the duration to the number of weeks.")
+  @JsMethod(name = "DurationToWeeks")
   public static long DurationToWeeks(long duration) {
           return Dates.ConvertDuration(duration, Calendar.WEEK_OF_YEAR);
   }
@@ -500,6 +530,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  seconds (range 0 - 59)
    */
   @SimpleFunction (description = "Returns the second of the minute (0-59) from the instant.")
+  @JsMethod(name = "Second")
   public static int Second(Calendar instant) {
     return Dates.Second(instant);
   }
@@ -511,6 +542,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  minutes (range 0 - 59)
    */
   @SimpleFunction(description = "Returns the minute of the hour (0-59) from the instant.")
+  @JsMethod(name = "Minute")
   public static int Minute(Calendar instant) {
     return Dates.Minute(instant);
   }
@@ -522,6 +554,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  hours (range 0 - 23)
    */
   @SimpleFunction (description = "Returns the hour of the day (0-23) from the instant.")
+  @JsMethod(name = "Hour")
   public static int Hour(Calendar instant) {
     return Dates.Hour(instant);
   }
@@ -533,6 +566,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  day: [1...31]
    */
   @SimpleFunction (description = "Returns the day of the month (1-31) from the instant.")
+  @JsMethod(name = "DayOfMonth")
   public static int DayOfMonth(Calendar instant) {
     return Dates.Day(instant);
   }
@@ -545,6 +579,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction (description = "Returns the day of the week represented as a "
       + "number from 1 (Sunday) to 7 (Saturday).")
+  @JsMethod(name = "Weekday")
   public static int Weekday(Calendar instant) {
     return Dates.Weekday(instant);
   }
@@ -556,6 +591,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  weekday, as a string.
    */
   @SimpleFunction (description = "Returns the name of the day of the week from the instant.")
+  @JsMethod(name = "WeekdayName")
   public static String WeekdayName(Calendar instant) {
     return Dates.WeekdayName(instant);
   }
@@ -568,6 +604,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction (description = "Returns the month of the year represented as a "
       + "number from 1 to 12).")
+  @JsMethod(name = "Month")
   public static int Month(Calendar instant) {
     return Dates.Month(instant) + 1;
   }
@@ -580,6 +617,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction (description = "Returns the name of the month from the instant, e.g., January, "
       + "February, March...")
+  @JsMethod(name = "MonthName")
   public static String MonthName(Calendar instant) {
     return Dates.MonthName(instant);
   }
@@ -591,6 +629,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  year
    */
   @SimpleFunction(description = "The year")
+  @JsMethod(name = "Year")
   public static int Year(Calendar instant) {
     return Dates.Year(instant);
   }
@@ -606,6 +645,7 @@ public class Clock extends AndroidNonvisibleComponent
    */
   @SimpleFunction (description = "Returns text representing the date and time of an"
       + " instant in the specified pattern")
+  @JsMethod(name = "FormatDateTime")
   public static String FormatDateTime(Calendar instant, String pattern) {
     try {
       return Dates.FormatDateTime(instant, pattern);
@@ -627,6 +667,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  formatted instant
    */
   @SimpleFunction (description = "Text representing the date of an instant in the specified pattern")
+  @JsMethod(name = "FormatDate")
   public static String FormatDate(Calendar instant, String pattern) {
     try {
       return Dates.FormatDate(instant, pattern);
@@ -647,6 +688,7 @@ public class Clock extends AndroidNonvisibleComponent
    * @return  formatted instant
    */
   @SimpleFunction (description = "Text representing the time of an instant")
+  @JsMethod(name = "FormatTime")
   public static String FormatTime(Calendar instant) {
     return Dates.FormatTime(instant);
   }

@@ -47,6 +47,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * This is a visible component that displays a list of text and image elements in your {@link Form} to
  * display. Simple lists of strings may be set using the {@link #ElementsFromString(String)} property.
@@ -262,6 +265,7 @@ public final class ListView extends AndroidViewComponent {
   @Override
   @SimpleProperty(description = "Determines the height of the list on the view.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Height")
   public void Height(int height) {
     if (height == LENGTH_PREFERRED) {
       height = LENGTH_FILL_PARENT;
@@ -273,12 +277,14 @@ public final class ListView extends AndroidViewComponent {
       defaultValue= "Search list...")
   @SimpleProperty (description = "Sets hint on the filter bar.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "HintText")
   public void HintText(String hint) {
     this.hint = hint;
     txtSearchBox.setHint(hint);
   }
 
   @SimpleProperty
+  @JsProperty(name = "HintText")
   public String HintText() {
     return hint;
   }
@@ -291,6 +297,7 @@ public final class ListView extends AndroidViewComponent {
   @Override
   @SimpleProperty(description = "Determines the width of the list on the view.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Width")
   public void Width(int width) {
     if (width == LENGTH_PREFERRED) {
       width = LENGTH_FILL_PARENT;
@@ -307,6 +314,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
+  @JsProperty(name = "ShowFilterBar")
   public void ShowFilterBar(boolean showFilter) {
     this.showFilter = showFilter;
     if (showFilter) {
@@ -325,6 +333,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "List filter bar, allows to search the list for relevant items. "
       + "True will display the bar, False will hide it.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ShowFilterBar")
   public boolean ShowFilterBar() {
     return showFilter;
   }
@@ -335,6 +344,7 @@ public final class ListView extends AndroidViewComponent {
    * @param itemsList a List containing the strings to be added to the ListView
    */
   @SimpleProperty
+  @JsProperty(name = "Elements")
   public void Elements(List<Object> itemsList) {
     items = new ArrayList<>(itemsList);
     updateAdapterData();
@@ -351,6 +361,7 @@ public final class ListView extends AndroidViewComponent {
       + "on the ListView, this may be a list of strings or a list of 3-element sub-lists "
       + "containing Text, Description, and Image file name.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Elements")
   public List<Object> Elements() {
     return items;
   }
@@ -366,6 +377,7 @@ public final class ListView extends AndroidViewComponent {
                                     + "stringItems separated by commas such as: Cheese,Fruit,Bacon,Radish. Each word "
                                     + "before the comma will be an element in the list.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ElementsFromString")
   public void ElementsFromString(String itemstring) {
     items = new ArrayList<Object>(ElementsUtil.elementsListFromString(itemstring));
     updateAdapterData();
@@ -383,6 +395,7 @@ public final class ListView extends AndroidViewComponent {
                                     + "to a number less than 1 or greater than the number of stringItems in the ListView, "
                                     + "SelectionIndex will be set to 0, and Selection will be set to the empty text.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "SelectionIndex")
   public int SelectionIndex() {
     return selectionIndex;
   }
@@ -394,6 +407,7 @@ public final class ListView extends AndroidViewComponent {
    * @suppressdoc
    */
   @SimpleProperty
+  @JsProperty(name = "SelectionIndex")
   public void SelectionIndex(int index) {
     selectionIndex = index;
     if (index > 0 && index <= items.size()) {
@@ -426,6 +440,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The text value of the most recently selected item in the ListView.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Selection")
   public String Selection() {
     return selection;
   }
@@ -438,6 +453,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Selection")
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
@@ -479,6 +495,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "Returns the secondary text of the selected row in the ListView.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "SelectionDetailText")
   public String SelectionDetailText() {
     return selectionDetailText;
   }
@@ -503,6 +520,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The color of the listview background.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "BackgroundColor")
   @IsColor
   public int BackgroundColor() {
     return backgroundColor;
@@ -520,6 +538,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
+  @JsProperty(name = "BackgroundColor")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
     recyclerView.setBackgroundColor(backgroundColor);
@@ -537,6 +556,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The color of the listview background.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ElementColor")
   @IsColor
   public int ElementColor() {
     return elementColor;
@@ -554,6 +574,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_NONE)
   @SimpleProperty
+  @JsProperty(name = "ElementColor")
   public void ElementColor(int argb) {
     elementColor = argb;
     setAdapterData();
@@ -570,6 +591,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The color of the item when it is selected.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "SelectionColor")
   @IsColor
   public int SelectionColor() {
     return selectionColor;
@@ -588,6 +610,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
   @SimpleProperty
+  @JsProperty(name = "SelectionColor")
   public void SelectionColor(int argb) {
     selectionColor = argb;
     setAdapterData();
@@ -603,6 +626,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The text color of the listview stringItems.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "TextColor")
   @IsColor
   public int TextColor() {
     return textColor;
@@ -620,6 +644,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
+  @JsProperty(name = "TextColor")
   public void TextColor(int argb) {
     textColor = argb;
     setAdapterData();
@@ -632,6 +657,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The text color of DetailText of listview stringItems. ",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "TextColorDetail")
   public int TextColorDetail() {
     return detailTextColor;
   }
@@ -645,6 +671,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
+  @JsProperty(name = "TextColorDetail")
   public void TextColorDetail(int argb) {
     detailTextColor = argb;
     setAdapterData();
@@ -661,6 +688,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The text size of the listview items.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "TextSize")
   public int TextSize() {
     return Math.round(fontSizeMain);
   }
@@ -673,6 +701,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
+  @JsProperty(name = "TextSize")
   public void TextSize(int textSize) {
     if (textSize > 1000) {
       textSize = 999;
@@ -688,6 +717,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "The text size of the listview stringItems.",
       category = PropertyCategory.APPEARANCE,
       userVisible = false)
+  @JsProperty(name = "FontSize")
   public float FontSize() {
     return fontSizeMain;
   }
@@ -702,6 +732,7 @@ public final class ListView extends AndroidViewComponent {
   // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
   //         defaultValue = "22.0")
   @SimpleProperty
+  @JsProperty(name = "FontSize")
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
       fontSizeMain = 999;
@@ -717,6 +748,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The text size of the listview stringItems.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "FontSizeDetail")
   public float FontSizeDetail() {
     return fontSizeDetail;
   }
@@ -730,6 +762,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
+  @JsProperty(name = "FontSizeDetail")
   public void FontSizeDetail(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
       fontSizeDetail = 999;
@@ -749,6 +782,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       userVisible = false)
+  @JsProperty(name = "FontTypeface")
   public String FontTypeface() {
     return fontTypeface;
   }
@@ -765,6 +799,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(userVisible = false)
+  @JsProperty(name = "FontTypeface")
   public void FontTypeface(String typeface) {
     fontTypeface = typeface;
     setAdapterData();
@@ -781,6 +816,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       userVisible = false)
+  @JsProperty(name = "FontTypefaceDetail")
   public String FontTypefaceDetail() {
     return fontTypeDetail;
   }
@@ -797,6 +833,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(userVisible = false)
+  @JsProperty(name = "FontTypefaceDetail")
   public void FontTypefaceDetail(String typeface) {
     fontTypeDetail = typeface;
     setAdapterData();
@@ -809,6 +846,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The image width of the listview image.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ImageWidth")
   public int ImageWidth() {
     return imageWidth;
   }
@@ -821,6 +859,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_IMAGE_WIDTH + "")
   @SimpleProperty
+  @JsProperty(name = "ImageWidth")
   public void ImageWidth(int width) {
     imageWidth = width;
     setAdapterData();
@@ -833,6 +872,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The image height of the listview image stringItems.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ImageHeight")
   public int ImageHeight() {
     return imageHeight;
   }
@@ -845,6 +885,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_IMAGE_WIDTH + "")
   @SimpleProperty
+  @JsProperty(name = "ImageHeight")
   public void ImageHeight(int height) {
     imageHeight = height;
     setAdapterData();
@@ -857,6 +898,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "Selecting the text and image layout in the ListView element.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ListViewLayout")
   public int ListViewLayout() {
     return layout;
   }
@@ -869,6 +911,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_LAYOUT,
       defaultValue = ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT + "")
   @SimpleProperty
+  @JsProperty(name = "ListViewLayout")
   public void ListViewLayout(@Options(LayoutType.class) int value) {
     layout = value;
     setAdapterData();
@@ -884,6 +927,7 @@ public final class ListView extends AndroidViewComponent {
 //  @SimpleProperty(description = "A function that allows you to select multiple elements. "
 //                                    + "True - function enabled, false - disabled.",
 //      category = PropertyCategory.BEHAVIOR)
+// @JsProperty(name = "MultiSelect")
   public boolean MultiSelect() {
     return multiSelect;
   }
@@ -898,6 +942,7 @@ public final class ListView extends AndroidViewComponent {
 //  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
 //      defaultValue = "False")
 //  @SimpleProperty
+//  @JsProperty(name = "MultiSelect")
   public void MultiSelect(boolean multi) {
     if (selectionIndex > 0) {
       listAdapterWithRecyclerView.clearSelections();
@@ -914,6 +959,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "Specifies the layout's orientation (vertical, horizontal).",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Orientation")
   public int Orientation() {
     return orientation;
   }
@@ -929,6 +975,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION,
       defaultValue = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL + "")
   @SimpleProperty
+  @JsProperty(name = "Orientation")
   public void Orientation(@Options(ListOrientation.class) int orientation) {
     this.orientation = orientation;
     if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
@@ -946,6 +993,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       userVisible = false)
+  @JsProperty(name = "ListData")
   public String ListData() {
     return propertyValue;
   }
@@ -961,6 +1009,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_ADD_DATA)
   @SimpleProperty(userVisible = false)
+  @JsProperty(name = "ListData")
   public void ListData(String propertyValue) {
     this.propertyValue = propertyValue;
     if (propertyValue != null && !propertyValue.isEmpty() && !propertyValue.equals("[]")) {
@@ -999,6 +1048,7 @@ public final class ListView extends AndroidViewComponent {
    * @param imageName  File name of an image that has been uploaded to media.
    */
   @SimpleFunction(description = "Create a ListView entry. MainText is required. DetailText and ImageName are optional.")
+  @JsMethod(name = "CreateElement")
   public YailDictionary CreateElement(final String mainText, final String detailText, final String imageName) {
     YailDictionary dictItem = new YailDictionary();
     dictItem.put(Component.LISTVIEW_KEY_MAIN_TEXT, mainText);
@@ -1008,16 +1058,19 @@ public final class ListView extends AndroidViewComponent {
   }
 
   @SimpleFunction(description = "Get the Main Text of a ListView element.")
+  @JsMethod(name = "GetMainText")
   public String GetMainText(final YailDictionary listElement) {
     return listElement.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
   }
 
   @SimpleFunction(description = "Get the Detail Text of a ListView element.")
+  @JsMethod(name = "GetDetailText")
   public String GetDetailText(final YailDictionary listElement) {
     return listElement.get(Component.LISTVIEW_KEY_DESCRIPTION).toString();
   }
 
   @SimpleFunction(description = "Get the filename of the image of a ListView element that has been uploaded to Media.")
+  @JsMethod(name = "GetImageName")
   public String GetImageName(final YailDictionary listElement) {
     return listElement.get(Component.LISTVIEW_KEY_IMAGE).toString();
   }
@@ -1032,6 +1085,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The color of the list view divider.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "DividerColor")
   @IsColor
   public int DividerColor() {
     return dividerColor;
@@ -1049,6 +1103,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
+  @JsProperty(name = "DividerColor")
   public void DividerColor(int argb) {
     dividerColor = argb;
     dividerPaint = new Paint();
@@ -1064,6 +1119,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "The thickness of the element divider in the list view. "
                                     + "If the thickness is 0, the divider is not visible.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "DividerThickness")
   public int DividerThickness() {
     return dividerSize;
   }
@@ -1076,6 +1132,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_DIVIDER_SIZE + "")
   @SimpleProperty
+  @JsProperty(name = "DividerThickness")
   public void DividerThickness(int size) {
     this.dividerSize = size;
     setDivider();
@@ -1088,6 +1145,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The margins width of the list view element.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ElementMarginsWidth")
   public int ElementMarginsWidth() {
     return margins;
   }
@@ -1100,6 +1158,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_MARGINS_SIZE + "")
   @SimpleProperty
+  @JsProperty(name = "ElementMarginsWidth")
   public void ElementMarginsWidth(int width) {
     this.margins = width;
     setDivider();
@@ -1112,6 +1171,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(description = "The radius of the rounded corners of a list view item.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ElementCornerRadius")
   public int ElementCornerRadius() {
     return radius;
   }
@@ -1124,6 +1184,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_RADIUS + "")
   @SimpleProperty
+  @JsProperty(name = "ElementCornerRadius")
   public void ElementCornerRadius(int radius) {
     this.radius = radius;
     setAdapterData();
@@ -1138,6 +1199,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "The effect of bounce from the edge after scrolling the list to the end. "
                                     + " True will enable the bounce effect, false will disable it.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "BounceEdgeEffect")
   public boolean BounceEdgeEffect() {
     return bounceEffect;
   }
@@ -1151,6 +1213,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty
+  @JsProperty(name = "BounceEdgeEffect")
   public void BounceEdgeEffect(boolean bounce) {
     if (bounce) {
       recyclerView.setEdgeEffectFactory(bounceEdgeEffectFactory);
@@ -1164,6 +1227,7 @@ public final class ListView extends AndroidViewComponent {
    * Removes Item from list at a given index
    */
   @SimpleFunction(description = "Removes Item from list at a given index.")
+  @JsMethod(name = "RemoveItemAtIndex")
   public void RemoveItemAtIndex(int index) {
     if (index < 1 || index > items.size()) {
       container.$form().dispatchErrorOccurredEvent(this, "RemoveItemAtIndex",
@@ -1179,6 +1243,7 @@ public final class ListView extends AndroidViewComponent {
    * Add new Item to list
    */
   @SimpleFunction(description = "Add new Item to list at the end.")
+  @JsMethod(name = "AddItem")
   public void AddItem(String mainText, String detailText, String imageName) {
     if (!items.isEmpty()) {
       Object o = items.get(0);
@@ -1206,6 +1271,7 @@ public final class ListView extends AndroidViewComponent {
    * Add new Items to list
    */
   @SimpleFunction(description = "Add new Items to list at the end.")
+  @JsMethod(name = "AddItems")
   public void AddItems(List<Object> itemsList) {
     if (!itemsList.isEmpty()) {
       int positionStart = items.size();
@@ -1220,6 +1286,7 @@ public final class ListView extends AndroidViewComponent {
    * Add new Item to list at a given index
    */
   @SimpleFunction(description = "Add new Item to list at a given index.")
+  @JsMethod(name = "AddItemAtIndex")
   public void AddItemAtIndex(int index, String mainText, String detailText, String imageName) {
     if (index < 1 || index > items.size() + 1) {
       container.$form().dispatchErrorOccurredEvent(this, "AddItemAtIndex",
@@ -1252,6 +1319,7 @@ public final class ListView extends AndroidViewComponent {
    * Add new Items to list at specific index
    */
   @SimpleFunction(description = "Add new Items to list at specific index.")
+  @JsMethod(name = "AddItemsAtIndex")
   public void AddItemsAtIndex(int index, YailList itemsList) {
     if (index < 1 || index > items.size() + 1) {
       container.$form().dispatchErrorOccurredEvent(this, "AddItemsAtIndex",
@@ -1375,6 +1443,7 @@ public final class ListView extends AndroidViewComponent {
 
   @Deprecated
   @SimpleFunction(description = "Reload the ListView to reflect any changes in the data.")
+  @JsMethod(name = "Refresh")
   public void Refresh() {
     setAdapterData();
   }

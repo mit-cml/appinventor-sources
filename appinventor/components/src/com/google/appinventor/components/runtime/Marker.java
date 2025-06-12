@@ -43,6 +43,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.util.GeoPoint;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * The `Marker` component indicates points on a {@link Map}, such as buildings or other points of
  * interest. `Marker`s can be customized in many ways, such as using custom images from the app's
@@ -207,6 +210,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @Override
   @SimpleProperty(description = "Returns the type of the feature. For Markers, "
       + "this returns MapFeature.Marker (\"Marker\").")
+  @JsProperty(name = "Type")
   public @Options(MapFeature.class) String Type() {
     return TypeAbstract().toUnderlyingValue();
   }
@@ -232,6 +236,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LATITUDE,
       defaultValue = "0")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Latitude")
   public void Latitude(double latitude) {
     Log.d(TAG, "Latitude");
     if (latitude < -90 || latitude > 90) {
@@ -248,6 +253,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @suppressdoc
    */
   @SimpleProperty
+  @JsProperty(name = "Latitude")
   public double Latitude() {
     return location.getLatitude();
   }
@@ -263,6 +269,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LONGITUDE,
       defaultValue = "0")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Longitude")
   public void Longitude(double longitude) {
     Log.d(TAG, "Longitude");
     if (longitude < -180 || longitude > 180) {
@@ -279,6 +286,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @suppressdoc
    */
   @SimpleProperty
+  @JsProperty(name = "Longitude")
   public double Longitude() {
     return location.getLongitude();
   }
@@ -291,6 +299,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET)
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ImageAsset")
   public void ImageAsset(@Asset String path) {
     Log.d(TAG, "ImageAsset");
     this.imagePath = path;
@@ -303,6 +312,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @SimpleProperty(description = "The ImageAsset property is used to provide an alternative image "
       + "for the Marker.")
+  @JsProperty(name = "ImageAsset")
   public String ImageAsset() {
     return imagePath;
   }
@@ -312,6 +322,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @param argb the outline paint color
    */
   @SimpleProperty
+  @JsProperty(name = "StrokeColor")
   public void StrokeColor(int argb) {
     super.StrokeColor(argb);
     map.getController().updateFeatureStroke(this);
@@ -321,6 +332,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = "3")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "AnchorHorizontal")
   public void AnchorHorizontal(@Options(HorizontalAlignment.class) int horizontal) {
     // Make sure the horizontal alignment is a valid HorizontalAlignment.
     HorizontalAlignment alignment = HorizontalAlignment.fromUnderlyingValue(horizontal);
@@ -340,6 +352,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SimpleProperty(description = "The horizontal alignment property controls where the Marker's "
       + "anchor is located relative to its width. The choices are: 1 = left aligned,"
       + " 3 = horizontally centered, 2 = right aligned.")
+  @JsProperty(name = "AnchorHorizontal")
   public @Options(HorizontalAlignment.class) int AnchorHorizontal() {
     return AnchorHorizontalAbstract().toUnderlyingValue();
   }
@@ -369,6 +382,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = "3")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "AnchorVertical")
   public void AnchorVertical(@Options(VerticalAlignment.class) int vertical) {
     // Make sure the vertical alignment is a valid VerticalAlignment.
     VerticalAlignment alignment = VerticalAlignment.fromUnderlyingValue(vertical);
@@ -387,6 +401,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SimpleProperty(description = "The vertical alignment property controls where the Marker's "
       + "anchor is located relative to its height. The choices are: 1 = aligned at the top, 2 = "
       + "vertically centered, 3 = aligned at the bottom.")
+  @JsProperty(name = "AnchorVertical")
   public @Options(VerticalAlignment.class) int AnchorVertical() {
     return AnchorVerticalAbstract().toUnderlyingValue();
   }
@@ -414,12 +429,14 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
 
   @Override
   @SimpleProperty(userVisible = false)
+  @JsProperty(name = "ShowShadow")
   public void ShowShadow(boolean show) {
     // This method has been deprecated.
   }
 
   @Override
   @SimpleProperty(description = "Gets whether or not the shadow of the Marker is shown.")
+  @JsProperty(name = "ShowShadow")
   public boolean ShowShadow() {
     return false;
   }
@@ -431,6 +448,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Width")
   public void Width(int width) {
     this.width = width;
     setNeedsUpdate();
@@ -441,6 +459,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Width")
   public int Width() {
     if (this.width == LENGTH_FILL_PARENT) {
       return map.getView().getWidth();
@@ -458,6 +477,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @SuppressWarnings("squid:S00100")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "WidthPercent")
   public void WidthPercent(int pCent) {
     this.width = LENGTH_PERCENT_TAG - pCent;
     setNeedsUpdate();
@@ -470,6 +490,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Height")
   public void Height(int height) {
     this.height = height;
     setNeedsUpdate();
@@ -480,6 +501,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Height")
   public int Height() {
     if (this.height == LENGTH_FILL_PARENT) {
       return map.getView().getHeight();
@@ -498,6 +520,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    */
   @SuppressWarnings("squid:S00100")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "HeightPercent")
   public void HeightPercent(int pCent) {
     this.height = LENGTH_PERCENT_TAG - pCent;
     setNeedsUpdate();
@@ -510,6 +533,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
    * @param longitude the new longitude of the marker
    */
   @SimpleFunction(description = "Set the location of the marker.")
+  @JsMethod(name = "SetLocation")
   public void SetLocation(double latitude, double longitude) {
     Log.d(TAG, "SetLocation");
     location.setCoords(latitude, longitude);
@@ -542,6 +566,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SuppressWarnings("squid:S00100")
   @SimpleFunction(description = "Compute the distance, in meters, between a Marker and a "
       + "latitude, longitude point.")
+  @JsMethod(name = "DistanceToPoint")
   public double DistanceToPoint(double latitude, double longitude) {
     return GeometryUtil.distanceBetween(this, new GeoPoint(latitude, longitude));
   }
@@ -557,6 +582,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
   @SuppressWarnings("squid:S00100")
   @SimpleFunction(description = "Returns the bearing from the Marker to the given latitude and "
       + "longitude, in degrees from due north.")
+  @JsMethod(name = "BearingToPoint")
   public double BearingToPoint(double latitude, double longitude) {
     return location.bearingTo(new GeoPoint(latitude, longitude));
   }
@@ -577,6 +603,7 @@ public class Marker extends MapFeatureBaseWithFill implements MapMarker {
       + "in degrees from due north. If the centroids parameter is true, the bearing will be to the "
       + "center of the map feature. Otherwise, the bearing will be computed to the point in the "
       + "feature nearest the Marker.")
+  @JsMethod(name = "BearingToFeature")
   public double BearingToFeature(MapFactory.MapFeature mapFeature, final boolean centroids) {
     return mapFeature == null ? -1 : mapFeature.accept(bearingComputation, this, centroids);
   }

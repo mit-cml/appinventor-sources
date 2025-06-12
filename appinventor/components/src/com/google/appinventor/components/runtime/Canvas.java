@@ -78,6 +78,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * A two-dimensional touch-sensitive rectangular panel on which drawing can
  * be done and sprites can be moved.
@@ -972,6 +975,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Width")
   // the bitmap routines will crash if the width is set to 0
   public void Width(int width) {
     if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED) ||
@@ -996,6 +1000,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Height")
   // the bitmap routines will crash if the height is set to 0
    public void Height(int height) {
      if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED) ||
@@ -1020,6 +1025,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The color of the canvas background.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "BackgroundColor")
   @IsColor
   public int BackgroundColor() {
     return backgroundColor;
@@ -1037,6 +1043,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
+  @JsProperty(name = "BackgroundColor")
   public void BackgroundColor(int argb) {
     view.setBackgroundColor(argb);
   }
@@ -1049,6 +1056,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The name of a file containing the background image for the canvas",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "BackgroundImage")
   public String BackgroundImage() {
     return backgroundImagePath;
   }
@@ -1065,6 +1073,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "BackgroundImage")
   public void BackgroundImage(@Asset String path) {
     view.setBackgroundImage(path);
   }
@@ -1080,6 +1089,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "Set the background image in Base64 format. This requires API level >= 8. For "
           + "devices with API level less than 8, setting this will end up with an empty background."
   )
+  @JsProperty(name = "BackgroundImageinBase64")
   public void BackgroundImageinBase64(String imageUrl) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
       view.setBackgroundImageBase64(imageUrl);
@@ -1099,6 +1109,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "Set the number of pixels right, left, up or down, a sequence of drags must"
           + "move from the starting point to be considered a drag (instead of a touch)."
   )
+  @JsProperty(name = "TapThreshold")
   public int TapThreshold() {
     return tapThreshold;
   }
@@ -1110,6 +1121,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *     move from the starting point to be considered a drag (instead of a touch).
    */
   @SimpleProperty
+  @JsProperty(name = "TapThreshold")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
       defaultValue = "15")
   public void TapThreshold(int threshold) {
@@ -1127,6 +1139,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The color in which lines are drawn",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "PaintColor")
   @IsColor
   public int PaintColor() {
     return paintColor;
@@ -1143,6 +1156,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
+  @JsProperty(name = "PaintColor")
   public void PaintColor(int argb) {
     paintColor = argb;
     changePaint(paint, argb);
@@ -1162,6 +1176,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The font size of text drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "FontSize")
   public float FontSize() {
     float scale = $form().deviceDensity();
     return paint.getTextSize() / scale;
@@ -1174,6 +1189,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
+  @JsProperty(name = "FontSize")
   public void FontSize(float size) {
     float scale = $form().deviceDensity();
     paint.setTextSize(size * scale);
@@ -1186,6 +1202,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty(
       description = "The width of lines drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "LineWidth")
   public float LineWidth() {
     return paint.getStrokeWidth() / $form().deviceDensity();
   }
@@ -1198,6 +1215,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = DEFAULT_LINE_WIDTH + "")
   @SimpleProperty
+  @JsProperty(name = "LineWidth")
   public void LineWidth(float width) {
     paint.setStrokeWidth(width * $form().deviceDensity());
   }
@@ -1218,6 +1236,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 //    TODO: (Hal) Check that this is still correct for RTL languages.
       category = PropertyCategory.APPEARANCE,
       userVisible = true)
+  @JsProperty(name = "TextAlignment")
   public int TextAlignment() {
     return textAlignment;
   }
@@ -1237,6 +1256,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = DEFAULT_TEXTALIGNMENT + "")
   @SimpleProperty(userVisible = true)
+  @JsProperty(name = "TextAlignment")
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     switch (alignment) {
@@ -1258,6 +1278,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       "is provided for backwards compatibility.",
       category = PropertyCategory.BEHAVIOR,
       userVisible = true)
+  @JsProperty(name = "ExtendMovesOutsideCanvas")
   public boolean ExtendMovesOutsideCanvas() {
     return extendMovesOutsideCanvas;
   }
@@ -1268,6 +1289,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(userVisible = true)
+  @JsProperty(name = "ExtendMovesOutsideCanvas")
   public void ExtendMovesOutsideCanvas(boolean extend){
     extendMovesOutsideCanvas = extend;   
   }
@@ -1371,6 +1393,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Clears anything drawn on this Canvas but " +
       "not any background color or image.")
+  @JsMethod(name = "Clear")
   public void Clear() {
     view.clearDrawingLayer();
   }
@@ -1382,6 +1405,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param y  y coordinate
    */
   @SimpleFunction
+  @JsMethod(name = "DrawPoint")
   public void DrawPoint(int x, int y) {
     float correctedX = x * $form().deviceDensity();
     float correctedY = y * $form().deviceDensity();
@@ -1399,6 +1423,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param fill  true for filled circle; false for circle outline
    */
   @SimpleFunction
+  @JsMethod(name = "DrawCircle")
   public void DrawCircle(int centerX, int centerY, float radius, boolean fill) {
     float correctedX = centerX * $form().deviceDensity();
     float correctedY = centerY * $form().deviceDensity();
@@ -1418,6 +1443,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param y2  y coordinate of second point
    */
   @SimpleFunction
+  @JsMethod(name = "DrawLine")
   public void DrawLine(int x1, int y1, int x2, int y2) {
     float correctedX1 = x1 * $form().deviceDensity();
     float correctedY1 = y1 * $form().deviceDensity();
@@ -1442,6 +1468,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       "pointList should be a list contains sub-lists with two number which represents a coordinate. " +
       "The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3)) " +
       "When fill is true, the shape will be filled.")
+  @JsMethod(name = "DrawShape")
   public void DrawShape(YailList pointList, boolean fill) {
     Path path;
     try {
@@ -1522,6 +1549,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       "Start angle is 0 when heading to the right, and increase when rotate clockwise. " +
       "When useCenter is true, a sector will be drawed instead of an arc. " +
       "When fill is true, a filled arc (or sector) will be drawed instead of just an outline.")
+  @JsMethod(name = "DrawArc")
   public void DrawArc(int left, int top, int right, int bottom, 
       float startAngle, float sweepAngle, boolean useCenter, boolean fill) {
     float scalingFactor = $form().deviceDensity();
@@ -1545,6 +1573,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Draws the specified text relative to the specified coordinates "
       + "using the values of the FontSize and TextAlignment properties.")
+  @JsMethod(name = "DrawText")
   public void DrawText(String text, int x, int y) {
     float fontScalingFactor = $form().deviceDensity();
     float correctedX = x * fontScalingFactor;
@@ -1565,6 +1594,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Draws the specified text starting at the specified coordinates "
       + "at the specified angle using the values of the FontSize and TextAlignment properties.")
+  @JsMethod(name = "DrawTextAngle")
   public void DrawTextAtAngle(String text, int x, int y, float angle) {
     int correctedX = (int) (x * $form().deviceDensity());
     int correctedY = (int) (y * $form().deviceDensity());
@@ -1582,6 +1612,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Gets the color of the specified point. "
       + "This includes the background and any drawn points, lines, or "
       + "circles but not sprites.")
+  @JsMethod(name = "GetBackgroundPixelColor")
   @IsColor
   public int GetBackgroundPixelColor(int x, int y) {
     int correctedX = (int) (x * $form().deviceDensity());
@@ -1599,6 +1630,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction(description = "Sets the color of the specified point. "
       + "This differs from DrawPoint by having an argument for color.")
+  @JsMethod(name = "SetBackgroundPixelColor")
   public void SetBackgroundPixelColor(int x, int y, @IsColor int color) {
     Paint pixelPaint = new Paint();
     PaintUtil.changePaint(pixelPaint, color);
@@ -1617,6 +1649,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *         or {@link Component#COLOR_NONE} if that point is not on this Canvas
    */
   @SimpleFunction(description = "Gets the color of the specified point.")
+  @JsMethod(name = "GetPixelColor")
   @IsColor
   public int GetPixelColor(int x, int y) {
     int correctedX = (int) (x * $form().deviceDensity());
@@ -1635,6 +1668,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Saves a picture of this Canvas to the " +
        "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
        "event will be called.")
+  @JsMethod(name = "Save")
   public String Save() {
     return saveFile(FileUtil.getScopedPictureFile($form(), "png"),
         Bitmap.CompressFormat.PNG, "Save");
@@ -1653,6 +1687,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    "external storage in the file " +
    "named fileName. fileName must end with one of .jpg, .jpeg, or .png, " +
    "which determines the file type.")
+  @JsMethod(name = "SaveAs")
   public String SaveAs(String fileName) {
     // Figure out desired file format
     Bitmap.CompressFormat format;

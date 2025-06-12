@@ -50,6 +50,8 @@ import javax.net.ssl.X509TrustManager;
 
 import org.json.JSONException;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
 
 /**
  * Use this component to translate words and sentences between
@@ -259,6 +261,7 @@ public final class Translator extends AndroidNonvisibleComponent {
       "executed.\nNote: Translate will attempt to detect the source language. You can " +
       "also specify prepending it to the language translation. I.e., es-ru will specify Spanish " +
       "to Russian translation.")
+  @JsMethod(name = "RequestTranslation")
   public void RequestTranslation(final String languageToTranslateTo,
                                  final String textToTranslate) {
 
@@ -377,6 +380,7 @@ public final class Translator extends AndroidNonvisibleComponent {
   @SimpleProperty(description = "The API Key to use. MIT App Inventor will automatically fill this " +
     "value in. You should not need to change it.",
       userVisible = true, category = PropertyCategory.ADVANCED)
+  @JsProperty(name = "ApiKey")
   public void ApiKey(String apiKey) {
     this.apiKey = apiKey;
   }

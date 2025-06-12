@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * Use a table arrangement component to display a group of components in a tabular fashion.
  *
@@ -82,6 +84,7 @@ public class TableArrangement extends AndroidViewComponent
    * @return  number of columns in this layout
    */
   @SimpleProperty(userVisible = false)
+  @JsProperty(name = "Columns")
   public int Columns() {
     return viewLayout.getNumColumns();
   }
@@ -94,6 +97,7 @@ public class TableArrangement extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
   @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Columns")
   public void Columns(int numColumns) {
     viewLayout.setNumColumns(numColumns);
   }
@@ -104,6 +108,7 @@ public class TableArrangement extends AndroidViewComponent
    * @return  number of rows in this layout
    */
   @SimpleProperty(userVisible = false)
+  @JsProperty(name = "Rows")
   public int Rows() {
     return viewLayout.getNumRows();
   }
@@ -116,6 +121,7 @@ public class TableArrangement extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
   @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Rows")
   public void Rows(int numRows) {
     viewLayout.setNumRows(numRows);
   }

@@ -44,6 +44,9 @@ import java.io.File;
 
 import java.net.URI;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * ![Camera icon](images/camera.png)
  *
@@ -117,6 +120,7 @@ public class Camera extends AndroidNonvisibleComponent
    */
   @Deprecated
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "UseFront")
   public boolean UseFront() {
     return useFront;
   }
@@ -133,6 +137,7 @@ public class Camera extends AndroidNonvisibleComponent
   @SimpleProperty(description = "Specifies whether the front-facing camera should be used (when available). "
     + "If the device does not have a front-facing camera, this option will be ignored "
     + "and the camera will open normally.")
+  @JsProperty(name = "UseFront")
   public void UseFront(boolean front) {
     useFront = front;
   }
@@ -144,6 +149,7 @@ public class Camera extends AndroidNonvisibleComponent
    * If useFront is true, adds an extra to the intent that requests the front-facing camera.
    */
   @SimpleFunction
+  @JsMethod(name = "TakePicture")
   public void TakePicture() {
     final ScopedFile target = FileUtil.getScopedPictureFile(form, "jpg");
     if (!havePermission) {

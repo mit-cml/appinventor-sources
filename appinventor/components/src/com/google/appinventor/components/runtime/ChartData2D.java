@@ -27,6 +27,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
  * for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar
@@ -58,6 +60,7 @@ public final class ChartData2D extends ChartDataBase {
    * @param y - y value of entry
    */
   @SimpleFunction()
+  @JsMethod(name = "AddEntry")
   public void AddEntry(final String x, final String y) {
     // Entry should be added via the Thread Runner asynchronously
     // to guarantee the order of data adding (e.g. CSV data
@@ -101,6 +104,7 @@ public final class ChartData2D extends ChartDataBase {
    * @param y - y value of entry
    */
   @SimpleFunction()
+  @JsMethod(name = "RemoveEntry")
   public void RemoveEntry(final String x, final String y) {
     // Entry should be deleted via the Thread Runner asynchronously
     // to guarantee the order of data adding (e.g. CSV data
@@ -158,6 +162,7 @@ public final class ChartData2D extends ChartDataBase {
   @SuppressWarnings("TryWithIdenticalCatches")
   @SimpleFunction(description = "Checks whether an (x, y) entry exists in the Coordinate Data."
       + "Returns true if the Entry exists, and false otherwise.")
+  @JsMethod(name = "DoesEntryExist")
   public boolean DoesEntryExist(final String x, final String y) {
     try {
       return threadRunner.submit(new Callable<Boolean>() {
@@ -185,6 +190,7 @@ public final class ChartData2D extends ChartDataBase {
    * @param yList - the list of y values
    */
   @SimpleFunction(description = "Draws the corresponding line of best fit on the graph")
+  @JsMethod(name = "DrawLineOfBestFit")
   @Deprecated
   public void DrawLineOfBestFit(final YailList xList, final YailList yList) {
     List<?> predictions = (List<?>) Regression.computeLineOfBestFit(castToDouble((LList) xList.getCdr()),
@@ -223,6 +229,7 @@ public final class ChartData2D extends ChartDataBase {
    */
   @SimpleFunction(description = "Highlights data points of choice on the Chart in the color of "
       + "choice. This block expects a list of data points, each data point is an index, value pair")
+  @JsMethod(name = "HighlightDataPoints")
   public void HighlightDataPoints(final YailList dataPoints, int color) {
     List<?> dataPointsList = (LList) dataPoints.getCdr();
     if (!dataPoints.isEmpty()) {

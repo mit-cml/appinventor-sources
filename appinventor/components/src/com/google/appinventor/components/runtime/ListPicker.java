@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.WindowManager;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * A button that, when clicked on, displays a list of texts for the user to choose among. The texts
  * can be specified through the Designer or Blocks Editor by setting the
@@ -123,6 +125,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
       "item in the ListPicker with the given value.  If the value does not " +
       "appear, SelectionIndex will be set to 0.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Selection")
   public String Selection() {
     return selection;
   }
@@ -135,6 +138,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Selection")
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
@@ -145,6 +149,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
     defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
+  @JsProperty(name = "ShowFilterBar")
   public void ShowFilterBar(boolean showFilter) {
     this.showFilter = showFilter;
   }
@@ -155,6 +160,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Returns current state of ShowFilterBar indicating if " +
           "Search Filter Bar will be displayed on ListPicker or not")
+  @JsProperty(name = "ShowFilterBar")
   public boolean ShowFilterBar() {
     return showFilter;
   }
@@ -162,12 +168,14 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
+  @JsProperty(name = "ItemTextColor")
   public void ItemTextColor(int argb) {
     this.itemTextColor = argb;
   }
 
   @SimpleProperty(description = "The text color of the ListPicker items.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ItemTextColor")
   @IsColor
   public int ItemTextColor() {
     return this.itemTextColor;
@@ -176,6 +184,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
+  @JsProperty(name = "ItemBackgroundColor")
   public void ItemBackgroundColor(int argb) {
     this.itemBackgroundColor = argb;
   }
@@ -185,6 +194,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    */
   @SimpleProperty(description = "The background color of the ListPicker items.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ItemBackgroundColor")
   @IsColor
   public int ItemBackgroundColor() {
     return this.itemBackgroundColor;
@@ -200,6 +210,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
       "of items in the ListPicker, SelectionIndex will be set to 0, and " +
       "Selection will be set to the empty text.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "SelectionIndex")
   public int SelectionIndex() {
     return selectionIndex;
   }
@@ -210,6 +221,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   // Not a designer property, since this could lead to unpredictable
   // results if Selection is set to an incompatible value.
   @SimpleProperty
+  @JsProperty(name = "SelectionIndex")
   public void SelectionIndex(int index) {
     selectionIndex = ElementsUtil.selectionIndex(index, items);
     // Now, we need to change Selection to correspond to SelectionIndex.
@@ -222,6 +234,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    * @return a YailList representing the list of strings to be picked from
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Elements")
   public YailList Elements() {
     return items;
   }
@@ -235,6 +248,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    */
   // TODO(user): we need a designer property for lists
   @SimpleProperty
+  @JsProperty(name = "Elements")
   public void Elements(YailList itemList) {
     items = ElementsUtil.elements(itemList, "ListPicker");
   }
@@ -251,6 +265,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   // could directly enter a list of strings (e.g. one per row) and we could
   // avoid the comma-separated business.
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ElementsFromString")
   public void ElementsFromString(String itemstring) {
     items = ElementsUtil.elementsFromString(itemstring);
   }
@@ -265,6 +280,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    */
     @SimpleProperty(category = PropertyCategory.APPEARANCE,
                     description = "Optional title displayed at the top of the list of choices.")
+    @JsProperty(name = "Title")
   public String Title() {
     return title;
   }
@@ -279,6 +295,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Title")
   public void Title(String title) {
     this.title = title;
   }

@@ -31,6 +31,9 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * The Chart component plots data originating from it's attached Data components. Five different
  * Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
@@ -152,6 +155,7 @@ public class Chart extends AndroidViewComponent
       category = PropertyCategory.BEHAVIOR,
       description = "Specifies the chart's type (area, bar, pie, scatter), "
           + "which determines how to visualize the data.")
+  @JsProperty(name = "Type")
   public ChartType Type() {
     return type;
   }
@@ -243,6 +247,7 @@ public class Chart extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Description")
   public String Description() {
     return description;
   }
@@ -255,6 +260,7 @@ public class Chart extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty
+  @JsProperty(name = "Description")
   public void Description(String text) {
     this.description = text;
     chartView.setDescription(description);
@@ -268,6 +274,7 @@ public class Chart extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "BackgroundColor")
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -281,6 +288,7 @@ public class Chart extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
+  @JsProperty(name = "BackgroundColor")
   public void BackgroundColor(int argb) {
     if (argb == Component.COLOR_DEFAULT) {
       argb = $form().isDarkTheme() ? Component.COLOR_BLACK : Component.COLOR_WHITE;
@@ -308,6 +316,7 @@ public class Chart extends AndroidViewComponent
       + "is drawn, while values closer to 0% correspond to hollow Pie Charts.",
       userVisible = false,
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "PieRadius")
   public void PieRadius(int percent) {
     this.pieRadius = percent;
 
@@ -325,6 +334,7 @@ public class Chart extends AndroidViewComponent
    * @return True if legend is enabled, false otherwise
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "LegendEnabled")
   public boolean LegendEnabled() {
     return this.legendEnabled;
   }
@@ -337,6 +347,7 @@ public class Chart extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
+  @JsProperty(name = "LegendEnabled")
   public void LegendEnabled(boolean enabled) {
     this.legendEnabled = enabled;
     chartView.setLegendEnabled(enabled);
@@ -351,6 +362,7 @@ public class Chart extends AndroidViewComponent
    * @return True if grid is enabled, false otherwise
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "GridEnabled")
   public boolean GridEnabled() {
     return this.gridEnabled;
   }
@@ -365,6 +377,7 @@ public class Chart extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
+  @JsProperty(name = "GridEnabled")
   public void GridEnabled(boolean enabled) {
     this.gridEnabled = enabled;
 
@@ -384,6 +397,7 @@ public class Chart extends AndroidViewComponent
    * @return List of Labels used for the X Axis
    */
   @SimpleProperty
+  @JsProperty(name = "Labels")
   public YailList Labels() {
     return labels;
   }
@@ -405,6 +419,7 @@ public class Chart extends AndroidViewComponent
       + "Bar, Line, Scatter Charts). The labels are applied in order, starting from the smallest "
       + "x value on the Chart, and continuing in order. If a label is not specified for an x "
       + "value, a default value is used (the x value of the axis tick at that location).")
+  @JsProperty(name = "Labels")
   public void Labels(YailList labels) {
     this.labels = labels;
 
@@ -435,6 +450,7 @@ public class Chart extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "LabelsFromString")
   public void LabelsFromString(String labels) {
     // Retrieve the elements from the CSV-formatted String
     YailList labelsList = ElementsUtil.elementsFromString(labels);
@@ -450,6 +466,7 @@ public class Chart extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "XFromZero")
   public void XFromZero(boolean zero) {
     this.zeroX = zero;
 
@@ -459,6 +476,7 @@ public class Chart extends AndroidViewComponent
   }
 
   @SimpleProperty
+  @JsProperty(name = "XFromZero")
   public boolean XFromZero() {
     return zeroX;
   }
@@ -472,6 +490,7 @@ public class Chart extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "YFromZero")
   public void YFromZero(boolean zero) {
     this.zeroY = zero;
 
@@ -481,6 +500,7 @@ public class Chart extends AndroidViewComponent
   }
 
   @SimpleProperty
+  @JsProperty(name = "YFromZero")
   public boolean YFromZero() {
     return this.zeroY;
   }
@@ -492,6 +512,7 @@ public class Chart extends AndroidViewComponent
    * @param x the value to show
    */
   @SimpleFunction
+  @JsMethod(name = "ExtendDomainToInclude")
   public void ExtendDomainToInclude(double x) {
     if (chartView instanceof AxisChartView) {
       double[] bounds = ((AxisChartView<?, ?, ?, ?, ?>) chartView).getXBounds();
@@ -513,6 +534,7 @@ public class Chart extends AndroidViewComponent
    * @param y the value to show
    */
   @SimpleFunction
+  @JsMethod(name = "ExtendRangeToInclude")
   public void ExtendRangeToInclude(double y) {
     if (chartView instanceof AxisChartView) {
       double[] bounds = ((AxisChartView<?, ?, ?, ?, ?>) chartView).getYBounds();
@@ -531,6 +553,7 @@ public class Chart extends AndroidViewComponent
    * Resets the axes of the chart to their original bounds.
    */
   @SimpleFunction
+  @JsMethod(name = "ResetAxes")
   public void ResetAxes() {
     if (chartView instanceof AxisChartView) {
       ((AxisChartView<?, ?, ?, ?, ?>) chartView).resetAxes();
@@ -545,6 +568,7 @@ public class Chart extends AndroidViewComponent
    * @param maximum the upper bound for the domain
    */
   @SimpleFunction
+  @JsMethod(name = "SetDomain")
   public void SetDomain(double minimum, double maximum) {
     this.zeroX = minimum == 0.0;
 
@@ -561,6 +585,7 @@ public class Chart extends AndroidViewComponent
    * @param maximum the upper bound for the range
    */
   @SimpleFunction
+  @JsMethod(name = "SetRange")
   public void SetRange(double minimum, double maximum) {
     this.zeroY = minimum == 0.0;
 

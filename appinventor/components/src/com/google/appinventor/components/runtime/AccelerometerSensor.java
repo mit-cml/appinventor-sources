@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * Non-visible component that can detect shaking and measure acceleration approximately in three
  * dimensions using SI units (m/s<sup>2</sup>). The components are:
@@ -177,6 +179,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
       description = "The minimum interval, in milliseconds, between phone shakes")
+  @JsProperty(name = "MinimumInterval")
   public int MinimumInterval() {
     return minimumInterval;
   }
@@ -191,6 +194,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "400") //Default value derived by trial of 12 people on 3 different devices
   @SimpleProperty
+  @JsProperty(name = "MinimumInterval")
   public void MinimumInterval(int interval) {
     minimumInterval = interval;
   }
@@ -208,6 +212,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
       description = "A number that encodes how sensitive the accelerometer is. " +
               "The choices are: 1 = weak, 2 = moderate, " +
               " 3 = strong.")
+  @JsProperty(name = "Sensitivity")
   public @Options(Sensitivity.class) int Sensitivity() {
     return sensitivity.toUnderlyingValue();
   }
@@ -240,6 +245,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY,
       defaultValue = Component.ACCELEROMETER_SENSITIVITY_MODERATE + "")
   @SimpleProperty
+  @JsProperty(name = "Sensitivity")
   public void Sensitivity(@Options(Sensitivity.class) int sensitivity) {
     // Make sure sensitivity is a valid Sensitivity.
     Sensitivity level = Sensitivity.fromUnderlyingValue(sensitivity);
@@ -323,6 +329,7 @@ public int getDeviceDefaultOrientation() {
   @SimpleProperty(
       description = "Returns whether the accelerometer is available on the device.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Available")
   public boolean Available() {
     List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
     return (sensors.size() > 0);
@@ -337,6 +344,7 @@ public int getDeviceDefaultOrientation() {
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Enabled")
   public boolean Enabled() {
     return enabled;
   }
@@ -375,6 +383,7 @@ public int getDeviceDefaultOrientation() {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
+  @JsProperty(name = "Enabled")
   public void Enabled(boolean enabled) {
     if (this.enabled == enabled) {
       return;
@@ -395,6 +404,7 @@ public int getDeviceDefaultOrientation() {
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "XAccel")
   public float XAccel() {
     return xAccel;
   }
@@ -407,6 +417,7 @@ public int getDeviceDefaultOrientation() {
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "YAccel")
   public float YAccel() {
     return yAccel;
   }
@@ -419,6 +430,7 @@ public int getDeviceDefaultOrientation() {
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ZAccel")
   public float ZAccel() {
     return zAccel;
   }
@@ -475,6 +487,7 @@ public int getDeviceDefaultOrientation() {
     "you update your project as we may remove this property in a future " +
     "release.",
     category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "LegacyMode")
   public void LegacyMode(boolean legacyMode) {
     this.legacyMode = legacyMode;
   }

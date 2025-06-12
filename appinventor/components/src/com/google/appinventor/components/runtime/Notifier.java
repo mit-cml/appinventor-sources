@@ -38,6 +38,9 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * The Notifier component displays alert messages and creates Android log entries through
  * an assortment of methods.
@@ -117,6 +120,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     + "artifact to indicate that the program is working. It cannot be canceled by the user "
     + "but must be dismissed by the App Inventor Program by using the DismissProgressDialog "
     + "block.")
+  @JsMethod(name = "ShowProgressDialog")
   public void ShowProgressDialog(String message, String title) {
     progressDialog(message, title);
   }
@@ -125,6 +129,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * Dismisses the alert created by the ShowProgressDialog block
    */
   @SimpleFunction(description = "Dismiss a previously displayed ProgressDialog box")
+  @JsMethod(name = "DismissProgressDialog")
   public void DismissProgressDialog() {
     if (progressDialog != null) {
       progressDialog.dismiss();
@@ -155,6 +160,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param buttonText the text on the button
    */
   @SimpleFunction
+  @JsMethod(name = "ShowMessageDialog")
   public void ShowMessageDialog(String message, String title, String buttonText) {
     oneButtonAlert(activity, message, title, buttonText);
   }
@@ -210,6 +216,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       + "Pressing a button will raise the AfterChoosing event.  The \"choice\" parameter to AfterChoosing "
       + "will be the text on the button that was pressed, or \"Cancel\" if the "
       + " CANCEL button was pressed.")
+  @JsMethod(name = "ShowChooseDialog")
   public void ShowChooseDialog(String message, String title, final String button1Text,
       final String button2Text, boolean cancelable) {
     twoButtonDialog(activity,
@@ -313,7 +320,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
      + "AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. "
      + "Entering text will raise the AfterTextInput event.  The \"response\" parameter to AfterTextInput "
      + "will be the text that was entered, or \"Cancel\" if the CANCEL button was pressed.")
-
+  @JsMethod(name = "ShowTextDialog")
   public void ShowTextDialog(String message, String title, boolean cancelable) {
     textInputDialog(message, title, cancelable, false);
   }
@@ -335,7 +342,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
      + "after which the AfterTextInput event will be raised.  If cancelable is true there will be an "
      + "additional CANCEL button. Entering password will raise the AfterTextInput event.  The \"response\" "
      + "parameter to AfterTextInput will be the entered password, or \"Cancel\" if CANCEL button was pressed.")
-
+  @JsMethod(name = "ShowPasswordDialog")
   public void ShowPasswordDialog(String message, String title, boolean cancelable) {
     textInputDialog(message, title, cancelable, true);
   }
@@ -434,6 +441,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param notice the text of the notification
    */
   @SimpleFunction
+  @JsMethod(name = "ShowAlert")
   public void ShowAlert(final String notice) {
     handler.post(new Runnable() {
       public void run() {
@@ -452,6 +460,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       defaultValue = Component.TOAST_LENGTH_LONG + "")
   @SimpleProperty(
       userVisible = false)
+  @JsProperty(name = "NotifierLength")
   public void NotifierLength(int length){
     notifierLength = length;
   }
@@ -462,6 +471,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @SimpleProperty(
       description="Specifies the length of time that the alert is shown -- either \"short\" or \"long\".",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "NotifierLength")
   public int NotifierLength() {
     return notifierLength;
   }
@@ -475,6 +485,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
   @SimpleProperty(description="Specifies the background color for alerts (not dialogs).",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "BackgroundColor")
   public void BackgroundColor(@IsColor int argb) {
     backgroundColor = argb;
   }
@@ -486,6 +497,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @SimpleProperty(description = "Specifies the text color for alerts (not dialogs).",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "TextColor")
   @IsColor
   public int TextColor() {
     return textColor;
@@ -499,6 +511,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
+  @JsProperty(name = "TextColor")
   public void TextColor(int argb) {
     textColor = argb;
   }
@@ -543,6 +556,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @SimpleFunction(description = "Writes an error message to the Android system log. " +
      "See the Google Android documentation for how to access the log.")
+  @JsMethod(name = "LogError")
   public void LogError(String message) {
     Log.e(LOG_TAG, message);
   }
@@ -555,6 +569,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @SimpleFunction(description = "Writes a warning message to the Android log. " +
      "See the Google Android documentation for how to access the log.")
+  @JsMethod(name = "LogWarning")
   public void LogWarning(String message) {
     Log.w(LOG_TAG, message);
   }
@@ -565,6 +580,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param message the information message
    */
   @SimpleFunction(description = "Writes an information message to the Android log.")
+  @JsMethod(name = "LogInfo")
   public void LogInfo(String message) {
     Log.i(LOG_TAG, message);
   }

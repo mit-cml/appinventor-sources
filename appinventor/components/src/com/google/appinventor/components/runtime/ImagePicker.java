@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * A special-purpose button. When the user taps an `ImagePicker`, the device's image gallery
  * appears, and the user can choose an image. After an image is picked, it is saved, and the
@@ -94,6 +96,7 @@ public class ImagePicker extends Picker implements ActivityResultListener {
    */
   @SimpleProperty(description = "Path to the file containing the image that was selected.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Selection")
   public String Selection() {
     return selectionSavedImage;
   }

@@ -27,6 +27,9 @@ import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * A `Spinner` component that displays a dialog with a list of elements. These elements can be set
  * in the Designer or Blocks Editor by setting the {@link #ElementsFromString(String)} property to
@@ -91,6 +94,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
    */
   @SimpleProperty(description = "Returns the current selected item in the spinner ",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Selection")
   public String Selection(){
     return SelectionIndex() == 0 ? "" : (String) view.getItemAtPosition(SelectionIndex() - 1);
   }
@@ -101,6 +105,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(description = "Set the selected item in the spinner",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Selection")
   public void Selection(String value){
     SelectionIndex(ElementsUtil.setSelectedIndexFromValue(value, items));
   }
@@ -110,6 +115,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
    */
   @SimpleProperty(description = "The index of the currently selected item, starting at 1. If no " +
       "item is selected, the value will be 0.", category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "SelectionIndex")
   public int SelectionIndex(){
     return ElementsUtil.selectionIndex(view.getSelectedItemPosition() + 1, items);
   }
@@ -124,6 +130,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       "If an attempt is made to set this to a number less than 1 or greater than the number of " +
       "items in the Spinner, SelectionIndex will be set to 0, and Selection will be set to empty.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "SelectionIndex")
   public void SelectionIndex(int index){
     oldSelectionIndex = SelectionIndex();
     view.setSelection(ElementsUtil.selectionIndex(index, items) - 1); // AI lists are 1-based
@@ -134,6 +141,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
    */
   @SimpleProperty(description = "returns a list of text elements to be picked from.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Elements")
   public YailList Elements(){
     return items;
   }
@@ -143,6 +151,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
    */
   @SimpleProperty(description = "Adds the passed text element to the Spinner list",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Elements")
   public void Elements(YailList itemList){
     // The following conditional handles special cases for the fact that
     // spinners automatically select an item when non-empty data is fed
@@ -162,6 +171,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA, defaultValue = "")
   @SimpleProperty(description = "Sets the Spinner list to the elements passed in the " +
       "comma-separated string", category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ElementsFromString")
   public void ElementsFromString(String itemstring){
     Elements(ElementsUtil.elementsFromString(itemstring));
   }
@@ -179,6 +189,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
    */
   @SimpleProperty(description = "Text with the current title for the Spinner window",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Prompt")
   public String Prompt(){
     return view.getPrompt().toString();
   }
@@ -189,12 +200,14 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(description = "Sets the Spinner window prompt to the given title",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Prompt")
   public void Prompt(String str){
     view.setPrompt(str);
   }
 
   @SimpleFunction(description = "Displays the dropdown list for selection, " +
       "same action as when the user clicks on the spinner.")
+  @JsMethod(name = "DisplayDropwdown")
   public void DisplayDropdown(){
     view.performClick();
   }

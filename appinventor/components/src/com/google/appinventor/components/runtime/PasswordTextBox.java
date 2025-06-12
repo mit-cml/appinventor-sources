@@ -21,6 +21,8 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * Users enter passwords in a password text box component, which hides the text that has been typed in it.
  *
@@ -79,6 +81,7 @@ public final class PasswordTextBox extends TextBoxBase {
   }
 
   @SimpleProperty(description = "Visibility of password.")
+  @JsProperty(name = "PasswordVisible")
   public void PasswordVisible(boolean visible){
     passwordVisible=visible;
     setPasswordInputType(acceptsNumbersOnly, visible);
@@ -90,6 +93,7 @@ public final class PasswordTextBox extends TextBoxBase {
    * @return true if the password should be shown, otherwise false.
    */
   @SimpleProperty(description = "Visibility of password.")
+  @JsProperty(name = "PasswordVisible")
   public boolean PasswordVisible(){
     return passwordVisible;
   }
@@ -106,6 +110,7 @@ public final class PasswordTextBox extends TextBoxBase {
       "Numbers can include a decimal point and an optional leading minus sign.  " +
       "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
       "can use [set Text to] to enter any text at all.")
+  @JsProperty(name = "NumbersOnly")
   public boolean NumbersOnly() {
     return acceptsNumbersOnly;
   }
@@ -125,6 +130,7 @@ public final class PasswordTextBox extends TextBoxBase {
       "Numbers can include a decimal point and an optional leading minus sign.  " +
       "This applies to keyboard input only.  Even if NumbersOnly is true, you " +
       "can use [set Text to] to enter any text at all.")
+  @JsProperty(name = "NumbersOnly")
   public void NumbersOnly(boolean acceptsNumbersOnly) {
     this.acceptsNumbersOnly = acceptsNumbersOnly;
     setPasswordInputType(acceptsNumbersOnly, passwordVisible);

@@ -64,6 +64,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * The ImageBot is a non-visible component that uses DALL-E 2 to create and edit images. You must
  * supply your own OpenAI API key for this component by setting its ApiKey property in the blocks.
@@ -238,6 +241,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
   @SimpleProperty(description = "The MIT Access token to use. MIT App Inventor will automatically "
       + "fill this value in. You should not need to change it.",
     userVisible = true, category = PropertyCategory.ADVANCED)
+  @JsProperty(name = "Token")
   public void Token(String token) {
     this.token = token;
   }
@@ -249,6 +253,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ApiKey")
   public void ApiKey(String apiKey) {
     this.apiKey = apiKey;
   }
@@ -261,11 +266,13 @@ public class ImageBot extends AndroidNonvisibleComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "InvertMask")
   public void InvertMask(boolean invert) {
     this.invert = invert;
   }
 
   @SimpleProperty
+  @JsProperty(name = "InvertMask")
   public boolean InvertMask() {
     return invert;
   }
@@ -278,11 +285,13 @@ public class ImageBot extends AndroidNonvisibleComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "256")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Size")
   public void Size(int size) {
     this.size = size;
   }
 
   @SimpleProperty
+  @JsProperty(name = "Size")
   public int Size() {
     return size;
   }
@@ -295,6 +304,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    * @param description a description of the image to create
    */
   @SimpleFunction
+  @JsMethod(name = "CreateImage")
   public void CreateImage(final String description) {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
@@ -313,6 +323,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    * @param description the description of how to edit the image
    */
   @SimpleFunction
+  @JsMethod(name = "EditImage")
   @Deprecated
   public void EditImage(Object source, final String description) {
     try {
@@ -350,6 +361,7 @@ public class ImageBot extends AndroidNonvisibleComponent {
    * @param prompt      the description of how to edit the image
    */
   @SimpleFunction
+  @JsMethod(name = "EditImageWithMask")
   public void EditImageWithMask(Object imageSource, Object maskSource, final String prompt) {
     try {
       final Bitmap bitmap = loadImage(imageSource);
