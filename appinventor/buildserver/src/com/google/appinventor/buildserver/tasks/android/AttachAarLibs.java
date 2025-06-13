@@ -44,16 +44,27 @@ public class AttachAarLibs implements AndroidTask {
 
     // walk components list for libraries ending in ".aar"
     try {
-      for (Set<String> libs : context.getComponentInfo().getLibsNeeded().values()) {
-        Iterator<String> i = libs.iterator();
+      for (String type : context.getComponentInfo().getLibsNeeded().keySet()) {
+        Iterator<String> i = context.getComponentInfo().getLibsNeeded().get(type).iterator();
         while (i.hasNext()) {
           String libname = i.next();
+          String sourcePath = "";
           if (libname.endsWith(".aar")) {
             i.remove();
             if (!processedLibs.contains(libname)) {
+              if (context.getSimpleCompTypes().contains(type) || "ANDROID".equals(type)) {
+                final String pathSuffix = context.getResources().getRuntimeFilesDir() + libname;
+                sourcePath = context.getResource(pathSuffix);
+              } else if (context.getExtCompTypes().contains(type)) {
+                final String pathSuffix = "/aars/" + libname;
+                sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
+                    context.getExtTypePathCache()) + pathSuffix;
+              } else {
+                context.getReporter().error("Unknown component type: " + type, true);
+                return TaskResult.generateError("Error while attaching AAR libraries");
+              }
               // explode libraries into ${buildDir}/exploded-aars/<package>/
-              AARLibrary aarLib = new AARLibrary(new File(context.getResource(
-                  context.getResources().getRuntimeFilesDir() + libname)));
+              AARLibrary aarLib = new AARLibrary(new File(sourcePath));
               aarLib.unpackToDirectory(explodedBaseDir);
               context.getComponentInfo().getExplodedAarLibs().add(aarLib);
               processedLibs.add(libname);
