@@ -30,6 +30,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
@@ -42,14 +43,10 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocks
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -74,6 +71,11 @@ public final class YaBlocksEditor extends FileEditor
     BlocklyWorkspaceChangeListener, ProjectChangeListener {
 
   private static final Logger LOG = Logger.getLogger(YaBlocksEditor.class.getName());
+
+  private static final String BLOCKLY_SOURCE_EXTENSION =
+      YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+  private static final String YAIL_EXTENSION =
+      YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
   // A constant to substract from the total height of the Viewer window, set through
   // the computed height of the user's window (Window.getClientHeight())
@@ -579,8 +581,7 @@ public final class YaBlocksEditor extends FileEditor
 
   private String yailFileName() {
     String fileId = getFileId();
-    return fileId.replace(YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION,
-        YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION);
+    return fileId.replace(BLOCKLY_SOURCE_EXTENSION, YAIL_EXTENSION);
   }
 
   // FormChangeListener implementation

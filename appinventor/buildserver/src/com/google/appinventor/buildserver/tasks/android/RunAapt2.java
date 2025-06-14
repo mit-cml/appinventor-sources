@@ -7,19 +7,23 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.context.AndroidPaths;
 import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
+import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 @BuildType(aab = true)
 public class RunAapt2 implements AndroidTask {
+  private static final String ASSETS_FOLDER =
+      YoungAndroidStructureConstants.ASSETS_FOLDER;
+
   CompilerContext<AndroidPaths> context;
   File resourcesZip;
 
@@ -31,8 +35,7 @@ public class RunAapt2 implements AndroidTask {
     ExecutorUtils.createDir(buildDir, "generated/src");
     final File symbolOutputDir = ExecutorUtils.createDir(buildDir, "generated/symbols");
     // Need to make sure assets directory exists otherwise aapt2 will fail.
-    context.getPaths().setAssetsDir(
-        ExecutorUtils.createDir(buildDir, YoungAndroidConstants.ASSET_DIR_NAME));
+    context.getPaths().setAssetsDir(ExecutorUtils.createDir(buildDir, ASSETS_FOLDER));
 
     String aapt2Tool = context.getResources().aapt2();
     if (aapt2Tool == null) {

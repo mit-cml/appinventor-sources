@@ -25,6 +25,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -39,7 +40,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNo
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.json.client.JSONException;
@@ -73,6 +73,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     ComponentDatabaseChangeListener {
 
   private static final Logger LOG = Logger.getLogger(YaProjectEditor.class.getName());
+
+  private static final String FORM_PROPERTIES_EXTENSION =
+      YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 
   @UiTemplate("YaProjectEditorClassic.ui.xml")
   interface ClassicUi extends UiBinder<FlowPanel, YaProjectEditor> {}
@@ -406,8 +409,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return new Comparator<String>() {
       @Override
       public int compare(String fileId1, String fileId2) {
-        boolean isForm1 = fileId1.endsWith(YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION);
-        boolean isForm2 = fileId2.endsWith(YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION);
+        boolean isForm1 = fileId1.endsWith(FORM_PROPERTIES_EXTENSION);
+        boolean isForm2 = fileId2.endsWith(FORM_PROPERTIES_EXTENSION);
 
         // Give priority to screen1.
         if (YoungAndroidSourceNode.isScreen1(fileId1)) {

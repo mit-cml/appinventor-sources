@@ -7,11 +7,11 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
-import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
 
+import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.common.io.Files;
 
 import java.io.File;
@@ -24,13 +24,17 @@ import java.io.IOException;
 
 @BuildType(apk = true, aab = true)
 public class AttachCompAssets implements AndroidTask {
+
+  private static final String ASSETS_FOLDER =
+      YoungAndroidStructureConstants.ASSETS_FOLDER;
+
   @Override
   public TaskResult execute(AndroidCompilerContext context) {
     try {
       // Gather non-library assets to be added to apk's Asset directory.
       // The assets directory have been created before this.
       File mergedAssetDir = ExecutorUtils.createDir(context.getProject().getBuildDirectory(),
-          YoungAndroidConstants.ASSET_DIR_NAME);
+          ASSETS_FOLDER);
 
       // Copy component/extension assets to build/assets
       for (String type : context.getComponentInfo().getAssetsNeeded().keySet()) {
@@ -44,8 +48,7 @@ public class AttachCompAssets implements AndroidTask {
           } else if (context.getExtCompTypes().contains(type)) {
             final String extCompDir = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
                 context.getExtTypePathCache());
-            sourcePath = extCompDir + File.separator + YoungAndroidConstants.ASSET_DIR_NAME
-                + File.separator + assetName;
+            sourcePath = extCompDir + File.separator + ASSETS_FOLDER + File.separator + assetName;
             // If targetDir's location is changed here, you must update Form.java in components to
             // reference the new location. The path for assets in compiled apps is assumed to be
             // assets/EXTERNAL-COMP-PACKAGE/ASSET-NAME

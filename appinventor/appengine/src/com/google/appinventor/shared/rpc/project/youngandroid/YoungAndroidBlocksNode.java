@@ -1,7 +1,6 @@
 package com.google.appinventor.shared.rpc.project.youngandroid;
 
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 
 
 /**
@@ -28,11 +27,11 @@ public final class YoungAndroidBlocksNode extends YoungAndroidSourceNode {
 
   public static String getCodeblocksFileId(String qualifiedName) {
     return SRC_PREFIX + qualifiedName.replace('.', '/')
-        + YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
+        + CODEBLOCKS_SOURCE_EXTENSION;
   }
 
   public static String getBlocklyFileId(String qualifiedName) {
     return SRC_PREFIX + qualifiedName.replace('.', '/')
-        + YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION;
+        + BLOCKLY_SOURCE_EXTENSION;
   }
 }

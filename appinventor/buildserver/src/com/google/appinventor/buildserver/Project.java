@@ -6,6 +6,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -119,6 +120,9 @@ public final class Project {
   private static final String DEFAULT_COLOR_PRIMARY_DARK = "#41521C";
   private static final String DEFAULT_COLOR_ACCENT = "#00728A";
   private static final String DEFAULT_COLOR_THEME = "Classic";
+
+  private static final String YAIL_EXTENSION =
+      YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
   // Table containing project properties
   private Properties properties;
@@ -400,10 +404,10 @@ public final class Project {
       }
     } else {
       // Add Young Android source files to the source file list
-      if (file.getName().endsWith(YoungAndroidConstants.YAIL_EXTENSION)) {
+      if (file.getName().endsWith(YAIL_EXTENSION)) {
         String absName = file.getAbsolutePath();
         String name = absName.substring(root.length() + 1, absName.length() -
-            YoungAndroidConstants.YAIL_EXTENSION.length());
+            YAIL_EXTENSION.length());
         sources.add(new SourceDescriptor(name.replace(File.separatorChar, '.'), file));
       }
     }

@@ -10,6 +10,7 @@ import static com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAnd
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 
+import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
@@ -27,7 +28,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -93,6 +93,9 @@ public class ProjectServiceTest {
       "{\"$Name\":\"Label1\",\"$Type\":\"Label\",\"Uuid\":\"-456\",\"Text\":\"Liz\"}" +
       "]}}\n" +
       "|#";
+
+  private static final String FORM_PROPERTIES_EXTENSION =
+      YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 
   private StorageIo storageIo;
   private ProjectServiceImpl projectServiceImpl;   // for USER_ID_ONE
@@ -173,7 +176,7 @@ public class ProjectServiceTest {
     // got changed (and not the one of the same name owned by the first user)
     ProjectRootNode user1Project1Root = projectServiceImpl.getProject(user1Project1);
     String user1Project1Source1FileId = findFileIdByName(user1Project1Root,
-        YOUNG_ANDROID_FORM_NAME + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION);
+        YOUNG_ANDROID_FORM_NAME + FORM_PROPERTIES_EXTENSION);
     assertNotNull(user1Project1Source1FileId);
 
     String user1Project1Source1 = projectServiceImpl.load(user1Project1,
@@ -190,7 +193,7 @@ public class ProjectServiceTest {
 
     ProjectRootNode user2Project1Root = projectServiceImpl2.getProject(user2Project1);
     String user2Project1Source1FileId = findFileIdByName(user2Project1Root,
-        YOUNG_ANDROID_FORM_NAME + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION);
+        YOUNG_ANDROID_FORM_NAME + FORM_PROPERTIES_EXTENSION);
     assertNotNull(user2Project1Source1FileId);
 
     Assert.assertNotEquals(YOUNG_ANDROID_COMMENT, projectServiceImpl2.load(user2Project1,
@@ -206,7 +209,7 @@ public class ProjectServiceTest {
     assertTrue(user1Projects.length == 2);
     ProjectRootNode user1Project2Root = projectServiceImpl.getProject(user1Project2);
     String user1Project2Source1FileId = findFileIdByName(user1Project2Root,
-        YOUNG_ANDROID_FORM_NAME + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION);
+        YOUNG_ANDROID_FORM_NAME + FORM_PROPERTIES_EXTENSION);
     assertNotNull(user1Project2Source1FileId);
 
     // Load and save multiple files
