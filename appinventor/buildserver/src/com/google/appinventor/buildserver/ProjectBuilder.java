@@ -139,7 +139,12 @@ public final class ProjectBuilder {
         File buildTmpDir = new File(projectRoot, "build/tmp");
         buildTmpDir.mkdirs();
 
-        Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory(), projectRoot);
+        // Make sure to skip any file not in the src/ directory, to avoid corrupted AIAs
+        //   containing scm or bky in the assets directory.
+        String sourcePrefix = new File(projectRoot, "src").getAbsolutePath() + SEPARATOR;
+
+        Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory(),
+            sourcePrefix);
         if (isForCompanion) {
           componentTypes.addAll(getAllComponentTypes());
         }
@@ -150,10 +155,10 @@ public final class ProjectBuilder {
         ComponentBlocksExtractor componentBlocksExtractor = new ComponentBlocksExtractor();
         PermissionBlockExtractor permissionBlockExtractor = new PermissionBlockExtractor();
         ScopeBlockExtractor scopeBlockExtractor = new ScopeBlockExtractor();
-        analyzeBlockFiles(sourceFiles, componentBlocksExtractor, permissionBlockExtractor,
-            scopeBlockExtractor);
+        analyzeBlockFiles(sourceFiles, sourcePrefix, componentBlocksExtractor,
+            permissionBlockExtractor, scopeBlockExtractor);
         Map<String, Set<String>> componentBlocks = componentBlocksExtractor.getResult();
-        Map<String, Set<String>> componentProperties = getComponentDesignerProperties(sourceFiles);
+        Map<String, Set<String>> componentProperties = getComponentDesignerProperties(sourceFiles, sourcePrefix);
         mergeMaps(componentBlocks, componentProperties);
         Set<String> extraPermissions = permissionBlockExtractor.getResult();
         Set<String> usedScopes = scopeBlockExtractor.getResult();
@@ -271,13 +276,9 @@ public final class ProjectBuilder {
     return result;
   }
 
-  private static Set<String> getComponentTypes(List<String> files, File assetsDir, File projectRoot)
+  private static Set<String> getComponentTypes(List<String> files, File assetsDir, String sourcePrefix)
       throws IOException, JSONException {
     Map<String, String> nameTypeMap = createNameTypeMap(assetsDir);
-
-    // Make sure to skip any .scm file not in the src/ directory, to avoid corrupted AIAs
-    //   containing extensions.
-    String sourcePrefix = new File(projectRoot, "src").getAbsolutePath() + SEPARATOR;
 
     Set<String> componentTypes = Sets.newHashSet();
     for (String f : files) {
@@ -293,10 +294,10 @@ public final class ProjectBuilder {
     return componentTypes;
   }
 
-  private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
+  private static void analyzeBlockFiles(List<String> files, String sourcePrefix, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
     for (String f : files) {
-      if (f.endsWith(".bky")) {
+      if (f.startsWith(sourcePrefix) && f.endsWith(".bky")) {
         File bkyFile = new File(f);
         String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
         FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
@@ -315,11 +316,11 @@ public final class ProjectBuilder {
    * @throws IOException if any of the files named in {@code files} cannot be
    *                     read
    */
-  private static Map<String, Set<String>> getComponentDesignerProperties(List<String> files)
+  private static Map<String, Set<String>> getComponentDesignerProperties(List<String> files, String sourcePrefix)
       throws IOException {
     Map<String, Set<String>> result = new HashMap<>();
     for (String f : files) {
-      if (f.endsWith(".scm")) {
+      if (f.startsWith(sourcePrefix) && f.endsWith(".scm")) {
         File scmFile = new File(f);
         String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
         for (Map.Entry<String, Set<String>> entry :
