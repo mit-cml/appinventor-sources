@@ -239,15 +239,19 @@ public final class MockForm extends MockContainer {
       if (size == 0) {
         bar.removeStyleDependentName("iPad");
         bar.addStyleDependentName("iPhone");
-        phoneBarLeftPanel.remove(blackIcons ? whiteIconsLeft : blackIconsLeft);
-        phoneBarRightPanel.remove(blackIcons ? whiteIconsRight : blackIconsRight);
+        phoneBarLeftPanel.remove(whiteIconsLeft);
+        phoneBarLeftPanel.remove(blackIconsLeft);
+        phoneBarRightPanel.remove(whiteIconsRight);
+        phoneBarRightPanel.remove(blackIconsRight);
         phoneBarLeftPanel.add(blackIcons ? blackIconsLeft : whiteIconsLeft);
         phoneBarRightPanel.add(blackIcons ? blackIconsRight : whiteIconsRight);
       } else {
         bar.removeStyleDependentName("iPhone");
         bar.addStyleDependentName("iPad");
-        iPadPhoneBarLeftPanel.remove(blackIcons? iPadWhiteIconsLeft : iPadBlackIconsLeft);
-        iPadPhoneBarRightPanel.remove(blackIcons ? iPadWhiteIconsRight : iPadBlackIconsRight);
+        iPadPhoneBarLeftPanel.remove(iPadWhiteIconsLeft);
+        iPadPhoneBarLeftPanel.remove(iPadBlackIconsLeft);
+        iPadPhoneBarRightPanel.remove(iPadWhiteIconsRight);
+        iPadPhoneBarRightPanel.remove(iPadBlackIconsRight);
         iPadPhoneBarLeftPanel.add(blackIcons ? iPadBlackIconsLeft : iPadWhiteIconsLeft);
         iPadPhoneBarRightPanel.add(blackIcons? iPadBlackIconsRight : iPadWhiteIconsRight);
       }
