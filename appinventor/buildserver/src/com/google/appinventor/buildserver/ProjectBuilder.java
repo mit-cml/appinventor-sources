@@ -18,6 +18,7 @@ import com.google.appinventor.buildserver.context.Paths;
 import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.buildserver.tasks.common.BuildFactory;
 import com.google.appinventor.buildserver.util.Execution;
+import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 
 import com.google.appinventor.buildserver.util.ProjectUtils;
 import com.google.appinventor.common.utils.StringUtils;
@@ -78,12 +79,14 @@ public final class ProjectBuilder {
   // They should probably be in some place shared with the server
   private static final String KEYSTORE_FILE_NAME = YoungAndroidConstants.PROJECT_KEYSTORE_LOCATION;
 
+  private static final String SRC_FOLDER_NAME =
+      YoungAndroidStructureConstants.SRC_FOLDER;
   private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidConstants.FORM_PROPERTIES_EXTENSION;
-  private static final String YAIL_EXTENSION = YoungAndroidConstants.YAIL_EXTENSION;
-
-  private static final String BLOCKS_SOURCE_EXTENSION =
-      YoungAndroidConstants.BLOCKS_SOURCE_EXTENSION;
+      YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+  private static final String YAIL_EXTENSION =
+      YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+  private static final String BLOCKLY_SOURCE_EXTENSION =
+      YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
 
   private static final String ALL_COMPONENT_TYPES = RUNTIME_FILES_DIR + "simple_components.txt";
 
@@ -207,7 +210,7 @@ public final class ProjectBuilder {
 
         // Retrieve compiler messages and convert to HTML and log
         String srcPath = projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_DIRECTORY + SEPARATOR
-            + ".." + SEPARATOR + "src" + SEPARATOR;
+            + ".." + SEPARATOR + SRC_FOLDER_NAME + SEPARATOR;
         String messages = processCompilerOutput(context.getReporter().getSystemOutput(),
             srcPath);
 
@@ -292,7 +295,7 @@ public final class ProjectBuilder {
   private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
     for (String f : files) {
-      if (f.endsWith(BLOCKS_SOURCE_EXTENSION)) {
+      if (f.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
         File bkyFile = new File(f);
         String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
         FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
@@ -454,7 +457,7 @@ public final class ProjectBuilder {
 
           // If the error/warning is in a yail file, generate a div and append it to the
           // StringBuilder.
-          if (filename.endsWith(YoungAndroidConstants.YAIL_EXTENSION)) {
+          if (filename.endsWith(YAIL_EXTENSION)) {
             skippedErrorOrWarning = false;
             sb.append("<div><span class='" + spanClass + "'>" + kind + "</span>: " +
                 StringUtils.escape(filename) + " line " + lineNumber + ": " +

@@ -2,7 +2,6 @@
 package com.google.appinventor.shared.rpc.project.youngandroid;
 
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 
 
 /**
@@ -30,6 +29,6 @@ public final class YoungAndroidYailNode extends YoungAndroidSourceNode {
 
   public static String getYailFileId(String qualifiedName) {
     return SRC_PREFIX + qualifiedName.replace('.', '/') 
-        + YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION;
+        + YAIL_EXTENSION;
   }
 }
