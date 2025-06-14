@@ -448,4 +448,11 @@ public class PropertyTypeConstants {
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
+
+  /**
+   * Personal Image Classifier and Personal Audio classifier component property editor
+   */
+
+  public static final String PROPERTY_TYPE_IMAGE_CLASSIFIER = "image_classifier_model";
+  public static final String PROPERTY_TYPE_AUDIO_CLASSIFIER = "audio_classifier_model";
 }
