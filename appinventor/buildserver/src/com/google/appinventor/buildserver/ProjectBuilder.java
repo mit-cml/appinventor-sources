@@ -82,8 +82,8 @@ public final class ProjectBuilder {
       YoungAndroidConstants.FORM_PROPERTIES_EXTENSION;
   private static final String YAIL_EXTENSION = YoungAndroidConstants.YAIL_EXTENSION;
 
-  private static final String CODEBLOCKS_SOURCE_EXTENSION =
-      YoungAndroidConstants.CODEBLOCKS_SOURCE_EXTENSION;
+  private static final String BLOCKS_SOURCE_EXTENSION =
+      YoungAndroidConstants.BLOCKS_SOURCE_EXTENSION;
 
   private static final String ALL_COMPONENT_TYPES = RUNTIME_FILES_DIR + "simple_components.txt";
 
@@ -139,12 +139,7 @@ public final class ProjectBuilder {
         File buildTmpDir = new File(projectRoot, "build/tmp");
         buildTmpDir.mkdirs();
 
-        // Make sure to skip any file not in the src/ directory, to avoid corrupted AIAs
-        //   containing scm or bky in the assets directory.
-        String sourcePrefix = new File(projectRoot, "src").getAbsolutePath() + SEPARATOR;
-
-        Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory(),
-            sourcePrefix);
+        Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory());
         if (isForCompanion) {
           componentTypes.addAll(getAllComponentTypes());
         }
@@ -155,10 +150,10 @@ public final class ProjectBuilder {
         ComponentBlocksExtractor componentBlocksExtractor = new ComponentBlocksExtractor();
         PermissionBlockExtractor permissionBlockExtractor = new PermissionBlockExtractor();
         ScopeBlockExtractor scopeBlockExtractor = new ScopeBlockExtractor();
-        analyzeBlockFiles(sourceFiles, sourcePrefix, componentBlocksExtractor,
-            permissionBlockExtractor, scopeBlockExtractor);
+        analyzeBlockFiles(sourceFiles, componentBlocksExtractor, permissionBlockExtractor,
+            scopeBlockExtractor);
         Map<String, Set<String>> componentBlocks = componentBlocksExtractor.getResult();
-        Map<String, Set<String>> componentProperties = getComponentDesignerProperties(sourceFiles, sourcePrefix);
+        Map<String, Set<String>> componentProperties = getComponentDesignerProperties(sourceFiles);
         mergeMaps(componentBlocks, componentProperties);
         Set<String> extraPermissions = permissionBlockExtractor.getResult();
         Set<String> usedScopes = scopeBlockExtractor.getResult();
@@ -276,13 +271,13 @@ public final class ProjectBuilder {
     return result;
   }
 
-  private static Set<String> getComponentTypes(List<String> files, File assetsDir, String sourcePrefix)
+  private static Set<String> getComponentTypes(List<String> files, File assetsDir)
       throws IOException, JSONException {
     Map<String, String> nameTypeMap = createNameTypeMap(assetsDir);
 
     Set<String> componentTypes = Sets.newHashSet();
     for (String f : files) {
-      if (f.startsWith(sourcePrefix) && f.endsWith(".scm")) {
+      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
         File scmFile = new File(f);
         String scmContent = new String(Files.toByteArray(scmFile),
             PathUtil.DEFAULT_CHARSET);
@@ -294,10 +289,10 @@ public final class ProjectBuilder {
     return componentTypes;
   }
 
-  private static void analyzeBlockFiles(List<String> files, String sourcePrefix, BlockXmlAnalyzer<?>... analyzers)
+  private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
     for (String f : files) {
-      if (f.startsWith(sourcePrefix) && f.endsWith(".bky")) {
+      if (f.endsWith(BLOCKS_SOURCE_EXTENSION)) {
         File bkyFile = new File(f);
         String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
         FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
@@ -316,11 +311,11 @@ public final class ProjectBuilder {
    * @throws IOException if any of the files named in {@code files} cannot be
    *                     read
    */
-  private static Map<String, Set<String>> getComponentDesignerProperties(List<String> files, String sourcePrefix)
+  private static Map<String, Set<String>> getComponentDesignerProperties(List<String> files)
       throws IOException {
     Map<String, Set<String>> result = new HashMap<>();
     for (String f : files) {
-      if (f.startsWith(sourcePrefix) && f.endsWith(".scm")) {
+      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
         File scmFile = new File(f);
         String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
         for (Map.Entry<String, Set<String>> entry :

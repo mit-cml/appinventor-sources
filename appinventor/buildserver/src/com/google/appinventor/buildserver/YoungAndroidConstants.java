@@ -28,9 +28,9 @@ public class YoungAndroidConstants {
 
   /**
    * The filename extension for the file which contains block metadata to be
-   * consumed by codeblocks.
+   * consumed by Blockly.
    */
-  public static final String CODEBLOCKS_SOURCE_EXTENSION = ".blk";
+  public static final String BLOCKS_SOURCE_EXTENSION = ".bky";
 
   /**
    * The filename for a project's keystore, relative to the directory that contains the

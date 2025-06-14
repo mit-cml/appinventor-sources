@@ -75,7 +75,12 @@ public class ProjectUtils {
    */
   public static List<String> extractProjectFiles(ZipFile inputZip, File projectRoot)
       throws IOException {
-    List<String> projectFileNames = new ArrayList<>();
+    // Make sure to skip returning any file not in the src/ directory, to avoid corrupted AIAs
+    //   containing scm or bky in the assets' directory.
+    String sourcePrefix = new File(projectRoot, "src").getAbsolutePath() + SEPARATOR;
+
+    List<String> projectSourceFileNames = new ArrayList<>();
+
     Enumeration<? extends ZipEntry> inputZipEnumeration = inputZip.entries();
     while (inputZipEnumeration.hasMoreElements()) {
       ZipEntry zipEntry = inputZipEnumeration.nextElement();
@@ -90,9 +95,14 @@ public class ProjectUtils {
             }
           },
           extractedFile);
-      projectFileNames.add(extractedFile.getPath());
+
+      String extractedFilePath = extractedFile.getPath();
+      if (extractedFilePath.startsWith(sourcePrefix)) {
+        projectSourceFileNames.add(extractedFile.getPath());
+      }
     }
-    return projectFileNames;
+
+    return projectSourceFileNames;
   }
 
   /**
