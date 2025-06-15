@@ -6,6 +6,8 @@
 
 package com.google.appinventor.server.storage;
 
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
@@ -68,8 +70,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
-
-import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;

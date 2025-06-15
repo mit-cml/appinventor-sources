@@ -255,17 +255,15 @@ public class DownloadServlet extends OdeServlet {
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_SOURCE);
         String projectTitle = (uriComponents.length > PROJECT_TITLE_INDEX) ?
-                uriComponents[PROJECT_TITLE_INDEX] : null;
-        final boolean includeProjectHistory = true;
+          uriComponents[PROJECT_TITLE_INDEX] : null;
         String zipName = (projectTitle == null) ? null :
-                StringUtils.normalizeForFilename(projectTitle) + ".aia";
+          StringUtils.normalizeForFilename(projectTitle) + ".aia";
         // Set includeYail to true by default to ensure downloaded file has yail file on hand.
         boolean includeYail = true;
-        boolean includeScreenShots = includeYail;
         StorageIoInstanceHolder.getInstance().assertUserHasProject(userId, projectId);
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-                projectId, includeProjectHistory, false, zipName, includeYail,
-                includeScreenShots, false, false, false, true);
+          projectId, false, false, zipName, includeYail,
+          false, false, false, false, true);
         downloadableFile = zipFile.getRawFile();
       } else {
         throw new IllegalArgumentException("Unknown download kind: " + downloadKind);

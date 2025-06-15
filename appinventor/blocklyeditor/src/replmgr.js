@@ -1141,10 +1141,10 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         case "startCache":
             top.BlocklyPanel_startCache().then((success) => {
                 if (!success) {
-                    console.log("Failed to cache project.");
+                    runtimeerr("Failed to cache project");
                 }})
                 .catch((error) => {
-                    console.log("Error while caching project: " + error);
+                    runtimeerr("Encountered issue while caching project: " + error);
                 });
             break;
         case "error":
@@ -1888,6 +1888,7 @@ Blockly.ReplMgr.getCookie = function() {
     }
     return cookie;
 };
+
 Blockly.ReplMgr.connectCache = function(projectId, projectName) {
     if (top.ReplState === undefined)
         return false;
@@ -1903,7 +1904,6 @@ Blockly.ReplMgr.connectCache = function(projectId, projectName) {
     this.putYail.putAsset(yail)
     return true;
 }
-
 
 Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, force) {
     if (top.ReplState === undefined)

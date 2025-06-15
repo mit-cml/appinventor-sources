@@ -18,12 +18,12 @@ import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.Promise.WrappedException;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
-import com.google.appinventor.client.utils.Promise;
-import com.google.appinventor.client.utils.Promise.WrappedException;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
@@ -42,7 +42,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.Command;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -319,31 +318,29 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static Promise<Boolean> startCache() {
     return new Promise<Boolean>((resolve, reject) -> {
-      // TODO Return a promise, do-then, resolve promise on next command to generate yail
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      
+
       ChainableCommand cmd = new SaveAllEditorsCommand(
         new GenerateYailCommand(
           new ChainableCommand() {
-                  @Override
-                  public void execute(ProjectNode projectRootNode) {
-                    try {
-                      long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
-                      String projectName = Ode.getCurrentProject().getProjectName();
-                      boolean result = connectCache(Long.toString(projectId), projectName);
-                      resolve.apply(result);
-                    } catch (WrappedException e) {
-                      reject.apply(new WrappedException(e));
-                    } 
-                  }
-                  @Override
-                  public boolean willCallExecuteNextCommand() {
-                    return false;
-                  }
-                })
-                );
+            @Override
+            public void execute(ProjectNode projectRootNode) {
+              try {
+                long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+                String projectName = Ode.getCurrentProject().getProjectName();
+                boolean result = connectCache(Long.toString(projectId), projectName);
+                resolve.apply(result);
+              } catch (WrappedException e) {
+                reject.apply(new WrappedException(e));
+              }
+            }
+            @Override
+            public boolean willCallExecuteNextCommand() {
+              return false;
+            }
+          })
+      );
       final ChainableCommand finalCmd = cmd;
-      // TODO make a new tracking type for project downloads
       finalCmd.startExecuteChain(Tracking.PROJECT_ACTION_CACHE_PROJECT, projectRootNode, null);       
     });
     
@@ -650,7 +647,7 @@ public class BlocklyPanel extends HTMLPanel {
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::pushScreen(Ljava/lang/String;));
     $wnd.BlocklyPanel_popScreen =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::popScreen());
-    $wnd.BlocklyPanel_startCache = 
+    $wnd.BlocklyPanel_startCache =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::startCache());
     $wnd.BlocklyPanel_createDialog =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
