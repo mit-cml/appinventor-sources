@@ -61,7 +61,7 @@ import GEOSwift
   }
 
   @objc open func LoadFromURL(_ url: String) {
-    Alamofire.request(url).validate(statusCode: 200...200).responseJSON { response in
+    AF.request(url).validate(statusCode: 200...200).responseJSON { response in
       switch response.result {
       case .success(let data):
         if let json = data as? [String: Any],
