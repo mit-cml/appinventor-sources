@@ -355,7 +355,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (node != null && node.Anchor() == null) {
                 Log.d(LOG_TAG, "Creating default anchor for " + node);
                 // TBD handle if anchor is loaded from a db
-                node.Anchor(CreateDefaultAnchor()); // assign an anchor if there isn't one
+
+                node.Anchor(CreateDefaultAnchor(node.PoseFromPropertyPosition())); // assign an anchor if there isn't one
             }
         }
     }
@@ -733,9 +734,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     // Create a default anchor for placing objects
-    public Anchor CreateDefaultAnchor() {
-        float[] position = {0f, 0f, 1};
-        float[] rotation = {0, 2, -2, 1};
+    public Anchor CreateDefaultAnchor(float[] defaultOrFromProperty) {
+        float[] position = defaultOrFromProperty;
+        float[] rotation = {0, 0, 0, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
         Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
 

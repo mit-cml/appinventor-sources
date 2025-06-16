@@ -59,6 +59,7 @@ public final class AR3DFactory {
      void Pose(Object o);
      void PoseFromPropertyPosition(String positionFromProperty) ;
      void PoseFromPropertyPositions(String x, String y, String z) ;
+     float[] PoseFromPropertyPosition();
 
      YailDictionary PoseToYailDictionary();
      YailDictionary ARNodeToYail();

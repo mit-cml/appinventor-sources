@@ -40,6 +40,7 @@ import android.util.Log;
   @SimpleObject
   public final class ModelNode extends ARNodeBase implements ARModel {
 
+    private float[] fromPropertyPosition = {0f,0f,0f};
     private Anchor anchor = null;
     private Trackable trackable = null;
     private String objectModel = "";
@@ -50,6 +51,7 @@ import android.util.Log;
       super(container);
       container.addNode(this);
     }
+
     @Override // wht is the significance?
     public Anchor Anchor() { return this.anchor; }
 
@@ -62,11 +64,15 @@ import android.util.Log;
     @Override
     public void Trackable(Trackable t) { this.trackable = t;}
 
-    @Override
+
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
     @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
             "sizing properties.  Values less than zero will be treated as their absolute value.")
     public float Scale() {return this.scale;}
+
+    @Override
+    @SimpleProperty(description = "set scale of the node")
+    public void Scale(float scale) { this.scale = scale;}
 
     @Override
     @SimpleProperty(description = "The 3D model file to be loaded.",
@@ -98,13 +104,38 @@ import android.util.Log;
 
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +
-            "specified (x,y,z) position.")
-    public void MoveTo(float x, float y, float z){
+        "specified (x,y,z) position.")
+    public void MoveBy(float x, float y, float z){
+
+      float[] position = { 0, 0, 0};
+      float[] rotation = {0, 0, 0, 1};
+
+      //float[] currentAnchorPoseRotation = rotation;
+
+      if (this.Anchor() != null) {
+        float[] translations = this.Anchor().getPose().getTranslation();
+        position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
+        //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+      }
+
+      Pose newPose = new Pose(position, rotation);
+      if (this.trackable != null){
+          Anchor(this.trackable.createAnchor(newPose));
+            Log.i("modelnode","moved anchor BY " + newPose+ " with rotaytion "+rotation);
+      }else {
+        Log.i("capsule", "tried to move anchor BY pose");
+      }
+  }
+
+
+  @Override
+  @SimpleFunction(description = "Changes the node's position by (x,y,z).")
+  public void MoveTo(float x, float y, float z) {
       float[] position = {x, y, z};
       float[] rotation = {0, 0, 0, 1};
 
       float[] currentAnchorPoseRotation = rotation;
-      if (this.Anchor() != null) {
+        if (this.Anchor() != null) {
         //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
       }
       Pose newPose = new Pose(position, rotation);
@@ -114,34 +145,40 @@ import android.util.Log;
       }else {
         Log.i("capsule", "tried to move anchor to pose");
       }
-    }
-    @Override
-    @SimpleFunction(description = "move a capsule node properties at the " +
-            "specified (x,y,z) position.")
-    public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
-      this.trackable = (Trackable) targetPlane.DetectedPlane();
-      if (this.anchor != null) {
-        this.anchor.detach();
-      }
-      Anchor(this.trackable.createAnchor((Pose) p));
-      Log.i("created Model Anchor!", " ");
-    }
+  }
 
 
-    @Override
-    @SimpleProperty(description = "Returns a list of the names of all nodes in the model.  " +
-      "If the model did not name a node, then the node will be named by the component Name and " +
-      "number, such as ModelNode1-1.")
-    public List<String> NamesOfNodes() { return new ArrayList<String>(); }
+  @Override
+  @SimpleFunction(description = "move a capsule node properties at the " +
+          "specified (x,y,z) position.")
+  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
+    this.trackable = (Trackable) targetPlane.DetectedPlane();
+    if (this.anchor != null) {
+      this.anchor.detach();
+    }
+    Anchor(this.trackable.createAnchor((Pose) p));
+    Log.i("created Model Anchor!", " ");
+  }
+
+
+  @Override
+  @SimpleProperty(description = "Returns a list of the names of all nodes in the model.  " +
+    "If the model did not name a node, then the node will be named by the component Name and " +
+    "number, such as ModelNode1-1.")
+  public List<String> NamesOfNodes() { return new ArrayList<String>(); }
+
+
+  //use for default positions when node isn't trackable yet
+  @Override
+  public float[] PoseFromPropertyPosition(){ return fromPropertyPosition; }
+
+
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
       category = PropertyCategory.APPEARANCE)
   @Override
   public void PoseFromPropertyPosition(String positionFromProperty) {
-    Log.i("setting model pose", "with position" +positionFromProperty);
-
-
     String[] positionArray = positionFromProperty.split(",");
     float[] position = {0f,0f,0f};
 
@@ -149,11 +186,13 @@ import android.util.Log;
       position[i] = Float.parseFloat(positionArray[i]);
     }
     float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
+
+    this.fromPropertyPosition = position;
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
-    Log.i("set model pose", "with position" +positionFromProperty);
+    Log.i("store model pose", "with position" +positionFromProperty);
   }
 
   /*@Override
