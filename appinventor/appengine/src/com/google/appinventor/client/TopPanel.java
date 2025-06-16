@@ -11,8 +11,6 @@ import static com.google.appinventor.client.Ode.getSystemConfig;
 
 import com.google.appinventor.client.actions.SelectLanguage;
 
-import com.google.appinventor.client.boxes.MotdBox;
-
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 
@@ -22,10 +20,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -165,13 +160,6 @@ public class TopPanel extends Composite {
    */
   public void showUserEmail(String email) {
     accountButton.setCaption(email);
-  }
-
-  /**
-   * Adds the MOTD box to the right panel. This should only be called once.
-   */
-  public void showMotd() {
-    rightPanel.add(MotdBox.getMotdBox());
   }
 
   private static class WindowOpenClickHandler implements ClickHandler {
