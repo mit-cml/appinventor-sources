@@ -15,6 +15,7 @@
 - (void)assetTransferred:(nonnull NSString *)name;
 - (void)extensionsLoaded;
 - (nonnull NSString *)fetch:(BOOL)block;
+- (void)startCache;
 
 @property BOOL usingWebRTC;
 

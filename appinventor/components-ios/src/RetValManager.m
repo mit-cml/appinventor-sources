@@ -133,4 +133,9 @@ static RetValManager *_manager = nil;
   return self;  // we don't want copies of a singleton!
 }
 
+- (void) startCache {
+  NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary: @{@"status": @"OK", @"type": @"startCache"}];
+  [self addResult:output];
+}
+
 @end

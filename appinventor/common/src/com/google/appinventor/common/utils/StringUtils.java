@@ -346,4 +346,15 @@ public final class StringUtils {
   public static boolean isNullOrEmpty(final String text) {
      return text == null || text.isEmpty();
   }
+
+  /**
+   * Returns the package name part of an dot-qualified class name.
+   *
+   * @param qualifiedName  qualified class name
+   * @return  package name
+   */
+  public static String getPackageName(String qualifiedName) {
+    int index = qualifiedName.lastIndexOf('.');
+    return index < 0 ? "" : qualifiedName.substring(0, index);
+  }
 }

@@ -5,7 +5,7 @@
 
 package com.google.appinventor.buildserver.context;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.common.collect.Sets;
