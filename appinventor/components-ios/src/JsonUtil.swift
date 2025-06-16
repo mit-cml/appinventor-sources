@@ -6,7 +6,7 @@
 import Foundation
 
 // let numberRegex = NSRegularExpression(pattern: "-?[1-9]?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?")
-func getJsonRepresentation(_ object: AnyObject?) throws -> String {
+public func getJsonRepresentation(_ object: AnyObject?) throws -> String {
   guard let object = object else {
     return "null"
   }
@@ -19,7 +19,7 @@ func getJsonRepresentation(_ object: AnyObject?) throws -> String {
   return String(data: trimmed, encoding: .utf8)!
 }
 
-func getObjectFromJson(_ json: String?) throws -> AnyObject? {
+public func getObjectFromJson(_ json: String?) throws -> AnyObject? {
   guard let jsonString = json else {
     return "" as NSString
   }

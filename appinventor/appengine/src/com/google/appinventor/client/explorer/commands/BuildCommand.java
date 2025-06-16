@@ -36,6 +36,8 @@ public class BuildCommand extends ChainableCommand {
   // Whether or not to use the second buildserver
   private boolean secondBuildserver = false;
   private boolean isAab;
+  private boolean foriOS;
+  private boolean forAppStore;
 
   // The next chainable command to be executed if a cached version of the build exists.
   private final ChainableCommand nextCommandIfCacheHit;
@@ -46,7 +48,7 @@ public class BuildCommand extends ChainableCommand {
    * @param target the build target
    */
   public BuildCommand(String target, boolean secondBuildserver, boolean isAab) {
-    this(target, secondBuildserver, isAab, null);
+    this(target, secondBuildserver, isAab, false, false, null);
   }
 
   /**
@@ -57,7 +59,12 @@ public class BuildCommand extends ChainableCommand {
    * @param nextCommand the command to execute after the build has finished
    */
   public BuildCommand(String target, boolean secondBuildserver, boolean isAab, ChainableCommand nextCommand) {
-    this(target, secondBuildserver, isAab, nextCommand, null);
+    this(target, secondBuildserver, isAab, false, false, nextCommand, null);
+  }
+
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab, boolean foriOS,
+      boolean forAppStore, ChainableCommand nextCommand) {
+    this(target, secondBuildserver, isAab, foriOS, forAppStore, nextCommand, null);
   }
 
   /**
@@ -70,12 +77,14 @@ public class BuildCommand extends ChainableCommand {
    * @param nextCommandIfCacheHit the command to execute if an up-to-date version
    *        of the build already exists
    */
-  public BuildCommand(String target, boolean secondBuildserver, boolean isAab,
-      ChainableCommand nextCommand, ChainableCommand nextCommandIfCacheHit) {
+  public BuildCommand(String target, boolean secondBuildserver, boolean isAab, boolean foriOS,
+      boolean forAppStore, ChainableCommand nextCommand, ChainableCommand nextCommandIfCacheHit) {
     super(nextCommand);
     this.isAab = isAab;
     this.target = target;
     this.secondBuildserver = secondBuildserver;
+    this.foriOS = foriOS;
+    this.forAppStore = forAppStore;
     this.nextCommandIfCacheHit = nextCommandIfCacheHit;
   }
 
@@ -163,6 +172,7 @@ public class BuildCommand extends ChainableCommand {
     };
 
     String nonce = ode.generateNonce();
-    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, isAab, callback);
+    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, isAab,
+        foriOS, forAppStore, callback);
   }
 }
