@@ -6,6 +6,8 @@ import com.google.appinventor.components.runtime.arview.renderer.ARViewRender;
 
 import java.io.Closeable;
 
+import static com.google.appinventor.components.runtime.ImageBot.LOG_TAG;
+
 /**
  * A framebuffer associated with a texture.
  */
@@ -13,8 +15,8 @@ public class Framebuffer implements Closeable {
     private static final String TAG = Framebuffer.class.getSimpleName();
 
     private final int[] framebufferId = {0};
-    private final Texture colorTexture;
-    private final Texture depthTexture;
+    private Texture colorTexture = null;
+    private Texture depthTexture = null;
     private int width = -1;
     private int height = -1;
 
@@ -103,10 +105,12 @@ public class Framebuffer implements Closeable {
         this.width = width;
         this.height = height;
 
-        // Color texture
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, colorTexture.getTextureId());
-        GLError.maybeThrowGLException("Failed to bind color texture", "glBindTexture");
-        GLES30.glTexImage2D(
+        if (colorTexture != null  && depthTexture != null) {
+            // Color texture
+            Log.d(LOG_TAG, "resizing colorTexture: " +colorTexture + " depttexture is " + depthTexture);
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, colorTexture.getTextureId());
+            GLError.maybeThrowGLException("Failed to bind color texture", "glBindTexture");
+            GLES30.glTexImage2D(
                 GLES30.GL_TEXTURE_2D,
                 /*level=*/ 0,
                 GLES30.GL_RGBA,
@@ -116,12 +120,12 @@ public class Framebuffer implements Closeable {
                 GLES30.GL_RGBA,
                 GLES30.GL_UNSIGNED_BYTE,
                 /*pixels=*/ null);
-        GLError.maybeThrowGLException("Failed to specify color texture format", "glTexImage2D");
+            GLError.maybeThrowGLException("Failed to specify color texture format", "glTexImage2D");
 
-        // Depth texture
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, depthTexture.getTextureId());
-        GLError.maybeThrowGLException("Failed to bind depth texture", "glBindTexture");
-        GLES30.glTexImage2D(
+            // Depth texture
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, depthTexture.getTextureId());
+            GLError.maybeThrowGLException("Failed to bind depth texture", "glBindTexture");
+            GLES30.glTexImage2D(
                 GLES30.GL_TEXTURE_2D,
                 /*level=*/ 0,
                 GLES30.GL_DEPTH_COMPONENT32F,
@@ -131,7 +135,8 @@ public class Framebuffer implements Closeable {
                 GLES30.GL_DEPTH_COMPONENT,
                 GLES30.GL_FLOAT,
                 /*pixels=*/ null);
-        GLError.maybeThrowGLException("Failed to specify depth texture format", "glTexImage2D");
+            GLError.maybeThrowGLException("Failed to specify depth texture format", "glTexImage2D");
+        }
     }
 
     /**

@@ -545,53 +545,82 @@ public class ARFilamentRenderer {
     }
 
     /**
-     * Updates the camera position and projection based on ARCore camera data
+     * Position Filament camera at ARCore location, but make it look at the object
      */
-    public void updateCameraFromARCore(float[] viewMatrix, float[] projectionMatrix) {
-        if (camera == null) {
-            Log.e(LOG_TAG, "Camera not initialized in updateCameraFromARCore");
-            return;
-        }
-        if (viewportWidth <= 0 || viewportHeight <= 0) {
-            Log.e(LOG_TAG, "Invalid viewport dimensions: " + viewportWidth + "x" + viewportHeight);
-            return;
-        }
+    public void updateCameraFromARCore(float[] arcoreViewMatrix, float[] arcoreProjectionMatrix) {
+        if (camera == null) return;
 
         try {
-            //invert view matrix to get the camera's world position
-            float[] cameraModelMatrix = new float[16];
-            Matrix.invertM(cameraModelMatrix, 0, viewMatrix, 0);
+            // Store ARCore matrices for QuadRenderer
+            System.arraycopy(arcoreViewMatrix, 0, this.viewMatrix, 0, 16);
+            System.arraycopy(arcoreProjectionMatrix, 0, this.projectionMatrix, 0, 16);
 
-            // Set camera transform
-            TransformManager transformManager = engine.getTransformManager();
-            int cameraInstance = transformManager.getInstance(cameraEntity);
-            transformManager.setTransform(cameraInstance, cameraModelMatrix);
+            // Get ARCore camera world position
+            float[] arCoreCameraMatrix = new float[16];
+            Matrix.invertM(arCoreCameraMatrix, 0, arcoreViewMatrix, 0);
+            float[] cameraPos = {arCoreCameraMatrix[12], arCoreCameraMatrix[13], arCoreCameraMatrix[14]};
 
-            double fovY = 2.0 * Math.toDegrees(Math.atan(1.0 / projectionMatrix[5]));
+            // Get object position (we'll need this from the current anchor)
+            // For now, let's assume the object is at the stored anchor position
+            // We'll update this in applyNodeTransformation
 
-            camera.setProjection(
-                    (double) 120.0,                   // vertical field of view
-                    (double) viewportWidth / viewportHeight,  // aspect ratio
-                    Z_NEAR,              // near plane (closer for AR)
-                    Z_FAR,                // far plane SHOULD MATCH ARView3d!!
-                    Camera.Fov.VERTICAL
+            // Use lookAt to position camera at ARCore location but looking at object
+            camera.lookAt(
+                cameraPos[0], cameraPos[1], cameraPos[2],  // Camera at ARCore position
+                currentObjectPos[0], currentObjectPos[1], currentObjectPos[2],  // Look at object
+                0.0f, 1.0f, 0.0f  // Up vector
             );
 
-            // Log camera position and orientation
-            float[] position = new float[3];
-            camera.getPosition(position);
-            Log.d(LOG_TAG, "Camera position: " + Arrays.toString(position));
+            // Use consistent projection
+            double fovY = 2.0 * Math.atan(1.0 / arcoreProjectionMatrix[5]) * 180.0 / Math.PI;
+            camera.setProjection(fovY, (double) viewportWidth / viewportHeight, Z_NEAR, Z_FAR, Camera.Fov.VERTICAL);
 
-            // Log camera projection details
-            double[] projMatrix = new double[16];
-            camera.getProjectionMatrix(projMatrix);
-            Log.d(LOG_TAG, "Projection matrix: " + Arrays.toString(projMatrix));
+            Log.d(LOG_TAG, String.format("Filament camera at ARCore pos [%.3f, %.3f, %.3f] looking at object [%.3f, %.3f, %.3f]",
+                cameraPos[0], cameraPos[1], cameraPos[2],
+                currentObjectPos[0], currentObjectPos[1], currentObjectPos[2]));
 
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Error updating camera: " + e.getMessage(), e);
+            Log.e(LOG_TAG, "Camera setup failed: " + e.getMessage());
         }
     }
 
+    // Add this field to store current object position
+    private float[] currentObjectPos = {0.0f, 0.0f, -2.0f};
+
+    /**
+     * Position object at anchor location and update camera target
+     */
+    private void applyNodeTransformation(ARNode node, FilamentAsset asset, float[] arcoreViewMatrix) {
+        TransformManager transformManager = engine.getTransformManager();
+        int rootEntityId = asset.getRoot();
+        int rootInstance = transformManager.getInstance(rootEntityId);
+
+        // Get anchor world position
+        Pose anchorPose = node.Anchor().getPose();
+        float[] anchorPos = anchorPose.getTranslation();
+
+        // Update stored object position for camera lookAt
+        currentObjectPos[0] = anchorPos[0];
+        currentObjectPos[1] = anchorPos[1];
+        currentObjectPos[2] = anchorPos[2];
+
+        // Position object at anchor location
+        float[] modelMatrix = new float[16];
+        Matrix.setIdentityM(modelMatrix, 0);
+
+        modelMatrix[12] = anchorPos[0];
+        modelMatrix[13] = anchorPos[1];
+        modelMatrix[14] = anchorPos[2];
+
+        // Apply scale
+        float scale = 0.2f;
+        Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
+
+        transformManager.setTransform(rootInstance, modelMatrix);
+
+        Log.d(LOG_TAG, String.format("Object positioned at anchor: [%.3f, %.3f, %.3f]",
+            anchorPos[0], anchorPos[1], anchorPos[2]));
+    }
 
     private void createARCoreDepthTexture() {
         Texture.Builder depthTextureBuilder = new Texture.Builder()
@@ -779,6 +808,8 @@ public class ARFilamentRenderer {
             view.setScene(modelScene);       // Render composite quad
             view.setRenderTarget(filamentRenderTarget);  // Final output
 
+            // how to confirm object stays in correct position
+            //camera.lookAt(0, 0, 0, 0, 0, 2, 0, 1, 0);
             robustBeginFrame();
             // Render the view
             renderer.render(view);
@@ -1178,39 +1209,7 @@ long lastSuccessfulFrameTime = 0;
         }
         return hasVisibleNodes;
     }
-    /**
-     * Apply node-specific transformations
-     */
-    private void applyNodeTransformation(ARNode node, FilamentAsset asset, float[] viewMatrix) {
-        TransformManager transformManager = engine.getTransformManager();
-        int rootEntityId = asset.getRoot();
-        int rootInstance = transformManager.getInstance(rootEntityId);
 
-        // Create a model matrix with identity (no rotation)
-        float[] modelMatrix = new float[16];
-        Matrix.setIdentityM(modelMatrix, 0);
-
-        // Apply a fixed rotation if needed to orient the model correctly
-        // Uncomment and adjust this if needed:
-        // Matrix.rotateM(modelMatrix, 0, 180, 0, 1, 0);
-        Matrix.rotateM(modelMatrix, 0, 0, 0, 1, 0);  // No rotation (identity)
-        // Get the anchor's position in world space - this stays fixed
-        Pose anchorPose = node.Anchor().getPose();
-        float[] position = anchorPose.getTranslation();
-
-        // Set the world position from the anchor
-        modelMatrix[12] = position[0];
-        modelMatrix[13] = position[1];
-        modelMatrix[14] = position[2];
-
-
-
-        // Apply scale
-        float scale = .2f; // node.Scale();
-        Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
-
-        transformManager.setTransform(rootInstance, modelMatrix);
-    }
 
     public void setAnimationEnabled(boolean enabled) {
         this.animationEnabled = enabled;

@@ -288,7 +288,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         // Create or resize framebuffer
         if (virtualSceneFramebuffer != null) {
-            virtualSceneFramebuffer.resize(width, height);
+            Log.d(LOG_TAG, "resize virtualSceneFramebuffer: " + virtualSceneFramebuffer);
+            //filamentFramebuffer.resize(width, height);
         } else {
             // Create the virtual scene framebuffer
             try {
@@ -303,7 +304,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         // Create or resize framebuffer
         if (filamentFramebuffer != null) {
-            filamentFramebuffer.resize(width, height);
+            Log.d(LOG_TAG, "resize virtualSceneFramebuffer: " + virtualSceneFramebuffer);
+            //filamentFramebuffer.resize(width, height);
         } else {
             // Create the virtual scene framebuffer
             try {
@@ -353,7 +355,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void setDefaultPositions(List<ARNode> nodes) {
         for (ARNode node: nodes){
             if (node != null && node.Anchor() == null) {
-                Log.d(LOG_TAG, "Creating default anchor for " + node);
+                Log.d(LOG_TAG, "Creating default anchor for " + Arrays.toString(node.PoseFromPropertyPosition()));
                 // TBD handle if anchor is loaded from a db
 
                 node.Anchor(CreateDefaultAnchor(node.PoseFromPropertyPosition())); // assign an anchor if there isn't one
@@ -738,7 +740,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         float[] position = defaultOrFromProperty;
         float[] rotation = {0, 0, 0, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
-        Log.i(LOG_TAG, "default anchor with pose: " + defaultAnchor.getPose() + " "+ defaultAnchor.getPose().getTranslation());
+        Log.i(LOG_TAG, "default anchor with pose: from" +defaultOrFromProperty + " "+ defaultAnchor.getPose());
 
         return defaultAnchor;
     }

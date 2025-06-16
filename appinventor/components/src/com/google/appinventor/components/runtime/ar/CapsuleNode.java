@@ -40,24 +40,24 @@ import java.util.Locale;
 @UsesAssets(fileNames = "pawn.obj, Palette.png")
   public final class CapsuleNode extends ARNodeBase implements ARCapsule {
 
-  private float[] fromPropertyPosition;
+  private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
   private Trackable trackable = null;
   private String texture = "";
   private String objectModel = Form.ASSETS_PREFIX + "pawn.obj";
   private float scale = 1.0f;
 
-    public CapsuleNode(final ARNodeContainer container) {
-      super(container);
-      //parentSession = session;
-      container.addNode(this);
-    }
+  public CapsuleNode(final ARNodeContainer container) {
+    super(container);
+    //parentSession = session;
+    container.addNode(this);
+  }
 
-    @Override
-    public Anchor Anchor() { return this.anchor; }
+  @Override
+  public Anchor Anchor() { return this.anchor; }
 
-    @Override
-    public void Anchor(Anchor a) { this.anchor = a;}
+  @Override
+  public void Anchor(Anchor a) { this.anchor = a;}
 
   @SimpleProperty(description = "Get the current pose of the object",
       category = PropertyCategory.APPEARANCE)
@@ -126,6 +126,7 @@ import java.util.Locale;
     for (int i = 0; i < positionArray.length; i++) {
       position[i] = Float.parseFloat(positionArray[i]);
     }
+    this.fromPropertyPosition = position;
     float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
