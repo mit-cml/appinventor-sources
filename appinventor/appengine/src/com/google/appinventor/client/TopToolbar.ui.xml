@@ -63,6 +63,9 @@
       <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:DeleteKeystoreAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="Share" caption="{messages.shareProjectButton}" visible="{hasWriteAccess}">
+        <actions:ShareProjectsAction/>
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Connect Menu -->
