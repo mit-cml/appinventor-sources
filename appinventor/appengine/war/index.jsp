@@ -60,7 +60,6 @@
     <link type="text/css" rel="stylesheet" href="static/css/iOS.css">
     <link type="text/css" rel="stylesheet" href="static/css/DarkTheme.css">
     <link type="text/css" rel="stylesheet" href="static/css/fonts.css">
-
     <link type="text/css" rel="stylesheet" href="static/css/nano.min.css">
     <noscript>
       <div class="floatingBox">

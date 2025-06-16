@@ -118,7 +118,6 @@ public class YoungAndroidSettingsBuilder {
     primaryColorDark = properties.getProperty("color.primary.dark", "");
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
-
     projectColors = properties.getProperty("projectcolors", "");
   }
 
