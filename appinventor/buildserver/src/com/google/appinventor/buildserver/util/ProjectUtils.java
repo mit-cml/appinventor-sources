@@ -7,6 +7,7 @@
 package com.google.appinventor.buildserver.util;
 
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
 
 import com.google.appinventor.buildserver.Project;
 import com.google.common.io.Files;
@@ -77,7 +78,7 @@ public class ProjectUtils {
       throws IOException {
     // Make sure to skip returning any file not in the src/ directory, to avoid corrupted AIAs
     //   containing scm or bky in the assets' directory.
-    String sourcePrefix = new File(projectRoot, "src").getAbsolutePath() + SEPARATOR;
+    String sourcePrefix = new File(projectRoot, SRC_FOLDER).getAbsolutePath() + SEPARATOR;
 
     List<String> projectSourceFileNames = new ArrayList<>();
 
