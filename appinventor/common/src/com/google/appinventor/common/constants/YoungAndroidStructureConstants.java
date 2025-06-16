@@ -1,6 +1,11 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.common.constants;
 
-public class YoungAndroidStructureConstants {
+public final class YoungAndroidStructureConstants {
   private YoungAndroidStructureConstants() {
   }
 
@@ -14,6 +19,11 @@ public class YoungAndroidStructureConstants {
    * of a project.
    */
   public static final String SRC_FOLDER = "src";
+
+  /**
+   * The folder containing the project properties file.
+   */
+  public static final String PROJECT_DIRECTORY = "youngandroidproject";
 
   /**
    * The filename extension for the file which contains the component

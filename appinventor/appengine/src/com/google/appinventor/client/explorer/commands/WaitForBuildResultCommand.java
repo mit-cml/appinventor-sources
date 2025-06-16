@@ -6,13 +6,15 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
@@ -27,8 +29,6 @@ import com.google.gwt.user.client.Timer;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 /**
  * Command to wait for the result of a build
  *
@@ -36,9 +36,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  */
 public class WaitForBuildResultCommand extends ChainableCommand {
   private static final Logger LOG = Logger.getLogger(WaitForBuildResultCommand.class.getName());
-
-  private static final String CODEBLOCKS_SOURCE_EXTENSION =
-      YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
 
   // The build target
   private final String target;

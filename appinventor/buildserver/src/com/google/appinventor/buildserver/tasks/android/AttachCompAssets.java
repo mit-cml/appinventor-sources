@@ -5,13 +5,14 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
 
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.common.io.Files;
 
 import java.io.File;
@@ -24,9 +25,6 @@ import java.io.IOException;
 
 @BuildType(apk = true, aab = true)
 public class AttachCompAssets implements AndroidTask {
-
-  private static final String ASSETS_FOLDER =
-      YoungAndroidStructureConstants.ASSETS_FOLDER;
 
   @Override
   public TaskResult execute(AndroidCompilerContext context) {

@@ -5,6 +5,8 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Signatures;
@@ -15,7 +17,6 @@ import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
@@ -35,9 +36,6 @@ import java.util.Set;
  */
 @BuildType(apk = true, aab = true)
 public class GenerateClasses implements AndroidTask {
-  private static final String YAIL_EXTENSION =
-      YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
-
   CompilerContext<AndroidPaths> context;
 
   @Override
@@ -61,7 +59,7 @@ public class GenerateClasses implements AndroidTask {
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
         String classFileName = (context.getPaths().getClassesDir().getAbsolutePath()
             + File.separator + sourceFileRelativePath)
-            .replace(YAIL_EXTENSION, ".class");
+            .replace(YAIL_FILE_EXTENSION, ".class");
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
         // a line in the file

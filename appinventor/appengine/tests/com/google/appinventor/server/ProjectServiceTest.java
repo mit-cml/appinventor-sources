@@ -6,11 +6,11 @@
 
 package com.google.appinventor.server;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 import static com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters.YOUNG_ANDROID_FORM_NAME;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
@@ -93,9 +93,6 @@ public class ProjectServiceTest {
       "{\"$Name\":\"Label1\",\"$Type\":\"Label\",\"Uuid\":\"-456\",\"Text\":\"Liz\"}" +
       "]}}\n" +
       "|#";
-
-  private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 
   private StorageIo storageIo;
   private ProjectServiceImpl projectServiceImpl;   // for USER_ID_ONE

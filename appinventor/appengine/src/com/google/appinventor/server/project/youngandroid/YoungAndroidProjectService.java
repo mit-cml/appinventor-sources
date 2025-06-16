@@ -6,9 +6,16 @@
 
 package com.google.appinventor.server.project.youngandroid;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.apphosting.api.ApiProxy;
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
@@ -54,7 +61,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNo
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.Settings;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
@@ -97,27 +103,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private static final Flag<Integer> MAX_PROJECT_SIZE =
       Flag.createFlag("project.maxsize", 30);
-  private static final String ERROR_LARGE_PROJECT =
-      "Sorry, can't package projects larger than %1$d MB. Yours is %2$3.2f MB.";
-
-  // Project folder prefixes
-  public static final String SRC_FOLDER =
-      YoungAndroidStructureConstants.SRC_FOLDER;
-
-  private static final String ASSETS_FOLDER =
-      YoungAndroidStructureConstants.ASSETS_FOLDER;
 
   private static final String EXTERNAL_COMPS_FOLDER = ASSETS_FOLDER + "/external_comps";
-  static final String PROJECT_DIRECTORY = "youngandroidproject";
-
-  private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
-  private static final String CODEBLOCKS_SOURCE_EXTENSION =
-      YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
-  private static final String BLOCKLY_SOURCE_EXTENSION =
-      YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
-  private static final String YAIL_FILE_EXTENSION =
-      YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
   public static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
       "project.properties";

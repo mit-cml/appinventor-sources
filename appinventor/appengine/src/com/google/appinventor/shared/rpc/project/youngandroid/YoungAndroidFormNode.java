@@ -6,6 +6,8 @@
 
 package com.google.appinventor.shared.rpc.project.youngandroid;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+
 import com.google.appinventor.shared.storage.StorageUtil;
 
 

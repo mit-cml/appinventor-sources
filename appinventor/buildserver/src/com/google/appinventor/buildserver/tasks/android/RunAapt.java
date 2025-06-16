@@ -5,6 +5,8 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
@@ -12,7 +14,6 @@ import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,10 +25,6 @@ import java.util.List;
 // RunAapt
 @BuildType(apk = true)
 public class RunAapt implements AndroidTask {
-
-  private static final String ASSETS_FOLDER =
-      YoungAndroidStructureConstants.ASSETS_FOLDER;
-
   @Override
   public TaskResult execute(AndroidCompilerContext context) {
     // Need to make sure assets directory exists otherwise aapt will fail.

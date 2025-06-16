@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -25,7 +26,6 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.utils.Promise;
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -73,9 +73,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     ComponentDatabaseChangeListener {
 
   private static final Logger LOG = Logger.getLogger(YaProjectEditor.class.getName());
-
-  private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 
   @UiTemplate("YaProjectEditorClassic.ui.xml")
   interface ClassicUi extends UiBinder<FlowPanel, YaProjectEditor> {}

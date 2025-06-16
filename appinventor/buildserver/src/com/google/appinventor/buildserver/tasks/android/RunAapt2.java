@@ -5,6 +5,8 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
@@ -13,7 +15,6 @@ import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
-import com.google.appinventor.common.constants.YoungAndroidStructureConstants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,9 +22,6 @@ import java.util.List;
 
 @BuildType(aab = true)
 public class RunAapt2 implements AndroidTask {
-  private static final String ASSETS_FOLDER =
-      YoungAndroidStructureConstants.ASSETS_FOLDER;
-
   CompilerContext<AndroidPaths> context;
   File resourcesZip;
 
