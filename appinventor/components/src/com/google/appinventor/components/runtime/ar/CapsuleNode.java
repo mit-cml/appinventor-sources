@@ -180,7 +180,34 @@ import java.util.Locale;
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
     public void Model(String model) {this.objectModel = model;}
 
+
     @Override
+    @SimpleFunction(description = "move a capsule node properties at the " +
+        "specified (x,y,z) position.")
+    public void MoveBy(float x, float y, float z){
+
+      float[] position = { 0, 0, 0};
+      float[] rotation = {0, 0, 0, 1};
+
+      //float[] currentAnchorPoseRotation = rotation;
+
+      if (this.Anchor() != null) {
+        float[] translations = this.Anchor().getPose().getTranslation();
+        position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
+        //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+      }
+
+      Pose newPose = new Pose(position, rotation);
+      if (this.trackable != null){
+        Anchor(this.trackable.createAnchor(newPose));
+        Log.i("capsule","moved anchor BY " + newPose+ " with rotaytion "+rotation);
+      }else {
+        Log.i("capsule", "tried to move anchor BY pose");
+      }
+    }
+
+
+  @Override
     @SimpleFunction(description = "move a capsule node properties at the " +
             "specified (x,y,z) position.")
     public void MoveTo(float x, float y, float z){

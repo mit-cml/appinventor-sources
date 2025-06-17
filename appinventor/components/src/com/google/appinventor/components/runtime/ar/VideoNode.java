@@ -44,7 +44,7 @@ import com.google.ar.core.Trackable;
 @SimpleObject
 public final class VideoNode extends ARNodeBase implements ARVideo {
 
-
+  private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
   private Trackable trackable = null;
   private String texture = "";
@@ -78,9 +78,49 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
   public void Model(String model) {this.objectModel = model;}
 
   @Override
-  @SimpleFunction(description = "move a sphere node properties at the " +
+  @SimpleFunction(description = "move a capsule node properties at the " +
       "specified (x,y,z) position.")
-  public void MoveTo(float x, float y, float z){}
+  public void MoveBy(float x, float y, float z){
+
+    float[] position = { 0, 0, 0};
+    float[] rotation = {0, 0, 0, 1};
+
+    //float[] currentAnchorPoseRotation = rotation;
+
+    if (this.Anchor() != null) {
+      float[] translations = this.Anchor().getPose().getTranslation();
+      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
+      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+    }
+
+    Pose newPose = new Pose(position, rotation);
+    if (this.trackable != null){
+      Anchor(this.trackable.createAnchor(newPose));
+      Log.i("capsule","moved anchor BY " + newPose+ " with rotaytion "+rotation);
+    }else {
+      Log.i("capsule", "tried to move anchor BY pose");
+    }
+  }
+
+
+  @Override
+  @SimpleFunction(description = "Changes the node's position by (x,y,z).")
+  public void MoveTo(float x, float y, float z) {
+    float[] position = {x, y, z};
+    float[] rotation = {0, 0, 0, 1};
+
+    float[] currentAnchorPoseRotation = rotation;
+    if (this.Anchor() != null) {
+      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+    }
+    Pose newPose = new Pose(position, rotation);
+    if (this.trackable != null){
+      Anchor(this.trackable.createAnchor(newPose));
+      Log.i("webview","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
+    }else {
+      Log.i("webview", "tried to move anchor to pose");
+    }
+  }
 
   @Override
   @SimpleFunction(description = "move a sphere node properties at the " +
@@ -110,25 +150,32 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
     }
   }
 
-  @SimpleProperty(description = "Set the current pose of the object from property",
+
+  /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
+  @Override
+  public float[] PoseFromPropertyPosition(){ return fromPropertyPosition; }
+
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
       category = PropertyCategory.APPEARANCE)
   @Override
   public void PoseFromPropertyPosition(String positionFromProperty) {
-    Log.i("setting Capsule pose", "with position" +positionFromProperty);
-
-
     String[] positionArray = positionFromProperty.split(",");
     float[] position = {0f,0f,0f};
 
     for (int i = 0; i < positionArray.length; i++) {
       position[i] = Float.parseFloat(positionArray[i]);
     }
-    float[] rotation = {0,0,0, 1}; // no rotation TBD
+    this.fromPropertyPosition = position;
+    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
+    Log.i("store sphere pose", "with position" +positionFromProperty);
   }
+
   @Override
   public float Scale() { return this.scale; }
 
@@ -229,7 +276,7 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
 
   @Override
   @SimpleProperty(userVisible = false)
-  public String Texture() { return ""; }
+  public String Texture() { return this.texture; }
 
   @Override
   @SimpleProperty(userVisible = false)
