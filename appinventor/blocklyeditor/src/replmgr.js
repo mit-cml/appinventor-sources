@@ -1416,8 +1416,8 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser
             return;             // startAdbDevice callbacks will continue the connection process
         }
         if (browser) {
-            var emulatorWindow = window.open('about:blank', '_blank');
-            emulatorWindow.postMessage("test");
+            var emulator = window.open('http://localhost:8000', '_blank');
+            // emulator.postMessage("test");
             return;
         }
         rs = top.ReplState;
