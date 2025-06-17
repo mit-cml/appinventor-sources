@@ -10,13 +10,14 @@ package com.google.appinventor.client.wizards.youngandroid;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.components.common.ComponentConstants.DEFAULT_THEME;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
 import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -50,23 +51,25 @@ import java.util.logging.Logger;
  * @author markf@google.com (Mark Friedman)
  */
 
-public final class NewYoungAndroidProjectWizard {
+public class NewYoungAndroidProjectWizard {
 
   interface NewYoungAndroidProjectWizardUiBinder extends UiBinder<Dialog, NewYoungAndroidProjectWizard> {}
-  private static final NewYoungAndroidProjectWizardUiBinder UI_BINDER = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
+
   private static final Logger LOG = Logger.getLogger(NewYoungAndroidProjectWizard.class.getName());
 
   EditableProperty theme;
   EditableProperty toolkit;
   // UI element for project name
-  @UiField Dialog addDialog;
-  @UiField Button addButton;
-  @UiField Button cancelButton;
-  @UiField LabeledTextBox projectNameTextBox;
+  @UiField protected Dialog addDialog;
+  @UiField protected Button addButton;
+  @UiField protected Button cancelButton;
+  @UiField protected LabeledTextBox projectNameTextBox;
   @UiField(provided = true) YoungAndroidThemeChoicePropertyEditor themeEditor;
   @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
-  @UiField FlowPanel horizontalThemePanel;
-  @UiField FlowPanel horizontalBlocksPanel;
+  @UiField protected FlowPanel horizontalThemePanel;
+  @UiField protected FlowPanel horizontalBlocksPanel;
+  @UiField protected Button topInvisible;
+  @UiField protected Button bottomInvisible;
 
   /**
    * Creates a new YoungAndroid project wizard.
@@ -76,7 +79,7 @@ public final class NewYoungAndroidProjectWizard {
     themeEditor = new YoungAndroidThemeChoicePropertyEditor(DEFAULT_THEME);
     theme = new EditableProperty(themes, MESSAGES.themeTitle(), DEFAULT_THEME,
         MESSAGES.themeTitle(), null,
-        ComponentsTranslation.getPropertyDescription("ThemePropertyDescriptions"),
+        ComponentTranslationTable.getPropertyDescription("ThemePropertyDescriptions"),
         themeEditor, 0x01, "", null);
     themeEditor.setProperty(theme);
 
@@ -84,11 +87,10 @@ public final class NewYoungAndroidProjectWizard {
     blockstoolkitEditor = new SubsetJSONPropertyEditor(true);
     toolkit = new EditableProperty(toolkits, MESSAGES.blocksToolkitTitle(), "",
         MESSAGES.blocksToolkitTitle(), null,
-        ComponentsTranslation.getPropertyDescription("BlocksToolkitPropertyDescriptions"),
+        ComponentTranslationTable.getPropertyDescription("BlocksToolkitPropertyDescriptions"),
         blockstoolkitEditor, 0x01, "", null);
     blockstoolkitEditor.setProperty(toolkit);
-
-    UI_BINDER.createAndBindUi(this);
+    bindUI();
     projectNameTextBox.setValidator(new Validator() {
       @Override
       public boolean validate(String value) {
@@ -125,7 +127,14 @@ public final class NewYoungAndroidProjectWizard {
         projectNameTextBox.validate();
       }
     });
+  }
 
+  public void bindUI() {
+    NewYoungAndroidProjectWizardUiBinder uibinder = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
+    uibinder.createAndBindUi(this);
+  }
+
+  public void show() {
     addDialog.center();
     projectNameTextBox.setFocus(true);
 
@@ -136,16 +145,18 @@ public final class NewYoungAndroidProjectWizard {
   }
 
   @UiHandler("cancelButton")
-  void cancelAdd(ClickEvent e) {
+  protected void cancelAdd(ClickEvent e) {
     addDialog.hide();
   }
 
   @UiHandler("addButton")
-  void addProject(ClickEvent e) {
-    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectNameTextBox.getText());
+  protected void addProject(ClickEvent e) {
+    String projectName = projectNameTextBox.getText().trim()
+        .replaceAll("( )+", " ").replace(" ", "_");
+    TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectName);
     if (status == TextValidators.ProjectNameStatus.SUCCESS) {
       LOG.info("Project status success");
-      createProject();
+      createProject(projectName);
       addDialog.hide();
     } else {
       LOG.info("Checking for error");
@@ -165,9 +176,7 @@ public final class NewYoungAndroidProjectWizard {
     }
   }
 
-  public void createProject() {
-    String projectName = projectNameTextBox.getText().trim();
-    projectName = projectName.replaceAll("( )+", " ").replace(" ", "_");
+  public void createProject(String projectName) {
     if (TextValidators.checkNewProjectName(projectName)
             == TextValidators.ProjectNameStatus.SUCCESS) {
       String packageName = StringUtils.getProjectPackage(
@@ -195,5 +204,15 @@ public final class NewYoungAndroidProjectWizard {
       Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
 
     }
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+     addButton.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+     projectNameTextBox.setFocus(true);
   }
 }

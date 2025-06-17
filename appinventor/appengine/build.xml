@@ -16,7 +16,7 @@
      App Inventor appengine app
      ====================================================================== -->
 
-<project name="appengine" default="all">
+<project name="appengine" default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <description>
     Appengine server and client code
   </description>
@@ -26,6 +26,8 @@
        ===================================================================== -->
 
   <property name="release" value="false"/>
+  <property name="sourceMaps" value="false"/>
+  <property name="local.services" value="false"/>
 
   <condition property="client.module"
              value="com.google.appinventor.YaClient"
@@ -39,20 +41,6 @@
     <equals arg1="${release}" arg2="true" />
   </condition>
 
-  <scriptdef name="generateguid" language="javascript">
-    <attribute name="property" />
-    <![CDATA[
-             try {
-               load("nashorn:mozilla_compat.js");
-             }
-             catch (exception) {
-               // Ignore the exception as the compat mode is only needed for Java 8
-             }
-             importClass( java.util.UUID );
-             project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
-    ]]>
-  </scriptdef>
-
   <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
     <os family="mac"/>
   </condition>
@@ -61,7 +49,7 @@
   </condition>
 
   <target name="all"
-          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs,InstallAuthKey">
+          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,CopyToBuildWarPost,Keystore,WarLibs,InstallAuthKey">
   </target>
 
   <target name="tests"
@@ -131,7 +119,9 @@
           depends="init,blocklyeditor_BlocklyTranslationGenerator,BuildDocs">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
-      <fileset dir="war" />
+      <fileset dir="war">
+        <exclude name="index.jsp" />
+      </fileset>
       <fileset dir="${docs.dir}">
         <include name="companions/*"/>
       </fileset>
@@ -170,15 +160,6 @@
         <exclude name="media/*.css"/>
       </fileset>
     </copy>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
-
-    <!-- Move Blockly translations into place -->
-    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
-    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
-      <fileset dir="${build.dir}/blocklyeditor/msg">
-        <include name="*.json"/>
-      </fileset>
-    </copy>
 
     <copy todir="${build.static.dir}">
       <fileset dir="src/${appinventor.pkg}">
@@ -205,6 +186,50 @@
         <include name="font-awesome/**/*"/>
       </fileset>
     </copy>
+  </target>
+
+  <target name="CopyToBuildWarPost">
+    <mkdir dir="${build.war.dir}/ode" />
+    <checksum property="blocklyeditor_BlocklyChecksum" algorithm="SHA-256" if:true="${release}">
+      <fileset dir="${build.dir}">
+        <include name="blocklyeditor/blockly-all.js"/>
+      </fileset>
+    </checksum>
+    <property name="blocklyeditor_BlocklyChecksum" value="0"/>
+    <condition property="blocklyeditor_postfix" value="cache" else="nocache">
+      <equals arg1="${release}" arg2="true" />
+    </condition>
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/ode/aiblockly-${blocklyeditor_BlocklyChecksum}.${blocklyeditor_postfix}.js" />
+    <copy todir="${build.war.dir}/ode">
+      <fileset dir="${build.dir}/blocklyeditor">
+        <include name="*.js.map"/>
+      </fileset>
+    </copy>
+    <filter token="blocklyeditor_BlocklyChecksum" value="${blocklyeditor_BlocklyChecksum}.${blocklyeditor_postfix}" />
+    <filter token="blocklyeditor_isRelease" value="${release}" />
+    <copy todir="${build.war.dir}" filtering="true" overwrite="true">
+      <fileset dir="war">
+        <include name="index.jsp"/>
+      </fileset>
+    </copy>
+
+    <!-- Move Blockly translations into place -->
+    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
+    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.json"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.war.dir}/ode/">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.js"/>
+      </fileset>
+    </copy>
+
+    <!-- Compile the Blockly translations map -->
+    <javac destdir="${build.war.dir}/WEB-INF/classes" srcdir="${public.build.dir}/../blocklyeditor" source="1.8" target="1.8">
+      <include name="msg/i18n.java"/>
+    </javac>
   </target>
 
   <!-- =====================================================================
@@ -282,7 +307,7 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
     <!-- Protocol Buffers -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-java-4.28.1.jar" />
     <!-- OWASP -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/owasp/owasp-java-html-sanitizer-20160628.1.jar" />
     <!-- Add any additional server libs that need to be copied -->
@@ -419,7 +444,7 @@
     <pathelement location="${lib.dir}/gcs/google-api-services-storage-v1-rev91-1.22.0.jar" />
     <pathelement location="${lib.dir}/gcs/httpclient-4.0.1.jar" />
     <pathelement location="${lib.dir}/gcs/joda-time-2.6.jar" />
-    <pathelement location="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />
+    <pathelement location="${lib.dir}/protobuf/protobuf-java-4.28.1.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
@@ -580,7 +605,10 @@
          Otherwise, set YaClientApp.uptodate to false -->
     <uptodate property="YaClientApp.uptodate"
               targetfile="${build.war.dir}/ode/ode.nocache.js">
-      <srcfiles dir="${build.war.dir}/WEB-INF/classes"/>
+      <srcfiles dir="${build.war.dir}/WEB-INF/classes">
+        <!-- This is compiled after YaClientApp in CopyToBuildWarPost -->
+        <exclude name="msg/i18n.class"/>
+      </srcfiles>
       <srcfiles file="${local.build.dir}/AiRebindLib.jar" />
       <srcfiles file="${build.dir}/common/CommonUtils-gwt.jar" />
       <srcfiles file="${build.dir}/common/CommonVersion-gwt.jar" />
@@ -624,7 +652,7 @@
         <path refid="YaClientApp.classpath" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx3G"/>
+      <jvmarg value="-Xmx4G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
       <arg value="-war"/>
@@ -632,8 +660,21 @@
       <arg line="-logLevel INFO"/>
       <arg value="-extra"/>
       <arg value="${build.extra.dir}"/>
+      <arg line="-setProperty local.services=${local.services}"/>
+      <arg line="-setProperty locale=${locale}" if:set="locale"/>
       <arg line="${client.flags} ${client.module}"/>
     </java>
+    <copy todir="${build.war.dir}/ode"
+          file="${appinventor.dir}/appengine/extra/cdnok.js" />
+    <copy todir="${build.war.dir}/ode" if:true="${sourceMaps}">
+      <fileset dir="${build.war.dir}/WEB-INF/deploy/ode/symbolMaps">
+        <include name="*.json"/>
+      </fileset>
+      <fileset dir="${src.dir}/">
+        <include name="${appinventor.pkg}/client/**/*.java"/>
+        <include name="${appinventor.pkg}/shared/**/*.java"/>
+      </fileset>
+    </copy>
   </target>
 
   <target name="devmode"

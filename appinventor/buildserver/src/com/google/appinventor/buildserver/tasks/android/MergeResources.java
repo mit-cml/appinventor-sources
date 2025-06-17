@@ -30,7 +30,7 @@ public class MergeResources implements AndroidTask {
     context.getPaths().setMergedResDir(ExecutorUtils.createDir(resDir, "merged"));
     context.getPaths().setTmpPackageName(new File(
         context.getPaths().getDeployDir().getAbsolutePath() + File.separator
-            + context.getProject().getProjectName() + "._ap"));
+            + context.getProject().getProjectName() + ".ap_"));
 
     PngCruncher cruncher = new AaptCruncher(context.getResources().aapt(), null, null);
     if (!context.getComponentInfo().getExplodedAarLibs().mergeResources(

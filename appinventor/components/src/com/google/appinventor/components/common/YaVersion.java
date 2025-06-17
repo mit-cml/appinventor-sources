@@ -596,7 +596,19 @@ public class YaVersion {
   // - TRENDLINE_COMPONENT_VERSION was introduced
   // For YOUNG_ANDROID_VERSION 228:
   // - Renamed LineOfBestFit to Trendline
-  public static final int YOUNG_ANDROID_VERSION = 228;
+  // For YOUNG_ANDROID_VERSION 229:
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 10.
+  // For YOUNG_ANDROID_VERSION 230:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 37.
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 8.
+  // For YOUNG_ANDROID_VERSION 231:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
+  // For YOUNG_ANDROID_VERSION 232:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
+  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
+  // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
+  // - CHART_COMPONENT_VERSION was incremented to 4
+  public static final int YOUNG_ANDROID_VERSION = 232;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -689,13 +701,15 @@ public class YaVersion {
   // - Add stats blocks
   // - Rename lists_*_number to lists_*_value
   // - Added "every component" block.
-  public static final int BLOCKS_LANGUAGE_VERSION = 36;
+  // For BLOCKS_LANGUAGE_VERSION 37
+  // - Add pull-downs for the ChatBot provider and model
+  public static final int BLOCKS_LANGUAGE_VERSION = 37;
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 33;
+  public static final int TARGET_SDK_VERSION = 34;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 13.0";
+  public static final String TARGET_ANDROID_VERSION = "Android 14.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -730,7 +744,9 @@ public class YaVersion {
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
 
-
+  // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 1:
+  // - AbsoluteArrangement component was added.
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
@@ -878,14 +894,24 @@ public class YaVersion {
   // For CHART_COMPONENT_VERSION 3:
   // - The ExtendDomainToInclude and ExtendRangeToInclude methods were added
   // - The Type getter block was made visible
-  public static final int CHART_COMPONENT_VERSION = 3;
+  // For CHART_COMPONENT_VERSION 4:
+  // - The axesTextColor property was added
+  // - The setAxesTextColor method was added
+  // - The ValueFormat property was added
+  public static final int CHART_COMPONENT_VERSION = 4;
 
-  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+  // For CHART_DATA_2D_COMPONENT_VERSION 2:
+  // - The dataLabelColor property was added
+  // - The setDataLabelColor method was added
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
 
   // For CHATBOT_COMPONENT_VERSION: Initial Version
   // For CHATBOT_COMPONENT_VERSION 2:
   // - The ApiKey property was made visible in the designer view
-  public static final int CHATBOT_COMPONENT_VERSION = 2;
+  // For CHATBOT_COMPONENT_VERSION 3:
+  // - GPT-4 with Vision can be used to handle image inputs
+  // - The ConverseWithImage method was added
+  public static final int CHATBOT_COMPONENT_VERSION = 3;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1115,7 +1141,11 @@ public class YaVersion {
   // For IMAGESPRITE_COMPONENT_VERSION 8:
   // - Adds dropdown blocks for Direction.
   // - Assets helper block was added.
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 8;
+  // For IMAGESPRITE_COMPONENT_VERSION 9:
+  // - The MarkOrigin, OriginX, and OriginY properties were added.
+  // For IMAGESPRITE_COMPONENT_VERSION 10:
+  // - A fix for MarkOrigin, OriginX, and OriginY properties was added.
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 10;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -1168,13 +1198,22 @@ public class YaVersion {
   // - Added ...
   // For LISTVIEW_COMPONENT_VERSION 7:
   // - Added RemoveItemAtIndex method
-  public static final int LISTVIEW_COMPONENT_VERSION = 7;
+  // For LISTVIEW_COMPONENT_VERSION 8:
+  // - Added HintText property, performance optimization
+  // For LISTVIEW_COMPONENT_VERSION 9:
+  // - Changed the default ElementColor from Black to None
+  // For LISTVIEW_COMPONENT_VERSION 10:
+  // - Changed TextSize property to FontSize
+  // - Add new layout
+  public static final int LISTVIEW_COMPONENT_VERSION = 10;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
   // - The speed parameter was added to the LocationChanged event
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 3;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 4:
+  // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
 
   // For MAP_COMPONENT_VERSION 1:
   // - Initial Map implementation using OpenStreetMap
@@ -1192,7 +1231,9 @@ public class YaVersion {
   // - Added ScaleUnits property
   // For MAP_COMPONENT_VERSION 6:
   // - Adds ScaleUnits and MapType dropdowns.
-  public static final int MAP_COMPONENT_VERSION = 6;
+  // For MAP_COMPONENT_VERSION 7:
+  // - Adds CustomUrl (MapType 4).
+  public static final int MAP_COMPONENT_VERSION = 7;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -1350,7 +1391,9 @@ public class YaVersion {
   // - Initial version.
   // For SLIDER_COMPONENT_VERSION 2:
   // - Added the property to allow for the removal of the Thumb Slider
-  public static final int SLIDER_COMPONENT_VERSION = 2;
+  // For SLIDER_COMPONENT_VERSION 3:
+  // - Added the NumberOfStepsand ThumbColor property, TouchDown and TouchUp events
+  public static final int SLIDER_COMPONENT_VERSION = 3;
 
   // For SPINNER_COMPONENT_VERSION 1:
   public static final int SPINNER_COMPONENT_VERSION = 1;
@@ -1670,12 +1713,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.70";
+  public static final String PREFERRED_COMPANION = "2.75";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.70", "2.70u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.75", "2.75u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

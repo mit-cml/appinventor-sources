@@ -12,7 +12,7 @@ to build MIT App Inventor applications.
 We provide this code for reference and for experienced people who wish
 to operate their own App Inventor instance and/or contribute to the project.
 
-This code is tested and known to work with Java 8.
+This code is tested and known to work with Java 11.
 
 ## Contributors
 
@@ -24,97 +24,20 @@ If you have skipped this step and have gone ahead and made your changes already,
 
 Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/) to find a lot more information about the project and how to contribute to it.
 
-## Setup Instructions (Vagrant)
-
-The easiest way to get a development environment up and running is to use the provided Vagrantfile. Install [Vagrant](https://vagrantup.com) and open a terminal in the root directory of this repository. Run the following commands
-
-```bash
-vagrant plugin install vagrant-vbguest  # optionally for virtualbox users, and only once
-vagrant up                              # initializes the VM
-```
-
-It may take a few minutes for Vagrant to initialize as it will pull down a virtual machine image from the Internet and configure it with all of the App Inventor dependencies. Subsequent start-ups will be faster. Next, enter the virtual machine by running:
-
-```bash
-vagrant ssh
-```
-
-This should open up a terminal within the virtual machine in the directory `/vagrant/appinventor`. This directory is the same as the `appinventor` directory in this repository, shared between your host machine and the virtual machine. Any changes made on one side will be visible in the other. This allows you to edit files on your host machine with your preferred editor, while keeping the build environment relegated to the virtual machine. 
-
-Before you can build App Inventor, you will need to also obtain the dependencies as described [below](#checkout-dependencies) using `git submodule` command:
-
-```bash
-git submodule update --init
-```
-
-Now, you are ready to build App Inventor, you may now run:
-
-```bash
-ant
-```
-
-and to run App Inventor:
-
-```bash
-start_appinventor
-```
-
-Press Ctrl+C to quit the server. Enter exit at the prompt to leave the virtual machine. To reclaim resources when you are not actively developing, you can run `vagrant halt` to stop the virtual machine. To completely remove the virtual machine, run `vagrant destroy`. If you destroy the VM, you will need to start these instructions from the top.
-
-Note 1: For macOS users, if you are using VirtualBox and get any error while initializing the VM it may be due to security restrictions in System Preferences, consider reading [this](https://medium.com/@Aenon/mac-virtualbox-kernel-driver-error-df39e7e10cd8) article. 
-
-Note 2: If it seems like none of the dependencies are installed in the VM, run ```vagrant provision```.
-
-For better performance, consider using the manual instructions.
-
-## Setup Instructions (iOS Support)
-
-Building MIT App Inventor Companion for iOS requires an Apple
-Macintosh computer running macOS 12 or later with Xcode 14 or later
-installed. While earlier versions may work we provide no support for
-building on versions below the ones stated. To install on a device,
-you **must** have a valid Apple Developer account license and have
-added the relevant mobile provisioning profiles from the Developer
-portal to your Xcode organizer (see Apple's website on instructions on
-how to do this).
-
-To build the MIT App Inventor companion, you will need to create a
-file called AICompanionApp.xcconfig in the components-ios directory
-that sets your development team. The easiest way to do this is to copy
-the AICompanionApp.xcconfig.sample file and edit it. Alternatively,
-create a file with the following line:
-
-```conf
-DEVELOPMENT_TEAM = ID
-```
-
-where ID is the development team ID shown in the Apple Developer
-Portal. This ID is unique to your developer account (individual or
-organization).
-
 ## Setup Instructions (Manual)
 
 This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen [here](http://josmas.github.io/contributingToAppInventor2/#/), and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project is available in our [site](http://appinventor.mit.edu/appinventor-sources/).
 
 ### Dependencies
 
-You will need a full Java JDK (version 8, OpenJDK preferred; JRE is not enough) and Python to compile and run the servers.
+You will need a full Java JDK (version 11, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) (version 1.10) to compile the sources.
 
-You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) for Java and [ant](http://ant.apache.org/).
+You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) to run the development servers. When setting up the gcloud cli you might be asked if you'd like to install Python 3.11, as the cli depends on it. In case of any issues with Python versions, check the value of the CLOUDSDK_PYTHON environment variable, which the cli can use to point to the right version.
 
-If you want to make changes to the source, you are going to need to run an automated test suite, and for that you will also need [phantomjs](http://phantomjs.org/). Have a look at the testing section for more information.
+If you want to make changes to the sources, you will have to run an automated test suite, and for that you will also need
+a recent version of NodeJS (node 20+ works) and the Firefox browser installed on your machine. Have a look at the testing section for more information.
 
-Note 1: If you are working on a 64-bit linux system, you need to install 32-bit version of: glibc(to get a 32-bit version of ld-linux.so), zlib and libstdc++.
-
-If you are on a Debian-based distribution(Ubuntu), use:
-
-    $ sudo apt-get install libc6:i386 zlib1g:i386 libstdc++6:i386
-
-If you are on an RPM-based distribution(Fedora), use:
-
-    $ sudo dnf install glibc.i686 zlib.i686 libstdc++.i686
-
-Note 2: Certain Java 8 features, such as lambda expressions, are not supported on Android, so please don't use them in your changes to the source code.
+Finally, if you want to make changes to the markdown docs you will need Ruby (versions 2.6 or 2.7).
 
 ### Forking or cloning
 
@@ -122,7 +45,7 @@ Consider ***forking*** the project if you want to make changes to the sources. I
 
 #### Forking
 
-If you decide to fork, follow the [instructions](https://help.github.com/articles/fork-a-repo) given by github. After that you can clone your own copy of the sources with:
+If you decide to fork, follow the [instructions](https://help.github.com/articles/fork-a-repo) given by GitHub. After that you can clone your own copy of the sources with:
 
     $ git clone https://github.com/YOUR_USER_NAME/appinventor-sources.git
 
@@ -139,17 +62,17 @@ Finally, you will also have to make sure that you are ignoring files that need i
 
 ### Checkout dependencies
 
-App Inventor uses Blockly, the web-based visual programming editor from Google, as a core part of its editor. Blockly core is made available to App Inventor as a git submodule. The first time after forking or cloning the repository, you will need to perform the following commands:
+App Inventor uses the [Closure library](https://github.com/google/closure-library) and the [Picrin](https://picrin.readthedocs.io/en/latest/) Scheme implementation. It is unlikely that most contributors will need to make changes to these dependencies, but they are necessary for local compilation, so you must initialize and track these libraries as submodules. The first time after forking or cloning the repository, you can perform the following commands:
 
     $ git submodule update --init
 
-For developers who will be working on Blockly within the context of App Inventor, the preferred checkout procedure is to perform a `git submodule init`, edit the `.git/config` file to use the read/write SSH URL for [MIT CML's Blockly fork](https://github.com/mit-cml/blockly) instead of the public read-only HTTPS URL assumed by default (to support pushing changes). After changing `.git/config`, a `git submodule update` will pull the repository.
-
-If you need to switch back to a branch that does contains the Blockly and Closure Library sources in the tree, you will need to run the command:
+If you need to switch back to a branch that does not contain the dependencies in the tree, you will need to run the command:
 
     $ git submodule deinit --all
 
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
+
+[Blockly](https://github.com/google/blockly) is also a dependency, currently being used as a slightly modified version 10 that can be found at [mit-cml/blockly](https://github.com/mit-cml/blockly/tree/rc/10.5.0).
 
 ### Troubleshooting common installation issues
 
@@ -210,6 +133,32 @@ the AICompanionApp target's Debug scheme and pressing the Run button.
 For more information about iOS support, please see
 [README.ios.md](README.ios.md).
 
+## Setup Instructions (iOS Support)
+
+Building MIT App Inventor Companion for iOS requires an Apple
+Macintosh computer running macOS 12 or later with Xcode 14 or later
+installed. While earlier versions may work we provide no support for
+building on versions below the ones stated. To install on a device,
+you **must** have a valid Apple Developer account license and have
+added the relevant mobile provisioning profiles from the Developer
+portal to your Xcode organizer (see Apple's website on instructions on
+how to do this).
+
+To build the MIT App Inventor companion, you will need to create a
+file called AICompanionApp.xcconfig in the components-ios directory
+that sets your development team. The easiest way to do this is to copy
+the AICompanionApp.xcconfig.sample file and edit it. Alternatively,
+create a file with the following line:
+
+```conf
+DEVELOPMENT_TEAM = ID
+```
+
+where ID is the development team ID shown in the Apple Developer
+Portal. This ID is unique to your developer account (individual or
+organization).
+
+
 ## Running the Server(s)
 
 There are two servers in App Inventor, the main server that deals with project information, and the build server that creates apk files. More detailed information can be found in the [App Inventor Developer Overview](https://docs.google.com/document/d/1hIvAtbNx-eiIJcTA2LLPQOawctiGIpnnt0AvfgnKBok/pub) document.
@@ -239,7 +188,7 @@ Before entering or scanning the QR code in the Companion, check the box labeled 
 
 ### Running tests
 
-The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
+The automated tests depend on NodeJS (version 20+) and Firefox, which will be used in headless mode. After that, you can run all tests by typing the following in a terminal window (note you can optionally skip iOS tests with -Dskip.ios=true):
 
     $ ant tests
 
@@ -272,6 +221,49 @@ The release configuration sets the following additional options:
    6. Refresh the page and that's it! The changes are live.
 
 Logs can be found at http://localhost:9876/log/ode and SourceMaps at http://localhost:9876/sourcemaps/ode
+
+## Setup Instructions (Vagrant)
+
+Using Vagrant for App Inventor development is a method of last resort to get a development environment up and running. To begin, install [Vagrant](https://vagrantup.com) and open a terminal in the root directory of this repository. Run the following commands:
+
+```bash
+vagrant plugin install vagrant-vbguest  # optionally for virtualbox users, and only once
+vagrant up                              # initializes the VM
+```
+
+It may take a few minutes for Vagrant to initialize as it will pull down a virtual machine image from the Internet and configure it with all of the App Inventor dependencies. Subsequent start-ups will be faster. Next, enter the virtual machine by running:
+
+```bash
+vagrant ssh
+```
+
+This should open up a terminal within the virtual machine in the directory `/vagrant/appinventor`. This directory is the same as the `appinventor` directory in this repository, shared between your host machine and the virtual machine. Any changes made on one side will be visible in the other. This allows you to edit files on your host machine with your preferred editor, while keeping the build environment relegated to the virtual machine.
+
+Before you can build App Inventor, you will need to also obtain the dependencies as described [below](#checkout-dependencies) using `git submodule` command:
+
+```bash
+git submodule update --init
+```
+
+Now, you are ready to build App Inventor, you may now run:
+
+```bash
+ant
+```
+
+and to run App Inventor:
+
+```bash
+start_appinventor
+```
+
+Press Ctrl+C to quit the server. Enter exit at the prompt to leave the virtual machine. To reclaim resources when you are not actively developing, you can run `vagrant halt` to stop the virtual machine. To completely remove the virtual machine, run `vagrant destroy`. If you destroy the VM, you will need to start these instructions from the top.
+
+Note 1: For macOS users, if you are using VirtualBox and get any error while initializing the VM it may be due to security restrictions in System Preferences, consider reading [this](https://medium.com/@Aenon/mac-virtualbox-kernel-driver-error-df39e7e10cd8) article.
+
+Note 2: If it seems like none of the dependencies are installed in the VM, run ```vagrant provision```.
+
+For better performance, consider using the manual instructions above.
 
 ## Need Help?
 

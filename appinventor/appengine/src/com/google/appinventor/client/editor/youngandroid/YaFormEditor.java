@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,6 +15,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
@@ -56,12 +57,17 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -142,7 +148,7 @@ public final class YaFormEditor extends SimpleEditor
   /**
    * A mapping of component UUIDs to mock components in the designer view.
    */
-  private final Map<String, MockComponent> componentsDb = new HashMap<String, MockComponent>();
+  private final Map<String, MockComponent> componentsDb = new HashMap<>();
 
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 
@@ -174,7 +180,7 @@ public final class YaFormEditor extends SimpleEditor
   /**
    * Creates a new YaFormEditor.
    *
-   * @param projectEditor  the project editor that contains this file editor
+   * @param projectEditor the project editor that contains this file editor
    * @param formNode the YoungAndroidFormNode associated with this YaFormEditor
    */
   YaFormEditor(ProjectEditor projectEditor, YoungAndroidFormNode formNode) {
@@ -190,7 +196,8 @@ public final class YaFormEditor extends SimpleEditor
     // Create UI elements for the designer panels.
     nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel(this);
     componentDatabaseChangeListeners.add(nonVisibleComponentsPanel);
-    visibleComponentsPanel = new SimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
+    visibleComponentsPanel = projectEditor.getUiFactory()
+        .createSimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
     componentDatabaseChangeListeners.add(visibleComponentsPanel);
     DockPanel componentsPanel = new DockPanel();
     componentsPanel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
@@ -211,13 +218,31 @@ public final class YaFormEditor extends SimpleEditor
     initWidget(componentsPanel);
     setSize("100%", "100%");
     registerNativeListeners();
+    registerKeyDownListeners();
   }
 
   public boolean shouldDisplayHiddenComponents() {
-    return visibleComponentsPanel.isHiddenComponentsCheckboxChecked();
+    return projectEditor.getScreenCheckboxState(form.getTitle()) != null
+               && projectEditor.getScreenCheckboxState(form.getTitle());
   }
 
   // FileEditor methods
+
+  @Override
+  public DropTargetProvider getDropTargetProvider() {
+    return new DropTargetProvider() {
+      @Override
+      public DropTarget[] getDropTargets() {
+        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
+        // getDropTargets() doesn't get called for each component.
+        // NOTE: These targets must be specified in depth-first order.
+        List<DropTarget> dropTargets = form.getDropTargetsWithin();
+        dropTargets.add(visibleComponentsPanel);
+        dropTargets.add(nonVisibleComponentsPanel);
+        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
+      }
+    };
+  }
 
   @Override
   public void loadFile(final Command afterFileLoaded) {
@@ -270,6 +295,8 @@ public final class YaFormEditor extends SimpleEditor
   public void onShow() {
     LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
+    // Replace the old singleton call with the new panel method
+    visibleComponentsPanel.show(form);
     loadDesigner();
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }
@@ -516,7 +543,7 @@ public final class YaFormEditor extends SimpleEditor
 
     // END OF PROJECT TAGGING CODE
 
-    preUpgradeJsonString =  propertiesObject.toJson(); // [lyn, [2014/10/13] remember pre-upgrade component versions.
+    preUpgradeJsonString = propertiesObject.toJson(); // [lyn, [2014/10/13] remember pre-upgrade component versions.
     if (YoungAndroidFormUpgrader.upgradeSourceProperties(propertiesObject.getProperties())) {
       String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
       fileContentHolder.setFileContent(upgradedContent);
@@ -527,16 +554,16 @@ public final class YaFormEditor extends SimpleEditor
         }
       } else {
         Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
-          getProjectId(), getFileId(), upgradedContent,
-          new OdeAsyncCallback<Long>(MESSAGES.saveError()) {
-            @Override
-            public void onSuccess(Long result) {
-              // Execute the afterUpgradeComplete command if one was given.
-              if (afterUpgradeComplete != null) {
-                afterUpgradeComplete.execute();
+            getProjectId(), getFileId(), upgradedContent,
+            new OdeAsyncCallback<Long>(MESSAGES.saveError()) {
+              @Override
+              public void onSuccess(Long result) {
+                // Execute the afterUpgradeComplete command if one was given.
+                if (afterUpgradeComplete != null) {
+                  afterUpgradeComplete.execute();
+                }
               }
-            }
-          });
+            });
       }
     } else {
       // No upgrade was necessary.
@@ -552,7 +579,7 @@ public final class YaFormEditor extends SimpleEditor
         content, JSON_PARSER);
     try {
       form = createMockForm(propertiesObject.getProperties().get("Properties").asObject());
-    } catch(ComponentNotFoundException e) {
+    } catch (ComponentNotFoundException e) {
       Ode.getInstance().recordCorruptProject(getProjectId(), getProjectRootNode().getName(),
           e.getMessage());
       ErrorReporter.reportError(MESSAGES.noComponentFound(e.getComponentName(),
@@ -566,9 +593,7 @@ public final class YaFormEditor extends SimpleEditor
     form.select(null);
 
     String subsetjson = form.getPropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET);
-    if (subsetjson.length() > 0) {
-      reloadComponentPalette(subsetjson);
-    }
+    reloadComponentPalette(subsetjson);
     // Set loadCompleted to true.
     // From now on, all change events will be taken seriously.
     loadComplete = true;
@@ -584,7 +609,7 @@ public final class YaFormEditor extends SimpleEditor
     // Also have the blocks editor listen to changes. Do this here instead
     // of in the blocks editor so that we don't risk it missing any updates.
     form.addFormChangeListener(((YaProjectEditor) projectEditor)
-        .getBlocksFileEditor(form.getName()));
+                                   .getBlocksFileEditor(form.getName()));
   }
 
   /**
@@ -593,7 +618,6 @@ public final class YaFormEditor extends SimpleEditor
    * @param subsetjson JSON encoding the list of allowable components for the palette.
    */
   public void reloadComponentPalette(String subsetjson) {
-    LOG.info(subsetjson);
     if (subsetjson.length() > 0) {
       try {
         String shownComponentsStr = getShownComponents(subsetjson);
@@ -615,11 +639,12 @@ public final class YaFormEditor extends SimpleEditor
             }
           };
         }
+        palettePanel.reloadComponentsFromSet(shownComponents);
       } catch (Exception e) {
         LOG.log(Level.SEVERE, "invalid subset string", e);
       }
     } else {
-      paletteFilter = null;
+      palettePanel.reloadComponents();
     }
     palettePanel.setFilter(paletteFilter, true);
   }
@@ -883,6 +908,7 @@ public final class YaFormEditor extends SimpleEditor
 
   /**
    * Runs through all the Mock Components and upgrades if its corresponding Component was Upgraded
+   *
    * @param componentTypes the Component Types that got upgraded
    */
   private void updateMockComponents(List<String> componentTypes) {
@@ -956,6 +982,93 @@ public final class YaFormEditor extends SimpleEditor
     return componentDatabase;
   }
 
+  private void registerKeyDownListeners () {
+    RootPanel.get().addDomHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        if (!isActiveEditor()) {
+          return;  // Not the active editor
+        }
+        if (event.isAltKeyDown()) {
+          List<MockComponent> allComponents = new ArrayList<>(getComponents().values());
+          MockComponent selectedComponent = form.getLastSelectedComponent();
+          int index = form.getChildren().indexOf(selectedComponent);
+
+          if (selectedComponent.isVisibleComponent()) {
+            switch (event.getNativeKeyCode()) {
+              case KeyCodes.KEY_DOWN:
+                if (index < 0) {
+                  MockContainer container = selectedComponent.getContainer();
+                  List<MockComponent> containerComponents = container.getChildren();
+                  int indexC = containerComponents.indexOf(selectedComponent);
+                  int indexOfContainer = allComponents.indexOf(container);
+                  selectedComponent.getContainer().removeComponent(selectedComponent, false);
+
+                  if (indexC == containerComponents.size() && container.getContainer().willAcceptComponentType(selectedComponent.getType())) {
+                    container.getContainer().addVisibleComponent(selectedComponent, indexOfContainer);
+                  } else {
+                    container.addVisibleComponent(selectedComponent, indexC + 1);
+                  }
+                } else {
+                  index++;
+                  form.removeComponent(selectedComponent, false);
+                  MockComponent nextComponent = allComponents.get(index + 1); 
+                  int nextComponentindex = form.getChildren().indexOf(nextComponent);
+                  if(nextComponent instanceof MockContainer && ((MockContainer) nextComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    ((MockContainer)nextComponent).addVisibleComponent(selectedComponent, 0);
+                  } else if (nextComponentindex < 0 && ((MockContainer) nextComponent.getContainer()).willAcceptComponentType(selectedComponent.getType())) {
+                    nextComponent.getContainer().addVisibleComponent(selectedComponent, 0);
+                  } else {
+                    form.addVisibleComponent(selectedComponent, index);
+                  }
+                }
+                break;
+
+              case KeyCodes.KEY_UP:
+                if (index < 0) {
+                  MockContainer container = selectedComponent.getContainer();
+                  List<MockComponent> containerComponents = container.getChildren();
+                  int indexC = containerComponents.indexOf(selectedComponent);
+                  int indexOfContainer = allComponents.indexOf(container);
+                  selectedComponent.getContainer().removeComponent(selectedComponent, false);
+                  if (indexC == 0 && container.getContainer().willAcceptComponentType(selectedComponent.getType())) {
+                    container.getContainer().addVisibleComponent(selectedComponent, indexOfContainer - 1);
+                  } else {
+                    container.addVisibleComponent(selectedComponent, indexC - 1);
+                  }
+                } else {
+                  index++;
+                  form.removeComponent(selectedComponent, false);
+                  MockComponent prevComponent = allComponents.get(index - 1); 
+                  int prevComponentIndex = form.getChildren().indexOf(prevComponent);
+                  if(prevComponent instanceof MockContainer && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    ((MockContainer)prevComponent).addVisibleComponent(selectedComponent, -1);
+                  } else if (prevComponentIndex < 0 && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    prevComponent.getContainer().addVisibleComponent(selectedComponent, -1);
+                  } else {                  
+                    form.addVisibleComponent(selectedComponent, index - 2);
+                  }
+                }
+                break;
+
+              default:
+                break;
+            }
+          }
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
+          SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused()
+            && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
+          getVisibleComponentsPanel().focusCheckbox();
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
+          PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused()) {
+          AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
+        }
+      }
+    }, KeyDownEvent.getType());
+  }
+
   @SuppressWarnings("checkstyle:LineLength")
   private native void registerNativeListeners()/*-{
     var editor = this;
@@ -998,13 +1111,13 @@ public final class YaFormEditor extends SimpleEditor
       copy(e);
     });
 
-    $wnd.addEventListener('keydown', function(e) {
+    $wnd.addEventListener('keydown', function (e) {
       if (e.keyCode === 16) {
         editor.shiftDown = true;
       }
     });
 
-    $wnd.addEventListener('keyup', function(e) {
+    $wnd.addEventListener('keyup', function (e) {
       if (e.keyCode === 16) {
         editor.shiftDown = false;
       }
@@ -1026,7 +1139,7 @@ public final class YaFormEditor extends SimpleEditor
       try {
         JSON.parse(data);
         e.preventDefault();
-      } catch(e) {
+      } catch (e) {
         return;  // not valid JSON to paste, abort!
       }
       editor.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::pasteFromJsni(*)(data, editor.shiftDown);
@@ -1076,7 +1189,7 @@ public final class YaFormEditor extends SimpleEditor
     String sep = "";
     sb.append("[");
     if (form.getSelectedComponents().size() == 1
-        && form.getSelectedComponents().get(0) instanceof MockForm) {
+            && form.getSelectedComponents().get(0) instanceof MockForm) {
       encodeComponentProperties(form, sb, false);
     } else {
       for (MockComponent component : form.getSelectedComponents()) {
@@ -1117,13 +1230,14 @@ public final class YaFormEditor extends SimpleEditor
     for (JSONValue element : components.getElements()) {
       JSONObject object = element.asObject();
       String type = object.get("$Type").asString().getString();
-      if (container.willAcceptComponentType(type)) {
+      if (container.willAcceptComponentType(type) && container.canPasteComponentOfType(type)) {
         MockComponent pasted = createMockComponent(object, container, substitution);
         if (pasted.isVisibleComponent()) {
           container.removeComponent(pasted, false);
           container.addVisibleComponent(pasted, insertBefore);
           insertBefore = container.getChildren().indexOf(pasted) + 1;
         }
+        container.onPaste(pasted);
         lastComponentCreated = pasted;
       }
     }
@@ -1134,7 +1248,7 @@ public final class YaFormEditor extends SimpleEditor
     // Copy the properties
     for (Map.Entry<String, JSONValue> property : prototype.getProperties().entrySet()) {
       if (property.getKey().startsWith("$")
-          || property.getKey().equals(MockForm.PROPERTY_NAME_UUID)) {
+              || property.getKey().equals(MockForm.PROPERTY_NAME_UUID)) {
         continue;
       }
       form.getProperties().getExistingProperty(property.getKey())

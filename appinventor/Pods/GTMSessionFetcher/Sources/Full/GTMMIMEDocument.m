@@ -314,7 +314,7 @@ static void SearchDataForBytes(NSData *data, const void *targetBytes, NSUInteger
     NSCharacterSet *badKeyChars = [NSCharacterSet characterSetWithCharactersInString:@":\r\n"];
     NSCharacterSet *badValueChars = [NSCharacterSet characterSetWithCharactersInString:@"\r\n"];
 
-    NSRange badRange = [key rangeOfCharacterFromSet:badKeyChars];
+    __unused NSRange badRange = [key rangeOfCharacterFromSet:badKeyChars];
     NSAssert(badRange.location == NSNotFound, @"invalid key: %@", key);
 
     badRange = [value rangeOfCharacterFromSet:badValueChars];
@@ -364,10 +364,14 @@ static void SearchDataForBytes(NSData *data, const void *targetBytes, NSUInteger
   }
   NSMutableArray *parts;
   NSInteger previousBoundaryOffset = -1;
+#if DEBUG
   NSInteger partCounter = -1;
   NSInteger numberOfPartsWithHeaders = 0;
+#endif
   for (NSNumber *currentBoundaryOffset in foundBoundaryOffsets) {
+#if DEBUG
     ++partCounter;
+#endif
     if (previousBoundaryOffset == -1) {
       // This is the first boundary.
       previousBoundaryOffset = currentBoundaryOffset.integerValue;
@@ -441,7 +445,9 @@ static void SearchDataForBytes(NSData *data, const void *targetBytes, NSUInteger
                 partData, (size_t)headerSeparatorOffset + 4,
                 (size_t)(previousPartDataLength - (headerSeparatorOffset + 4)));
 
+#if DEBUG
             numberOfPartsWithHeaders++;
+#endif
           }  // crlfOffsets.count == 0
         }    // hasAnotherCRLF
 

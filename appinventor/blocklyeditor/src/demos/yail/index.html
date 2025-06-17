@@ -115,18 +115,18 @@ function setOutput(text) {
 }
 
 function toXml() {
-  var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+  var xmlDom = Blockly.Xml.workspaceToDom(Blockly.common.getMainWorkspace());
   var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
   setOutput(xmlText);
 }
 
 function toAppYail() {
-  var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", false);
+  var code = AI.Yail.getFormYail(formJson, "fakepackagename", false);
   setOutput(code);
 }
 
 function toReplYail() {
-  var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", true);
+  var code = AI.Yail.getFormYail(formJson, "fakepackagename", true);
   setOutput(code);
 }
 

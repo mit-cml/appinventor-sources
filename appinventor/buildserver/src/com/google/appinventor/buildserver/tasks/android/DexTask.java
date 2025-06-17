@@ -38,6 +38,7 @@ public abstract class DexTask {
   static Set<String> getCriticalJars(AndroidCompilerContext context) {
     return new HashSet<>(Arrays.asList(
         // Minimum required for Android 4.x
+        context.getResources().getRuntimeFilesDir() + "annotation-experimental.jar",
         context.getResources().getRuntimeFilesDir() + "appcompat.jar",
         context.getResources().getRuntimeFilesDir() + "collection.jar",
         context.getResources().getRuntimeFilesDir() + "core.jar",

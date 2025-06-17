@@ -1,7 +1,7 @@
 /* -*- mode: javascript; js-indent-level 2; -*- */
 /**
  * @license
- * Copyright © 2016 Massachusetts Institute of Technology. All rights reserved.
+ * Copyright © 2016-2021 Massachusetts Institute of Technology. All rights reserved.
  */
 
 /**
@@ -204,7 +204,7 @@ Blockly.ComponentDatabase.prototype.addInstance = function(uid, name, typeName) 
   if (this.hasInstance(uid)) {
     return false;
   }
-  this.instances_[uid] = {name: name, typeName: typeName};
+  this.instances_[uid] = {uid: uid, name: name, typeName: typeName};
   this.instanceNameUid_[name] = uid;
   return true;
 };
@@ -222,12 +222,25 @@ Blockly.ComponentDatabase.prototype.hasInstance = function(uid) {
  * Get a component instance for the given UUID or Name.
  * @param {!string} uidOrName UUID for the component. This method also takes a Name for backwards
  * compatibility with methods that do not yet refer to a component by UUID.
- * @returns {{typeName: !string, name: !string}|ComponentInstanceDescriptor} An internal descriptor
+ * @returns {{uid: string, typeName: !string, name: !string}|ComponentInstanceDescriptor} An internal descriptor
  * of a component, otherwise undefined.
  */
 Blockly.ComponentDatabase.prototype.getInstance = function(uidOrName) {
   return this.instances_[uidOrName] || this.instances_[this.instanceNameUid_[uidOrName]];
 };
+
+/**
+ * Get the container record for the instance by UUID or Name.
+ *
+ * @param {!string} formName
+ * @param {!string} uidOrName
+ * @returns {?{uid: string, typeName: !string, name: !string}}
+ */
+Blockly.ComponentDatabase.prototype.getContainer = function(formName, uidOrName) {
+  var component = this.getInstance(uidOrName);
+  var containerUuid = top.BlocklyPanel_getComponentContainerUuid(formName, component.name);
+  return this.getInstance(containerUuid);
+}
 
 /**
  * Rename a component instance in the ComponentDatabase.
@@ -519,6 +532,10 @@ Blockly.ComponentDatabase.prototype.processHelper = function(helper) {
       return this.processOptionList(helper.data);
     case "ASSET":
       return this.processAssetHelper(helper.data);
+    case "PROVIDER_MODEL":
+      return this.processProviderModelHelper(helper.data);
+    case "PROVIDER":
+      return this.processProviderHelper(helper.data);
   }
   return null;
 }
@@ -603,6 +620,76 @@ Blockly.ComponentDatabase.prototype.processAssetHelper = function(data) {
   }
   return {
     type: "ASSET",
+    key: index
+  }
+}
+
+/**
+ * Processes data defining an provider model (from simple_components.json) and
+ * returns a HelperKey pointing to the filter.
+ * @param {!Object} data The data defining the filter.
+ * @return {!HelperKey} The key associated with the filter.
+ */
+Blockly.ComponentDatabase.prototype.processProviderModelHelper = function(data) {
+  var filter = data.filter;
+  if (!filter || filter.length == 0) {
+    return {
+      type: "PROVIDER_MODEL",
+      key: null
+    }
+  }
+  // We have to do this because js is very restrictive with array equality.
+  function findIndex(acc, cur, idx) {
+    if (acc != -1) {
+      return acc;
+    }
+    var matches = cur.every(function(string) {
+      return filter.includes(string);
+    });
+    if (matches) {
+      return idx;
+    }
+    return -1;
+  }
+}
+
+/**
+ * Processes data defining an provider (from simple_components.json) and
+ * returns a HelperKey pointing to the filter.
+ * @param {!Object} data The data defining the filter.
+ * @return {!HelperKey} The key associated with the filter.
+ */
+Blockly.ComponentDatabase.prototype.processProviderHelper = function(data) {
+  var filter = data.filter;
+  if (!filter || filter.length == 0) {
+    return {
+      type: "PROVIDER",
+      key: null
+    }
+  }
+  // We have to do this because js is very restrictive with array equality.
+  function findIndex(acc, cur, idx) {
+    if (acc != -1) {
+      return acc;
+    }
+    var matches = cur.every(function(string) {
+      return filter.includes(string);
+    });
+    if (matches) {
+      return idx;
+    }
+    return -1;
+  }
+
+  var index = this.filters_.reduce(findIndex, -1);
+  if (index == -1) {
+    // TODO: If filters_ was instead a sorted list we could optimize index
+    //   finding algorithm using a binary search.
+    this.filters_.push(filter);
+    index = this.filters_.length - 1;
+  }
+  return {
+    type: "PROVIDER",
     key: index
   }
 }

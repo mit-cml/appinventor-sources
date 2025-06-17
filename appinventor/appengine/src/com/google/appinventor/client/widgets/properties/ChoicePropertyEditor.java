@@ -8,6 +8,10 @@ package com.google.appinventor.client.widgets.properties;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.utils.Promise;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.common.collect.Lists;
@@ -72,10 +76,10 @@ public class ChoicePropertyEditor extends PropertyEditor {
   }
 
   // UI for the drop-down list of values will be represented by a DropDownButton
-  private final DropDownButton dropDownButton;
+  private DropDownButton dropDownButton;
 
   // Array of choices
-  private final Choice[] choices;
+  private Choice[] choices;
 
   /**
    * Creates a new instance of the property editor.
@@ -108,6 +112,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
           if (autoupdate) {
             updateValue();
           }
+          dropDownButton.setFocus(true);
         }
       }));
       if (Objects.equals(choice.value, defaultValue)) {
@@ -119,6 +124,43 @@ public class ChoicePropertyEditor extends PropertyEditor {
 
     initWidget(dropDownButton);
   }
+
+  /**
+   * Creates a new instance of the property editor.
+   *
+   * @param choicesPromise A promise that resolves to an array of choices
+   */
+  public ChoicePropertyEditor(Promise<Choice[]> choicePromise) {
+    // We are asynchronous. We won't have real value here until we get an answer
+    // from the Chatbot Proxy. So we need to not NPF or otherwise die, so we
+    // start with an empty list.
+    this.choices = new Choice[0];
+    dropDownButton = new DropDownButton("Choice Property Editor", "", Lists.newArrayList(), false);
+    dropDownButton.setStylePrimaryName("ode-ChoicePropertyEditor");
+    initWidget(dropDownButton);
+
+    choicePromise.then(choices -> {
+        this.choices = choices;
+        for (final Choice choice : choices) {
+          dropDownButton.addItem(
+            new DropDownItem("Choice Property Editor", choice.caption, new Command() {
+              @Override
+              public void execute() {
+                boolean multiple = isMultipleValues();
+                setMultipleValues(false);
+                property.setValue(choice.value, multiple);
+              }
+              }));
+        }
+        updateValue();
+        return null;
+      }).error(caught -> {
+          Throwable original = caught.getOriginal();
+          ErrorReporter.reportError("Error fetching Chatbot providers/models: " + original.getMessage());
+          Ode.CLog("Error fetching choices" + original.getMessage());
+          return null;
+        });
+}
 
   /**
    * Creates a new instance of the property editor with choice names.
@@ -139,6 +181,7 @@ public class ChoicePropertyEditor extends PropertyEditor {
           boolean multiple = isMultipleValues();
           setMultipleValues(false);
           property.setValue(choice.value, multiple);
+          dropDownButton.setFocus(true);
         }
       }));
     }
@@ -150,6 +193,9 @@ public class ChoicePropertyEditor extends PropertyEditor {
 
   @Override
   protected void updateValue() {
+    if (choices == null) {
+      return;
+    }
     if (isMultipleValues()) {
       dropDownButton.setCaption(MESSAGES.multipleValues());
       return;
@@ -190,4 +236,5 @@ public class ChoicePropertyEditor extends PropertyEditor {
   public void setVisible(boolean visible) {
     dropDownButton.setVisible(visible);
   }
+
 }

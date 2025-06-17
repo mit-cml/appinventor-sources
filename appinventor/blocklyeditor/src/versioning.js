@@ -23,6 +23,7 @@
 
 goog.provide('AI.Blockly.Versioning');
 
+goog.require('AI.Substitution');
 goog.require('goog.dom');
 goog.require('goog.dom.xml');
 
@@ -73,7 +74,7 @@ Blockly.Versioning.upgradeComponentMethods = function(dom) {
  * @param preUpgradeFormJsonString: JSON String from pre-upgrade Form associated with these blocks
  * @param blocksContent: String with XML representation of blocks for a screen
  * @param {Blockly.WorkspaceSvg=} opt_workspace Optional workspace that will be populated with the
- * blocks content. If not specified, Blockly.mainWorkspace is used.
+ * blocks content. If not specified, Blockly.common.getMainWorkspace() is used.
  *
  * @author fturbak@wellesley.edu (Lyn Turbak)
  *
@@ -81,21 +82,21 @@ Blockly.Versioning.upgradeComponentMethods = function(dom) {
  * in preUpgradeFormJsonString and current system component numbers or (2) between blocks language
  * version number in blocksContent and current system blocks language version.
  *
- * After any upgrades, load the blocks into Blockly.mainWorkspace.
+ * After any upgrades, load the blocks into Blockly.common.getMainWorkspace().
  *
  * Upgrades may be performed either on the XML dom tree representation or the loaded blocks
- * representation in Blockly.mainWorkspace. As a consquence, the upgrading process may
+ * representation in Blockly.common.getMainWorkspace(). As a consquence, the upgrading process may
  * ping-pong back and forth between these two representations. But in the end, the upgraded
- * blocks will be loaded into Blockly.mainWorkspace.
+ * blocks will be loaded into Blockly.common.getMainWorkspace().
  *
  * All upgrades are described by the dictionary structure in Blockly.Versioning.AllUpgradeMaps,
  * which is defined at the end of this file.
  *
  */
 Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, opt_workspace) {
-  opt_workspace = opt_workspace || Blockly.mainWorkspace;
+  opt_workspace = opt_workspace || Blockly.common.getMainWorkspace();
   var preUpgradeFormJsonObject = JSON.parse(preUpgradeFormJsonString);
-  var dom = Blockly.Xml.textToDom(blocksContent); // Initial blocks rep is dom for blocksContent
+  var dom = Blockly.utils.xml.textToDom(blocksContent); // Initial blocks rep is dom for blocksContent
   dom = Blockly.Versioning.upgradeComponentMethods(dom);
   var didUpgrade = false;
 
@@ -106,7 +107,7 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
    * @param componentType
    * @param preUpgradeVersion
    * @param systemVersion
-   * @param rep: the current blocks representation (dom or Blockly.mainWorkspace).
+   * @param rep: the current blocks representation (dom or Blockly.common.getMainWorkspace()).
    *        This is only passed explicitly to indicate type of current rep to determine
    *        when conversion needs to be done between dom and workspace (or vice versa).
    * @returns: resulting representation (dom or workspace), again only for dynamic type checking.
@@ -211,9 +212,9 @@ Blockly.Versioning.upgrade = function (preUpgradeFormJsonString, blocksContent, 
     blocksRep = upgradeComponentType(componentType, preUpgradeVersion, systemVersion, blocksRep);
   }
 
-  // Ensure that final blocks rep is Blockly.mainWorkspace
-  Blockly.Versioning.log("Blockly.Versioning.upgrade: Final conversion to Blockly.mainWorkspace");
-  Blockly.Versioning.ensureWorkspace(blocksRep, opt_workspace); // No need to use result; does work by side effect on Blockly.mainWorkspace
+  // Ensure that final blocks rep is Blockly.common.getMainWorkspace()
+  Blockly.Versioning.log("Blockly.Versioning.upgrade: Final conversion to Blockly.common.getMainWorkspace()");
+  Blockly.Versioning.ensureWorkspace(blocksRep, opt_workspace); // No need to use result; does work by side effect on Blockly.common.getMainWorkspace()
 
   return didUpgrade;
 };
@@ -284,7 +285,7 @@ Blockly.Versioning.ensureDom = function (blocksRep) {
   if (Blockly.Versioning.isDom(blocksRep)) {
     return blocksRep; // already a dom
   } else if (Blockly.Versioning.isWorkspace(blocksRep)) {
-    Blockly.Versioning.log("Blockly.Versioning.ensureDom: converting Blockly.mainWorkspace to dom");
+    Blockly.Versioning.log("Blockly.Versioning.ensureDom: converting Blockly.common.getMainWorkspace() to dom");
     return Blockly.Xml.workspaceToDom(blocksRep);
   } else {
     throw "Blockly.Versioning.ensureDom: blocksRep is neither dom nor workspace -- " + blocksRep;
@@ -307,8 +308,8 @@ Blockly.Versioning.ensureWorkspace = function (blocksRep, opt_workspace) {
   if (Blockly.Versioning.isWorkspace(blocksRep)) {
     return blocksRep; // already a workspace
   } else if (Blockly.Versioning.isDom(blocksRep)) {
-    var workspace = opt_workspace || Blockly.mainWorkspace;
-    Blockly.Versioning.log("Blockly.Versioning.ensureWorkspace: converting dom to Blockly.mainWorkspace");
+    var workspace = opt_workspace || Blockly.common.getMainWorkspace();
+    Blockly.Versioning.log("Blockly.Versioning.ensureWorkspace: converting dom to Blockly.common.getMainWorkspace()");
     workspace.clear(); // Remove any existing blocks before we add new ones.
     Blockly.Xml.domToWorkspace(blocksRep, workspace);
     // update top block positions in event of save before rendering.
@@ -333,7 +334,7 @@ Blockly.Versioning.ensureWorkspace = function (blocksRep, opt_workspace) {
  * @param opt_workspace: Optional workspace to be upgraded
  */
 Blockly.Versioning.applyUpgrader = function (upgrader, blocksRep, opt_workspace) {
-  opt_workspace = opt_workspace || Blockly.mainWorkspace;
+  opt_workspace = opt_workspace || Blockly.common.getMainWorkspace();
   opt_workspace.getProcedureDatabase().clear();  // clear the proc database in case of multiple upgrades
   Blockly.Versioning.checkUpgrader(upgrader); // ensure it has the correct form.
   // Perform upgrade
@@ -355,7 +356,7 @@ Blockly.Versioning.applyUpgrader = function (upgrader, blocksRep, opt_workspace)
  * @param upgraderList
  */
 Blockly.Versioning.composeUpgraders = function (upgraderList, opt_workspace) {
-  opt_workspace = opt_workspace || Blockly.mainWorkspace;
+  opt_workspace = opt_workspace || Blockly.common.getMainWorkspace();
   return function (blocksRep) {
     for (var i = 0, upgrader; upgrader = upgraderList[i]; i++) {
       blocksRep = Blockly.Versioning.applyUpgrader(upgrader, blocksRep, opt_workspace); // Applying upgrader may convert blocks rep from dom to workspace or vice versa.
@@ -1028,7 +1029,6 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
   }
 };
 
-
 Blockly.Versioning.makeMethodUseHelper =
   function(componentType, methodName, argNum, replaceFunc) {
     return function(blocksRep, workspace) {
@@ -1486,9 +1486,9 @@ Blockly.Versioning.firstChildWithTagName = function (elem, tag) {
  *
  */
 Blockly.Versioning.xmlBlockTextToDom = function(xmlBlockText) {
-  // To make Blockly.Xml.textToDom happy, must provide it with top-level XML tag
+  // To make Blockly.utils.xml.textToDom happy, must provide it with top-level XML tag
   var topLevelXmlString = "<xml>" + xmlBlockText + "</xml>";
-  var topLevelDom = Blockly.Xml.textToDom(topLevelXmlString);
+  var topLevelDom = Blockly.utils.xml.textToDom(topLevelXmlString);
   // Now extract single block dom from top-level dom
   var children = goog.dom.getChildren(topLevelDom);
   if (children.length != 1) {
@@ -1853,12 +1853,15 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: The SetDomain and SetRange methods were added.
     2: "noUpgrade",
     // AI2: The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // AI2: The property axesTextColor and method setAxesTextColor were added.
+    4: "noUpgrade"
 
   }, // End Chart upgraders
 
   "ChartData2D": {
-
+    // - The property dataLabelColor and method setDataLabelColor were added.
+    2: "noUpgrade"
   }, // End ChartData2D upgraders
 
   "ChatBot" : {
@@ -1867,6 +1870,9 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The ApiKey property was made visible in the designer
     2: "noUpgrade",
+
+    // The ConverseWithImage method was added
+    3: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
@@ -2196,6 +2202,12 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseHelper('ImageSprite', 'Picture',
             Blockly.Versioning.tryReplaceBlockWithAssets)],
 
+    // The MarkOrigin, OriginX, and OriginY properties were added.
+    9: "noUpgrade",
+
+    // A fix for the MarkOrigin, OriginX, and OriginY properties in the designer was fixed
+    10: "noUpgrade"
+
   }, // End ImageSprite upgraders
 
   "Label": {
@@ -2384,7 +2396,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Added mode on List Mathematical Operations
     // AI2: Added "every component" block.
     36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
-         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')]
+         Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')],
+
+    37: "noUpgrade"
 
   }, // End Language upgraders
 
@@ -2443,7 +2457,16 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade",
     // AI2:
     // - Added RemoveItemAtList method
-    7: "noUpgrade"
+    7: "noUpgrade",
+    // AI2:
+    // - Added HintText property, performance optimization
+    8: "noUpgrade",
+    // AI2: Fixed a designer property issue with ElementColor
+    9: "noUpgrade",
+    // AI2: 
+    // - Changed TextSize property to FontSize
+    // - Add new layout
+    10: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -2454,7 +2477,9 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
     // AI2:
     // The speed parameter to the LocationChanged event
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // AI2: The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling.
+    4: "noUpgrade"
 
   }, // End LocationSensor upgraders
 
@@ -2489,9 +2514,13 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Adds Units and MapType dropdowns.
     6: [Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'ScaleUnits', 'ScaleUnits'),
-        Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'MapType', 'MapType')]
+      'Map', 'ScaleUnits', 'ScaleUnits'),
+    Blockly.Versioning.makeSetterUseDropdown(
+      'Map', 'MapType', 'MapType')],
+
+    // AI2:
+    // - Adds CustomUrl (MapType 4).
+    7: "noUpgrade"
 
   }, // End Map upgraders
 
@@ -3070,7 +3099,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // Added the property to allow for the removal of the Thumb Slider
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // Added the NumberOfSteps and ColorThumb property, TouchDown and TouchUp events, 
+    3: "noUpgrade"
 
   }, // End Slider upgraders
 

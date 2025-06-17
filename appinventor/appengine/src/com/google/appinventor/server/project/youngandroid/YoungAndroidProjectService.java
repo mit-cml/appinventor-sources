@@ -238,12 +238,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     YoungAndroidSettingsBuilder oldProperties = new YoungAndroidSettingsBuilder(properties);
 
 
+    // Project settings do not include the name and package (main). So we add them
+    // here so the comparison below is accurate. Before this change, we always write out the
+    // project properties file, even when there are no changes to it.
+    String projectName = properties.getProperty("name");
+    String qualifiedName = properties.getProperty("main");
+    newProperties.setProjectName(projectName)
+      .setQualifiedFormName(qualifiedName);
+
     if (!oldProperties.equals(newProperties)) {
       // Recreate the project.properties and upload it to storageIo.
-      String projectName = properties.getProperty("name");
-      String qualifiedName = properties.getProperty("main");
-      String newContent = newProperties.setProjectName(projectName)
-          .setQualifiedFormName(qualifiedName).toProperties();
+      String newContent = newProperties.toProperties();
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -483,20 +488,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   /**
-   * Renames several projects.
-   *
-   * @param userId the user id
-   * @param projectIds IDs of projects to be renamed
-   * @param projectNames new project names
-   */
-	@Override
-  public void renameProjects(String userId, List<Long> projectIds, List<String> projectNames) {
-    for (int i = 0; i < projectIds.size(); ++i) {
-      storageIo.setProjectName(userId, projectIds.get(i), projectNames.get(i));
-    }
-  }
-
-  /**
    * Constructs a RpcResult object that indicates that a file was too big to send.
    *
    * @param size size of the aia
@@ -554,7 +545,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
-        projectName + ".aia", true, false, true, false);
+        projectName + ".aia", true, false, true, false, false, false);
       // The code below tests the size of the compressed project before
       // we send it off to the buildserver. When using URLFetch we know that
       // this size is limited to 10MB based on Google's documentation.
@@ -683,7 +674,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     try {
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
-        false, projectName + ".aia", false, false, true, true);
+        false, projectName + ".aia", false, false, true, true, false, false);
       String token = GalleryToken.makeToken(userId, projectId, projectName);
       newGalleryUrl = new URL(galleryLocation + "/fromappinventor?token=" +
         token + "&id=" + galleryId);
@@ -873,6 +864,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
                                       buildResultJsonObj.getString("output"),
                                       buildResultJsonObj.getString("error"),
                                       outputStr);
+          if (buildResultJsonObj.getInt("result") == 0) {
+            storageIo.updateProjectBuiltDate(userId, projectId, System.currentTimeMillis());
+          }
         } catch (JSONException e) {
           buildResult = new RpcResult(1, "", "");
         }

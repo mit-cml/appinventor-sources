@@ -57,8 +57,8 @@ In order to keep Alamofire focused specifically on core networking implementatio
 ## Requirements
 
 - iOS 8.0+ / macOS 10.10+ / tvOS 9.0+ / watchOS 2.0+
-- Xcode 8.3+
-- Swift 3.1+
+- Xcode 9.3+
+- Swift 4.0+
 
 ## Migration Guides
 
@@ -85,7 +85,7 @@ In order to keep Alamofire focused specifically on core networking implementatio
 $ gem install cocoapods
 ```
 
-> CocoaPods 1.1+ is required to build Alamofire 4.0+.
+> CocoaPods 1.7+ is required to build Alamofire 4.9+.
 
 To integrate Alamofire into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
@@ -95,7 +95,7 @@ platform :ios, '10.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'Alamofire', '~> 4.7'
+  pod 'Alamofire', '~> 4.9'
 end
 ```
 
@@ -112,14 +112,13 @@ $ pod install
 You can install Carthage with [Homebrew](https://brew.sh/) using the following command:
 
 ```bash
-$ brew update
 $ brew install carthage
 ```
 
 To integrate Alamofire into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "Alamofire/Alamofire" ~> 4.7
+github "Alamofire/Alamofire" ~> 4.9
 ```
 
 Run `carthage update` to build the framework and drag the built `Alamofire.framework` into your Xcode project.
@@ -130,19 +129,11 @@ The [Swift Package Manager](https://swift.org/package-manager/) is a tool for au
 
 Once you have your Swift package set up, adding Alamofire as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift`.
 
-#### Swift 3
-
-```swift
-dependencies: [
-    .Package(url: "https://github.com/Alamofire/Alamofire.git", majorVersion: 4)
-]
-```
-
 #### Swift 4
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/Alamofire/Alamofire.git", from: "4.0.0")
+    .package(url: "https://github.com/Alamofire/Alamofire.git", from: "4.9")
 ]
 ```
 

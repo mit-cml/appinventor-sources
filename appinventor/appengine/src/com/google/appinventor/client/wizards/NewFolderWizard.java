@@ -8,7 +8,11 @@ package com.google.appinventor.client.wizards;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -32,7 +36,6 @@ import java.util.logging.Logger;
  */
 public final class NewFolderWizard {
   interface NewFolderWizardUiBinder extends UiBinder<Dialog, NewFolderWizard> {}
-  private static final NewFolderWizardUiBinder UI_BINDER = GWT.create(NewFolderWizardUiBinder.class);
   private static final Logger LOG = Logger.getLogger(NewFolderWizard.class.getName());
 
   private FolderManager manager;
@@ -42,12 +45,15 @@ public final class NewFolderWizard {
   @UiField Button cancelButton;
   @UiField LabeledTextBox input;
   @UiField Tree tree;
+  @UiField Button topInvisible;
+  @UiField Button bottomInvisible;
 
   /**
    * Creates a new command for renaming projects
    */
   public NewFolderWizard() {
-    UI_BINDER.createAndBindUi(this);
+    NewFolderWizardUiBinder uibinder = GWT.create(NewFolderWizardUiBinder.class);
+    uibinder.createAndBindUi(this);
     manager = Ode.getInstance().getFolderManager();
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());
     tree.addItem(root);
@@ -57,13 +63,13 @@ public final class NewFolderWizard {
     input.setValidator(new Validator() {
       @Override
       public boolean validate(String value) {
-        errorMessage = TextValidators.getErrorMessage(value);
+        errorMessage = TextValidators.getFolderErrorMessage(value);
         input.setErrorMessage(errorMessage);
         if (errorMessage.length() > 0) {
           addButton.setEnabled(false);
           return false;
         }
-        errorMessage = TextValidators.getWarningMessages(value);
+        errorMessage = TextValidators.getFolderWarningMessages(value);
         addButton.setEnabled(true);
         return true;
       }
@@ -90,6 +96,20 @@ public final class NewFolderWizard {
         input.validate();
       }
     });
+
+    tree.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        tree.getParent().addStyleName("gwt-Tree-focused");
+      }
+    });
+
+    tree.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        tree.getParent().removeStyleName("gwt-Tree-focused");
+      }
+    });
   }
 
   private FolderTreeItem renderFolder(ProjectFolder folder) {
@@ -107,14 +127,42 @@ public final class NewFolderWizard {
     addDialog.hide();
   }
 
+  /**
+   * Handles the addition of a new folder when the add button is clicked.
+   * It validates the folder name, creates the folder if valid, and displays appropriate error messages if not.
+   * @param e The click event triggered by the add button.
+   */
   @UiHandler("addButton")
   void addFolder(ClickEvent e) {
     FolderTreeItem treeItem = (FolderTreeItem) tree.getSelectedItem();
-    TextValidators.ProjectNameStatus status = TextValidators.checkNewFolderName(
-        input.getText(), treeItem.getFolder());
+    String folderName = input.getText().trim().replaceAll("( )+", " ").replace(" ", "_");
+    TextValidators.ProjectNameStatus status = TextValidators.checkNewFolderName(folderName, treeItem.getFolder());
+
     if (status == TextValidators.ProjectNameStatus.SUCCESS) {
-      manager.createFolder(input.getText(), treeItem.getFolder());
+      manager.createFolder(folderName, treeItem.getFolder());
+      addDialog.hide();
+    } else {
+      String errorMessage = TextValidators.getFolderErrorMessage(input.getText());
+      if (errorMessage.isEmpty()) {
+        errorMessage = TextValidators.getFolderWarningMessages(input.getText());
+        if (errorMessage.isEmpty()) {
+          input.setErrorMessage("There has been an unexpected error validating the folder name.");
+        } else {
+          input.setErrorMessage(errorMessage);
+        }
+      } else {
+        input.setErrorMessage(errorMessage);
+      }
     }
-    addDialog.hide();
+  }
+
+  @UiHandler("topInvisible")
+  protected void FocusLast(FocusEvent event) {
+   addButton.setFocus(true);
+  }
+
+  @UiHandler("bottomInvisible")
+  protected void FocusFirst(FocusEvent event) {
+   input.setFocus(true);
   }
 }

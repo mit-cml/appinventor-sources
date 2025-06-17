@@ -12,17 +12,18 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 import java.util.Collections;
@@ -43,7 +44,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   interface ProjectListUiBinder extends UiBinder<FlowPanel, ProjectList> {}
 
   private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
-  private static final ProjectListUiBinder UI_BINDER = GWT.create(ProjectListUiBinder.class);
 
   private enum SortField {
     NAME,
@@ -64,15 +64,17 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   private boolean projectsLoaded = false;
 
   // UI elements
-  @UiField
-  CheckBox selectAllCheckBox;
-  @UiField FlowPanel container;
-  @UiField InlineLabel projectNameSortDec;
-  @UiField InlineLabel projectNameSortAsc;
-  @UiField InlineLabel createDateSortDec;
-  @UiField InlineLabel createDateSortAsc;
-  @UiField InlineLabel modDateSortDec;
-  @UiField InlineLabel modDateSortAsc;
+  @UiField protected CheckBox selectAllCheckBox;
+  @UiField protected FlowPanel container;
+  @UiField protected InlineLabel projectNameSortDec;
+  @UiField protected InlineLabel projectNameSortAsc;
+  @UiField protected InlineLabel createDateSortDec;
+  @UiField protected InlineLabel createDateSortAsc;
+  @UiField protected InlineLabel modDateSortDec;
+  @UiField protected InlineLabel modDateSortAsc;
+  @UiField protected FocusPanel nameFocusPanel;
+  @UiField protected FocusPanel createdateFocusPanel;
+  @UiField protected FocusPanel modDateFocusPanel;
 
   /**
    * Creates a new ProjectList
@@ -82,29 +84,56 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     sortField = SortField.DATE_MODIFIED;
     sortOrder = SortOrder.DESCENDING;
 
-    initWidget(UI_BINDER.createAndBindUi(this));
+    bindIU();
+    setIsTrash(false);
     refreshSortIndicators();
+  }
+
+  public void bindIU() {
+    ProjectListUiBinder uibinder = GWT.create(ProjectListUiBinder.class);
+    initWidget(uibinder.createAndBindUi(this));
     Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
 
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
-    setIsTrash(false);
   }
 
   @SuppressWarnings("unused")
-  @UiHandler("projectName")
+  @UiHandler("nameFocusPanel")
   public void sortByNameField(ClickEvent e) {
     changeSortOrder(SortField.NAME);
   }
 
-  @UiHandler("createDate")
+  @SuppressWarnings("unused")
+  @UiHandler("nameFocusPanel")
+  public void sortByNameField(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.NAME);
+    }
+  }
+
+  @UiHandler("createdateFocusPanel")
   public void sortByCreateDate(ClickEvent e) {
     changeSortOrder(SortField.DATE_CREATED);
   }
 
-  @UiHandler("modDate")
+  @UiHandler("createdateFocusPanel")
+  public void sortByCreateDate(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.DATE_CREATED);
+    }
+  }
+
+  @UiHandler("modDateFocusPanel")
   public void sortByModDate(ClickEvent e) {
     changeSortOrder(SortField.DATE_MODIFIED);
+  }
+
+  @UiHandler("modDateFocusPanel")
+  public void sortByModDate(KeyDownEvent e) {
+    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+      changeSortOrder(SortField.DATE_MODIFIED);
+    }
   }
 
   private void changeSortOrder(SortField clickedSortField) {
@@ -210,7 +239,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       }
     };
 
-    for (final ProjectFolder childFolder : folders) {
+    for (final ProjectFolder childFolder : folder.getChildFolders()) {
       if ("*trash*".equals(childFolder.getName())) {
         continue;
       }
@@ -220,16 +249,21 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     }
     folder.clearProjectList();
     for (final Project project : projects) {
-      ProjectListItem item = new ProjectListItem(project);
+      ProjectListItem item = createProjectListItem(project);
       item.setSelectionChangeHandler(selectionEvent);
       folder.addProjectListItem(item);
       container.add(item);
     }
     selectAllCheckBox.setValue(false);
+
     Ode.getInstance().getProjectToolbar().updateButtons();
-    if (isTrash && folder.getProjects().isEmpty()) {
+    if (isTrash && folder.getProjects().isEmpty() && folder.getChildFolders().isEmpty()) {
       Ode.getInstance().createEmptyTrashDialog(true);
     }
+  }
+
+  public ProjectListItem createProjectListItem(Project p) {
+   return new ProjectListItem(p) ;
   }
 
   public boolean isSelected() {
@@ -241,10 +275,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     int visibleProjects = folder.getVisibleProjects(false).size();
     int selectedFolders = folder.getSelectedFolders().size();
     int selectedProjects = folder.getSelectedProjects().size();
-
-    LOG.info("Checking SelectAll checkbox: SelectableFolders=" + selectableFolders
-        + " visibleProjects=" + visibleProjects + " " + "SelectedFolders=" + selectedFolders
-        + " SelectedProjects=" + selectedProjects);
 
     if (selectableFolders + visibleProjects > 0
         && selectableFolders == selectedFolders
@@ -265,7 +295,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
   @UiHandler("selectAllCheckBox")
-  void toggleAllItemSelection(ClickEvent e) {
+  protected void toggleAllItemSelection(ClickEvent e) {
     folder.selectAll(selectAllCheckBox.getValue());
     fireSelectionChangeEvent();
   }
@@ -287,6 +317,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     return folder.containsAnyProjects();
   }
 
+
   public int getMyProjectsCount() {
     int count = 0;
     if (folder == null) {
@@ -300,6 +331,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     return count;
   }
 
+
   public void setIsTrash(boolean isTrash) {
     this.isTrash = isTrash;
     if (isTrash) {
@@ -311,6 +343,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       refresh();
     }
   }
+
 
   // FolderManagerEventListener implementation
   @Override
@@ -349,29 +382,16 @@ public class ProjectList extends Composite implements FolderManagerEventListener
 
   @Override
   public void onTrashProjectRestored(Project project) {
-    Ode.getInstance().getFolderManager().getGlobalFolder().addProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
   }
 
   @Override
   public void onProjectTrashed(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().addProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
-  }
 
-  public void onProjectMoved(Project project) {
-    refresh();
   }
 
   @Override
   public void onProjectDeleted(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
+
   }
 
   @Override

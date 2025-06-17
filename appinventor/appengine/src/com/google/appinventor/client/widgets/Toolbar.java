@@ -193,7 +193,9 @@ public class Toolbar extends FlowPanel {
    * @param enabled enabled status
    */
   public void setButtonVisible(String widgetName, boolean enabled) {
-    buttonMap.get(widgetName).setVisible(enabled);
+    if (buttonMap.containsKey(widgetName)) {
+      buttonMap.get(widgetName).setVisible(enabled);
+    }
   }
 
   /**
@@ -213,7 +215,9 @@ public class Toolbar extends FlowPanel {
    * @param enabled enabled status
    */
   public void setDropDownButtonVisible(String widgetName, boolean enabled) {
-    dropDownButtonMap.get(widgetName).setVisible(enabled);
+    if (dropDownButtonMap.containsKey(widgetName)) {
+      dropDownButtonMap.get(widgetName).setVisible(enabled);
+    }
   }
 
   /**

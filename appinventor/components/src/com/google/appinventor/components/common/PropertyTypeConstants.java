@@ -194,6 +194,13 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_MAP_TYPE = "map_type";
 
+ /**
+   * Map custom URL template required by the Map component.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapCustomUrlPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_MAP_CUSTOMURL = "map_customurl";
+
   /**
    * Integer values limited to the range of valid map zoom levels [1, 18].
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapZoomPropertyEditor
@@ -411,4 +418,34 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_STROKE_STYLE = "stroke_style";
 
+  /**
+   * Float values limited to the range of valid unit coordinates [0, 1].
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFloatRangePropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_UNIT_COORDINATE =  "unit_coordinate";
+
+  /**
+   * The unit coordinates of the origin with respect to the top - left edge.
+   * See {@link com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteOriginPropertyEditor}
+   */
+  public static final String PROPERTY_TYPE_ORIGIN = "origin";
+
+  /**
+   * Chatbot Providers
+   *
+   */
+  public static final String PROPERTY_TYPE_CHATBOT_PROVIDER = "chatbotprovider";
+
+  /**
+   * Chatbot Models
+   *
+   */
+  public static final String PROPERTY_TYPE_CHATBOT_MODEL = "chatbotmodel";
+
+  /**
+   * Chart Value type for x-axis values.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
 }

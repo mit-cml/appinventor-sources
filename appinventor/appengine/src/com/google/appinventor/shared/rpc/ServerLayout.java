@@ -6,6 +6,10 @@
 
 package com.google.appinventor.shared.rpc;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+
 /**
  * Configuration of the URL namespace on the ODE server.
  *
@@ -86,6 +90,12 @@ public class ServerLayout {
    * for downloading a project's sources
    */
   public static final String DOWNLOAD_PROJECT_SOURCE = "project-source";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading a project's sources for local device caching.
+   */
+  public static final String DOWNLOAD_PROJECT_CACHED = "project-cached";
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
@@ -206,4 +216,10 @@ public class ServerLayout {
   public static String genFullDownloadPath(long projectId, String target) {
     return ODE_BASEURL + genRelativeDownloadPath(projectId, target);
   }
+
+  public static String getModuleBaseURL() {
+    return Window.Location.getProtocol() + "//" + Window.Location.getHost() +
+      "/" + GWT.getModuleName() + "/";
+  }
+
 }

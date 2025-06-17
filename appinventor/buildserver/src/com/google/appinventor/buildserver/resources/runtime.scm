@@ -412,17 +412,18 @@
          ;; The call below is a no-op unless we are in the wireless repl
 ;; Commented out -- we only send reports from the setting menu choice
 ;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
-         (if isrepl
-             (when ((this):toastAllowed)
-                   (let ((message (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))))
-                     (send-error message)
-                     ((android.widget.Toast:makeText (this) message 5):show)))
 
-             (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
-              (this)
-              (ex:getMessage)
-              (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
-              "End Application")))
+            ;; only take action if we are non-REPL (compiled app) or
+            ;; when toastAllowed (and REPL)
+         (if (or (not isrepl) ((this):toastAllowed))
+             ((com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
+               (this)                                        ;; context
+               ;; dialog is shown for compiled apps
+               ;; or toast if condition (REPL and toastAllowed)
+               (and isrepl (this):toastAllowed)              ;; toast
+               (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))     ;; message
+               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")   ;; title
+               "End Application"))))    ;; buttonText
 
 
        ;; For the HandlesEventDispatching interface
@@ -450,7 +451,7 @@
                                    (apply handler (gnu.lists.LList:makeList args 0))
                                    #t)
                                  (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
-                                   #f)
+                                   (throw exception))
                                  ;; PermissionException should be caught by a permissions-aware component and
                                  ;; handled correctly at the point it is caught. However, older extensions
                                  ;; might not be updated yet for SDK 23's dangerous permissions model, so if
@@ -1741,6 +1742,7 @@
   (cond
     ((yail-dictionary? arg) arg)
     ((yail-list? arg) (yail-dictionary-alist-to-dict arg))
+    ((string? arg) (com.google.appinventor.components.runtime.util.JsonUtil:getObjectFromJson arg #t))
     (else (try-catch
             (arg:toYailDictionary)
             (exception java.lang.Exception

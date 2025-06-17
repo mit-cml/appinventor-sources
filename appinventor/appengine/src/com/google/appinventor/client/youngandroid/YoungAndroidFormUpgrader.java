@@ -277,6 +277,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Chart")) {
         srcCompVersion = upgradeChartProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("ChartData2D")) {
+        srcCompVersion = upgradeChartData2DProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ChatBot")) {
         srcCompVersion = upgradeChatBotProperties(componentProperties, srcCompVersion);
 
@@ -691,6 +694,10 @@ public final class YoungAndroidFormUpgrader {
       // Added the property to allow for the removal of the Thumb Slider
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // Added the NumberOfSteps property, TouchDown and TouchUp events
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -865,6 +872,20 @@ public final class YoungAndroidFormUpgrader {
       // The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The axesTextColor and dataLabelColor properties were added.
+      // The ValueFormat property was added.
+      srcCompVersion = 4;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeChartData2DProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added a dataLabelColor feature.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
@@ -873,6 +894,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // The ApiKey property was made visible in the designer.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The ConverseWithImage block was added
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1381,6 +1406,43 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 8;
     }
+    if (srcCompVersion < 9) {
+      // The MarkOrigin, OriginX, and OriginY properties were added.
+      srcCompVersion = 9;
+    }
+    if (srcCompVersion < 10) {
+      JSONValue value = componentProperties.get("MarkOrigin");
+      if (value != null) {
+        String origin = value.asString().getString();
+        if (origin.startsWith("(") && origin.endsWith(")")) {
+          String[] parts = origin.substring(1, origin.length() - 1).split(", ");
+          double x = Double.parseDouble(parts[0]);
+          double y = Double.parseDouble(parts[1]);
+          if (x == 0.0 && y == 0.0) {
+            // Clean up the default value
+            componentProperties.remove("MarkOrigin");
+          }
+        }
+      }
+      value = componentProperties.get("OriginX");
+      if (value != null) {
+        double x = Double.parseDouble(value.asString().getString());
+        if (x == 0.0) {
+          // Clean up the default value
+          componentProperties.remove("OriginX");
+        }
+      }
+      // I haven't seen this in the wild but just in case...
+      value = componentProperties.get("OriginY");
+      if (value != null) {
+        double y = Double.parseDouble(value.asString().getString());
+        if (y == 0.0) {
+          // Clean up the default value
+          componentProperties.remove("OriginY");
+        }
+      }
+      srcCompVersion = 10;
+    }
     return srcCompVersion;
   }
 
@@ -1473,6 +1535,32 @@ public final class YoungAndroidFormUpgrader {
       // Added RemoveItemAtIndex method
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8) {
+      // Added HintText property, performance optimization.
+
+      // !!! NB: Note that because of a behavior issue introduced in nb199, if we get to this point
+      // we immediately jump to version 9 since this project predates the introduction of the
+      // ElementColor property.
+      srcCompVersion = 9;
+    }
+    if (srcCompVersion < 9) {
+      srcCompVersion = 9;
+      if (componentProperties.containsKey("ElementColor")) {
+        // ElementColor default was changed to None. If the user manually changed it to None,
+        // remove it to keep the project size down.
+        String elementColor = componentProperties.get("ElementColor").asString().getString();
+        if ("&H00FFFFFF".equals(elementColor)) {
+          componentProperties.remove("ElementColor");
+        }
+      }
+    }
+    if (srcCompVersion < 10) {
+      // The TextSize property was renamed to FontSize.
+      // Add new layout
+      handlePropertyRename(componentProperties, "TextSize", "FontSize");
+      // Properties related to this component have now been upgraded to version 10.
+      srcCompVersion = 10;
+    }
     return srcCompVersion;
   }
 
@@ -1485,6 +1573,11 @@ public final class YoungAndroidFormUpgrader {
       // Version 3:
       // The speed parameter was added to the LocationChanged event
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      //Version 4:
+      //The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -2003,6 +2096,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // Adds ScaleUnits and MapType dropdowns.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // Adds CustomUrl (MapType 4).
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }
