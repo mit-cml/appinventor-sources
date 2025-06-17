@@ -44,7 +44,7 @@ import com.google.ar.core.Trackable;
 @SimpleObject
 public final class WebViewNode extends ARNodeBase implements ARWebView {
 
-
+  private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
   private Trackable trackable = null;
   private String texture = "";
@@ -93,25 +93,27 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
     }
   }
 
-  @SimpleProperty(description = "Set the current pose of the object from property",
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
       category = PropertyCategory.APPEARANCE)
   @Override
   public void PoseFromPropertyPosition(String positionFromProperty) {
-    Log.i("setting Capsule pose", "with position" +positionFromProperty);
-
-
     String[] positionArray = positionFromProperty.split(",");
     float[] position = {0f,0f,0f};
 
     for (int i = 0; i < positionArray.length; i++) {
       position[i] = Float.parseFloat(positionArray[i]);
     }
-    float[] rotation = {0,0,0, 1}; // no rotation TBD
+    this.fromPropertyPosition = position;
+    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
+    Log.i("store webview pose", "with position" +positionFromProperty);
   }
+
 
   @Override
   @SimpleProperty(description = "How far, in centimeters, the WebViewNode extends along the x-axis.  " +

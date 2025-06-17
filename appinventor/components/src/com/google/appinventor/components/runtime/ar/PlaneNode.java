@@ -37,7 +37,7 @@ import com.google.ar.core.Trackable;
   @SimpleObject
   public final class PlaneNode extends ARNodeBase implements ARPlane {
 
-
+  private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
   private Trackable trackable = null;
   // TODO: either supply a simple quad or make one
@@ -89,43 +89,90 @@ import com.google.ar.core.Trackable;
     Log.i("created Anchor!", " " );
   }
 
+  @SimpleProperty(description = "Set the current pose of the object",
+      category = PropertyCategory.APPEARANCE)
+  @Override
+  public void Pose(Object p) {
+    Log.i("setting Capsule pose", "with " +p);
+    Pose pose = (Pose) p;
+
+    float[] position = {pose.tx(), pose.ty(), pose.tz()};
+    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }
+
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
+      category = PropertyCategory.APPEARANCE)
+  @Override
+  public void PoseFromPropertyPosition(String positionFromProperty) {
+    String[] positionArray = positionFromProperty.split(",");
+    float[] position = {0f,0f,0f};
+
+    for (int i = 0; i < positionArray.length; i++) {
+      position[i] = Float.parseFloat(positionArray[i]);
+    }
+    this.fromPropertyPosition = position;
+    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+    Log.i("store webview pose", "with position" +positionFromProperty);
+  }
+
+
   @Override
   public float Scale() { return this.scale; }
 
   @Override
   public void Scale(float t) { this.scale = t;}
 
-    @Override
-    @SimpleProperty(description = "How far, in centimeters, the PlaneNode extends along the x-axis.  " +
-      "Values less than zero will be treated as their absolute value.  When set to zero, the PlaneNode " +
-      "will not be shown.")
-    public float WidthInCentimeters() { return 0.5f; }
+  @Override
+  @SimpleProperty(description = "How far, in centimeters, the PlaneNode extends along the x-axis.  " +
+    "Values less than zero will be treated as their absolute value.  When set to zero, the PlaneNode " +
+    "will not be shown.")
+  public float WidthInCentimeters() { return 0.5f; }
 
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "6")
-    @SimpleProperty(category = PropertyCategory.APPEARANCE)
-    public void WidthInCentimeters(float widthInCentimeters) {}
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "6")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void WidthInCentimeters(float widthInCentimeters) {}
 
-    @Override
-    @SimpleProperty(description = "How far, in centimeters, the PlaneNode extends along the y-axis.  " +
-      "Values less than zero will be treated as their absolute value.  When set to zero, the PlaneNode " +
-      "will not be shown.")
-    public float HeightInCentimeters() { return 0.5f; }
+  @Override
+  @SimpleProperty(description = "How far, in centimeters, the PlaneNode extends along the y-axis.  " +
+    "Values less than zero will be treated as their absolute value.  When set to zero, the PlaneNode " +
+    "will not be shown.")
+  public float HeightInCentimeters() { return 0.5f; }
 
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "2")
-    @SimpleProperty(category = PropertyCategory.APPEARANCE)
-    public void HeightInCentimeters(float heightInCentimeters) {}
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "2")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void HeightInCentimeters(float heightInCentimeters) {}
 
-    @Override
-    @SimpleProperty(description = "This determines how rounded the boxes corners will be.  " +
-      "A value of zero specifies no rounded corners, and a value of half the height or " +
-      "width of the PlaneNode (whichever is greater) makes it fully rounded, with no " +
-      "straight edges.  Values less than zero will be treated as zero.")
-    public float CornerRadius() { return 0f; }
+  @Override
+  @SimpleProperty(description = "This determines how rounded the boxes corners will be.  " +
+    "A value of zero specifies no rounded corners, and a value of half the height or " +
+    "width of the PlaneNode (whichever is greater) makes it fully rounded, with no " +
+    "straight edges.  Values less than zero will be treated as zero.")
+  public float CornerRadius() { return 0f; }
 
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "0")
-    @SimpleProperty(category = PropertyCategory.APPEARANCE)
-    public void CornerRadius(float cornerRadius) {}
-  }
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "0")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void CornerRadius(float cornerRadius) {}
+
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public String Texture() { return this.texture; }
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public void Texture(String texture) {}
+
+}
