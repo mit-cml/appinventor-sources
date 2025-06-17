@@ -43,6 +43,7 @@ import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
+import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
 import com.google.appinventor.client.style.neo.UiFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
@@ -145,6 +146,7 @@ public class Ode implements EntryPoint {
   // Application level image bundle
   private static Images IMAGES;
   private static boolean useNeoStyle = false;
+  private static boolean useDarkMode = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -930,6 +932,7 @@ public class Ode implements EntryPoint {
   private Promise<Void> handleUiPreference() {
     return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
       useNeoStyle = Ode.getUserNewLayout();
+      useDarkMode = Ode.getUserDarkThemeEnabled();
       if (useNeoStyle) {
         GWT.runAsync(new RunAsyncCallback() {
           @Override
@@ -939,7 +942,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(ImagesNeo.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImagesNeo.class);
+            } else {
+              IMAGES = GWT.create(ImagesNeo.class);
+            }
             RootPanel.get().addStyleName("neo");
             uiFactory = new UiFactoryNeo();
             res.apply(null);
@@ -954,7 +961,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(Images.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImages.class);
+            } else {
+              IMAGES = GWT.create(Images.class);
+            }
             RootPanel.get().addStyleName("classic");
             uiFactory = new UiStyleFactory();
             res.apply(null);
@@ -2663,12 +2674,14 @@ public class Ode implements EntryPoint {
     public static final Resources INSTANCE =  GWT.create(Resources.class);
     
     @Source({
-      "com/google/appinventor/client/light.css"
+      "com/google/appinventor/client/style/classic/light.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicLight();
 
     @Source({
-      "com/google/appinventor/client/dark.css"
+      "com/google/appinventor/client/style/classic/dark.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicDark();
 
