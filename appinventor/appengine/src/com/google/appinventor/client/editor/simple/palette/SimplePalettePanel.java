@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,11 +17,8 @@ import com.google.appinventor.client.editor.simple.components.MockComponent;
 public interface SimplePalettePanel {
   /**
    * Loads all components to be shown on the palette.
-   *
-   * @param dropTargetProvider  provider of targets that palette items can be
-   *                            dropped on
    */
-  void loadComponents(DropTargetProvider dropTargetProvider);
+  void loadComponents();
 
   /**
    * Configure a mock component.

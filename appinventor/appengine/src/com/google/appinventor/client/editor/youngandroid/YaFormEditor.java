@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -85,7 +85,8 @@ import java.util.logging.Logger;
  * @author markf@google.com (Mark Friedman)
  * @author lizlooney@google.com (Liz Looney)
  */
-public final class YaFormEditor extends SimpleEditor implements FormChangeListener, ComponentDatabaseChangeListener, PropertyChangeListener {
+public final class YaFormEditor extends SimpleEditor
+    implements FormChangeListener, ComponentDatabaseChangeListener, PropertyChangeListener {
 
   private static final Logger LOG = Logger.getLogger(YaFormEditor.class.getName());
 
@@ -105,13 +106,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     }
   }
 
-  private static final String ERROR_EXISTING_UUID = "Component with UUID \"%1$s\" already exists.";
-  private static final String ERROR_NONEXISTENT_UUID = "No component exists with UUID \"%1$s\".";
-
   // JSON parser
   private static final JSONParser JSON_PARSER = new ClientJsonParser();
 
-  private final SimpleComponentDatabase COMPONENT_DATABASE;
+  private final SimpleComponentDatabase componentDatabase;
 
   private final YoungAndroidFormNode formNode;
 
@@ -127,6 +125,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   private final YoungAndroidPalettePanel palettePanel;
   private final PropertiesPanel designProperties;
 
+  private YoungAndroidPalettePanel.Filter paletteFilter = null;
+
   // UI elements
   private final SimpleVisibleComponentsPanel visibleComponentsPanel;
   private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
@@ -141,7 +141,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // and we rely on the pre-upgraded .scm file for this info.
   private String preUpgradeJsonString;
 
-  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<>();
+  private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners
+      = new ArrayList<ComponentDatabaseChangeListener>();
   private JSONArray authURL;    // List of App Inventor versions we have been edited on.
 
   /**
@@ -152,6 +153,29 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 
   private EditableProperties selectedProperties = null;
+  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>();
+  private DropTargetProvider dropTargetProvider = new DropTargetProvider() {
+    @Override
+    public DropTarget[] getDropTargets() {
+      // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
+      // getDropTargets() doesn't get called for each component.
+      // NOTE: These targets must be specified in depth-first order.
+      List<DropTarget> dropTargets = form.getDropTargetsWithin();
+      dropTargets.add(visibleComponentsPanel);
+      dropTargets.add(nonVisibleComponentsPanel);
+      return dropTargets.toArray(new DropTarget[0]);
+    }
+  };
+
+  @Override
+  public DropTargetProvider getDropTargetProvider() {
+    return dropTargetProvider;
+  }
+
+  @Override
+  public YoungAndroidPalettePanel.Filter getPaletteFilter() {
+    return paletteFilter;
+  }
 
   /**
    * Creates a new YaFormEditor.
@@ -163,14 +187,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     super(projectEditor, formNode);
 
     this.formNode = formNode;
-    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(getProjectId());
+    componentDatabase = SimpleComponentDatabase.getInstance(getProjectId());
 
     // Get reference to the source structure explorer
     sourceStructureExplorer =
         SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer();
 
     // Create UI elements for the designer panels.
-    nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel();
+    nonVisibleComponentsPanel = new SimpleNonVisibleComponentsPanel(this);
     componentDatabaseChangeListeners.add(nonVisibleComponentsPanel);
     visibleComponentsPanel = projectEditor.getUiFactory()
         .createSimpleVisibleComponentsPanel(this, nonVisibleComponentsPanel);
@@ -186,20 +210,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     designProperties.setSize("100%", "100%");
 
     // Create palettePanel, which will be used as the content of the PaletteBox.
-    palettePanel = new YoungAndroidPalettePanel(this);
-    palettePanel.loadComponents(new DropTargetProvider() {
-      @Override
-      public DropTarget[] getDropTargets() {
-        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
-        // getDropTargets() doesn't get called for each component.
-        // NOTE: These targets must be specified in depth-first order.
-        List<DropTarget> dropTargets = form.getDropTargetsWithin();
-        dropTargets.add(visibleComponentsPanel);
-        dropTargets.add(nonVisibleComponentsPanel);
-        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
-      }
-    });
-    palettePanel.setSize("100%", "100%");
+    palettePanel = YoungAndroidPalettePanel.get();
+    palettePanel.setActiveEditor(this);
+    palettePanel.loadComponents();
     componentDatabaseChangeListeners.add(palettePanel);
 
     initWidget(componentsPanel);
@@ -216,26 +229,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   // FileEditor methods
 
   @Override
-  public DropTargetProvider getDropTargetProvider() {
-    return new DropTargetProvider() {
-      @Override
-      public DropTarget[] getDropTargets() {
-        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
-        // getDropTargets() doesn't get called for each component.
-        // NOTE: These targets must be specified in depth-first order.
-        List<DropTarget> dropTargets = form.getDropTargetsWithin();
-        dropTargets.add(visibleComponentsPanel);
-        dropTargets.add(nonVisibleComponentsPanel);
-        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
-      }
-    };
-  }
-
-  @Override
   public void loadFile(final Command afterFileLoaded) {
     final long projectId = getProjectId();
     final String fileId = getFileId();
-    OdeAsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
+    OdeAsyncCallback<ChecksumedLoadFile> callback =
+        new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
       @Override
       public void onSuccess(ChecksumedLoadFile result) {
         String contents;
@@ -340,11 +338,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   @Override
   public List<String> getComponentNames() {
     return new ArrayList<String>(getComponents().keySet());
-  }
-
-  @Override
-  public SimplePalettePanel getComponentPalettePanel() {
-    return palettePanel;
   }
 
   @Override
@@ -603,13 +596,34 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
                                    .getBlocksFileEditor(form.getName()));
   }
 
+  /**
+   * Reload the form's palette panel with a subset of all components.
+   *
+   * @param subsetjson JSON encoding the list of allowable components for the palette.
+   */
   public void reloadComponentPalette(String subsetjson) {
     Set<String> shownComponents = new HashSet<String>();
-    if (subsetjson.length() > 0) {
+    if (!subsetjson.isEmpty()) {
       try {
         String shownComponentsStr = getShownComponents(subsetjson);
-        if (shownComponentsStr.length() > 0) {
-          shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
+        if (!shownComponentsStr.isEmpty()) {
+          shownComponents = new HashSet<String>(
+              Arrays.asList(shownComponentsStr.split(",")));
+          Set<String> finalShownComponents = shownComponents;
+          paletteFilter = new YoungAndroidPalettePanel.Filter() {
+            @Override
+            public boolean shouldShowComponent(String componentTypeName) {
+              return finalShownComponents.contains(componentTypeName)
+                  && !componentDatabase.getComponentExternal(componentTypeName);
+            }
+
+            // Toolkit does not currently support Extensions. The Extensions palette should be
+            // left alone.
+            @Override
+            public boolean shouldShowExtensions() {
+              return true;
+            }
+          };
         }
         palettePanel.reloadComponentsFromSet(shownComponents);
       } catch (Exception e) {
@@ -618,6 +632,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     } else {
       palettePanel.reloadComponents();
     }
+    palettePanel.setFilter(paletteFilter, true);
   }
 
   private native String getShownComponents(String subsetString)/*-{
@@ -670,7 +685,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       mockComponent = new MockForm(this);
     } else {
       mockComponent = SimpleComponentDescriptor.createMockComponent(componentType,
-          COMPONENT_DATABASE.getComponentType(componentType), this);
+          componentDatabase.getComponentType(componentType), this);
 
       // Ensure unique name on paste
       if (substitution != null) {
@@ -755,6 +770,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     MockComponent selectedComponent = form.getLastSelectedComponent();
 
     // Set the palette box's content.
+    palettePanel.setActiveEditor(this);
     PaletteBox paletteBox = PaletteBox.getPaletteBox();
     paletteBox.setContent(palettePanel);
 
@@ -830,7 +846,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     sb.append("\",\"$Type\":\"");
     sb.append(componentType);
     sb.append("\",\"$Version\":\"");
-    sb.append(COMPONENT_DATABASE.getComponentVersion(componentType));
+    sb.append(componentDatabase.getComponentVersion(componentType));
     sb.append('"');
 
     // Next the actual component properties
@@ -900,7 +916,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void onComponentTypeAdded(List<String> componentTypes) {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    componentDatabase.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       // TODO: Refactor calls to to Source Structure
       cdbChangeListener.onComponentTypeAdded(componentTypes);
@@ -933,7 +949,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void onComponentTypeRemoved(Map<String, String> componentTypes) {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    componentDatabase.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       cdbChangeListener.onComponentTypeRemoved(componentTypes);
     }
@@ -941,7 +957,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void onResetDatabase() {
-    COMPONENT_DATABASE.removeComponentDatabaseListener(this);
+    componentDatabase.removeComponentDatabaseListener(this);
     for (ComponentDatabaseChangeListener cdbChangeListener : componentDatabaseChangeListeners) {
       cdbChangeListener.onResetDatabase();
     }
@@ -978,10 +994,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
                 } else {
                   index++;
                   form.removeComponent(selectedComponent, false);
-                  MockComponent nextComponent = allComponents.get(index + 1); 
+                  MockComponent nextComponent = allComponents.get(index + 1);
                   int nextComponentindex = form.getChildren().indexOf(nextComponent);
-                  if(nextComponent instanceof MockContainer && ((MockContainer) nextComponent).willAcceptComponentType(selectedComponent.getType())) {
-                    ((MockContainer)nextComponent).addVisibleComponent(selectedComponent, 0);
+                  if (nextComponent instanceof MockContainer && ((MockContainer) nextComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    ((MockContainer) nextComponent).addVisibleComponent(selectedComponent, 0);
                   } else if (nextComponentindex < 0 && ((MockContainer) nextComponent.getContainer()).willAcceptComponentType(selectedComponent.getType())) {
                     nextComponent.getContainer().addVisibleComponent(selectedComponent, 0);
                   } else {
@@ -1005,13 +1021,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
                 } else {
                   index++;
                   form.removeComponent(selectedComponent, false);
-                  MockComponent prevComponent = allComponents.get(index - 1); 
+                  MockComponent prevComponent = allComponents.get(index - 1);
                   int prevComponentIndex = form.getChildren().indexOf(prevComponent);
-                  if(prevComponent instanceof MockContainer && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
-                    ((MockContainer)prevComponent).addVisibleComponent(selectedComponent, -1);
+                  if (prevComponent instanceof MockContainer && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
+                    ((MockContainer) prevComponent).addVisibleComponent(selectedComponent, -1);
                   } else if (prevComponentIndex < 0 && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
                     prevComponent.getContainer().addVisibleComponent(selectedComponent, -1);
-                  } else {                  
+                  } else {
                     form.addVisibleComponent(selectedComponent, index - 2);
                   }
                 }
@@ -1024,7 +1040,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
           SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused()
-            && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
+                                                                                                                          && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
           getVisibleComponentsPanel().focusCheckbox();
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
           PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
@@ -1033,6 +1049,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
         }
       }
     }, KeyDownEvent.getType());
+  }
+
+  @Override
+  public SimpleComponentDatabase getComponentDatabase() {
+    return componentDatabase;
   }
 
   @SuppressWarnings("checkstyle:LineLength")
