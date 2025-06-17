@@ -544,9 +544,6 @@ public class ARFilamentRenderer {
         Log.d(LOG_TAG, "view is " + view);
     }
 
-    /**
-     * Position Filament camera at ARCore location, but make it look at the object
-     */
     public void updateCameraFromARCore(float[] arcoreViewMatrix, float[] arcoreProjectionMatrix) {
         if (camera == null) return;
 
@@ -555,35 +552,63 @@ public class ARFilamentRenderer {
             System.arraycopy(arcoreViewMatrix, 0, this.viewMatrix, 0, 16);
             System.arraycopy(arcoreProjectionMatrix, 0, this.projectionMatrix, 0, 16);
 
-            // Get ARCore camera world position
+            // Get ARCore camera world position (same as before)
             float[] arCoreCameraMatrix = new float[16];
             Matrix.invertM(arCoreCameraMatrix, 0, arcoreViewMatrix, 0);
             float[] cameraPos = {arCoreCameraMatrix[12], arCoreCameraMatrix[13], arCoreCameraMatrix[14]};
 
-            // Get object position (we'll need this from the current anchor)
-            // For now, let's assume the object is at the stored anchor position
-            // We'll update this in applyNodeTransformation
+            // Calculate center of all objects (this becomes our new "currentObjectPos")
+            float[] sceneCenter = calculateSceneCenter();
 
-            // Use lookAt to position camera at ARCore location but looking at object
+            float[] upVector = {arCoreCameraMatrix[4], arCoreCameraMatrix[5], arCoreCameraMatrix[6]};
+
+            // Use the EXACT same pattern that worked
             camera.lookAt(
-                cameraPos[0], cameraPos[1], cameraPos[2],  // Camera at ARCore position
-                currentObjectPos[0], currentObjectPos[1], currentObjectPos[2],  // Look at object
-                0.0f, 1.0f, 0.0f  // Up vector
+                cameraPos[0], cameraPos[1], cameraPos[2],        // Camera at ARCore position
+                sceneCenter[0], sceneCenter[1], sceneCenter[2],   // Look at scene center
+                upVector[0], upVector[1], upVector[2]                            // Up vector
             );
 
-            // Use consistent projection
+            // Use consistent projection (same as before)
             double fovY = 2.0 * Math.atan(1.0 / arcoreProjectionMatrix[5]) * 180.0 / Math.PI;
             camera.setProjection(fovY, (double) viewportWidth / viewportHeight, Z_NEAR, Z_FAR, Camera.Fov.VERTICAL);
 
-            Log.d(LOG_TAG, String.format("Filament camera at ARCore pos [%.3f, %.3f, %.3f] looking at object [%.3f, %.3f, %.3f]",
-                cameraPos[0], cameraPos[1], cameraPos[2],
-                currentObjectPos[0], currentObjectPos[1], currentObjectPos[2]));
+            Log.d(LOG_TAG, String.format("Filament camera at ARCore pos [%.3f, %.3f, %.3f] looking at scene center [%.3f, %.3f, %.3f]",
+                cameraPos[0], cameraPos[1], cameraPos[2], sceneCenter[0], sceneCenter[1], sceneCenter[2]));
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Camera setup failed: " + e.getMessage());
         }
     }
 
+    private float[] calculateSceneCenter() {
+        float centerX = 0, centerY = 0, centerZ = 0;
+        int count = 0;
+
+        for (ARNode node : nodeAssetMap.keySet()) {
+            if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
+                float[] pos = node.Anchor().getPose().getTranslation();
+                centerX += pos[0];
+                centerY += pos[1];
+                centerZ += pos[2];
+                count++;
+            }
+        }
+
+        if (count > 0) {
+            return new float[]{centerX / count, centerY / count, centerZ / count};
+        } else {
+            // Fallback: look 1 meter in front of camera
+            float[] arCoreCameraMatrix = new float[16];
+            Matrix.invertM(arCoreCameraMatrix, 0, this.viewMatrix, 0);
+            float[] forward = {-arCoreCameraMatrix[8], -arCoreCameraMatrix[9], -arCoreCameraMatrix[10]};
+            return new float[]{
+                arCoreCameraMatrix[12] + forward[0],
+                arCoreCameraMatrix[13] + forward[1],
+                arCoreCameraMatrix[14] + forward[2]
+            };
+        }
+    }
     // Add this field to store current object position
     private float[] currentObjectPos = {0.0f, 0.0f, -2.0f};
 
