@@ -17,6 +17,15 @@
           return n < 0 ? "-infinity" : "+infinity";
         }
       }
+      window.addEventListener(
+        "message",
+        (event) => {
+          if (event.origin !== "http://localhost:8000") return;
+          console.log("Received message:", event.data);
+          // …
+        },
+        false,
+      );
     </script>
     <script src="build/runtime.js" type="text/javascript"></script>
     <script>

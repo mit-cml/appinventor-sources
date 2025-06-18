@@ -1417,7 +1417,7 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser
         }
         if (browser) {
             var emulator = window.open('http://localhost:8000', '_blank');
-            // emulator.postMessage("test");
+            emulator.postMessage("message");
             return;
         }
         rs = top.ReplState;
