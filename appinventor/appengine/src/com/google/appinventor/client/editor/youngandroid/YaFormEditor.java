@@ -1040,7 +1040,7 @@ public final class YaFormEditor extends SimpleEditor
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
           SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused()
-                                                                                                                          && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
+            && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
           getVisibleComponentsPanel().focusCheckbox();
         } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
           PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();

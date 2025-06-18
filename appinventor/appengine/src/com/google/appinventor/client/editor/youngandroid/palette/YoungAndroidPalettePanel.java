@@ -291,6 +291,14 @@ public class YoungAndroidPalettePanel extends Composite
     bundledImages.put("images/chart.png", images.chart());
     bundledImages.put("images/chartData.png", images.chartData2D());
     bundledImages.put("images/dataFile.png", images.dataFile());
+    bundledImages.put("images/circularProgress.png", images.circularProgress());
+    bundledImages.put("images/linearProgress.png", images.linearProgress());
+    bundledImages.put("images/regression.png", images.regression());
+    bundledImages.put("images/anomaly.png", images.anomalyDetection());
+    bundledImages.put("images/filepicker.png", images.file());
+    bundledImages.put("images/trendline.png", images.trendline());
+    bundledImages.put("images/chatbot.png", images.chatbot());
+    bundledImages.put("images/paintpalette.png", images.paintPalette());
   }
 
   /**

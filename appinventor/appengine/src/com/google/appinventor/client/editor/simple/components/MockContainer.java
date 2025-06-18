@@ -149,7 +149,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     int beforeActualIndex;
     if ((beforeVisibleIndex == -1) || (beforeVisibleIndex >= visibleChildren.size())) {
       // Insert after last visible component
-      if (visibleChildren.size() == 0) {
+      if (visibleChildren.isEmpty()) {
         beforeActualIndex = 0;
       } else {
         beforeActualIndex = getChildren().indexOf(
