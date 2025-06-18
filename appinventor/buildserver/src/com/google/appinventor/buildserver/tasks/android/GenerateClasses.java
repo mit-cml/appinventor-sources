@@ -180,7 +180,7 @@ public class GenerateClasses implements AndroidTask {
       boolean kawaSuccess;
       synchronized (context.getResources().getSyncKawaOrDx()) {
         kawaSuccess = Execution.execute(null, kawaCommandLine,
-            System.out, new PrintStream(kawaOutputStream));
+            System.out, new PrintStream(kawaOutputStream), Execution.Timeout.MEDIUM);
       }
       if (!kawaSuccess) {
         context.getReporter().error("Kawa compile has failed.", true);

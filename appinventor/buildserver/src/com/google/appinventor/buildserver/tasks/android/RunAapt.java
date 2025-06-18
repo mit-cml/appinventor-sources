@@ -73,7 +73,7 @@ public class RunAapt implements AndroidTask {
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, aaptPackageCommandLine,
-        System.out, System.err)) {
+        System.out, System.err, Execution.Timeout.MEDIUM)) {
       return TaskResult.generateError("Error running AAPT");
     }
 

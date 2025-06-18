@@ -62,7 +62,7 @@ public class RunAapt2 implements AndroidTask {
     String[] aapt2CompileCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2CompileCommandLine,
-        System.out, System.err)) {
+        System.out, System.err, Execution.Timeout.MEDIUM)) {
       context.getReporter().error("Could not execute AAPT2 compile step");
       return false;
     }
@@ -97,7 +97,7 @@ public class RunAapt2 implements AndroidTask {
     String[] aapt2LinkCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2LinkCommandLine,
-        System.out, System.err)) {
+        System.out, System.err, Execution.Timeout.MEDIUM)) {
       context.getReporter().error("Could not execute AAPT2 link step");
       return false;
     }
