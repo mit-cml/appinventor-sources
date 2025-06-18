@@ -1728,7 +1728,9 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(ok);
-    holder.add(noshow);
+    if (splashConfig.version != -2) { // Don't show checkbox if splash is mandatory
+      holder.add(noshow);
+    }
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
@@ -1780,7 +1782,7 @@ public class Ode implements EntryPoint {
     } else {
       uversion = Integer.parseInt(value);
     }
-    if (uversion >= splashConfig.version) {
+    if ((uversion >= splashConfig.version) && splashConfig.version != -2) { // -2 means always show the splash screen!
       return false;
     } else {
       return true;
