@@ -45,7 +45,6 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   @UiField protected VerticalPanel phoneScreen;
   @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   @UiField(provided = true) protected ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
-  private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
   private final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
   @UiField protected CheckBox HiddenComponentsCheckbox;
 
@@ -75,9 +74,11 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        int idx = Integer.parseInt(listboxPhoneTablet.getSelectedValue());
-        int width = drop_lst[idx][0];
-        int height = drop_lst[idx][1];
+        String[] selectedValue = listboxPhoneTablet.getSelectedValue().split(",");
+        int idx = listboxPhoneTablet.getSelectedIndex();
+
+        int width = Integer.parseInt(selectedValue[0].trim());
+        int height = Integer.parseInt(selectedValue[1].trim());
         String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
         // here, we can change settings by putting val into it
         projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -153,18 +154,23 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     int width = 320;
     int height = 505;
 
+    // Note: Initialization values above should not be changed without good reason. The settings property PHONE_TABLET
+    // is a legacy setting indicating tablet (true) or phone (false).
     if (val.equals("True")) {
       idx = 1;
-      width = drop_lst[idx][0];
-      height = drop_lst[idx][1];
+    } else {
+      String[] parts = val.split(",");
+      if (parts.length == 3) {
+        idx = Integer.parseInt(parts[0]);
+      }
     }
 
-    String[] parts = val.split(",");
-    if (parts.length == 3) {
-      idx = Integer.parseInt(parts[0]);
-      width = Integer.parseInt(parts[1]);
-      height = Integer.parseInt(parts[2]);
+    if (listboxPhoneTablet.getItemCount() >= idx) {
+      String[] selectedValue = listboxPhoneTablet.getValue(idx).split(",");
+      width = Integer.parseInt(selectedValue[0].trim());
+      height = Integer.parseInt(selectedValue[1].trim());
     }
+
     listboxPhoneTablet.setItemSelected(idx, true);
     changeFormPreviewSize(idx, width, height);
   }
@@ -208,11 +214,10 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     if (form != null){
       if (!enable){
         changeFormPreviewSize(0, 320, 505);
-        listboxPhoneTablet.setVisible(enable);
       } else {
         getUserSettingChangeSize();
-        listboxPhoneTablet.setVisible(enable);
       }
+      listboxPhoneTablet.setVisible(enable);
     }
     listboxPhoneTablet.setEnabled(enable);
   }
@@ -221,11 +226,10 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     if (form != null){
       if (!enable){
         changeFormPhonePreview(-1,"Classic");
-        listboxPhonePreview.setVisible(enable);
       } else {
         getUserSettingChangePreview();
-        listboxPhonePreview.setVisible(enable);
       }
+      listboxPhonePreview.setVisible(enable);
     }
     listboxPhonePreview.setEnabled(enable);
   }

@@ -273,7 +273,7 @@ public final class YaBlocksEditor extends FileEditor
       Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
       BlockSelectorBox.getBlockSelectorBox().setVisible(true);
       AssetListBox.getAssetListBox().setVisible(true);
-      blocksArea.injectWorkspace();
+      blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled());
       hideComponentBlocks();
     } else {
       LOG.warning("Can't get form editor for blocks: " + getFileId());

@@ -830,21 +830,17 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Switch to disable new layouts")
   String disableNewLayout();
 
-  @DefaultMessage("Select Mode")
-  @Description("Select light or dark mode")
-  String selectMode();  
+  @DefaultMessage("Select Theme")
+  @Description("Select light or dark theme")
+  String selectTheme();
 
-  @DefaultMessage("Dark Mode")
+  @DefaultMessage("Light")
+  @Description("Switch to enable light theme")
+  String lightMode();
+
+  @DefaultMessage("Dark")
   @Description("Switch to enable dark theme")
-  String enableDarkTheme();
-
-  @DefaultMessage("Light Mode")
-  @Description("Switch to disable dark theme")
-  String disableDarkTheme();
-
-  @DefaultMessage("Toggle Light/Dark Theme")
-  @Description("Switch to disable dark theme")
-  String toggleTheme();
+  String darkMode();
 
   @DefaultMessage("User Interface Settings")
   @Description("Open wizard for user interface settings")
