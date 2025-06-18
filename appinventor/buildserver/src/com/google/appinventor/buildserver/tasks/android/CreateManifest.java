@@ -157,6 +157,10 @@ public class CreateManifest implements AndroidTask {
         permissions.remove("android.permission.CALL_PHONE");
         permissions.remove("android.permission.READ_CALL_LOG");
         permissions.remove("android.permission.WRITE_CALL_LOG");
+        // Photo and Video Permissions
+        // https://support.google.com/googleplay/android-developer/answer/9888170#photo-and-video-permissions
+        permissions.remove("android.permission.READ_MEDIA_IMAGES");
+        permissions.remove("android.permission.READ_MEDIA_VIDEO");
       }
 
       Multimap<String, PermissionConstraint<?>> permissionConstraints = HashMultimap.create();
