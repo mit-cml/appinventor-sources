@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.opengl.Matrix;
@@ -153,7 +154,36 @@ public class QuadRenderer {
         Matrix.multiplyMM(this.modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
     }
 
-    public void draw(ARViewRender render, ARNode filamentSceneNode, Texture currentFilamentTexture,
+    private float[] calculateSceneCenter(List<ARNode> modelNodes) {
+        float centerX = 0, centerY = 0, centerZ = 0;
+        int count = 0;
+
+        for (ARNode node : modelNodes) {
+            if (node.Anchor() != null && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
+                float[] pos = node.Anchor().getPose().getTranslation();
+                centerX += pos[0];
+                centerY += pos[1];
+                centerZ += pos[2];
+                count++;
+            }
+        }
+
+        if (count > 0) {
+            return new float[]{centerX / count, centerY / count, centerZ / count};
+        } else {
+            // Fallback: look 1 meter in front of camera
+            float[] arCoreCameraMatrix = new float[16];
+            Matrix.invertM(arCoreCameraMatrix, 0, this.viewMatrix, 0);
+            float[] forward = {-arCoreCameraMatrix[8], -arCoreCameraMatrix[9], -arCoreCameraMatrix[10]};
+            return new float[]{
+                arCoreCameraMatrix[12] + forward[0],
+                arCoreCameraMatrix[13] + forward[1],
+                arCoreCameraMatrix[14] + forward[2]
+            };
+        }
+    }
+
+    public void draw(ARViewRender render, List<ARNode> modelNodes, Texture currentFilamentTexture,
                      Framebuffer target, Pose cameraPose, float[] cameraProjection) {
 
         if (currentFilamentTexture == null ) {
@@ -167,7 +197,7 @@ public class QuadRenderer {
         }
 
         try {
-            Anchor anchor = filamentSceneNode.Anchor();
+            Anchor anchor = modelNodes.get(0).Anchor(); // this isn't the right way to do it but billboarding w center position is not working
             if (anchor == null || anchor.getTrackingState() != TrackingState.TRACKING) {
                 return;
             }
@@ -181,7 +211,7 @@ public class QuadRenderer {
             anchorPose.toMatrix(anchorMatrix, 0);
 
             // Apply the SAME scale that ARFilamentRenderer uses (0.1f)
-            float scale = filamentSceneNode.Scale();
+            float scale = modelNodes.get(0).Scale();
             Matrix.scaleM(anchorMatrix, 0, scale, scale, scale);
 
             // Position the quad exactly where the 3D model is
@@ -189,6 +219,7 @@ public class QuadRenderer {
 
             // Apply additional quad scale for visibility (this is separate from model scale)
             updateModelMatrix(modelMatrix, 1.0f); // Make quad bigger since model is 0.1 scale
+
 
             // Calculate MVP matrix
             Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);

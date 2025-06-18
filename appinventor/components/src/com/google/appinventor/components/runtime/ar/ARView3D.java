@@ -104,7 +104,7 @@ import java.util.stream.Collectors;
         )
 })
 @UsesAssets(fileNames = "ar_object.vert, ar_unlit_object.frag, ar_unlit_object.vert, ar_object.frag, plane.vert, plane.frag, point_cloud.vert, point_cloud.frag," +
-        "cube.obj, sphere.obj, torus.obj, trigrid.png," +
+        "cube.obj, plane.obj, sphere.obj, torus.obj, trigrid.png," +
         "background_show_camera.frag, background_show_camera.vert," +
         "basic.filamat, material_background.filamat, material_basic.filamat, occlusion2.filamat," +
         "background.frag, background.vert," +
@@ -442,10 +442,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             " to framebuffer " + filamentFramebuffer.getFramebufferId());
 
 
-        //use model node as SCENE nodes to which pose/translation the quad is attached?
-        ARNode filamentSceneNode = modelNodes.get(0);
-
-        quadRenderer.draw(render, filamentSceneNode, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
+        quadRenderer.draw(render, modelNodes, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
     }
 
     private ByteBuffer convertDepthImageToBuffer(android.media.Image depthImage) {
