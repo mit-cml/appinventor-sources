@@ -23,14 +23,21 @@ public class UiStyleFactory {
   interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
   @UiTemplate("style/neo/Ode.ui.xml")
   interface OdeUiBinderNeo extends UiBinder<FlowPanel, Ode> {}
+  @UiTemplate("style/mobile/Ode.ui.xml")
+  interface OdeUiBinderMobile extends UiBinder<FlowPanel, Ode> {}
 
   public FlowPanel createOde(Ode target, String style) {
-    if (style.equals("modern")) {
-      OdeUiBinderNeo uibinder = GWT.create(OdeUiBinderNeo.class);
-      return uibinder.createAndBindUi(target);
+    switch (style) {
+      case "modern":
+        OdeUiBinderNeo uibinderNeo = GWT.create(OdeUiBinderNeo.class);
+        return uibinderNeo.createAndBindUi(target);
+      case "mobile":
+        OdeUiBinderMobile uibinderMobile = GWT.create(OdeUiBinderMobile.class);
+        return uibinderMobile.createAndBindUi(target);
+      default:
+        OdeUiBinder uibinder = GWT.create(OdeUiBinder.class);
+        return uibinder.createAndBindUi(target);
     }
-    OdeUiBinder uibinder = GWT.create(OdeUiBinder.class);
-    return uibinder.createAndBindUi(target);
   }
 
   public ProjectList createProjectList() {

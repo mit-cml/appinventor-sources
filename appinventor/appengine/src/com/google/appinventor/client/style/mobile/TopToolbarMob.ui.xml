@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             xmlns:yaactions="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+
+    <!-- Resources -->
+    <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+    <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
+<!--    <ui:with field="hasWriteAccessForUiBinder" type="java.lang.Boolean"/>-->
+
+
+    <!-- Root container: Mobile toolbar -->
+    <g:FlowPanel styleName="mobile-TopToolbar">
+        <!-- Hamburger Menu Button -->
+        <g:Button ui:field="hamburgerButton" styleName="mobile-HamburgerButton" title="{messages.menuButton}">
+            <ui:html><![CDATA[<span class="hamburger-icon">☰</span>]]></ui:html>
+        </g:Button>
+
+        <!-- Popup Overlay for Menu -->
+        <g:PopupPanel ui:field="menuPopup" styleName="mobile-MenuPopup" modal="true" autoHideEnabled="false">
+            <g:VerticalPanel styleName="mobile-MenuContainer">
+                <!-- Menu Header with Close Button -->
+                <g:HorizontalPanel styleName="mobile-MenuHeader">
+                    <g:Label text="{messages.menuTitle}" styleName="mobile-MenuTitle"/>
+                    <g:Button ui:field="closeButton" styleName="mobile-CloseButton" title="{messages.closeButton}">
+                        <ui:html><![CDATA[<span class="close-icon">×</span>]]></ui:html>
+                    </g:Button>
+                </g:HorizontalPanel>
+
+                <!-- Scrollable Menu Items -->
+                <g:ScrollPanel styleName="mobile-MenuScroll">
+                    <g:VerticalPanel styleName="mobile-MenuItems">
+                        <!-- Projects Section -->
+                        <g:Label text="{messages.projectsTabName}" styleName="mobile-SectionTitle"/>
+                        <g:Button ui:field="myProjectsButton" styleName="mobile-MenuItem" text="{messages.projectMenuItem}"/>
+                        <g:Button ui:field="newProjectButton" styleName="mobile-MenuItem" text="{messages.newProjectMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="importProjectButton" styleName="mobile-MenuItem" text="{messages.importProjectMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="importTemplateButton" styleName="mobile-MenuItem" text="{messages.importTemplateButton}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="deleteButton" styleName="mobile-MenuItem" text="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="saveButton" styleName="mobile-MenuItem" text="{messages.saveMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="saveAsButton" styleName="mobile-MenuItem" text="{messages.saveAsMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="checkpointButton" styleName="mobile-MenuItem" text="{messages.checkpointMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="projectPropertiesButton" styleName="mobile-MenuItem" text="{messages.projectPropertiesMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="exportProjectButton" styleName="mobile-MenuItem" text="{messages.exportProjectMenuItem}"/>
+                        <g:Button ui:field="exportAllProjectsButton" styleName="mobile-MenuItem" text="{messages.exportAllProjectsMenuItem}"/>
+                        <g:Button ui:field="uploadKeystoreButton" styleName="mobile-MenuItem" text="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="downloadKeystoreButton" styleName="mobile-MenuItem" text="{messages.downloadKeystoreMenuItem}"/>
+                        <g:Button ui:field="deleteKeystoreButton" styleName="mobile-MenuItem" text="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}"/>
+
+                        <!-- Connect Section -->
+                        <g:Label text="{messages.connectTabName}" styleName="mobile-SectionTitle"/>
+                        <g:Button ui:field="wirelessButton" styleName="mobile-MenuItem" text="{messages.AICompanionMenuItem}"/>
+                        <g:Button ui:field="emulatorButton" styleName="mobile-MenuItem" text="{messages.emulatorMenuItem}"/>
+                        <g:Button ui:field="usbButton" styleName="mobile-MenuItem" text="{messages.usbMenuItem}"/>
+                        <g:Button ui:field="chromebookButton" styleName="mobile-MenuItem" text="{messages.chromebookMenuItem}"/>
+                        <g:Button ui:field="refreshCompanionButton" styleName="mobile-MenuItem" text="{messages.refreshCompanionMenuItem}"/>
+                        <g:Button ui:field="resetButton" styleName="mobile-MenuItem" text="{messages.resetConnectionsMenuItem}"/>
+                        <g:Button ui:field="hardResetButton" styleName="mobile-MenuItem" text="{messages.hardResetConnectionsMenuItem}"/>
+
+                        <!-- Build Section -->
+                        <g:Label text="{messages.buildTabName}" styleName="mobile-SectionTitle" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="buildApkButton" styleName="mobile-MenuItem" text="{messages.showExportAndroidApk}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="buildAabButton" styleName="mobile-MenuItem" text="{messages.showExportAndroidAab}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="buildApk2Button" styleName="mobile-MenuItem" text="{messages.showExportAndroidApk2}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="buildAab2Button" styleName="mobile-MenuItem" text="{messages.showExportAndroidAab2}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="generateYailButton" styleName="mobile-MenuItem" text="{messages.generateYailMenuItem}" visible="{hasWriteAccess}"/>
+
+                        <!-- Settings Section -->
+                        <g:Label text="{messages.settingsTabName}" styleName="mobile-SectionTitle"/>
+                        <g:Button ui:field="uiSettingsButton" styleName="mobile-MenuItem" text="{messages.uiSettings}"/>
+                        <g:Button ui:field="autoloadLastProjectButton" styleName="mobile-MenuItem" text="{messages.disableAutoload}" visible="{hasWriteAccess}"/>
+                        <g:Button ui:field="dyslexicFontButton" styleName="mobile-MenuItem" text="{messages.disableOpenDyslexic}" visible="{hasWriteAccess}"/>
+
+                        <!-- Help Section -->
+                        <g:Label text="{messages.helpTabName}" styleName="mobile-SectionTitle"/>
+                        <g:Button ui:field="aboutButton" styleName="mobile-MenuItem" text="{messages.aboutMenuItem}"/>
+                        <g:Button ui:field="libraryButton" styleName="mobile-MenuItem" text="{messages.libraryMenuItem}"/>
+                        <g:Button ui:field="getStartedButton" styleName="mobile-MenuItem" text="{messages.getStartedMenuItem}"/>
+                        <g:Button ui:field="extensionsButton" styleName="mobile-MenuItem" text="{messages.extensionsMenuItem}"/>
+                        <g:Button ui:field="tutorialsButton" styleName="mobile-MenuItem" text="{messages.tutorialsMenuItem}"/>
+                        <g:Button ui:field="troubleshootingButton" styleName="mobile-MenuItem" text="{messages.troubleshootingMenuItem}"/>
+                        <g:Button ui:field="forumsButton" styleName="mobile-MenuItem" text="{messages.forumsMenuItem}"/>
+                        <g:Button ui:field="reportIssueButton" styleName="mobile-MenuItem" text="{messages.feedbackMenuItem}"/>
+                        <g:Button ui:field="companionInformationButton" styleName="mobile-MenuItem" text="{messages.companionInformation}"/>
+                        <g:Button ui:field="companionUpdateButton" styleName="mobile-MenuItem" text="{messages.companionUpdate}"/>
+                        <g:Button ui:field="showSplashButton" styleName="mobile-MenuItem" text="{messages.showSplashMenuItem}"/>
+                        <g:Button ui:field="showShortcutsButton" styleName="mobile-MenuItem" text="{messages.showShortcuts}"/>
+
+                        <!-- Admin Section -->
+                        <g:Label text="{messages.adminTabName}" styleName="mobile-SectionTitle"/>
+                        <g:Button ui:field="downloadUserSourceButton" styleName="mobile-MenuItem" text="{messages.downloadUserSourceMenuItem}"/>
+                        <g:Button ui:field="userAdminButton" styleName="mobile-MenuItem" text="{messages.userAdminMenuItem}"/>
+                    </g:VerticalPanel>
+                </g:ScrollPanel>
+            </g:VerticalPanel>
+        </g:PopupPanel>
+        <ai:DropDownButton ui:field="fileDropDown" visible="false" />
+        <ai:DropDownButton ui:field="connectDropDown" visible="false" />
+        <ai:DropDownButton ui:field="buildDropDown" visible="false" />
+        <ai:DropDownButton ui:field="settingsDropDown" visible="false" />
+        <ai:DropDownButton ui:field="adminDropDown" visible="false" />
+    </g:FlowPanel>
+</ui:UiBinder>
