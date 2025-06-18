@@ -180,7 +180,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
         }
         break;
     }
-    refresh();
+    refresh(true);
   }
 
   private void refreshSortIndicators() {
@@ -225,7 +225,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   // ProjectManagerEventListener interface that this is the
   // implementation of.
 
-  public void refresh() {
+  public void refresh(boolean needToSort) {
     LOG.info("Refresh ProjectList");
     List<Project> projects = folder.getProjects();
     refreshSortIndicators();
@@ -245,7 +245,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
         continue;
       }
       childFolder.setSelectionChangeHandler(selectionEvent);
-      childFolder.refresh(projectComparator, folderComparator);
+      childFolder.refresh(projectComparator, folderComparator, needToSort);
       container.add(childFolder);
     }
     folder.clearProjectList();
@@ -341,7 +341,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       folder = Ode.getInstance().getFolderManager().getGlobalFolder();
     }
     if (folder != null) {
-      refresh();
+      refresh(true);
     }
   }
 
@@ -349,22 +349,22 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   // FolderManagerEventListener implementation
   @Override
   public void onFolderAdded(ProjectFolder folder) {
-    refresh();
+    refresh(true);
   }
 
   @Override
   public void onFolderRemoved(ProjectFolder folder) {
-    refresh();
+    refresh(false);
   }
 
   @Override
   public void onFolderRenamed(ProjectFolder folder) {
-    refresh();
+    refresh(false);
   }
 
   @Override
   public void onFoldersChanged() {
-    refresh();
+    refresh(false);
   }
 
   @Override
@@ -377,7 +377,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     if (projectsLoaded) {
       folder.addProject(project);
       Ode.getInstance().getFolderManager().saveAllFolders();
-      refresh();
+      refresh(true);
     }
   }
 
@@ -398,6 +398,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   @Override
   public void onProjectsLoaded() {
     projectsLoaded = true;
-    refresh();
+    refresh(true);
   }
 }

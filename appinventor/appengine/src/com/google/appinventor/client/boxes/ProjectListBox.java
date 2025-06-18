@@ -71,13 +71,13 @@ public final class ProjectListBox extends Box {
 
   public void loadProjectList() {
     plist.setIsTrash(false);
-    plist.refresh();
+    plist.refresh(false);
     this.setCaption(MESSAGES.projectListBoxCaption());
   }
 
   public void loadTrashList() {
     plist.setIsTrash(true);
-    plist.refresh();
+    plist.refresh(false);
     this.setCaption(MESSAGES.trashprojectlistbox());
   }
 }

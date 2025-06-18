@@ -184,22 +184,27 @@ public class ProjectFolder extends Composite {
     cachedJson = null;
   }
 
-  public void refresh(Comparator<Project> projectComparator, Comparator<ProjectFolder> folderComparator) {
+  public void refresh(Comparator<Project> projectComparator, Comparator<ProjectFolder> folderComparator,
+      boolean needToSort) {
     nameLabel.setText(name);
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
     childrenContainer.clear();
     List<ProjectFolder> sortedChildren = getChildFolders();
-    sortedChildren.sort(folderComparator);
+    if (needToSort) {
+      sortedChildren.sort(folderComparator);
+    }
     for (ProjectFolder f : sortedChildren) {
       if (changeHandler != null) {
         f.setSelectionChangeHandler(changeHandler);
       }
-      f.refresh(projectComparator, folderComparator);
+      f.refresh(projectComparator, folderComparator, needToSort);
       childrenContainer.add(f);
     }
     projectListItems.clear();
-    Collections.sort(projects, projectComparator);
+    if (needToSort) {
+      projects.sort(projectComparator);
+    }
     for (Project p : projects) {
       ProjectListItem item =  createProjectListItem(p);
       if (changeHandler != null) {
