@@ -1,0 +1,9 @@
+Code,Description
+1,Token Missing
+2,Generic Token Decoding Error
+3,Token Expired
+4,Incorrect Usage
+5,No Such User
+6,Project Name Already in Use
+7,Old Project Doesn’t Exist
+8,User Already Exists
