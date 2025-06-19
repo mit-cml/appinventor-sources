@@ -246,6 +246,7 @@ public class Ode implements EntryPoint {
   // mode
   @UiField(provided = true) static Resources.Style style;
 
+
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
 
@@ -659,7 +660,7 @@ public class Ode implements EntryPoint {
     getTopToolbar().updateFileMenuButtons(1);
   }
 
-  private final String currentLayout = "classic";
+  private String currentLayout;
 
   /**
    * Returns i18n compatible messages
@@ -776,8 +777,11 @@ public class Ode implements EntryPoint {
               // Add resize handler after UI initialization
               Window.addResizeHandler(event -> {
                 String newLayout = determineLayout();
+                LOG.info("Window resized to " + event.getWidth() + "x" + event.getHeight());
+                LOG.info("Current layout: " + currentLayout + ", new layout: " + newLayout);
                 if (!newLayout.equals(currentLayout)) {
-                  updateLayout(newLayout);
+                  LOG.info("Layout changed from " + currentLayout + " to " + newLayout + ", reloading...");
+                  Window.Location.reload(); // Reload the app
                 }
               });
               return projectManager.ensureProjectsLoadedFromServer(projectService);
@@ -947,6 +951,7 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onFailure(Throwable reason) {
+            LOG.info("Failed to load mobile layout: " + reason.getMessage());
             rej.apply(new Promise.WrappedException(reason));
           }
           @Override
@@ -955,6 +960,7 @@ public class Ode implements EntryPoint {
             RootPanel.get().addStyleName("mobile");
             uiFactory = new UiFactoryMobile();
             res.apply(null);
+            LOG.info("Mobile layout loaded successfully");
           }
         });
       }else if (layout.equals("modern")) {
@@ -1011,7 +1017,12 @@ public class Ode implements EntryPoint {
       IMAGES = GWT.create(Images.class);
       uiFactory = new UiStyleFactory();
     }
-    style.ensureInjected();
+    if (style == null) {
+      LOG.warning("Resources.Style object is null. Ensure the CSS files are correctly loaded.");
+    } else {
+      style.ensureInjected();
+    }
+    currentLayout = newLayout;
   }
 
     /*
@@ -1055,6 +1066,8 @@ public class Ode implements EntryPoint {
     // TODO: Tidy up user preference variable
     projectListbox = ProjectListBox.create(uiFactory);
     String layout = determineLayout();
+    currentLayout = layout;
+    LOG.info("Current layout: " + currentLayout);
     Resources.Style style;
     if (layout.equals("mobile")) {
       style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.stylemobileDark() : Resources.INSTANCE.stylemobileLight();
@@ -1063,31 +1076,14 @@ public class Ode implements EntryPoint {
     } else {
       style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.styleclassicDark() : Resources.INSTANCE.styleclassicLight();
     }
-//    if (Ode.getUserNewLayout()) {
-//      layout = "modern";
-//      if (Ode.getUserDarkThemeEnabled()) {
-//        style = Resources.INSTANCE.stylemodernDark();
-//      } else {
-//        style = Resources.INSTANCE.stylemodernLight();
-//      }
-//    } else if(Ode.getUserMobileLayout()){
-//      layout = "mobile";
-//        if (Ode.getUserDarkThemeEnabled()) {
-//            style = Resources.INSTANCE.stylemobileDark();
-//        } else {
-//            style = Resources.INSTANCE.stylemobileLight();
-//        }
-//    } else {
-//      layout = "classic";
-//      if (Ode.getUserDarkThemeEnabled()) {
-//        style = Resources.INSTANCE.styleclassicDark();
-//      } else {
-//        style = Resources.INSTANCE.styleclassicLight();
-//      }
-//    }
 
+    LOG.info("Injecting style for layout: " + layout);
     style.ensureInjected();
+    LOG.info("Style injected successfully for layout: " + layout);
+    LOG.info("Creating main panel for layout: " + layout);
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
+    LOG.info("Main panel created with " + mainPanel.getWidgetCount() + " widgets for layout: " + layout);
+
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
@@ -1107,7 +1103,9 @@ public class Ode implements EntryPoint {
     // Debugging Panel
     debuggingTabIndex = 3;
 
+    LOG.info("Adding main panel to RootPanel for layout: " + layout);
     RootPanel.get().add(mainPanel);
+    LOG.info("Main panel added to RootPanel for layout: " + layout);
 
     // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
     // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
@@ -1513,6 +1511,7 @@ public class Ode implements EntryPoint {
    */
   private String determineLayout() {
     int screenWidth = Window.getClientWidth();
+    LOG.info(" dertermine , Screen width: " + screenWidth);
     if (screenWidth < 768) {
       return "mobile";
     } else if (Ode.getUserNewLayout()) {

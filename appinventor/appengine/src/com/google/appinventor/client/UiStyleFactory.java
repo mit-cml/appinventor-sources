@@ -17,7 +17,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.FlowPanel;
 
+import java.util.logging.Logger;
+
 public class UiStyleFactory {
+
+  private static final Logger LOG = Logger.getLogger(UiStyleFactory.class.getName());
 
   @UiTemplate("Ode.ui.xml")
   interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
@@ -32,13 +36,20 @@ public class UiStyleFactory {
         OdeUiBinderNeo uibinderNeo = GWT.create(OdeUiBinderNeo.class);
         return uibinderNeo.createAndBindUi(target);
       case "mobile":
-        OdeUiBinderMobile uibinderMobile = GWT.create(OdeUiBinderMobile.class);
-        return uibinderMobile.createAndBindUi(target);
+        try {
+          OdeUiBinderMobile uibinderMobile = GWT.create(OdeUiBinderMobile.class);
+          return uibinderMobile.createAndBindUi(target);
+
+        }catch (Exception e) {
+            LOG.severe("Error while creating mobile ODE: " + e.getMessage());
+        }
+
       default:
         OdeUiBinder uibinder = GWT.create(OdeUiBinder.class);
         return uibinder.createAndBindUi(target);
     }
   }
+
 
   public ProjectList createProjectList() {
     return new ProjectList();
