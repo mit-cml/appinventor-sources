@@ -28,7 +28,7 @@ import com.google.ar.core.Trackable;
 
 
 // TODO: either supply a simple quad or make one
-@UsesAssets(fileNames = "cube.obj, Palette.png")
+@UsesAssets(fileNames = "plane.obj, Palette.png")
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a plane in an ARView3D.  The plane is positioned " +
       "at a point and can be colored or textured as well as rotated.",

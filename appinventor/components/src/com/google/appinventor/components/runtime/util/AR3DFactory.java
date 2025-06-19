@@ -50,7 +50,7 @@ public final class AR3DFactory {
      void Trackable(Trackable t);
 
      Session Session();
-     void Session(Session t);
+     void Session(Session s);
 
      String Model();
      void Model(String o);
@@ -486,6 +486,7 @@ public final class AR3DFactory {
 
      // getARView()
      void addNode(ARNode node);
+
      void NodeClick(ARNode node);
      void NodeLongClick(ARNode node);
      void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint);

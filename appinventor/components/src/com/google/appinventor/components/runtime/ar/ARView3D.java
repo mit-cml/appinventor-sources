@@ -351,13 +351,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
+
     // Filter ARNodes by type and ensure they have anchors
     public void setDefaultPositions(List<ARNode> nodes) {
         for (ARNode node: nodes){
             if (node != null && node.Anchor() == null) {
                 Log.d(LOG_TAG, "Creating default anchor for " + Arrays.toString(node.PoseFromPropertyPosition()));
                 // TBD handle if anchor is loaded from a db
-
+                node.Session(session);
                 node.Anchor(CreateDefaultAnchor(node.PoseFromPropertyPosition())); // assign an anchor if there isn't one
             }
         }
@@ -1072,8 +1073,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void addNode(ARNode node){
         Log.i("ADDING ARNODE", "");
         arNodes.add(node);
-        Log.i("ADDED ARNODE", node.Type());
+        node.Session(session);
+        Log.i("ADDED ARNODE", node.Type() + " and session is null? " + (session == null));
         // or would this dispatch a create node event?
+        // we don't have an anchor or a trackable yet so need session
+
     }
 
     // @Override

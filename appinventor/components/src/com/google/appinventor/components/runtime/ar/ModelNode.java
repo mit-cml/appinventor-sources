@@ -24,7 +24,9 @@ import com.google.appinventor.components.runtime.util.YailList;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
+import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
+import com.google.ar.core.TrackingState;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import android.util.Log;
 
     private float[] fromPropertyPosition = {0f,0f,0f};
     private Anchor anchor = null;
+    private Session session = null;
     private Trackable trackable = null;
     private String objectModel = "";
     private String texture = Form.ASSETS_PREFIX + "Palette.png";
@@ -110,23 +113,30 @@ import android.util.Log;
       float[] position = { 0, 0, 0};
       float[] rotation = {0, 0, 0, 1};
 
-      //float[] currentAnchorPoseRotation = rotation;
-
+      TrackingState trackingState = null;
       if (this.Anchor() != null) {
         float[] translations = this.Anchor().getPose().getTranslation();
         position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
         //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+        trackingState = this.Anchor().getTrackingState();
       }
 
       Pose newPose = new Pose(position, rotation);
-      if (this.trackable != null){
-          Anchor(this.trackable.createAnchor(newPose));
-            Log.i("modelnode","moved anchor BY " + newPose+ " with rotaytion "+rotation);
+      if (this.trackable != null ){
+        Anchor(this.trackable.createAnchor(newPose));
+        Log.i("sphere","moved anchor BY " + newPose+ " with rotaytion "+rotation);
       }else {
-        Log.i("capsule", "tried to move anchor BY pose");
-      }
-  }
+        if (trackingState == TrackingState.TRACKING){
+          if (session != null){
+            Log.i("sphere", "moved anchor BY, make anchor with SESSION, ");
+            Anchor(session.createAnchor(newPose));
+          } else{
+            Log.i("sphere", "tried to move anchor BY pose, session must be 0" + (session == null));
+          }
+        }
 
+      }
+    }
 
   @Override
   @SimpleFunction(description = "Changes the node's position by (x,y,z).")
