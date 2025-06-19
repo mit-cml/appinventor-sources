@@ -545,7 +545,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
-        projectName + ".aia", true, false, true, false);
+        projectName + ".aia", true, false, true, false, false, false);
       // The code below tests the size of the compressed project before
       // we send it off to the buildserver. When using URLFetch we know that
       // this size is limited to 10MB based on Google's documentation.
@@ -674,7 +674,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     try {
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
-        false, projectName + ".aia", false, false, true, true);
+        false, projectName + ".aia", false, false, true, true, false, false);
       String token = GalleryToken.makeToken(userId, projectId, projectName);
       newGalleryUrl = new URL(galleryLocation + "/fromappinventor?token=" +
         token + "&id=" + galleryId);
