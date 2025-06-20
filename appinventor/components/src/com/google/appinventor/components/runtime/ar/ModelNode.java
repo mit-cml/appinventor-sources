@@ -62,6 +62,9 @@ import android.util.Log;
     public void Anchor(Anchor a) { this.anchor = a;}
 
     @Override
+    public void Session(Session s){ this.session = s;};
+
+    @Override
     public Trackable Trackable() { return this.trackable; }
 
     @Override
@@ -105,38 +108,39 @@ import android.util.Log;
     public List<YailList> BoundingBox() { return new ArrayList<YailList>(); }
 
 
-    @Override
-    @SimpleFunction(description = "move a capsule node properties at the " +
-        "specified (x,y,z) position.")
-    public void MoveBy(float x, float y, float z){
+  @Override
+  @SimpleFunction(description = "move a model node properties at the " +
+      "specified (x,y,z) position.")
+  public void MoveBy(float x, float y, float z){
 
-      float[] position = { 0, 0, 0};
-      float[] rotation = {0, 0, 0, 1};
+    float[] position = { 0, 0, 0};
+    float[] rotation = {0, 0, 0, 1};
 
-      TrackingState trackingState = null;
-      if (this.Anchor() != null) {
-        float[] translations = this.Anchor().getPose().getTranslation();
-        position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
-        //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
-        trackingState = this.Anchor().getTrackingState();
-      }
-
-      Pose newPose = new Pose(position, rotation);
-      if (this.trackable != null ){
-        Anchor(this.trackable.createAnchor(newPose));
-        Log.i("sphere","moved anchor BY " + newPose+ " with rotaytion "+rotation);
-      }else {
-        if (trackingState == TrackingState.TRACKING){
-          if (session != null){
-            Log.i("sphere", "moved anchor BY, make anchor with SESSION, ");
-            Anchor(session.createAnchor(newPose));
-          } else{
-            Log.i("sphere", "tried to move anchor BY pose, session must be 0" + (session == null));
-          }
-        }
-
-      }
+    //float[] currentAnchorPoseRotation = rotation;
+    TrackingState trackingState = null;
+    if (this.Anchor() != null) {
+      float[] translations = this.Anchor().getPose().getTranslation();
+      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
+      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+      trackingState = this.Anchor().getTrackingState();
     }
+
+    Pose newPose = new Pose(position, rotation);
+    if (this.trackable != null ){
+      Anchor(this.trackable.createAnchor(newPose));
+      Log.i("model","moved anchor BY " + newPose+ " with rotaytion "+rotation);
+    }else {
+      if (trackingState == TrackingState.TRACKING){
+        if (session != null){
+          Log.i("model", "moved anchor BY, make anchor with SESSION, ");
+          Anchor(session.createAnchor(newPose));
+        } else{
+          Log.i("model", "tried to move anchor BY pose, session must be 0" + (session == null));
+        }
+      }
+
+    }
+  }
 
   @Override
   @SimpleFunction(description = "Changes the node's position by (x,y,z).")

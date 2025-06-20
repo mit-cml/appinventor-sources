@@ -124,7 +124,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             0.282095f, -0.325735f, 0.325735f, -0.325735f, 0.273137f,
             -0.273137f, 0.078848f, -0.273137f, 0.136569f,
     };
-    private static final float TINT_INTENSITY = 0.1f;
+    private static final float TINT_INTENSITY = 0.05f;
     private static final float TINT_ALPHA = 1.0f;
     private static final int[] TINT_COLORS_HEX = {
             0x000000, 0xF44336, 0xE91E63, 0x9C27B0, 0x673AB7, 0x3F51B5, 0x2196F3, 0x03A9F4, 0x00BCD4,
@@ -1073,11 +1073,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void addNode(ARNode node){
         Log.i("ADDING ARNODE", "");
         arNodes.add(node);
-        node.Session(session);
         Log.i("ADDED ARNODE", node.Type() + " and session is null? " + (session == null));
-        // or would this dispatch a create node event?
-        // we don't have an anchor or a trackable yet so need session
-
     }
 
     // @Override

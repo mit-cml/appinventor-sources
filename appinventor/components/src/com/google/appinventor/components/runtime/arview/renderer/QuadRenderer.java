@@ -127,6 +127,7 @@ public class QuadRenderer {
                     "\n" +
                     "void main() {\n" +
                     "    v_TexCoord = a_TexCoord;\n" +
+                   // "    vec2 rotateUV = vec2(v_TexCoord.y, 1.0 - v_TexCoord.x);\n" +
                     "    gl_Position = u_ModelViewProjection * vec4(a_Position, 0.0, 1.0);\n" +
                     "}\n";
 
@@ -138,6 +139,7 @@ public class QuadRenderer {
                     "layout(location = 0) out vec4 o_FragColor;\n" +
                     "\n" +
                     "void main() {\n" +
+                   // "    vec2 rotatedUV = vec2(1.0 - v_TexCoord.x, v_TexCoord.y);\n" +
                     "    o_FragColor = texture(u_Texture, v_TexCoord);\n" +
                     "}\n";
 
@@ -186,40 +188,55 @@ public class QuadRenderer {
     public void draw(ARViewRender render, List<ARNode> modelNodes, Texture currentFilamentTexture,
                      Framebuffer target, Pose cameraPose, float[] cameraProjection) {
 
-        if (currentFilamentTexture == null ) {
-            Log.w(TAG, "Invalid texture  " + currentFilamentTexture);
-            return;
-        }
-        int texId = currentFilamentTexture.getTextureId();
-        if ( texId <= 0) {
-            Log.w(TAG, "Invalid texture ID: " + texId);
-            return;
-        }
+        if (currentFilamentTexture == null) return;
 
         try {
-            Anchor anchor = modelNodes.get(0).Anchor(); // this isn't the right way to do it but billboarding w center position is not working
-            if (anchor == null || anchor.getTrackingState() != TrackingState.TRACKING) {
-                return;
-            }
-
             // Get ARCore camera view matrix
             cameraPose.inverse().toMatrix(viewMatrix, 0);
 
-            // Use the EXACT same transformation as ARFilamentRenderer
-            Pose anchorPose = anchor.getPose();
-            float[] anchorMatrix = new float[16];
-            anchorPose.toMatrix(anchorMatrix, 0);
+            // GLASSES POSITIONING: Always in front of camera
+            float[] cameraMatrix = new float[16];
+            cameraPose.toMatrix(cameraMatrix, 0);
 
-            // Apply the SAME scale that ARFilamentRenderer uses (0.1f)
-            float scale = modelNodes.get(0).Scale();
-            Matrix.scaleM(anchorMatrix, 0, scale, scale, scale);
+            // Extract camera position and forward direction
+            float camX = cameraMatrix[12];
+            float camY = cameraMatrix[13];
+            float camZ = cameraMatrix[14];
 
-            // Position the quad exactly where the 3D model is
-            calculateBillboardMatrix(anchorMatrix, viewMatrix);
+            // Forward direction (where camera is looking)
+            float forwardX = -cameraMatrix[8];
+            float forwardY = -cameraMatrix[9];
+            float forwardZ = -cameraMatrix[10];
 
-            // Apply additional quad scale for visibility (this is separate from model scale)
-            updateModelMatrix(modelMatrix, 1.0f); // Make quad bigger since model is 0.1 scale
+            // Position quad just in front of camera (like glasses)
+            float distanceFromCamera = .1f + 0.005f; // Just past near plane
+            int viewportWidth = 1020;
+            int viewportHeight = 1410;
+            float textureAspect = (float) viewportWidth / viewportHeight; // Texture aspect ratio
 
+            // Create identity matrix for quad
+            Matrix.setIdentityM(modelMatrix, 0);
+
+            // Position quad in front of camera
+            modelMatrix[12] = camX + forwardX * distanceFromCamera;
+            modelMatrix[13] = camY + forwardY * distanceFromCamera;
+            modelMatrix[14] = camZ + forwardZ * distanceFromCamera;
+
+            // Billboard: Make quad face camera (same as before)
+            calculateBillboardMatrix(new float[]{modelMatrix[12], modelMatrix[13], modelMatrix[14]}, viewMatrix);
+
+            // FULLSCREEN SCALING: Calculate size to fill screen at this distance
+            // Use camera's field of view to determine required quad size
+            double fovRadians = Math.toRadians(45.0); // Approximate FOV, you could extract from projection
+            float quadHeight = (float)(2.0 * distanceFromCamera * Math.tan(fovRadians / 2.0));
+            float screenAspect = (float) viewportWidth / viewportHeight;
+            float quadWidth = quadHeight * screenAspect;
+
+            // Scale quad to fill screen
+            Matrix.scaleM(modelMatrix, 0, quadWidth, quadHeight, 1.3f);
+
+            Log.d(TAG, String.format("Fullscreen quad: %.3f x %.3f at distance %.3f",
+                quadWidth, quadHeight, distanceFromCamera));
 
             // Calculate MVP matrix
             Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
@@ -228,23 +245,23 @@ public class QuadRenderer {
             shader.setTexture("u_Texture", currentFilamentTexture);
             shader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
 
-            // Draw the quad
+
             render.draw(quadMesh, shader, target);
 
-            float[] anchorPos = anchorPose.getTranslation();
-            Log.d(TAG, String.format("Quad positioned exactly like 3D model: [%.3f, %.3f, %.3f] * %.3f scale",
-                anchorPos[0], anchorPos[1], anchorPos[2], scale));
+            Log.d(TAG, String.format("Quad with aspect %.2f, matrix scale X:%.3f Y:%.3f Z:%.3f",
+                textureAspect,
+                Math.sqrt(modelMatrix[0]*modelMatrix[0] + modelMatrix[1]*modelMatrix[1] + modelMatrix[2]*modelMatrix[2]),
+                Math.sqrt(modelMatrix[4]*modelMatrix[4] + modelMatrix[5]*modelMatrix[5] + modelMatrix[6]*modelMatrix[6]),
+                Math.sqrt(modelMatrix[8]*modelMatrix[8] + modelMatrix[9]*modelMatrix[9] + modelMatrix[10]*modelMatrix[10])
+            ));
 
         } catch (Exception e) {
-            Log.e(TAG, "Error during quad rendering", e);
+            Log.e(TAG, "Error during glasses quad rendering", e);
         }
     }
 
-    private void calculateBillboardMatrix(float[] anchorMatrix, float[] viewMatrix) {
-        // Extract anchor position
-        float anchorX = anchorMatrix[12];
-        float anchorY = anchorMatrix[13];
-        float anchorZ = anchorMatrix[14];
+    private void calculateBillboardMatrix(float[] sceneCenter, float[] viewMatrix) {
+
 
         // Create a clean model matrix starting with identity
         Matrix.setIdentityM(modelMatrix, 0);
@@ -261,33 +278,14 @@ public class QuadRenderer {
             }
         }
 
-        // APPROACH 2: Y-AXIS CONSTRAINED BILLBOARDING (only rotates around Y, stays upright)
-        // This is your current approach which works well for signs, trees, etc.
-    /*
-    // Extract camera position (using inverse of view matrix)
-    float[] cameraMatrix = new float[16];
-    Matrix.invertM(cameraMatrix, 0, viewMatrix, 0);
-    float cameraX = cameraMatrix[12];
-    float cameraY = cameraMatrix[13];
-    float cameraZ = cameraMatrix[14];
+        modelMatrix[12] = sceneCenter[0];
+        modelMatrix[13] = sceneCenter[1];
+        modelMatrix[14] = sceneCenter[2];
 
-    // Vector from anchor to camera (in XZ plane only for Y-up constraint)
-    float dirX = cameraX - anchorX;
-    float dirZ = cameraZ - anchorZ;
-
-    // Calculate rotation around Y axis to face camera
-    float angle = (float) Math.toDegrees(Math.atan2(dirX, dirZ));
-
-    // Apply rotation around Y axis to face camera in XZ plane
-    Matrix.rotateM(modelMatrix, 0, angle, 0, 1, 0);
-    */
-
-        // Set position from anchor
-        modelMatrix[12] = anchorX;
-        modelMatrix[13] = anchorY;
-        modelMatrix[14] = anchorZ;
-    }
-     /* Clean up resources when no longer needed.
+        // Scale appropriately (this is critical for making it look right)
+        float scale = 0.5f; // Adjust based on your scene scale
+        Matrix.scaleM(modelMatrix, 0, scale, scale, 1.0f);
+    }   /* Clean up resources when no longer needed.
      */
     public void cleanup() {
         // Clean up shader

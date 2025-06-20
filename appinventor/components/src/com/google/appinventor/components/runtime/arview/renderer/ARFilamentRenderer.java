@@ -100,7 +100,7 @@ public class ARFilamentRenderer {
     private boolean isInitialized = false;
     private boolean hasSetTextureNames = false;
 
-    private static final float Z_NEAR = 0.1f;
+    private static final float Z_NEAR = 0.05f;
     private static final float Z_FAR = 40f;
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
@@ -120,6 +120,10 @@ public class ARFilamentRenderer {
     private MaterialInstance standardMaterialInstance;
     private float[] depthUvTransform = new float[16];
 
+    boolean hasNonZeroData = false;
+    // Add a flag to track when occlusion is ready
+    private boolean occlusionTexturesReady = false;
+    private boolean occlusionMaterialsApplied = false;
 
     // Animation supportin
     private float animationTime = 0.0f;
@@ -344,29 +348,30 @@ public class ARFilamentRenderer {
      * Set up basic lighting for the scene
      */
     private void setupLighting() {
-        // Create main directional light (sun)
+        // Create main directional light (sun) - DISABLE SHADOWS
         mainLightEntity = EntityManager.get().create();
 
         LightManager.Builder lightBuilder = new LightManager.Builder(LightManager.Type.DIRECTIONAL);
         lightBuilder.color(1.0f, 1.0f, 0.8f)
             .intensity(180000.0f)
-            .direction(1.0f, -1.5f, -1.0f);  // ✅ More angled from above-front-right
+            .direction(1.0f, -1.5f, -1.0f)
+            .castShadows(false); // DISABLE SHADOWS
 
         lightBuilder.build(engine, mainLightEntity);
         modelScene.addEntity(mainLightEntity);
 
-        // Add fill light
-        int ambientLightEntity = EntityManager.get().create();
+        // Add fill light - ALSO DISABLE SHADOWS
+       /* int ambientLightEntity = EntityManager.get().create();
         new LightManager.Builder(LightManager.Type.DIRECTIONAL)
-            .color(0.6f, 0.6f, 0.8f)       // Softer blue fill
-            .intensity(80000.0f)            // ✅ Lower intensity for fill
-            .direction(-0.5f, 0.5f, 1.0f)  // ✅ From below-back-left (opposite side)
-            .castShadows(false)
-            .build(engine, ambientLightEntity);
+            .color(0.6f, 0.6f, 0.8f)
+            .intensity(80000.0f)
+            .direction(-0.5f, 0.5f, 1.0f)
+            .castShadows(false) // ALREADY DISABLED
+            .build(engine, ambientLightEntity);*/
 
-        modelScene.addEntity(ambientLightEntity);
+       // modelScene.addEntity(ambientLightEntity);
 
-        Log.d(LOG_TAG, "Lighting setup complete with main and ambient lights");
+        Log.d(LOG_TAG, "Lighting setup complete - shadows disabled");
     }
 
 
@@ -547,37 +552,50 @@ public class ARFilamentRenderer {
     public void updateCameraFromARCore(float[] arcoreViewMatrix, float[] arcoreProjectionMatrix) {
         if (camera == null) return;
 
-        try {
-            // Store ARCore matrices for QuadRenderer
-            System.arraycopy(arcoreViewMatrix, 0, this.viewMatrix, 0, 16);
-            System.arraycopy(arcoreProjectionMatrix, 0, this.projectionMatrix, 0, 16);
+        // Store matrices
+        System.arraycopy(arcoreViewMatrix, 0, this.viewMatrix, 0, 16);
+        System.arraycopy(arcoreProjectionMatrix, 0, this.projectionMatrix, 0, 16);
 
-            // Get ARCore camera world position (same as before)
-            float[] arCoreCameraMatrix = new float[16];
-            Matrix.invertM(arCoreCameraMatrix, 0, arcoreViewMatrix, 0);
-            float[] cameraPos = {arCoreCameraMatrix[12], arCoreCameraMatrix[13], arCoreCameraMatrix[14]};
+        // EXACT SAME CAMERA: Use ARCore's matrices directly
+        float[] cameraWorldMatrix = new float[16];
+        if (Matrix.invertM(cameraWorldMatrix, 0, arcoreViewMatrix, 0)) {
 
-            // Calculate center of all objects (this becomes our new "currentObjectPos")
-            float[] sceneCenter = calculateSceneCenter();
+            // Extract ARCore camera position and orientation EXACTLY
+            float camX = cameraWorldMatrix[12];
+            float camY = cameraWorldMatrix[13];
+            float camZ = cameraWorldMatrix[14];
 
-            float[] upVector = {arCoreCameraMatrix[4], arCoreCameraMatrix[5], arCoreCameraMatrix[6]};
+            float[] right = {cameraWorldMatrix[0], cameraWorldMatrix[1], cameraWorldMatrix[2]};
+            float[] up = {cameraWorldMatrix[4], cameraWorldMatrix[5], cameraWorldMatrix[6]};
+            float[] forward = {-cameraWorldMatrix[8], -cameraWorldMatrix[9], -cameraWorldMatrix[10]};
 
-            // Use the EXACT same pattern that worked
+            float targetX = camX + forward[0];
+            float targetY = camY + forward[1];
+            float targetZ = camZ + forward[2];
+
             camera.lookAt(
-                cameraPos[0], cameraPos[1], cameraPos[2],        // Camera at ARCore position
-                sceneCenter[0], sceneCenter[1], sceneCenter[2],   // Look at scene center
-                upVector[0], upVector[1], upVector[2]                            // Up vector
+                camX, camY, camZ,
+                targetX, targetY, targetZ,
+                up[0], up[1], up[2]
             );
 
-            // Use consistent projection (same as before)
-            double fovY = 2.0 * Math.atan(1.0 / arcoreProjectionMatrix[5]) * 180.0 / Math.PI;
-            camera.setProjection(fovY, (double) viewportWidth / viewportHeight, Z_NEAR, Z_FAR, Camera.Fov.VERTICAL);
+            // Use ARCore's EXACT projection
+            double[] projectionMatrixDouble = new double[16];
+            for (int i = 0; i < 16; i++) {
+                projectionMatrixDouble[i] = (double) arcoreProjectionMatrix[i];
+            }
+            camera.setCustomProjection(projectionMatrixDouble, (double) Z_NEAR, (double) Z_FAR);
 
-            Log.d(LOG_TAG, String.format("Filament camera at ARCore pos [%.3f, %.3f, %.3f] looking at scene center [%.3f, %.3f, %.3f]",
-                cameraPos[0], cameraPos[1], cameraPos[2], sceneCenter[0], sceneCenter[1], sceneCenter[2]));
+            Log.d(LOG_TAG, String.format("EXACT ARCore camera: pos[%.3f,%.3f,%.3f]", camX, camY, camZ));
+        }
+    }
 
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Camera setup failed: " + e.getMessage());
+    private void normalizeVector(float[] vec) {
+        float length = (float) Math.sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+        if (length > 0.0001f) {
+            vec[0] /= length;
+            vec[1] /= length;
+            vec[2] /= length;
         }
     }
 
@@ -612,9 +630,7 @@ public class ARFilamentRenderer {
     // Add this field to store current object position
     private float[] currentObjectPos = {0.0f, 0.0f, -2.0f};
 
-    /**
-     * Position object at anchor location and update camera target
-     */
+
     private void applyNodeTransformation(ARNode node, FilamentAsset asset, float[] arcoreViewMatrix) {
         TransformManager transformManager = engine.getTransformManager();
         int rootEntityId = asset.getRoot();
@@ -694,25 +710,31 @@ public class ARFilamentRenderer {
             Log.d(LOG_TAG, "updateARCoreDepth called - buffer size: " + depthData.remaining() +
                 ", dimensions: " + depthWidth + "x" + depthHeight);
 
-            // Check if we have any non-zero depth values
-            depthData.rewind();
-            boolean hasNonZeroData = false;
-            for (int i = 0; i < Math.min(100, depthData.remaining()); i++) {
-                if (depthData.get(i) != 0) {
-                    hasNonZeroData = true;
-                    break;
-                }
-            }
-            depthData.rewind();
+
+
+
 
             Log.d(LOG_TAG, "Depth buffer has non-zero data: " + hasNonZeroData);
 
             // Store UV transform for shader
             System.arraycopy(uvTransform, 0, depthUvTransform, 0, 16);
 
-            // Update material parameters if occlusion material is loaded
-            if (hasNonZeroData){
-                updateOcclusionMaterialNearFarParams(nearPlane, farPlane, uvTransform);
+
+            //applyStandardMaterial();
+
+            // Check if we have any non-zero depth values
+            depthData.rewind();
+
+            for (int i = 0; i < Math.min(100, depthData.remaining()); i++) {
+                if (depthData.get(i) != 0) {
+                  hasNonZeroData = true;
+                  break;
+                }
+            }
+            if (hasNonZeroData) {
+              updateOcclusionMaterialNearFarParams(nearPlane, farPlane, uvTransform);
+              occlusionTexturesReady = true; // Mark textures as ready
+              Log.d(LOG_TAG, "Occlusion textures are now ready");
             }
         } else {
             // Create/recreate texture with correct size
@@ -785,7 +807,7 @@ public class ARFilamentRenderer {
                 occlusionMaterialInstance.setParameter("debugMode", 0);
                 occlusionMaterialInstance.setParameter("baseColor", 0.0f, 0.0f, 1.0f, 1.0f);
 
-
+                occlusionTexturesReady = true;
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error setting material parameters: " + e.getMessage(), e);
             }
@@ -858,53 +880,26 @@ public class ARFilamentRenderer {
     private void applyOcclusionMaterialToAllAssets() {
         try {
 
-
+            occlusionMaterialsApplied = true;
             RenderableManager renderableManager = engine.getRenderableManager();
             for (FilamentAsset asset : nodeAssetMap.values()) {
-
-                for (int entityId : asset.getEntities()) {
-                    if (renderableManager.hasComponent(entityId)) {
-                        int instance = renderableManager.getInstance(entityId);
-                        for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
-                            renderableManager.setMaterialInstanceAt(instance, i, occlusionMaterialInstance);
-                        }
+                int[] entities = asset.getEntities();
+                for (int i = 2; i < 8;  i++) {
+                    if (renderableManager.hasComponent(entities[i])) {
+                        int instance = renderableManager.getInstance(entities[i]);
+                        //for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
+                        renderableManager.setMaterialInstanceAt(instance, 0, occlusionMaterialInstance);
+                        //}
                     }
                 }
                 Log.d(LOG_TAG, "updated  model occlusion material for asset " + asset.getRoot());
             }
-
+            occlusionMaterialsApplied = true;
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error applying occlusion material: " + e.getMessage());
         }
     }
 
-
-    private void mergeARCoreDepthUsingObjects() {
-
-        try {
-            // Apply depth comparison material to all objects
-            applyOcclusionMaterialToAllAssets();
-
-            // Configure depth testing for merging
-            GLES30.glEnable(GLES30.GL_DEPTH_TEST);
-            GLES30.glDepthFunc(GLES30.GL_ALWAYS);  // Always run fragment shader
-            GLES30.glDepthMask(true);              // Allow depth writes
-            GLES30.glColorMask(false, false, false, false); // No color output
-
-            robustBeginFrame();
-            // Render the view
-            renderer.render(view);
-
-            Log.d(LOG_TAG, "Rendered to depth scene");
-
-        } catch (Exception renderError) {
-            Log.e(LOG_TAG, "Rendering to model scene process error", renderError);
-        } finally {
-            // Always end the frame
-            renderer.endFrame();
-            GLES30.glColorMask(true, true, true, true); // Re-enable color
-        }
-    }
     private void compositeSceneRenderPass() {
         // PASS 2: Render composite quad with occlusion
 
@@ -913,8 +908,18 @@ public class ARFilamentRenderer {
         try {
 
 
-            updateOcclusionMaterialTextureParams();
-            applyOcclusionMaterialToAllAssets(); // apparently this is necessary?
+            // Apply occlusion materials once when everything is ready
+            if (occlusionTexturesReady && !occlusionMaterialsApplied) {
+                updateOcclusionMaterialTextureParams(); // Set up all texture parameters
+                applyOcclusionMaterialToAllAssets();     // Apply materials once
+                occlusionMaterialsApplied = true;
+                Log.d(LOG_TAG, "Occlusion materials applied - ready for depth occlusion");
+            }
+
+            // Just update uniform parameters each frame (cheap)
+            if (occlusionMaterialsApplied) {
+                updateOcclusionMaterialTextureParams(); // Update texture uniforms only
+            }
 
             view.setScene(modelScene);       // DOH
             view.setRenderTarget(compositeRenderTarget);  // Final output
@@ -928,7 +933,7 @@ public class ARFilamentRenderer {
             // Render the view
             renderer.render(view);
             // Pixel buffer preparation with diagnostic logging
-            handleRenderableBufferRead();
+
 
             Log.d(LOG_TAG, "Rendered to target with depth texture: " + virtualSceneDepthTexture);
             Log.d(LOG_TAG, "Render target has depth attachment: " + (filamentRenderTarget != null));
@@ -940,7 +945,7 @@ public class ARFilamentRenderer {
             renderer.endFrame();
         }
     }
-
+int textureUpdateCounter = 0;
     public void draw(List<ARNode> nodes, float[] viewMatrix, float[] projectionMatrix) {
 
         if (!isInitialized) {
@@ -972,7 +977,7 @@ public class ARFilamentRenderer {
             // Prevent rapid, repeated frame attempts
             long currentTime = System.currentTimeMillis();
 
-            final long MINIMUM_FRAME_INTERVAL = 16; // milliseconds
+            final long MINIMUM_FRAME_INTERVAL = 8; // milliseconds
 
             /*throttling */
             // Track last successful frame time
@@ -1011,6 +1016,11 @@ public class ARFilamentRenderer {
                 GLES30.glFinish();
                 //handleRenderableBufferRead();
                 compositeSceneRenderPass(); // this second pass should provide filament depth info.. however it renders a black rectangle, so the occlusion still isn't right
+                // Only update texture every other frame
+                textureUpdateCounter++;
+                if (textureUpdateCounter % 2 == 0) {
+                    handleRenderableBufferRead();
+                }
             }
 
 
@@ -1050,7 +1060,7 @@ long lastSuccessfulFrameTime = 0;
                 if (glSurfaceView != null) {
                     glSurfaceView.queueEvent(new Runnable() {
                         @Override
-                        public void run() {
+                        public void run() { //has to be here to
                             EGLContext currentGLContext = EGL14.eglGetCurrentContext();
                             Log.d(LOG_TAG, "GL Thread Context for texture update: " + currentGLContext);
 
@@ -1100,47 +1110,26 @@ long lastSuccessfulFrameTime = 0;
 
         pixelBuffer.rewind();
 
-        // Check if we need to recreate the texture (only when necessary)
-        boolean needsRecreation = false;
-
-        // Test if texture is still valid by trying to bind it
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
+
+        // FAST path - don't recreate texture unless necessary
         int error = GLES30.glGetError();
         if (error != GLES30.GL_NO_ERROR) {
-            Log.d(LOG_TAG, "Texture needs recreation due to GL error: 0x" + Integer.toHexString(error));
-            needsRecreation = true;
-        }
-
-        if (needsRecreation) {
             recreateTexture();
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, displayTextureId);
         }
 
-        setTextureParameters();
-
-        // Upload pixel data
-        GLES30.glTexImage2D(
-            GLES30.GL_TEXTURE_2D,
-            0,
-            GLES30.GL_RGBA8,
-            viewportWidth,
-            viewportHeight,
-            0,
-            GLES30.GL_RGBA,
-            GLES30.GL_UNSIGNED_BYTE,
+        // Use glTexSubImage2D for updates (faster than glTexImage2D)
+        GLES30.glTexSubImage2D(
+            GLES30.GL_TEXTURE_2D, 0, 0, 0,
+            viewportWidth, viewportHeight,
+            GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE,
             pixelBuffer
         );
 
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-        GLES30.glFlush();  // Ensure commands complete
-        GLES30.glFinish(); // Wait for completion
-        // Check for errors
-        error = GLES30.glGetError();
-        if (error != GLES30.GL_NO_ERROR) {
-            Log.e(LOG_TAG, "OpenGL texture update error: 0x" + Integer.toHexString(error));
-        } else {
-            Log.d(LOG_TAG, "Successfully updated texture ID: " + displayTextureId);
-        }
+        // Remove glFinish() - it forces CPU/GPU sync and causes lag
+        // GLES30.glFinish(); // Comment this out
     }
 
     /**
@@ -1262,7 +1251,7 @@ long lastSuccessfulFrameTime = 0;
     }
 
 
-    private void applyStandardMaterial(FilamentAsset asset) {
+    private void applyStandardMaterial() {
         try {
 
             if (standardMaterialInstance != null) {
@@ -1271,8 +1260,7 @@ long lastSuccessfulFrameTime = 0;
                 Log.d(LOG_TAG, "Applying simple material");
                 // Occlusion will be set up automatically when depth data arrives
 
-                // Apply to all parts of the model
-               // RenderableManager renderableManager = engine.getRenderableManager();
+                // this wipes texture from model, so don't do that
                // renderableManager.setMaterialInstance(asset);
                /* for (int entityId : asset.getEntities()) {
                     if (renderableManager.hasComponent(entityId)) {
@@ -1335,7 +1323,7 @@ long lastSuccessfulFrameTime = 0;
 
             //if (asset.getMaterialInstances().length == 0) {
                 // No materials - apply simple PBR with occlusion
-            applyStandardMaterial(asset);
+            applyStandardMaterial();
 
 
             // Check material instances after loading
