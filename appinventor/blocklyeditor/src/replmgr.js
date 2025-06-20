@@ -1416,8 +1416,22 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser
             return;             // startAdbDevice callbacks will continue the connection process
         }
         if (browser) {
-            var emulator = window.open('http://localhost:8000', '_blank');
-            emulator.postMessage("message");
+            // Open emulator window
+            window.emulator = window.open('http://localhost:8000', '_blank');
+
+            // Listen for a ready message from emulator to avoid missing the message
+            window.addEventListener("message", (event) => {
+                if (event.origin !== "http://localhost:8000") return;
+                const data = event.data;
+
+                if (data.type === "sendToAppInventor") { // Message displayed in App Inventor will be echoed in the emulator as well
+                    console.log("Emulator said: ", data.payload);
+                    window.emulator.postMessage({type: "response", payload: "App Inventor received: " + data.payload}, "http://localhost:8000");
+                } else if (data.type === "response") { // Same as sendToAppInventor but without echo
+                    console.log("Emulator said: ", data.payload);
+                }
+            });
+
             return;
         }
         rs = top.ReplState;
