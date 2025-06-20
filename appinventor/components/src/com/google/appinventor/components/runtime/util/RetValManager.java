@@ -31,7 +31,7 @@ public class RetValManager {
   private static final long TENSECONDS = 10000; // Ten Seconds (in milliseconds)
 
   // There can be only one!
-  private static ArrayList<com.google.appinventor.shared.properties.json.JSONObject> currentArray = new ArrayList<JSONObject>(10);
+  private static ArrayList<JSONObject> currentArray = new ArrayList<JSONObject>(10);
 
   // Need a better place for this version string, but for various reasons, this is how we
   // are going to do this for now...
@@ -71,7 +71,7 @@ public class RetValManager {
   }
 
   public static void appendLogValue(String item, String blockid, String status, String level) {
-    synchronized (semaphore) {
+    synchronized(semaphore) {
       JSONObject retval = new JSONObject();
       try {
         retval.put("status", status);
@@ -79,7 +79,6 @@ public class RetValManager {
         retval.put("item", item);
         retval.put("blockid", blockid);
         retval.put("level", level);
-
       } catch (JSONException e) {
         Log.e(LOG_TAG, "Error building retval", e);
         return;
@@ -89,7 +88,7 @@ public class RetValManager {
       if (PhoneStatus.getUseWebRTC()) {
         webRTCsendCurrent();
       } else if (sendNotify) {
-        sempahore.notifyAll();
+        semaphore.notifyAll();
       }
     }
   }

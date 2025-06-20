@@ -546,7 +546,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
      "See the Google Android documentation for how to access the log.")
   public void LogError(String message) {
     Log.e(LOG_TAG, message);
-    RetValManager.shared().appendLogValue(message, "Notifier", "OK", "Error");
+    RetValManager.appendLogValue(message, "Notifier", "OK", "Error");
   }
 
   /**
@@ -559,7 +559,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
      "See the Google Android documentation for how to access the log.")
   public void LogWarning(String message) {
     Log.w(LOG_TAG, message);
-    RetValManager.shared().appendLogValue(message, "Notifier", "OK", "Warning");
+    RetValManager.appendLogValue(message, "Notifier", "OK", "Warning");
   }
 
   /**
@@ -570,6 +570,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @SimpleFunction(description = "Writes an information message to the Android log.")
   public void LogInfo(String message) {
     Log.i(LOG_TAG, message);
-    RetValManager.shared().appendLogValue(message, "Notifier", "OK", "Info");
+    RetValManager.appendLogValue(message, "Notifier", "OK", "Info");
   }
 }
