@@ -32,11 +32,6 @@
                     tooltip="{messages.removeFormButton}">
       <ya:RemoveFormAction/>
     </ai:ToolbarItem>
-    <ai:ToolbarItem name="ToggleConsole" icon="add" ui:field="toggleConsoleItem"
-                    align="center" styleName="ode-ProjectListButton inline bcenter primary"
-                    tooltip="{messages.toggleConsoleButton}">
-      <ya:ToggleConsoleAction/>
-    </ai:ToolbarItem>
 
     <ai:ToolbarItem name="TutorialToggle" icon="school" tooltip="{messages.toggleTutorialButton}"
         visible="false" align="center" styleName="ode-ProjectListButton inline">
@@ -53,8 +48,13 @@
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
 
+    <ai:ToolbarItem name="ToggleConsole" caption="{messages.toggleConsoleButton}" 
+                    ui:field="toggleConsoleItem" align="right" styleName="ode-ProjectListButton bleft primary">
+      <ya:ToggleConsoleAction/>
+    </ai:ToolbarItem>
+
     <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
-                    ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bleft primary">
+                    ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bcenter primary">
       <ya:SwitchToFormEditorAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="switchToBlocks" caption="{messages.switchToBlocksEditorButton}"
