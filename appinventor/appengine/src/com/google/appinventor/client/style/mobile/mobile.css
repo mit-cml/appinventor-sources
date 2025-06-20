@@ -1,0 +1,104 @@
+/*Copyright 2025 MIT, All rights reserved*/
+/* Released under the Apache License, Version 2.0*/
+/* http://www.apache.org/licenses/LICENSE-2.0*/
+
+@external .*;
+
+.ode-TopPanel-Mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    height: 50px; /* Compact for mobile */
+}
+
+.mobile-project-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.mobile-TopToolbar {
+    width: 100%;
+    height: 50px;
+    background-color: #3c8dbc;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.mobile-HamburgerButton {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.mobile-MenuPopup {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    max-width: 90%;
+    max-height: 80%;
+    margin: 0 auto;
+}
+
+.mobile-MenuContainer {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 300px;
+}
+
+.mobile-MenuHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.mobile-MenuTitle {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.mobile-CloseButton {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.mobile-MenuScroll {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.mobile-SectionTitle {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 10px 0 5px;
+    color: #333;
+}
+
+.mobile-MenuItem {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    font-size: 14px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.mobile-MenuItem:hover {
+    background-color: #f5f5f5;
+}

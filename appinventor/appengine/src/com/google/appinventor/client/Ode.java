@@ -36,12 +36,11 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.local.LocalGetMotdService;
 import com.google.appinventor.client.local.LocalProjectService;
-import com.google.appinventor.client.local.LocalTokenAuthService;
-import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.client.style.mobile.ImagesMobile;
+import com.google.appinventor.client.style.mobile.UiFactoryMobile;
 import com.google.appinventor.client.style.neo.ImagesNeo;
 import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
 import com.google.appinventor.client.style.neo.UiFactoryNeo;
@@ -91,6 +90,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
@@ -246,6 +247,7 @@ public class Ode implements EntryPoint {
 
   // mode
   @UiField(provided = true) static Resources.Style style;
+
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -660,6 +662,8 @@ public class Ode implements EntryPoint {
     getTopToolbar().updateFileMenuButtons(1);
   }
 
+  private String currentLayout;
+
   /**
    * Returns i18n compatible messages
    * @return messages
@@ -771,7 +775,19 @@ public class Ode implements EntryPoint {
         ))
         .then0(this::handleUiPreference)
         .then(this::initializeUi)
-        .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
+            .then0(() -> {
+              // Add resize handler after UI initialization
+              Window.addResizeHandler(event -> {
+                String newLayout = determineLayout();
+                LOG.info("Window resized to " + event.getWidth() + "x" + event.getHeight());
+                LOG.info("Current layout: " + currentLayout + ", new layout: " + newLayout);
+                if (!newLayout.equals(currentLayout)) {
+                  LOG.info("Layout changed from " + currentLayout + " to " + newLayout + ", reloading...");
+                  Window.Location.reload(); // Reload the app
+                }
+              });
+              return projectManager.ensureProjectsLoadedFromServer(projectService);
+            })
         .then(projects -> {
           folderManager.loadFolders();
           ProjectListBox.getProjectListBox().getProjectList().onProjectsLoaded();
@@ -931,9 +947,26 @@ public class Ode implements EntryPoint {
 
   private Promise<Void> handleUiPreference() {
     return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
-      useNeoStyle = Ode.getUserNewLayout();
-      useDarkMode = Ode.getUserDarkThemeEnabled();
-      if (useNeoStyle) {
+
+      String layout = determineLayout();
+      if (layout.equals("mobile")) {
+        GWT.runAsync(new RunAsyncCallback() {
+
+          @Override
+          public void onFailure(Throwable reason) {
+            LOG.info("Failed to load mobile layout: " + reason.getMessage());
+            rej.apply(new Promise.WrappedException(reason));
+          }
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(ImagesMobile.class);
+            RootPanel.get().addStyleName("mobile");
+            uiFactory = new UiFactoryMobile();
+            res.apply(null);
+            LOG.info("Mobile layout loaded successfully");
+          }
+        });
+      }else if (layout.equals("modern")) {
         GWT.runAsync(new RunAsyncCallback() {
           @Override
           public void onFailure(Throwable reason) {
@@ -975,7 +1008,35 @@ public class Ode implements EntryPoint {
     });
   }
 
-  /*
+  private void updateLayout(String newLayout) {
+    if (newLayout.equals("mobile")) {
+      RootPanel.get().removeStyleName("classic");
+      RootPanel.get().removeStyleName("modern");
+      RootPanel.get().addStyleName("mobile");
+      IMAGES = GWT.create(ImagesMobile.class);
+      uiFactory = new UiFactoryMobile();
+    } else if (newLayout.equals("modern")) {
+      RootPanel.get().removeStyleName("classic");
+      RootPanel.get().removeStyleName("mobile");
+      RootPanel.get().addStyleName("neo");
+      IMAGES = GWT.create(ImagesNeo.class);
+      uiFactory = new UiFactoryNeo();
+    } else {
+      RootPanel.get().removeStyleName("mobile");
+      RootPanel.get().removeStyleName("neo");
+      RootPanel.get().addStyleName("classic");
+      IMAGES = GWT.create(Images.class);
+      uiFactory = new UiStyleFactory();
+    }
+    if (style == null) {
+      LOG.warning("Resources.Style object is null. Ensure the CSS files are correctly loaded.");
+    } else {
+      style.ensureInjected();
+    }
+    currentLayout = newLayout;
+  }
+
+    /*
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
@@ -1013,28 +1074,27 @@ public class Ode implements EntryPoint {
       }
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
-
     // TODO: Tidy up user preference variable
     projectListbox = ProjectListBox.create(uiFactory);
-    String layout;
-    if (Ode.getUserNewLayout()) {
-      layout = "modern";
-      if (Ode.getUserDarkThemeEnabled()) {
-        style = Resources.INSTANCE.stylemodernDark();
-      } else {
-        style = Resources.INSTANCE.stylemodernLight();
-      }
+    String layout = determineLayout();
+    currentLayout = layout;
+    LOG.info("Current layout: " + currentLayout);
+    Resources.Style style;
+    if (layout.equals("mobile")) {
+      style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.stylemobileDark() : Resources.INSTANCE.stylemobileLight();
+    } else if (layout.equals("modern")) {
+      style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.stylemodernDark() : Resources.INSTANCE.stylemodernLight();
     } else {
-      layout = "classic";
-      if (Ode.getUserDarkThemeEnabled()) {
-        style = Resources.INSTANCE.styleclassicDark();
-      } else {
-        style = Resources.INSTANCE.styleclassicLight();
-      }
+      style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.styleclassicDark() : Resources.INSTANCE.styleclassicLight();
     }
 
+    LOG.info("Injecting style for layout: " + layout);
     style.ensureInjected();
+    LOG.info("Style injected successfully for layout: " + layout);
+    LOG.info("Creating main panel for layout: " + layout);
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
+    LOG.info("Main panel created with " + mainPanel.getWidgetCount() + " widgets for layout: " + layout);
+
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
@@ -1054,7 +1114,9 @@ public class Ode implements EntryPoint {
     // Debugging Panel
     debuggingTabIndex = 3;
 
+    LOG.info("Adding main panel to RootPanel for layout: " + layout);
     RootPanel.get().add(mainPanel);
+    LOG.info("Main panel added to RootPanel for layout: " + layout);
 
     // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
     // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
@@ -1453,6 +1515,21 @@ public class Ode implements EntryPoint {
             .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
     return Boolean.parseBoolean(value);
     // return true;
+  }
+
+  /**
+   * Determines the mobile layout based on the current screen width.
+   */
+  private String determineLayout() {
+    int screenWidth = Window.getClientWidth();
+    LOG.info(" dertermine , Screen width: " + screenWidth);
+    if (screenWidth < 768) {
+      return "mobile";
+    } else if (Ode.getUserNewLayout()) {
+      return "modern";
+    } else {
+      return "classic";
+    }
   }
 
   /**
@@ -2696,6 +2773,18 @@ public class Ode implements EntryPoint {
       "com/google/appinventor/client/style/neo/neo.css"
     })
     Style stylemodernDark();
+
+    @Source({
+      "com/google/appinventor/client/style/mobile/mobileDark.css",
+      "com/google/appinventor/client/style/mobile/mobile.css"
+    })
+    Style stylemobileDark();
+
+    @Source({
+      "com/google/appinventor/client/style/mobile/mobileLight.css",
+      "com/google/appinventor/client/style/mobile/mobile.css"
+    })
+    Style stylemobileLight();
 
     public interface Style extends CssResource {
     }
