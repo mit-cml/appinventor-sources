@@ -318,8 +318,8 @@ Component for BoxNode
 {:id="BoxNode.Pose" .any .wo .bo} *Pose*
 : Set the current pose of the object
 
-{:id="BoxNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
-: Set the current pose of the object from property
+{:id="BoxNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="BoxNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
@@ -414,10 +414,10 @@ Component for BoxNode
 : Rotates the node to look at the Spotlight.
 
 {:id="BoxNode.MoveBy" class="method"} <i/> MoveBy(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position by (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="BoxNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: move a capsule node properties at the specified (x,y,z) position.
+: Changes the node's position by (x,y,z).
 
 {:id="BoxNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a capsule node properties to detectedplane.
@@ -579,7 +579,7 @@ Component for CapsuleNode
 : Rotates the node to look at the Spotlight.
 
 {:id="CapsuleNode.MoveBy" class="method"} <i/> MoveBy(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position by (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="CapsuleNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
 : move a capsule node properties at the specified (x,y,z) position.
@@ -1094,7 +1094,7 @@ Component for ModelNode
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
 {:id="ModelNode.Scale" .number} *Scale*
-: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
+: set scale of the node
 
 {:id="ModelNode.ShowShadow" .boolean .do} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
@@ -1183,10 +1183,10 @@ Component for ModelNode
 : Rotates the node to look at the Spotlight.
 
 {:id="ModelNode.MoveBy" class="method"} <i/> MoveBy(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position by (x,y,z).
+: move a model node properties at the specified (x,y,z) position.
 
 {:id="ModelNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: move a capsule node properties at the specified (x,y,z) position.
+: Changes the node's position by (x,y,z).
 
 {:id="ModelNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a capsule node properties at the specified (x,y,z) position.
@@ -1279,6 +1279,12 @@ Component for PlaneNode
 {:id="PlaneNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="PlaneNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="PlaneNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
+
 {:id="PlaneNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
@@ -1288,7 +1294,7 @@ Component for PlaneNode
 {:id="PlaneNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
-{:id="PlaneNode.Texture" .text} *Texture*
+{:id="PlaneNode.Texture" .text .do} *Texture*
 : The image used to texture the node.  If set, the FillColor is not shown.
 
 {:id="PlaneNode.TextureOpacity" .number} *TextureOpacity*
@@ -1372,10 +1378,10 @@ Component for PlaneNode
 : Rotates the node to look at the Spotlight.
 
 {:id="PlaneNode.MoveBy" class="method"} <i/> MoveBy(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position by (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="PlaneNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: move a sphere node properties at the specified (x,y,z) position.
+: Changes the node's position by (x,y,z).
 
 {:id="PlaneNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a sphere node properties at the specified (x,y,z) position.
@@ -1764,10 +1770,10 @@ Component for SphereNode
 : Rotates the node to look at the Spotlight.
 
 {:id="SphereNode.MoveBy" class="method"} <i/> MoveBy(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position by (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="SphereNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: move a sphere node properties at the specified (x,y,z) position.
+: Changes the node's position by (x,y,z).
 
 {:id="SphereNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a sphere node properties at the specified (x,y,z) position.
@@ -2462,8 +2468,8 @@ Component for VideoNode
 {:id="VideoNode.Pose" .any .wo .bo} *Pose*
 : Set the current pose of the object
 
-{:id="VideoNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
-: Set the current pose of the object from property
+{:id="VideoNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="VideoNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
@@ -2570,10 +2576,10 @@ Component for VideoNode
 : Rotates the node to look at the Spotlight.
 
 {:id="VideoNode.MoveBy" class="method"} <i/> MoveBy(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position by (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="VideoNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: move a sphere node properties at the specified (x,y,z) position.
+: Changes the node's position by (x,y,z).
 
 {:id="VideoNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a sphere node properties at the specified (x,y,z) position.
@@ -2645,8 +2651,8 @@ Component for WebViewNode
 {:id="WebViewNode.Pose" .any .wo .bo} *Pose*
 : Set the current pose of the object
 
-{:id="WebViewNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
-: Set the current pose of the object from property
+{:id="WebViewNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="WebViewNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
@@ -2756,10 +2762,10 @@ Component for WebViewNode
 : Rotates the node to look at the Spotlight.
 
 {:id="WebViewNode.MoveBy" class="method"} <i/> MoveBy(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position by (x,y,z).
+: move a capsule node properties at the specified (x,y,z) position.
 
 {:id="WebViewNode.MoveTo" class="method"} <i/> MoveTo(*x*{:.number},*y*{:.number},*z*{:.number})
-: Changes the node's position to (x,y,z).
+: Changes the node's position by (x,y,z).
 
 {:id="WebViewNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a webview node properties at the specified (x,y,z) position.

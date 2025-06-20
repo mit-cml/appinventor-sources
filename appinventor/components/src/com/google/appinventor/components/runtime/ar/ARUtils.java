@@ -42,8 +42,6 @@ public final class ARUtils {
     LinkedHashMap rotation = (LinkedHashMap) op.get("q");
 
     try {
-
-
       float x = parseFloat(String.format("%.2f",((Double)translation.get("x")).floatValue()));
       float y = parseFloat(String.format("%.2f",((Double)translation.get("y")).floatValue()));
       float z = parseFloat(String.format("%.2f",((Double)translation.get("z")).floatValue()));
@@ -57,7 +55,6 @@ public final class ARUtils {
       Log.i("creating Pose in parsePoseLinkedHM ", "parsed object " + pose);
     } catch (Exception e) {
       Log.i("creating Pose error", "err" + e);
-
 
       float x = parseFloat((String)translation.get("x"));
       float y = parseFloat((String)translation.get("y"));

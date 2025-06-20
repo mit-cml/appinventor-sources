@@ -54,7 +54,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void Anchor(Anchor a) {}
 
   @Override
-  public Object Pose() { return null; }
+  public Object Pose() { return null; };
 
   @Override
   public void Pose(Object p) {}
