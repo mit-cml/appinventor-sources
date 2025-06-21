@@ -79,6 +79,9 @@ import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.exceptions.JedisNoScriptException;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * The `CloudDB` component is a Non-visible component that allows you to store data on a Internet
  * connected database server (using Redis software). This allows the users of your App to share
@@ -431,6 +434,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The Redis Server to use to store data. A setting of \"DEFAULT\" " +
           "means that the MIT server will be used.")
+  @JsProperty(name = "RedisServer")
   public String RedisServer() {
     if (redisServer.equals(defaultRedisServer)) {
       return "DEFAULT";
@@ -449,6 +453,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
     description = "The Default Redis Server to use.",
     userVisible = false)
+  @JsProperty(name = "DefaultRedisServer")
   public void DefaultRedisServer(String server) {
     defaultRedisServer = server;
     if (useDefault) {
@@ -467,6 +472,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The Redis Server port to use. Defaults to 6381")
+  @JsProperty(name = "RedisPort")
   public int RedisPort() {
     return redisPort;
   }
@@ -478,6 +484,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Gets the ProjectID for this CloudDB project.")
+  @JsProperty(name = "ProjectID")
   public String ProjectID() {
     checkProjectIDNotBlank();
     return projectID;
@@ -534,6 +541,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
               "may also provide a special value to you which can be used to share " +
               "data between multiple projects from multiple people. If using your own " +
               "Redis server, set a password in the server's config and enter it here.")
+  @JsProperty(name = "Token")
   public String Token() {
     checkProjectIDNotBlank();
     return token;
@@ -557,6 +565,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false,
           description = "Set to true to use SSL to talk to CloudDB/Redis server. " +
               "This should be set to True for the \"DEFAULT\" server.")
+  @JsProperty(name = "UseSSL")
   public boolean UseSSL() {
     return useSSL;
   }
@@ -583,6 +592,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
    * number, text, boolean or list).
    */
   @SimpleFunction(description = "Store a value at a tag.")
+  @JsMethod(name = "StoreValue")
   public void StoreValue(final String tag, final Object valueToStore) {
     checkProjectIDNotBlank();
     final String value;
@@ -741,6 +751,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
   @SimpleFunction(description = "Get the Value for a tag, doesn't return the " +
     "value but will cause a GotValue event to fire when the " +
     "value is looked up.")
+  @JsMethod(name = "GetValue")
   public void GetValue(final String tag, final Object valueIfTagNotThere) {
     if (DEBUG) {
       Log.d(LOG_TAG, "getting value ... for tag: " + tag);
@@ -843,6 +854,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
    */
   @SimpleFunction(description = "returns True if we are on the network and will likely " +
     "be able to connect to the CloudDB server.")
+  @JsMethod(name = "CloudConnected")
   public boolean CloudConnected() {
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
@@ -918,6 +930,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
     "If two devices use this function simultaneously, one will get the first element and the " +
     "the other will get the second element, or an error if there is no available element. " +
     "When the element is available, the \"FirstRemoved\" event will be triggered.")
+  @JsMethod(name = "RemoveFirstFromList")
   public void RemoveFirstFromList(final String tag) {
     checkProjectIDNotBlank();
 
@@ -966,6 +979,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
   @SimpleFunction(description = "Append a value to the end of a list atomically. " +
     "If two devices use this function simultaneously, both will be appended and no " +
     "data lost.")
+  @JsMethod(name = "AppendValueToList")
   public void AppendValueToList(final String tag, final Object itemToAdd) {
     checkProjectIDNotBlank();
 
@@ -1040,6 +1054,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
    * @param tag The tag to remove
    */
   @SimpleFunction(description = "Remove the tag from CloudDB.")
+  @JsMethod(name = "ClearTag")
   public void ClearTag(final String tag) {
     checkProjectIDNotBlank();
     background.submit(new Runnable() {
@@ -1085,6 +1100,7 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
   @SimpleFunction(description = "Get the list of tags for this application. " +
       "When complete a \"TagList\" event will be triggered with the list of " +
       "known tags.")
+  @JsMethod(name = "GetTagList")
   public void GetTagList() {
     checkProjectIDNotBlank();
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();

@@ -34,6 +34,9 @@ import com.google.appinventor.components.runtime.util.InternalTextToSpeech;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * The `TextToSpeech` component speaks a given text aloud. You can set the pitch
  * and the rate of speech.
@@ -173,6 +176,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Result")
   public boolean Result() {
     return result;
   }
@@ -191,6 +195,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   description = "Sets the language for TextToSpeech. This changes the way that words are " +
       "pronounced, not the actual language that is spoken.  For example setting the language to " +
       "and speaking English text with sound like someone speaking English with a French accent.")
+  @JsProperty(name = "Language")
   public void Language(String language) {
     Locale locale;
     switch (language.length()) {
@@ -234,6 +239,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
       "TextToSpeech The values should " +
       "be between 0 and 2 where lower values lower the tone of synthesized voice and greater values " +
       "raise it.")
+  @JsProperty(name = "Pitch")
     public void Pitch(float pitch) {
         if (pitch < 0 || pitch > 2) {
             Log.i(LOG_TAG, "Pitch value should be between 0 and 2, but user specified: " + pitch);
@@ -253,6 +259,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
      * @suppressdoc
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns current value of Pitch")
+    @JsProperty(name = "Pitch")
     public float Pitch() {
         return this.pitch;
     }
@@ -273,6 +280,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the SpeechRate for TextToSpeech. " +
             "The values should be between 0 and 2 where lower values slow down the pitch and greater values " +
             "accelerate it.")
+    @JsProperty(name = "SpeechRate")
     public void SpeechRate(float speechRate) {
         if (speechRate < 0 || speechRate > 2) {
             Log.i(LOG_TAG, "speechRate value should be between 0 and 2, but user specified: " + speechRate);
@@ -292,6 +300,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
      * @suppressdoc
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns current value of SpeechRate")
+    @JsProperty(name = "SpeechRate")
     public float SpeechRate() {
         return this.speechRate;
   }
@@ -304,6 +313,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * @return the language code for this TextToSpeech component.
    */
   @SimpleProperty
+  @JsProperty(name = "Language")
   public String Language() {
     return language;
   }
@@ -322,6 +332,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
       "pronounciation.  For example, British English (GBR) will sound different from US English " +
       "(USA).  Not every country code will affect every language.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Country")
   public void Country(String country) {
     Locale locale;
     switch (country.length()) {
@@ -358,6 +369,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * @return country code for this TextToSpeech component.
    */
   @SimpleProperty
+  @JsProperty(name = "Country")
   public String Country() {
     return country;
   }
@@ -365,6 +377,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   @SimpleProperty(description = "List of the languages available on this device " +
       "for use with TextToSpeech.  Check the Android developer documentation under supported " +
       "languages to find the meanings of these abbreviations.")
+  @JsProperty(name = "AvailableLanguages")
   public YailList AvailableLanguages() {
     prepareLanguageAndCountryProperties();
     return allLanguages;
@@ -373,6 +386,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   @SimpleProperty(description = "List of the country codes available on this device " +
       "for use with TextToSpeech.  Check the Android developer documentation under supported " +
       "languages to find the meanings of these abbreviations.")
+  @JsProperty(name = "AvailableCountries")
   public YailList AvailableCountries() {
     prepareLanguageAndCountryProperties();
     return allCountries;
@@ -435,6 +449,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * Speaks the given message.
    */
   @SimpleFunction
+  @JsMethod(name = "Speak")
   public void Speak(final String message) {
     BeforeSpeaking();
     final Locale loc = new Locale(iso2Language, iso2Country);
@@ -445,6 +460,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * Stops any current speech.
    */
   @SimpleFunction
+  @JsMethod(name = "Stop")
   public void Stop() {
     tts.stop();
     AfterSpeaking(false);

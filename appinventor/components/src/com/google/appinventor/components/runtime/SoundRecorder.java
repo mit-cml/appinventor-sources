@@ -38,6 +38,9 @@ import com.google.appinventor.components.runtime.util.FileUtil;
 
 import java.io.IOException;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * ![SoundRecorder icon](images/soundrecorder.png)
  *
@@ -152,6 +155,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
           "a complete path to a file in an existing directory, including a file name with the " +
           "extension .3gp." ,
           category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "SavedRecording")
   public String SavedRecording() {
     return savedRecording;
   }
@@ -165,6 +169,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "SavedRecording")
   public void SavedRecording(String pathName) {
     savedRecording = pathName;
   }
@@ -173,6 +178,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    * Starts recording.
    */
   @SimpleFunction
+  @JsMethod(name = "Start")
   public void Start() {
     // Need to check if we have RECORD_AUDIO and WRITE_EXTERNAL permissions
     String uri = FileUtil.resolveFileName(form, savedRecording, form.DefaultFileScope());
@@ -294,6 +300,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    * Stops recording.
    */
   @SimpleFunction
+  @JsMethod(name = "Stop")
   public void Stop() {
     if (controller == null) {
       Log.i(TAG, "Stop() called, but already stopped.");

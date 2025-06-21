@@ -35,6 +35,30 @@ function getReplForm() {
     return undefined;
   }
 }
+
+       // Send ready message to App Inventor (opener)
+      window.onload = () => {
+        if (window.opener) {
+          window.opener.postMessage("ready", "http://localhost:8888");
+        }
+      };
+
+      // Receive messages from App Inventor
+      window.addEventListener("message", async (event) => {
+        if (event.origin !== "http://localhost:8888") return;
+        const data = event.data;
+        
+        if (data.type === "sendToEmulator") { // Emulator will display the message and echo it in app inventor
+          console.log("App Inventor said: ", data.payload);
+          window.opener.postMessage({type : "response", payload : "Emulator received: " + data.payload}, "http://localhost:8888");
+        } else if (data.type === "response") { // Same as sendToEmulator but without echo
+          console.log("App Inventor said: ", data.payload);
+        } else if (data.type === "eval") {
+          var result = await evalScheme(data.payload);
+          window.opener.postMessage({type : "response", payload: "Answer is: " + result}, "http://localhost:8888");
+        }
+      });
+
     </script>
     <script src="build/runtime.js" type="text/javascript"></script>
 <script id="runtimeExtra" type="text/scheme">

@@ -25,6 +25,8 @@ import com.google.appinventor.components.runtime.util.NougatUtil;
 
 import java.io.File;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * Sharing is a non-visible component that enables sharing files and/or messages between your app
  * and other apps installed on a device. The component will display a list of the installed apps
@@ -79,6 +81,7 @@ public class Sharing extends AndroidNonvisibleComponent {
       "application installed on the phone by displaying a list of the available apps and " +
       "allowing the user to choose one from the list. The selected app will open with the " +
       "message inserted on it.")
+  @JsMethod(name = "ShareMessage")
   public void ShareMessage(String message) {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
     shareIntent.putExtra(Intent.EXTRA_TEXT, message);
@@ -96,6 +99,7 @@ public class Sharing extends AndroidNonvisibleComponent {
   @SimpleFunction(description = "Shares a file through any capable application "
       + "installed on the phone by displaying a list of the available apps and allowing the " +
       "user to choose one from the list. The selected app will open with the file inserted on it.")
+  @JsMethod(name = "ShareFile")
   public void ShareFile(String file) {
     ShareFileWithMessage(file, "");
   }
@@ -107,6 +111,7 @@ public class Sharing extends AndroidNonvisibleComponent {
   @SimpleFunction(description = "Shares both a file and a message through any capable application "
       + "installed on the phone by displaying a list of available apps and allowing the user to " +
       " choose one from the list. The selected app will open with the file and message inserted on it.")
+  @JsMethod(name = "ShareFileWithMessage")
   public void ShareFileWithMessage(String file, String message) {
     if (!file.startsWith("file://")) {
       if (!file.startsWith("/")) {

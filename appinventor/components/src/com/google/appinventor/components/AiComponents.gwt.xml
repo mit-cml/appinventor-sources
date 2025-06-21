@@ -7,4 +7,6 @@
   <source path="runtime/error"/>
   <source path="runtime/util"/>
   <source path="runtime/util/theme"/>
+
+  <source path="errors"/> <!--- lucas trying to fix errors in building webruntime -->
 </module>

@@ -35,6 +35,9 @@ import java.util.Map;
 
 import org.json.JSONException;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * `TinyDB` is a non-visible component that stores data for an app.
  *
@@ -134,6 +137,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    * @param namespace the alternate namespace to use for the TinyDB
    */
   @SimpleProperty(description = "Namespace for storing data.", category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Namespace")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = DEFAULT_NAMESPACE)
   public void Namespace(String namespace) {
     this.namespace = namespace;
@@ -150,6 +154,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
   }
 
   @SimpleProperty(description = "Namespace for storing data.")
+  @JsProperty(name = "Namespace")
   public String Namespace() {
     return namespace;
   }
@@ -164,6 +169,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    */
   @SimpleFunction(description = "Store the given value under the given tag.  The storage persists "
       + "on the phone when the app is restarted.")
+  @JsMethod(name = "StoreValue")
   public void StoreValue(final String tag, final Object valueToStore) {
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     try {
@@ -185,6 +191,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    */
   @SimpleFunction(description = "Retrieve the value stored under the given tag. If there's no "
       + "such tag, then return valueIfTagNotThere.")
+  @JsMethod(name = "GetValue")
   public Object GetValue(final String tag, final Object valueIfTagNotThere) {
     try {
       String value = sharedPreferences.getString(tag, "");
@@ -202,6 +209,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    * @return a list of all keys.
    */
   @SimpleFunction(description = "Return a list of all the tags in the data store.")
+  @JsMethod(name = "GetTags")
   public Object GetTags() {
     List<String> keyList = new ArrayList<String>();
     Map<String, ?> keyValues = sharedPreferences.getAll();
@@ -216,6 +224,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    *
    */
   @SimpleFunction(description = "Clear the entire data store.")
+  @JsMethod(name = "ClearAll")
   public void ClearAll() {
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.clear();
@@ -229,6 +238,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    * @param tag The tag to remove.
    */
   @SimpleFunction(description = "Clear the entry with the given tag.")
+  @JsMethod(name = "ClearTag")
   public void ClearTag(final String tag) {
     final SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
     sharedPrefsEditor.remove(tag);
@@ -290,6 +300,7 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
    * @return Dictionary of tags and their associated values
    */
   @SimpleFunction(description = "Retrieves all data entries of TinyDB in form of Dictionaries")
+  @JsMethod(name = "GetEntries")
   public YailDictionary GetEntries() {
     Map<String, ?> keyValues = sharedPreferences.getAll();
     List<String> keyList = new ArrayList<>(keyValues.keySet());

@@ -93,6 +93,9 @@ import org.json.JSONException;
 
 import org.xml.sax.InputSource;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.
  *
@@ -273,6 +276,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The URL for the web request.")
+  @JsProperty(name = "Url")
   public String Url() {
     return urlString;
   }
@@ -283,6 +287,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Url")
   public void Url(String url) {
     urlString = url;
   }
@@ -292,6 +297,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "User-specified character encoding for web response.")
+  @JsProperty(name = "ResponseTextEncoding")
   public String ResponseTextEncoding() {
     return responseTextEncoding;
   }
@@ -302,6 +308,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "UTF-8")
   @SimpleProperty
+  @JsProperty(name = "ResponseTextEncoding")
   public void ResponseTextEncoding(String encoding) {
     responseTextEncoding = encoding;
   }
@@ -318,6 +325,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "of each sublist represents the request header field name. The second element of each " +
       "sublist represents the request header field values, either a single value or a list " +
       "containing multiple values.")
+  @JsProperty(name = "RequestHeaders")
   public YailList RequestHeaders() {
     return requestHeaders;
   }
@@ -328,6 +336,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @param list a list of two-element sublists, each representing a header name and values
    */
   @SimpleProperty
+  @JsProperty(name = "RequestHeaders")
   public void RequestHeaders(YailList list) {
     // Call processRequestHeaders to validate the list parameter before setting the requestHeaders
     // field.
@@ -348,6 +357,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Whether the cookies from a response should be saved and used in subsequent " +
       "requests. Cookies are only supported on Android version 2.3 or greater.")
+  @JsProperty(name = "AllowCookies")
   public boolean AllowCookies() {
     return allowCookies;
   }
@@ -358,6 +368,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "false")
   @SimpleProperty
+  @JsProperty(name = "AllowCookies")
   public void AllowCookies(boolean allowCookies) {
     this.allowCookies = allowCookies;
     if (allowCookies && cookieHandler == null) {
@@ -371,6 +382,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Whether the response should be saved in a file.")
+  @JsProperty(name = "SaveResponse")
   public boolean SaveResponse() {
     return saveResponse;
   }
@@ -381,6 +393,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "false")
   @SimpleProperty
+  @JsProperty(name = "SaveResponse")
   public void SaveResponse(boolean saveResponse) {
     this.saveResponse = saveResponse;
   }
@@ -394,6 +407,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The name of the file where the response should be saved. If SaveResponse " +
       "is true and ResponseFileName is empty, then a new file name will be generated.")
+  @JsProperty(name = "ResponseFileName")
   public String ResponseFileName() {
     return responseFileName;
   }
@@ -406,6 +420,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "ResponseFileName")
   public void ResponseFileName(String responseFileName) {
     this.responseFileName = responseFileName;
   }
@@ -417,6 +432,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "The number of milliseconds that a web request will wait for a response before giving up. " +
           "If set to 0, then there is no time limit on how long the request will wait.")
+  @JsProperty(name = "Timeout")
   public int Timeout() {
     return timeout;
   }
@@ -428,6 +444,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "0")
   @SimpleProperty
+  @JsProperty(name = "Timeout")
   public void Timeout(int timeout) {
     if (timeout < 0){
       throw new IllegalArgumentError("Web Timeout must be a non-negative integer.");
@@ -436,6 +453,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   }
 
   @SimpleFunction(description = "Clears all cookies for this Web component.")
+  @JsMethod(name = "ClearCookies")
   public void ClearCookies() {
     if (cookieHandler != null) {
       GingerbreadUtil.clearCookies(cookieHandler);
@@ -457,6 +475,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * triggered.
    */
   @SimpleFunction
+  @JsMethod(name = "Get")
   public void Get() {
     final String METHOD = "Get";
     // Capture property values in local variables before running asynchronously.
@@ -496,6 +515,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The responseFileName property can be used to specify " +
       "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PostText")
   public void PostText(final String text) {
     requestTextImpl(text, "UTF-8", "PostText", "POST");
   }
@@ -522,6 +542,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
       "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PostTextWithEncoding")
   public void PostTextWithEncoding(final String text, final String encoding) {
     requestTextImpl(text, encoding, "PostTextWithEncoding", "POST");
   }
@@ -543,6 +564,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
       "the name of the file.\n" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PostFile")
   public void PostFile(final String path) {
     final String METHOD = "PostFile";
     // Capture property values before running asynchronously.
@@ -582,6 +604,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The responseFileName property can be used to specify " +
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PatchText")
   public void PatchText(final String text) {
     requestTextImpl(text, "UTF-8", "PatchText", "PATCH");
   }
@@ -608,6 +631,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PatchTextWithEncoding")
   public void PatchTextWithEncoding(final String text, final String encoding) {
     requestTextImpl(text, encoding, "PatchTextWithEncoding", "PATCH");
   }
@@ -629,6 +653,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PatchFile")
   public void PatchFile(final String path) {
     final String METHOD = "PatchFile";
     // Capture property values before running asynchronously.
@@ -666,6 +691,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The responseFileName property can be used to specify " +
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PutText")
   public void PutText(final String text) {
     requestTextImpl(text, "UTF-8", "PutText", "PUT");
   }
@@ -692,6 +718,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PutTextWithEncoding")
   public void PutTextWithEncoding(final String text, final String encoding) {
     requestTextImpl(text, encoding, "PutTextWithEncoding", "PUT");
   }
@@ -713,6 +740,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
+  @JsMethod(name = "PutFile")
   public void PutFile(final String path) {
     final String METHOD = "PutFile";
     // Capture property values before running asynchronously.
@@ -744,6 +772,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * triggered.
    */
   @SimpleFunction
+  @JsMethod(name = "Delete")
   public void Delete() {
     final String METHOD = "Delete";
     // Capture property values in local variables before running asynchronously.
@@ -860,6 +889,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @param list a list of two-element sublists representing name and value pairs
    */
   @SimpleFunction
+  @JsMethod(name = "BuildRequestData")
   public String BuildRequestData(YailList list) {
     try {
       return buildRequestData(list);
@@ -911,6 +941,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @return the encoded text
    */
   @SimpleFunction
+  @JsMethod(name = "UriEncode")
   public String UriEncode(String text) {
     try {
       return URLEncoder.encode(text, "UTF-8");
@@ -931,6 +962,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @return the decoded text
    */
   @SimpleFunction
+  @JsMethod(name = "UriDecode")
   public String UriDecode(String text) {
     try {
       return URLDecoder.decode(text, "UTF-8");
@@ -964,6 +996,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   // TOOD(hal): Provide an alternative way to decode JSON objects to dictionaries.  Maybe with 
   // renaming this JsonTextDecodeWithPairs and making JsonTextDecode the one to use
   // dictionaries
+  @JsMethod(name = "JsonTextDecode")
   public Object JsonTextDecode(String jsonText) {
     try {
       return decodeJsonText(jsonText, false);
@@ -983,6 +1016,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @return The decoded value.
    */
   @SimpleFunction
+  @JsMethod(name = "JsonTextDecodeWithDictionaries")
   public Object JsonTextDecodeWithDictionaries(String jsonText) {
     try {
       return decodeJsonText(jsonText, true);
@@ -1036,6 +1070,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @return the stringified JSON value
    */
   @SimpleFunction
+  @JsMethod(name = "JsonObjectEncode")
   public String JsonObjectEncode(Object jsonObject) {
     try {
       return JsonUtil.encodeJsonObject(jsonObject);
@@ -1083,7 +1118,9 @@ public class Web extends AndroidNonvisibleComponent implements Component,
    * @return the decoded text
    */
   @SimpleFunction(description = "Decodes the given XML into a set of nested dictionaries that " +
-      "capture the structure and data contained in the XML. See the help for more details.")  public Object XMLTextDecodeAsDictionary(String XmlText) {
+      "capture the structure and data contained in the XML. See the help for more details.")  
+  @JsMethod(name = "XMLTextDecodeAsDictionary")
+  public Object XMLTextDecodeAsDictionary(String XmlText) {
     try {
       XmlParser p = new XmlParser();
       SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
@@ -1128,6 +1165,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
   // The above description string is punted because I can't figure out how to write the
   // documentation string in a way that will look work both as a tooltip and in the autogenerated
   // HTML for the component documentation on the Web.  It's too long for a tooltip, anyway.
+  @JsMethod(name = "XMLTextDecode")
   public Object XMLTextDecode(String XmlText) {
     try {
       return JsonTextDecode(XML.toJSONObject(XmlText).toString());
@@ -1157,6 +1195,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       "such as `&`, `<`, `>`, `'`, and `\"` are changed to " +
       "&, <, >, ', and \". Entities such as &#xhhhh, and &#nnnn " +
       "are changed to the appropriate characters.")
+  @JsMethod(name = "HtmlTextDecode")
   public String HtmlTextDecode(String htmlText) {
     try {
       return HtmlEntities.decodeHtmlText(htmlText);

@@ -1389,7 +1389,7 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
     return sb.join("");
 };
 
-Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
+Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
@@ -1402,7 +1402,7 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
     if (!already) {
         if (top.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
-        if (emulator || usb) {         // If we are talking to the emulator, don't use rendezvou server
+        if (emulator || usb) {         // If we are talking to the emulator, don't use rendezvous server
             this.startAdbDevice(rs, usb);
             rs.state = this.rsState.WAITING; // Wait for the emulator to start
             rs.replcode = "emulator";          // Must match code in Companion Source
@@ -1414,6 +1414,25 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
             rs.seq_count = 1;
             rs.count = 0;
             return;             // startAdbDevice callbacks will continue the connection process
+        }
+        if (browser) {
+            // Open emulator window
+            window.emulator = window.open('http://localhost:8000', '_blank');
+
+            // Listen for a ready message from emulator to avoid missing the message
+            window.addEventListener("message", (event) => {
+                if (event.origin !== "http://localhost:8000") return;
+                const data = event.data;
+
+                if (data.type === "sendToAppInventor") { // Message displayed in App Inventor will be echoed in the emulator as well
+                    console.log("Emulator said: ", data.payload);
+                    window.emulator.postMessage({type: "response", payload: "App Inventor received: " + data.payload}, "http://localhost:8000");
+                } else if (data.type === "response") { // Same as sendToAppInventor but without echo
+                    console.log("Emulator said: ", data.payload);
+                }
+            });
+
+            return;
         }
         rs = top.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing

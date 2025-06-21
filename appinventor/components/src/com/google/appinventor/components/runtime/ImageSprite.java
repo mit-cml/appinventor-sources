@@ -28,6 +28,9 @@ import com.google.appinventor.components.runtime.util.Vector2D;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * A 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,
  * interact with other sprites ({@link Ball}s and other `ImageSprite`s) and the edge of the
@@ -223,6 +226,7 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(
       description = "The picture that determines the ImageSprite's appearance.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Picture")
   public String Picture() {
     return picturePath;
   }
@@ -239,6 +243,7 @@ public class ImageSprite extends Sprite {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Picture")
   public void Picture(@Asset String path) {
     picturePath = (path == null) ? "" : path;
     try {
@@ -256,6 +261,7 @@ public class ImageSprite extends Sprite {
 
   @Override
   @SimpleProperty(description = "The height of the ImageSprite in pixels.")
+  @JsProperty(name = "Height")
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
@@ -270,6 +276,7 @@ public class ImageSprite extends Sprite {
    */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Height")
   public void Height(int height) {
     heightHint = height;
     yTop = yOriginToTop(yOrigin);
@@ -283,6 +290,7 @@ public class ImageSprite extends Sprite {
 
   @Override
   @SimpleProperty(description = "The width of the ImageSprite in pixels.")
+  @JsProperty(name = "Width")
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
@@ -297,6 +305,7 @@ public class ImageSprite extends Sprite {
    */
   @Override
   @SimpleProperty
+  @JsProperty(name = "Width")
   public void Width(int width) {
     widthHint = width;
     xLeft = xOriginToLeft(xOrigin);
@@ -318,6 +327,7 @@ public class ImageSprite extends Sprite {
       description = "Whether the image should rotate to match the ImageSprite's heading. " +
           "The sprite rotates around its origin.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Rotates")
   public boolean Rotates() {
     return rotates;
   }
@@ -332,6 +342,7 @@ public class ImageSprite extends Sprite {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
+  @JsProperty(name = "Rotates")
     public void Rotates(boolean rotates) {
     this.rotates = rotates;
     registerChange();
@@ -342,6 +353,7 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(
       description = "The horizontal coordinate of the origin of the ImageSprite, " +
           "increasing as the ImageSprite moves right.")
+  @JsProperty(name = "X")
   @Override
   public double X() {
     return super.X();
@@ -350,6 +362,7 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(
       description = "The vertical coordinate of the origin of the ImageSprite, " +
           "increasing as the ImageSprite moves down.")
+  @JsProperty(name = "Y")
   @Override
   public double Y() {
     return super.Y();
@@ -363,6 +376,7 @@ public class ImageSprite extends Sprite {
    * @return  Horizontal unit coordinate of origin with respect to left edge
    */
   @SimpleProperty
+  @JsProperty(name = "OriginX")
   public double OriginX() {
     return super.U();
   }
@@ -376,6 +390,7 @@ public class ImageSprite extends Sprite {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
           defaultValue = "0.0")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "OriginX")
   public void OriginX(double u) {
     super.U(u);
   }
@@ -388,6 +403,7 @@ public class ImageSprite extends Sprite {
    * @return Vertical unit coordinate of the origin with respect to top edge
    */
   @SimpleProperty
+  @JsProperty(name = "OriginY")
   public double OriginY() {
     return super.V();
   }
@@ -401,6 +417,7 @@ public class ImageSprite extends Sprite {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_UNIT_COORDINATE,
           defaultValue = "0.0")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "OriginY")
   public void OriginY(double v) {
     super.V(v);
   }
@@ -413,6 +430,7 @@ public class ImageSprite extends Sprite {
           defaultValue = DEFAULT_ORIGIN)
   @SimpleProperty(description = "Mark the origin of the image sprite using a draggable marker",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "MarkOrigin")
   public void MarkOrigin(String originCoordinates) {
     // parse u and v with originCoordinates interpreted in "(u, v)" format
     double u = Double.parseDouble(originCoordinates.substring(1, originCoordinates.indexOf(",")));
@@ -430,6 +448,7 @@ public class ImageSprite extends Sprite {
   @SimpleFunction(
       description = "Moves the ImageSprite so that its origin is at " +
           "the specified x and y coordinates.")
+  @JsMethod(name = "MoveTo")
   @Override
   public void MoveTo(double x, double y) {
     super.MoveTo(x, y);

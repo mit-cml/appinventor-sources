@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * A data science component to apply different anomaly detection models.
  * The component only needs a data source to apply the model on.
@@ -51,6 +53,7 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
       + "against the given threshold if a data point's Z-score is greater than the threshold, the "
       + "data point is labeled as anomaly and returned in a list of pairs (anomaly index, anomaly "
       + "value)")
+  @JsMethod(name = "DetectAnomalies")
   public List<List<?>> DetectAnomalies(final YailList dataList, double threshold) {
     List<List<?>> anomalies = new ArrayList<>();
 
@@ -92,6 +95,7 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
    * @return a list of anomalies in the form of a list of pairs (x-coord, y-coord)
    */
   @SimpleFunction
+  @JsMethod(name = "DetectAnomaliesInChartData")
   public List<List<?>> DetectAnomaliesInChartData(final ChartData2D chartData, double threshold) {
     List<Entry> entries = (List<Entry>) chartData.getDataValue(null);
     double sum = 0;
@@ -130,6 +134,7 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
    */
   @SimpleFunction(description = "Given a single anomaly and the x and y values of your data."
       + " This block will return the x and y value pairs of your data without the anomaly")
+  @JsMethod(name = "CleanData")
   public List<List<?>> CleanData(final YailList anomaly, YailList xList, YailList yList) {
     LList xValues = (LList) xList.getCdr();
     List<Double> xData = castToDouble(xValues);

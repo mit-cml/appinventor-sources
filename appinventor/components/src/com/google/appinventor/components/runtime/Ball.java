@@ -22,6 +22,9 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.Vector2D;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * A round 'sprite' that can be placed on a {@link Canvas}, where it can react to touches and drags,
  * interact with other sprites ({@link ImageSprite}s and other `Ball`s) and the edge of the
@@ -151,6 +154,7 @@ public final class Ball extends Sprite {
       defaultValue = "5")
   @SimpleProperty(description = "The distance from the edge of the Ball to its center.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Radius")
   public void Radius(int radius) {
     this.radius = radius;
     xLeft = xOriginToLeft(xOrigin);
@@ -162,6 +166,7 @@ public final class Ball extends Sprite {
    * The distance from the center of the `Ball` to its edge.
    */
   @SimpleProperty
+  @JsProperty(name = "Radius")
   public int Radius() {
     return radius;
   }
@@ -174,6 +179,7 @@ public final class Ball extends Sprite {
   @SimpleProperty(
       description = "The color of the Ball.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "PaintColor")
   @IsColor
   public int PaintColor() {
     return paintColor;
@@ -188,6 +194,7 @@ public final class Ball extends Sprite {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "PaintColor")
   public void PaintColor(int argb) {
     paintColor = argb;
     if (argb != Component.COLOR_DEFAULT) {
@@ -211,6 +218,7 @@ public final class Ball extends Sprite {
       description = "Whether the x- and y-coordinates should represent the center of the Ball " +
           "(true) or its left and top edges (false).",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "OriginAtCenter")
   public void OriginAtCenter(boolean b) {
     super.OriginAtCenter(b);
   }
@@ -224,6 +232,7 @@ public final class Ball extends Sprite {
       description = "The horizontal coordinate of the Ball, increasing as the Ball moves right. " +
           "If the property OriginAtCenter is true, the coordinate is for the center of the Ball; " +
           "otherwise, it is for the leftmost point of the Ball.")
+  @JsProperty(name = "X")
   @Override
   public double X() {
     return super.X();
@@ -238,6 +247,7 @@ public final class Ball extends Sprite {
       description = "The vertical coordinate of the Ball, increasing as the Ball moves " +
           "down. If the property OriginAtCenter is true, the coordinate is for the center of the Ball; " +
           "otherwise, it is for the uppermost point of the Ball.")
+  @JsProperty(name = "Y")
   @Override
   public double Y() {
     return super.Y();
@@ -254,6 +264,7 @@ public final class Ball extends Sprite {
       description = "Sets the x and y coordinates of the Ball. If CenterAtOrigin is " +
           "true, the center of the Ball will be placed here. Otherwise, the top left edge of the Ball " +
           "will be placed at the specified coordinates.")
+  @JsMethod(name = "MoveTo")
   @Override
   public void MoveTo(double x, double y) {
     super.MoveTo(x, y);

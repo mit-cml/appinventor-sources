@@ -13,7 +13,7 @@ public class WirelessAction implements Command {
   @Override
   public void execute() {
     if (Ode.getInstance().okToConnect()) {
-      Ode.getInstance().getTopToolbar().startRepl(true, false, false, false); // false means we are
+      Ode.getInstance().getTopToolbar().startRepl(true, false, false, false, false); // false means we are
                                      // *not* the emulator
     }
   }

@@ -40,6 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * The Trendline component can be used to visualize the trend of a data series represented by a
  * ChartData2D component. It must be added to a Chart component. To associate a ChartData2D
@@ -212,6 +215,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       + ":com.google.appinventor.component.runtime.ChartData2D")
   @SimpleProperty(description = "The data series for which to compute the line of best fit.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "ChartData")
   public void ChartData(ChartData2D chartData) {
     if (this.chartData != null) {
       this.chartData.removeDataSourceChangeListener(this);
@@ -229,6 +233,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty(description = "The color of the line of best fit.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Color")
   public void Color(int color) {
     this.color = color;
     if (initialized) {
@@ -237,6 +242,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   }
 
   @SimpleProperty
+  @JsProperty(name = "Color")
   @IsColor
   public int Color() {
     return color;
@@ -246,6 +252,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The correlation coefficient of the trendline to the data.
    */
   @SimpleProperty
+  @JsProperty(name = "CorrelationCoefficient")
   public double CorrelationCoefficient() {
     return resultOrNan((Double) lastResults.get("correlation coefficient"));
   }
@@ -254,6 +261,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The base of the exponential term in the equation y = a*b^x.
    */
   @SimpleProperty
+  @JsProperty(name = "ExponentialBase")
   public double ExponentialBase() {
     return resultOrNan((Double) lastResults.get("b"));
   }
@@ -262,6 +270,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The coefficient of the exponential term in the equation y = a*b^x.
    */
   @SimpleProperty
+  @JsProperty(name = "Exponential")
   public double ExponentialCoefficient() {
     return resultOrNan((Double) lastResults.get("a"));
   }
@@ -273,6 +282,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       defaultValue = "True")
   @SimpleProperty(description = "Whether to extend the line of best fit beyond the data.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Extend")
   public void Extend(boolean extend) {
     this.extend = extend;
     if (initialized) {
@@ -281,6 +291,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   }
 
   @SimpleProperty
+  @JsProperty(name = "Extend")
   public boolean Extend() {
     return extend;
   }
@@ -289,6 +300,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The coefficient of the linear term in the trendline.
    */
   @SimpleProperty
+  @JsProperty(name = "LinearCoefficient")
   public double LinearCoefficient() {
     return resultOrNan((Double) lastResults.get("slope"));
   }
@@ -297,6 +309,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The coefficient of the logarithmic term in the equation y = a + b*ln(x).
    */
   @SimpleProperty
+  @JsProperty(name = "LogarithmCoefficient")
   public double LogarithmCoefficient() {
     return resultOrNan((Double) lastResults.get("b"));
   }
@@ -305,6 +318,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The constant term in the logarithmic equation y = a + b*ln(x).
    */
   @SimpleProperty
+  @JsProperty(name = "LogarithmConstant")
   public double LogarithmConstant() {
     return resultOrNan((Double) lastResults.get("a"));
   }
@@ -316,6 +330,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       defaultValue = "Linear")
   @SimpleProperty(description = "The model to use for the line of best fit.",
       category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Model")
   public void Model(BestFitModel model) {
     this.model = model;
     switch (model) {
@@ -340,6 +355,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   }
 
   @SimpleProperty
+  @JsProperty(name = "BestFitModel")
   public BestFitModel Model() {
     return model;
   }
@@ -348,6 +364,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The predictions for the trendline.
    */
   @SimpleProperty
+  @JsProperty(name = "Predictions")
   public List<Double> Predictions() {
     Object value = lastResults.get("predictions");
 
@@ -365,6 +382,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The coefficient of the quadratic term in the trendline, if any.
    */
   @SimpleProperty
+  @JsProperty(name = "QuadraticCoefficient")
   public double QuadraticCoefficient() {
     return resultOrZero((Double) lastResults.get("x^2"));
   }
@@ -373,6 +391,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * Obtain a copy of the most recent values computed by the line of best fit.
    */
   @SimpleProperty
+  @JsProperty(name = "Results")
   public YailDictionary Results() {
     return new YailDictionary(lastResults, ENUM_KEY_TRANSFORMER);
   }
@@ -381,6 +400,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The r-squared coefficient of determination for the trendline.
    */
   @SimpleProperty
+  @JsProperty(name = "Squared")
   public double RSquared() {
     return resultOrNan((Double) lastResults.get("r^2"));
   }
@@ -392,6 +412,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       defaultValue = "1")
   @SimpleProperty(description = "The style of the best fit line.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "StrokeStyle")
   public void StrokeStyle(StrokeStyle strokeStyle) {
     this.strokeStyle = strokeStyle;
     if (initialized) {
@@ -423,6 +444,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   }
 
   @SimpleProperty
+  @JsProperty(name = "StrokeStyle")
   public StrokeStyle StrokeStyle() {
     return strokeStyle;
   }
@@ -434,6 +456,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
       defaultValue = "1.0")
   @SimpleProperty(description = "The width of the best fit line.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "StrokeWidth")
   public void StrokeWidth(double strokeWidth) {
     this.strokeWidth = strokeWidth;
     if (initialized) {
@@ -442,6 +465,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   }
 
   @SimpleProperty
+  @JsProperty(name = "StrokeWidth")
   public double StrokeWidth() {
     return strokeWidth;
   }
@@ -452,6 +476,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Visible")
   public void Visible(boolean visible) {
     this.visible = visible;
     if (initialized) {
@@ -460,6 +485,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
   }
 
   @SimpleProperty
+  @JsProperty(name = "Visible")
   public boolean Visible() {
     return visible;
   }
@@ -469,6 +495,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * values are NaN (no intercept), a single value (one intercept), or a list of values.
    */
   @SimpleProperty
+  @JsProperty(name = "XIntercepts")
   public Object XIntercepts() {
     Object result = lastResults.get("Xintercepts");
     return result == null ? Double.NaN : result;
@@ -478,6 +505,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * The Y-intercept of the trendline (constant term).
    */
   @SimpleProperty
+  @JsProperty(name = "YIntercept")
   public double YIntercept() {
     if (lastResults.containsKey("Yintercept")) {
       return (Double) lastResults.get("Yintercept");
@@ -495,6 +523,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * Disconnect the Trendline from a previously associated ChartData2D.
    */
   @SimpleFunction
+  @JsMethod(name = "DisconnectFromChartData")
   public void DisconnectFromChartData() {
     if (chartData != null) {
       chartData.removeDataSourceChangeListener(this);
@@ -512,6 +541,7 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
    * @return the value of the field, or NaN if the field is undefined
    */
   @SimpleFunction
+  @JsMethod(name = "GetResultValue")
   public Object GetResultValue(@Options(LOBFValues.class) String value) {
     if (lastResults.containsKey(value)) {
       return lastResults.get(value);

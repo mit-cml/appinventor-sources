@@ -37,6 +37,8 @@ import android.widget.ImageView;
 
 import java.io.IOException;
 
+import jsinterop.annotations.JsProperty;
+
 /**
  * Component for displaying images and basic animations.
  *
@@ -94,6 +96,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(description = "A written description of what the image looks like.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "AlternateText")
   public void AlternateText(String description){
     view.setContentDescription(description);
   }
@@ -106,6 +109,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
     defaultValue = "False")
   @SimpleProperty(description = "Specifies whether the image should be clickable or not.")
+  @JsProperty(name = "Clickable")
   public void Clickable(boolean clickable) {
     this.clickable = clickable;
     view.setClickable(this.clickable);
@@ -122,6 +126,7 @@ public final class Image extends AndroidViewComponent {
   }
 
   @SimpleProperty(description = "Specifies whether the image should be clickable or not.", category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Clickable")
   public boolean Clickable() {
     return this.clickable;
   }
@@ -133,6 +138,7 @@ public final class Image extends AndroidViewComponent {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Picture")
   public String Picture() {
     return picturePath;
   }
@@ -149,6 +155,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Picture")
   public void Picture(@Asset String path) {
     final String tempPath = path == null ? "" : path;
     if (TiramisuUtil.requestImagePermissions(container.$form(), path,
@@ -185,6 +192,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0.0")
   @SimpleProperty
+  @JsProperty(name = "RotationAngle")
   public void RotationAngle(double rotationAngle) {
     if (this.rotationAngle == rotationAngle) {
       return;                   // Nothing to do...
@@ -203,6 +211,7 @@ public final class Image extends AndroidViewComponent {
   @SimpleProperty(description = "The angle at which the image picture appears rotated. " +
       "This rotation does not appear on the designer screen, only on the device.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "RotationAngle")
   public double RotationAngle() {
     return rotationAngle;
   }
@@ -212,6 +221,7 @@ public final class Image extends AndroidViewComponent {
   // @Deprecated -- We will deprecate this in a future release (jis: 2/12/2016)
   @SimpleProperty(description = "Specifies whether the image should be resized to match the size of the ImageView.",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "ScalePictureToFit")
   public void ScalePictureToFit(boolean scale) {
     if (scale)
       view.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -233,6 +243,7 @@ public final class Image extends AndroidViewComponent {
       "ScrollRightSlow, ScrollRight, ScrollRightFast, ScrollLeftSlow, ScrollLeft, " +
       "ScrollLeftFast, and Stop",
       category = PropertyCategory.APPEARANCE)
+  @JsProperty(name = "Animation")
   // TODO(user): This should be changed from a property to an "animate" method, and have the choices
   // placed in a dropdown.  Aternatively the whole thing should be removed and we should do
   // something that is more consistent with sprites.
@@ -247,6 +258,7 @@ public final class Image extends AndroidViewComponent {
       "scales according to the Height or Width of the Image. Scale " +
       "proportionally (0) preserves the picture aspect ratio. Scale to fit " +
       "(1) matches the Image area, even if the aspect ratio changes.")
+  @JsProperty(name = "Scaling")
   public void Scaling(int mode) {
     switch (mode) {
       case 0:
@@ -265,6 +277,7 @@ public final class Image extends AndroidViewComponent {
    * @suppressdoc
    */
   @SimpleProperty
+  @JsProperty(name = "Scaling")
   public int Scaling() {
     return scalingMode;
   }
