@@ -2530,16 +2530,6 @@ public class Ode implements EntryPoint {
     }
   }
 
-  protected String projectColors = "";
-
-  public void setProjectColors(String colors) {
-    projectColors = colors;
-  }
-
-  public String getProjectColors() {
-    return projectColors;
-  }
-
   // Load the user's backpack. This is not called if we are using
   // a shared backpack
   private Promise<String> loadBackpack() {

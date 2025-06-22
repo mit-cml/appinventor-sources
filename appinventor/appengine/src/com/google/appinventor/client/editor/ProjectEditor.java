@@ -109,9 +109,9 @@ public abstract class ProjectEditor extends Composite {
   public final void setScreenCheckboxState(String screen, Boolean isChecked) {
     screenHashMap.put(screen, isChecked);
     changeProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
-        getScreenCheckboxMapString()
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
+            getScreenCheckboxMapString()
     );
   }
 
@@ -141,8 +141,8 @@ public abstract class ProjectEditor extends Composite {
 
   public final void buildScreenHashMap() {
     String screenCheckboxMap = getProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
     );
     String[] pairs = screenCheckboxMap.split(" ");
     for (String pair : pairs) {
@@ -203,9 +203,9 @@ public abstract class ProjectEditor extends Composite {
       }
     }
     LOG.info("ProjectEditor: got selectFileEditor for "
-        + ((fileEditor == null) ? null : fileEditor.getFileId())
-        +  " selectedFileEditor is "
-        + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
+            + ((fileEditor == null) ? null : fileEditor.getFileId())
+            +  " selectedFileEditor is "
+            + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
     if (selectedFileEditor != null && selectedFileEditor != fileEditor) {
       selectedFileEditor.onHide();
     }
@@ -291,18 +291,13 @@ public abstract class ProjectEditor extends Composite {
     String currentValue = settings.getPropertyValue(name);
     if (!newValue.equals(currentValue)) {
       LOG.info("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
-                 " => " + newValue);
+              " => " + newValue);
       settings.changePropertyValue(name, newValue);
       // Deal with the Tutorial Panel
       Ode ode = Ode.getInstance();
       if (name.equals("TutorialURL")) {
         ode.setTutorialURL(newValue);
       }
-
-      if (name.equals("ProjectColors")){
-        ode.setProjectColors(newValue);
-      }
-
       ode.getEditorManager().scheduleAutoSave(projectSettings);
     }
   }
@@ -343,7 +338,7 @@ public abstract class ProjectEditor extends Composite {
       }
     }
     changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION,
-      usesLocation);
+            usesLocation);
   }
 
   public void clearLocation(String componentName) {
@@ -376,14 +371,7 @@ public abstract class ProjectEditor extends Composite {
     LOG.info("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-                                                    SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
-    String colors = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
-
-    if (!colors.isEmpty()){
-      Ode.getInstance().setProjectColors(colors);
-    }
-
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
     if (!tutorialURL.isEmpty()) {
       Ode ode = Ode.getInstance();
       ode.setTutorialURL(tutorialURL);
