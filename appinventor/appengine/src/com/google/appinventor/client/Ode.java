@@ -2530,6 +2530,7 @@ public class Ode implements EntryPoint {
     }
   }
 
+
   // Load the user's backpack. This is not called if we are using
   // a shared backpack
   private Promise<String> loadBackpack() {
