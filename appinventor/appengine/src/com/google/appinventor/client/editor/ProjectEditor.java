@@ -183,7 +183,7 @@ public abstract class ProjectEditor extends Composite {
 
   /**
    * Selects the given file editor in the deck panel and calls its onShow()
-   * method. Calls onHide() for a previously selected file editor if there was
+   * method. Calls onHide() for a previously selected file editor
    * one (and it wasn't the same one).
    *
    * Note: all actions that cause the selected file editor to change should
