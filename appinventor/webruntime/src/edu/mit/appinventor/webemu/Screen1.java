@@ -28,6 +28,7 @@ public class Screen1 extends ReplForm {
     super();
   }
 
+  @JsMethod
   public void Initialize() {
     evalScheme("(init-runtime)");
     super.Initialize();
@@ -57,6 +58,7 @@ public class Screen1 extends ReplForm {
       args = Array.prototype.slice.call(args);
     }
     cb.apply($wnd, args);
+    return true;
   }-*/;
 
   @Override

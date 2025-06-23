@@ -22,9 +22,24 @@ class RetValManager {
   static values = [];
 
   static appendReturnValue(blockid, ok, item) {
+    if (typeof blockid !== 'string') {
+      blockid = blockid.toString();
+    }
     let response = {status: ok, type: 'return', value: item, blockid: blockid};
     RetValManager.values.push(response);
     console.log(response);
+    if (window.opener) {
+      window.opener.postMessage(response, 'http://localhost:8888');
+    }
+  }
+
+  static extensionsLoaded() {
+    let response = {status: 'OK', type: 'extensionsLoaded'};
+    RetValManager.values.push(response);
+    console.log(response);
+    if (window.opener) {
+      window.opener.postMessage(response, 'http://localhost:8888');
+    }
   }
 }
 
@@ -35,13 +50,6 @@ function getReplForm() {
     return undefined;
   }
 }
-
-       // Send ready message to App Inventor (opener)
-      window.onload = () => {
-        if (window.opener) {
-          window.opener.postMessage("ready", "http://localhost:8888");
-        }
-      };
 
       // Receive messages from App Inventor
       window.addEventListener("message", async (event) => {
@@ -56,6 +64,8 @@ function getReplForm() {
         } else if (data.type === "eval") {
           var result = await evalScheme(data.payload);
           window.opener.postMessage({type : "response", payload: "Answer is: " + result}, "http://localhost:8888");
+        } else if (data.type === 'repl') {
+          evalScheme(data.code);
         }
       });
 
@@ -148,6 +158,7 @@ function getReplForm() {
 </script>
 <script id="sampleYail" type="text/yail">
 (begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (AssetFetcher:loadExtensions "[]"))))
+(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (clear-current-form))))
 ;(begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (define-syntax protect-enum   (lambda (x)     (syntax-case x ()       ((_ enum-value number-value)         (if (< com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 34)           #'number-value           #'enum-value)))))(clear-current-form))))
 (begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (try-catch (let ((attempt (delay (set-form-name "Screen1")))) (force attempt)) (exception java.lang.Throwable 'notfound)))))
 (begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (do-after-form-creation (set-and-coerce-property! 'Screen1 'ActionBar #t 'boolean)
@@ -172,6 +183,9 @@ function getReplForm() {
 let runtimeExtras = document.getElementById('runtimeExtra').innerText.trim();
 function initRuntime() {
   evalScheme(runtimeExtras);
+  if (window.opener) {
+    window.opener.postMessage({type: "ready"}, "http://localhost:8888");
+  }
 }
 function runYail() {
   const yail = document.getElementById('sampleYail');

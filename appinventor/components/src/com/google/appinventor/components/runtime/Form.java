@@ -2709,6 +2709,7 @@ public class Form extends AppInventorCompatActivity
   }
 
   // This is used by runtime.scm to call the Initialize of a component.
+  @JsMethod
   public void callInitialize(Object component) throws Throwable {
     FormUtil.callInitialize(component);
   }

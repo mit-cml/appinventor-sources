@@ -371,6 +371,10 @@ Blockly.ReplMgr.putYail = (function() {
                 return;
             }
 
+            if (rs.skipMacros) {
+                sentMacros = true;
+            }
+
             if (!sentMacros) {
                 // Add the protect-enum macro (used by dropdown blocks).
                 code = (rs.android ? PROTECT_ENUM_ANDROID : PROTECT_ENUM_IOS) + code;
@@ -625,7 +629,7 @@ Blockly.ReplMgr.putYail = (function() {
 
             var blockid;
             var sendcode;
-            if (!phonereceiving && !top.usewebrtc) {
+            if (!window.emulator && !phonereceiving && !top.usewebrtc) {
                 engine.receivefromphone();
             }
             var work;
@@ -743,6 +747,13 @@ Blockly.ReplMgr.putYail = (function() {
                     blockid = "-1";
                 }
             }
+            if (window.emulator) {
+                sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
+                  blockid + " (begin " + work.code + ")))";
+                window.emulator.postMessage({type: 'repl', code: sendcode}, 'http://localhost:8000');
+                rs.phoneState.ioRunning = false;
+                return;
+            }
             var encoder = new goog.Uri.QueryData();
             console.log('Low Level Sending: ' + work.code)
             encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
@@ -817,6 +828,10 @@ Blockly.ReplMgr.putYail = (function() {
         },
         "reset" : function() {
             sentMacros = false;
+            if (window.emulator) {
+                window.emulator.close();
+                window.emulator = undefined;
+            }
             if (top.usewebrtc) {
                 if (webrtcdata) {
                     webrtcdata.close();
@@ -1416,6 +1431,8 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser
             return;             // startAdbDevice callbacks will continue the connection process
         }
         if (browser) {
+            rs.skipMacros = true;
+            rs.hasfetchassets = true;
             // Open emulator window
             window.emulator = window.open('http://localhost:8000', '_blank');
 
@@ -1429,6 +1446,16 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser
                     window.emulator.postMessage({type: "response", payload: "App Inventor received: " + data.payload}, "http://localhost:8000");
                 } else if (data.type === "response") { // Same as sendToAppInventor but without echo
                     console.log("Emulator said: ", data.payload);
+                } else if (data.type === 'return' || data.type === 'extensionsLoaded') {
+                    console.log("Emulator returned: ", data);
+                    Blockly.ReplMgr.processRetvals([data]);
+                } else if (data.type === 'ready') {
+                    console.log("Emulator is ready");
+                    rs.state = this.rsState.ASSET;
+                    RefreshAssets(function() {
+                        Blockly.ReplMgr.loadExtensions();
+                    });
+
                 }
             });
 

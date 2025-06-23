@@ -9,11 +9,13 @@
   (let ((n (if (symbol? method) (symbol->string method) method))
         (args (map (lambda (x) (if (symbol? x) (symbol->string x) x)) params)))
     `(##inline-host-expression "@1@[@scm2host@(@2@)].apply(@1@, @scm2host@(@3@))" ,object ,method (list ,@args))))
+(define-macro (!host2scm! x)
+  `(##inline-host-expression "@host2scm@(@1@)" ,x))
 (define (YailNumberToString:format n)
   (!e "@host2scm@(yailNumberToString(@scm2host@(@1@)))" n))
 (define com.google.appinventor.components.common.YaVersion:BLOCKS_LANGUAGE_VERSION 37)
 (define (AssetFetcher:loadExtensions json)
-  #t)
+  (!s "RetValManager.extensionsLoaded();"))
 (define (!js-object-get object name)
   (let ((n (if (##symbol? name) (symbol->string name) name)))
     (!e "@host2scm@(@1@[@scm2host@(@2@)])" object n)))
@@ -50,11 +52,15 @@
          (add-to-form-do-after-creation (delay (begin expr ...)))))))
 
 (define (reset-current-form-environment)
-  (!s "@1@.environment = {};" *this-form*))
+  (!s "@1@.environment = {'Screen1': @host2scm@(@1@)};" *this-form*))
 
 (define (add-to-current-form-environment name object)
   (let ((name-str (if (symbol? name) (symbol->string name) name)))
     (!s "@1@.environment[@scm2host@(@2@)] = @scm2host@(@3@);" (get-repl-form) name-str object)))
+
+(define (add-to-current-form-environment-raw name object)
+  (let ((name-str (if (symbol? name) (symbol->string name) name)))
+    (!s "@1@.environment[@scm2host@(@2@)] = @3@;" (get-repl-form) name-str object)))
 
 (define (bound-in-current-form-environment name)
   (let ((name-str (if (symbol? name) (symbol->string name) name)))
@@ -102,12 +108,12 @@
 
 (define (make component-type container)
   (let ((typename (if (symbol? component-type) (symbol->string component-type) component-type)))
-    (!e "appinventor.ComponentFactory.create(@1@, @scm2host@(@2@))" container typename)))
+    (!e "@host2scm@(appinventor.ComponentFactory.create(@scm2host@(@1@), @scm2host@(@2@)))" container typename)))
 
 (define (add-component-within-repl container-name component-type component-name init-props-thunk)
   (let* ((container (lookup-in-current-form-environment container-name))
          (component-to-add (make component-type container)))
-    (add-to-current-form-environment component-name component-to-add)
+    (add-to-current-form-environment-raw component-name component-to-add)
     (add-init-thunk component-name
      (lambda ()
        (when init-props-thunk (init-props-thunk))))
@@ -117,7 +123,7 @@
   (syntax-rules ()
     ((_)
      (if *testing* #t
-         (get-property 'Screen1 'ShowListsAsJson)))))
+         (!get (get-repl-form) 'ShowListsAsJson)))))
 
 
 ;(eval
@@ -191,7 +197,7 @@
 ;    (android-log (format #f "coerced property value was: ~A " coerced-arg))
     (if (all-coercible? (list coerced-arg))
         (try-catch
-         (!s "@1@[@scm2host@(@2@)] = @scm2host@(@3@)" comp (symbol->string prop-name) coerced-arg)
+         (!s "@scm2host@(@1@)[@scm2host@(@2@)] = @scm2host@(@3@)" comp (symbol->string prop-name) coerced-arg)
          (exception PermissionException
           (invoke (get-repl-form) 'dispatchPermissionDeniedEvent comp prop-name exception)))
         (generate-runtime-type-error prop-name (list property-value)))))
@@ -257,7 +263,7 @@
 
 (define (get-property component prop-name)
   (let ((component (coerce-to-component-and-verify component)))
-    (sanitize-return-value component prop-name (##inline-host-expression "@host2scm@(@1@[@scm2host@(@2@)])" component prop-name))))
+    (sanitize-return-value component prop-name (##inline-host-expression "@host2scm@(@scm2host@(@1@)[@scm2host@(@2@)])" component prop-name))))
 
 (define (coerce-arg arg type)
   (let ((arg (sanitize-atomic arg)))
@@ -429,12 +435,10 @@
                 (when init-thunk (init-thunk))))
             component-names)
   ;; Do the explicit component initialization methods and events
-  #|
   (for-each (lambda (component-name)
-              (invoke *this-form* 'callInitialize
+              (invoke (get-repl-form) 'callInitialize
                       (lookup-in-current-form-environment component-name)))
             component-names)
-  |#
   )
 
 (define (get-repl-form)
@@ -443,7 +447,7 @@
 (define *this-form* #!void)
 (define (init-runtime)
   (set-this-form)
-  (add-to-current-form-environment "Screen1" *this-form*))
+  (add-to-current-form-environment-raw "Screen1" (!host2scm! *this-form*)))
 (define (set-this-form)
   (set! *this-form* (get-repl-form)))
 

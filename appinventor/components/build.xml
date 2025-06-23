@@ -622,9 +622,12 @@
         <include name="${components.pkg}/runtime/On*Listener.java" />
         <include name="${components.pkg}/runtime/PermissionResultHandler.java" />
         <include name="${components.pkg}/runtime/Picker.java" />
+        <include name="${components.pkg}/runtime/errors/ArrayIndexOutOfBoundsError.java" />
+        <include name="${components.pkg}/runtime/errors/IllegalArgumentError.java" />
         <include name="${components.pkg}/runtime/errors/PermissionException.java" />
         <include name="${components.pkg}/runtime/errors/RuntimeError.java" />
         <include name="${components.pkg}/runtime/errors/StopBlocksExecution.java" />
+        <include name="${components.pkg}/runtime/errors/UninitializedInstanceError.java" />
         <include name="${components.pkg}/runtime/errors/YailRuntimeError.java" />
         <include name="${components.pkg}/runtime/util/AlignmentUtil.java" />
         <include name="${components.pkg}/runtime/util/BulkPermissionRequest.java" />
