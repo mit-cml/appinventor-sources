@@ -28,7 +28,7 @@ import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
 
 
-@UsesAssets(fileNames = "cube.obj, Palette.png")
+@UsesAssets(fileNames = "plane.obj, Palette.png")
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a video in an ARView3D.  The video is positioned " +
         "at a point, and the source, or video to be played, can be set." +
