@@ -611,6 +611,7 @@
         <include name="${components.pkg}/runtime/AndroidNonvisibleComponent.java" />
         <include name="${components.pkg}/runtime/Button.java" />
         <include name="${components.pkg}/runtime/ButtonBase.java" />
+        <include name="${components.pkg}/runtime/ChatBot.java" />
         <include name="${components.pkg}/runtime/Clock.java" />
         <include name="${components.pkg}/runtime/Deleteable.java" />
         <include name="${components.pkg}/runtime/Label.java" />
@@ -630,6 +631,7 @@
         <include name="${components.pkg}/runtime/errors/UninitializedInstanceError.java" />
         <include name="${components.pkg}/runtime/errors/YailRuntimeError.java" />
         <include name="${components.pkg}/runtime/util/AlignmentUtil.java" />
+        <include name="${components.pkg}/runtime/util/Base58Util.java" />
         <include name="${components.pkg}/runtime/util/BulkPermissionRequest.java" />
         <include name="${components.pkg}/runtime/util/Dates.java" />
         <include name="${components.pkg}/runtime/util/ElementsUtil.java" />

@@ -35,7 +35,13 @@
     <equals arg1="${release}" arg2="true" />
   </condition>
 
-  <target name="webruntime">
+  <target name="webruntime.uptodate">
+    <uptodate property="webruntime.uptodate" targetfile="build/runtime.js">
+      <srcfiles file="runtime.scm" />
+    </uptodate>
+  </target>
+
+  <target name="webruntime" depends="webruntime.uptodate" unless="webruntime.uptodate">
     <mkdir dir="build"/>
     <exec executable="gsc">
       <arg line="-warnings -target js -o build/runtime.js -exe -nopreload" />
@@ -48,7 +54,14 @@
     </exec>
   </target>
 
-  <target name="webemu" depends="components_AiComponentsGwt,common_CommonUtils,common_CommonVersion">
+  <target name="webemu.uptodate">
+    <uptodate property="webemu.uptodate"
+              targetfile="${local.build.dir}/web/webemu/webemu.nocache.js">
+      <srcfiles dir="src" />
+    </uptodate>
+  </target>
+
+  <target name="webemu" depends="components_AiComponentsGwt,common_CommonUtils,common_CommonVersion,webemu.uptodate" unless="webemu.uptodate">
     <mkdir dir="${local.build.dir}/classes" />
     <!--
     <javac destdir="${local.build.dir}/classes" debug="on" includeantruntime="false">
