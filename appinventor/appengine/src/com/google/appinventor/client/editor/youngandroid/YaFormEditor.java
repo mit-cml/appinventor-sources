@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -237,7 +237,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     final String fileId = getFileId();
     OdeAsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
       @Override
-      public void onSuccess(ChecksumedLoadFile result) {
+      public void onSuccess(final ChecksumedLoadFile result) {
         String contents;
         try {
           contents = result.getContent();
@@ -253,6 +253,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
               onFileLoaded(fileContentHolder.getFileContent());
             } catch (IllegalArgumentException e) {
               return;
+            }
+            try {
+              result.setContent(fileContentHolder.getFileContent());
+            } catch (ChecksumedFileException e) {
+              LOG.warning("ChecksumedFileException in YaFormEditor");
             }
             if (afterFileLoaded != null) {
               afterFileLoaded.execute();
