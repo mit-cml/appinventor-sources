@@ -40,7 +40,8 @@ import java.util.List;
 @DesignerComponent(version = YaVersion.ABSOLUTEARRANGEMENT_COMPONENT_VERSION,
     description = "<p>A formatting element in which to place components "
         + "that should be displayed at any coordinates.</p>",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/table.png")
 @SimpleObject
 public class AbsoluteArrangement extends AndroidViewComponent
     implements Component, ComponentContainer {
