@@ -288,6 +288,16 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
         if node._node.parent != _sceneView.scene.rootNode && !node.IsFollowingImageMarker {
           _sceneView.scene.rootNode.addChildNode(node._node)
         }
+        
+        if node._fromPropertyPosition != nil {
+          
+          // Convert pose string to coordinate array
+          let position = node._fromPropertyPosition.split(separator: ",")
+            .prefix(3)
+            .map { Double(String($0)) ?? 0.0 }
+          
+          // Use position array as needed...
+        }
       }
       
       for light in _lights.values {

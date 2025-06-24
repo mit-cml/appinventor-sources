@@ -55,4 +55,10 @@ import com.google.appinventor.components.common.YaVersion;
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "2")
     @SimpleProperty(category = PropertyCategory.APPEARANCE)
     public void CapRadiusInCentimeters(float capRadiusInCentimeters) {}
+
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "7")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    public void PoseFromPropertyPosition(float heightInCentimeters) {}
+
   }

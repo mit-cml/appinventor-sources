@@ -18,6 +18,7 @@ open class ARNodeBase: NSObject, ARNode {
   private var _panToMove: Bool = false
   private var _rotateWithGesture: Bool = false
   public var _followingMarker: ARImageMarker? = nil
+  public var _fromPropertyPosition = "0.0,0.0,0.0";
   
   /**
    * This init is used for all nodes except for ModelNodes.
@@ -141,6 +142,26 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
+  
+  @objc open var PoseFromProperty: String {
+    get {
+      return _fromPropertyPosition;
+    }
+    set(pose) {
+      // turn pose into array and setX, y, z
+      //let coordinateArray = pose.split(separator: ",");
+      var position = "1.0,0.0,0.0";
+     /* for (index, item) in pose.enumerated() {
+              if index < position.count {
+                  position[index] = Double(String(item)) ?? 0.0
+              }
+      }*/
+          
+          // Store the coordinate array (converted to proper type)
+      _fromPropertyPosition = position
+     
+    }
+  }
   /// NOTE: uncomment if we want to allow nonuniform scaling
 //  @objc open var XScale: Float {
 //    get {
@@ -320,6 +341,7 @@ open class ARNodeBase: NSObject, ARNode {
     let zMeters: Float = UnitHelper.centimetersToMeters(z)
     _node.simdPosition = simd_float3(xMeters, yMeters, zMeters)
   }
+
   
   @objc open func DistanceToNode(_ node: ARNode) -> Float {
     return UnitHelper.metersToCentimeters(getPosition().distanceFromPos(pos: node.getPosition()))
