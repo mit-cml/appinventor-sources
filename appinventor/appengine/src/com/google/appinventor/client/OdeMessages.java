@@ -5892,4 +5892,16 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Other")
   @Description("Text for the other files filter option")
   String otherFilter();
+
+  @DefaultMessage("Upload as Global Asset")
+  @Description("Label for the checkbox to upload as a global asset")
+  String uploadAsGlobalAssetCheckbox();
+
+  @DefaultMessage("Global Folder (optional)")
+  @Description("Placeholder for the global folder text box in asset upload")
+  String globalFolderPlaceholder();
+
+  @DefaultMessage("Error fetching global assets.")
+  @Description("Error message when fetching global assets fails")
+  String errorFetchingGlobalAssets();
 }

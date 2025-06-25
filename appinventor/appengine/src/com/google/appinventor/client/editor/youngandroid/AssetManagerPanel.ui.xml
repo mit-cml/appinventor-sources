@@ -73,16 +73,6 @@
       overflow-y: auto;
     }
     
-    .dropZone {
-      margin: 8px;
-      border: 1px dashed #ddd;
-      border-radius: 4px;
-      padding: 16px;
-      text-align: center;
-      background-color: #fafafa;
-      font-size: 12px;
-    }
-    
     .previewPanel {
       flex: 1;
       display: flex;
@@ -155,10 +145,6 @@
         
         <g:Label styleName="{style.sectionTitle}">Tags</g:Label>
         <g:VerticalPanel ui:field="tagsPanel" styleName="{style.sectionContent}" />
-      </g:VerticalPanel>
-      
-      <g:VerticalPanel styleName="{style.centerPanel}">
-        <ai:DropZone ui:field="uploadDropZone" styleName="{style.dropZone}" />
       </g:VerticalPanel>
       
       <g:VerticalPanel styleName="{style.rightPanel}">

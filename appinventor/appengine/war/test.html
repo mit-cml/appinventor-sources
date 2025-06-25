@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Global Asset Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload Global Asset</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="assetFolder">Folder (optional):</label>
+            <input type="text" id="assetFolder" name="assetFolder" placeholder="e.g., MySharedAssets">
+        </div>
+
+        <div class="form-group">
+            <label for="uploadUserFile">File:</label>
+            <input type="file" id="uploadUserFile" name="uploadUserFile" required>
+            <div id="fileError" class="error"></div>
+        </div>
+
+        <input type="submit" value="Upload Asset">
+    </form>
+
+    <div id="responseMessage" class="success"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('uploadUserFile');
+            const file = fileInput.files[0];
+            const fileError = document.getElementById('fileError');
+            const responseMessage = document.getElementById('responseMessage');
+            const folder = document.getElementById('assetFolder').value.trim();
+            const fileName = file?.name;
+
+            if (!file) {
+                fileError.textContent = 'Please select a file to upload';
+                return;
+            }
+
+            fileError.textContent = '';
+            responseMessage.textContent = '';
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                fileError.textContent = 'File size exceeds 10MB limit';
+                return;
+            }
+
+            // Construct the full path: _global_/folder/filename
+            const folderPath = folder ? `${folder}/` : '';
+            const globalPath = `_global_/${folderPath}${fileName}`;
+            const endpoint = `http://localhost:8888/ode/upload/globalasset/${globalPath}`;
+
+            const formData = new FormData();
+            formData.append('uploadUserFile', file);
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    credentials: 'include', // Required if session cookie is needed
+                    body: formData
+                });
+
+                const text = await res.text();
+                if (res.ok && text.includes('SUCCESS_')) {
+                    responseMessage.textContent = `Upload successful! Response: ${text}`;
+                    responseMessage.className = 'success';
+                } else {
+                    responseMessage.textContent = `Upload failed. Server said: ${text}`;
+                    responseMessage.className = 'error';
+                }
+            } catch (err) {
+                responseMessage.textContent = `Error uploading asset: ${err.message}`;
+                responseMessage.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>

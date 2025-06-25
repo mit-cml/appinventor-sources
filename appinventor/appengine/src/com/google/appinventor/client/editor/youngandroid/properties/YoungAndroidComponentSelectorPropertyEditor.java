@@ -94,6 +94,11 @@ public final class YoungAndroidComponentSelectorPropertyEditor
       public void setSelectedIndex(int index) {
         componentsList.setSelectedIndex(index);
       }
+
+      @Override
+      public int getItemCount() {
+        return componentsList.getItemCount();
+      }
     });
 
     // At this point, the editor hasn't finished loading.

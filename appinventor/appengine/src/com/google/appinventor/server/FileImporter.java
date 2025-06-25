@@ -95,19 +95,5 @@ public interface FileImporter {
    */
   String importTempFile(InputStream inStream) throws IOException;
 
-  /**
-   * Imports a global asset for a user (e.g., an extension or other file not tied to a specific project).
-   *
-   * @param userId the user ID
-   * @param assetName the name of the asset file
-   * @param assetType the MIME type or general category of the asset (e.g., "application/zip", "text/java")
-   * @param folder an optional folder for organization
-   * @param uploadedStream the input stream of the asset file content
-   * @return the ID of the stored global asset data
-   * @throws FileImporterException if there is an error during import
-   * @throws IOException if any file operation fails
-   */
-  long importGlobalAsset(String userId, String assetName, String assetType, String folder, InputStream uploadedStream)
-      throws FileImporterException, IOException;
 
 }

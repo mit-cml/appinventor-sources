@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.widgets.DropZone;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.core.client.GWT;
@@ -49,9 +48,6 @@ public class AssetManagerPanel extends Composite {
   VerticalPanel tagsPanel;
   
   @UiField
-  DropZone uploadDropZone;
-  
-  @UiField
   VerticalPanel previewPanel;
   
   @UiField
@@ -83,10 +79,6 @@ public class AssetManagerPanel extends Composite {
     typeFilter.addItem(MESSAGES.audioFilter());
     typeFilter.addItem(MESSAGES.videoFilter());
     typeFilter.addItem(MESSAGES.otherFilter());
-    
-    // Set up drop zone
-    uploadDropZone.setText(MESSAGES.dragDropText());
-    uploadDropZone.setSubText(MESSAGES.clickToBrowseText());
   }
 
   private void addEventHandlers() {
@@ -122,13 +114,6 @@ public class AssetManagerPanel extends Composite {
       }
     });
     
-    // Drop zone handlers
-    uploadDropZone.addDropHandler(new DropHandler() {
-      @Override
-      public void onDrop(DropEvent event) {
-        // TODO: Implement file drop handling
-      }
-    });
   }
 
   /**

@@ -31,6 +31,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -38,6 +40,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.event.dom.client.ClickHandler;
 
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -59,7 +62,11 @@ public class FileUploadWizard {
   @UiField Button cancelButton;
   @UiField Button topInvisible;
   @UiField Button bottomInvisible;
+  @UiField FlowPanel uploadDialogPanel;
 
+  // New UI Elements
+  CheckBox globalAssetCheckbox;
+  TextBox globalFolderTextBox;
 
   private final FolderNode folderNode;
   private final Collection<String> acceptableTypes;
@@ -117,6 +124,28 @@ public class FileUploadWizard {
     if (this.acceptableTypes != null) {
       upload.getElement().setAttribute("accept", String.join(",", this.acceptableTypes));
     }
+
+    // New UI elements for global asset upload
+    globalAssetCheckbox = new CheckBox(MESSAGES.uploadAsGlobalAssetCheckbox());
+    globalFolderTextBox = new TextBox();
+    globalFolderTextBox.getElement().setAttribute("placeholder", MESSAGES.globalFolderPlaceholder());
+    globalFolderTextBox.setVisible(false); // Initially hidden
+
+    globalAssetCheckbox.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        boolean isChecked = globalAssetCheckbox.getValue();
+        globalFolderTextBox.setVisible(isChecked);
+        if (!isChecked) {
+          globalFolderTextBox.setText("");
+        }
+      }
+    });
+
+    // Insert after upload widget, before button row
+    int uploadIndex = uploadDialogPanel.getWidgetIndex(upload);
+    uploadDialogPanel.insert(globalAssetCheckbox, uploadIndex + 1);
+    uploadDialogPanel.insert(globalFolderTextBox, uploadIndex + 2);
   }
 
 
@@ -133,60 +162,116 @@ public class FileUploadWizard {
   @UiHandler("okButton")
   public void uploadFile(ClickEvent e) {
     String uploadFilename = upload.getFilename();
-    uploadDialog.hide();
-    if (!uploadFilename.isEmpty()) {
-      final String filename = makeValidFilename(uploadFilename);
-      if (!TextValidators.isValidCharFilename(filename)) {
-        new FileUploadErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
-            FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
-        return;
-      } else if (!TextValidators.isValidLengthFilename(filename)) {
-        new FileUploadErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
-            FileUploadErrorCode.FILENAME_BAD_SIZE, folderNode, acceptableTypes, fileUploadedCallback);
-        return;
-      }
-      int nameLength = uploadFilename.length();
-      String fileEnd = uploadFilename.substring(nameLength - 4, nameLength);
+    if (uploadFilename.isEmpty()) {
+      uploadDialog.hide(); // Hide dialog first
+      new FileUploadErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
+          FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
+      return;
+    }
 
-      if (".aia".equals(fileEnd.toLowerCase())) {
-        new FileUploadErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
-            FileUploadErrorCode.AIA_MEDIA_ASSET, folderNode, acceptableTypes, fileUploadedCallback);
+    uploadDialog.hide(); // Hide dialog as processing starts
+
+    final String originalFilename = makeValidFilename(uploadFilename);
+
+    if (!TextValidators.isValidCharFilename(originalFilename)) {
+      new FileUploadErrorDialog(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename(),
+          FileUploadErrorCode.MALFORMED_FILENAME, folderNode, acceptableTypes, fileUploadedCallback);
+      return;
+    } else if (!TextValidators.isValidLengthFilename(originalFilename)) {
+      new FileUploadErrorDialog(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize(),
+          FileUploadErrorCode.FILENAME_BAD_SIZE, folderNode, acceptableTypes, fileUploadedCallback);
+      return;
+    }
+
+    if (".aia".equalsIgnoreCase(originalFilename.substring(Math.max(0, originalFilename.length() - 4)))) {
+      new FileUploadErrorDialog(MESSAGES.aiaMediaAssetTitle(), MESSAGES.aiaMediaAsset(),
+          FileUploadErrorCode.AIA_MEDIA_ASSET, folderNode, acceptableTypes, fileUploadedCallback);
+      return;
+    }
+
+    boolean isGlobalAsset = globalAssetCheckbox.getValue();
+
+    if (isGlobalAsset) {
+      ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(originalFilename));
+      String globalFolderName = globalFolderTextBox.getText().trim();
+      String targetPath = "_global_/";
+      if (globalFolderName != null && !globalFolderName.isEmpty()) {
+        // Basic sanitization for folder name, can be expanded
+        globalFolderName = globalFolderName.replaceAll("[^a-zA-Z0-9_\\-/]", "");
+        if (!globalFolderName.isEmpty()) {
+            targetPath += globalFolderName + "/";
+        }
+      }
+      targetPath += originalFilename;
+
+      // For UPLOAD_GLOBAL_ASSET, the UploadServlet expects the full path in the URI
+      // and the file in a form element named UPLOAD_USERFILE_FORM_ELEMENT
+      String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+          ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + targetPath;
+      
+      upload.setName(ServerLayout.UPLOAD_USERFILE_FORM_ELEMENT);
+
+      Uploader.getInstance().upload(upload, uploadUrl,
+          new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+            @Override
+            public void onSuccess(UploadResponse uploadResponse) {
+              if (uploadResponse.getStatus() == UploadResponse.Status.SUCCESS) {
+                ErrorReporter.hide();
+                ErrorReporter.reportInfo("Global asset " + originalFilename + " uploaded successfully.");
+                // TODO: Trigger refresh of global asset list if a UI component is listening.
+                // For now, no specific callback for global assets to project structure.
+                if (fileUploadedCallback != null) {
+                  // Decide if/how to call. Current signature is project-centric.
+                  // fileUploadedCallback.onFileUploaded(null, new FileNode(originalFilename, targetPath));
+                }
+              } else {
+                ErrorReporter.reportError(MESSAGES.fileUploadError() + " (Status: " + uploadResponse.getStatus() + ")");
+              }
+            }
+            @Override
+            public void onFailure(Throwable caught) {
+              super.onFailure(caught);
+              ErrorReporter.reportError(MESSAGES.fileUploadError() + ": " + caught.getMessage());
+            }
+          });
+
+    } else { // Project Asset Upload (existing logic with minor adjustments)
+      if (folderNode == null) {
+        ErrorReporter.reportError("Cannot upload project asset: target folder is not specified.");
         return;
       }
-      String fn = conflictingExistingFile(folderNode, filename);
-      if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
+      String fn = conflictingExistingFile(folderNode, originalFilename);
+      if (fn != null && !confirmOverwrite(folderNode, fn, originalFilename)) {
         return;
-      } else {
-        String fileId = folderNode.getFileId() + "/" + filename;
-        // We delete all the conflicting files.
+      } else if (fn != null) { // confirmed overwrite or case-insensitive match
+        String fileIdToDelete = folderNode.getFileId() + "/" + fn; // Use 'fn' which is the existing name
+        // We delete all the conflicting files (case-insensitive)
         for (ProjectNode child : folderNode.getChildren()) {
-          if (fileId.equalsIgnoreCase(child.getFileId()) && !fileId.equals(child.getFileId())) {
+          if (fileIdToDelete.equalsIgnoreCase(child.getFileId())) {
             final ProjectNode node = child;
             String filesToClose[] = {node.getFileId()};
             Ode ode = Ode.getInstance();
             ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
             ode.getProjectService().deleteFile(ode.getSessionId(),
                 node.getProjectId(), node.getFileId(),
-                new OdeAsyncCallback<Long>(
-                    // message on failure
-                    MESSAGES.deleteFileError()) {
+                new OdeAsyncCallback<Long>(MESSAGES.deleteFileError()) {
                   @Override
                   public void onSuccess(Long date) {
                     Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
                     Ode.getInstance().updateModificationDate(node.getProjectId(), date);
-
                   }
                 });
           }
         }
       }
-      ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(filename));
+      ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(originalFilename));
 
-      // Use the folderNode's project id and file id in the upload URL so that the file is
-      // uploaded into that project and that folder in our back-end storage.
       String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
-        ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
-        folderNode.getFileId() + "/" + filename;
+          ServerLayout.UPLOAD_FILE + "/" + folderNode.getProjectId() + "/" +
+          folderNode.getFileId() + "/" + originalFilename;
+      
+      upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+
       Uploader.getInstance().upload(upload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
             @Override
@@ -194,12 +279,10 @@ public class FileUploadWizard {
               switch (uploadResponse.getStatus()) {
                 case SUCCESS:
                   ErrorReporter.hide();
-                  onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                  onUploadSuccess(folderNode, originalFilename, uploadResponse.getModificationDate(),
                       fileUploadedCallback);
                   break;
                 case FILE_TOO_LARGE:
-                  // The user can resolve the problem by
-                  // uploading a smaller file.
                   ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
                   break;
                 default:
@@ -208,9 +291,6 @@ public class FileUploadWizard {
               }
             }
           });
-    } else {
-      new FileUploadErrorDialog(MESSAGES.noFileSelectedTitle(), MESSAGES.noFileSelected(),
-          FileUploadErrorCode.NO_FILE_SELECTED, folderNode, acceptableTypes, fileUploadedCallback);
     }
   }
 

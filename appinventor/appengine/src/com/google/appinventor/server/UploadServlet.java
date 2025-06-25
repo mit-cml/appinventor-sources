@@ -160,69 +160,41 @@ public class UploadServlet extends OdeServlet {
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,
           fileImporter.importTempFile(uploadedStream));
       } else if (uploadKind.equals(ServerLayout.UPLOAD_GLOBAL_ASSET)) {
-        String assetName = null;
-        String assetType = null;
-        String assetFolder = null;
-        InputStream uploadedStream = null;
-        long assetId = 0;
+        // This case now assumes that the global asset name (including _global_/ prefix)
+        // is part of the URI, similar to UPLOAD_USERFILE.
+        // The client is responsible for constructing this URI correctly.
+        // FileImporterImpl.importGlobalAsset has been modified to expect the
+        // _global_ prefix as part of its assetName parameter.
+        // However, the original plan for UPLOAD_GLOBAL_ASSET was to distinguish it
+        // for potential admin checks or different handling.
+        // Re-routing this to use importUserFile means the distinction of "global asset"
+        // at this servlet level is lost, and FileImporterImpl.importUserFile would
+        // need to be aware of the "_global_/" prefix to treat it as such,
+        // or a new method in FileImporter for this specific URI-based upload is needed.
 
-        try {
-          ServletFileUpload upload = new ServletFileUpload();
-          FileItemIterator iterator = upload.getItemIterator(req);
-          while (iterator.hasNext()) {
-            FileItemStream item = iterator.next();
-            InputStream stream = item.openStream();
-            if (item.isFormField()) {
-              String fieldName = item.getFieldName();
-              String value = Streams.asString(stream); // Consume the stream
-              if ("assetName".equals(fieldName)) {
-                assetName = value;
-              } else if ("assetType".equals(fieldName)) {
-                assetType = value;
-              } else if ("assetFolder".equals(fieldName)) {
-                assetFolder = value;
-              }
-            } else {
-              if (ServerLayout.UPLOAD_GLOBAL_ASSET_FORM_ELEMENT.equals(item.getFieldName())) {
-                // Check if we already have a stream, which would be an error (e.g. multiple files)
-                if (uploadedStream != null) {
-                  LOG.warning("Multiple files found for field: " + item.getFieldName() + ". Ignoring subsequent ones.");
-                  stream.close(); // Close the new stream as we are ignoring it
-                } else {
-                  uploadedStream = stream; // Don't close this stream here, importer will
-                }
-              } else {
-                LOG.warning("Unexpected file field in global asset upload: " + item.getFieldName());
-                stream.close(); // Close unused file streams
-              }
-            }
-          }
-
-          if (assetName == null || assetType == null || uploadedStream == null) {
-            LOG.severe("Missing required fields for global asset upload (name, type, or file).");
-            uploadResponse = new UploadResponse(UploadResponse.Status.IO_EXCEPTION, 0, "Missing required fields for global asset upload (name, type, or file).");
-          } else {
-            assetId = fileImporter.importGlobalAsset(userInfoProvider.getUserId(), assetName,
-                assetType, assetFolder, uploadedStream);
-            uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, assetId);
-          }
-        } catch (FileImporterException e) {
-          LOG.warning("FileImporterException during global asset upload: " + e.getMessage());
-          uploadResponse = e.uploadResponse;
-        } catch (IOException e) {
-          LOG.severe("IOException during global asset upload: " + e.getMessage());
-          uploadResponse = new UploadResponse(UploadResponse.Status.IO_EXCEPTION, 0, "IO Error during global asset upload: " + e.getMessage());
-          throw CrashReport.createAndLogError(LOG, req, "IOException during global asset upload", e);
-        } catch (Exception e) { // Catch other general exceptions from fileupload
-          LOG.severe("Exception during global asset upload processing: " + e.getMessage());
-          uploadResponse = new UploadResponse(UploadResponse.Status.IO_EXCEPTION, 0, "Server error during global asset upload: " + e.getMessage());
-          throw CrashReport.createAndLogError(LOG, req, "Exception during global asset upload processing", e);
-        } finally {
-          // Ensure uploadedStream is closed if it was opened and not passed to importer
-          // However, the importer is responsible for closing the stream it receives.
-          // If an exception occurred before calling the importer, and uploadedStream was assigned,
-          // it might need closing here, but typical stream handling in importer should cover it.
+        // Adopting the user-provided snippet which uses importUserFile:
+        uriComponents = uri.split("/", SPLIT_LIMIT_USERFILE);
+        if (USERFILE_PATH_INDEX >= uriComponents.length) {
+          throw CrashReport.createAndLogError(LOG, req, null,
+              new IllegalArgumentException("Missing user file path for global asset."));
         }
+        String fileName = uriComponents[USERFILE_PATH_INDEX]; // Expected: _global_/folder/asset.png or _global_/asset.png
+        InputStream uploadedStream;
+        try {
+          // Using UPLOAD_USERFILE_FORM_ELEMENT as per the snippet.
+          // This implies the client should use this form element name when uploading global assets via this path.
+          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_USERFILE_FORM_ELEMENT);
+        } catch (Exception e) {
+          throw CrashReport.createAndLogError(LOG, req, null, e);
+        }
+
+        // Assuming importUserFile can handle a fileName that starts with "_global_/"
+        // and treat it as a global asset. This would be a change in contract for importUserFile
+        // or it implies that "user files" can now also be global.
+        // The FileImporterImpl.importGlobalAsset method expects assetName and folder separately.
+        // The provided snippet uses importUserFile.
+        fileImporter.importUserFile(userInfoProvider.getUserId(), fileName, uploadedStream);
+        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
 
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,

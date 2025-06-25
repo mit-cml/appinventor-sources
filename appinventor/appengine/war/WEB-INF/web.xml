@@ -259,4 +259,17 @@
     <servlet-name>componentService</servlet-name>
   </filter-mapping>
 
+  <servlet>
+    <servlet-name>GlobalAssetServiceImpl</servlet-name>
+    <servlet-class>com.google.appinventor.server.GlobalAssetServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GlobalAssetServiceImpl</servlet-name>
+    <url-pattern>/ode/globalasset</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>GlobalAssetServiceImpl</servlet-name>
+  </filter-mapping>
+
 </web-app>

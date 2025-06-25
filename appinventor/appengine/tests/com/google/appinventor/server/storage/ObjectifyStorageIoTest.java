@@ -402,20 +402,20 @@ public class ObjectifyStorageIoTest {
     storage.addFilesToUser(USER_ID, FILE_NAME_OUTPUT);
     storage.uploadRawUserFile(USER_ID, FILE_NAME_OUTPUT, FILE_CONTENT_OUTPUT);
 
-    assertTrue(storage.getUserFiles(USER_ID).contains(FILE_NAME1));
-    assertTrue(storage.getUserFiles(USER_ID).contains(FILE_NAME_OUTPUT));
+    assertTrue(storage.getUserFiles(USER_ID, null).contains(FILE_NAME1));
+    assertTrue(storage.getUserFiles(USER_ID, null).contains(FILE_NAME_OUTPUT));
     assertEquals(FILE_CONTENT1, storage.downloadUserFile(USER_ID, FILE_NAME1,
         StorageUtil.DEFAULT_CHARSET));
     assertEquals(new String(FILE_CONTENT_OUTPUT),
         new String(storage.downloadRawUserFile(USER_ID, FILE_NAME_OUTPUT)));
 
     storage.deleteUserFile(USER_ID, FILE_NAME1);
-    assertFalse(storage.getUserFiles(USER_ID).contains(FILE_NAME1));
-    assertTrue(storage.getUserFiles(USER_ID).contains(FILE_NAME_OUTPUT));
+    assertFalse(storage.getUserFiles(USER_ID, null).contains(FILE_NAME1));
+    assertTrue(storage.getUserFiles(USER_ID, null).contains(FILE_NAME_OUTPUT));
 
     storage.deleteUserFile(USER_ID, FILE_NAME_OUTPUT);
-    assertFalse(storage.getUserFiles(USER_ID).contains(FILE_NAME1));
-    assertFalse(storage.getUserFiles(USER_ID).contains(FILE_NAME_OUTPUT));
+    assertFalse(storage.getUserFiles(USER_ID, null).contains(FILE_NAME1));
+    assertFalse(storage.getUserFiles(USER_ID, null).contains(FILE_NAME_OUTPUT));
   }
 
   public void testUnsupportedEncoding() throws BlocksTruncatedException {

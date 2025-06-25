@@ -227,23 +227,4 @@ public final class FileImporterImpl implements FileImporter {
     });
     return ImmutableSet.copyOf(names);
   }
-
-  @Override
-  public long importGlobalAsset(String userId, String assetName, String assetType, String folder, InputStream uploadedStream)
-      throws FileImporterException, IOException {
-    try {
-      StoredData.UserGlobalAssetData globalAssetData = storageIo.uploadGlobalAsset(userId, assetName, assetType, folder, uploadedStream);
-      if (globalAssetData != null && globalAssetData.id != null) {
-        return globalAssetData.id;
-      } else {
-        // This case should ideally not happen if uploadGlobalAsset is successful and returns an entity with an ID.
-        throw new FileImporterException(UploadResponse.Status.IO_EXCEPTION);
-      }
-    } catch (IOException e) {
-      // Log the exception or handle it as per existing patterns if necessary
-      // For now, rethrow as IOException as declared.
-      LOG.log(Level.SEVERE, "IOException during global asset import for user " + userId + ", asset name " + assetName, e);
-      throw e;
-    }
-  }
 }
