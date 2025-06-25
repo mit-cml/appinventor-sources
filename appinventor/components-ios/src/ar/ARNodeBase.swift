@@ -20,6 +20,8 @@ open class ARNodeBase: NSObject, ARNode {
   public var _followingMarker: ARImageMarker? = nil
   public var _fromPropertyPosition = "0.0,0.0,0.0";
   
+  private var _modelString: String = ""
+  private var _objectModel:String = ""
   /**
    * This init is used for all nodes except for ModelNodes.
    */
@@ -133,6 +135,15 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
+  @objc open var Model: String {
+    get {
+      return _objectModel
+    }
+    set(model) {
+      _objectModel = model
+    }
+  }
+  
   @objc open var Scale: Float {
     get {
       return _node.scale.x
@@ -143,22 +154,22 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   
-  @objc open var PoseFromProperty: String {
+  @objc open var PoseFromPropertyPosition: String {
     get {
       return _fromPropertyPosition;
     }
     set(pose) {
       // turn pose into array and setX, y, z
       //let coordinateArray = pose.split(separator: ",");
-      var position = "1.0,0.0,0.0";
+      //var position = "1.0,0.0,0.0";
      /* for (index, item) in pose.enumerated() {
               if index < position.count {
-                  position[index] = Double(String(item)) ?? 0.0
+                  position[index] = Float(String(item)) ?? 0.0
               }
       }*/
           
           // Store the coordinate array (converted to proper type)
-      _fromPropertyPosition = position
+      _fromPropertyPosition = pose
      
     }
   }

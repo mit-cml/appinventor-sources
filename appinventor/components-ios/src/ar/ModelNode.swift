@@ -35,7 +35,7 @@ open class ModelNode: ARNodeBase, ARModel {
     fatalError("init(coder:) has not been implemented")
   }
   
-  @objc public var Model: String {
+  override open var Model: String {
     get {
       return _modelString
     }

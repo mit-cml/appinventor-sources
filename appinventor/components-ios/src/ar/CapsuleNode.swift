@@ -8,6 +8,7 @@ import SceneKit
 open class CapsuleNode: ARNodeBase, ARCapsule {
   private var _capsuleGeometry: SCNCapsule = SCNCapsule(capRadius: 0.02, height: 0.07)
   private var _capsuleNode: SCNNode
+
   
   @objc init(_ container: ARNodeContainer) {
     _capsuleNode = SCNNode(geometry: _capsuleGeometry)

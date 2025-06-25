@@ -294,9 +294,9 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
           // Convert pose string to coordinate array
           let position = node._fromPropertyPosition.split(separator: ",")
             .prefix(3)
-            .map { Double(String($0)) ?? 0.0 }
+            .map { Float(String($0)) ?? 0.0 }
           
-          // Use position array as needed...
+          node._node.position = SCNVector3(x: position[0], y: position[1], z: position[2])
         }
       }
       
@@ -362,6 +362,16 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     
     if _sessionRunning {
       _sceneView.scene.rootNode.addChildNode(node._node)
+      
+      if node._fromPropertyPosition != nil {
+        
+        // Convert pose string to coordinate array
+        let position = node._fromPropertyPosition.split(separator: ",")
+          .prefix(3)
+          .map { Float(String($0)) ?? 0.0 }
+        
+        node._node.position = SCNVector3(x: position[0], y: position[1], z: position[2])
+      }
     } else {
       _requiresAddNodes = true
     }
