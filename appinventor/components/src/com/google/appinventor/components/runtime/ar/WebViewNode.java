@@ -46,15 +46,15 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
 
   private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
-  private Trackable trackable = null;
-  private String texture = "";
+
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
-  private float scale = 1.0f;
+  private String texture = Form.ASSETS_PREFIX + "Palette.png";
 
 
   public WebViewNode(final ARNodeContainer container) {
     super(container);
-    // Additional updates
+    //Texture(texture); // or url, not sure how this works yet
+    Model(objectModel);
     container.addNode(this);
   }
   @Override // wht is the significance?
@@ -62,21 +62,6 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
 
   @Override
   public void Anchor(Anchor a) { this.anchor = a;}
-
-  @Override
-  public Trackable Trackable() { return this.trackable; }
-
-  @Override
-  public void Trackable(Trackable t) { this.trackable = t;}
-
-  @Override
-  @SimpleProperty(description = "The 3D model file to be loaded.",
-      category = PropertyCategory.APPEARANCE)
-  public String Model() { return this.objectModel; }
-
-  @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-  public void Model(String model) {this.objectModel = model;}
 
 
   @Override
@@ -258,14 +243,6 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
     Anchor(this.trackable.createAnchor((Pose) p));
     Log.i("created Anchor!", " " );
   }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public String Texture() { return ""; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void Texture(String texture) {}
 
   @Override
   @SimpleProperty(userVisible = false)

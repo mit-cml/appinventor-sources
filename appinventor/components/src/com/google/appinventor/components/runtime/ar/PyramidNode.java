@@ -49,34 +49,16 @@ import com.google.ar.core.Trackable;
     @Override
     public void Anchor(Anchor a) { this.anchor = a;}
 
-    @Override
-    public Trackable Trackable() { return this.trackable; }
 
     @Override
-    public void Trackable(Trackable t) { this.trackable = t;}
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
-    @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
-        "sizing properties.  Values less than zero will be treated as their absolute value.")
     public float Scale() {
       return this.scale;
     }
 
     @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
     public void Scale(float s) {
       this.scale = s;}
 
-
-    @Override
-    @SimpleProperty(description = "The 3D model file to be loaded.",
-        category = PropertyCategory.APPEARANCE)
-    public String Model() { return this.objectModel; }
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Model(String model) {this.objectModel = model;}
 
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +

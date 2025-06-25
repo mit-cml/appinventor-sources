@@ -29,6 +29,15 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   // protected ContainerType container = null;
   protected ARView3D arView = null;
 
+  protected Anchor anchor = null;
+  protected float[] fromPropertyPosition = {0f, 0f, 0f};
+  protected float scale = 1.0f;
+  protected Session session = null;
+  protected String texture = "";
+  protected Trackable trackable = null;
+
+  protected String objectModel = Form.ASSETS_PREFIX + "";
+
   @SuppressWarnings("WeakerAccess")
   protected ARNodeBase(ARNodeContainer container) {
     // any initializing that needs to be done here
@@ -47,11 +56,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @Override
   public void Width(int width) {}
 
-  @Override
-  public Anchor Anchor() { return null; }
+  public Anchor Anchor() {
+    return this.anchor;
+  }
 
-  @Override
-  public void Anchor(Anchor a) {}
+  public void Anchor(Anchor a) {
+    this.anchor = a;
+  }
 
   @Override
   public Object Pose() { return null; };
@@ -59,19 +70,43 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @Override
   public void Pose(Object p) {}
 
-  @Override
-  public float[] PoseFromPropertyPosition(){return null;};
+  /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
 
-  @Override
-  public void PoseFromPropertyPosition(String positionFromProperty){} ;
+  public float[] PoseFromPropertyPosition() {
+    return fromPropertyPosition;
+  }
+
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
+      category = PropertyCategory.APPEARANCE)
+  public void PoseFromPropertyPosition(String positionFromProperty) {
+    String[] positionArray = positionFromProperty.split(",");
+    float[] position = {0f, 0f, 0f};
+
+    for (int i = 0; i < positionArray.length; i++) {
+      position[i] = Float.parseFloat(positionArray[i]);
+    }
+    this.fromPropertyPosition = position;
+    float[] rotation = {0f, 0f, 0f, 1f}; // no rotation rn TBD
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+    Log.i("store pose", "with position" + positionFromProperty);
+  }
+
   @Override
   public void PoseFromPropertyPositions(String x, String y, String z){} ;
 
-  @Override
-  public Trackable Trackable() { return null; }
 
-  @Override
-  public void Trackable(Trackable t) {}
+  public Trackable Trackable() {
+    return this.trackable;
+  }
+
+  public void Trackable(Trackable t) {
+    this.trackable = t;
+  }
 
   @Override
   public Session Session() { return null; }
@@ -80,15 +115,18 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void Session(Session s) {}
 
   @Override
-  public String Model() { return null; }
+  @SimpleProperty(description = "The 3D model file to be loaded.",
+      category = PropertyCategory.APPEARANCE)
+  public String Model() { return this.objectModel; }
 
   @Override
-  public void Model(String o) {}
+  @SimpleProperty(description = "The 3D model file to be loaded.",
+      category = PropertyCategory.APPEARANCE)
+  public void Model(String model) {this.objectModel = model;}
 
   @Override
   @SimpleProperty(description = "Returns the type of node as a String.")
   public String Type() { return getClass().getSimpleName(); };
-
 
   @SimpleProperty(description = "Convert current pose to yail",
       category = PropertyCategory.APPEARANCE)
@@ -192,15 +230,24 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void FillColorOpacity(int colorOpacity) {}
 
-  @Override
-  @SimpleProperty(description = "The image used to texture the node.  If set, the FillColor is not shown.")
-  public String Texture()  { return ""; }
 
-  @Override
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-      defaultValue = "")
-  public void Texture(String texture) {}
+
+  @SimpleProperty(description = "Gets the 3D texture",
+      category = PropertyCategory.APPEARANCE)
+  public String Texture()  {
+    return this.texture; }
+
+
+  @SimpleProperty(description = "The 3D texturebe loaded.",
+      category = PropertyCategory.APPEARANCE)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  public void Texture(String texture) {
+    Log.d("texture","set texture on node" + texture);
+    this.texture = texture;
+  }
+
+
+
 
   @Override
   @SimpleProperty(description = "The opacity of the node's Texture.  Values less than zero " +
@@ -299,12 +346,17 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
   @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
-    "sizing properties.  Values less than zero will be treated as their absolute value.")
-  public float Scale() { return 1f; }
+      "sizing properties.  Values less than zero will be treated as their absolute value.")
+  public float Scale() {
+    return this.scale;
+  }
 
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  public void Scale(float scalar) {}
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  public void Scale(float s) {
+    this.scale = s;
+  }
 
   @Override
   @SimpleProperty(description = "Specifies whether a node is following an ImageMarker.  Returns " +

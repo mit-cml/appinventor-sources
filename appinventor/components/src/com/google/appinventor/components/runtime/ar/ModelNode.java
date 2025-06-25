@@ -64,32 +64,16 @@ import android.util.Log;
     @Override
     public void Session(Session s){ this.session = s;};
 
-    @Override
-    public Trackable Trackable() { return this.trackable; }
+  @Override
+  @SimpleProperty(description = "The 3D model file to be loaded.",
+      category = PropertyCategory.APPEARANCE)
+  public String Model() { return this.objectModel; }
 
-    @Override
-    public void Trackable(Trackable t) { this.trackable = t;}
-
-
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
-    @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
-            "sizing properties.  Values less than zero will be treated as their absolute value.")
-    public float Scale() {return this.scale;}
-
-    @Override
-    @SimpleProperty(description = "set scale of the node")
-    public void Scale(float scale) { this.scale = scale;}
-
-    @Override
-    @SimpleProperty(description = "The 3D model file to be loaded.",
-                    category = PropertyCategory.APPEARANCE)
-    public String Model() { return this.objectModel; }
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Model(String model) {
-      this.objectModel = model;
-    }
+  @Override
+  @SimpleProperty(description = "The 3D model file to be loaded.",
+      category = PropertyCategory.APPEARANCE)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  public void Model(String model) {this.objectModel = model;}
 
     @Override
     @SimpleProperty(category = PropertyCategory.APPEARANCE,
@@ -222,9 +206,10 @@ import android.util.Log;
       Anchor(myAnchor);
     }
   }*/
-
-
   // FUNCTIONS
+
+
+
     @SimpleFunction(description = "Sets the color of all nodes with the given opacity.  " +
       "Opacity vales less than 0 will be treated as 0, and values greater than 100 will be " +
       "treated as 100.")
@@ -292,6 +277,7 @@ import android.util.Log;
     @SimpleEvent(description = "This event is triggered when the user tries to access a " +
       "node named \"name\", but a node with that \"name\" does not exist.")
     public void NodeNotFound(String name) {}
+
 
     // Hidden Properties
     @Override

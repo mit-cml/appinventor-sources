@@ -42,33 +42,27 @@ import java.util.Locale;
 @UsesAssets(fileNames = "pawn.obj, Palette.png")
   public final class CapsuleNode extends ARNodeBase implements ARCapsule {
 
-  private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
   private Session session = null;
   private Trackable trackable = null;
-  private String texture = "";
-  private String objectModel = Form.ASSETS_PREFIX + "pawn.obj";
-  private float scale = 1.0f;
+
 
   public CapsuleNode(final ARNodeContainer container) {
     super(container);
+    Model( Form.ASSETS_PREFIX + "pawn.obj");
+    Texture(Form.ASSETS_PREFIX + "Palette.png");
     //parentSession = session;
     container.addNode(this);
   }
 
-  @Override
-  public Anchor Anchor() { return this.anchor; }
-
-  @Override
-  public void Anchor(Anchor a) { this.anchor = a;}
 
   @SimpleProperty(description = "Get the current pose of the object",
       category = PropertyCategory.APPEARANCE)
   @Override
   public Object Pose() {
-      Pose p = (Pose)this.anchor.getPose();
-      return p;
-    }
+    Pose p = (Pose) this.anchor.getPose();
+    return p;
+  }
 
 
   @SimpleProperty(description = "Get the current pose of the object",
@@ -91,9 +85,9 @@ import java.util.Locale;
     innerObject2.put("w", p.qw());
     saveObject.put("q", innerObject2);
 
-    Log.i("exporting Capsule pose as JSON", "with " +saveObject);
+    Log.i("exporting Capsule pose as JSON", "with " + saveObject);
 
-   return saveObject;
+    return saveObject;
 
   }
 
@@ -102,7 +96,7 @@ import java.util.Locale;
       category = PropertyCategory.APPEARANCE)
   @Override
   public void Pose(Object p) {
-    Log.i("setting Capsule pose", "with " +p);
+    Log.i("setting Capsule pose", "with " + p);
     Pose pose = (Pose) p;
 
     float[] position = {pose.tx(), pose.ty(), pose.tz()};
@@ -113,30 +107,6 @@ import java.util.Locale;
     }
   }
 
-  /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
-  @Override
-  public float[] PoseFromPropertyPosition(){ return fromPropertyPosition; }
-
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void PoseFromPropertyPosition(String positionFromProperty) {
-    String[] positionArray = positionFromProperty.split(",");
-    float[] position = {0f,0f,0f};
-
-    for (int i = 0; i < positionArray.length; i++) {
-      position[i] = Float.parseFloat(positionArray[i]);
-    }
-    this.fromPropertyPosition = position;
-    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
-    }
-    Log.i("store Capsule pose", "with position" +positionFromProperty);
-  }
 
   /*@Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT, defaultValue = "")
@@ -154,101 +124,72 @@ import java.util.Locale;
 
 
 
-    @Override
-    public Trackable Trackable() { return this.trackable; }
 
-    @Override
-    public void Trackable(Trackable t) { this.trackable = t;}
+  @Override
+  @SimpleFunction(description = "move a capsule node properties at the " +
+      "specified (x,y,z) position.")
+  public void MoveBy(float x, float y, float z) {
 
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
-    @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
-            "sizing properties.  Values less than zero will be treated as their absolute value.")
-   public float Scale() {
-        return this.scale;
+    float[] position = {0, 0, 0};
+    float[] rotation = {0, 0, 0, 1};
+
+    //float[] currentAnchorPoseRotation = rotation;
+
+    TrackingState trackingState = null;
+    if (this.Anchor() != null) {
+      float[] translations = this.Anchor().getPose().getTranslation();
+      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
+      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+      trackingState = this.Anchor().getTrackingState();
     }
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Scale(float s) {
-        this.scale = s;}
-
-
-    @Override
-    @SimpleProperty(description = "The 3D model file to be loaded.",
-            category = PropertyCategory.APPEARANCE)
-    public String Model() { return this.objectModel; }
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Model(String model) {this.objectModel = model;}
-
-
-    @Override
-    @SimpleFunction(description = "move a capsule node properties at the " +
-        "specified (x,y,z) position.")
-    public void MoveBy(float x, float y, float z){
-
-      float[] position = { 0, 0, 0};
-      float[] rotation = {0, 0, 0, 1};
-
-      //float[] currentAnchorPoseRotation = rotation;
-
-      TrackingState trackingState = null;
-      if (this.Anchor() != null) {
-        float[] translations = this.Anchor().getPose().getTranslation();
-        position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
-        //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
-        trackingState = this.Anchor().getTrackingState();
-      }
-      Pose newPose = new Pose(position, rotation);
-      if (this.trackable != null ){
-        Anchor(this.trackable.createAnchor(newPose));
-        Log.i("sphere","moved anchor BY " + newPose+ " with rotaytion "+rotation);
-      }else {
-        if (trackingState == TrackingState.TRACKING){
-          if (session != null){
-            Log.i("sphere", "moved anchor BY, make anchor with SESSION, ");
-            Anchor(session.createAnchor(newPose));
-          } else{
-            Log.i("sphere", "tried to move anchor BY pose, session must be 0" + (session == null));
-          }
+    Pose newPose = new Pose(position, rotation);
+    if (this.trackable != null) {
+      Anchor(this.trackable.createAnchor(newPose));
+      Log.i("sphere", "moved anchor BY " + newPose + " with rotaytion " + rotation);
+    } else {
+      if (trackingState == TrackingState.TRACKING) {
+        if (session != null) {
+          Log.i("sphere", "moved anchor BY, make anchor with SESSION, ");
+          Anchor(session.createAnchor(newPose));
+        } else {
+          Log.i("sphere", "tried to move anchor BY pose, session must be 0" + (session == null));
         }
-
       }
+
     }
+  }
 
 
   @Override
-    @SimpleFunction(description = "move a capsule node properties at the " +
-            "specified (x,y,z) position.")
-    public void MoveTo(float x, float y, float z){
-      float[] position = {x, y, z};
-      float[] rotation = {0, 0, 0, 1};
+  @SimpleFunction(description = "move a capsule node properties at the " +
+      "specified (x,y,z) position.")
+  public void MoveTo(float x, float y, float z) {
+    float[] position = {x, y, z};
+    float[] rotation = {0, 0, 0, 1};
 
-      float[] currentAnchorPoseRotation = rotation;
-      if (this.Anchor() != null) {
-        //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); not working yet
-      }
-      Pose newPose = new Pose(position, rotation);
-      if (this.trackable != null){
-        Anchor(this.trackable.createAnchor(newPose));
-        Log.i("capsule","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
-      }else {
-        Log.i("capsule", "tried to move anchor to pose");
-      }
+    float[] currentAnchorPoseRotation = rotation;
+    if (this.Anchor() != null) {
+      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); not working yet
     }
+    Pose newPose = new Pose(position, rotation);
+    if (this.trackable != null) {
+      Anchor(this.trackable.createAnchor(newPose));
+      Log.i("capsule", "moved anchor to pose: " + newPose + " with rotaytion " + currentAnchorPoseRotation);
+    } else {
+      Log.i("capsule", "tried to move anchor to pose");
+    }
+  }
 
-    @Override
-    @SimpleFunction(description = "move a capsule node properties to detectedplane.")
-    public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
-        this.trackable = (Trackable) targetPlane.DetectedPlane();
-        if (this.anchor != null) {
-          this.anchor.detach();
-        }
-        Anchor(this.trackable.createAnchor((Pose) p));
-        Log.i("created Capsule Anchor!", " ");
+  @Override
+  @SimpleFunction(description = "move a capsule node properties to detectedplane.")
+  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
+    this.trackable = (Trackable) targetPlane.DetectedPlane();
+    if (this.anchor != null) {
+      this.anchor.detach();
     }
+    Anchor(this.trackable.createAnchor((Pose) p));
+    Log.i("created Capsule Anchor!", " ");
+  }
 
 
   @SimpleFunction(description = "move a capsule node properties to detectedplane.")
@@ -269,43 +210,33 @@ import java.util.Locale;
   }
 
 
-    @Override
-    @SimpleProperty(description = "How far, in centimeters, the CapsuleNode extends along the y-axis.  " +
+  @Override
+  @SimpleProperty(description = "How far, in centimeters, the CapsuleNode extends along the y-axis.  " +
       "Values less than zero will be treated as their absolute value.  When set to zero or when set to " +
       "less than double the CapRadius, the CapsuleNode will not appear.")
-    public float HeightInCentimeters() { return 0.5f; }
+  public float HeightInCentimeters() {
+    return 0.5f;
+  }
 
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "7")
-    @SimpleProperty(category = PropertyCategory.APPEARANCE)
-    public void HeightInCentimeters(float heightInCentimeters) {}
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "7")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void HeightInCentimeters(float heightInCentimeters) {
+  }
 
-    @Override
-    @SimpleProperty(description = "The radius, in centimeters, of two hemispheres " +
+  @Override
+  @SimpleProperty(description = "The radius, in centimeters, of two hemispheres " +
       "or caps at the ends of a CapsuleNode.  Values less than zero will be treated as their " +
       "absolute values.  When set to zero or when set to greater than half of the Height, the " +
       "CapsuleNode will not appear.")
-    public float CapRadiusInCentimeters() { return 0.05f; }
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "2")
-    @SimpleProperty(category = PropertyCategory.APPEARANCE)
-    public void CapRadiusInCentimeters(float capRadiusInCentimeters) {}
-
-
+  public float CapRadiusInCentimeters() {
+    return 0.05f;
+  }
 
   @Override
-    @SimpleProperty(description = "Gets the 3D texture",
-            category = PropertyCategory.APPEARANCE)
-    public String Texture()  {
-        return this.texture; }
-
-    @Override
-    @SimpleProperty(description = "The 3D texturebe loaded.",
-            category = PropertyCategory.APPEARANCE)
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Texture(String texture) {
-        Log.d("capnode","set texture on capnode" + texture);
-        this.texture = texture;}
-
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "2")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void CapRadiusInCentimeters(float capRadiusInCentimeters) {
   }
+
+}

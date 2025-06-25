@@ -46,14 +46,15 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
 
   private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
-  private Trackable trackable = null;
-  private String texture = "";
+
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
-  private float scale = 1.0f;
+  private String texture = Form.ASSETS_PREFIX + "Palette.png";
 
   public VideoNode(final ARNodeContainer container) {
     super(container);
     // Additional updates
+      Model( objectModel);
+      Texture(texture);
     container.addNode(this);
   }
   @Override // wht is the significance?
@@ -175,13 +176,6 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
     }
     Log.i("store sphere pose", "with position" +positionFromProperty);
   }
-
-  @Override
-  public float Scale() { return this.scale; }
-
-  @Override
-  public void Scale(float t) { this.scale = t;}
-
 
   @Override
   @SimpleProperty(description = "How far, in centimeters, the VideoNode extends along the x-axis.  " +

@@ -209,7 +209,9 @@ public class ObjectRenderer {
       float[] anchorMatrix = new float[16];
       anchor.getPose().toMatrix(anchorMatrix, 0);
 
-      float[] modelMatrix = updateModelMatrix(anchorMatrix, 1.0f);
+      Log.e(TAG, "scale for node " + arNode.Model() + " " + arNode.Scale());
+
+      float[] modelMatrix = updateModelMatrix(anchorMatrix, arNode.Scale());
       float[] localModelViewMatrix = new float[16];
       float[] localModelViewProjectionMatrix = new float[16];
 

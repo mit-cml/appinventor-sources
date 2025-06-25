@@ -39,16 +39,17 @@ import com.google.ar.core.Trackable;
 
   private float[] fromPropertyPosition = {0f,0f,0f};
   private Anchor anchor = null;
-  private Trackable trackable = null;
   // TODO: either supply a simple quad or make one
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
   private String texture = Form.ASSETS_PREFIX + "Palette.png";
-  private float scale = 1.0f;
 
   public PlaneNode(final ARNodeContainer container) {
     super(container);
     // Additional updates
+    Model( objectModel);
+    Texture(texture);
     container.addNode(this);
+
   }
 
   @Override // wht is the significance?
@@ -57,20 +58,6 @@ import com.google.ar.core.Trackable;
   @Override
   public void Anchor(Anchor a) { this.anchor = a;}
 
-  @Override
-  public Trackable Trackable() { return this.trackable; }
-
-  @Override
-  public void Trackable(Trackable t) { this.trackable = t;}
-
-  @Override
-  @SimpleProperty(description = "The 3D model file to be loaded.",
-      category = PropertyCategory.APPEARANCE)
-  public String Model() { return this.objectModel; }
-
-  @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-  public void Model(String model) {this.objectModel = model;}
 
   @Override
   @SimpleFunction(description = "move a capsule node properties at the " +
@@ -170,13 +157,6 @@ import com.google.ar.core.Trackable;
     Log.i("store sphere pose", "with position" +positionFromProperty);
   }
 
-
-  @Override
-  public float Scale() { return this.scale; }
-
-  @Override
-  public void Scale(float t) { this.scale = t;}
-
   @Override
   @SimpleProperty(description = "How far, in centimeters, the PlaneNode extends along the x-axis.  " +
     "Values less than zero will be treated as their absolute value.  When set to zero, the PlaneNode " +
@@ -210,14 +190,5 @@ import com.google.ar.core.Trackable;
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "0")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void CornerRadius(float cornerRadius) {}
-
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public String Texture() { return this.texture; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void Texture(String texture) {}
 
 }

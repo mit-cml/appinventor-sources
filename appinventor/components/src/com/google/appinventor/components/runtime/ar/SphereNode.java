@@ -34,17 +34,15 @@ import android.util.Log;
 @SimpleObject
   public final class SphereNode extends ARNodeBase implements ARSphere {
 
-    private float[] fromPropertyPosition = {0f,0f,0f};
     private Anchor anchor = null;
-    private Trackable trackable = null;
     private Session session = null;
     private String objectModel = Form.ASSETS_PREFIX + "sphere.obj";
     private String texture = Form.ASSETS_PREFIX + "Palette.png";
-    private float scale = 1.0f;
 
     public SphereNode(final ARNodeContainer container) {
       super(container);
-
+      Model( objectModel);
+      Texture(texture);
       container.addNode(this); // hooks in session
     }
 
@@ -57,20 +55,6 @@ import android.util.Log;
     @Override
     public void Session(Session s){ this.session = s;};
 
-    @Override
-    public Trackable Trackable() { return this.trackable; }
-
-    @Override
-    public void Trackable(Trackable t) { this.trackable = t;}
-
-    @Override
-    @SimpleProperty(description = "The 3D model file to be loaded.",
-            category = PropertyCategory.APPEARANCE)
-    public String Model() { return this.objectModel; }
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Model(String model) {this.objectModel = model;}
 
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +
@@ -193,11 +177,7 @@ import android.util.Log;
       Anchor(myAnchor);
     }
   }*/
-  @Override
-  public float Scale() { return this.scale; }
 
-  @Override
-  public void Scale(float t) { this.scale = t;}
 
     @Override
     @SimpleProperty(description = "The radius of the sphere in centimeters.")
@@ -303,13 +283,6 @@ import android.util.Log;
   @SimpleProperty(userVisible = false)
   public void FillColorOpacity(int FillColorOpacity) {}
 
-  @Override
-  @SimpleProperty(userVisible = false)
-  public String Texture() { return this.texture; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void Texture(String texture) {}
 
   @Override
   @SimpleProperty(userVisible = false)
