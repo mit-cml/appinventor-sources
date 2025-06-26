@@ -42,40 +42,28 @@ import android.util.Log;
   @SimpleObject
   public final class ModelNode extends ARNodeBase implements ARModel {
 
-    private float[] fromPropertyPosition = {0f,0f,0f};
-    private Anchor anchor = null;
-    private Session session = null;
-    private Trackable trackable = null;
-    private String objectModel = "";
     private String tex = Form.ASSETS_PREFIX + "Palette.png";
-    private float scale = 1.0f;
 
     public ModelNode(final ARNodeContainer container) {
       super(container);
       Texture(tex);
-
       container.addNode(this);
     }
 
-    @Override // wht is the significance?
-    public Anchor Anchor() { return this.anchor; }
 
     @Override
-    public void Anchor(Anchor a) { this.anchor = a;}
+    public void Session(Session s){ this.session = s;}
 
     @Override
-    public void Session(Session s){ this.session = s;};
+    @SimpleProperty(description = "The 3D model file to be loaded.",
+        category = PropertyCategory.APPEARANCE)
+    public String Model() { return this.objectModel; }
 
-  @Override
-  @SimpleProperty(description = "The 3D model file to be loaded.",
-      category = PropertyCategory.APPEARANCE)
-  public String Model() { return this.objectModel; }
-
-  @Override
-  @SimpleProperty(description = "The 3D model file to be loaded.",
-      category = PropertyCategory.APPEARANCE)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-  public void Model(String model) {this.objectModel = model;}
+    @Override
+    @SimpleProperty(description = "The 3D model file to be loaded.",
+        category = PropertyCategory.APPEARANCE)
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+    public void Model(String model) {this.objectModel = model;}
 
     @Override
     @SimpleProperty(category = PropertyCategory.APPEARANCE,
@@ -166,49 +154,6 @@ import android.util.Log;
     "If the model did not name a node, then the node will be named by the component Name and " +
     "number, such as ModelNode1-1.")
   public List<String> NamesOfNodes() { return new ArrayList<String>(); }
-
-
-  //use for default positions when node isn't trackable yet
-  @Override
-  public float[] PoseFromPropertyPosition(){ return fromPropertyPosition; }
-
-
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void PoseFromPropertyPosition(String positionFromProperty) {
-    String[] positionArray = positionFromProperty.split(",");
-    float[] position = {0f,0f,0f};
-
-    for (int i = 0; i < positionArray.length; i++) {
-      position[i] = Float.parseFloat(positionArray[i]);
-    }
-    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
-
-    this.fromPropertyPosition = position;
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
-    }
-    Log.i("store model pose", "with position" +positionFromProperty);
-  }
-
-  /*@Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT, defaultValue = "")
-  public void PoseFromPropertyPositions(String x, String y, String z) {
-    Log.i("setting Capsule pose", "with position" + x + " " + y  + " " + z);
-
-    float[] position = { Float.parseFloat(x), Float.parseFloat(y), Float.parseFloat(z)};
-
-    float[] rotation = {0,0,0, 1}; // no rotation rn TBD
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
-    }
-  }*/
-  // FUNCTIONS
 
 
 
