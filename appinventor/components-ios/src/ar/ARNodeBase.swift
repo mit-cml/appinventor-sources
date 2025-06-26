@@ -159,18 +159,7 @@ open class ARNodeBase: NSObject, ARNode {
       return _fromPropertyPosition;
     }
     set(pose) {
-      // turn pose into array and setX, y, z
-      //let coordinateArray = pose.split(separator: ",");
-      //var position = "1.0,0.0,0.0";
-     /* for (index, item) in pose.enumerated() {
-              if index < position.count {
-                  position[index] = Float(String(item)) ?? 0.0
-              }
-      }*/
-          
-          // Store the coordinate array (converted to proper type)
       _fromPropertyPosition = pose
-     
     }
   }
   /// NOTE: uncomment if we want to allow nonuniform scaling
