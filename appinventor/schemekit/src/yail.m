@@ -1103,8 +1103,8 @@ yail_isa(pic_state *pic) {
   } else if (pic_sym_p(pic, native_class)) {
     // We have a symbol representing a FQCN
     NSString *name = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, native_class))];
-    if ([name hasPrefix:@"com.google.appinventor.components.runtime.ar"]) {
-        name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime.ar" withString:@"AIComponentKit."];
+    if ([name hasPrefix:@"com.google.appinventor.components.runtime.ar."]) {
+        name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime.ar." withString:@"AIComponentKit."];
     } else if ([name hasPrefix:@"com.google.appinventor.components.runtime."]) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
     } else if ([name hasPrefix:@"com.google.appinventor.components.common."]) {
