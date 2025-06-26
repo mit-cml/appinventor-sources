@@ -10,7 +10,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
 public class WindowOpenAction implements Command {
-  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes,popup=true";
+  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes,popup=true,width=480,height=675";
   private static final String WINDOW_OPEN_LOCATION = "_ai2";
 
   private final String url;
