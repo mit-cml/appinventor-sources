@@ -210,17 +210,4 @@ import com.google.ar.core.Trackable;
     @SimpleProperty(category = PropertyCategory.APPEARANCE)
     public void CornerRadius(float cornerRadius) {}
 
-
-    @Override
-    @SimpleProperty(description = "Gets the 3D texture",
-        category = PropertyCategory.APPEARANCE)
-    public String Texture()  {
-      return this.texture; }
-
-    @Override
-    @SimpleProperty(description = "The 3D texturebe loaded.",
-        category = PropertyCategory.APPEARANCE)
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Texture(String texture) {
-      this.texture = texture;}
   }

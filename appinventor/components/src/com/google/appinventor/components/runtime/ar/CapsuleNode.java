@@ -42,26 +42,11 @@ import java.util.Locale;
 @UsesAssets(fileNames = "pawn.obj, Palette.png")
   public final class CapsuleNode extends ARNodeBase implements ARCapsule {
 
-  private Anchor anchor = null;
-  private Session session = null;
-  private Trackable trackable = null;
-
-
   public CapsuleNode(final ARNodeContainer container) {
     super(container);
     Model( Form.ASSETS_PREFIX + "pawn.obj");
     Texture(Form.ASSETS_PREFIX + "Palette.png");
-    //parentSession = session;
     container.addNode(this);
-  }
-
-
-  @SimpleProperty(description = "Get the current pose of the object",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public Object Pose() {
-    Pose p = (Pose) this.anchor.getPose();
-    return p;
   }
 
 
@@ -89,22 +74,6 @@ import java.util.Locale;
 
     return saveObject;
 
-  }
-
-
-  @SimpleProperty(description = "Set the current pose of the object",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void Pose(Object p) {
-    Log.i("setting Capsule pose", "with " + p);
-    Pose pose = (Pose) p;
-
-    float[] position = {pose.tx(), pose.ty(), pose.tz()};
-    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
-    }
   }
 
 

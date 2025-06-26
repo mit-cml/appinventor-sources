@@ -33,7 +33,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
   protected float scale = 1.0f;
   protected Session session = null;
-  protected String texture = "";
+  protected String texture = "test.png";
   protected Trackable trackable = null;
 
   protected String objectModel = Form.ASSETS_PREFIX + "";
@@ -65,10 +65,22 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   @Override
-  public Object Pose() { return null; };
+  public Object Pose() { return null; }
 
+  @SimpleProperty(description = "Set the current pose of the object",
+      category = PropertyCategory.APPEARANCE)
   @Override
-  public void Pose(Object p) {}
+  public void Pose(Object p) {
+    Log.i("setting node pose", "with " + p);
+    Pose pose = (Pose) p;
+
+    float[] position = {pose.tx(), pose.ty(), pose.tz()};
+    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
+    if (this.trackable != null) {
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor(myAnchor);
+    }
+  }
 
   /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
 
@@ -98,6 +110,20 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   public void PoseFromPropertyPositions(String x, String y, String z){} ;
+
+  @Override
+  @SimpleProperty(description = "Gets the 3D texture", category = PropertyCategory.APPEARANCE)
+  public String Texture()  {
+    return this.texture; }
+
+  @Override
+  @SimpleProperty(description = "The 3D texture loaded.",
+      category = PropertyCategory.APPEARANCE)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  public void Texture(String texture) {
+    Log.d("texture","set texture on node" + texture);
+    this.texture = texture;
+  }
 
 
   public Trackable Trackable() {
@@ -202,10 +228,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @Override
   @SimpleProperty(description = "Sets the opacity of the node.  Values less than zero " +
     "will be treated as zero, and values greater than 100 will be treated as 100.")
-  public int Opacity() { return 100; }
+  public int Opacity() { return 90; }
 
   @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER, defaultValue = "100")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER, defaultValue = "90")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void Opacity(int opacity) {}
 
@@ -229,24 +255,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER, defaultValue = "100")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void FillColorOpacity(int colorOpacity) {}
-
-
-
-  @SimpleProperty(description = "Gets the 3D texture",
-      category = PropertyCategory.APPEARANCE)
-  public String Texture()  {
-    return this.texture; }
-
-
-  @SimpleProperty(description = "The 3D texturebe loaded.",
-      category = PropertyCategory.APPEARANCE)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-  public void Texture(String texture) {
-    Log.d("texture","set texture on node" + texture);
-    this.texture = texture;
-  }
-
-
 
 
   @Override
@@ -344,7 +352,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void ZRotation(float zRotation) {}
 
   @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "1")
   @SimpleProperty(description = "The scale of the node.  This is used to multiply its " +
       "sizing properties.  Values less than zero will be treated as their absolute value.")
   public float Scale() {
@@ -353,7 +360,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1")
   public void Scale(float s) {
     this.scale = s;
   }

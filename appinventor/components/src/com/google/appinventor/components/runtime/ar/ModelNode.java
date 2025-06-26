@@ -47,11 +47,13 @@ import android.util.Log;
     private Session session = null;
     private Trackable trackable = null;
     private String objectModel = "";
-    private String texture = Form.ASSETS_PREFIX + "Palette.png";
+    private String tex = Form.ASSETS_PREFIX + "Palette.png";
     private float scale = 1.0f;
 
     public ModelNode(final ARNodeContainer container) {
       super(container);
+      Texture(tex);
+
       container.addNode(this);
     }
 
@@ -303,16 +305,6 @@ import android.util.Log;
     @Override
     @SimpleProperty(userVisible = false)
     public void FillColorOpacity(int FillColorOpacity) {}
-
-    @Override
-    @SimpleProperty(userVisible = false)
-    public String Texture() { return this.texture; }
-
-    @Override
-    @SimpleProperty(userVisible = false)
-    public void Texture(String texture) {
-      this.texture = texture;
-    }
 
     @Override
     @SimpleProperty(userVisible = false)

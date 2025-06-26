@@ -57,12 +57,6 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
     Model(objectModel);
     container.addNode(this);
   }
-  @Override // wht is the significance?
-  public Anchor Anchor() { return this.anchor; }
-
-  @Override
-  public void Anchor(Anchor a) { this.anchor = a;}
-
 
   @Override
   @SimpleFunction(description = "move a capsule node properties at the " +
@@ -108,48 +102,6 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
       Log.i("webview", "tried to move anchor to pose");
     }
   }
-
-  @SimpleProperty(description = "Set the current pose of the object",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void Pose(Object p) {
-    Log.i("setting Capsule pose", "with " +p);
-    Pose pose = (Pose) p;
-
-    float[] position = {pose.tx(), pose.ty(), pose.tz()};
-    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
-    }
-  }
-
-
-  /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
-  @Override
-  public float[] PoseFromPropertyPosition(){ return fromPropertyPosition; }
-
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void PoseFromPropertyPosition(String positionFromProperty) {
-    String[] positionArray = positionFromProperty.split(",");
-    float[] position = {0f,0f,0f};
-
-    for (int i = 0; i < positionArray.length; i++) {
-      position[i] = Float.parseFloat(positionArray[i]);
-    }
-    this.fromPropertyPosition = position;
-    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
-    }
-    Log.i("store sphere pose", "with position" +positionFromProperty);
-  }
-
 
   @Override
   @SimpleProperty(description = "How far, in centimeters, the WebViewNode extends along the x-axis.  " +

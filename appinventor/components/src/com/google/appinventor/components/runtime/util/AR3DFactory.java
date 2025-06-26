@@ -79,7 +79,7 @@ public final class AR3DFactory {
      int FillColorOpacity();
      void FillColorOpacity(int colorOpacity);
 
-    String Texture();
+     String Texture();
      void Texture(String texture);
 
      int TextureOpacity();
@@ -90,8 +90,6 @@ public final class AR3DFactory {
 
      boolean PanToMove();
      void PanToMove(boolean panToMove);
-
-
 
      boolean RotateWithGesture();
      void RotateWithGesture(boolean rotateWithGesture);
