@@ -6,8 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.util.LocaleUtil;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,7 +28,6 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ExternalTextToSpeech;
 import com.google.appinventor.components.runtime.util.ITextToSpeech;
@@ -74,15 +75,9 @@ description = "The TextToSpeech component speaks a given text aloud.  You can se
 public class TextToSpeech extends AndroidNonvisibleComponent
     implements Component, OnStopListener, OnResumeListener, OnDestroyListener, OnClearListener {
 
-  private static final Map<String, Locale> iso3LanguageToLocaleMap = Maps.newHashMap();
-  private static final Map<String, Locale> iso3CountryToLocaleMap = Maps.newHashMap();
   private float pitch = 1.0f;
   private float speechRate = 1.0f;
   private static final String LOG_TAG = "TextToSpeech";
-
-  static {
-    initLocaleMaps();
-  }
 
   // List of available languages for the TTS
   private ArrayList<String> languageList;
@@ -105,27 +100,6 @@ public class TextToSpeech extends AndroidNonvisibleComponent
 
   private boolean isTtsPrepared;
 
-  private static void initLocaleMaps() {
-    Locale[] locales = Locale.getAvailableLocales();
-    for (Locale locale : locales) {
-      try {
-        String iso3Country = locale.getISO3Country();
-        if (iso3Country.length() > 0) {
-          iso3CountryToLocaleMap.put(iso3Country, locale);
-        }
-      } catch (MissingResourceException e) {
-        // ignore;
-      }
-      try {
-        String iso3Language = locale.getISO3Language();
-        if (iso3Language.length() > 0) {
-          iso3LanguageToLocaleMap.put(iso3Language, locale);
-        }
-      } catch (MissingResourceException e) {
-        // ignore;
-      }
-    }
-  }
 
   /**
    * Creates a TextToSpeech component.
@@ -200,7 +174,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     Locale locale;
     switch (language.length()) {
     case 3:
-      locale = iso3LanguageToLocale(language);
+      locale = LocaleUtil.iso3LanguageToLocale(language);
       this.language = locale.getISO3Language();
       break;
     case 2:
@@ -213,15 +187,6 @@ public class TextToSpeech extends AndroidNonvisibleComponent
       break;
     }
     iso2Language = locale.getLanguage();
-  }
-
-  private static Locale iso3LanguageToLocale(String iso3Language) {
-    Locale mappedLocale = iso3LanguageToLocaleMap.get(iso3Language);
-    if (mappedLocale == null) {
-      // Language codes should be lower case, but maybe the user doesn't know that.
-      mappedLocale = iso3LanguageToLocaleMap.get(iso3Language.toLowerCase(Locale.ENGLISH));
-    }
-    return mappedLocale == null ? Locale.getDefault() : mappedLocale;
   }
 
   /**
@@ -337,28 +302,19 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     Locale locale;
     switch (country.length()) {
     case 3:
-      locale = iso3CountryToLocale(country);
+      locale = LocaleUtil.iso3CountryToLocale(country);
       this.country = locale.getISO3Country();
       break;
     case 2:
-      locale = new Locale(country);
-      this.country = locale.getCountry();
-      break;
+      this.country = country.toUpperCase();
+      this.iso2Country = this.country;
+      return;
     default:
       locale = Locale.getDefault();
       this.country = locale.getCountry();
       break;
     }
     iso2Country = locale.getCountry();
-  }
-
-  private static Locale iso3CountryToLocale(String iso3Country) {
-    Locale mappedLocale = iso3CountryToLocaleMap.get(iso3Country);
-    if (mappedLocale == null) {
-      // Country codes should be upper case, but maybe the user doesn't know that.
-      mappedLocale = iso3CountryToLocaleMap.get(iso3Country.toUpperCase(Locale.ENGLISH));
-    }
-    return mappedLocale == null ? Locale.getDefault() : mappedLocale;
   }
 
   /**
