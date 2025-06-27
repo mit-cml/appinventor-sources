@@ -461,9 +461,9 @@ public abstract class ButtonBase extends AndroidViewComponent
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
         } else {
           // Clear the background image.
-          ViewUtil.setBackgroundDrawable(view, null);
-          //Now we set again the default drawable
-          ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
+          // ViewUtil.setBackgroundDrawable(view, null);
+          // Now we set again the default drawable
+          // ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
           //@Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com]
           view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
         }
