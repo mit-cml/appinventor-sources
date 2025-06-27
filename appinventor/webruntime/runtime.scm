@@ -139,7 +139,7 @@
   (syntax-rules ()
     ((_)
      (if *testing* #t
-         (if (get-repl-form)
+         (if (not (eq? (get-repl-form) #!void))
              (!get (get-repl-form) 'ShowListsAsJson)
              #t)))))
 
