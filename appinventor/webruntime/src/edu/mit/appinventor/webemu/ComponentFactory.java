@@ -13,6 +13,7 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Label;
 import com.google.appinventor.components.runtime.ListPicker;
+import com.google.appinventor.components.runtime.SpeechRecognizer;
 import com.google.appinventor.components.runtime.TextToSpeech;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class ComponentFactory {
 //    LOOKUP.put("Clock", Clock::new);
     LOOKUP.put("Label", Label::new);
     LOOKUP.put("ListPicker", ListPicker::new);
+    LOOKUP.put("SpeechRecognizer", SpeechRecognizer::new);
     LOOKUP.put("TextToSpeech", TextToSpeech::new);
   }
 

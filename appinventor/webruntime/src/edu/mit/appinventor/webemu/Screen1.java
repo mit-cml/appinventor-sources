@@ -2,7 +2,9 @@ package edu.mit.appinventor.webemu;
 
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.PermissionResultHandler;
 import com.google.appinventor.components.runtime.ReplForm;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.gwt.core.client.JavaScriptObject;
 import java.util.logging.Logger;
 import jsinterop.annotations.JsMethod;
@@ -37,6 +39,11 @@ public class Screen1 extends ReplForm {
   @JsMethod
   public void clear() {
     super.clear();
+  }
+
+  @Override
+  public boolean isDeniedPermission(String permission) {
+    return false;  // The browser will handle it
   }
 
   @Override

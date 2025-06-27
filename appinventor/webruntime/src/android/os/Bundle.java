@@ -74,6 +74,10 @@ public class Bundle {
     return values.containsKey(key) ? Long.valueOf(values.get(key)) : defaultValue;
   }
 
+  public void remove(String key) {
+    values.remove(key);
+  }
+
   public boolean containsKey(String key) {
     return values.containsKey(key);
   }

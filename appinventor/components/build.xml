@@ -623,6 +623,9 @@
         <include name="${components.pkg}/runtime/On*Listener.java" />
         <include name="${components.pkg}/runtime/PermissionResultHandler.java" />
         <include name="${components.pkg}/runtime/Picker.java" />
+        <include name="${components.pkg}/runtime/SpeechListener.java" />
+        <include name="${components.pkg}/runtime/SpeechRecognizer.java" />
+        <include name="${components.pkg}/runtime/SpeechRecognizerController.java" />
         <include name="${components.pkg}/runtime/TextToSpeech.java" />
         <include name="${components.pkg}/runtime/errors/ArrayIndexOutOfBoundsError.java" />
         <include name="${components.pkg}/runtime/errors/IllegalArgumentError.java" />
