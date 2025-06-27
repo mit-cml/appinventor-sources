@@ -2,7 +2,9 @@ package edu.mit.appinventor.webemu;
 
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.PermissionResultHandler;
 import com.google.appinventor.components.runtime.ReplForm;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.gwt.core.client.JavaScriptObject;
 import java.util.logging.Logger;
 import jsinterop.annotations.JsMethod;
@@ -40,10 +42,20 @@ public class Screen1 extends ReplForm {
   }
 
   @Override
+  public boolean isDeniedPermission(String permission) {
+    return false;  // The browser will handle it
+  }
+
+  @Override
   @SuppressWarnings("unusable-by-js")
   public native boolean dispatchEvent(Component component, String componentName, String eventName,
       Object[] args)/*-{
     // TODO(ewpatton): Move dispatchEvent to runtime.scm
+    var registeredObject = $wnd._scm2host(this.@edu.mit.appinventor.webemu.Screen1::environment[componentName]);
+    if (registeredObject !== component) {
+      // Not the right target component.
+      return false;
+    }
     var cb = this.@edu.mit.appinventor.webemu.Screen1::environment[componentName + '$' + eventName];
     if (typeof cb !== 'function') {
       // No event handler for this event.

@@ -611,6 +611,7 @@
         <include name="${components.pkg}/runtime/AndroidNonvisibleComponent.java" />
         <include name="${components.pkg}/runtime/Button.java" />
         <include name="${components.pkg}/runtime/ButtonBase.java" />
+        <include name="${components.pkg}/runtime/ChatBot.java" />
         <include name="${components.pkg}/runtime/Clock.java" />
         <include name="${components.pkg}/runtime/Deleteable.java" />
         <include name="${components.pkg}/runtime/Label.java" />
@@ -622,6 +623,10 @@
         <include name="${components.pkg}/runtime/On*Listener.java" />
         <include name="${components.pkg}/runtime/PermissionResultHandler.java" />
         <include name="${components.pkg}/runtime/Picker.java" />
+        <include name="${components.pkg}/runtime/SpeechListener.java" />
+        <include name="${components.pkg}/runtime/SpeechRecognizer.java" />
+        <include name="${components.pkg}/runtime/SpeechRecognizerController.java" />
+        <include name="${components.pkg}/runtime/TextToSpeech.java" />
         <include name="${components.pkg}/runtime/errors/ArrayIndexOutOfBoundsError.java" />
         <include name="${components.pkg}/runtime/errors/IllegalArgumentError.java" />
         <include name="${components.pkg}/runtime/errors/PermissionException.java" />
@@ -631,11 +636,13 @@
         <include name="${components.pkg}/runtime/errors/UninitializedInstanceError.java" />
         <include name="${components.pkg}/runtime/errors/YailRuntimeError.java" />
         <include name="${components.pkg}/runtime/util/AlignmentUtil.java" />
+        <include name="${components.pkg}/runtime/util/Base58Util.java" />
         <include name="${components.pkg}/runtime/util/BulkPermissionRequest.java" />
         <include name="${components.pkg}/runtime/util/Dates.java" />
         <include name="${components.pkg}/runtime/util/ElementsUtil.java" />
         <include name="${components.pkg}/runtime/util/ErrorMessages.java" />
         <include name="${components.pkg}/runtime/util/FileUtil.java" />
+        <include name="${components.pkg}/runtime/util/ITextToSpeech.java" />
         <include name="${components.pkg}/runtime/util/ImageViewUtil.java" />
         <include name="${components.pkg}/runtime/util/MediaUtil.java" />
         <include name="${components.pkg}/runtime/util/OnInitializeListener.java" />
@@ -643,6 +650,12 @@
         <include name="${components.pkg}/runtime/util/TimerInternal.java" />
         <include name="${components.pkg}/runtime/util/theme/ThemeHelper.java" />
         <include name="${components.pkg}/runtime/util/theme/IceCreamSandwichThemeHelper.java" />
+      </fileset>
+    </copy>
+    <copy todir="build/AiComponents">
+      <fileset dir="${appinventor.dir}/components-ios/src">
+        <include name="language-codes.plist" />
+        <include name="iso3166_1_2_to_iso3166_1_3.plist" />
       </fileset>
     </copy>
     <jar destfile="${public.build.dir}/AiComponents-gwt.jar">

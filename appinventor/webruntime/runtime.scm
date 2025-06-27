@@ -5,10 +5,14 @@
 
 (define-macro (!s . params) `(##inline-host-statement ,@params))
 (define-macro (!e . params) `(##inline-host-expression ,@params))
-(define-macro (invoke object method . params)
+(define-macro (invokev object method params)
+  `(##inline-host-expression "@scm2host@(@1@)[@scm2host@(@2@)].apply(@scm2host@(@1@), @scm2host@(@3@))" ,object ,method ,params))
+(define-macro (!scm2host! x)
+  `(##inline-host-expression "@scm2host@(@1@)" x))
+(define (invoke object method . params)
   (let ((n (if (symbol? method) (symbol->string method) method))
         (args (map (lambda (x) (if (symbol? x) (symbol->string x) x)) params)))
-    `(##inline-host-expression "@1@[@scm2host@(@2@)].apply(@1@, @scm2host@(@3@))" ,object ,method (list ,@args))))
+    (invokev object method args)))
 (define-macro (!host2scm! x)
   `(##inline-host-expression "@host2scm@(@1@)" ,x))
 (define (YailNumberToString:format n)
@@ -50,6 +54,18 @@
      (if *this-is-the-repl*
          (begin expr ...)
          (add-to-form-do-after-creation (delay (begin expr ...)))))))
+
+(define (add-global-var-to-current-form-environment name object)
+  (begin
+    (if (not (eq? *this-form* #!void))
+        (add-to-current-form-environment name object))
+    ;; return *the-null-value* rather than #!void, which would show as a blank in the repl balloon
+    *the-null-value*))
+
+(define (lookup-global-var-in-current-form-environment name #!optional (default-value #f))
+  (if (not (eq? *this-form* #!void))
+      (lookup-in-current-form-environment name default-value)
+      default-value))
 
 (define (reset-current-form-environment)
   (!s "@1@.environment = {'Screen1': @host2scm@(@1@)};" *this-form*))
@@ -123,7 +139,9 @@
   (syntax-rules ()
     ((_)
      (if *testing* #t
-         (!get (get-repl-form) 'ShowListsAsJson)))))
+         (if (not (eq? (get-repl-form) #!void))
+             (!get (get-repl-form) 'ShowListsAsJson)
+             #t)))))
 
 
 ;(eval
@@ -199,7 +217,7 @@
         (try-catch
          (!s "@scm2host@(@1@)[@scm2host@(@2@)] = @scm2host@(@3@)" comp (symbol->string prop-name) coerced-arg)
          (exception PermissionException
-          (invoke (get-repl-form) 'dispatchPermissionDeniedEvent comp prop-name exception)))
+          (invoke (!host2scm! (get-repl-form)) 'dispatchPermissionDeniedEvent comp prop-name exception)))
         (generate-runtime-type-error prop-name (list property-value)))))
 
 (define (generate-runtime-type-error proc-name arglist)
@@ -270,7 +288,13 @@
     (cond
      ((equal? type 'number) (coerce-to-number arg))
      ((equal? type 'text) (coerce-to-text arg))
+     ((equal? type 'boolean) (coerce-to-boolean arg))
      )))
+
+(define (coerce-to-boolean arg)
+  (cond
+   ((boolean? arg) arg)
+   (else *non-coercible-value*)))
 
 (define (sanitize-atomic arg)
   (cond
@@ -436,10 +460,151 @@
             component-names)
   ;; Do the explicit component initialization methods and events
   (for-each (lambda (component-name)
-              (invoke (get-repl-form) 'callInitialize
+              (invoke (!host2scm! (get-repl-form)) 'callInitialize
                       (lookup-in-current-form-environment component-name)))
             component-names)
   )
+
+;;;; Procedure call and method call
+
+
+;;; There are three kinds of calls:
+
+;;; call-component-method
+;;; call-component-type-method
+;;; call-user-procedure
+;;; call-yail-primitive
+
+
+;;; CALL-COMPONENT-METHOD
+;;; Call the component method with the given list of args, coercing to the given types.
+;;; For example:
+;;;  (call-component-method 'Sound1 'Vibrate (*list-for-runtime* duration) (*list-for-runtime* 'number))
+
+;;; Note that the result is coming back from a component, so we have to sanitize it
+;;; Warning: We are living dangrously here by assuming that the component method can handle the
+;;; args being passed to it.  We're relying on the coercion from coerce-args and Kawa's invoke
+;;; to deal with any weird Kawa types before passing them to the component.  A place where this
+;;; does not work is with TinyDB and TinyWebDB and the storeValue method, where the "value" arg is
+;;; type any on the Kawa side and type Object on the Java side, so no coercion get performed.  As a
+;;; consequence, calling this method with value as the result of a division could wind up passing an
+;;; argument of class gnu.math.IntFraction, which the Json library can't handle, and so has to
+;;; be tested for in the Java implementation of this method in JsonUtils.getJsonRepresentation.  It might be
+;;; more prudent to install an interface that is inverse of sanitize to check that all values being
+;;; relayed by call-component-method at OK.  But for now, we'll try to get by with being careful.
+;;; Be sure to check any components whose methods are type 'any' to make sure they can handle the
+;;; values they will receive.
+
+(define (call-component-method component-name method-name arglist typelist)
+  (let ((coerced-args (coerce-args method-name arglist typelist))
+        (component (lookup-in-current-form-environment component-name)))
+    (let ((result
+           (if (all-coercible? coerced-args)
+               (try-catch
+                (apply invoke (cons component (cons method-name coerced-args)))
+;                       `(,component
+;                         ,method-name
+;                         ,@coerced-args))
+                (exception PermissionException
+                           (invoke (!host2scm! (get-repl-form)) 'dispatchPermissionDeniedEvent (list component method-name exception))))
+               (generate-runtime-type-error method-name arglist))))
+      ;; TODO(markf): this should probably be generalized but for now this is OK, I think
+      (sanitize-return-value component method-name result))))
+#|
+
+
+;;; CALL-COMPONENT-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-method-with-continuation component-name method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist typelist))
+         (component (lookup-in-current-form-environment component-name))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke
+                `(,component
+                  ,method-name
+                  ,@coerced-args
+                  ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-method-with-blocking-continuation component-name method-name arglist typelist)
+  (let ((result #f))
+    (call-component-method-with-continuation component-name method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD
+;;; Call the component method for the given component object with the given list of args,
+;;; coercing to the given types.
+;;; For example:
+;;;  (call-component-type-method (get-var 'my-sound-comp) 'Vibrate (list duration) (list 'number))
+
+;;; Note that the result is coming back from a component, so we have to
+;;; sanitize it
+
+(define (call-component-type-method possible-component component-type method-name arglist typelist)
+  ;; Note that we use the cdr of the typelist because it contains the generic
+  ;; 'component' type for the component and we want to check the more specific type
+  ;; that is passed in via the component-type argument
+  (let ((coerced-args (coerce-args method-name arglist (cdr typelist)))
+        (component-value (coerce-to-component-of-type possible-component component-type)))
+    (if (not (instance? component-value com.google.appinventor.components.runtime.Component))
+        (generate-runtime-type-error method-name
+                                     (list (get-display-representation possible-component)))
+        (let ((result
+               (if (all-coercible? coerced-args)
+                   (apply invoke
+                          `(,component-value
+                            ,method-name
+                            ,@coerced-args))
+                   (generate-runtime-type-error method-name arglist))))
+          ;; TODO(markf): this should probably be generalized but for now this is OK, I think
+          (sanitize-return-value component-value method-name result)))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-continuation component-type method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist (cdr typelist)))
+         (component-value (coerce-to-component-of-type possible-component component-type))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component-value method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke `(,component-value ,method-name ,@coerced-args ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-blocking-continuation component-type method-name arglist typelist)
+  (let ((result #f))
+    (call-component-type-method-with-continuation component-type method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+|#
+
+(define (yail-not foo) (not foo))
 
 (define (get-repl-form)
   (!e "appinventor.Screen1.getActiveForm()"))

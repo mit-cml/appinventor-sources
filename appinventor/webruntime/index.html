@@ -70,6 +70,8 @@ function getReplForm() {
       });
 
     </script>
+    <script src="protobuf-7.5.3.min.js"></script>
+    <script src="chat.proto.js" type="text/javascript"></script>
     <script src="build/runtime.js" type="text/javascript"></script>
 <script id="runtimeExtra" type="text/scheme">
 (define-syntax require
@@ -155,6 +157,31 @@ function getReplForm() {
      (if *this-is-the-repl*
          (begin expr ...)
          (add-to-form-do-after-creation (delay (begin expr ...)))))))
+(define-syntax get-var
+  (syntax-rules ()
+    ((_ var-name)
+     ;; unbound global variables default to *the-null-value*
+     (lookup-global-var-in-current-form-environment 'var-name *the-null-value*))))
+(define-syntax set-var!
+  (syntax-rules ()
+    ((_ var-name value)
+     (add-global-var-to-current-form-environment 'var-name value))))
+(define-syntax lexical-value
+  (syntax-rules ()
+    ((_ var-name)
+     var-name)))
+(define-syntax set-lexical!
+  (syntax-rules ()
+    ((_ var value)
+     (set! var value))))
+(define-syntax and-delayed
+  (syntax-rules ()
+    ((_ conjunct ...)
+     (process-and-delayed (lambda () conjunct) ...))))
+(define-syntax or-delayed
+  (syntax-rules ()
+    ((_ disjunct ...)
+     (process-or-delayed (lambda () disjunct) ...))))
 </script>
 <script id="sampleYail" type="text/yail">
 (begin (require <com.google.youngandroid.runtime>) (process-repl-input -1 (begin (AssetFetcher:loadExtensions "[]"))))
@@ -210,6 +237,9 @@ function runYail() {
       #activity>div { width: 100%; height: 100%; }
       .fillViewport { width: 100%; height: 100%; position: relative; }
       .ContentView { display: flex; width: 100%; height: 100%; padding-top: 3.4rem; box-sizing: border-box; }
+      .LinearLayout { display: flex; align-items: start; }
+      .horizontal { flex-direction: row; }
+      .vertical { flex-direction: column; }
     </style>
   </head>
   <body>

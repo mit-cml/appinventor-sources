@@ -46,6 +46,7 @@
   <source path="androidx/appcompat/view" />
   -->
   <source path="com/google/appinventor/components" />
+  <source path="com/google/protobuf" />
   <!--
   <source path="com/google/appinventor/components/runtime/util" />
   -->

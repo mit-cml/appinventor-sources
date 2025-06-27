@@ -1434,7 +1434,7 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser
             rs.skipMacros = true;
             rs.hasfetchassets = true;
             // Open emulator window
-            window.emulator = window.open('http://localhost:8000', '_blank');
+            window.emulator = window.open('http://localhost:8000', '_blank', "menubar=no,location=no,resizable=yes,scrollbars=yes,status=no,popup=true,width=480,height=675");
 
             // Listen for a ready message from emulator to avoid missing the message
             window.addEventListener("message", (event) => {

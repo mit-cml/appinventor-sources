@@ -14,22 +14,26 @@ public class LinearLayout extends ViewGroup {
   public static final int VERTICAL = 1;
   private boolean mBaselineAligned = true;
   private int mGravity = Gravity.START | Gravity.TOP;
+  private int mOrientation = HORIZONTAL;
 
   public LinearLayout(Context context) {
-    super(DOM.createDiv());
+    this(DOM.createDiv());
   }
 
   public LinearLayout(Element element) {
     super(element);
+    setOrientation(HORIZONTAL);
+    element.setClassName("LinearLayout");
   }
 
   public LinearLayout(View view) {
-    super(DOM.createDiv());
+    this(DOM.createDiv());
     getElement().appendChild(view.getElement());
   }
 
   public void setOrientation(int orientation) {
-    // TODO(ewpatton): Real implementation
+    element.removeClassName(orientation == HORIZONTAL ? "vertical" : "horizontal");
+    element.addClassName(orientation == HORIZONTAL ? "horizontal" : "vertical");
   }
 
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

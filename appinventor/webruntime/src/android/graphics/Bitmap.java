@@ -125,7 +125,69 @@ public class Bitmap {
     }
   }
 
+  public enum CompressFormat {
+    /**
+     * Compress to the JPEG format. {@code quality} of {@code 0} means
+     * compress for the smallest size. {@code 100} means compress for max
+     * visual quality.
+     */
+    JPEG          (0),
+    /**
+     * Compress to the PNG format. PNG is lossless, so {@code quality} is
+     * ignored.
+     */
+    PNG           (1),
+    /**
+     * Compress to the WEBP format. {@code quality} of {@code 0} means
+     * compress for the smallest size. {@code 100} means compress for max
+     * visual quality. As of {@link android.os.Build.VERSION_CODES#Q}, a
+     * value of {@code 100} results in a file in the lossless WEBP format.
+     * Otherwise the file will be in the lossy WEBP format.
+     *
+     * @deprecated in favor of the more explicit
+     *             {@link CompressFormat#WEBP_LOSSY} and
+     *             {@link CompressFormat#WEBP_LOSSLESS}.
+     */
+    @Deprecated
+    WEBP          (2),
+    /**
+     * Compress to the WEBP lossy format. {@code quality} of {@code 0} means
+     * compress for the smallest size. {@code 100} means compress for max
+     * visual quality.
+     */
+    WEBP_LOSSY    (3),
+    /**
+     * Compress to the WEBP lossless format. {@code quality} refers to how
+     * much effort to put into compression. A value of {@code 0} means to
+     * compress quickly, resulting in a relatively large file size.
+     * {@code 100} means to spend more time compressing, resulting in a
+     * smaller file.
+     */
+    WEBP_LOSSLESS (4);
+
+    CompressFormat(int nativeInt) {
+      this.nativeInt = nativeInt;
+    }
+    final int nativeInt;
+  }
+
   public static Bitmap createBitmap(int width, int height, Config config) {
     return null;
+  }
+
+  public static Bitmap createScaledBitmap(Bitmap src, int dstWidth, int dstHeight, boolean filter) {
+    return null;
+  }
+
+  public Bitmap compress(CompressFormat format, int quality, java.io.OutputStream stream) {
+    return null;
+  }
+
+  public int getWidth() {
+    return 0;
+  }
+
+  public int getHeight() {
+    return 0;
   }
 }

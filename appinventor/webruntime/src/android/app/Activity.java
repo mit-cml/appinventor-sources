@@ -354,4 +354,8 @@ public class Activity extends Context {
     this.resultData = null;
   }
 
+  public final void setVolumeControlStream(int streamType) {
+    // TODO(ewpatton): Real implementation
+  }
+
 }

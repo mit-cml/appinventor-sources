@@ -12,6 +12,7 @@ public class Build {
   }
 
   public static class VERSION_CODES {
+    public static final int FROYO = 8;
     public static final int GINGERBREAD_MR1 = 10;
     public static final int ICE_CREAM_SANDWICH = 14;
     public static final int JELLY_BEAN = 16;

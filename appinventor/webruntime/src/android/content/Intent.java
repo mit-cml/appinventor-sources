@@ -21,6 +21,10 @@ public class Intent {
 
   }
 
+  public Intent(String action) {
+    this.action = action;
+  }
+
   public Intent(String action, Uri uri) {
     this.action = action;
     this.uri = uri;
@@ -104,6 +108,13 @@ public class Intent {
     return extras.containsKey(key);
   }
 
+  public void putExtra(String key, boolean value) {
+    if (extras == null) {
+      extras = new Bundle();
+    }
+    extras.put(key, String.valueOf(value));
+  }
+
   public void putExtra(String key, String value) {
     if (extras == null) {
       extras = new Bundle();
@@ -130,6 +141,12 @@ public class Intent {
       extras = new Bundle();
     }
     extras.put(key, value);
+  }
+
+  public void removeExtra(String key) {
+    if (extras != null) {
+      extras.remove(key);
+    }
   }
 
   public Intent addFlags(int flags) {
