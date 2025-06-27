@@ -626,6 +626,7 @@
         <include name="${components.pkg}/runtime/errors/IllegalArgumentError.java" />
         <include name="${components.pkg}/runtime/errors/PermissionException.java" />
         <include name="${components.pkg}/runtime/errors/RuntimeError.java" />
+        
         <include name="${components.pkg}/runtime/errors/StopBlocksExecution.java" />
         <include name="${components.pkg}/runtime/errors/UninitializedInstanceError.java" />
         <include name="${components.pkg}/runtime/errors/YailRuntimeError.java" />
