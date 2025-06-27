@@ -50,7 +50,8 @@ public class IntentBasedSpeechRecognizer extends SpeechRecognizerController {
     } else if ($wnd.webkitSpeechRecognition) {
       recognizer = new $wnd.webkitSpeechRecognition();
     } else {
-      throw "Speech recognition not supported in this browser.";
+      console.error("Speech recognition not supported in this browser.");
+      return null;
     }
     var self = this;
     recognizer.addEventListener('error', function(event) {
