@@ -33,7 +33,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
   protected float scale = 1.0f;
   protected Session session = null;
-  protected String texture = "test.png";
+  protected String texture = "";
   protected Trackable trackable = null;
 
   protected String objectModel = Form.ASSETS_PREFIX + "";
