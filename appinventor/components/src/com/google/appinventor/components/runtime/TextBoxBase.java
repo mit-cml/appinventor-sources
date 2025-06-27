@@ -31,6 +31,9 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
 
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+
 /**
  * Underlying base class for TextBox, not directly accessible to Simple
  * programmers.
@@ -199,6 +202,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "Whether the text should be left justified, centered, " +
       "or right justified.  By default, text is left justified.",
       userVisible = false)
+  @JsProperty(name = "TextAlignment")
   public int TextAlignment() {
     return textAlignment;
   }
@@ -217,6 +221,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       defaultValue = Component.ALIGNMENT_NORMAL + "")
   @SimpleProperty(
       userVisible = false)
+  @JsProperty(name = "TextAlignment")
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, false);
@@ -233,6 +238,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The background color of the input box.  You can choose " +
       "a color by name in the Designer or in the Blocks Editor.  The " +
       "default background color is 'default' (shaded 3-D look).")
+  @JsProperty(name = "BackgroundColor")
   @IsColor
   public int BackgroundColor() {
     return backgroundColor;
@@ -251,6 +257,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
+  @JsProperty(name = "BackgroundColor")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
     if (argb != Component.COLOR_DEFAULT) {
@@ -273,6 +280,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       category = PropertyCategory.BEHAVIOR,
       description = "Whether the user can enter text into the %type%.  " +
       "By default, this is true.")
+  @JsProperty(name = "Enabled")
   public boolean Enabled() {
     return TextViewUtil.isEnabled(view);
   }
@@ -288,6 +296,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
+  @JsProperty(name = "Enabled")
   public void Enabled(boolean enabled) {
     TextViewUtil.setEnabled(view, enabled);
   }
@@ -304,6 +313,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       userVisible = false,
       description = "Whether the font for the text should be bold.  By " +
       "default, it is not.")
+  @JsProperty(name = "FontBold")
   public boolean FontBold() {
     return bold;
   }
@@ -318,6 +328,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
+  @JsProperty(name = "FontBold")
   public void FontBold(boolean bold) {
     this.bold = bold;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
@@ -335,6 +346,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "Whether the text should appear in italics.  By " +
       "default, it does not.",
       userVisible = false)
+  @JsProperty(name = "FontItalic")
   public boolean FontItalic() {
     return italic;
   }
@@ -348,6 +360,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(userVisible = false)
+  @JsProperty(name = "FontItalic")
   public void FontItalic(boolean italic) {
     this.italic = italic;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
@@ -362,6 +375,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE,
       description = "The font size for the text.  By default, it is " +
       Component.FONT_DEFAULT_SIZE + " points.")
+  @JsProperty(name = "FontSize")
   public float FontSize() {
     return TextViewUtil.getFontSize(view, container.$context());
   }
@@ -374,6 +388,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
+  @JsProperty(name = "FontSize")
   public void FontSize(float size) {
     if (size == FONT_DEFAULT_SIZE && container.$form().BigDefaultText()) {
       TextViewUtil.setFontSize(view, 24);
@@ -396,6 +411,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The font for the text.  The value can be changed in " +
       "the Designer.",
       userVisible = false)
+  @JsProperty(name = "FontTypeface")
   public String FontTypeface() {
     return fontTypeface;
   }
@@ -413,6 +429,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
+  @JsProperty(name = "FontTypeface")
   public void FontTypeface(String typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
@@ -428,6 +445,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "Text that should appear faintly in the %type% to " +
       "provide a hint as to what the user should enter.  This can only be " +
       "seen if the Text property is empty.")
+  @JsProperty(name = "Hint")
   public String Hint() {
     return hint;
   }
@@ -443,6 +461,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
+  @JsProperty(name = "Hint")
   public void Hint(String hint) {
     this.hint = hint;
     view.setHint(hint);
@@ -452,12 +471,14 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Specifies the color of the hint of the %type%.")
+  @JsProperty(name = "HintColor")
   public int HintColor() {
     return hintColor;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_GRAY)
   @SimpleProperty()
+  @JsProperty(name = "HintColor")
   public void HintColor(int hintColor) {
     this.hintColor = hintColor;
     if (hintColor != Component.COLOR_DEFAULT) {
@@ -477,6 +498,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    * @return  text box contents
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @JsProperty(name = "Text")
   public String Text() {
     return TextViewUtil.getText(view);
   }
@@ -495,6 +517,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The text in the %type%, which can be set by the " +
       "programmer in the Designer or Blocks Editor, or it can be entered by " +
       "the user (unless the <code>Enabled</code> property is false).")
+  @JsProperty(name = "Text")
   public void Text(String text) {
     TextViewUtil.setText(view, text);
   }
@@ -510,6 +533,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
       description = "The color for the text.  You can choose a color by name " +
       "in the Designer or in the Blocks Editor.  The default text color is " +
       "black.")
+  @JsProperty(name = "TextColor")
   @IsColor
   public int TextColor() {
     return textColor;
@@ -524,6 +548,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
+  @JsProperty(name = "TextColor")
   public void TextColor(int argb) {
     textColor = argb;
     if (argb != Component.COLOR_DEFAULT) {
@@ -541,6 +566,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleFunction(description = "Repositions the cursor of the %type% before the character at the given"
       + " 1-indexed position. If the given position is larger than the length of the %type%, the cursor will be moved"
       + " to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.")
+  @JsMethod(name = "MoveCursorTo")
   public void MoveCursorTo(int position) {
     int len = view.getText().toString().length();
     if (position > len) {
@@ -553,11 +579,13 @@ public abstract class TextBoxBase extends AndroidViewComponent
   }
 
   @SimpleFunction(description = "Repositions the cursor to the end of the %type%'s text.")
+  @JsMethod(name = "MoveCursorToEnd")
   public void MoveCursorToEnd() {
     MoveCursorTo(view.getText().length() + 1);
   }
 
   @SimpleFunction(description = "Repositions the cursor to the start of the %type%'s text.")
+  @JsMethod(name = "MoveCursorToStart")
   public void MoveCursorToStart() {
     MoveCursorTo(1);
   }
@@ -567,6 +595,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @SimpleFunction(
     description = "Sets the %type% active.")
+  @JsMethod(name = "RequestFocus")
   public void RequestFocus() {
     view.requestFocus();
   }
