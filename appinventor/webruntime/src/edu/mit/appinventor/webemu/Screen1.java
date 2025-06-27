@@ -51,6 +51,11 @@ public class Screen1 extends ReplForm {
   public native boolean dispatchEvent(Component component, String componentName, String eventName,
       Object[] args)/*-{
     // TODO(ewpatton): Move dispatchEvent to runtime.scm
+    var registeredObject = $wnd._scm2host(this.@edu.mit.appinventor.webemu.Screen1::environment[componentName]);
+    if (registeredObject !== component) {
+      // Not the right target component.
+      return false;
+    }
     var cb = this.@edu.mit.appinventor.webemu.Screen1::environment[componentName + '$' + eventName];
     if (typeof cb !== 'function') {
       // No event handler for this event.
