@@ -28,8 +28,7 @@ public class MockModelNode extends MockARNodeBase {
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_TEXTURE) ||
-        propertyName.equals(PROPERTY_NAME_TEXTUREOPACITY) ||
+    if (propertyName.equals(PROPERTY_NAME_TEXTUREOPACITY) ||
         propertyName.equals(PROPERTY_NAME_FILLCOLOR) ||
         propertyName.equals(PROPERTY_NAME_FILLCOLOROPACITY) ||
         propertyName.equals(PROPERTY_NAME_SHOWSHADOW)) {
