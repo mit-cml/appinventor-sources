@@ -288,7 +288,13 @@
     (cond
      ((equal? type 'number) (coerce-to-number arg))
      ((equal? type 'text) (coerce-to-text arg))
+     ((equal? type 'boolean) (coerce-to-boolean arg))
      )))
+
+(define (coerce-to-boolean arg)
+  (cond
+   ((boolean? arg) arg)
+   (else *non-coercible-value*)))
 
 (define (sanitize-atomic arg)
   (cond
@@ -597,6 +603,8 @@
       (lambda (v) (set! result v)))
     result))
 |#
+
+(define (yail-not foo) (not foo))
 
 (define (get-repl-form)
   (!e "appinventor.Screen1.getActiveForm()"))
