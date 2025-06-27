@@ -27,8 +27,9 @@ open class ModelNode: ARNodeBase, ARModel {
   private var _rootNodeName: String = ""
   private var _numberToUseForNode: String = "1"
   
+
   @objc init(_ container: ARNodeContainer) {
-    super.init(modelNodeContainer: container)
+    super.init(container: container, node: _addedNode!)
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -106,14 +107,7 @@ open class ModelNode: ARNodeBase, ARModel {
     }
     set(color) {}
   }
-  
-  // Texture is not user accessible
-  @objc open override var Texture: String {
-    get {
-      return ""
-    }
-    set(path) {}
-  }
+
   
   // TextureOpacity is not user accessible
   @objc open override var TextureOpacity: Int32 {
