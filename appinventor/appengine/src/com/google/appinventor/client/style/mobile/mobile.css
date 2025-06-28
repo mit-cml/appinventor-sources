@@ -1,0 +1,58 @@
+/*Copyright 2025 MIT, All rights reserved*/
+/* Released under the Apache License, Version 2.0*/
+/* http://www.apache.org/licenses/LICENSE-2.0*/
+
+@external .*;
+
+/*.mobile-MenuContainer {*/
+/*    position: absolute;*/
+/*    top: 50%;*/
+/*    left: 50%;*/
+/*    transform: translate(-50%, -50%);*/
+/*    background: white;*/
+/*    padding: 20px;*/
+/*    border-radius: 5px;*/
+/*    width: 80%;*/
+/*    max-height: 80%;*/
+/*    overflow: auto;*/
+/*    box-shadow: 0 0 10px rgba(0,0,0,0.5);*/
+/*}*/
+
+.mobile-MenuContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 50vw; /* Set width to 50% of the viewport width */
+    height: 50vw; /* Set height equal to width for a square shape */
+    overflow: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.mobile-SectionHeader {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 5px;
+}
+
+.mobile-SectionPanel .gwt-Button {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+    text-align: center;
+}
+
+/*.mobile-MenuPopup {*/
+/*    position: fixed;*/
+/*    width: 50%;*/
+/*    height: 50%;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    background: rgba(0, 0, 0, 0.8); !* Full-screen overlay *!*/
+/*    z-index: 1000;*/
+/*}*/
