@@ -128,7 +128,6 @@ class AssetLoadError: Error {
           .appendingPathComponent("samples", isDirectory: true)
       try? FileManager.default.createDirectory(at: samplesDirectory, withIntermediateDirectories: true)
       let destination = samplesDirectory.appendingPathComponent(projectName + ".aia")
-      print("Saving project to \(destination)")
       if let data = data {
         do {
           try data.write(to: destination)

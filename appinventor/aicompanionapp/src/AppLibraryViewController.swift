@@ -116,8 +116,13 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   
   private func initDownloadedApps() {
     let libraryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-          .appendingPathComponent("samples", isDirectory: true)
+        .appendingPathComponent("samples", isDirectory: true)
     do {
+      // Creates the samples directory for new users in case that it has not be created yet
+      try FileManager.default.createDirectory(
+          at: libraryPath,
+          withIntermediateDirectories: true,
+          attributes: nil)
       let apps = try FileManager.default.contentsOfDirectory(at: libraryPath, includingPropertiesForKeys: nil)
       for app in apps {
         let projectFile = app.path.components(separatedBy: "/").last!
@@ -166,11 +171,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
               if key == "icon" {
                 iconPath = libraryPath.appendingPathComponent("\(app)/assets/\(value)").path
               } else if key == "aiversioning" {
-                if app == "SettingsBuild3" {
-                  appAIVersioning = 220
-                } else {
-                  appAIVersioning = Int(value)!
-                }
+                appAIVersioning = Int(value)!
               }
           }
         }
