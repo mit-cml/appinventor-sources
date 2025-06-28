@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="log4j-1.2.16">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/log4j/log4j-1.2.16.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

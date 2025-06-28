@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="webrtc">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/webrtc/webrtc.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jsr305">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/findbugs/jsr305.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

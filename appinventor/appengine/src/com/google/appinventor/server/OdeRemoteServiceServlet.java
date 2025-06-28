@@ -49,33 +49,27 @@ import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.logging.Logger;
+
 public abstract class OdeRemoteServiceServlet extends RemoteServiceServlet {
   public final static String MODULE_ALIAS = "ode";
+  private static final Logger LOGGER = Logger.getLogger(OdeRemoteServiceServlet.class.getName());
   protected final UserInfoProvider userInfoProvider = LocalUser.getInstance();
 
   @Override
   protected SerializationPolicy doGetSerializationPolicy(final HttpServletRequest request,
     final String moduleBaseURL, final String strongName) {
 
-    // true client side relative location is the app name
     String newModuleBaseURL = moduleBaseURL;
     try {
       URL url = new URL(moduleBaseURL);
-
-      StringBuilder builder = new StringBuilder();
-      builder.append(url.getProtocol());
-      builder.append("://");
-      builder.append(url.getHost());
-      builder.append("/");
-      builder.append(MODULE_ALIAS);
-      builder.append("/");
-      newModuleBaseURL = builder.toString();
+      newModuleBaseURL = String.format("%s://%s/%s/", url.getProtocol(), url.getHost(), MODULE_ALIAS);
 
     } catch (MalformedURLException ex) {
-      // we have no affect
+      LOGGER.warning("Malformed URL for moduleBaseURL: " + moduleBaseURL);
     }
 
     return super.doGetSerializationPolicy(request, newModuleBaseURL, strongName);
   }
-
 }
+

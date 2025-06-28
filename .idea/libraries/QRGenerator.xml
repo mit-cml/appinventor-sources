@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="QRGenerator">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/QRGenerator/core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/QRGenerator/javase.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

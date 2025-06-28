@@ -59,7 +59,6 @@ public class AIMerger extends JFrame {
   private JLabel secondProjectScreensInstrucL;
   private JLabel secondProjectScreensL;
   private JLabel secondProjectAssetsInstrucL;
-  private JLabel picLabel;
   private JButton mainProjectBrowseB;
   private JButton mainProjectLoadB;
   private JButton secondProjectBrowseB;

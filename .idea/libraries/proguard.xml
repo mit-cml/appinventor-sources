@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="proguard">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/proguard/proguard.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

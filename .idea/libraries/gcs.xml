@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="gcs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-http-client-appengine-1.22.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/joda-time-2.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-api-client-appengine-1.22.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/httpclient-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-api-client-1.22.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-api-services-storage-v1-rev91-1.22.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-http-client-jackson-1.22.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/appengine-gcs-client-0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-api-client-jackson2-1.20.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-http-client-jackson2-1.22.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/google-http-client-1.22.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gcs/jackson-core-2.1.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

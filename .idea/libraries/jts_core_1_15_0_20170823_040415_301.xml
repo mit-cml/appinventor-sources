@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jts-core-1.15.0-20170823.040415-301">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/jts/jts-core-1.15.0-20170823.040415-301.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

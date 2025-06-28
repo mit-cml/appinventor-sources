@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="soy">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/blockly/demos/plane/soy/SoyMsgExtractor.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/blockly/demos/plane/soy/SoyToJsSrcCompiler.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
