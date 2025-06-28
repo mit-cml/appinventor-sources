@@ -6,4 +6,8 @@ public class ColorDrawable extends Drawable {
   public ColorDrawable(int argb) {
     this.color = argb;
   }
+
+  public int getColor() {
+    return color;
+  }
 }

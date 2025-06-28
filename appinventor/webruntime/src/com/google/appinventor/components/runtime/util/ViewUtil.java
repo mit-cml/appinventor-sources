@@ -5,7 +5,8 @@ import android.view.View;
 
 public class ViewUtil {
   public static void setBackgroundImage(View view, Drawable drawable) {
-    // TODO(ewpatton): Real implementation
+    view.setBackgroundDrawable(drawable);
+    view.requestLayout();
   }
 
   public static void setChildHeightForVerticalLayout(View child, int height) {
@@ -17,6 +18,7 @@ public class ViewUtil {
   }
 
   public static void setBackgroundDrawable(View view, Drawable drawable) {
-    // TODO(ewpatton): Real implementation
+    view.setBackgroundDrawable(drawable);
+    view.requestLayout();
   }
 }

@@ -7,8 +7,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.IBinder;
+import android.util.Log;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
@@ -190,6 +193,41 @@ public class View {
   public void setBackgroundColor(int color) {
     element.getStyle().setProperty("background", Color.getHtmlColor(color));
   }
+
+  public void setBackgroundDrawable(Drawable background) {
+    if (background instanceof BitmapDrawable) {
+      setBackgroundColor(Color.TRANSPARENT);
+      nativeSetBackgroundDrawable(((BitmapDrawable) background).getDataUrl());
+    } else if (background instanceof ColorDrawable) {
+      setBackgroundColor(((ColorDrawable) background).getColor());
+    } else if (background != null) {
+      Log.w("View", "Unsupported background drawable type: " + background.getClass().getName());
+    }
+  }
+
+  private native void nativeSetBackgroundDrawable(String dataUrl) /*-{
+    var img;
+    var el = this.@android.view.View::element;
+    if (el.querySelector(".background-image")) {
+      img = el.querySelector(".background-image");
+    } else {
+      img = $doc.createElement("img");
+      img.className = "background-image";
+      el.appendChild(img);
+      img.style.visibility = "hidden"; // Hide the image element
+    }
+    img.src = dataUrl;
+    el.style.backgroundImage = "url('" + img.src + "')";
+    el.style.backgroundSize = "cover";
+    el.style.backgroundRepeat = "no-repeat";
+    el.style.backgroundPosition = "center center";
+    el.style.backgroundColor = "transparent";
+    el.style.backgroundAttachment = "fixed";
+    el.style.backgroundClip = "padding-box";
+    el.style.backgroundOrigin = "padding-box";
+    el.style.backgroundBlendMode = "normal";
+    el.classList.add("has-bg-image");
+  }-*/;
 
   @Override
   public boolean equals(Object v) {
