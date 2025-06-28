@@ -26,7 +26,13 @@ public class MediaUtil {
   public static BitmapDrawable getBitmapDrawable(Form form, String mediaPath)
       throws IOException {
     // TODO(ewpatton): Real implementation
-    return null;
+    try {
+      return new BitmapDrawable(AssetFetcher.getLoadedAsset(mediaPath));
+    } catch (Exception e) {
+      // If the asset is not loaded, we will try to load it from the file system.
+      // This is a temporary workaround until we have a better way to handle assets.
+      return null;
+    }
   }
 
   public static int loadSoundPool(SoundPool soundPool, Form form, String mediaPath)
