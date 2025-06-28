@@ -194,9 +194,9 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
         return 92
     }
     
-    let title = isSearching ? self.filteredAppsTitles[indexPath.row] : self.downloadedAppsTitles[indexPath.row]
+    let title = (self.isSearching ? self.filteredAppsTitles : self.downloadedAppsTitles)[indexPath.row]
     
-    let projectAIVersion = self.downloadedApps[title]!.aiVersioning!
+    let projectAIVersion = (self.isSearching ? self.filteredApps : self.downloadedApps)[title]!.aiVersioning!
     
     if  projectAIVersion < AppLibraryViewController.AIVersioning {
       return 152
@@ -260,8 +260,17 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
             self.downloadedAppsTitles.remove(at: index)
             self.downloadedApps.removeValue(forKey: appName)
           }
+          
+          if self.isSearching {
+            if let index = self.filteredAppsTitles.firstIndex(of: appName) {
+              self.filteredAppsTitles.remove(at: index)
+              self.filteredApps.removeValue(forKey: appName)
+            }
+          }
+          
           self.tableView.reloadData()
           self.updateUIOnAppAvailability()
+          
           DispatchQueue.main.async {
             guard let window = UIApplication.shared.keyWindow else {
               return
