@@ -623,6 +623,7 @@
         <include name="${components.pkg}/runtime/On*Listener.java" />
         <include name="${components.pkg}/runtime/PermissionResultHandler.java" />
         <include name="${components.pkg}/runtime/Picker.java" />
+        <include name="${components.pkg}/runtime/Sound.java" />
         <include name="${components.pkg}/runtime/SpeechListener.java" />
         <include name="${components.pkg}/runtime/SpeechRecognizer.java" />
         <include name="${components.pkg}/runtime/SpeechRecognizerController.java" />
@@ -645,8 +646,10 @@
         <include name="${components.pkg}/runtime/util/ImageViewUtil.java" />
         <include name="${components.pkg}/runtime/util/MediaUtil.java" />
         <include name="${components.pkg}/runtime/util/OnInitializeListener.java" />
+        <include name="${components.pkg}/runtime/util/QUtil.java" />
         <include name="${components.pkg}/runtime/util/SdkLevel.java" />
         <include name="${components.pkg}/runtime/util/TimerInternal.java" />
+        <include name="${components.pkg}/runtime/util/TiramisuUtil.java" />
         <include name="${components.pkg}/runtime/util/theme/ThemeHelper.java" />
         <include name="${components.pkg}/runtime/util/theme/IceCreamSandwichThemeHelper.java" />
       </fileset>

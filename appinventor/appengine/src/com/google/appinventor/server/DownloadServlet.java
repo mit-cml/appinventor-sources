@@ -262,6 +262,7 @@ public class DownloadServlet extends OdeServlet {
       resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
       resp.setContentType("text/plain");
       resp.setContentLength(message.length());
+      resp.setHeader("Access-Control-Allow-Origin", "*");
       ServletOutputStream out = resp.getOutputStream();
       out.write(message.getBytes());
       out.close();
@@ -271,6 +272,8 @@ public class DownloadServlet extends OdeServlet {
     }
 
     resp.setStatus(statusCode);
+    resp.setHeader("Access-Control-Allow-Origin", req.getHeader("Origin"));
+    resp.setHeader("Access-Control-Allow-Credentials", "true");
 
     if (statusCode == HttpServletResponse.SC_OK) {
       LOG.fine("Sending File!");
