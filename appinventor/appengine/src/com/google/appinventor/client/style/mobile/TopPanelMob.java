@@ -24,7 +24,9 @@ public class TopPanelMob extends TopPanel {
     interface TopPanelUiBinderMob extends UiBinder<FlowPanel, TopPanelMob> {}
 
 
-    @UiField TopToolbarMob topToolbar;
+    @UiField
+    TopToolbarMob topToolbar;
+//  @UiField TopToolbarMob topToolbar;
     @UiField Label readOnly;
     @UiField ImageElement logo;
     @UiField FlowPanel rightPanel;
