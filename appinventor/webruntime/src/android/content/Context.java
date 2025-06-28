@@ -1,9 +1,11 @@
 package android.content;
 
+import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.ServiceManager;
 import android.content.res.Resources;
+import java.io.File;
 
 public class Context {
 
@@ -17,6 +19,8 @@ public class Context {
    * @see #getSystemService(String)
    */
   public static final String INPUT_METHOD_SERVICE = "input_method";
+
+  public static final String VIBRATOR_SERVICE = "vibrator";
 
   public static final String WINDOW_SERVICE = "window";
 
@@ -61,5 +65,9 @@ public class Context {
 
   public String getPackageName() {
     return ""; // TODO
+  }
+
+  public File getExternalFilesDir(@Nullable String type) {
+    return null;
   }
 }

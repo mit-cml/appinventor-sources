@@ -1446,7 +1446,7 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser
                     window.emulator.postMessage({type: "response", payload: "App Inventor received: " + data.payload}, "http://localhost:8000");
                 } else if (data.type === "response") { // Same as sendToAppInventor but without echo
                     console.log("Emulator said: ", data.payload);
-                } else if (data.type === 'return' || data.type === 'extensionsLoaded') {
+                } else if (data.type === 'return' || data.type === 'extensionsLoaded' || data.type === 'assetTransferred') {
                     console.log("Emulator returned: ", data);
                     Blockly.ReplMgr.processRetvals([data]);
                 } else if (data.type === 'ready') {

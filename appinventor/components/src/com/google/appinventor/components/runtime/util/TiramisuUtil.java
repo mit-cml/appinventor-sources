@@ -27,9 +27,7 @@ public class TiramisuUtil {
   public static boolean requestFilePermissions(Form form, String path, String mediaPermission,
       PermissionResultHandler continuation) {
     String perm = null;
-    if (path.startsWith("content:")
-        || (path.startsWith("file:") && FileUtil.needsPermission(form, path))
-        || FileUtil.needsReadPermission(new ScopedFile(form.DefaultFileScope(), path))) {
+    if (path.startsWith("content:")) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         perm = mediaPermission;
       } else {

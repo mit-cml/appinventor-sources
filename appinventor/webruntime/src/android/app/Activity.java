@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -317,6 +318,9 @@ public class Activity extends Context {
 
   public Object getSystemService(String name) {
     // TODO(ewpatton): Real implementation
+    if (VIBRATOR_SERVICE.equals(name)) {
+      return new Vibrator();
+    }
     return null;
   }
 

@@ -450,7 +450,8 @@
   #f)
 
 (define (AssetFetcher:fetchAssets cookieValue projectId url asset)
-  #f)
+  (!s "AssetFetcher.fetchAssets(@scm2host@(@1@), @scm2host@(@2@), @scm2host@(@3@), @scm2host@(@4@))"
+      cookieValue projectId url asset))
 
 (define (call-Initialize-of-components . component-names)
   ;; Do any inherent/implied initializations

@@ -51,7 +51,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

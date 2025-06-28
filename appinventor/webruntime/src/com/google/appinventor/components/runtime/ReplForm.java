@@ -13,4 +13,8 @@ public class ReplForm extends Form {
   protected void setResult(Object result) {
     // TODO(ewpatton): Real implementation
   }
+
+  public boolean isAssetsLoaded() {
+    return true;
+  }
 }
