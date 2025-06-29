@@ -129,12 +129,11 @@
     display: grid;
     row-gap: 0px;
     column-gap: 5px;
-    /* align-items: center; */
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 
-.pcr-active {
+.pcr-active > button{
   border: 1px solid black !important;
 }
 
@@ -285,7 +284,7 @@
   cursor: -webkit-grabbing;
 }
 .pcr-app[data-theme="nano"] {
-  width: 15.25em;
+  width: 19.25em;
   max-width: 95vw;
 }
 .pcr-app[data-theme="nano"] .pcr-swatches {
@@ -400,7 +399,7 @@
 }
 
 .swatch-text {
-  margin: 6px 0;
+  margin: 3px 0 6px 0;
   font-size: 9px;
 }
 

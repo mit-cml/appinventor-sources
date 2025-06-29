@@ -6,6 +6,9 @@
 
 package com.google.appinventor.client.editor;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
+
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
@@ -19,6 +22,7 @@ import com.google.gwt.user.client.ui.DeckPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -299,6 +303,62 @@ public abstract class ProjectEditor extends Composite {
         ode.setTutorialURL(newValue);
       }
       ode.getEditorManager().scheduleAutoSave(projectSettings);
+    }
+  }
+
+  /*
+   * Code for handling project specific colors
+   */
+
+  private final HashMap<String, Integer> colorFrequency = new HashMap<>();
+  private final List<String> projectColors = new ArrayList<>();
+  public List<String> getProjectColors() {
+    if (projectColors.isEmpty()) {
+      String projectColorProperty = getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
+      LOG.info("Project Colors get from property : "+projectColorProperty);
+      if (projectColorProperty != null) {
+        String[] colorArray = projectColorProperty.split(",");
+        for (String color : colorArray) {
+          if (!color.startsWith("&H"))
+            continue; // reject if does not starts with &H, might be a corrupt value
+
+          // storing 1, can we do something to make the color all over persistent?
+          // storing the frequency in project properties might
+          colorFrequency.put(color, 1);
+          this.projectColors.add(color);
+        }
+      }
+    }
+      LOG.info("Project Colors get from property : "+projectColors.toString());
+    return this.projectColors;
+  }
+
+  public void addColor(String color) {
+    colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
+    sortColors();
+
+    changeProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS,
+            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, String.join(",", projectColors));
+  }
+
+  private void sortColors() {
+    List<Map.Entry<String, Integer>> sortedColors = new ArrayList<>(this.colorFrequency.entrySet());
+
+    sortedColors.sort(new Comparator<Map.Entry<String, Integer>>() {
+      @Override
+      public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+        return o2.getValue().compareTo(o1.getValue());
+      }
+    });
+
+    this.projectColors.clear();
+
+    int n = 12; // storing maximum 12 colors, that might fill 3 rows in color dialog
+    if (n > sortedColors.size()) {
+      n = sortedColors.size();
+    }
+    for (int i = 0; i < n; i++) {
+      this.projectColors.add(sortedColors.get(i).getKey());
     }
   }
 

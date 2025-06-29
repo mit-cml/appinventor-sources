@@ -121,41 +121,15 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     private final HashMap<String, String> defaultColorsObject;
 
     private final boolean showCustomColors; // for handling LEGO colors
-    private final List<String> defaultColorList;
-    private final List<String> projectColors;
     private final Color[] colors;
 
     public ColorChoicePropertyEditor(Color[] colors, final String hexPrefix, final String defaultValue, boolean showCustomColors) {
         this.colors = colors;
         this.showCustomColors = showCustomColors;
-        ProjectEditor projectEditor = Ode.getCurrentProjectEditor();
-
-        defaultColorList = new ArrayList<>();
         defaultColorsObject = new HashMap<>();
 
         for (Color color : colors) {
-            defaultColorList.add("#" + color.rgbString);
             defaultColorsObject.put("#" + color.rgbString, color.name);
-        }
-
-        String projectColorsFromProperty;
-        if (projectEditor != null) {
-            projectColorsFromProperty = projectEditor.getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
-        } else {
-            projectColorsFromProperty = "";
-        }
-        this.projectColors = new ArrayList<>();
-        if (!projectColorsFromProperty.isEmpty()) {
-            String[] colorArray = projectColorsFromProperty.split(",");
-            for (String color : colorArray) {
-                if (!color.startsWith("&H"))
-                    continue; // reject if does not starts with &H, might be a corrupt value
-
-                // storing 1, can we do something to make the color all over persistent?
-                // storing the frequency in project properties might make them persistent
-                colorFrequency.put(color, 1);
-                this.projectColors.add(color);
-            }
         }
 
         this.hexPrefix = hexPrefix;
@@ -262,11 +236,15 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     private String getProjectColorsHexString() {
-        List<String> projectColorsCopy = new ArrayList<>();
-        for (String color : projectColors) {
-            projectColorsCopy.add(color.startsWith("#") ? color : getAlphaHexString(color));
+        ProjectEditor projectEditor = Ode.getCurrentProjectEditor();
+        if (projectEditor != null) {
+            List<String> projectColorsCopy = new ArrayList<>();
+            for (String color : projectEditor.getProjectColors()) {
+                projectColorsCopy.add(color.startsWith("#") ? color : getAlphaHexString(color));
+            }
+            return String.join(",", projectColorsCopy);
         }
-        return String.join(",", projectColorsCopy);
+        return "";
     }
 
     public static String argbToHex(long argbValue) {
@@ -344,40 +322,15 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     public void addColor(String color) {
-        if (defaultColorList.contains(formatColor(color)))
+        // check if the color belongs from defaultColors
+        if (defaultColorsObject.containsKey(formatColor(color)))
             return;
-
-        colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
-        sortColors();
 
         ProjectEditor projectEditor = Ode.getCurrentProjectEditor();
         if (projectEditor != null) {
-            projectEditor.changeProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS,
-                    YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, String.join(",", projectColors));
+            projectEditor.addColor(color);
         }
     }
-
-    private void sortColors() {
-        List<Map.Entry<String, Integer>> sortedColors = new ArrayList<>(this.colorFrequency.entrySet());
-
-        sortedColors.sort(new Comparator<Map.Entry<String, Integer>>() {
-            @Override
-            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-                return o2.getValue().compareTo(o1.getValue());
-            }
-        });
-
-        this.projectColors.clear();
-
-        int n = 14;
-        if (n > sortedColors.size())
-            n = sortedColors.size();
-        for (int i = 0; i < n; i++)
-            this.projectColors.add(sortedColors.get(i).getKey());
-
-    }
-
-    private final HashMap<String, Integer> colorFrequency = new HashMap<>();
 
     public static String formatColor(String color) { // color : &HFF303F9F, output : #303F9F (to check wether it is a color from primary colors list)
         return "#" + color.substring(4);
