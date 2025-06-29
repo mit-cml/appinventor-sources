@@ -22,8 +22,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-
 
 /**
  * Property editor for color properties.
@@ -120,7 +118,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
      * @param defaultValue the color of the default value, for display in the editor only
      */
 
-    private final String defaultColorsString;
+    private final HashMap<String, String> defaultColorsObject;
 
     private final boolean showCustomColors; // for handling LEGO colors
     private final List<String> defaultColorList;
@@ -133,11 +131,12 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         ProjectEditor projectEditor = Ode.getCurrentProjectEditor();
 
         defaultColorList = new ArrayList<>();
+        defaultColorsObject = new HashMap<>();
+
         for (Color color : colors) {
             defaultColorList.add("#" + color.rgbString);
+            defaultColorsObject.put("#" + color.rgbString, color.name);
         }
-
-        defaultColorsString = String.join(",", defaultColorList);
 
         String projectColorsFromProperty;
         if (projectEditor != null) {
@@ -256,10 +255,15 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     private void showCustomColorPicker() {
+        HashMap<String, String> defaultColors = new HashMap<>();
+        if (!defaultColorsObject.containsKey(pickerColor)) {
+            defaultColors.put(pickerColor, pickerColor);
+        }
+        defaultColors.putAll(defaultColorsObject);
         if (container != null) {
-            showPicker(getElement(), container, pickerColor, getProjectColorsHexString(), defaultColorsString);
+            showPicker(getElement(), container, pickerColor, getProjectColorsHexString(), defaultColors.toString());
         } else {
-            showPicker(getElement(), getProjectColorsHexString());
+            showPicker(getElement(), pickerColor, getProjectColorsHexString(), defaultColors.toString());
         }
     }
 
@@ -291,7 +295,8 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     private native void showPicker(Element element, Element containerElement, String defaultColor, String projectColors, String defaultColors)/*-{
     var prefix = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::hexPrefix;
     var that = this;
-    defaultColors = defaultColor + "," + defaultColors;
+    console.log(defaultColors);
+    console.log(JSON.parse(defaultColors));
     var pickr = $wnd.Pickr.create({
             el: element,
             useAsButton: true,
@@ -301,7 +306,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
             'default': defaultColor,
             sliders: "h",
             position: 'bottom-middle',
-            swatches: defaultColors.split(","),
+            swatches: JSON.parse(defaultColors),
             swatches2: projectColors.split(","),
             components: {
                 preview: true,
@@ -338,12 +343,11 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         pickr.show();
   }-*/;
 
-    private native void showPicker(Element element, String projectColorsString)/*-{
+    private native void showPicker(Element element, String defaultColor, String projectColors, String defaultColors)/*-{
     var prefix = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::hexPrefix;
-    var defaultColorListString = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::defaultColorsString;
-    var defaultColor = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::pickerColor;
     var that = this;
-    defaultColors = defaultColor + "," + defaultColorListString;
+    console.log(defaultColors);
+    console.log(JSON.parse(defaultColors));
     var pickr = $wnd.Pickr.create({
             el: element,
             useAsButton: true,
@@ -352,7 +356,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
             'default': defaultColor,
             sliders: "h",
             position: 'bottom-middle',
-            swatches: defaultColorListString.split(","),
+            swatches: JSON.parse(JSON.stringify(defaultColors)),
             swatches2: projectColorsString.split(","),
             components: {
                 preview: true,

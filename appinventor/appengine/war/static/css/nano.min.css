@@ -2,12 +2,12 @@
 
 .colorPickerHeading {
   margin: 12px 12px 0;
-  font-size: 9px;
+  font-size: 11px;
 }
 
-.colorPickerHeading2{
+.colorPickerHeading2 {
   margin: 3px 12px 0;
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .pickr {
@@ -124,21 +124,20 @@
   margin: 0;
 }
 @supports (display: grid) {
-    .pcr-app .pcr-swatches {
-        display: grid;
-        row-gap: 2px;
-        column-gap: 2px;
-        align-items: center;
-        grid-template-columns: repeat(auto-fit, 1.75em);
-    }
+  .pcr-app .pcr-swatches {
+    row-gap: 0px;
+    column-gap: 5px;
+    align-items: center;
+    /* grid-template-columns: repeat(auto-fit, 1.75em); */
+  }
 }
 
 .pcr-active {
-    border: 1px solid black !important;
+  border: 1px solid black !important;
 }
 
-.pcr-app .pcr-swatches > button {
-  border : 1px solid #aaa;
+.swatch-container button {
+  border: 1px solid #aaa;
   font-size: 1em;
   position: relative;
   width: calc(1.75em - 5px);
@@ -153,7 +152,7 @@
   background: transparent;
   z-index: 1;
 }
-.pcr-app .pcr-swatches > button:before {
+.swatch-container button:before {
   position: absolute;
   content: "";
   top: 0;
@@ -164,7 +163,7 @@
   border-radius: 50%;
   z-index: -1;
 }
-.pcr-app .pcr-swatches > button:after {
+.swatch-container button:after {
   content: "";
   position: absolute;
   top: 0;
@@ -175,16 +174,16 @@
   border-radius: 50%;
   box-sizing: border-box;
 }
-.pcr-app .pcr-swatches > button:hover {
+.swatch-container button:hover {
   filter: brightness(1.05);
 }
-.pcr-app .pcr-swatches > button:not(.pcr-active) {
+.swatch-container button:not(.pcr-active) {
   box-shadow: none;
 }
 .pcr-app .pcr-interaction {
   display: flex;
   flex-wrap: wrap;
-  row-gap: .4em;
+  row-gap: 0.4em;
   align-items: center;
   margin: 0 -0.2em;
 }
@@ -396,4 +395,13 @@
   background: linear-gradient(90deg, transparent, #000),
     url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
   background-size: 100%, 0.25em;
+}
+
+.swatch-text {
+  margin: 6px 0;
+  font-size: 9px;
+}
+
+.swatch-container {
+  text-align: center;
 }
