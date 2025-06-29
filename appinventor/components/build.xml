@@ -627,7 +627,6 @@
         <include name="${components.pkg}/runtime/SpeechRecognizer.java" />
         <include name="${components.pkg}/runtime/SpeechRecognizerController.java" />
         <include name="${components.pkg}/runtime/TextToSpeech.java" />
-        <include name="${components.pkg}/runtime/TextBoxBase.java" />
         <include name="${components.pkg}/runtime/TextBox.java" />
         <include name="${components.pkg}/runtime/errors/ArrayIndexOutOfBoundsError.java" />
         <include name="${components.pkg}/runtime/errors/IllegalArgumentError.java" />
