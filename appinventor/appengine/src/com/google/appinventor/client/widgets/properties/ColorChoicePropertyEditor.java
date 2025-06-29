@@ -16,6 +16,8 @@ import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -108,8 +110,6 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
     private String pickerColor = "";
 
-    private Element container;
-
     /**
      * Creates a new instance of the property editor.
      *
@@ -177,10 +177,6 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
             }
         }, ClickEvent.getType());
         initWidget(selectColor);
-    }
-
-    public void setContainer(Element container) {
-        this.container = container;
     }
 
     @Override
@@ -255,16 +251,14 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     private void showCustomColorPicker() {
-        HashMap<String, String> defaultColors = new HashMap<>();
+        JSONObject defaultColors = new JSONObject();
         if (!defaultColorsObject.containsKey(pickerColor)) {
-            defaultColors.put(pickerColor, pickerColor);
+            defaultColors.put(pickerColor, new JSONString(pickerColor));
         }
-        defaultColors.putAll(defaultColorsObject);
-        if (container != null) {
-            showPicker(getElement(), container, pickerColor, getProjectColorsHexString(), defaultColors.toString());
-        } else {
-            showPicker(getElement(), pickerColor, getProjectColorsHexString(), defaultColors.toString());
+        for (Map.Entry<String, String> entry : defaultColorsObject.entrySet()) {
+            defaultColors.put(entry.getKey(), new JSONString(entry.getValue()));
         }
+        showPicker(getElement(), pickerColor, getProjectColorsHexString(), defaultColors.toString());
     }
 
     private String getProjectColorsHexString() {
@@ -291,73 +285,19 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         this.pickerColor = argbToHex(argbValue);
     }
 
-    // JSNI Methods
-    private native void showPicker(Element element, Element containerElement, String defaultColor, String projectColors, String defaultColors)/*-{
+    private native void showPicker(Element element, String defaultColor, String projectColors, String defaultColors)/*-{
     var prefix = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::hexPrefix;
     var that = this;
-    console.log(defaultColors);
-    console.log(JSON.parse(defaultColors));
     var pickr = $wnd.Pickr.create({
             el: element,
             useAsButton: true,
             theme: 'nano',
-            container: containerElement,
             showAlways: false,
             'default': defaultColor,
             sliders: "h",
             position: 'bottom-middle',
             swatches: JSON.parse(defaultColors),
             swatches2: projectColors.split(","),
-            components: {
-                preview: true,
-                opacity: true,
-                hue: true,
-                interaction: {
-                    hex: true,
-                    rgba: true,
-                    hsla: false,
-                    hsva: false,
-                    cmyk: false,
-                    input: true,
-                    clear: false,
-                    cancel: true,
-                    save: true
-                }
-            }
-          });
-
-        pickr.on('hide', function(instance){
-            pickr.destroyAndRemove();
-        });
-
-        pickr.on('save', function(instance){
-          var color = pickr.getColor().toHEXA().toString();
-          if (color.length === 7) {
-            color += "FF";
-          }
-          var finalColor = prefix + color.substr(7, 2) + color.substr(1, 6);
-          that.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::selectionChanged(Ljava/lang/String;)(finalColor);
-          pickr.destroyAndRemove();
-        });
-
-        pickr.show();
-  }-*/;
-
-    private native void showPicker(Element element, String defaultColor, String projectColors, String defaultColors)/*-{
-    var prefix = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::hexPrefix;
-    var that = this;
-    console.log(defaultColors);
-    console.log(JSON.parse(defaultColors));
-    var pickr = $wnd.Pickr.create({
-            el: element,
-            useAsButton: true,
-            theme: 'nano',
-            showAlways: false,
-            'default': defaultColor,
-            sliders: "h",
-            position: 'bottom-middle',
-            swatches: JSON.parse(JSON.stringify(defaultColors)),
-            swatches2: projectColorsString.split(","),
             components: {
                 preview: true,
                 opacity: true,

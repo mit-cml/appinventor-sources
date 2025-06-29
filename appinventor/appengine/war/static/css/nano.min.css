@@ -125,10 +125,12 @@
 }
 @supports (display: grid) {
   .pcr-app .pcr-swatches {
+    justify-content: space-between;
+    display: grid;
     row-gap: 0px;
     column-gap: 5px;
-    align-items: center;
-    /* grid-template-columns: repeat(auto-fit, 1.75em); */
+    /* align-items: center; */
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 
