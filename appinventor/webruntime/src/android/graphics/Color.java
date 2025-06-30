@@ -23,11 +23,11 @@ public class Color {
    * Not part of Android, used for internal purposes
    */
   public static String getHtmlColor(int color) {
-    String hex = Integer.toHexString(color);
-    while (hex.length() < 6) {
-      hex = "0" + hex;
-    }
-    return "#" + hex;
+    int blue = color & 0xff;
+    int green = (color >> 8) & 0xff;
+    int red = (color >> 16) & 0xff;
+    int alpha = (color >> 24) & 0xff;
+    return "rgba(" + red + ", " + green + ", " + blue + ", " + (alpha / 255.0) + ")";
   }
 
   public static int argb(int alpha, int red, int green, int blue) {
