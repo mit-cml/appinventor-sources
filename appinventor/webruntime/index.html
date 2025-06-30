@@ -309,6 +309,18 @@ function runYail() {
       .vertical { flex-direction: column; }
       .ContentView button:active { background-color: rgba(255, 192, 0, 0.3); background-blend-mode: screen; }
       .has-bg-image { padding: 0; border: 0; }
+      .horizontal.left { justify-content: flex-start; }
+      .horizontal.center_horizontal { justify-content: center; }
+      .horizontal.right { justify-content: flex-end; }
+      .horizontal.top { align-items: flex-start; }
+      .horizontal.center_vertical { align-items: center; }
+      .horizontal.bottom { align-items: flex-end; }
+      .vertical.left { align-items: flex-start; }
+      .vertical.center_horizontal { align-items: center; }
+      .vertical.right { align-items: flex-end; }
+      .vertical.top { justify-content: flex-start; }
+      .vertical.center_vertical { justify-content: center; }
+      .vertical.bottom { justify-content: flex-end; }
     </style>
   </head>
   <body>
