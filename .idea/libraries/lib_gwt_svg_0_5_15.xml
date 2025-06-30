@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="lib-gwt-svg-0.5.15">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt_svg/lib-gwt-svg-0.5.15.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

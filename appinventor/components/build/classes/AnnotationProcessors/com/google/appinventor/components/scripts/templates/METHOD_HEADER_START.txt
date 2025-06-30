@@ -1,0 +1,6 @@
+<BlockGenus name="%1$s-%2$s" decorator="call" initlabel="%2$s"
+            kind="%3$s" color="call">
+  <description>
+    <text>%4$s</text>
+  </description>
+  <BlockConnectors>

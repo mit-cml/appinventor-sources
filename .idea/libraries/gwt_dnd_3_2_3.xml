@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gwt-dnd-3.2.3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt_dragdrop/gwt-dnd-3.2.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

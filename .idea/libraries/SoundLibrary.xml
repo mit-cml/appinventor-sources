@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SoundLibrary">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/war/templates/SoundLibrary/SoundLibrary.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

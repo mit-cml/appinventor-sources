@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="commons-io-2.0.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/commons-io/commons-io-2.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

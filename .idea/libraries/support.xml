@@ -1,0 +1,44 @@
+<component name="libraryTable">
+  <library name="support">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/testing-support-R-classes.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/drawerlayout-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/constraintlayout-solver-1.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/lifecycle-livedata-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/viewpager-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/cardview-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/legacy-support-core-ui-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/vectordrawable-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/cursoradapter-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/annotation-experimental-1.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/interpolator-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/annotation-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/fragment-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/lifecycle-viewmodel-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/customview-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/lifecycle-livedata-core-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/slidingpanelayout-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/appcompat-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/core-runtime-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/legacy-support-core-utils-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/versionedparcelable-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/constraintlayout-1.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/coordinatorlayout-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/lifecycle-runtime-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/documentfile-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/collection-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/print-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/loader-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/core-common-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/vectordrawable-animated-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/lifecycle-common-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/recyclerview-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/swiperefreshlayout-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/core-1.9.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/asynclayoutinflater-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/support/localbroadcastmanager-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

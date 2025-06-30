@@ -194,6 +194,13 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_MAP_TYPE = "map_type";
 
+ /**
+   * Map custom URL template required by the Map component.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapCustomUrlPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_MAP_CUSTOMURL = "map_customurl";
+
   /**
    * Integer values limited to the range of valid map zoom levels [1, 18].
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapZoomPropertyEditor
@@ -436,6 +443,7 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_CHATBOT_MODEL = "chatbotmodel";
 
   /**
+<<<<<<< HEAD
    * AR Tracking types supported by the ARView3D component.
    * @see
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARTrackingPropertyEditor
@@ -455,4 +463,11 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARFalloffTypePropertyEditor
    */
   public static final String PROPERTY_TYPE_AR_FALLOFF_TYPE = "ARFallOffType";
+=======
+   * Chart Value type for x-axis values.
+   *
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
+>>>>>>> master
 }

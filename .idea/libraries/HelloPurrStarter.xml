@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="HelloPurrStarter">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/war/templates/HelloPurrStarter/HelloPurrStarter.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="MyToDoList">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/war/templates/MyToDoList/MyToDoList.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

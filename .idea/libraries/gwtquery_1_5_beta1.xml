@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gwtquery-1.5-beta1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt_query/gwtquery-1.5-beta1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

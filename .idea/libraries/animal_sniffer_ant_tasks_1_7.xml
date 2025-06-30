@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="animal-sniffer-ant-tasks-1.7">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/animal_sniffer/animal-sniffer-ant-tasks-1.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
