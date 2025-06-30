@@ -2,151 +2,89 @@ material {
     name : LitDebugOcclusion,
     
     parameters : [
-        {
-            type : float3,
-            name : baseColor
-        },
-        {
-            type : float,
-            name : roughness
-        },
-        {
-            type : float,
-            name : metallic
-        },
-        {
-            type : sampler2d,
-            name : depthTexture
-        },
-        {
-            type : sampler2d,
-            name : virtualDepthTexture
-        },
+        { type : float4, name : baseColor },
+        { type : float4, name : uvTransformRow0 },
+        { type : float4, name : uvTransformRow1 },
+        { type : float4, name : uvTransformRow2 },
+        { type : float4, name : uvTransformRow3 },
+        { type : float, name : roughness },
+        { type : float, name : metallic },
+        { type : sampler2d, name : depthTexture },
+       // {
+       //     type : sampler2d,
+       //     name : virtualDepthTexture
+       // },
         {
             type : sampler2d,
             name : colorTexture
         },
-        {
-            type : float,
-            name : nearPlane
-        },
-        {
-            type : float,
-            name : farPlane
-        },
-        {
-            type : float,
-            name : occlusionBias
-        },
-        {
-            type : int,
-            name : debugMode
-        }
+        { type : float, name : nearPlane },
+        { type : float, name : farPlane },
+        { type : float, name : occlusionBias },
+        { type : int, name : debugMode }
     ],
     
     vertexDomain : object,
     depthWrite : true,
     shadingModel : lit,
-    blending : transparent,
+    blending : opaque,
     culling : none
 }
 
 fragment {
+float linearizeDepth(float ndcDepth, float nearPlane, float farPlane) {
+    return (2.0 * nearPlane) / (farPlane + nearPlane - ndcDepth * (farPlane - nearPlane));
+}
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
         
-        // Get screen coordinates
         vec2 screenUV = gl_FragCoord.xy / getResolution().xy;
+	 screenUV.y = 1.0 - screenUV.y;  // Flip Y coordinate
+        vec2 rotatedUV = vec2(screenUV.y, 1.0 - screenUV.x);
 
-	vec2 rotatedUV = vec2(1.0 - screenUV.y, screenUV.x); 
-        vec4 depthSample = texture(materialParams_depthTexture, rotatedUV);
 
-	// filament frag depth
-	vec4 virtualDepth = texture(materialParams_virtualDepthTexture, screenUV);
+        // ✅ Get linear view-space depth directly
+        vec3 worldPos = getWorldPosition();
+        vec3 cameraPos = getWorldCameraPosition();
+        float virtualDepthMeters = distance(worldPos, cameraPos);
 
- 	vec4 virtualColorSample = texture(materialParams_colorTexture, screenUV);
+
+        // Transform for ARCore depth
+        mat4 depthUvTransform = mat4(
+            materialParams.uvTransformRow0,
+            materialParams.uvTransformRow1,
+            materialParams.uvTransformRow2,
+            materialParams.uvTransformRow3
+        );
         
-        // Debug modes
-        if (materialParams.debugMode == 1) {
-            // Force red
-            material.baseColor.rgb = vec3(1.0, 0.0, 0.0);
-            material.roughness = 0.5;
-            material.metallic = 0.0;
-            return;
-        } else if (materialParams.debugMode == 2) {
-            // Show green where depth exists
-            if (depthSample.r > 0.01 || depthSample.g > 0.01) {
-                material.baseColor.rgb = vec3(0.0, 1.0, 0.0);
-            } else {
-                material.baseColor.rgb = vec3(1.0, 0.0, 1.0);
-            }
-            material.roughness = 0.5;
-            material.metallic = 0.0;
-            return;
-        } else if (materialParams.debugMode == 3) {
-            // Show depth values as grayscale
-            float rawR = depthSample.r;
-            float rawG = depthSample.g;
-            
-            // Reconstruct 16-bit depth from RG
-            float arCoreDepthMm = rawR * 255.0 + rawG * 255.0 * 256.0;
-            float arCoreDepthMeters = arCoreDepthMm * 0.001;
-            
-            // Simple visualization - clamp to reasonable range
-            float normalizedDepth = clamp(arCoreDepthMeters / 5.0, 0.0, 1.0); // 0-5 meter range
-            
-            // Show as grayscale: black=close, white=far
-            material.baseColor.rgb = vec3(normalizedDepth);
-            material.roughness = 0.9; // Make it less shiny for better depth visibility
-            material.metallic = 0.0;
-            return;
-        } else if (materialParams.debugMode == 4) {
-            // Show raw RG values directly
-            material.baseColor.rgb = vec3(depthSample.r, depthSample.g, 0.0);
-            material.roughness = 0.9;
-            material.metallic = 0.0;
-            return;
-        } else if (materialParams.debugMode == 5) {
-            // Show reconstructed millimeter values as color
-            float arCoreDepthMm = depthSample.r * 255.0 + depthSample.g * 255.0 * 256.0;
-            float normalizedMm = clamp(arCoreDepthMm / 5000.0, 0.0, 1.0); // 0-5000mm range
-            material.baseColor.rgb = vec3(normalizedMm, 0.0, 1.0 - normalizedMm);
-            material.roughness = 0.9;
-            material.metallic = 0.0;
-            return;
-        } else if (materialParams.debugMode == 6) {
-    	// Show virtual depth texture raw - all channels
-    		vec4 vDepth = texture(materialParams_virtualDepthTexture, screenUV);
-    		material.baseColor.rgb = vec3(vDepth.r, vDepth.g, vDepth.b);
-    		material.roughness = 0.9;
-    		material.metallic = 0.0;
-    		return;
-	}else if (materialParams.debugMode == 7) {
-    // Show color texture
-    vec4 virtualColorSample = texture(materialParams_colorTexture, screenUV);
-    material.baseColor.rgb = virtualColorSample.rgb;
-    material.roughness = 0.9;
-    material.metallic = 0.0;
-    return;
-}
+        vec4 depthUV4 = depthUvTransform * vec4(rotatedUV, 0.0, 1.0);
+        vec2 depthUV = clamp(depthUV4.xy / depthUV4.w, 0.0, 1.0);
+
+
+        vec4 ardepthSample = texture(materialParams_depthTexture, depthUV);
         
-        // Normal PBR rendering
-        material.baseColor.rgb = virtualColorSample.rgb;
-        material.roughness = materialParams.roughness;
-        material.metallic = materialParams.metallic;
 
-// Get ARCore depth (this works)
-float arCoreDepthMm = depthSample.r * 255.0 + depthSample.g * 255.0 * 256.0;
-float arCoreDepthMeters = arCoreDepthMm * 0.001;
+        // Read virtual color
+        vec4 virtualColor = texture(materialParams_colorTexture, screenUV);
 
-// Get Filament virtual depth 
-float virtualDepthNDC = virtualDepth.r;  
-float virtualDepthLinear = materialParams.nearPlane / (1.0 - virtualDepthNDC * (1.0 - materialParams.nearPlane / materialParams.farPlane));
 
-        // Occlusion test
-        if (arCoreDepthMeters > 0.01 && arCoreDepthMeters < (virtualDepthLinear - materialParams.occlusionBias)) {
+        // Decode ARCore depth
+        float arCoreDepthMm = ardepthSample.r * 255.0 + ardepthSample.g * 255.0 * 256.0;
+        float arCoreDepthMeters = arCoreDepthMm * 0.001;
+
+
+       // we already write the txture in the first pass
+       // material.baseColor.rgb = virtualColor.rgb;
+       // material.roughness = materialParams.roughness;
+       // material.metallic = materialParams.metallic;
+
+       // Simple occlusion test
+       if (arCoreDepthMeters > 0.01 && 
+            arCoreDepthMeters < (virtualDepthMeters - materialParams.occlusionBias)) {
             discard;
-        }
+       }
+        
 
     }
 }
+

@@ -100,8 +100,8 @@ public class ARFilamentRenderer {
     private boolean isInitialized = false;
     private boolean hasSetTextureNames = false;
 
-    private static final float Z_NEAR = 0.05f;
-    private static final float Z_FAR = 40f;
+    private static final float Z_NEAR = 0.085f;
+    private static final float Z_FAR = 20f;
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
 
@@ -872,24 +872,19 @@ public class ARFilamentRenderer {
         }
     }
 
-
-
-
-
     // Apply occlusion material to an asset
+    // this causes laggy shadows if the asset has many parts to it
     private void applyOcclusionMaterialToAllAssets() {
         try {
-
             occlusionMaterialsApplied = true;
             RenderableManager renderableManager = engine.getRenderableManager();
             for (FilamentAsset asset : nodeAssetMap.values()) {
-                int[] entities = asset.getEntities();
-                for (int i = 2; i < 8;  i++) {
-                    if (renderableManager.hasComponent(entities[i])) {
-                        int instance = renderableManager.getInstance(entities[i]);
-                        //for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
-                        renderableManager.setMaterialInstanceAt(instance, 0, occlusionMaterialInstance);
-                        //}
+                for (int entityId : asset.getEntities()) {
+                    if (renderableManager.hasComponent(entityId)) {
+                        int instance = renderableManager.getInstance(entityId);
+                        for (int i = 0; i < renderableManager.getPrimitiveCount(instance); i++) {
+                            renderableManager.setMaterialInstanceAt(instance, i, occlusionMaterialInstance);
+                        }
                     }
                 }
                 Log.d(LOG_TAG, "updated  model occlusion material for asset " + asset.getRoot());
@@ -911,8 +906,9 @@ public class ARFilamentRenderer {
             // Apply occlusion materials once when everything is ready
             if (occlusionTexturesReady && !occlusionMaterialsApplied) {
                 updateOcclusionMaterialTextureParams(); // Set up all texture parameters
-                applyOcclusionMaterialToAllAssets();     // Apply materials once
                 occlusionMaterialsApplied = true;
+                applyOcclusionMaterialToAllAssets();     // Apply materials ONLY ONCE
+
                 Log.d(LOG_TAG, "Occlusion materials applied - ready for depth occlusion");
             }
 
@@ -924,10 +920,6 @@ public class ARFilamentRenderer {
             view.setScene(modelScene);       // DOH
             view.setRenderTarget(compositeRenderTarget);  // Final output
 
-           /* GLES30.glEnable(GLES30.GL_DEPTH_TEST);
-            GLES30.glDepthFunc(GLES30.GL_LESS);
-            GLES30.glDepthMask(true); // Write depth for objects that pass occlusion test
-*/
             robustBeginFrame();
 
             // Render the view
@@ -943,9 +935,9 @@ public class ARFilamentRenderer {
         } finally {
             // Always end the frame
             renderer.endFrame();
+            handleRenderableBufferRead();
         }
     }
-int textureUpdateCounter = 0;
     public void draw(List<ARNode> nodes, float[] viewMatrix, float[] projectionMatrix) {
 
         if (!isInitialized) {
@@ -1017,10 +1009,8 @@ int textureUpdateCounter = 0;
                 //handleRenderableBufferRead();
                 compositeSceneRenderPass(); // this second pass should provide filament depth info.. however it renders a black rectangle, so the occlusion still isn't right
                 // Only update texture every other frame
-                textureUpdateCounter++;
-                if (textureUpdateCounter % 2 == 0) {
-                    handleRenderableBufferRead();
-                }
+
+
             }
 
 
