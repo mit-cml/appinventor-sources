@@ -25,6 +25,10 @@ public class R {
     public static final int simple_list_item_1 = 17367043;
   }
 
+  public static final class string {
+    public static final int cancel = 17039360;
+  }
+
   public static final class style {
     public static final int TextAppearance_WindowTitle = 16973907;
     public static final int Theme = 16973829;

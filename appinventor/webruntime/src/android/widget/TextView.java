@@ -5,6 +5,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.View;
@@ -83,6 +84,20 @@ public class TextView extends View {
 
   public void setTextColor(int color) {
     element.getStyle().setProperty("color", Color.getHtmlColor(color));
+  }
+
+  public void setTextSize(float size) {
+    element.getStyle().setProperty("font-size", size + "px");
+  }
+
+  public void setTypeface(Typeface face) {
+    if (face == null) {
+      element.getStyle().setProperty("font-family", "");
+    } else {
+      element.getStyle().setProperty("font-family", face.getSystemFontFamilyName());
+      element.getStyle().setProperty("font-weight", face.isBold() ? "bold" : "normal");
+      element.getStyle().setProperty("font-style", face.isItalic() ? "italic" : "normal");
+    }
   }
 
   public native int getLineHeight()

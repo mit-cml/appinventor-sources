@@ -40,5 +40,7 @@ public class EditText extends TextView {
     }
   }
 
-
+  public void setInputType(int inputType) {
+    // TODO: Implement input type handling
+  }
 }

@@ -22,6 +22,9 @@ public class Resources {
   }
 
   public String getString(int id) {
+    if (id == android.R.string.cancel) {
+      return "Cancel";
+    }
     return null;
   }
 
