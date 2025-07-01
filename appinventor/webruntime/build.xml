@@ -58,6 +58,7 @@
     <uptodate property="webemu.uptodate"
               targetfile="${local.build.dir}/web/webemu/webemu.nocache.js">
       <srcfiles dir="src" />
+      <srcfiles file="../build/components/AiComponents-gwt.jar" />
     </uptodate>
   </target>
 

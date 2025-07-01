@@ -32,7 +32,7 @@ public class ComponentFactory {
   static {
     LOOKUP.put("Button", Button::new);
     LOOKUP.put("ChatBot", ChatBot::new);
-//    LOOKUP.put("Clock", Clock::new);
+    LOOKUP.put("Clock", Clock::new);
     LOOKUP.put("Label", Label::new);
     LOOKUP.put("ListPicker", ListPicker::new);
     LOOKUP.put("Notifier", Notifier::new);

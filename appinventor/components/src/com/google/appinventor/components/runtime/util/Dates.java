@@ -330,7 +330,7 @@ public final class Dates {
    */
   @SimpleFunction
   public static String MonthName(Calendar date) {
-    return String.format("%1$tB", date);
+    return StringUtil.formatString("%1$tB", new Object[] { date });
   }
 
   /**
@@ -386,7 +386,7 @@ public final class Dates {
    */
   @SimpleFunction
   public static String WeekdayName(Calendar date) {
-    return String.format("%1$tA", date);
+    return StringUtil.formatString("%1$tA", new Object[] { date });
   }
 
   /**
