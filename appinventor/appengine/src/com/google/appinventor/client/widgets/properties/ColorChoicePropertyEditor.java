@@ -7,8 +7,6 @@
 package com.google.appinventor.client.widgets.properties;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
-import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.ProjectEditor;
@@ -20,7 +18,6 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,12 +117,12 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
     private final HashMap<String, String> defaultColorsObject;
 
-    private final boolean showCustomColors; // for handling LEGO colors
+    private final boolean restrict; // for handling LEGO colors
     private final Color[] colors;
 
-    public ColorChoicePropertyEditor(Color[] colors, final String hexPrefix, final String defaultValue, boolean showCustomColors) {
+    public ColorChoicePropertyEditor(Color[] colors, final String hexPrefix, final String defaultValue, boolean restrict) {
         this.colors = colors;
-        this.showCustomColors = showCustomColors;
+        this.restrict = restrict;
         defaultColorsObject = new HashMap<>();
 
         for (Color color : colors) {
@@ -232,7 +229,11 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         for (Map.Entry<String, String> entry : defaultColorsObject.entrySet()) {
             defaultColors.put(entry.getKey(), new JSONString(entry.getValue()));
         }
-        showPicker(getElement(), pickerColor, getProjectColorsHexString(), defaultColors.toString());
+        if (restrict) {
+            showAdvancedPicker(getElement(), pickerColor, defaultColors.toString());
+        } else {
+            showPicker(getElement(), pickerColor, getProjectColorsHexString(), defaultColors.toString());
+        }
     }
 
     private String getProjectColorsHexString() {
@@ -287,7 +288,57 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
                     hsva: false,
                     cmyk: false,
                     input: true,
-                    clear: false,
+                    cancel: true,
+                    save: true
+                }
+            }
+          });
+
+        pickr.on('hide', function(instance){
+            pickr.destroyAndRemove();
+        });
+
+        pickr.on('cancel', function(instance){
+            pickr.destroyAndRemove();
+        });
+
+        pickr.on('save', function(instance){
+          var color = pickr.getColor().toHEXA().toString();
+          if (color.length === 7) {
+              color += "FF";
+          }
+          var finalColor = prefix + color.substr(7, 2) + color.substr(1, 6);
+          that.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::selectionChanged(Ljava/lang/String;)(finalColor);
+          pickr.destroyAndRemove();
+        });
+
+        pickr.show();
+  }-*/;
+
+    private native void showAdvancedPicker(Element element, String defaultColor, String defaultColors)/*-{
+    var prefix = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::hexPrefix;
+    var that = this;
+    var pickr = $wnd.Pickr.create({
+            el: element,
+            useAsButton: true,
+            theme: 'nano',
+            showAlways: false,
+            'default': defaultColor,
+            sliders: "h",
+            position: 'bottom-middle',
+            swatches: JSON.parse(defaultColors),
+            swatches2: [],
+            components: {
+                preview: false,
+                opacity: false,
+                hue: false,
+                interaction: {
+                    hex: false,
+                    rgba: false,
+                    hsla: false,
+                    hsva: false,
+                    cmyk: false,
+                    input: false,
                     cancel: true,
                     save: true
                 }

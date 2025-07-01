@@ -315,7 +315,6 @@ public abstract class ProjectEditor extends Composite {
   public List<String> getProjectColors() {
     if (projectColors.isEmpty()) {
       String projectColorProperty = getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
-      LOG.info("Project Colors get from property : "+projectColorProperty);
       if (projectColorProperty != null) {
         String[] colorArray = projectColorProperty.split(",");
         for (String color : colorArray) {
@@ -329,7 +328,6 @@ public abstract class ProjectEditor extends Composite {
         }
       }
     }
-      LOG.info("Project Colors get from property : "+projectColors.toString());
     return this.projectColors;
   }
 
