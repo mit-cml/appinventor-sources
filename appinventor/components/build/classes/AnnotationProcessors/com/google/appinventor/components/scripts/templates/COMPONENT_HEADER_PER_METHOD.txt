@@ -1,0 +1,2 @@
+    <LangSpecProperty key="ya-method-%3$d" value="%1$s-%2$s"/>
+    <LangSpecProperty key="ya-type-method-%3$d" value="Type-%1$s-%2$s"/>

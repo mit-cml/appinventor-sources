@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="twitter">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/twitter/twitter4j-media-support-3.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/twitter/twitter4j-core-3.0.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,4 @@
+  <BlockConnector connector-kind="socket" label="do" is-indented="yes" connector-type="cmd"/>
+  </BlockConnectors>
+  <LangSpecProperties>
+    <LangSpecProperty key="ya-kind" value="componentEvent"/>

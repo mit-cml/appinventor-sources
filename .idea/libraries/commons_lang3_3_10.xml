@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="commons-lang3-3.10">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/commons-lang3/commons-lang3-3.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

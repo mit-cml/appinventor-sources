@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="server">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/tests/com/google/appinventor/server/Buggy.zip!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/tests/com/google/appinventor/server/Project1.zip!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/tests/com/google/appinventor/server/ProjectWithAssets.zip!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/tests/com/google/appinventor/server/NotAValidProjectArchive.zip!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/tests/com/google/appinventor/server/EmptyZip.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

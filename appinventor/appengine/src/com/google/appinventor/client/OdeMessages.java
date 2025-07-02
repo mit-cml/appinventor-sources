@@ -5769,6 +5769,65 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Dialog to introduce users to new UI. Shown once to each user.")
   String selectUIStyle();
 
+<<<<<<< HEAD
+  // Augmented Reality
+
+  @DefaultMessage("WorldTracking")
+  @Description("World tracking AR tracking type")
+  String arTrackingTypeWorldTracking();
+
+  @DefaultMessage("OrientationTracking")
+  @Description("Orientation tracking AR tracking type")
+  String arTrackingTypeOrientationTracking();
+
+  @DefaultMessage("ImageTracking")
+  @Description("Image tracking AR tracking type")
+  String arTrackingTypeImageTracking();
+
+  @DefaultMessage("None")
+  @Description("No plane detection")
+  String arPlaneDetectionTypeNone();
+
+  @DefaultMessage("Horizontal")
+  @Description("Detect horizontal planes")
+  String arPlaneDetectionTypeHorizontal();
+
+  @DefaultMessage("Vertical")
+  @Description("Detect vertical planes")
+  String arPlaneDetectionTypeVertical();
+
+  @DefaultMessage("Both")
+  @Description("Detect both horizontal and vertical planes")
+  String arPlaneDetectionTypeBoth();
+
+  @DefaultMessage("None")
+  @Description("No text truncation")
+  String truncationTypeNone();
+
+  @DefaultMessage("End")
+  @Description("Truncate the end of the text")
+  String truncationTypeEnd();
+
+  @DefaultMessage("Middle")
+  @Description("Truncate the middle of the text")
+  String truncationTypeMiddle();
+
+  @DefaultMessage("Start")
+  @Description("Truncate the beginning of the text")
+  String truncationTypeStart();
+
+  @DefaultMessage("None")
+  @Description("No falloff for the light intensity.")
+  String arFalloffTypeNone();
+
+  @DefaultMessage("Linear")
+  @Description("Linear light intensity falloff.")
+  String arFalloffTypeLinear();
+
+  @DefaultMessage("Quadratic")
+  @Description("Further the distance, the greater the light intensity falloff")
+  String arFalloffTypeQuadratic();
+=======
   @DefaultMessage("Integer")
   @Description("Set x-axis label values as Integers")
   String labelInteger();
@@ -5784,4 +5843,5 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Time")
   @Description("Set x-axis label values Type as Time")
   String labelTime();
+>>>>>>> master
 }

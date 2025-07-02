@@ -443,9 +443,31 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_CHATBOT_MODEL = "chatbotmodel";
 
   /**
+<<<<<<< HEAD
+   * AR Tracking types supported by the ARView3D component.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARTrackingPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_AR_TRACKING_TYPE = "ARTrackingType";
+
+  /**
+   * AR Plane Detection types supported by the ARView3D component.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARPlaneDetectionTypePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_AR_PLANE_DETECTION_TYPE = "ARPlaneDetectionType";
+
+  /**
+   * AR Falloff types supported by the ARLight components.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARFalloffTypePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_AR_FALLOFF_TYPE = "ARFallOffType";
+=======
    * Chart Value type for x-axis values.
    *
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
+>>>>>>> master
 }

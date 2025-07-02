@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="2.8.1-patched">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-dev.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-codeserver.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-user.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-servlet.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt/2.8.1-patched/validation-api-1.0.0.GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/gwt/2.8.1-patched/gwt-servlet-deps.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

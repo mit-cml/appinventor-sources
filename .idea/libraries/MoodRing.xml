@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="MoodRing">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/appengine/war/templates/MoodRing/MoodRing.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

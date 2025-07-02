@@ -1,0 +1,2761 @@
+<!DOCTYPE BlockLangDef SYSTEM "ignore_lang_def.dtd">
+<!--
+    This describes BlockGenus, BlockDrawer, BlockFamilies in Young Android.
+    Based on third_party/java/openblocks/slcodeblocks/v20090424/support/lang_def.xml
+  -->
+
+<!-- Note: WARNING:  When you create a block, don't name
+   one of the  connectors "value" and then use it in a block type
+   rule, for example 
+        LangSpecProperty key="socket-allow-1" value="value/boolean"
+   This will crash the  blocks editor with a "bad block" error.
+   We need to track this bug down and fix it, probably in BlockRules -->
+
+<BlockLangDef ya-version="%1$d" lang-version="%2$d">
+  <BlockConnectorShapes>
+    <BlockConnectorShape shape-type="number" shape-number="1"/>
+    <BlockConnectorShape shape-type="number-list" shape-number="2"/>
+    <BlockConnectorShape shape-type="number-inv" shape-number="3"/>
+    <BlockConnectorShape shape-type="boolean" shape-number="4"/>
+    <BlockConnectorShape shape-type="boolean-list" shape-number="5"/>
+    <BlockConnectorShape shape-type="boolean-inv" shape-number="6"/>
+    <BlockConnectorShape shape-type="string" shape-number="7"/>
+    <BlockConnectorShape shape-type="string-list" shape-number="8"/>
+    <BlockConnectorShape shape-type="string-inv" shape-number="9"/>
+    <BlockConnectorShape shape-type="poly" shape-number="10"/>
+    <BlockConnectorShape shape-type="poly-list" shape-number="11"/>
+    <BlockConnectorShape shape-type="poly-inv" shape-number="12"/>
+    <BlockConnectorShape shape-type="proc-param" shape-number="13"/>
+    <BlockConnectorShape shape-type="cmd" shape-number="14"/>
+    <BlockConnectorShape shape-type="infix-rhs" shape-number="15"/>
+  </BlockConnectorShapes>
+
+  <BlockColors>
+    <BlockColor name="setter" rgb-value="162 205 250"/>
+    <BlockColor name="text" rgb-value="248 208 143"/>
+    <BlockColor name="list" rgb-value="255 251 211"/>
+    <BlockColor name="math" rgb-value="216 237 145"/>
+    <BlockColor name="event" rgb-value="191 217 108"/>
+    <BlockColor name="logic" rgb-value="255 174 128"/>
+    <BlockColor name="control" rgb-value="252 233 157"/>
+    <BlockColor name="colors" rgb-value="191 217 108"/> <!-- colors drawer -->
+    <BlockColor name="getter" rgb-value="217 229 255"/>
+    <BlockColor name="call" rgb-value="198 193 232"/>
+
+    <BlockColor name="grey" rgb-value="187 187 187"/>
+    <BlockColor name="ode-none" rgb-value="255 255 255"/>
+    <BlockColor name="ode-black" rgb-value="0 0 0"/>
+    <BlockColor name="ode-blue" rgb-value="0 0 255"/>
+    <BlockColor name="ode-cyan" rgb-value="0 255 255"/>
+    <BlockColor name="ode-dark-gray" rgb-value="68 68 68"/>
+    <BlockColor name="ode-gray" rgb-value="136 136 136"/>
+    <BlockColor name="ode-green" rgb-value="00 255 00"/>
+    <BlockColor name="ode-light-gray" rgb-value="204 204 204"/>
+    <BlockColor name="ode-magenta" rgb-value="255 0 255"/>
+    <BlockColor name="ode-orange" rgb-value="255 200 0"/>
+    <BlockColor name="ode-pink" rgb-value="255 175 175"/>
+    <BlockColor name="ode-red" rgb-value="255 0 0"/>
+    <BlockColor name="ode-white" rgb-value="255 255 255"/>
+    <BlockColor name="ode-yellow" rgb-value="255 255 0"/>
+    <BlockColor name="hot-pink" rgb-value="255 105 180"/>
+    <BlockColor name="goldenrod" rgb-value="218 165 32"/>
+    <BlockColor name="thistle" rgb-value="232 191 232"/>
+  </BlockColors>
+
+  <BlockGenuses>
+
+    <!-- Stub Genuses -->
+
+    <!-- Getter stub for arguments. These don't have a corresponding setter -->
+    <BlockGenus name="getter" kind="data" initlabel="" decorator="value" color="getter">
+      <description>
+        <text>Reports the value of the variable.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="getter"/>
+        <LangSpecProperty key="plug-type-1" value="value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Getter stub for global vars -->
+    <BlockGenus name="getterGlobal" kind="data" initlabel="" decorator="global" color="getter">
+      <description>
+        <text>Reports the value of the variable.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="getter"/>
+        <LangSpecProperty key="plug-type-1" value="value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Getter stub for component properties -->
+    <BlockGenus name="componentGetter" kind="data" initlabel="" color="getter">
+      <description>
+        <text>Reports the value of the component's property.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="componentGetter"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Generic getter stub for component properties -->
+    <BlockGenus name="componentTypeGetter" kind="data" initlabel="" color="getter">
+      <description>
+        <text>Reports the value of the specified component's property.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="component" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="componentGetter"/>
+        <LangSpecProperty key="is-from-component-type" value="true"/>
+        <LangSpecProperty key="socket-allow-1" value="component/value"/>
+        <LangSpecProperty key="socket-allow-2" value="component/component"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Setter stub for global vars -->
+    <BlockGenus name="setterGlobal" kind="command" initlabel="" decorator="set global" color="setter">
+      <description>
+        <text>Sets the value of the variable. </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="socket" label="to" connector-type="poly" position-type="single"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="setter"/>
+        <LangSpecProperty key="socket-exclude-1" value="to/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Setter stub for component properties -->
+    <BlockGenus name="componentSetter" kind="command" initlabel="" color="setter" decorator="set">
+      <description>
+        <text>Sets the value of the component property.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="socket" label="to" connector-type="poly" position-type="single"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="componentSetter"/>
+        <LangSpecProperty key="socket-exclude-1" value="to/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Generic setter stub for component properties -->
+    <BlockGenus name="componentTypeSetter" kind="command" initlabel="" color="setter" decorator="set">
+      <description>
+        <text>Sets the value of the specified component property.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="component" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector connector-kind="socket" label="to" connector-type="poly" position-type="single"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="componentSetter"/>
+        <LangSpecProperty key="is-from-component-type" value="true"/>
+        <LangSpecProperty key="socket-exclude-1" value="to/argument"/>
+        <LangSpecProperty key="socket-allow-1" value="component/value"/>
+        <LangSpecProperty key="socket-allow-2" value="component/component"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- End of Stub Genuses -->
+
+    <!-- Collapsed Block -->
+
+    <BlockGenus name="collapsed" kind="function" decorator="" initlabel="" color="setter">
+      <description>
+        <text>This block represents a collapsed procedure</text>
+      </description>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="collapsed"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- Values -->
+
+    <!-- Value Block -->
+    <!-- TODO(gleitz): remove and use the autogenerated stubs -->
+    <BlockGenus name="value" kind="data" initlabel="value" editable-label="yes" is-empty-label-allowed="yes" is-label-value="yes" color="text">
+      <description>
+        <text>Reports the value shown.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Component Block -->
+    <BlockGenus name="component" kind="data" decorator="component" initlabel="" is-label-value="yes" color="getter">
+      <description>
+        <text>This block represents the given component</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="component"/>
+        <LangSpecProperty key="plug-type-1" value="component"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Null Block -->
+    <BlockGenus name="null" kind="data" initlabel="?" is-label-value="yes" color="text">
+      <description>
+        <text>A null block</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="null"/>
+        <LangSpecProperty key="plug-type-1" value="null"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Number Block -->
+    <BlockGenus name="number" kind="data" label-filter="number" decorator="number" initlabel="123" editable-label="yes" is-label-value="yes" color="math">
+      <description>
+        <text>Reports the number shown.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="number"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Colors -->
+    <!-- TODO(sharon): temporary hack to get color blocks. We may
+     want to generate these programmatically and/or have a color picker -->
+    <BlockGenus name="color-none" kind="data" initlabel="None" decorator="color" is-label-value="no" color="ode-none">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="00FFFFFF"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-black" kind="data" initlabel="Black" decorator="color" is-label-value="no" color="ode-black">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FF000000"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-blue" kind="data" initlabel="Blue" decorator="color" is-label-value="no" color="ode-blue">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FF0000FF"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-cyan" kind="data" initlabel="Cyan" decorator="color" is-label-value="no" color="ode-cyan">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FF00FFFF"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-dark-gray" kind="data" initlabel="Dark Gray" decorator="color" is-label-value="no" color="ode-dark-gray">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FF444444"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-gray" kind="data" initlabel="Gray" decorator="color" is-label-value="no" color="ode-gray">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FF888888"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-green" kind="data" initlabel="Green" decorator="color" is-label-value="no" color="ode-green">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FF00FF00"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-light-gray" kind="data" initlabel="Light Gray" decorator="color" is-label-value="no" color="ode-light-gray">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FFCCCCCC"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-magenta" kind="data" initlabel="Magenta" decorator="color" is-label-value="no" color="ode-magenta">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FFFF00FF"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-orange" kind="data" initlabel="Orange" decorator="color" is-label-value="no" color="ode-orange">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FFFFC800"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-pink" kind="data" initlabel="Pink" decorator="color" is-label-value="no" color="ode-pink">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FFFFAFAF"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-red" kind="data" initlabel="Red" decorator="color" is-label-value="no" color="ode-red">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FFFF0000"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-white" kind="data" initlabel="White" decorator="color" is-label-value="no" color="ode-white">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FFFFFFFF"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="color-yellow" kind="data" initlabel="Yellow" decorator="color" is-label-value="no" color="ode-yellow">
+      <description>
+        <text> Inserts the number representing the named color </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="color"/>
+        <LangSpecProperty key="ya-hex-value" value="FFFFFF00"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Make-Color Block -->
+    <BlockGenus name="make-color" decorator="call" kind="function" initlabel="make color" color="colors">
+      <description>
+      <text>A Color with the given red, green, blue, and (optionally) alpha components.</text>
+      <arg-description n="1" name="components">A list of red, green, blue, and alpha components, each in the range 0 to 255; the alpha component may be omitted, in which case a value of 255 (fully opaque) will be used.</arg-description>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="components" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="make-color"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="components/list"/>
+        <LangSpecProperty key="socket-allow-2" value="components/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Split-Color Block -->
+    <BlockGenus name="split-color" decorator="call" kind="function" initlabel="split color" color="list">
+      <description>
+        <text>A list of four elements, each in the range 0 to 255, representing the red, blue, green, and alpha components.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="color" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="split-color"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="color/number"/>
+        <LangSpecProperty key="socket-allow-2" value="color/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Declarations -->
+
+    <!-- Property Block -->
+    <!-- While not explicitly in a drawer, property blocks are created by components -->
+    <BlockGenus name="read-write-property" kind="param" initlabel="property" label-unique="yes" is-starter="yes" is-terminator="yes" color="text">
+      <description>
+        <text>Represents a component's property</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <Stubs>
+        <Stub stub-genus="componentGetter"/>
+        <Stub stub-genus="componentTypeGetter"/>
+        <Stub stub-genus="componentSetter"/>
+        <Stub stub-genus="componentTypeSetter"/>
+      </Stubs>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="read-write-property"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+        <BlockGenus name="read-only-property" kind="param" initlabel="property" label-unique="yes" is-starter="yes" is-terminator="yes" color="text">
+      <description>
+        <text>Represents a component's property</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <Stubs>
+        <Stub stub-genus="componentGetter"/>
+        <Stub stub-genus="componentTypeGetter"/>
+      </Stubs>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="read-only-property"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="write-only-property" kind="param" initlabel="property" label-unique="yes" is-starter="yes" is-terminator="yes" color="text">
+      <description>
+        <text>Represents a component's property</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <Stubs>
+        <Stub stub-genus="componentSetter"/>
+        <Stub stub-genus="componentTypeSetter"/>
+      </Stubs>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="write-only-property"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="invisible-property" kind="param" initlabel="property" label-unique="yes" is-starter="yes" is-terminator="yes" color="text">
+      <description>
+        <text>Represents a component's property</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <Stubs>
+      </Stubs>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="invisible-property"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Argument Block -->
+    <BlockGenus name="argument" kind="param" label-filter="identifier" initlabel="name" decorator="name" editable-label="yes" label-unique="yes" is-starter="yes" is-terminator="yes" color="getter">
+      <description>
+        <text>Argument for a function</text>
+      </description>
+      <BlockConnectors>
+      <!-- TODO(gleitz): Allow for default arguments <BlockConnector connector-kind="socket" connector-type="poly"/> -->
+      <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <Stubs>
+        <!-- TODO(gleitz): Put labeled argument sockets in the caller block -->
+        <Stub stub-genus="getter"/>
+        <!-- arguments don't get setter stubs. too confusing for users. -->
+      </Stubs>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="argument"/>
+        <LangSpecProperty key="plug-type-1" value="argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+
+    <!-- Def Block -->
+    <!-- TODO(gleitz): put the getter/setter in a "variables" drawer -->
+    <BlockGenus name="def" kind="param" label-filter="identifier" decorator="def" initlabel="variable" editable-label="yes" label-unique="yes" is-starter="yes" is-terminator="yes" color="setter">
+      <description>
+        <arg-description n="1" name="arg">The variable's initial value.</arg-description>
+        <text>Defines a global variable.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="socket" label="as" connector-type="poly">
+        </BlockConnector>
+      </BlockConnectors>
+      <Stubs>
+        <Stub stub-genus="getterGlobal"/>
+        <Stub stub-genus="setterGlobal"/>
+      </Stubs>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="def"/>
+        <LangSpecProperty key="socket-exclude-1" value="as/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Procedures -->
+
+    <!-- Define Block -->
+    <BlockGenus name="define" label-filter="identifier" label-unique="yes" kind="function" decorator="to" initlabel="procedureWithResult" editable-label="yes" color="call">
+      <description>
+        <arg-description n="1" name="arg">Procedure argument</arg-description>
+        <arg-description n="2" name="do"> The set of instructions that is done when the procedure is called.</arg-description>
+        <text>Defines a procedure that returns a result. Calling the procedure (with its associated 'call' block) will run the blocks in the 'do' section and return the specified result.</text>
+      </description>
+      <Stubs>
+        <Stub stub-genus="caller"/>
+      </Stubs>
+      <BlockConnectors>
+        <BlockConnector label="arg" connector-kind="socket" is-expandable="yes" connector-type="poly"/>
+        <BlockConnector label="do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+        <BlockConnector label="return" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="define"/>
+        <LangSpecProperty key="socket-allow-1" value="arg/argument"/>
+        <LangSpecProperty key="socket-exclude-1" value="return/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="define-void" label-filter="identifier" label-unique="yes" kind="function" decorator="to" initlabel="procedure" editable-label="yes" color="call">
+      <description>
+        <arg-description n="1" name="arg">Procedure argument</arg-description>
+        <arg-description n="2" name="do"> The set of instructions that is done when the procedure is called.</arg-description>
+        <text>Defines a procedure that does not return a result. Calling the procedure (with its associated 'call' block) will run the blocks in the 'do' section.</text>
+      </description>
+      <Stubs>
+        <Stub stub-genus="caller-command"/>
+      </Stubs>
+      <BlockConnectors>
+        <BlockConnector label="arg" connector-kind="socket" is-expandable="yes" connector-type="poly"/>
+        <BlockConnector label="do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="define"/>
+        <LangSpecProperty key="socket-allow-1" value="arg/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Call Block -->
+    <BlockGenus name="caller" label-filter="identifier" kind="function" decorator="call" initlabel="" color="call" editable-label="no">
+      <description>
+        <text>Calls the specified procedure, returning its result</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="call"/>
+        <LangSpecProperty key="plug-type-1" value="value"/>
+        <LangSpecProperty key="socket-exclude-1" value="*/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="caller-command" label-filter="identifier" kind="command" decorator="call" initlabel="" color="call" editable-label="no">
+      <description>
+        <text>Calls the specified procedure</text>
+      </description>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="call"/>
+        <LangSpecProperty key="socket-exclude-1" value="*/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Glue Block -->
+    <BlockGenus name="glue" kind="command" initlabel="|" color="call">
+      <description>
+        <text>Runs the block associated with its attached block and ignores the return value</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="glue"/>
+        <LangSpecProperty key="socket-exclude-1" value="default/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Commands -->
+    <!-- TODO(gleitz): determine how this should be used
+    <BlockGenus name="localvar" initlabel="var" kind="command" color="text">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+    </BlockGenus>
+    -->
+
+    <!-- Control -->
+
+    <!-- If Block -->
+    <BlockGenus name="if" kind="command" initlabel="if" color="control">
+      <description>
+        <arg-description n="1" name="test"> The condition to test.</arg-description>
+        <arg-description n="2" name="then-do">The actions to be performed when the condition is true.</arg-description>
+        <text>Tests a given condition.  If the result is true, performs the actions in the 'then-do' sequence of blocks.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="test" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="then-do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="if"/>
+        <LangSpecProperty key="socket-allow-1" value="test/value"/>
+        <LangSpecProperty key="socket-allow-2" value="test/boolean"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- IfElse Block -->
+    <BlockGenus name="ifelse" kind="command" initlabel="ifelse" color="control">
+      <description>
+        <arg-description n="1" name="test">The condition to test.</arg-description>
+        <arg-description n="2" name="then-do">The actions to be performed when test is true.</arg-description>
+        <arg-description n="3" name="else">The actions to be performed when test is false.</arg-description>
+        <text>Tests a given condition.  If the result is true, performs the actions in the 'then-do' sequence of blocks;
+         otherwise, performs the actions in the 'else-do' sequence of blocks.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="test" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="then-do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+        <BlockConnector label="else-do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="ifelse"/>
+        <LangSpecProperty key="socket-allow-1" value="test/value"/>
+        <LangSpecProperty key="socket-allow-2" value="test/boolean"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Choose Block -->
+    <BlockGenus name="choose" kind="function" initlabel="choose" color="control">
+      <description>
+        <arg-description n="1" name="test">The condition being tested.</arg-description>
+        <arg-description n="2" name="then-do">The set of instructions that is done when test is true.</arg-description>
+        <arg-description n="3" name="then-return"> The return value when the test is true.</arg-description>
+        <arg-description n="4" name="else">The set of instructions that is done when test is false.</arg-description>
+        <arg-description n="5" name="else-return">The return value when the test is false.</arg-description>
+        <text>If the condition being tested is true, the agent will run all the blocks attached to the 'then-do' section and
+return the value attached to the 'then-return'slot. Otherwise, the agent will run all blocks attached to the 'else-do'
+section and return the value in the 'else-return' slot.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="test" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="then-do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+        <BlockConnector label="then-return" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="else-do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+        <BlockConnector label="else-return" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="choose"/>
+        <LangSpecProperty key="type-exclude-1" value="argument"/>
+        <LangSpecProperty key="socket-allow-1" value="test/value"/>
+        <LangSpecProperty key="socket-allow-2" value="test/boolean"/>
+        <LangSpecProperty key="socket-exclude-1" value="then-return/argument"/>
+        <LangSpecProperty key="socket-exclude-2" value="else-return/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- ForEach Block -->
+    <BlockGenus name="foreach" initlabel="foreach" kind="command" color="control">
+      <description>
+        <arg-description n="1" name="variable">Name for the variable that will refer to each item in the list</arg-description>
+        <arg-description n="2" name="do">Sequence of commands to do for each value of the variable</arg-description>
+        <arg-description n="3" name="in list">List of values for the variable</arg-description>
+        <text>Runs the blocks in the 'do'  section for each item in the list.  Use the given variable
+name to refer to the current list item.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="variable" label-unique="yes" connector-kind="socket" connector-type="poly">
+          <DefaultArg genus-name="argument" label="var"/>
+        </BlockConnector>
+        <BlockConnector label="do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+        <BlockConnector label="in list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="foreach"/>
+        <LangSpecProperty key="socket-allow-1" value="variable/argument"/>
+        <LangSpecProperty key="socket-allow-2" value="in list/list"/>
+        <LangSpecProperty key="socket-allow-3" value="in list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Foreach in range block -->
+    <BlockGenus name="forrange" initlabel="for range" kind="command" color="control">
+      <description>
+        <arg-description n="1" name="variable">The variable that will refer to each item in the range</arg-description>
+        <arg-description n="2" name="start">Start of the range</arg-description>
+        <arg-description n="3" name="end">End of the range</arg-description>
+        <arg-description n="4" name="step">Amount to step the variable each time</arg-description>
+        <arg-description n="4" name="do">Sequence of commands to do for each value of the variable</arg-description>
+        <text>Runs the blocks in the 'do' section for each numeric value in the range from start to end, stepping the
+value each time.  Use the given variable name to refer to the current value.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="variable" label-unique="yes" connector-kind="socket" connector-type="poly">
+          <DefaultArg genus-name="argument" label="i"/>
+        </BlockConnector>
+        <BlockConnector label="start" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="end" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="step" connector-kind="socket" connector-type="poly">
+          <DefaultArg genus-name="number" label="1"/>
+        </BlockConnector>
+        <BlockConnector label="do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="forrange"/>
+        <LangSpecProperty key="socket-allow-1" value="variable/argument"/>
+        <LangSpecProperty key="socket-allow-2" value="start/number"/>
+        <LangSpecProperty key="socket-allow-3" value="start/value"/>
+        <LangSpecProperty key="socket-allow-4" value="end/number"/>
+        <LangSpecProperty key="socket-allow-5" value="end/value"/>
+        <LangSpecProperty key="socket-allow-6" value="step/number"/>
+        <LangSpecProperty key="socket-allow-7" value="step/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- While Block -->
+    <BlockGenus name="while" initlabel="while" kind="command" color="control">
+      <description>
+        <text>Runs the blocks in the 'do' section while the test is true.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="test" label-unique="yes" connector-kind="socket" connector-type="poly" />
+        <BlockConnector label="do" connector-kind="socket" is-indented="yes" connector-type="cmd"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="while"/>
+        <LangSpecProperty key="socket-allow-1" value="test/boolean"/>
+        <LangSpecProperty key="socket-allow-2" value="test/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Multiple screens  -->
+
+    <!-- Get Start Text Block -->
+    <!-- This block is deprecated and has been removed from the drawer (see 
+     OUTPUT_FOOTER.txt).  The BlockGenus remains here so we can load blocks from old
+     projects and mark them "bad" -->
+    <BlockGenus name="get-startup-text" decorator="call" kind="function" initlabel="get start text" color="control">
+      <description>
+      <text>Returns the text passed to this app when it was started, if any. If no text was passed, returns an empty text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="startup-value"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Close Screen Block -->
+    <BlockGenus name="close-screen" decorator="call" kind="command" initlabel="close screen" is-terminator="yes" color="control">
+      <description>
+        <text>Closes the current screen.</text>
+      </description>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="close-screen"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+   <!-- Close Screen With Result Block -->
+    <!-- This block is deprecated and has been removed from the drawer (see 
+     OUTPUT_FOOTER.txt).  The BlockGenus remains here so we can load blocks from old
+     projects and mark them "bad" -->
+   <BlockGenus name="close-screen-with-result" decorator="call" kind="command" initlabel="close screen with result" is-terminator="yes" color="control">
+      <description>
+        <arg-description n="1" doc-name="result">
+          Text to be returned when the screen closes.
+        </arg-description>
+        <text>Closes the current screen and returns a result that can be picked up by
+        another screen or application. The result will be named APP_INVENTOR_RESULT.
+        </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="result" connector-kind="socket" connector-type="poly">
+        </BlockConnector>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="close-screen-with-result"/>
+        <LangSpecProperty key="socket-allow-1" value="result/text"/>
+        <LangSpecProperty key="socket-allow-2" value="result/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Close Application Block -->
+    <BlockGenus name="close-application" decorator="call" kind="command" initlabel="close application" is-terminator="yes" color="control">
+      <description>
+        <text>Closes all screens in this app and stops the app.</text>
+      </description>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="close-application"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Open Another Screen Block -->
+    <BlockGenus name="open-another-screen" decorator="call" kind="command" initlabel="open another screen" is-terminator="yes" color="control">
+      <description>
+        <arg-description n="1" doc-name="screenName">
+          The name of the new screen to open.
+        </arg-description>
+        <text>Opens a new screen in a multiple screen app.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="screenName" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="open-another-screen"/>
+        <LangSpecProperty key="socket-allow-1" value="screenName/text"/>
+        <LangSpecProperty key="socket-allow-2" value="screenName/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Open Another Screen With Start Value Block -->
+    <BlockGenus name="open-another-screen-with-start-value" decorator="call" kind="command" 
+       initlabel="open another screen with start value" is-terminator="yes" color="control">
+      <description>
+        <arg-description n="1" doc-name="screenName">
+          The name of the new screen to open.
+        </arg-description>
+        <arg-description n="2" doc-name="startValue">
+          The value to be passed to the new screen.
+        </arg-description>
+        <text>Opens a new screen in a multiple screen app and passes the start value to that screen.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="screenName" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="startValue" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="open-another-screen-with-start-value"/>
+        <LangSpecProperty key="socket-allow-1" value="screenName/text"/>
+        <LangSpecProperty key="socket-allow-2" value="screenName/value"/>
+        <LangSpecProperty key="socket-exclude-1" value="startValue/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Get Start Value Block -->
+    <BlockGenus name="get-start-value"
+       decorator="call" kind="function" initlabel="get start value" color="control">
+      <description>
+      <text>Returns the value that was passed to this screen when it
+was opened, typically by another screen in a multiple-screen app.
+If no value was passed, returns the empty text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="get-start-value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+   <!-- Close Screen With Value Block -->
+   <BlockGenus name="close-screen-with-value" decorator="call" kind="command" 
+          initlabel="close screen with value" is-terminator="yes" color="control">
+      <description>
+        <arg-description n="1" doc-name="result">
+          Value to return when the screen closes.
+       </arg-description>
+        <text>Closes the current screen and returns a result to the screen that opened this one.
+        </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="result" connector-kind="socket" connector-type="poly">
+        </BlockConnector>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="close-screen-with-value"/>
+        <LangSpecProperty key="socket-exclude-1" value="result/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!--Communicating between apps -->
+
+     <!-- Get Plain Start Text Block -->
+     <BlockGenus name="get-plain-start-text"
+                 decorator="call" kind="function" initlabel="get plain start text" color=" control">
+       <description>
+         <text>Returns the plain text that was passed to this screen when it was started by another app.
+If no value was passed, returns the empty text.
+        
+For multiple screen apps, use get start value rather than get plain start text.
+         </text>
+       </description>
+       <BlockConnectors>
+         <BlockConnector connector-kind="plug" connector-type="poly"/>
+       </BlockConnectors>
+       <LangSpecProperties>
+         <LangSpecProperty key="ya-kind" value="primitive"/>
+         <LangSpecProperty key="ya-rep" value="get-plain-start-text"/>
+         <LangSpecProperty key="plug-type-1" value="text"/>
+       </LangSpecProperties>
+     </BlockGenus>
+
+        
+     <!-- Close Screen With Plain Text Block -->
+     <BlockGenus name="close-screen-with-plain-text" decorator="call" kind="command"
+                 initlabel="close screen with plain text" is-terminator="yes" color="control">
+       <description>
+         <arg-description n="1" doc-name="text">
+           Text to return when the screen closes.
+         </arg-description>
+         <text>Closes the current screen and returns text to the app that opened this one.
+
+For multiple screen apps, use close screen with value rather than close screen with plain text.
+         </text>
+       </description>
+       <BlockConnectors>
+         <BlockConnector label="text" connector-kind="socket" connector-type="poly">
+         </BlockConnector>
+       </BlockConnectors>
+       <LangSpecProperties>
+         <LangSpecProperty key="ya-kind" value="primitive"/>
+         <LangSpecProperty key="ya-rep" value="close-screen-with-plain-text"/>
+         <LangSpecProperty key="socket-allow-1" value="text/text"/>
+         <LangSpecProperty key="socket-allow-2" value="text/value"/>
+       </LangSpecProperties>
+     </BlockGenus>
+
+    <!-- Logic -->
+
+    <!-- True Block -->
+    <BlockGenus name="true" kind="data" initlabel="true" is-label-value="yes" color="logic">
+      <description>
+        <text>  Reports the boolean true.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="true"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- False Block -->
+    <BlockGenus name="false" kind="data" initlabel="false" is-label-value="yes" color="logic">
+      <description>
+        <text> Reports the boolean false.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="false"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- And Block -->
+    <BlockGenus name="and" kind="function" initlabel="and" color="logic">
+      <description>
+        <text>Returns true if all connected blocks are true</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="test" connector-kind="socket" is-expandable="yes" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="and"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="test/boolean"/>
+        <LangSpecProperty key="socket-allow-2" value="test/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Or Block -->
+    <BlockGenus name="or" kind="function" initlabel="or" color="logic">
+      <description>
+        <text>Returns true if any connected blocks are true</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="test" connector-kind="socket" is-expandable="yes" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="or"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="test/boolean"/>
+        <LangSpecProperty key="socket-allow-2" value="test/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Logical-Not Block -->
+    <BlockGenus name="logical-not" initlabel="not" kind="function" color="logic">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-not"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="default/boolean"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Strings -->
+
+    <!-- Text Block -->
+    <BlockGenus name="text" kind="data" label-filter="string" decorator="text" initlabel="text" is-empty-label-allowed="yes" editable-label="yes" color="text">
+      <description>
+        <text>A text string</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="text"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Yail-Equal Block -->
+
+    <BlockGenus name="yail-equal" kind="function" initlabel="=" color="math">
+      <description>
+        <text>Tests whether two things are equal.  The things being compared can be anything, not only numbers.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-equal?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-exclude-1" value="default/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- Yail-Not-Equal Block -->
+    <BlockGenus name="yail-not-equal" kind="function" initlabel="not =" color="math">
+      <description>
+        <text>Tests whether two things are unequal.  The things being compared can be anything, not only numbers.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-not-equal?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-exclude-1" value="default/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Append Block -->
+    <BlockGenus name="string-append" kind="function" initlabel="join" color="text">
+      <description>
+      <arg-description n="2" doc-name="first">the beginning of the new string</arg-description>
+      <arg-description n="3" doc-name="second">the end of the new string</arg-description>
+      <text>Appends the second argument to the end of the first argument.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-append"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="default/text"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Append Vertical Block -->
+    <BlockGenus name="string-vappend" decorator="call" kind="function" initlabel="make text" color="text">
+      <description>
+        <text>Appends all the arguments to form a single text string. If there are no arguments, makes an empty text.</text>
+        <arg-description n="1" name="text" doc-name="text">Item to include</arg-description>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly" is-expandable="yes"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-append"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Length Block -->
+    <BlockGenus name="string-length" decorator="call" kind="function" initlabel="length" color="text">
+      <description>
+        <text>Reports the length of the text attached to this block.</text>
+        <arg-description n="1" name="text" doc-name="text">The text whose length should be returned</arg-description>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-length"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-LessThan Block -->
+    <BlockGenus name="string-less-than" kind="function" initlabel="text&lt;" color="text">
+      <description>
+        <arg-description n="1" doc-name="text1">
+          The first text string to compare.
+        </arg-description>
+        <arg-description n="2" doc-name="text2">
+          The second text string to compare.
+        </arg-description>
+        <text>Tests whether text1 is lexicographically less than text2. If one text is a prefix of the other, the shorter text is considered smaller. Uppercase characters precede lowercase characters.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text1" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="text2" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string&lt;?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="text1/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text1/value"/>
+        <LangSpecProperty key="socket-allow-3" value="text2/text"/>
+        <LangSpecProperty key="socket-allow-4" value="text2/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Equal Block -->
+    <BlockGenus name="string-equal" kind="function" initlabel="text=" color="text">
+      <description>
+        <arg-description n="1" doc-name="text1">
+          The first text string to compare.
+        </arg-description>
+        <arg-description n="2" doc-name="text2">
+          The second text string to compare.
+        </arg-description>
+        <text>Tests whether the text strings are identical, i.e., have the same characters in the same order.  This is different from ordinary = in the case where the text strings are numbers: 123 and 0123 are = but not text=.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text1" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="text2" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string=?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="text1/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text1/value"/>
+        <LangSpecProperty key="socket-allow-3" value="text2/text"/>
+        <LangSpecProperty key="socket-allow-4" value="text2/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-GreaterThan Block -->
+    <BlockGenus name="string-greater-than" kind="function" initlabel="text&gt;" color="text">
+      <description>
+        <arg-description n="1" doc-name="text1">
+          The first text string to compare.
+        </arg-description>
+        <arg-description n="2" doc-name="text2">
+          The second text string to compare.
+        </arg-description>
+        <text>Reports whether the text1 is lexicographically greater than text2. If one text is a prefix of the other, the shorter text is considered smaller. Uppercase characters precede lowercase characters.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text1" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="text2" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string&gt;?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="text1/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text1/value"/>
+        <LangSpecProperty key="socket-allow-3" value="text2/text"/>
+        <LangSpecProperty key="socket-allow-4" value="text2/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Upcase Block -->
+    <BlockGenus name="string-upcase" kind="function" initlabel="upcase" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text string to convert to upper case
+        </arg-description>
+        <text>Returns a copy of its text string argument converted to uppercase.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-to-upper-case"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Downcase Block -->
+    <BlockGenus name="string-downcase" kind="function" initlabel="downcase" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text string to convert to lower case
+        </arg-description>
+        <text>Returns a copy of its text string argument converted to lowercase.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-to-lower-case"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Trim Block -->
+    <BlockGenus name="string-trim" kind="function" initlabel="trim" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text string to trim.
+        </arg-description>
+        <text>Returns a copy of its text string argument with any leading or trailing spaces removed.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-trim"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Starts-At-Block -->
+    <BlockGenus name="string-starts-at" decorator="call" kind="function" initlabel="starts at" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to search for the piece.
+        </arg-description>
+        <arg-description n="2" doc-name="piece">
+          The piece (a text string) to search for in the text.
+        </arg-description>
+        <text>Returns the starting index of the piece in the text, where index 1 denotes the beginning of the text. Returns 0 if the piece is not in the text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="piece" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-starts-at"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="piece/text"/>
+        <LangSpecProperty key="socket-allow-4" value="piece/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Contains-Block -->
+    <BlockGenus name="string-contains" decorator="call" kind="function" initlabel="contains" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to search for the piece.
+        </arg-description>
+        <arg-description n="2" doc-name="piece">
+          The piece (a text string) to search for in the text.
+        </arg-description>
+        <text>Tests whether the piece is in the text</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="piece" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-contains"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="piece/text"/>
+        <LangSpecProperty key="socket-allow-4" value="piece/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Split-At-First-Block -->
+    <BlockGenus name="string-split-at-first" decorator="call" kind="function" initlabel="split at first" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to split.
+        </arg-description>
+        <arg-description n="2" doc-name="at">
+          The delimiter text.
+        </arg-description>
+        <text>Split the text into two pieces separated by the first occurrence of 'at'. Returns a two-element list with the two pieces. Returns a one-element list with original text if 'at' is not contained in the text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="at" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-split-at-first"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="at/text"/>
+        <LangSpecProperty key="socket-allow-4" value="at/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Split-At-First-of-Any-Block -->
+    <BlockGenus name="string-split-at-first-of-any" decorator="call" kind="function" initlabel="split at first of any" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to split.
+        </arg-description>
+        <arg-description n="2" doc-name="at">
+          A list of delimiter text strings to that are places to split at.
+        </arg-description>
+        <text>Split the text into two pieces separated by the first occurrence of any of the elements in the list 'at', and return the list of these pieces. Returns a one-element list with the original text if no elements of 'at' are in the text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="at" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-split-at-first-of-any"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="at/list"/>
+        <LangSpecProperty key="socket-allow-4" value="at/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Split Block -->
+    <BlockGenus name="string-split" decorator="call" kind="function" initlabel="split" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to split.
+        </arg-description>
+        <arg-description n="2" doc-name="at">
+          The delimiter text.
+        </arg-description>
+        <text>Split the text into pieces separated by the occurrences of 'at', and return the list of these pieces. Returns a one-element list with the original text if 'at' is not in the text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="at" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-split"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="at/text"/>
+        <LangSpecProperty key="socket-allow-4" value="at/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Split-Any Block -->
+    <BlockGenus name="string-split-at-any" decorator="call" kind="function" initlabel="split at any" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to split.
+        </arg-description>
+        <arg-description n="2" doc-name="at">
+          A list of delimiter text strings to search for as places to split at.
+        </arg-description>
+        <text>Split the text into pieces separated by the occurrences of any of the elements in the list 'at', and return the list of these pieces. Returns a one-element list with the original text if no elements of 'at' are in the text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="at" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-split-at-any"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="at/list"/>
+        <LangSpecProperty key="socket-allow-4" value="at/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Split-At-Spaces Block -->
+    <BlockGenus name="string-split-at-spaces" decorator="call" kind="function" initlabel="split at spaces" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to split.
+        </arg-description>
+        <text>Split the text into a list of the pieces separated by spaces.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-split-at-spaces"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Substring Block -->
+    <BlockGenus name="string-subtext" decorator="call" kind="function" initlabel="segment" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to extract from
+        </arg-description>
+        <arg-description n="2" doc-name="start">
+          The starting position (a number) of the segment.
+        </arg-description>
+        <arg-description n="3" doc-name="length">
+          The length of the segment
+        </arg-description>
+        <text>Extracts the segment of the given length from the given text, starting from the given position. Position 1 denotes the beginning of the text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="start" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="length" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-substring"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="start/number"/>
+        <LangSpecProperty key="socket-allow-4" value="start/value"/>
+        <LangSpecProperty key="socket-allow-5" value="length/number"/>
+        <LangSpecProperty key="socket-allow-6" value="length/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String-Replace-All-Block -->
+    <BlockGenus name="string-replace-all" decorator="call" kind="function" initlabel="replace all" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text to do the replacement in
+        </arg-description>
+        <arg-description n="2" doc-name="segment">
+          The segment to replace
+        </arg-description>
+        <arg-description n="3" doc-name="replacement">
+          The replacement for the segment
+        </arg-description>
+      <text>Returns a new text obtained by replacing all occurrences of the segment with the replacement</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="segment" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="replacement" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-replace-all"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+        <LangSpecProperty key="socket-allow-3" value="segment/text"/>
+        <LangSpecProperty key="socket-allow-4" value="segment/value"/>
+        <LangSpecProperty key="socket-allow-5" value="replacement/text"/>
+        <LangSpecProperty key="socket-allow-6" value="replacement/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- String Empty Block -->
+    <BlockGenus name="string-empty?" kind="function" initlabel="is text empty?" color="text">
+      <description>
+        <arg-description n="1" doc-name="text">
+          The text string.
+        </arg-description>
+        <text>Returns true if the length of the text is 0, false otherwise.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="string-empty?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Lists -->
+
+    <ObsoleteBlockGenus name="list" initlabel="list" color="list"/>
+    <ObsoleteBlockGenus name="set-list-item" initlabel="set list item" color="list"/>
+    <ObsoleteBlockGenus name="add-to-list" initlabel="add items to list" color="list"/>
+    <ObsoleteBlockGenus name="adjoin" initlabel="adjoin" color="list"/>
+    <ObsoleteBlockGenus name="member" initlabel="member" color="list"/>
+    <ObsoleteBlockGenus name="list-first" initlabel="first" color="list"/>
+    <ObsoleteBlockGenus name="list-rest" initlabel="rest" color="list"/>
+    <ObsoleteBlockGenus name="pick-list-item" initlabel="pick list item" color="list"/>
+
+    <!-- Make-List Block -->
+    <BlockGenus name="make-list" decorator="call" kind="function" initlabel="make a list" color="list">
+      <description>
+        <text>Makes a list of the given items. If there are no items, makes an empty list.</text>
+        <arg-description n="1" name="item" doc-name="item">Item to include in the list</arg-description>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="item" connector-kind="socket" connector-type="poly"
+                        is-indented="yes" is-expandable="yes"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="make-yail-list"/>
+        <LangSpecProperty key="socket-exclude-1" value="item/argument"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Is-list? block -->
+    <BlockGenus name="is-list?" decorator="call" kind="function" initlabel="is a list?" color="list">
+      <description>
+        <arg-description n="1" name="thing" doc-name="thing">The thing to test.</arg-description>
+        <text>Tests if something is a list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="thing" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-exclude-1" value="thing/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- List Empty Block -->
+    <BlockGenus name="list-empty?" decorator="call" kind="function" initlabel="is list empty?" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list to test</arg-description>
+        <text>Tests if a list is empty (has no items in it)</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-empty?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- List Length Block -->
+    <BlockGenus name="list-length" decorator="call" kind="function" initlabel="length of list" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list to find the length of</arg-description>
+        <text>Counts the number of items in a list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-length"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- First and Rest are removed, to simplify the API to lists -->
+    <!-- List First Block -->
+    <!--
+    <BlockGenus name="list-first" decorator="call" kind="function" initlabel="first in list" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list</arg-description>
+        <text>Gets the first item in a list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-first"/>
+        <LangSpecProperty key="type-exclude-1" value="argument"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+    -->
+
+
+  <!-- List Rest Block -->
+  <!--
+    <BlockGenus name="list-rest" decorator="call" kind="function" initlabel="rest of list" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list</arg-description>
+        <text>Gets the rest of the list, after the first item.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-rest"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+ -->
+
+  <!-- List Copy -->
+    <BlockGenus name="list-copy" decorator="call" kind="function" initlabel="copy list" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list</arg-description>
+        <text>Makes a copy of a list, including copying all sublists</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-copy"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+      <!-- List from CSV row string -->
+    <BlockGenus name="list-from-csv-row" decorator="call" kind="function" initlabel="list from csv row" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The CSV row text</arg-description>
+        <text>Parses a text as a CSV (comma-separated value) formatted row to produce a list of fields. It is an error for the row text to contain unescaped newlines inside fields (effectively, multiple lines). It is okay for the row text to end in a single newline or CRLF.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-from-csv-row"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+       <!-- List from CSV table Block -->
+    <BlockGenus name="list-from-csv-table" decorator="call" kind="function" initlabel="list from csv table" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The CSV table text</arg-description>
+        <text>Parses a text as a CSV (comma-separated value) formatted table to produce a list of rows, each of which is a list of fields. Rows can be separated by newlines (\n) or CRLF (\r\n).</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="text" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-from-csv-table"/>
+        <LangSpecProperty key="plug-type-1" value="list"/>
+        <LangSpecProperty key="socket-allow-1" value="text/text"/>
+        <LangSpecProperty key="socket-allow-2" value="text/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+      <!-- List to CSV row Block -->
+    <BlockGenus name="list-to-csv-row" decorator="call" kind="function" initlabel="list to csv row" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list</arg-description>
+        <text>Interprets the list as a row of a table and returns a CSV (comma-separated value) text representing the row. Each item in the row list is considered to be a field, and is quoted with double-quotes in the resulting CSV text. Items are separated by commas. The returned row text does not have a line separator at the end. </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-to-csv-row"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+      <!-- List to CSV table Block -->
+    <BlockGenus name="list-to-csv-table" decorator="call" kind="function" initlabel="list to csv table" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list</arg-description>
+        <text>Interprets the list as a table in row-major format and returns a CSV (comma-separated value) text representing the table. Each item in the list should itself be a list representing a row of the CSV table. Each item in the row list is considered to be a field, and is quoted with double-quotes in the resulting CSV text. In the returned text, items in rows are separated by commas and rows are separated by CRLF (\r\n).</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-to-csv-table"/>
+        <LangSpecProperty key="plug-type-1" value="text"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- List Get Item Block -->
+    <BlockGenus name="get-list-item" decorator="call" kind="function" initlabel="select list item" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list </arg-description>
+        <arg-description n="2" name="index" doc-name="index">The position of the item to retrieve</arg-description>
+        <text>Get the nth item from a list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="index" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-get-item"/>
+        <LangSpecProperty key="type-exclude-1" value="argument"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+        <LangSpecProperty key="socket-allow-3" value="index/number"/>
+        <LangSpecProperty key="socket-allow-4" value="index/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- List Pick Random Block -->
+    <BlockGenus name="list-pick-random" decorator="call" kind="function" initlabel="pick random item" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list </arg-description>
+        <text>Pick an element at random from the list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-pick-random"/>
+        <LangSpecProperty key="type-exclude-1" value="argument"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- List Set Item Block -->
+    <BlockGenus name="replace-list-item" decorator="call" kind="command" initlabel="replace list item" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list"> The list</arg-description>
+        <arg-description n="2" name="index" doc-name="index">The position of the item to replace</arg-description>
+        <arg-description n="3" name="replacement" doc-name="replacement">The replacement for the item</arg-description>
+        <text>Replaces the nth item in a list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="index" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="replacement" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-set-item!"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+        <LangSpecProperty key="socket-allow-3" value="index/number"/>
+        <LangSpecProperty key="socket-allow-4" value="index/value"/>
+        <LangSpecProperty key="socket-exclude-1" value="replacement/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- List Remove Item Block -->
+    <BlockGenus name="remove-list-item" decorator="call" kind="command" initlabel="remove list item" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list</arg-description>
+        <arg-description n="2" name="index" doc-name="index">The position of the item to remove</arg-description>
+        <text>Removes the item at the specified position from the list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="index" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-remove-item!"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+        <LangSpecProperty key="socket-allow-3" value="index/number"/>
+        <LangSpecProperty key="socket-allow-4" value="index/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- List Insert Item Block -->
+    <BlockGenus name="insert-list-item" decorator="call" kind="command" initlabel="insert list item" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list"> The list</arg-description>
+        <arg-description n="2" name="index" doc-name="index">The position where the item should be inserted</arg-description>
+        <arg-description n="3" name="item" doc-name="item">The item to insert</arg-description>
+        <text>Insert an item into a list at the specified position.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="index" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="item" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-insert-item!"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+        <LangSpecProperty key="socket-allow-3" value="index/number"/>
+        <LangSpecProperty key="socket-allow-4" value="index/value"/>
+        <LangSpecProperty key="socket-exclude-1" value="item/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- List Append Block -->
+    <BlockGenus name="append-list" decorator="call" kind="command" initlabel="append to list" color="list">
+      <description>
+        <arg-description n="1" name="list1" doc-name="list1">The list to append on to</arg-description>
+        <arg-description n="2" name="list2" doc-name="list2">The list of items to be appended</arg-description>
+        <text>Appends all the items in list2 onto the end of list1.  After the append, list1 will include these additional elements, but list2 will be unchanged.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="list1" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="list2" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-append!"/>
+        <LangSpecProperty key="socket-allow-1" value="list1/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list1/value"/>
+        <LangSpecProperty key="socket-allow-3" value="list2/list"/>
+        <LangSpecProperty key="socket-allow-4" value="list2/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- List Add-Items-to-List Block -->
+    <BlockGenus name="add-items-to-list" decorator="call" kind="command" initlabel="add items to list" color="list">
+      <description>
+        <arg-description n="1" name="list" doc-name="list">The list</arg-description>
+        <arg-description n="2" name="item" doc-name="item"> The item to add to the list</arg-description>
+        <text>Adds items to the end of a list.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="item" connector-kind="socket" is-expandable="yes" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-add-to-list!"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+        <LangSpecProperty key="socket-exclude-1" value="item/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- List Member Block -->
+    <BlockGenus name="list-member" decorator="call" kind="function" initlabel="is in list?" color="list">
+      <description>
+        <arg-description n="1" name="thing" doc-name="thing">The thing to find in the list</arg-description>
+        <arg-description n="2" name="list" doc-name="list">The list to check for the thing</arg-description>
+        <text>Retuns true if the the thing is an item in the list, and false if not.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="thing" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-member?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-exclude-1" value="thing/argument"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- List Index Block -->
+    <BlockGenus name="list-index" decorator="call" kind="function" initlabel="position in list" color="list">
+      <description>
+        <arg-description n="1" name="thing" doc-name="thing">The thing whose position to find</arg-description>
+        <arg-description n="2" name="list" doc-name="list">The list</arg-description>
+        <text>Find the position of the thing in the list.  If it's not in the list, return 0.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="thing" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="list" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-list-index"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-exclude-1" value="thing/argument"/>
+        <LangSpecProperty key="socket-allow-1" value="list/list"/>
+        <LangSpecProperty key="socket-allow-2" value="list/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- List Lookup in Pairs Block -->
+    <BlockGenus name="list-lookup-in-pairs" decorator="call" kind="function" initlabel="lookup in pairs " color="list">
+      <description>
+        <arg-description n="1" name="key" doc-name="key">The key to look up </arg-description>
+        <arg-description n="2" name="pairs" doc-name="pairs">A list of (key value) pairs</arg-description>
+        <arg-description n="3" name="notFound" 
+                 doc-name="notFound">Value to return if there is no pair with the given key.</arg-description>
+        <text>Returns the value associated with the key in the list of pairs.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="key" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="pairs" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="notFound" connector-kind="socket" connector-type="poly">
+          <DefaultArg genus-name="text" label="NotFound"/>
+        </BlockConnector>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-alist-lookup"/>
+        <LangSpecProperty key="type-exclude-1" value="argument"/>
+        <LangSpecProperty key="socket-exclude-1" value="key/argument"/>
+        <LangSpecProperty key="socket-allow-1" value="pairs/value"/>
+        <LangSpecProperty key="socket-allow-2" value="pairs/list"/>
+        <LangSpecProperty key="socket-allow-3" value="notFound/text"/>
+        <LangSpecProperty key="socket-allow-4" value="notFound/text"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Math -->
+
+    <!-- Greaterthan Block -->
+    <BlockGenus name="greaterthan" kind="function" initlabel=">" color="math">
+      <description>
+        <arg-description n="1" doc-name="left value">
+          The first number to compare.
+        </arg-description>
+        <arg-description n="2" doc-name="right value">
+          The second number to compare.
+        </arg-description>
+        <text>Tests whether the first number is greater than the second number.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value=">"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- GreaterthanOrEqual Block -->
+    <BlockGenus name="greaterthanorequal" kind="function" initlabel=">=" color="math">
+      <description>
+        <arg-description n="1" doc-name="left value">
+          The first number to compare.
+        </arg-description>
+        <arg-description n="2" doc-name="right value">
+          The second number to compare.
+        </arg-description>
+        <text>Tests whether the first number is greater than or equal to the second number.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value=">="/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- Lessthan Block -->
+    <BlockGenus name="lessthan" kind="function" initlabel="&lt;" color="math">
+      <description>
+        <arg-description n="1" doc-name="left value">
+          The first number to compare.
+        </arg-description>
+        <arg-description n="2" doc-name="right value">
+          The second number to compare.
+        </arg-description>
+        <text>Tests whether the first number is less than the second number.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="&lt;"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- LessthanOrEqual Block -->
+    <BlockGenus name="lessthanorequal" kind="function" initlabel="&lt;=" color="math">
+      <description>
+        <arg-description n="1" doc-name="left value">
+          The first number to compare.
+        </arg-description>
+        <arg-description n="2" doc-name="right value">
+          The second number to compare.
+        </arg-description>
+        <text>Tests whether the first number is less than or equal to the second number.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="&lt;="/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <BlockGenus name="number-plus" kind="function" initlabel="+" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="+"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Here we are specifying a non-ascii character (minus sign) as a label. -->
+    <BlockGenus name="number-minus" kind="function" initlabel="&#x2212;" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="-"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- Here we are specifying a non-ascii character (times sign) as a label. -->
+    <BlockGenus name="number-times" kind="function" initlabel="&#x00D7;" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="*"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!-- It would be nicer to use a real division symbol here, but that looks too much like
+         a + sign in Arial on the Mac
+    -->
+    <BlockGenus name="number-divide" kind="function" initlabel="/" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly" position-type="bottom"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-divide"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-sqrt" decorator="call" kind="function" initlabel="sqrt" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="sqrt"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-negate" decorator="call" kind="function" initlabel="negate" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="-"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-min" decorator="call" kind="function" initlabel="min" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" is-expandable="yes" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="min"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-max" decorator="call" kind="function" initlabel="max" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" is-expandable="yes" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="max"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-quotient" decorator="call" kind="function" initlabel="quotient" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="quotient"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-remainder" decorator="call" kind="function" initlabel="remainder" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="remainder"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-modulo" decorator="call" kind="function" initlabel="modulo" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="modulo"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-abs" decorator="call" kind="function" initlabel="abs" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="abs"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-round" decorator="call" kind="function" initlabel="round" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-round"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-floor" decorator="call" kind="function" initlabel="floor" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-floor"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-ceiling" decorator="call" kind="function" initlabel="ceiling" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-ceiling"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-expt" decorator="call" kind="function" initlabel="expt" color="math">
+       <description>
+        <arg-description n="1" doc-name="base">
+          The number to raise to the exponent.
+        </arg-description>
+        <arg-description n="2" doc-name="exponent">
+          The power to raise the base to.
+        </arg-description>
+        <text>Returns the result of raising the base to the exponent.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="base" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="exponent" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="expt"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="exponent/number"/>
+        <LangSpecProperty key="socket-allow-2" value="exponent/value"/>
+        <LangSpecProperty key="socket-allow-3" value="base/number"/>
+        <LangSpecProperty key="socket-allow-4" value="base/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-exp" decorator="call" kind="function" initlabel="exp" color="math">
+       <description>
+        <arg-description n="1" doc-name="exponent">
+          The power to raise e to.
+        </arg-description>
+        <text>Returns the result of raising the mathematical constant 'e' to the given exponent.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="exp"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-log" decorator="call" kind="function" initlabel="log" color="math">
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="log"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-sin" decorator="call" kind="function" initlabel="sin" color="math">
+      <description>
+        <arg-description n="1" doc-name="degrees">
+          An angle expressed in degrees
+        </arg-description>
+        <text>Provides the sine of the given angle in degrees</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="degrees" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="sin-degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="degrees/number"/>
+        <LangSpecProperty key="socket-allow-2" value="degrees/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-cos" decorator="call" kind="function" initlabel="cos" color="math">
+      <description>
+        <arg-description n="1" doc-name="degrees">
+          An angle expressed in degrees
+        </arg-description>
+        <text>Provides the cosine of the given angle in degrees</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="degrees" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="cos-degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="degrees/number"/>
+        <LangSpecProperty key="socket-allow-2" value="degrees/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-tan" decorator="call" kind="function" initlabel="tan" color="math">
+      <description>
+        <arg-description n="1" doc-name="degrees">
+          An angle expressed in degrees
+        </arg-description>
+        <text>Provides the tangent of the given angle in degrees</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="degrees" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="tan-degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="degrees/number"/>
+        <LangSpecProperty key="socket-allow-2" value="degrees/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-asin" decorator="call" kind="function" initlabel="asin" color="math">
+      <description>
+        <text>Provides the angle in the range (-90, +90] degrees with the given sine value</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="asin-degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-acos" decorator="call" kind="function" initlabel="acos" color="math">
+      <description>
+        <text>Provides the angle in the range [0, 180) degrees with the given cosine value</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="acos-degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-atan" decorator="call" kind="function" initlabel="atan" color="math">
+      <description>
+        <text>Provides the angle in the range (-90, +90) degrees with the given tangent value</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="atan-degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="default/number"/>
+        <LangSpecProperty key="socket-allow-2" value="default/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-atan2" decorator="call" kind="function" initlabel="atan2" color="math">
+      <description>
+        <arg-description n="1" doc-name="y">
+          the y-coordinate
+        </arg-description>
+        <arg-description n="2" doc-name="x">
+          the x-coordinate
+        </arg-description>
+        <text>Provides the angle in the range (-180, +180] degrees corresponding to the given rectangular coordinates</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="y" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="x" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="atan2-degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="y/number"/>
+        <LangSpecProperty key="socket-allow-2" value="y/value"/>
+        <LangSpecProperty key="socket-allow-3" value="x/number"/>
+        <LangSpecProperty key="socket-allow-4" value="x/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-radians-to-degrees" decorator="call" kind="function" initlabel="convert radians to degrees" color="math">
+      <description>
+        <arg-description n="1" doc-name="radians" />
+        <text>Returns the degree value in the range [0, 360) corresponding to its radians argument</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="radians" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="radians->degrees"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="radians/number"/>
+        <LangSpecProperty key="socket-allow-2" value="radians/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-degrees-to-radians" decorator="call" kind="function" initlabel="convert degrees to radians" color="math">
+      <description>
+        <arg-description n="1" doc-name="degrees" />
+        <text>Returns the radian value in the range [-Pi, +Pi) corresponding to its degrees argument</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="degrees" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="degrees->radians"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="degrees/number"/>
+        <LangSpecProperty key="socket-allow-2" value="degrees/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-random-set-seed" decorator="call" kind="command" initlabel="random set seed" color="math">
+      <description>
+        <arg-description n="1" doc-name="seed">
+          Numeric seed for random number generator
+        </arg-description>
+        <text>Specifies a numeric seed for the random number generator.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="seed" connector-kind="socket" connector-type="poly">
+        </BlockConnector>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="random-set-seed"/>
+        <LangSpecProperty key="socket-allow-1" value="seed/number"/>
+        <LangSpecProperty key="socket-allow-2" value="seed/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-random-fraction" decorator="call" kind="function" initlabel="random fraction" color="math">
+      <description>
+        <text>Returns a random number between 0 and 1.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="random-fraction"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="number-random-integer" decorator="call" kind="function" initlabel="random integer" color="math">
+      <description>
+        <arg-description n="1" doc-name="lower bound">
+          The lower bound
+        </arg-description>
+        <arg-description n="2" doc-name="upper bound">
+          The upper bound
+        </arg-description>
+        <text>Returns a random integer between the lower bound and the upper bound.  The bounds will be clipped to be smaller than 2**30.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="from" connector-kind="socket" connector-type="poly">
+          <DefaultArg genus-name="number" label="1"/>
+        </BlockConnector>
+        <BlockConnector label="to" connector-kind="socket" connector-type="poly">
+          <DefaultArg genus-name="number" label="100"/>
+        </BlockConnector>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="random-integer"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+        <LangSpecProperty key="socket-allow-1" value="from/number"/>
+        <LangSpecProperty key="socket-allow-2" value="from/value"/>
+        <LangSpecProperty key="socket-allow-3" value="to/number"/>
+        <LangSpecProperty key="socket-allow-4" value="to/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <BlockGenus name="format-as-decimal" decorator="call" kind="function" initlabel="format as decimal" color="math">
+      <description>
+        <arg-description n="1" doc-name="number">
+          The number to be formatted
+        </arg-description>
+        <arg-description n="2" doc-name="places">
+          The number of places
+        </arg-description>
+        <text>Returns the number formatted as a decimal with a specified number of places.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="number" connector-kind="socket" connector-type="poly">
+        </BlockConnector>
+        <BlockConnector label="places" connector-kind="socket" connector-type="poly">
+        </BlockConnector>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="format-as-decimal"/>
+        <LangSpecProperty key="plug-type-1" value="number"/>
+       <LangSpecProperty key="socket-allow-1" value="number/number"/>
+        <LangSpecProperty key="socket-allow-2" value="number/value"/>
+        <LangSpecProperty key="socket-allow-3" value="places/number"/>
+        <LangSpecProperty key="socket-allow-4" value="places/value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- Is-number? block -->
+    <BlockGenus name="number-is-number?" decorator="call" kind="function" initlabel="is a number?" color="math">
+      <description>
+        <arg-description n="1" name="thing" doc-name="thing">The thing to test.</arg-description>
+        <text>Tests if something is a number.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="thing" connector-kind="socket" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="is-number?"/>
+        <LangSpecProperty key="plug-type-1" value="boolean"/>
+        <LangSpecProperty key="socket-exclude-1" value="thing/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+
+    <!-- COMPONENTS BEGIN HERE -->
+

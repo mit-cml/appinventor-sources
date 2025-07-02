@@ -1194,7 +1194,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public int getMaxJobSizeBytes() {
     // TODO(user): what should this mean?
-    return 5 * 1024 * 1024;
+    return 10 * 1024 * 1024;
   }
 
   @Override

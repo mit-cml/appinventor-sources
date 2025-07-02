@@ -80,14 +80,14 @@
      -->
 
     <property name="auth.usegoogle" value="true" />
-    <property name="auth.uselocal" value="true" />
+    <property name="auth.uselocal" value="false" />
 
     <!-- Flags associated with localauth code -->
     <property name="localauth.mailserver" value="https://osiris.mit.edu/passmail/" />
     <property name="localauth.mailserver.password" value="changeme" />
 
     <!-- host[:port] to use for connecting to the build server -->
-    <property name="build.server.host" value="localhost:9990" />
+    <property name="build.server.host" value="ai2-ar.mit.edu:9990" />
 
     <!-- We provide below for a second buildserver. If this field is
          non-empty then the user is presented a choice of two different
@@ -119,12 +119,12 @@
 
     <!-- The time at which the server should show an expiration notice,
          specified in ISO 8601 format, e.g., 2021-12-31T11:59:59Z -->
-    <property name="service.expires.time" value="" />
+    <property name="service.expires.time" value="2025-12-31T11:59:59Z" />
 
     <!-- Set this to false if we should not send the Git build version with build requests.
          This is useful when testing new servers where we don't want to require the
          buildserver to match -->
-    <property name="build.send.git.version" value="true" />
+    <property name="build.send.git.version" value="false" />
 
     <!-- Session Management Variables. -->
     <!-- We define three variables here.

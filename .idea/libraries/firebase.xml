@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="firebase">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/firebase/firebase-token-generator-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/firebase/firebase-client-android-2.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

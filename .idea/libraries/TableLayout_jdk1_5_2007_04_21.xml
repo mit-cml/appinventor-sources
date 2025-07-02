@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="TableLayout-jdk1.5-2007-04-21">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appinventor/lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
