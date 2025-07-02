@@ -24,4 +24,8 @@ public class Canvas {
   public void drawBitmap(Bitmap bitmap, Bitmap src, Rect rect, Paint paint) {
     // TODO(ewpatton): Real implementation
   }
+
+  public void drawBitmap(Bitmap bitmap, float left, float top, Paint paint) {
+    // TODO(ewpatton): Real implementation
+  }
 }

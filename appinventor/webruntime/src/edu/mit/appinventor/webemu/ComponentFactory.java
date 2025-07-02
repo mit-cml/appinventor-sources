@@ -11,6 +11,7 @@ import com.google.appinventor.components.runtime.Clock;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.ImageBot;
 import com.google.appinventor.components.runtime.Label;
 import com.google.appinventor.components.runtime.ListPicker;
 import com.google.appinventor.components.runtime.Notifier;
@@ -33,6 +34,7 @@ public class ComponentFactory {
     LOOKUP.put("Button", Button::new);
     LOOKUP.put("ChatBot", ChatBot::new);
     LOOKUP.put("Clock", Clock::new);
+    LOOKUP.put("ImageBot", ImageBot::new);
     LOOKUP.put("Label", Label::new);
     LOOKUP.put("ListPicker", ListPicker::new);
     LOOKUP.put("Notifier", Notifier::new);

@@ -29,4 +29,8 @@ public class Paint {
     // TODO(ewpatton): Real implementation
     return xfermode;
   }
+
+  public void setColorFilter(ColorFilter cf) {
+    // TODO(ewpatton): Real implementation
+  }
 }
