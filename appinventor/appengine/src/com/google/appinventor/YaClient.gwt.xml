@@ -203,4 +203,12 @@
     <when-type-is class="com.google.appinventor.client.utils.Uploader"/>
     <when-property-is name="local.services" value="true"/>
   </replace-with>
+
+  <define-property name="rest" values="false,true"/>
+  <set-property name="rest" value="false"/>
+
+  <replace-with class="com.google.appinventor.client.rest.UserRestService">
+    <when-type-is class="com.google.appinventor.shared.rpc.user.UserInfoService"/>
+    <when-property-is name="rest" value="true"/>
+  </replace-with>  
 </module>
