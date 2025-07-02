@@ -316,4 +316,8 @@ public final class Project {
       listener.onProjectNodeRemoved(this, node);
     }
   }
+
+  public static Project createProject(UserProject projectInfo) {
+    return new Project(projectInfo);
+  }
 }
