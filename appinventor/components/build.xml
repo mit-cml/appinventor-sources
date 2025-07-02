@@ -597,7 +597,7 @@
         <include name="${components.pkg}/**/*.gwt.xml" />
         <include name="${components.pkg}/annotations/**/*.java" />
         <include name="${components.pkg}/common/*.java" />
-        <include name="${components.pkg}/runtime/AndroidViewComponent.java" />
+        <include name="${components.pkg}/runtime/Component.java" />
         <include name="${components.pkg}/runtime/VisibleComponent.java" />
         <include name="${components.pkg}/runtime/Component.java" />
         <include name="${components.pkg}/runtime/ComponentContainer.java" />
@@ -629,6 +629,7 @@
         <include name="${components.pkg}/runtime/SpeechRecognizerController.java" />
         <include name="${components.pkg}/runtime/TextToSpeech.java" />
         <include name="${components.pkg}/runtime/TextBox.java" />
+        <include name="${components.pkg}/runtime/TextBoxBase.java" />
         <include name="${components.pkg}/runtime/errors/ArrayIndexOutOfBoundsError.java" />
         <include name="${components.pkg}/runtime/errors/IllegalArgumentError.java" />
         <include name="${components.pkg}/runtime/errors/PermissionException.java" />
