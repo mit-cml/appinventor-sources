@@ -622,6 +622,7 @@
         <include name="${components.pkg}/runtime/ListPickerActivity.java" />
         <include name="${components.pkg}/runtime/ListView.java" />
         <include name="${components.pkg}/runtime/On*Listener.java" />
+        <include name="${components.pkg}/runtime/PasswordTextBox.java" />
         <include name="${components.pkg}/runtime/PermissionResultHandler.java" />
         <include name="${components.pkg}/runtime/Picker.java" />
         <include name="${components.pkg}/runtime/Sound.java" />

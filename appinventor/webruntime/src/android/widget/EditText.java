@@ -40,5 +40,12 @@ public class EditText extends TextView {
     }
   }
 
+  public void setTransformationMethod(Object method) {
+    if (!isTextArea) {
+      InputElement.as(element).setAttribute("type", "password");  // Treat any non-null method as a signal to enable password mode
+    }
+    // TODO(lroman10): Real implementation
+  }
+
 
 }
