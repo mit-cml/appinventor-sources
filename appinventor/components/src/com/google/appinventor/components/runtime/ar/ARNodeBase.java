@@ -31,6 +31,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   protected Anchor anchor = null;
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
+  protected float[] fromPropertyRotation = {0f, 0f, 0f, 1f};
   protected float scale = 1.0f;
   protected Session session = null;
   protected String texture = "";
@@ -85,38 +86,60 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
 
   public float[] PoseFromPropertyPosition() {
-    return fromPropertyPosition;
+    float[] combined = new float[7];
+    System.arraycopy(fromPropertyPosition, 0, combined, 0, 3);
+    System.arraycopy(fromPropertyRotation, 0, combined, 3, 4);
+    return combined;
   }
 
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
+  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 7 coordinates: x, y, z, qx, qy, qz, qw such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
       category = PropertyCategory.APPEARANCE)
-  public void PoseFromPropertyPosition(String positionFromProperty) {
+  public float[] PoseFromPropertyPosition(String positionFromProperty) {
     float[] position = {0f, 0f, 0f};
+    float[] rotation = {0f, 0f, 0f, 1f};
     if (positionFromProperty == null || positionFromProperty.isEmpty()) {
       this.fromPropertyPosition = position;
-      return;
+      this.fromPropertyRotation = rotation;
+      return new float[7];
     }
     String[] positionArray = positionFromProperty.split(",");
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 7; i++) {
       try {
         if (i < positionArray.length) {
-          position[i] = Float.parseFloat(positionArray[i]);
+          float val = Float.parseFloat(positionArray[i]);
+          if (i < 3) {
+            position[i] = val;
+          } else {
+            rotation[i - 3] = val;
+          }
         } else {
-          position[i] = 0f;
+          if (i < 3) {
+            position[i] = 0f;
+          } else {
+            rotation[i - 3] = 0f;
+          }
         }
       } catch (NumberFormatException e) {
-        position[i] = 0f;
+        if (i < 3) {
+          position[i] = 0f;
+        } else {
+          rotation[i - 3] = 0f;
+        }
       }
     }
     this.fromPropertyPosition = position;
-    float[] rotation = {0f, 0f, 0f, 1f}; // no rotation rn TBD
+    this.fromPropertyRotation = rotation;
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
       Anchor(myAnchor);
     }
     Log.i("store pose", "with position" + positionFromProperty);
+    float[] combined = new float[7];
+    System.arraycopy(position, 0, combined, 0, 3);
+    System.arraycopy(rotation, 0, combined, 3, 4);
+    return combined;
   }
 
   @Override

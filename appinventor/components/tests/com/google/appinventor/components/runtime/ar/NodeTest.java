@@ -10,9 +10,45 @@ import com.google.appinventor.components.runtime.ar.ARNodeBase;
 
 public class NodeTest {
 
+    // Concrete subclass for testing since ARNodeBase is abstract
+    private static class TestNode extends ARNodeBase {
+        public TestNode() {
+            super(null);
+        }
+
+        @Override
+        public Anchor Anchor() {
+            return null;
+        }
+
+        @Override
+        public void Anchor(Anchor a) {}
+
+        @Override
+        public float[] PoseFromPropertyPosition(String positionFromProperty) {
+            return super.PoseFromPropertyPosition(positionFromProperty);
+        }
+
+        @Override
+        public Session Session() {
+            return null;
+        }
+
+        @Override
+        public void Session(Session s) {}
+
+        @Override
+        public Trackable Trackable() {
+            return null;
+        }
+
+        @Override
+        public void Trackable(Trackable t) {}
+    }
+
     @Test
     public void testPoseFromPropertyPosition_ValidInput() {
-        ARNodeBase node = new ARNodeBase();
+        TestNode node = new TestNode();
         String validInput = "1.0,2.0,3.0,0.1,0.2,0.3,0.4";
         float[] result = node.PoseFromPropertyPosition(validInput);
         assertNotNull(result);
@@ -22,7 +58,7 @@ public class NodeTest {
 
     @Test
     public void testPoseFromPropertyPosition_EmptyInput() {
-        ARNodeBase node = new ARNodeBase();
+        TestNode node = new TestNode();
         String emptyInput = "";
         float[] result = node.PoseFromPropertyPosition(emptyInput);
         assertNotNull(result);
@@ -34,7 +70,7 @@ public class NodeTest {
 
     @Test
     public void testPoseFromPropertyPosition_NullInput() {
-        ARNodeBase node = new ARNodeBase();
+        TestNode node = new TestNode();
         String nullInput = null;
         float[] result = node.PoseFromPropertyPosition(nullInput);
         assertNotNull(result);
@@ -46,7 +82,7 @@ public class NodeTest {
 
     @Test
     public void testPoseFromPropertyPosition_PartialInput() {
-        ARNodeBase node = new ARNodeBase();
+        TestNode node = new TestNode();
         String partialInput = "1.0,2.0";
         float[] result = node.PoseFromPropertyPosition(partialInput);
         assertNotNull(result);
@@ -60,7 +96,7 @@ public class NodeTest {
 
     @Test
     public void testPoseFromPropertyPosition_InvalidInput() {
-        ARNodeBase node = new ARNodeBase();
+        TestNode node = new TestNode();
         String invalidInput = "a,b,c,d,e,f,g";
         float[] result = node.PoseFromPropertyPosition(invalidInput);
         assertNotNull(result);
