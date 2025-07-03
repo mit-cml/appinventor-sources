@@ -56,3 +56,81 @@
 /*    background: rgba(0, 0, 0, 0.8); !* Full-screen overlay *!*/
 /*    z-index: 1000;*/
 /*}*/
+
+/* mobile.css */
+
+/* Ensure the page allows horizontal scrolling if content overflows */
+html, body {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* TopPanel: Larger height for mobile touch-friend Likely need to set width here too */
+.ode-TopPanel {
+    height: 90px;
+    min-height: 72px;
+    padding: 8px; /* Increased padding for better spacing */
+    overflow: hidden;
+    /* Keep flex layout as is, no need for min-width since content will dictate width */
+}
+
+/* Logo: Adjust size for mobile */
+.ode-TopPanel img {
+    height: 50px;
+    width: 290px; /* Maintain aspect ratio */
+    margin-left: -75px;
+}
+
+/* Logo text: Larger font for readability */
+.ode-LogoText {
+    font-size: 20px;
+}
+
+/* Toolbar: No direct size change, inherits TopPanel height */
+.ode-TopToolbar {
+    /* No specific overrides needed unless toolbar has child elements to size */
+}
+
+/* Account section: Larger text and padding */
+.ode-TopPanelAccount {
+}
+
+/* Links: Larger text and spacing */
+.ode-TopPanelLinks .gwt-Label,
+.ode-TopPanelLinks .gwt-Anchor,
+.ode-TopPanelLinks .gwt-TitleLabel {
+    font-size: 16px;
+    margin-right: 20px; /* Slightly more spacing */
+}
+
+/* Buttons: Match TopPanel height, larger touch area */
+.ode-TopPanelButton,
+.ActionDropDown-Default,
+.ActionDropDown-Options {
+    height: 72px;
+    font-size: 16px;
+    padding: 0; /* Larger touch targets */
+    float: right;
+}
+
+/* Icon buttons: Larger margins */
+.ode-TopPanelIconButton {
+    margin: 8px 12px;
+}
+
+/* Warning label: Ensure it’s readable if present */
+.ode-TopPanelWarningLabel {
+    font-size: 16px;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+}
+
+.material-icons{
+    font-size: 75px
+}

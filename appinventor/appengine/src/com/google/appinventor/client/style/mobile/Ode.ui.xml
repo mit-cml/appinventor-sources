@@ -13,8 +13,8 @@
     <Ui:with field="style" />
     <g:FlowPanel ui:field="rootPanel">
         <mob:TopPanelMob ui:field="topPanel" />
-        <box:AssetListBox ui:field="assetListBox" />
-        <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
+        <box:AssetListBox ui:field="assetListBox" visible="false"/>
+        <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel" visible="false">
             <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
                 <g:FlowPanel width="100%" >

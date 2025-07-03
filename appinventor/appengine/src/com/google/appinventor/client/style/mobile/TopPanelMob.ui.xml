@@ -13,7 +13,7 @@
     <ui:with field="config" type="com.google.appinventor.client.OdeMessages"/>
     <g:FlowPanel styleName="ode-TopPanel">
         <g:HTMLPanel>
-            <img srcset="" src="/static/images/codi-logo.svg" ui:field="logo" height="37px"/>
+            <img srcset="" src="/static/images/codi-logo.svg" ui:field="logo" height="90px"/>
         </g:HTMLPanel>
         <mob:TopToolbarMob ui:field="topToolbar"/>
         <g:FlowPanel ui:field="rightPanel">
@@ -22,7 +22,7 @@
                          ui:field="readOnly"/>
                 <!-- Help Menu -->
                 <ai:DropDownButton name="Help" caption="{messages.helpTabName}" styleName="ode-TopPanelButton"
-                                   ui:field="helpDropDown" align="right" icon="help">
+                                   ui:field="helpDropDown" align="right" icon="help" visible="false">
                     <ai:DropDownItem name="About" caption="{messages.aboutMenuItem}">
                         <actions:AboutAction/>
                     </ai:DropDownItem>
@@ -59,7 +59,7 @@
                     </ai:DropDownItem>
                 </ai:DropDownButton>
 
-                <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links">
+                <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links" visible="false">
                     <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
                                        ui:field="languageDropDown" icon="language"/>
                     <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"

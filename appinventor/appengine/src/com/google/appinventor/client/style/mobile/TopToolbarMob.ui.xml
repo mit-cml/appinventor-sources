@@ -44,7 +44,7 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
-        ui:field="settingsDropDown" align="left" icon="menu" caption="{messages.menuButton}">
+        ui:field="settingsDropDown" align="left" icon="menu">
     </ai:DropDownButton>
 
       <g:VerticalPanel ui:field="menuContent" visible="false" spacing="10">
@@ -132,6 +132,36 @@
                   <g:Button ui:field="userAdminButton" text="{messages.userAdminMenuItem}"/>
               </g:VerticalPanel>
           </g:DisclosurePanel>
+
+          <g:DisclosurePanel>
+              <g:header styleName="mobile-SectionHeader" icon="help">Help</g:header>
+              <g:VerticalPanel styleName="mobile-SectionPanel">
+                  <g:Button ui:field="aboutButton" text="{messages.aboutMenuItem}"/>
+                  <g:Button ui:field="guideButton" text="{messages.guideTabName}"/>
+                  <g:Button ui:field="feedbackButton" text="{messages.feedbackTabName}"/>
+                  <g:Button ui:field="libraryButton" text="{messages.libraryMenuItem}"/>
+                  <g:Button ui:field="getStartedButton" text="{messages.getStartedMenuItem}"/>
+                  <g:Button ui:field="extensionsButton" text="{messages.extensionsMenuItem}"/>
+                  <g:Button ui:field="tutorialsButton" text="{messages.tutorialsMenuItem}"/>
+                  <g:Button ui:field="troubleshootingButton" text="{messages.troubleshootingMenuItem}"/>
+                  <g:Button ui:field="forumsButton" text="{messages.forumsMenuItem}"/>
+                  <g:Button ui:field="showSplashButton" text="{messages.showSplashMenuItem}"/>
+                  <g:Button ui:field="showShortcutsButton" text="{messages.showShortcuts}"/>
+                </g:VerticalPanel>
+          </g:DisclosurePanel>
+
+          <g:DisclosurePanel>
+              <g:header styleName="mobile-SectionHeader" >Account</g:header>
+            <g:VerticalPanel>
+              <g:VerticalPanel styleName="mobile-SectionPanel">
+                <g:Button ui:field="signOutButton" text="{messages.signOutLink}"/>
+                <g:Button ui:field="deleteAccountItem" text="{messages.deleteAccountLink}"/>
+              </g:VerticalPanel>
+            </g:VerticalPanel>
+          </g:DisclosurePanel>
+
+          <g:Button ui:field="languageButton" text="Language" styleName="mobile-MenuItem"/>
+
       </g:VerticalPanel>
 
 
