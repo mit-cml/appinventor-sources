@@ -7,6 +7,7 @@ package edu.mit.appinventor.webemu;
 
 import com.google.appinventor.components.runtime.Button;
 import com.google.appinventor.components.runtime.ChatBot;
+import com.google.appinventor.components.runtime.CheckBox;
 import com.google.appinventor.components.runtime.Clock;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
@@ -32,6 +33,7 @@ public class ComponentFactory {
   static {
     LOOKUP.put("Button", Button::new);
     LOOKUP.put("ChatBot", ChatBot::new);
+    LOOKUP.put("CheckBox", CheckBox::new);
 //    LOOKUP.put("Clock", Clock::new);
     LOOKUP.put("Label", Label::new);
     LOOKUP.put("ListPicker", ListPicker::new);

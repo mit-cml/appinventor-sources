@@ -612,6 +612,7 @@
         <include name="${components.pkg}/runtime/Button.java" />
         <include name="${components.pkg}/runtime/ButtonBase.java" />
         <include name="${components.pkg}/runtime/ChatBot.java" />
+        <include name="${components.pkg}/runtime/CheckBox.java" />
         <include name="${components.pkg}/runtime/Clock.java" />
         <include name="${components.pkg}/runtime/Deleteable.java" />
         <include name="${components.pkg}/runtime/Label.java" />
@@ -630,6 +631,7 @@
         <include name="${components.pkg}/runtime/TextToSpeech.java" />
         <include name="${components.pkg}/runtime/TextBox.java" />
         <include name="${components.pkg}/runtime/TextBoxBase.java" />
+        <include name="${components.pkg}/runtime/ToggleBase.java" />
         <include name="${components.pkg}/runtime/errors/ArrayIndexOutOfBoundsError.java" />
         <include name="${components.pkg}/runtime/errors/IllegalArgumentError.java" />
         <include name="${components.pkg}/runtime/errors/PermissionException.java" />
