@@ -18,8 +18,6 @@
 	"Blockly.Msg.HORIZONTAL_PARAMETERS": "Parametrus išdėstyti horizontaliai",
 	"Blockly.Msg.VERTICAL_PARAMETERS": "Parametrus išdėstyti vertikaliai",
 	"Blockly.Msg.CONFIRM_DELETE": "Patvirtinti pašalinimą",
-	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Šis vaizdas nurodo šiuos blokų, kurie reikalauja plėtinių, kurie nėra projekte:\n\n",
-	"Blockly.Msg.ERROR_PARSING_XML": "Klaida: Nepavyko išanalizuoti XML iš PNG failo. Prašome pabandyti vėl.",
 	"Blockly.Msg.DELETE_ALL_BLOCKS": "Pašalinti visus %1 blokus (-ų)?",
 	"Blockly.Msg.DELETE_BLOCK": "Pašalinti bloką",
 	"Blockly.Msg.DELETE_X_BLOCKS": "Pašalinti %1 blokus (-ų)",

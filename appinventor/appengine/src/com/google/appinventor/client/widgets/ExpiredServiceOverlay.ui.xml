@@ -19,8 +19,6 @@
       font-weight: bold;
       color: darkred;
       text-align: center;
-      z-index: 100000;
-      opacity: 0.7;
     }
   </ui:style>
 

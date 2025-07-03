@@ -1,12 +1,12 @@
-.blockly-icon-warning .blocklyIconShape {
+.blocklyWarningIconGroup .blocklyIconShape {
   cursor: default;
   fill: #ff5;
   stroke-width: 1px;
   stroke: #555;
 }
 
-.blockly-icon-warning .blocklyIconSymbol {
-  fill: #222;
+.blocklyWarningIconGroup .blocklyIconSymbol {
+  fill: #000;
 }
 
 .blocklyIconGroup .blocklyErrorIconOutline {
@@ -33,7 +33,7 @@
   cursor: pointer;
 }
 
-.blocklyZoom:hover {
+.blocklyZoomButton:hover {
   cursor: pointer;
 }
 
@@ -41,12 +41,4 @@
 .dyslexic .blocklyFieldParameter,
 .dyslexic .goog-menuitem .goog-menuitem-content {
   font-family: OpenDyslexic, Helvetica, Arial, sans-serif;
-}
-
-.blocklyMultiselect:hover {
-  cursor: pointer;
-}
-
-.blocklyTrash:hover {
-  cursor: pointer;
 }

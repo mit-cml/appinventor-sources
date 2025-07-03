@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -34,8 +34,15 @@ import java.io.PrintWriter;
  *
  */
 public class ExtendedServiceProxyGenerator extends Generator {
+  // Suffix that is appended to the name of the service interface to build the
+  // name of the proxy class
   private static final String PROXY_SUFFIX = "_ExtendedProxy";
+
+  // Suffix that is appended to the name of the service interface to build the
+  // name of the asynchronous service interface
   private static final String ASYNC_SUFFIX = "Async";
+
+  // Delegate generator to generate "normal" proxies
   private static final Generator PROXY_GENERATOR = new ServiceInterfaceProxyGenerator();
 
   @Override
@@ -60,32 +67,29 @@ public class ExtendedServiceProxyGenerator extends Generator {
    * @return the name of the extended proxy class
    */
   private String generateExtendedProxy(TreeLogger logger, GeneratorContext context,
-      String typeName, String proxyTypeName) throws UnableToCompleteException {
-
+      String typeName, String proxyTypeName) {
     JClassType type = context.getTypeOracle().findType(typeName);
-    if (type == null) {
-      logger.log(TreeLogger.ERROR, "Unable to find type " + typeName);
-      throw new UnableToCompleteException();
-    }
-
     String packageName = type.getPackage().getName();
     String className = type.getSimpleSourceName() + PROXY_SUFFIX;
     String asyncName = typeName + ASYNC_SUFFIX;
 
     String classNameExtendedServiceProxy = "com.google.appinventor.client.ExtendedServiceProxy";
 
+    // The generator can be invoked for the same class name more than once.
+    // In this case the GeneratorContext.tryCreate method will return null to
+    // indicate that the file already exists. This is not an error.
     PrintWriter out = context.tryCreate(logger, packageName, className);
     if (out != null) {
       out.println("package " + packageName + ";");
-      out.println("class " + className + " extends " + classNameExtendedServiceProxy + "<" + typeName + ">");
+      out.println("class " + className);
+      out.println("    extends " + classNameExtendedServiceProxy + "<" + typeName + ">");
       out.println("    implements " + ServiceDefTarget.class.getName() + ", " + asyncName + " {");
       out.println("  private " + proxyTypeName + " proxy = new " + proxyTypeName + "();");
-
-      // Implement ServiceDefTarget methods
       out.println("  public String getServiceEntryPoint() {");
       out.println("    return proxy.getServiceEntryPoint();");
       out.println("  }");
-      out.println("  public void setRpcRequestBuilder(" + RpcRequestBuilder.class.getName() + " builder) {");
+      out.println("  public void setRpcRequestBuilder(" + RpcRequestBuilder.class.getName() +
+          " builder) {");
       out.println("    proxy.setRpcRequestBuilder(builder);");
       out.println("  }");
       out.println("  public void setServiceEntryPoint(String address) {");
@@ -100,6 +104,7 @@ public class ExtendedServiceProxyGenerator extends Generator {
       }
 
       out.println("}");
+
       context.commit(logger, out);
     }
 
@@ -114,6 +119,7 @@ public class ExtendedServiceProxyGenerator extends Generator {
    * @param typeName type name of the containing proxy class
    */
   private void printMethod(PrintWriter out, JMethod method, String typeName) {
+    // Build parameter lists
     int i = 0;
     StringBuilder actualParamsBuilder = new StringBuilder();
     StringBuilder formalParamsBuilder = new StringBuilder();
@@ -122,6 +128,7 @@ public class ExtendedServiceProxyGenerator extends Generator {
         actualParamsBuilder.append(", ");
         formalParamsBuilder.append(", ");
       }
+
       String paramType = param.getType().getParameterizedQualifiedSourceName();
       String paramName = "p" + i++;
       actualParamsBuilder.append(paramName);
@@ -130,16 +137,18 @@ public class ExtendedServiceProxyGenerator extends Generator {
     String actualParams = actualParamsBuilder.toString();
     String formalParams = formalParamsBuilder.toString();
 
+    // Information about the return type
     JType returnType = method.getReturnType();
     boolean hasReturnValue = !returnType.getSimpleSourceName().equals("void");
 
     JPrimitiveType primitiveReturnType = returnType.isPrimitive();
-    String resultType = primitiveReturnType != null 
-        ? primitiveReturnType.getQualifiedBoxedSourceName()
-        : returnType.getParameterizedQualifiedSourceName();
+    String resultType =
+        primitiveReturnType != null ? primitiveReturnType.getQualifiedBoxedSourceName()
+            : returnType.getParameterizedQualifiedSourceName();
 
     String callbackType = AsyncCallback.class.getName() + "<" + resultType + ">";
 
+    // Print method
     out.println("  public void " + method.getName() + "(" + formalParams
         + (formalParams.isEmpty() ? "" : ", ") + "final " + callbackType + " callback" + ") {");
     out.println("    fireStart(\"" + method.getName() + "\"" + (actualParams.isEmpty() ? "" : ", ")
@@ -167,6 +176,7 @@ public class ExtendedServiceProxyGenerator extends Generator {
   private String outcome(JMethod method, String outcome, String result) {
     String callListener = "fire" + outcome + "(\"" + method.getName() + "\", " + result + ");";
     String callCallback = "callback.on" + outcome + "(" + result + ");";
-    return callListener + " " + callCallback;
+
+    return callListener + ' ' + callCallback;
   }
 }

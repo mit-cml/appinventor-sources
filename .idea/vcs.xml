@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/appinventor/lib/blockly" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/appinventor/lib/closure-library" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/appinventor/schemekit/src/picrin" vcs="Git" />
-  </component>
-</project>

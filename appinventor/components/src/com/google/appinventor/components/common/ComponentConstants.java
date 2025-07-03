@@ -32,14 +32,6 @@ public class ComponentConstants {
   public static final int EMPTY_HV_ARRANGEMENT_WIDTH = 100;
   public static final int EMPTY_HV_ARRANGEMENT_HEIGHT = 100;
 
-  public static final int EMPTY_A_ARRANGEMENT_WIDTH = 100;
-  public static final int EMPTY_A_ARRANGEMENT_HEIGHT = 100;
-
-  /**
-   * Default value for the top and left coordinates of view components.
-   */
-  public static final int DEFAULT_X_Y = Integer.MIN_VALUE;
-
   /**
    * Canvas component.
    */
@@ -120,8 +112,6 @@ public class ComponentConstants {
   public static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
   public static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
   public static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
-  public static final int LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT = 5;
-
 
   /*
    * Chart Components

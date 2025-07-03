@@ -543,11 +543,6 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
     }
   }
 
-  @Override
-  public ChartDataModel<?, ?, ?, ?, ?> getDataModel() {
-    return null;
-  }
-
   private DashPathEffect getDashPathEffect() {
     switch (strokeStyle) {
       case Dashed:

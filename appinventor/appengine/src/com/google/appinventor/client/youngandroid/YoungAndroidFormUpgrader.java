@@ -277,9 +277,6 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Chart")) {
         srcCompVersion = upgradeChartProperties(componentProperties, srcCompVersion);
 
-      } else if (componentType.equals("ChartData2D")) {
-        srcCompVersion = upgradeChartData2DProperties(componentProperties, srcCompVersion);
-
       } else if (componentType.equals("ChatBot")) {
         srcCompVersion = upgradeChatBotProperties(componentProperties, srcCompVersion);
 
@@ -694,10 +691,6 @@ public final class YoungAndroidFormUpgrader {
       // Added the property to allow for the removal of the Thumb Slider
       srcCompVersion = 2;
     }
-    if (srcCompVersion < 3) {
-      // Added the NumberOfSteps property, TouchDown and TouchUp events
-      srcCompVersion = 3;
-    }
     return srcCompVersion;
   }
 
@@ -871,20 +864,6 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
       srcCompVersion = 3;
-    }
-    if (srcCompVersion < 4) {
-      // The axesTextColor and dataLabelColor properties were added.
-      // The ValueFormat property was added.
-      srcCompVersion = 4;
-    }
-    return srcCompVersion;
-  }
-
-  private static int upgradeChartData2DProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
-    if (srcCompVersion < 2) {
-      // Added a dataLabelColor feature.
-      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -1554,13 +1533,6 @@ public final class YoungAndroidFormUpgrader {
         }
       }
     }
-    if (srcCompVersion < 10) {
-      // The TextSize property was renamed to FontSize.
-      // Add new layout
-      handlePropertyRename(componentProperties, "TextSize", "FontSize");
-      // Properties related to this component have now been upgraded to version 10.
-      srcCompVersion = 10;
-    }
     return srcCompVersion;
   }
 
@@ -1573,11 +1545,6 @@ public final class YoungAndroidFormUpgrader {
       // Version 3:
       // The speed parameter was added to the LocationChanged event
       srcCompVersion = 3;
-    }
-    if (srcCompVersion < 4) {
-      //Version 4:
-      //The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
-      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -2096,10 +2063,6 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // Adds ScaleUnits and MapType dropdowns.
       srcCompVersion = 6;
-    }
-    if (srcCompVersion < 7) {
-      // Adds CustomUrl (MapType 4).
-      srcCompVersion = 7;
     }
     return srcCompVersion;
   }

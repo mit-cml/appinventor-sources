@@ -50,7 +50,7 @@ public class NoProjectDialogBox extends DialogBox {
   @UiField
   Button goToPurr;
   @UiField
-  Button goToChat;
+  Button goToTalk;
   @UiField
   Button goToYR;
   @UiField
@@ -88,11 +88,12 @@ public class NoProjectDialogBox extends DialogBox {
             "HelloPurr");
   }
 
-  @UiHandler("goToChat")
-  void handleGoToChat(ClickEvent e) {
+  @UiHandler("goToTalk")
+  void handleGoToTalk(ClickEvent e) {
     this.hide();
-    new TemplateUploadWizard().createProjectFromExistingZip("SimpleChatbot", new NewTutorialProject(),
-        "SimpleChatbot");
+    TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
+        + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/talk_to_me/TalkToMe.asc",
+        new NewTutorialProject());
   }
 
   @UiHandler("goToYR")

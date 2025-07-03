@@ -170,16 +170,8 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 : Specifies the `FeatureCollection`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
-{:id="FeatureCollection.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
-
 {:id="FeatureCollection.Source" .text .ro} *Source*
 : Specifies the source URL used to populate the feature collection. If the feature collection was not loaded from a URL, this will be the empty string.
-
-{:id="FeatureCollection.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
 
 {:id="FeatureCollection.Visible" .boolean} *Visible*
 : Specifies whether the `FeatureCollection` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -371,7 +363,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 
 A two-dimensional container that renders map tiles in the background and allows for multiple
  [`Marker`](#Marker) elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- contributors and the the United States Geological Survey, or a custom basemap URL can be provided.
+ contributors and the the United States Geological Survey.
 
  The `Map` component provides three utilities for manipulating its boundaries with App Inventor.
  First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -401,11 +393,6 @@ A two-dimensional container that renders map tiles in the background and allows 
  [`PanTo`](#Map.PanTo) with numerical latitude and longitude rather than convert
  to the string representation for use with this property.
 
-{:id="Map.CustomUrl" .text} *CustomUrl*
-: Update the custom URL of the base tile layer in use by the map.
- e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
- e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername
-
 {:id="Map.EnablePan" .boolean} *EnablePan*
 : Enables or disables the ability of the user to move the Map.
 
@@ -431,10 +418,6 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Gets the latitude of the center of the Map. To change the latitude, use the
  [`PanTo`](#Map.PanTo) method.
 
-{:id="Map.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
-
 {:id="Map.LocationSensor" .component .wo} *LocationSensor*
 : Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
  rather than the built-in location provider.
@@ -450,7 +433,6 @@ A two-dimensional container that renders map tiles in the background and allows 
    1. Roads
    2. Aerial
    3. Terrain
-   4. Custom
 
    **Note:** Road layers are provided by OpenStreetMap and aerial and terrain layers are
  provided by the U.S. Geological Survey.
@@ -476,10 +458,6 @@ A two-dimensional container that renders map tiles in the background and allows 
 
 {:id="Map.ShowZoom" .boolean} *ShowZoom*
 : Specifies whether to show zoom controls or not.
-
-{:id="Map.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
 
 {:id="Map.UserLatitude" .number .ro .bo} *UserLatitude*
 : Returns the user's latitude if ShowUser is enabled.

@@ -6,8 +6,6 @@
 
 package com.google.appinventor.server;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
-
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
@@ -126,7 +124,7 @@ public final class FileImporterImpl implements FileImporter {
 
           } else {
 
-            if (fileName.startsWith(SRC_FOLDER)) {
+            if (fileName.startsWith(YoungAndroidProjectService.SRC_FOLDER)) {
               // For files within the src folder, we need to update the directory that we put files
               // in. Adjust the fileName so that it corresponds to this project's package.
               fileName = srcDirectory + '/' + StorageUtil.basename(fileName);

@@ -24,15 +24,12 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.logging.Logger;
 
 /**
  * Wizard for renaming projects.
  *
  */
 public class RequestNewProjectNameWizard extends Wizard {
-
-  private static final Logger LOG = Logger.getLogger(RequestNewProjectNameWizard.class.getName());
 
   private LabeledTextBox projectNameTextBox;
   private RequestProjectNewNameInterface newName;

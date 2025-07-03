@@ -8,8 +8,6 @@
 	"Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT": "slå upp parvis  nyckel %1 par %2 hittadesInte %3",
 	"Blockly.Msg.VARIABLE_CATEGORY": "Variabler",
 	"Blockly.Msg.ADD_COMMENT": "Lägg till kommentar",
-	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Den här bilden refererar till följande block som kräver tillägg som inte finns i projektet:\n\n",
-	"Blockly.Msg.ERROR_PARSING_XML": "Fel: Kunde inte analysera XML från PNG-filen. Vänligen försök igen.",
 	"Blockly.Msg.EXPAND_BLOCK": "Expandera block",
 	"Blockly.Msg.LANG_CONTROLS_IF_ELSE_TITLE_ELSE": "annars",
 	"Blockly.Msg.LANG_TEXT_SPLIT_TOOLTIP_SPLIT": "Delar upp texten i bitar med texten 'vid' som delningspunkt och ger en lista med resultatet.  \nAtt dela upp 'one,two,three,four' vid ',' (komma) ger listan '(one two three four)'. \nAtt dela upp 'one-potato,two-potato,three-potato,four' vid '-potato' ger listan '(one two three four)'.",

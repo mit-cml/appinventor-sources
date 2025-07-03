@@ -112,7 +112,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     guard !_readOnly else {
       return false
     }
-
+   
     if _numbersOnly {
       let decimalSeparator = Locale.current.decimalSeparator ?? "."
       let escapedDecimalSeparator = decimalSeparator == "." ? "\\." : ","
@@ -124,7 +124,6 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
       if let range = Range(range, in: textField.text ?? "") {
         textField.text?.replaceSubrange(range,with: string)
       }
-      textField.sendActions(for: .editingChanged)
     }
     return false
   }
@@ -141,7 +140,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     _base = base
     _field.addTarget(base, action: #selector(TextBoxBase.textFieldChanged(_:)), for: .editingChanged)
   }
-
+  
   func textFieldDidBeginEditing(_ textField: UITextField) {
     _base?.GotFocus()
   }

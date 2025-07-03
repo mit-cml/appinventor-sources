@@ -37,10 +37,8 @@ public class RunApkSigner implements AndroidTask {
     };
 
     if (!Execution.execute(null, apksignerCommandLine,
-        System.out, System.err, Execution.Timeout.SHORT)) {
-      context.getReporter().warn("We could not sign your app. In case you are using a custom keystore, please make " +
-        "sure its password is set to 'android', and the key is set to 'androidkey'.");
-      return TaskResult.generateError("Error while running ApkSigner tool");
+        System.out, System.err)) {
+      TaskResult.generateError("Error while running ZipAligned tool");
     }
 
     return TaskResult.generateSuccess();

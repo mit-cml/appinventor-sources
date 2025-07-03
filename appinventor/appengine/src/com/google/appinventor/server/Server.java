@@ -4,58 +4,51 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-import java.util.logging.Logger;
+package com.google.appinventor.server;
+
+import com.google.appengine.api.utils.SystemProperty;
+import com.google.appinventor.shared.rpc.ServerLayout;
+
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * TODO(user);
+ * Useful server-related methods. Probably these should be moved elsewhere.
+ *
+ */
 public class Server {
 
-  private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
-  
-  // Start page for ODE/YA; main page redirected by other servlets
-  public static final String START_PAGE;
-  
-  // System property name for GWT UI module start page
+  // Start page for ODE/YA. This is where other servlets redirect to to get the main page
+  public static final String START_PAGE = getStartPage();
+
+  // System property name to obtain GWT UI module
   private static final String START_PAGE_KEY = "StartPage";
 
-  static {
-    START_PAGE = getStartPage();
-    if (START_PAGE == null) {
-      LOGGER.warning("Start page not found. Ensure 'StartPage' property is set.");
-    }
-  }
 
-  /**
-   * Retrieves the start page URL from system properties.
-   *
-   * @return the configured start page URL, or null if not set
-   */
-  private static String getStartPage() {
+  public static String getStartPage() {
     return System.getProperty(START_PAGE_KEY);
   }
 
   /**
-   * Checks if this server instance is running on App Engine production.
+   * Indicates whether this server instance is running on app engine production
    *
-   * @return true if running on App Engine production, false otherwise
+   * @return  true if this server instance is running on app engine production
    */
   public static boolean isProductionServer() {
     return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
   }
 
   /**
-   * Builds a full URL by appending the provided path to the current server's base URL.
+   * Returns URL built by appending path to the current server and the server
+   * port and base URL.
    *
-   * @param req the HTTP request to retrieve scheme, server name, and port
-   * @param path the requested path to append
-   * @return a complete URL as a string
+   * @param req HTTP request
+   * @param path requested path
+   * @return build URL
    */
   public static String urlFromPath(HttpServletRequest req, String path) {
-    int port = req.getServerPort();
-    boolean isDefaultPort = (req.getScheme().equals("http") && port == 80) ||
-                            (req.getScheme().equals("https") && port == 443);
-    String portPart = isDefaultPort ? "" : ":" + port;
-
-    return req.getScheme() + "://" + req.getServerName() + portPart + ServerLayout.ODE_BASEURL + path;
+    // TODO(user): omit the port if it is the default port for a schema
+    return req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
+        + ServerLayout.ODE_BASEURL + path;
   }
 }
-

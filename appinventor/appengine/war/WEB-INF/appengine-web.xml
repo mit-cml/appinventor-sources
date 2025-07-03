@@ -155,7 +155,7 @@
     <property name="firebase.url" value="" />
 
     <property name="library.url" value="http://appinventor.mit.edu/explore/library" />
-    <property name="getstarted.url" value="http://appinventor.mit.edu/explore/get-started" />
+    <property name="get_started.url" value="http://appinventor.mit.edu/explore/get-started" />
     <property name="tutorials.url" value="http://appinventor.mit.edu/explore/ai2/tutorials" />
     <property name="extensions.url" value="http://appinventor.mit.edu/extensions" />
     <property name="troubleshooting.url" value="http://appinventor.mit.edu/explore/ai2/support/troubleshooting" />

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="TranslateApp">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/appinventor/appengine/war/templates/TranslateApp/TranslateApp.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

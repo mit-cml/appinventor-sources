@@ -48,15 +48,11 @@ public final class Urls {
    * repo, and galleryId parameters from the current session.
    *
    * @param base the base URI
-   * @param hasParam true if the base URL already has a parameter, so ? should not be used
    * @return the new URI to redirect to
    */
-  public static String makeUri(String base, boolean hasParam) {
+  public static String makeUri(String base) {
     String[] params = new String[] { "locale", "repo", "galleryId" };
     String separator = "?";
-    if (hasParam) {
-      separator = "&";
-    }
     StringBuilder sb = new StringBuilder(base);
     for (String param : params) {
       String value = Window.Location.getParameter(param);
@@ -69,10 +65,6 @@ public final class Urls {
       }
     }
     return sb.toString();
-  }
-
-  public static String makeUri(String base) {
-    return makeUri(base, false);
   }
 
 }

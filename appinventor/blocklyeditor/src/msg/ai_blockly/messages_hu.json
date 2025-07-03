@@ -5,8 +5,6 @@
 		"locale": "hu",
 		"messagedocumentation" : "qqq"
 	},
-	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Ez a kép az alábbi blokkokra hivatkozik, amelyek kiterjesztéseket igényelnek, amelyek nincsenek jelen a projektben:\n\n",
-	"Blockly.Msg.ERROR_PARSING_XML": "Hiba: Nem sikerült az XML elemzése a PNG fájlból. Kérjük, próbálja újra.",
 	"Blockly.Msg.UNDO": "Visszavonás",
 	"Blockly.Msg.REDO": "Mégis",
 	"Blockly.Msg.CLEAN_UP": "Rendrakás",

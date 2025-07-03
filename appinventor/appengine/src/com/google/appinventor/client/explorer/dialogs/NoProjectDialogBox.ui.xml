@@ -66,8 +66,8 @@
       <div class="ode-noDialogExampleDiv">
         <div class='ode-noDialogUpperDiv'>
           <h4 class="ode-noDialogExampleTitle">
-            <ui:msg key="simpleChatbotTitle"
-                description="Title of the Chatbot app">Simple Chatbot
+            <ui:msg key="talkToMeTitle"
+                    description="Title of the Talk to Me app">Talk to Me
             </ui:msg>
           </h4>
           <div class="ode-noDialogExampleImage">
@@ -75,13 +75,14 @@
           </div>
 
           <p class="ode-noDialogExampleAbout">
-            <ui:msg key="simpleChatbotDescription" description="Description of the Simple Chatbot app">
-              Create your very own ChatGPT app that will allow you, wherever you are, to connect to ChatGPT, ask questions, and have a conversation.
+            <ui:msg key="talkToMeDescription" description="Description of the Talk to Me app">
+              Text to Speech is surprisingly fun. Find out for yourself with this
+              starter app that talks.
             </ui:msg>
           </p>
         </div>
 
-        <g:Button ui:field='goToChat' styleName='ode-tutorialButton'>
+        <g:Button ui:field='goToTalk' styleName='ode-tutorialButton'>
           <ui:msg key="startTutorialButton">Go to Tutorial</ui:msg>
         </g:Button>
       </div>

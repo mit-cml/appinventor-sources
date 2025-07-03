@@ -689,59 +689,26 @@ Blockly.WarningHandler.prototype.setBlockError = function(block, message){
   block.setErrorIconText(message);
 };
 
-/**
- * Recursively counts all child blocks of a given block.
- * @param {Blockly.Block} block The parent block.
- * @return {number} The total number of child blocks (including nested children).
- */
-Blockly.WarningHandler.prototype.countChildBlocks = function(block) {
-  var count = 0;
-  var childBlocks = block.getChildren();
-
-  for (var i = 0; i < childBlocks.length; i++) {
-    var childBlock = childBlocks[i];
-    if (childBlock) {
-      console.log(`Found child block: ${childBlock.type} (ID: ${childBlock.id})`);
-      // Count the child block itself
-      count += 1;
-      // Recursively count the child block's children
-      var nestedChildCount = this.countChildBlocks(childBlock);
-      count += nestedChildCount;
-    }
+// Check a disposed block for any errors or warnings and update state accordingly.
+Blockly.WarningHandler.prototype.checkDisposedBlock = function(block){
+  if(block.warning) {
+    block.setWarningText(null);
   }
-
-  return count;
-};
-
-/**
- * Checks a disposed block for any errors or warnings and updates the state accordingly.
- * This function is called recursively for the block and all its child blocks.
- * @param {Blockly.Block} block The block being disposed.
- */
-Blockly.WarningHandler.prototype.checkDisposedBlock = function(block) {
-  console.log(`Checking disposed block: ${block.type} (ID: ${block.id})`);
-
-  // Handle warnings for the current block
-  if (block.hasWarning) {
+  if(block.error) {
+    block.setErrorIconText(null);
+  }
+  if(block.hasWarning) {
     block.hasWarning = false;
-    this.warningCount -= 1;
+    this.warningCount--;
     delete this.warningIdHash[block.id];
+    this.updateWarningErrorCount();
   }
-
-  // Handle errors for the current block
-  if (block.hasError) {
+  if(block.hasError) {
     block.hasError = false;
-    this.errorCount -= 1;
+    this.errorCount--;
     delete this.errorIdHash[block.id];
+    this.updateWarningErrorCount();
   }
-
-  // Recursively handle all child blocks
-  var children = block.getChildren();
-  for (var i = 0; i < children.length; i++) {
-    this.checkDisposedBlock(children[i]);
-  }
-
-  this.updateWarningErrorCount();
 };
 
 Blockly.WarningHandler.prototype['checkEmptySetterSocket'] = function(block) {

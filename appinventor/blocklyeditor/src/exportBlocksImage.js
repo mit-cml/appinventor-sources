@@ -120,7 +120,6 @@ goog.require('goog.Timer');
     clone.setAttribute("width", width);
     clone.setAttribute("height", height);
     clone.setAttribute("style", 'background-color: rgba(255, 255, 255, 0);');
-    clone.setAttribute("class", "geras2_renderer-renderer classic-theme");
     outer.appendChild(clone);
 
     var css = styles(el, options.selectorRemap);
@@ -519,68 +518,6 @@ Blockly.exportBlockAsPng = function(block) {
 };
 
 /**
- * Extracts the block types from the given XML.
- * @param {Document} xml - The XML document containing blocks.
- * @returns {Array<string>} An array of block types.
- */
-function extractBlockTypes(xml) {
-  var blockTypes = [];
-  var mutations = xml.getElementsByTagName('mutation');
-
-  for (var i = 0; i < mutations.length; i++) {
-    var componentType = mutations[i].getAttribute('component_type');
-    if (componentType) {
-      blockTypes.push(componentType);
-    }
-  }
-
-  return blockTypes;
-}
-
-/**
- * Validates the block types against the component database in the workspace.
- * @param {Array<string>} blockTypes - The block types to validate.
- * @param {Blockly.WorkspaceSvg} workspace - The workspace containing the component database.
- * @returns {Array<string>} An array of missing component types.
- */
-function validateBlockTypes(blockTypes, workspace) {
-  if (!blockTypes || blockTypes.length === 0) {
-    return [];
-  }
-
-  var componentDb = workspace.getComponentDatabase();
-  var missingExtensions = [];
-  for (var i = 0; i < blockTypes.length; i++) {
-    const typeDescriptor = componentDb.getType(blockTypes[i]);
-    if (!typeDescriptor || !typeDescriptor.componentInfo || typeDescriptor.componentInfo.name !== blockTypes[i]) {
-      missingExtensions.push(blockTypes[i]);
-    }
-  }
-
-  if (missingExtensions.length > 0) {
-    console.warn('Missing component types:', missingExtensions.join(', '));
-  }
-  return missingExtensions;
-}
-
-/**
- * Displays a dialog showing the missing extensions.
- * @param {Array<string>} missingExtensions - The missing component types.
- */
-function showMissingExtensionDialog(missingExtensions) {
-  // Filter out undefined or null values
-  missingExtensions = missingExtensions.filter(function(extension) {
-    return extension !== undefined && extension !== null;
-  });
-
-  if (missingExtensions.length > 0) {
-    var message = Blockly.Msg['REQUIRED_EXTENSIONS_MISSING'];
-    message += missingExtensions.join('\n');
-    alert(message);
-  }
-}
-
-/**
  * Imports a block from a PNG file if the code chunk is present.
  * @param {!Blockly.WorkspaceSvg} workspace the target workspace for the block
  * @param {goog.math.Coordinate} xy the coordinate to place the block
@@ -592,20 +529,6 @@ Blockly.importPngAsBlock = function(workspace, xy, png) {
     if (xmlChunk) {
       var xmlText = new TextDecoder().decode(xmlChunk.data);
       var xml = /** @type {!Element} */ (Blockly.utils.xml.textToDom(xmlText));
-      if (!xml) {
-        var message = Blockly.Msg['ERROR_PARSING_XML'];
-        alert(message);
-        console.error('Failed to parse XML from PNG.');
-        return;
-      }
-      var blockTypes = extractBlockTypes(xml);
-
-      var missingExtensions = validateBlockTypes(blockTypes, workspace);
-      if (missingExtensions.length > 0) {
-        showMissingExtensionDialog(missingExtensions);
-        return;
-      }
-
       xml = xml.firstElementChild;
       var block = /** @type {Blockly.BlockSvg} */ (Blockly.Xml.domToBlock(xml, workspace));
       block.moveBy(xy.x, xy.y);

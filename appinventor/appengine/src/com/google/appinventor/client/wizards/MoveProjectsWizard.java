@@ -42,8 +42,6 @@ public final class MoveProjectsWizard {
   @UiField Tree tree;
   @UiField Button topInvisible;
   @UiField Button bottomInvisible;
-  private List<Project> selectedProjects;
-  private List<ProjectFolder> selectedFolders;
 
   /**
    * Creates a new wizard for moving projects.
@@ -52,12 +50,7 @@ public final class MoveProjectsWizard {
     uibinder.createAndBindUi(this);
 
     manager = Ode.getInstance().getFolderManager();
-    ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
-    selectedProjects = projectList.getSelectedProjects();
-    selectedFolders = projectList.getSelectedFolders();
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());
-    // This undescriptive method below sets whether the tree is expanded or not
-    root.setState(true);
     tree.addItem(root);
     tree.setSelectedItem(root);
     moveDialog.center();
@@ -78,10 +71,10 @@ public final class MoveProjectsWizard {
     });
   }
 
-  FolderTreeItem renderFolder(ProjectFolder folder) {
+  static FolderTreeItem renderFolder(ProjectFolder folder) {
     FolderTreeItem treeItem = new FolderTreeItem(folder);
     for (ProjectFolder child : folder.getChildFolders()) {
-      if (!"*trash*".equals(child.getName()) && !selectedFolders.contains(child)) {
+      if (!"*trash*".equals(child.getName())) {
         FolderTreeItem childItem = renderFolder(child);
         childItem.setState(true);
         treeItem.addItem(childItem);
@@ -100,6 +93,9 @@ public final class MoveProjectsWizard {
   @UiHandler("moveButton")
   void moveProjects(ClickEvent e) {
     FolderTreeItem treeItem = (FolderTreeItem) tree.getSelectedItem();
+    ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
+    List<Project> selectedProjects = projectList.getSelectedProjects();
+    List<ProjectFolder> selectedFolders = projectList.getSelectedFolders();
     manager.moveItemsToFolder(selectedProjects, selectedFolders,
         treeItem.getFolder());
     moveDialog.hide();

@@ -18,8 +18,6 @@
     "Blockly.Msg.ENABLE_BLOCK": "启用代码块",
     "Blockly.Msg.HELP": "帮助",
     "Blockly.Msg.EXPORT_IMAGE": "下载工作区为图像",
-    "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "此图像引用了以下需要在项目中存在的扩展的块：\n\n",
-    "Blockly.Msg.ERROR_PARSING_XML": "错误：无法从PNG文件解析XML。请再试一次。",
     "Blockly.Msg.COLLAPSE_ALL": "折叠所有块",
     "Blockly.Msg.EXPAND_ALL": "展开所有块",
     "Blockly.Msg.ARRANGE_H": "横向排列所有块",

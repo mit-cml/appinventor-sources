@@ -5,8 +5,6 @@
 		"locale": "ru",
 		"messagedocumentation" : "qqq"
 	},
-	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Это изображение ссылается на следующие блоки, которые требуют расширений, отсутствующих в проекте:\n\n",
-	"Blockly.Msg.ERROR_PARSING_XML": "Ошибка: Не удалось разобрать XML из PNG файла. Пожалуйста, попробуйте снова.",
 	"Blockly.Msg.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION": "Этот блок не может использоваться в определении",
 	"Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER": "Это дубликат обработчика события для этого элемента.",
 	"Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN": "Выберите подходящий пункт из выпадающего меню.",

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2024 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,16 +15,15 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssets
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.FontStyle;
-import com.google.gwt.dom.client.Style.FontWeight;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.dom.client.Style.WhiteSpace;
 import com.google.gwt.dom.client.StyleElement;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.graphics.client.Color;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Helper methods for working with mock components.
@@ -44,9 +43,9 @@ public final class MockComponentsUtil {
    */
   static void setWidgetBackgroundColor(Widget widget, String color) {
     if (isNoneColor(color)) {
-      widget.getElement().getStyle().setBackgroundColor("transparent");
+      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "transparent");
     } else {
-      widget.getElement().getStyle().setBackgroundColor("#" + getAlphaHexString(color));
+      DOM.setStyleAttribute(widget.getElement(), "backgroundColor", "#" + getHexString(color, 6));
     }
   }
 
@@ -70,13 +69,13 @@ public final class MockComponentsUtil {
    */
   static void setWidgetBackgroundImage(Widget widget, String image) {
     if (image.isEmpty()) {
-      widget.getElement().getStyle().setBackgroundImage("none");
+      DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "none");
     } else {
-      widget.getElement().getStyle().setBackgroundImage("url(" + image + ')');
+      DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
     }
-    widget.getElement().getStyle().setProperty("backgroundRepeat", "no-repeat");
-    widget.getElement().getStyle().setProperty("backgroundPosition", "center");
-    widget.getElement().getStyle().setProperty("backgroundSize", "100% 100%");
+    DOM.setStyleAttribute(widget.getElement(), "backgroundRepeat", "no-repeat");
+    DOM.setStyleAttribute(widget.getElement(), "backgroundPosition", "center");
+    DOM.setStyleAttribute(widget.getElement(), "backgroundSize", "100% 100%");
   }
 
   /**
@@ -122,10 +121,8 @@ public final class MockComponentsUtil {
    * @param value  {@code true} for bold font and {@code false} for normal font
    */
   static void setWidgetFontBold(Widget widget, String value) {
-    widget
-        .getElement()
-        .getStyle()
-        .setFontWeight(Boolean.parseBoolean(value) ? FontWeight.BOLD : FontWeight.NORMAL);
+    DOM.setStyleAttribute(widget.getElement(), "fontWeight",
+        Boolean.parseBoolean(value) ? "bold" : "normal");
   }
 
   /**
@@ -136,9 +133,9 @@ public final class MockComponentsUtil {
    */
   static void setWidgetTextColor(Widget widget, String color) {
     if (isNoneColor(color)) {
-      widget.getElement().getStyle().setColor("transparent");
+      DOM.setStyleAttribute(widget.getElement(), "color", "transparent");
     } else {
-      widget.getElement().getStyle().setColor("#" + getAlphaHexString(color));
+      DOM.setStyleAttribute(widget.getElement(), "color", "#" + getHexString(color, 6));
     }
   }
 
@@ -161,10 +158,8 @@ public final class MockComponentsUtil {
    * @param value  {@code true} for italic font and {@code false} for normal font
    */
   static void setWidgetFontItalic(Widget widget, String value) {
-    widget
-        .getElement()
-        .getStyle()
-        .setFontStyle(Boolean.parseBoolean(value) ? FontStyle.ITALIC : FontStyle.NORMAL);
+    DOM.setStyleAttribute(widget.getElement(), "fontStyle",
+        Boolean.parseBoolean(value) ? "italic" : "normal");
   }
 
   /**
@@ -176,7 +171,8 @@ public final class MockComponentsUtil {
   static void setWidgetFontSize(Widget widget, String size) {
     // Fonts on Android are in scaled pixels...
     try {
-      widget.getElement().getStyle().setFontSize((int) (Float.parseFloat(size) * 0.9), Unit.PX);
+      DOM.setStyleAttribute(widget.getElement(), "fontSize",
+          (int)(Float.parseFloat(size) * 0.9) + "px");
     } catch (NumberFormatException e) {
       // Ignore this. If we throw an exception here, the project is unrecoverable.
     }
@@ -193,7 +189,7 @@ public final class MockComponentsUtil {
     Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
     if (project != null) {
       HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder =
-          (YoungAndroidProjectNode) project.getRootNode();
+        (YoungAndroidProjectNode) project.getRootNode();
       for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {
         if (asset.getName().equals(name)) {
           return asset;
@@ -227,7 +223,7 @@ public final class MockComponentsUtil {
    * @param fontResourceURL font resource url
    * @param resourceId      uniq ID of font resource.
    */
-  static void createFontResource(String fontFamily, String fontResourceURL, String resourceId) {
+  static void createFontResource(String fontFamily, String fontResourceURL, String resourceId)  {
     StyleElement resourceElement = Document.get().createStyleElement();
     resourceElement.setId(resourceId);
     String resource = "@font-face {";
@@ -249,7 +245,7 @@ public final class MockComponentsUtil {
    */
   static void setWidgetFontTypeface(SimpleEditor editor, Widget widget, String typeface) {
     String fontFamily = "";
-    if (typeface.equals("0") || typeface.equals("1")) {
+    if (typeface.equals("0") || typeface.equals("1")){
       fontFamily = "sans-serif";
     } else if (typeface.equals("2")) {
       fontFamily = "serif";
@@ -259,11 +255,11 @@ public final class MockComponentsUtil {
       fontFamily = typeface.substring(0, typeface.lastIndexOf("."));
       String resourceID = typeface.toLowerCase().substring(0, typeface.lastIndexOf("."));
       String resourceURL = convertFontPropertyValueToUrl(editor, typeface);
-      if (Document.get().getElementById(resourceID) == null) {
+      if (Document.get().getElementById(resourceID) == null)  {
         createFontResource(fontFamily, resourceURL, resourceID);
       }
     }
-    widget.getElement().getStyle().setProperty("fontFamily", fontFamily);
+    DOM.setStyleAttribute(widget.getElement(), "fontFamily", fontFamily);
   }
 
   /**
@@ -275,10 +271,10 @@ public final class MockComponentsUtil {
   static void updateTextAppearances(Widget widget, String width) {
     if (width.equals("-1")) {
       // for width = Automatic
-      widget.getElement().getStyle().setWhiteSpace(WhiteSpace.NOWRAP);
+      DOM.setStyleAttribute(widget.getElement(), "whiteSpace", "nowrap");
     } else {
       // for width = Fill Parent, Pixels or Percentage
-      widget.getElement().getStyle().setWhiteSpace(WhiteSpace.NORMAL);
+      DOM.setStyleAttribute(widget.getElement(), "whiteSpace", "normal");
     }
   }
 
@@ -306,7 +302,7 @@ public final class MockComponentsUtil {
         align = "right";
         break;
     }
-    widget.getElement().getStyle().setProperty("textAlign", align);
+    DOM.setStyleAttribute(widget.getElement(), "textAlign", align);
   }
 
   /**
@@ -356,20 +352,6 @@ public final class MockComponentsUtil {
   }
 
   /*
-   * Converts the hex string representing the color &HAARRGGBB to a hex color in the format RRGGBBAA
-   */
-  static String getAlphaHexString(String color) {
-    color = color.startsWith("&H") ? color.substring(2) : Long.toHexString(Long.parseLong(color));
-    int len = color.length();
-    if (len < 8) {
-      do {
-        color = 'F' + color;
-      } while (++len < 8);
-    }
-    return color.substring(2) + color.substring(0, 2);
-  }
-
-  /*
    * Retrieves the size style attributes of the given widgets and then clears
    * them.
    *
@@ -382,19 +364,19 @@ public final class MockComponentsUtil {
   }
 
   static String[] clearSizeStyle(Element element) {
-    String widthStyle = element.getStyle().getWidth();
-    String heightStyle = element.getStyle().getHeight();
-    String lineHeightStyle = element.getStyle().getLineHeight();
+    String widthStyle = DOM.getStyleAttribute(element, "width");
+    String heightStyle = DOM.getStyleAttribute(element, "height");
+    String lineHeightStyle = DOM.getStyleAttribute(element, "lineHeight");
     if (widthStyle != null) {
-      element.getStyle().clearWidth();
+      DOM.setStyleAttribute(element, "width", null);
     }
     if (heightStyle != null) {
-      element.getStyle().clearHeight();
+      DOM.setStyleAttribute(element, "height", null);
     }
     if (lineHeightStyle != null) {
-      element.getStyle().setProperty("lineHeight", "initial");
+      DOM.setStyleAttribute(element, "lineHeight", "initial");
     }
-    return new String[] {widthStyle, heightStyle, lineHeightStyle};
+    return new String[] { widthStyle, heightStyle, lineHeightStyle };
   }
 
   /*
@@ -410,13 +392,13 @@ public final class MockComponentsUtil {
 
   static void restoreSizeStyle(Element element, String[] style) {
     if (style[0] != null) {
-      element.getStyle().setProperty("width", style[0]);
+      DOM.setStyleAttribute(element, "width", style[0]);
     }
     if (style[1] != null) {
-      element.getStyle().setProperty("width", style[1]);
+      DOM.setStyleAttribute(element, "height", style[1]);
     }
     if (style[2] != null) {
-      element.getStyle().setProperty("width", style[2]);
+      DOM.setStyleAttribute(element, "lineHeight", style[2]);
     }
   }
 

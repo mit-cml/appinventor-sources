@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2024 MIT, All rights reserved
+// Copyright 2021-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -36,7 +36,6 @@ public class ComponentInfo {
   private final ConcurrentMap<String, Set<String>> queriesNeeded;
   private final ConcurrentMap<String, Set<String>> servicesNeeded;
   private final ConcurrentMap<String, Set<String>> contentProvidersNeeded;
-  private final ConcurrentMap<String, Set<String>> xmlsNeeded;
 
   private Set<String> uniqueLibsNeeded;
   private AARLibraries explodedAarLibs;
@@ -59,7 +58,6 @@ public class ComponentInfo {
     queriesNeeded = new ConcurrentHashMap<>();
     servicesNeeded = new ConcurrentHashMap<>();
     contentProvidersNeeded = new ConcurrentHashMap<>();
-    xmlsNeeded = new ConcurrentHashMap<>();
 
     uniqueLibsNeeded = Sets.newHashSet();
   }
@@ -137,10 +135,6 @@ public class ComponentInfo {
     return contentProvidersNeeded;
   }
 
-  public ConcurrentMap<String, Set<String>> getXmlsNeeded() {
-    return xmlsNeeded;
-  }
-
   @Override
   public String toString() {
     return "JsonInfo{"
@@ -153,7 +147,6 @@ public class ComponentInfo {
         + ", minSdksNeeded=" + minSdksNeeded
         + ", componentBroadcastReceiver=" + componentBroadcastReceiver
         + ", uniqueLibsNeeded=" + uniqueLibsNeeded
-        + ", xmlsNeeded=" + xmlsNeeded
         + '}';
   }
 }

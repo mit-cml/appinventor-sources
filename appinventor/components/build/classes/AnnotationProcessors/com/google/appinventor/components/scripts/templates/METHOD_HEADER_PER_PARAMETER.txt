@@ -1,1 +1,0 @@
-    <BlockConnector label="%1$s" connector-kind="socket" connector-type="poly"/>

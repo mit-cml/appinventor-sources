@@ -1,9 +1,8 @@
 // Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 package com.google.appinventor.shared.rpc.project.youngandroid;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
-
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 
 
 /**
@@ -31,6 +30,6 @@ public final class YoungAndroidYailNode extends YoungAndroidSourceNode {
 
   public static String getYailFileId(String qualifiedName) {
     return SRC_PREFIX + qualifiedName.replace('.', '/') 
-        + YAIL_FILE_EXTENSION;
+        + YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION;
   }
 }

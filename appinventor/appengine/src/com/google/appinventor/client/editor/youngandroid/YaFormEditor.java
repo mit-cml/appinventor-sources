@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -281,8 +281,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onShow() {
     LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
-    // Replace the old singleton call with the new panel method
-    visibleComponentsPanel.show(form);
+    HiddenComponentsCheckbox.show(form);
     loadDesigner();
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }
@@ -952,10 +951,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     RootPanel.get().addDomHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
-        if (!isActiveEditor()) {
-          return;  // Not the active editor
-        }
-        if (event.isAltKeyDown()) {
+        if (event.isAltKeyDown() && isActiveEditor()) {
           List<MockComponent> allComponents = new ArrayList<>(getComponents().values());
           MockComponent selectedComponent = form.getLastSelectedComponent();
           int index = form.getChildren().indexOf(selectedComponent);
@@ -1021,14 +1017,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
                 break;
             }
           }
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused() && isActiveEditor()) {
           SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused()
-            && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused() && isActiveEditor()) {
           getVisibleComponentsPanel().focusCheckbox();
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused() && isActiveEditor()) {
           PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused()) {
+        } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused() && isActiveEditor()) {
           AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
         }
       }
@@ -1196,14 +1191,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     for (JSONValue element : components.getElements()) {
       JSONObject object = element.asObject();
       String type = object.get("$Type").asString().getString();
-      if (container.willAcceptComponentType(type) && container.canPasteComponentOfType(type)) {
+      if (container.willAcceptComponentType(type)) {
         MockComponent pasted = createMockComponent(object, container, substitution);
         if (pasted.isVisibleComponent()) {
           container.removeComponent(pasted, false);
           container.addVisibleComponent(pasted, insertBefore);
           insertBefore = container.getChildren().indexOf(pasted) + 1;
         }
-        container.onPaste(pasted);
         lastComponentCreated = pasted;
       }
     }

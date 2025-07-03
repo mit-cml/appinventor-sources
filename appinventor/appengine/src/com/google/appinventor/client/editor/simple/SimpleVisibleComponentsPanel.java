@@ -6,8 +6,6 @@
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.HiddenComponentsManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -20,8 +18,6 @@ import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -45,6 +41,7 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   @UiField protected VerticalPanel phoneScreen;
   @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   @UiField(provided = true) protected ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
+  private final int[][] drop_lst = { {320, 505}, {480, 675}, {768, 1024} };
   private final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
   @UiField protected CheckBox HiddenComponentsCheckbox;
 
@@ -74,11 +71,9 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        String[] selectedValue = listboxPhoneTablet.getSelectedValue().split(",");
-        int idx = listboxPhoneTablet.getSelectedIndex();
-
-        int width = Integer.parseInt(selectedValue[0].trim());
-        int height = Integer.parseInt(selectedValue[1].trim());
+        int idx = Integer.parseInt(listboxPhoneTablet.getSelectedValue());
+        int width = drop_lst[idx][0];
+        int height = drop_lst[idx][1];
         String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
         // here, we can change settings by putting val into it
         projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -95,12 +90,6 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
         projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
         changeFormPhonePreview(idx, val);
-      }
-    });
-    HiddenComponentsCheckbox.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        HiddenComponentsManager.getInstance().toggle();
       }
     });
     initWidget(phoneScreen);
@@ -154,23 +143,18 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     int width = 320;
     int height = 505;
 
-    // Note: Initialization values above should not be changed without good reason. The settings property PHONE_TABLET
-    // is a legacy setting indicating tablet (true) or phone (false).
     if (val.equals("True")) {
       idx = 1;
-    } else {
-      String[] parts = val.split(",");
-      if (parts.length == 3) {
-        idx = Integer.parseInt(parts[0]);
-      }
+      width = drop_lst[idx][0];
+      height = drop_lst[idx][1];
     }
 
-    if (listboxPhoneTablet.getItemCount() >= idx) {
-      String[] selectedValue = listboxPhoneTablet.getValue(idx).split(",");
-      width = Integer.parseInt(selectedValue[0].trim());
-      height = Integer.parseInt(selectedValue[1].trim());
+    String[] parts = val.split(",");
+    if (parts.length == 3) {
+      idx = Integer.parseInt(parts[0]);
+      width = Integer.parseInt(parts[1]);
+      height = Integer.parseInt(parts[2]);
     }
-
     listboxPhoneTablet.setItemSelected(idx, true);
     changeFormPreviewSize(idx, width, height);
   }
@@ -214,10 +198,11 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     if (form != null){
       if (!enable){
         changeFormPreviewSize(0, 320, 505);
+        listboxPhoneTablet.setVisible(enable);
       } else {
         getUserSettingChangeSize();
+        listboxPhoneTablet.setVisible(enable);
       }
-      listboxPhoneTablet.setVisible(enable);
     }
     listboxPhoneTablet.setEnabled(enable);
   }
@@ -226,10 +211,11 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
     if (form != null){
       if (!enable){
         changeFormPhonePreview(-1,"Classic");
+        listboxPhonePreview.setVisible(enable);
       } else {
         getUserSettingChangePreview();
+        listboxPhonePreview.setVisible(enable);
       }
-      listboxPhonePreview.setVisible(enable);
     }
     listboxPhonePreview.setEnabled(enable);
   }
@@ -299,31 +285,5 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   @Override
   public void onResetDatabase() {
 
-  }
-
-  public void show(MockForm form) {
-    this.form = form;
-    HiddenComponentsManager manager = HiddenComponentsManager.getInstance();
-    manager.setCurrentForm(form);
-    Boolean state = Ode.getCurrentProjectEditor().getScreenCheckboxState(form.getTitle());
-    boolean effectiveState = (state != null) ? state : false;
-    LOG.info("Setting checkbox state for " + form.getTitle() + " to " + effectiveState);
-    HiddenComponentsCheckbox.setValue(effectiveState);
-  }
-
-  public void showHiddenComponentsCheckbox() {
-    if (HiddenComponentsCheckbox != null) {
-      HiddenComponentsCheckbox.setVisible(true);
-    } else {
-      LOG.severe("HiddenComponentsCheckbox is null in showHiddenComponentsCheckbox");
-    }
-  }
-
-  public void hideHiddenComponentsCheckbox() {
-    if (HiddenComponentsCheckbox != null) {
-      HiddenComponentsCheckbox.setVisible(false);
-    } else {
-      LOG.severe("HiddenComponentsCheckbox is null in hideHiddenComponentsCheckbox");
-    }
   }
 }

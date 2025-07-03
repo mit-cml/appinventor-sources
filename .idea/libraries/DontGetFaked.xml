@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="DontGetFaked">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/appinventor/appengine/war/templates/DontGetFaked/DontGetFaked.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

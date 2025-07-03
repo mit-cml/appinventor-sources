@@ -28,12 +28,12 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Downloader extends Frame {
   // Singleton Downloader instance
-  private static final Downloader INSTANCE = GWT.create(Downloader.class);
+  private static final Downloader INSTANCE = new Downloader();
 
   /**
    * Creates a new downloader.
    */
-  protected Downloader() {
+  private Downloader() {
     // We need to trick the browser into downloading a file by adding an
     // invisible frame to our application. That's the only way to open the
     // browser download dialog box.
@@ -48,7 +48,7 @@ public class Downloader extends Frame {
    *
    * @param path a relative path within the GWT module
    */
-  public void download(String path) {
+  public final void download(String path) {
     ErrorReporter.hide();
     setUrl(ServerLayout.getModuleBaseURL() + path);
   }

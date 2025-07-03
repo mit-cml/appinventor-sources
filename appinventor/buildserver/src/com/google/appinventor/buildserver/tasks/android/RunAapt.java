@@ -5,11 +5,10 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
-
 import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.Execution;
@@ -30,7 +29,7 @@ public class RunAapt implements AndroidTask {
     // Need to make sure assets directory exists otherwise aapt will fail.
     context.getPaths().setAssetsDir(
         ExecutorUtils.createDir(context.getProject().getBuildDirectory(),
-            ASSETS_FOLDER));
+            YoungAndroidConstants.ASSET_DIR_NAME));
 
     File sourceOutputDir = ExecutorUtils.createDir(context.getPaths().getBuildDir(),
         "generated/src");
@@ -74,7 +73,7 @@ public class RunAapt implements AndroidTask {
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, aaptPackageCommandLine,
-        System.out, System.err, Execution.Timeout.MEDIUM)) {
+        System.out, System.err)) {
       return TaskResult.generateError("Error running AAPT");
     }
 

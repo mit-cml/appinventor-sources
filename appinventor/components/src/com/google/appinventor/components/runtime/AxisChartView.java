@@ -5,10 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import static com.google.appinventor.components.runtime.Component.CHART_VALUE_DATE;
-import static com.google.appinventor.components.runtime.Component.CHART_VALUE_INTEGER;
-import static com.google.appinventor.components.runtime.Component.CHART_VALUE_TIME;
-
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
@@ -16,11 +12,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,8 +37,6 @@ public abstract class AxisChartView<
   // The first entry corresponds to an x value of 0, the second to
   // an x value of 1, and so on.
   private List<String> axisLabels = new ArrayList<>();
-
-  private int valueType;
 
   /**
    * Creates a new Axis Chart View with the specified Chart component
@@ -94,24 +84,7 @@ public abstract class AxisChartView<
           return axisLabels.get(integerValue);
         } else {
           // Custom axis label not present; Use the usual value
-          if (valueType == CHART_VALUE_INTEGER) {
-            //labels are displayed as integer
-            return "" + ((int) value);
-          } else if (valueType == CHART_VALUE_DATE) {
-            //display x-axis labels as Date
-            Date mDate = new Date((long) value);
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            chart.getXAxis().setLabelRotationAngle(-90);
-            return dateFormat.format(mDate);
-          } else if (valueType == CHART_VALUE_TIME) {
-            //display x-axis labels as Time
-            Date mDate = new Date((long) value);
-            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-            chart.getXAxis().setLabelRotationAngle(-90);
-            return dateFormat.format(mDate);
-          } else {
-            return super.getFormattedValue(value);
-          }
+          return super.getFormattedValue(value);
         }
       }
     });
@@ -184,14 +157,6 @@ public abstract class AxisChartView<
     chart.getAxisLeft().setAxisMinimum((float) minimum);
     chart.getAxisLeft().setAxisMaximum((float) maximum);
     chart.invalidate();
-  }
-
-  /**
-   *
-   * @param valueType indicates whether the data should be interpreted as integers or not
-   */
-  public void setValueType(int valueType){
-    this.valueType = valueType;
   }
 
   /**

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,7 +10,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -79,7 +78,7 @@ import android.graphics.Rect;
         "android.permission.READ_EXTERNAL_STORAGE")
 public final class ListView extends AndroidViewComponent {
 
-  protected static final String LOG_TAG = "ListView";
+  private static final String LOG_TAG = "ListView";
 
   private EditText txtSearchBox;
   protected final ComponentContainer container;
@@ -114,7 +113,7 @@ public final class ListView extends AndroidViewComponent {
   private String hint;
 
   /* for backward compatibility */
-  private static final float DEFAULT_TEXT_SIZE = 22;
+  private static final int DEFAULT_TEXT_SIZE = 22;
 
   private int imageWidth;
   private int imageHeight;
@@ -125,10 +124,12 @@ public final class ListView extends AndroidViewComponent {
   private String propertyValue;  // JSON string representing data entered through the Designer
 
   private boolean multiSelect;
+  private boolean divider;
   private Paint dividerPaint;
   private int dividerColor;
   private int dividerSize;
   private static final int DEFAULT_DIVIDER_SIZE = 0;
+  private boolean first = true; //flag for first element margins
   private int margins;
   private static final int DEFAULT_RADIUS = 0;
   private int radius;
@@ -216,14 +217,14 @@ public final class ListView extends AndroidViewComponent {
     // note that the TextColor and ElementsFromString setters
     // need to have the textColor set first, since they reset the
     // adapter
-    BackgroundColor(DEFAULT_BACKGROUND_COLOR);
+    BackgroundColor(Component.COLOR_BLACK);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
     TextColorDetail(Component.COLOR_WHITE);
     DividerColor(Component.COLOR_WHITE);
     DividerThickness(DEFAULT_DIVIDER_SIZE);
     ElementMarginsWidth(DEFAULT_MARGINS_SIZE);
-    FontSize(DEFAULT_TEXT_SIZE);  // This was the original size of ListView text.
+    FontSize(22.0f);  // This was the original size of ListView text.
     FontSizeDetail(Component.FONT_DEFAULT_SIZE);
     FontTypeface(Component.TYPEFACE_DEFAULT);
     FontTypefaceDetail(Component.TYPEFACE_DEFAULT);
@@ -245,6 +246,7 @@ public final class ListView extends AndroidViewComponent {
     ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
+    setDivider();
   }
 
   @Override
@@ -599,7 +601,7 @@ public final class ListView extends AndroidViewComponent {
    * @return background color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
    */
-  @SimpleProperty(description = "The color of the main text of ListView elements.",
+  @SimpleProperty(description = "The text color of the listview stringItems.",
       category = PropertyCategory.APPEARANCE)
   @IsColor
   public int TextColor() {
@@ -628,7 +630,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return color of the secondary text
    */
-  @SimpleProperty(description = "The color of the detail text of ListView elements. ",
+  @SimpleProperty(description = "The text color of DetailText of listview stringItems. ",
       category = PropertyCategory.APPEARANCE)
   public int TextColorDetail() {
     return detailTextColor;
@@ -649,18 +651,27 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
-   * This property is deprecated, use FontSize instead.
+   * Returns the listview's text font Size
+   *
+   * This property is provided for backwards compatibility
+   * it takes and returns an integer, but in reality it just
+   * updates the FontSize property, which works with floats
+   *
+   * @return text size as an integer
    */
-  @Deprecated
-  @SimpleProperty
+  @SimpleProperty(description = "The text size of the listview items.",
+      category = PropertyCategory.APPEARANCE)
   public int TextSize() {
     return Math.round(fontSizeMain);
   }
 
   /**
-   * This property is deprecated, use FontSize instead.
+   * Specifies the `ListView` item's text font size
+   *
+   * @param textSize int value for font size
    */
-  @Deprecated
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = DEFAULT_TEXT_SIZE + "")
   @SimpleProperty
   public void TextSize(int textSize) {
     if (textSize > 1000) {
@@ -670,23 +681,26 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
-   * Returns the font size of the main text.
+   * Returns the listview's text font Size
    *
    * @return text size as an float
    */
-  @SimpleProperty(description = "The font size of the main text.",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "The text size of the listview stringItems.",
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
   public float FontSize() {
     return fontSizeMain;
   }
 
   /**
-   * Specifies the font size of the element's main text.
+   * Specifies the `ListView` item's text font size
    *
-   * @param float value for font size
+   * @param integer value for font size
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-           defaultValue = DEFAULT_TEXT_SIZE + "")
+  @SuppressWarnings("JavadocReference")
+  // Temporarily removed until Companion with support is more prevalent
+  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  //         defaultValue = "22.0")
   @SimpleProperty
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
@@ -696,22 +710,23 @@ public final class ListView extends AndroidViewComponent {
     setAdapterData();
   }
 
-   /**
-   * Returns the font size of the detail text.
+  /**
+   * Returns the listview's text font Size
    *
    * @return text size as an float
    */
-  @SimpleProperty(description = "The font size of the detail text.",
+  @SimpleProperty(description = "The text size of the listview stringItems.",
       category = PropertyCategory.APPEARANCE)
   public float FontSizeDetail() {
     return fontSizeDetail;
   }
 
   /**
-   * Specifies the font size of the element's detail text.
+   * Specifies the `ListView` item's text font size
    *
-   * @param float value for font size
-   */  
+   * @param integer value for font size
+   */
+  @SuppressWarnings("JavadocReference")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
@@ -792,7 +807,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return width of image
    */
-  @SimpleProperty(description = "Image width of ListView elements.",
+  @SimpleProperty(description = "The image width of the listview image.",
       category = PropertyCategory.APPEARANCE)
   public int ImageWidth() {
     return imageWidth;
@@ -816,7 +831,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return height of image
    */
-  @SimpleProperty(description = "Image height of ListView elements.",
+  @SimpleProperty(description = "The image height of the listview image stringItems.",
       category = PropertyCategory.APPEARANCE)
   public int ImageHeight() {
     return imageHeight;
@@ -1054,8 +1069,7 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
-   * Specifies the divider thickness of list view.
-   * If the thickness is 0, the divider is not visible.
+   * Specifies the divider thickness of list view
    *
    * @param size sets the thickness of divider in the list view
    */
@@ -1072,16 +1086,14 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return width of margins
    */
-  @SimpleProperty(description = "The margins width of the list view element. "
-                                    + "If margins width > 0, then the divider is not displayed.",
+  @SimpleProperty(description = "The margins width of the list view element.",
       category = PropertyCategory.APPEARANCE)
   public int ElementMarginsWidth() {
     return margins;
   }
 
   /**
-   * Specifies the width of the margins of a list view element.
-   * If margins width > 0, then the divider is not displayed.
+   * Specifies the width of the margins of a list view element
    *
    * @param width sets the width of the margins in the list view element
    */
@@ -1098,7 +1110,7 @@ public final class ListView extends AndroidViewComponent {
    *
    * @return corner radius
    */
-  @SimpleProperty(description = "The radius of the rounded corners of a list view element.",
+  @SimpleProperty(description = "The radius of the rounded corners of a list view item.",
       category = PropertyCategory.APPEARANCE)
   public int ElementCornerRadius() {
     return radius;
@@ -1259,38 +1271,17 @@ public final class ListView extends AndroidViewComponent {
    * Create a new adapter and apply visual changes, load data if it exists.
    */
   public void setAdapterData() {
-    switch (layout) {
-      case LISTVIEW_LAYOUT_SINGLE_TEXT:
-        setListAdapter(new ListViewSingleTextAdapter(container, items,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
-        break;
-      case LISTVIEW_LAYOUT_TWO_TEXT:
-        setListAdapter(new ListViewTwoTextAdapter(container, items,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
-        break;
-      case LISTVIEW_LAYOUT_TWO_TEXT_LINEAR:
-        setListAdapter(new ListViewTwoTextLinearAdapter(container, items,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
-        break;
-      case LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT:
-        setListAdapter(new ListViewImageSingleTextAdapter(container, items,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
-        break;
-      case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT:
-        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, items,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
-        break;
-      case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
-        setListAdapter(new ListViewImageTopTwoTextAdapter(container, items,
-          textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-          elementColor, selectionColor, radius, imageWidth, imageHeight));
-        break;
-    }    
+    listAdapterWithRecyclerView = new ListAdapterWithRecyclerView(container, items, layout,
+        textColor, detailTextColor, fontSizeMain, fontSizeDetail, fontTypeface, fontTypeDetail,
+        elementColor, selectionColor, imageWidth, imageHeight, radius);
+    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
+      @Override
+      public void onItemClick(int position, View v) {
+        SelectionIndex(position + 1);
+        AfterPicking();
+      }
+    });
+    recyclerView.setAdapter(listAdapterWithRecyclerView);
   }
 
   /**
@@ -1306,7 +1297,6 @@ public final class ListView extends AndroidViewComponent {
    */
   private void setDivider() {
     DividerItemDecoration dividerDecoration = new DividerItemDecoration();
-    dividerDecoration.removeLayoutChangeListener();
     for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
       RecyclerView.ItemDecoration decoration = recyclerView.getItemDecorationAt(i);
       if (decoration instanceof DividerItemDecoration) {
@@ -1317,39 +1307,21 @@ public final class ListView extends AndroidViewComponent {
     recyclerView.addItemDecoration(dividerDecoration);
   }
 
-  public void setListAdapter(ListAdapterWithRecyclerView adapter) {
-    listAdapterWithRecyclerView = adapter;
-    listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
-      @Override
-      public void onItemClick(int position, View v) {
-        SelectionIndex(position + 1);
-        AfterPicking();
-      }
-    });
-    recyclerView.setAdapter(listAdapterWithRecyclerView);
-  }
   /**
    * A class that creates dividers between elements or margins, depending on the options selected.
    */
   private class DividerItemDecoration extends RecyclerView.ItemDecoration {
-    private int recyclerViewWidth = 0;
-    private View.OnLayoutChangeListener layoutChangeListener;
-    private RecyclerView parent;
-
-    public DividerItemDecoration() {}
+    public DividerItemDecoration() {
+    }
 
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-      // If margins are set, dividers will not be created.
+      //If margins are set, dividers will not be created.
       if (margins == 0) {
-        ViewGroup.LayoutParams layoutParams;
         int childCount = parent.getChildCount();
         if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
           for (int i = 0; i < childCount - 1; i++) {
             View child = parent.getChildAt(i);
-            layoutParams = child.getLayoutParams();
-            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            child.setLayoutParams(layoutParams);
             int position = parent.getChildAdapterPosition(child);
             if (position != RecyclerView.NO_POSITION) {
               int left = child.getRight();
@@ -1363,9 +1335,6 @@ public final class ListView extends AndroidViewComponent {
           int width = parent.getWidth();
           for (int i = 0; i < childCount - 1; i++) {
             View child = parent.getChildAt(i);
-            layoutParams = child.getLayoutParams();
-            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            child.setLayoutParams(layoutParams);
             int position = parent.getChildAdapterPosition(child);
             if (position != RecyclerView.NO_POSITION) {
               int top = child.getBottom();
@@ -1378,14 +1347,11 @@ public final class ListView extends AndroidViewComponent {
     }
 
     @Override
-    public void getItemOffsets(
-        Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-      this.parent = parent;
-      ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
       int position = parent.getChildAdapterPosition(view);
+      int spanCount = 1; //No GridLayout support, so spanCount set to 1.
       if (margins == 0) {
-        if (position != RecyclerView.NO_POSITION
-            && position < parent.getAdapter().getItemCount() - 1) {
+        if (position != RecyclerView.NO_POSITION && position < parent.getAdapter().getItemCount() - 1) {
           if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
             outRect.set(0, 0, dividerSize, 0);
           } else {
@@ -1395,50 +1361,14 @@ public final class ListView extends AndroidViewComponent {
           outRect.setEmpty();
         }
       } else {
-        if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
-          if (layoutChangeListener == null) {
-            layoutChangeListener =
-                new View.OnLayoutChangeListener() {
-                  @Override
-                  public void onLayoutChange(View v, int left, int top, int right,
-                      int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    if (recyclerViewWidth != parent.getWidth()) {
-                      recyclerViewWidth = parent.getWidth();
-                      for (int i = 0; i < parent.getChildCount(); i++) {
-                        View child = parent.getChildAt(i);
-                        ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
-                        childLayoutParams.width = recyclerViewWidth - (2 * margins);
-                        child.setLayoutParams(childLayoutParams);
-                      }
-                      parent.invalidate();
-                    }
-                  }
-                };
-            parent.addOnLayoutChangeListener(layoutChangeListener);
-          }
-          recyclerViewWidth = parent.getWidth();
-          layoutParams.width = recyclerViewWidth - (2 * margins);
-          view.setLayoutParams(layoutParams);
-          if (position == 0) {
-            outRect.set(margins, margins, margins, margins);
-          } else {
-            outRect.set(0, margins, margins, margins);
-          }
-        } else {
-          layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-          if (position == 0) {
-            outRect.set(margins, margins, margins, margins);
-          } else {
-            outRect.set(margins, 0, margins, margins);
-          }
+        int column = position % spanCount;
+        outRect.left = margins - column * margins / spanCount;
+        outRect.right = (column + 1) * margins / spanCount;
+        if (position < spanCount || first) {
+          first = false;
+          outRect.top = margins;
         }
-        view.setLayoutParams(layoutParams);
-      }
-    }
-
-    public void removeLayoutChangeListener() {
-      if (layoutChangeListener != null) {
-        parent.removeOnLayoutChangeListener(layoutChangeListener);
+        outRect.bottom = margins;
       }
     }
   }

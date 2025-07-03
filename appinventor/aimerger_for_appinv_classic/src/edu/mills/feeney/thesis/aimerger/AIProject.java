@@ -8,124 +8,147 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+
 import javax.swing.JOptionPane;
 
 /**
- * Represents an App Inventor project, including its path, name,
- * list of assets, screens, and properties file.
+ * A representation of an App Inventor project. This includes its path, name,
+ * list of assets, list of screens and project properties file.
  * 
- * @autor feeney.kate@gmail.com (Kate Feeney)
+ * @author feeney.kate@gmail.com (Kate Feeney)
  */
 public class AIProject {
 
-    private final String projectPath; // Project's directory path
-    private final List<AIScreen> screensList; // List of screens in the project
-    private final List<AIAsset> assetsList; // List of assets in the project
-    private String propertiesFilePath; // Path to the project properties file
-    private boolean valid; // Validity of the project
+  // Backing for the project's directory path from home
+  private String projectPath;
 
-    /**
-     * Creates a new AIProject from a project file path.
-     *
-     * @param projectPath the path to the project zip file
-     */
-    public AIProject(String projectPath) {
-        this.projectPath = projectPath;
-        this.screensList = new LinkedList<>();
-        this.assetsList = new LinkedList<>();
-        loadProject();
-    }
+  // Backing for the list of AIScreens
+  private List<AIScreen> screensList;
 
-    /**
-     * Loads the project by reading from the provided zip file path.
-     */
-    private void loadProject() {
-        try (ZipFile zipFile = new ZipFile(new File(projectPath))) {
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+  // Backing for the list of AIAssets
+  private List<AIAsset> assetsList;
 
-            while (entries.hasMoreElements()) {
-                processZipEntry(entries.nextElement());
-            }
+  // Backing for the path to the projects properties file
+  private String propertiesFilePath;
 
-            validateProject();
-        } catch (ZipException e) {
-            showErrorDialog("Error opening zip file: " + e.getMessage(), "File error");
-            valid = false;
-        } catch (IOException e) {
-            showErrorDialog("Error reading file: " + e.getMessage(), "File error");
-            valid = false;
-        }
-    }
+  // Backing for if the project is a valid source file
+  private boolean valid;
 
-    /**
-     * Processes individual entries in the zip file to categorize them as screens,
-     * assets, or properties.
-     *
-     * @param entry the zip entry representing a file in the project
-     */
-    private void processZipEntry(ZipEntry entry) {
-        String fileName = entry.getName();
-
+  /**
+   * Creates a new AIProject.
+   * 
+   * @param projectPath the path to the project from the home directory
+   */
+  public AIProject(String projectPath) {
+    try {
+      this.projectPath = projectPath;
+      // Create screens list.
+      this.screensList = new LinkedList<AIScreen>();
+      // Create assets list.
+      this.assetsList = new LinkedList<AIAsset>();
+      // Go through each file in the project and create the appropriate classes.
+      Enumeration<? extends ZipEntry> e = new ZipFile(new File(projectPath)).entries();
+      while (e.hasMoreElements()) {
+        // fileName is the path of the file in the project file.
+        String fileName = (new ZipEntry(e.nextElement())).getName();
+        // Create an AIScreen from any screen file in the project's src folder.
         if (fileName.startsWith("src") && fileName.endsWith(".scm")) {
-            screensList.add(new AIScreen(fileName));
+          AIScreen screen = new AIScreen(fileName);
+          screensList.add(screen);
+          // Create an AIAsset from any file in the project's assets folder.
         } else if (fileName.startsWith("assets")) {
-            assetsList.add(new AIAsset(fileName));
+          AIAsset asset = new AIAsset(fileName);
+          assetsList.add(asset);
         } else if (fileName.endsWith("project.properties")) {
-            setPropertiesFilePath(fileName);
+          this.setPropertiesFilePath(fileName);
         }
+      }
+      // Check if valid project, if not show error.
+      valid = screensList != null && propertiesFilePath != null;
+      if (!valid) {
+        JOptionPane.showMessageDialog(AIMerger.getInstance().myCP, "The selected project is not a"
+        		+ " project source file! Project source files are zip files.", "File error",
+            JOptionPane.ERROR_MESSAGE);
+      }
+    } catch (ZipException e) {
+      JOptionPane.showMessageDialog(AIMerger.getInstance().myCP, 
+          "The selected project is not a project source file! Project source files are zip files.", 
+          "File error", JOptionPane.ERROR_MESSAGE);
+      valid = false;
+    } catch (IOException e) {
+      JOptionPane.showMessageDialog(AIMerger.getInstance().myCP, 
+          "The selected project is not a project source file! Project source files are zip files.", 
+          "File error", JOptionPane.ERROR_MESSAGE);
+      valid = false;
     }
+  }
 
-    /**
-     * Validates the project to ensure it has essential components.
-     */
-    private void validateProject() {
-        valid = !screensList.isEmpty() && propertiesFilePath != null;
-        if (!valid) {
-            showErrorDialog("The selected project is not a valid source file! Project source files are zip files.", "File error");
-        }
+  /**
+   * Returns the AIProject's name.
+   * 
+   * @return AIProject's name
+   */
+  public String getProjectName() {
+    // The projectName is the name of the zip file.
+    if (projectPath.contains(File.separator)) {
+      return projectPath.substring(projectPath.lastIndexOf(File.separator) + 1, 
+          projectPath.lastIndexOf("."));
+    } else {
+      return projectPath;
     }
+  }
 
-    /**
-     * Shows an error dialog with the given message and title.
-     *
-     * @param message the error message
-     * @param title   the dialog title
-     */
-    private void showErrorDialog(String message, String title) {
-        JOptionPane.showMessageDialog(AIMerger.getInstance().myCP, message, title, JOptionPane.ERROR_MESSAGE);
-    }
+  /**
+   * Returns the AIProject's path from home directory.
+   * 
+   * @return AIProject's path from home directory
+   */
+  public String getProjectPath() {
+    return projectPath;
+  }
 
-    /**
-     * Returns the AIProject's name derived from the zip file name.
-     *
-     * @return AIProject's name
-     */
-    public String getProjectName() {
-        String fileName = new File(projectPath).getName();
-        return fileName.substring(0, fileName.lastIndexOf('.'));
-    }
+  /**
+   * Returns the AIProject's list of AIScreens.
+   * 
+   * @return list of project's AIScreens
+   */
+  public List<AIScreen> getScreensList() {
+    return screensList;
+  }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
+  /**
+   * Returns the AIProject's list of AIAssets.
+   * 
+   * @return list of project's AIAssets
+   */
+  public List<AIAsset> getAssetsList() {
+    return assetsList;
+  }
 
-    public List<AIScreen> getScreensList() {
-        return screensList;
-    }
+  /**
+   * Returns the path to the projects properties file from project file.
+   * 
+   * @return path to project's properties file within the project file
+   */
+  public String getPropertiesFilePath() {
+    return propertiesFilePath;
+  }
 
-    public List<AIAsset> getAssetsList() {
-        return assetsList;
-    }
+  /**
+   * Sets the projects properties file
+   * 
+   * @param propertiesFilePath the path to the project's properties file within the project
+   */
+  public void setPropertiesFilePath(String propertiesFilePath) {
+    this.propertiesFilePath = propertiesFilePath;
+  }
 
-    public String getPropertiesFilePath() {
-        return propertiesFilePath;
-    }
-
-    public void setPropertiesFilePath(String propertiesFilePath) {
-        this.propertiesFilePath = propertiesFilePath;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
+  /**
+   * Returns if the project is valid and can be used for a merge.
+   * 
+   * @return if project is valid
+   */
+  public boolean isValid() {
+    return this.valid;
+  }
 }

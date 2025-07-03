@@ -6,15 +6,13 @@
 
 package com.google.appinventor.buildserver.util;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
-
 import com.google.appinventor.buildserver.Project;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -26,6 +24,7 @@ public class ProjectUtils {
   private static final Logger LOG = Logger.getLogger(ProjectUtils.class.getName());
 
   private static final String SEPARATOR = File.separator;
+  public static final String PROJECT_DIRECTORY = "youngandroidproject";
   public static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + SEPARATOR
       + "project.properties";
 
@@ -76,12 +75,7 @@ public class ProjectUtils {
    */
   public static List<String> extractProjectFiles(ZipFile inputZip, File projectRoot)
       throws IOException {
-    // Make sure to skip returning any file not in the src/ directory, to avoid corrupted AIAs
-    //   containing scm or bky in the assets' directory.
-    String sourcePrefix = new File(projectRoot, SRC_FOLDER).getAbsolutePath() + SEPARATOR;
-
-    List<String> projectSourceFileNames = new ArrayList<>();
-
+    List<String> projectFileNames = new ArrayList<>();
     Enumeration<? extends ZipEntry> inputZipEnumeration = inputZip.entries();
     while (inputZipEnumeration.hasMoreElements()) {
       ZipEntry zipEntry = inputZipEnumeration.nextElement();
@@ -96,14 +90,9 @@ public class ProjectUtils {
             }
           },
           extractedFile);
-
-      String extractedFilePath = extractedFile.getPath();
-      if (extractedFilePath.startsWith(sourcePrefix)) {
-        projectSourceFileNames.add(extractedFile.getPath());
-      }
+      projectFileNames.add(extractedFile.getPath());
     }
-
-    return projectSourceFileNames;
+    return projectFileNames;
   }
 
   /**

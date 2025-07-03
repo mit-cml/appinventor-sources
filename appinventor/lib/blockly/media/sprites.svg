@@ -18,16 +18,16 @@
   text-anchor: middle;
 }
 .trash {
-  fill: #000;
+  fill: #888;
 }
 .zoom {
   fill: none;
-  stroke: #000;
+  stroke: #888;
   stroke-width: 2;
   stroke-linecap: round;
 }
 .zoom>.center {
-  fill: #000;
+  fill: #888;
   stroke-width: 0;
 }
   </style>

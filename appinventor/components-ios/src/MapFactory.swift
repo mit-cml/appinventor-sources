@@ -142,5 +142,4 @@ enum MapType: Int32 {
   case ROADS = 1
   case AERIAL = 2
   case TERRAIN = 3
-  case CUSTOM = 4
 }

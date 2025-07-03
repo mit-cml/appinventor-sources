@@ -3,8 +3,6 @@
     "@metadata.lastupdated": "2019-12-17 16:55:22.863126",
     "@metadata.locale": "es",
     "@metadata.messagedocumentation": "qqq",
-    "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Esta imagen hace referencia a los siguientes bloques que requieren extensiones que no están presentes en el proyecto:\n\n",
-    "Blockly.Msg.ERROR_PARSING_XML": "Error: No se pudo analizar el XML desde el archivo PNG. Por favor, inténtelo de nuevo.",
     "Blockly.Msg.DUPLICATE_BLOCK": "Duplicar",
     "Blockly.Msg.REMOVE_COMMENT": "Borrar Comentario",
     "Blockly.Msg.ADD_COMMENT": "Añadir Comentario",

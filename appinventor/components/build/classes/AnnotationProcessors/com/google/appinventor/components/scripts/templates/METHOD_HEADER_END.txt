@@ -1,3 +1,0 @@
-  </BlockConnectors>
-  <LangSpecProperties>
-    <LangSpecProperty key="ya-kind" value="%1$s" />

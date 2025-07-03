@@ -7,11 +7,7 @@
 package com.google.appinventor.buildserver;
 
 import static com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+import static com.google.appinventor.buildserver.util.ProjectUtils.PROJECT_DIRECTORY;
 
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.BlockXmlAnalyzer;
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ComponentBlocksExtractor;
@@ -47,8 +43,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -78,13 +72,18 @@ public final class ProjectBuilder {
   private static final int MAX_COMPILER_MESSAGE_LENGTH = 160;
   private static final String SEPARATOR = File.separator;
 
-  private static final int MAX_BUILD_TIMEOUT_SECONDS = 60 * 5; // 5 minutes
-
   // Project folder prefixes
   // TODO(user): These constants are (or should be) also defined in
   // appengine/src/com/google/appinventor/server/project/youngandroid/YoungAndroidProjectService
   // They should probably be in some place shared with the server
   private static final String KEYSTORE_FILE_NAME = YoungAndroidConstants.PROJECT_KEYSTORE_LOCATION;
+
+  private static final String FORM_PROPERTIES_EXTENSION =
+      YoungAndroidConstants.FORM_PROPERTIES_EXTENSION;
+  private static final String YAIL_EXTENSION = YoungAndroidConstants.YAIL_EXTENSION;
+
+  private static final String CODEBLOCKS_SOURCE_EXTENSION =
+      YoungAndroidConstants.CODEBLOCKS_SOURCE_EXTENSION;
 
   private static final String ALL_COMPONENT_TYPES = RUNTIME_FILES_DIR + "simple_components.txt";
 
@@ -202,26 +201,13 @@ public final class ProjectBuilder {
 
         Future<Boolean> executor = Executors.newSingleThreadExecutor().submit(compiler);
 
-        boolean success;
-        try {
-          if (isForCompanion) {
-            // If we are building for companion, very likely in CI, don't limit the build time...
-            success = executor.get();
-          } else {
-            success = executor.get(MAX_BUILD_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-          }
-        } catch (TimeoutException e) {
-          LOG.severe("Build has timed out");
-          context.getReporter().error("Build has timed out");
-          success = false;
-        }
-
+        boolean success = executor.get();
         statReporter.stopBuild(compiler, success);
         r.close();
 
         // Retrieve compiler messages and convert to HTML and log
         String srcPath = projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_DIRECTORY + SEPARATOR
-            + ".." + SEPARATOR + SRC_FOLDER + SEPARATOR;
+            + ".." + SEPARATOR + "src" + SEPARATOR;
         String messages = processCompilerOutput(context.getReporter().getSystemOutput(),
             srcPath);
 
@@ -291,7 +277,7 @@ public final class ProjectBuilder {
 
     Set<String> componentTypes = Sets.newHashSet();
     for (String f : files) {
-      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
+      if (f.endsWith(".scm")) {
         File scmFile = new File(f);
         String scmContent = new String(Files.toByteArray(scmFile),
             PathUtil.DEFAULT_CHARSET);
@@ -306,7 +292,7 @@ public final class ProjectBuilder {
   private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
     for (String f : files) {
-      if (f.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
+      if (f.endsWith(".bky")) {
         File bkyFile = new File(f);
         String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
         FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
@@ -329,7 +315,7 @@ public final class ProjectBuilder {
       throws IOException {
     Map<String, Set<String>> result = new HashMap<>();
     for (String f : files) {
-      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
+      if (f.endsWith(".scm")) {
         File scmFile = new File(f);
         String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
         for (Map.Entry<String, Set<String>> entry :
@@ -420,8 +406,7 @@ public final class ProjectBuilder {
         "-keypass", "android"
     };
 
-    if (Execution.execute(null, keytoolCommandline, System.out, System.err,
-        Execution.Timeout.SHORT)) {
+    if (Execution.execute(null, keytoolCommandline, System.out, System.err)) {
       if (keyStoreFile.length() > 0) {
         return keyStoreFile.getAbsolutePath();
       }
@@ -469,7 +454,7 @@ public final class ProjectBuilder {
 
           // If the error/warning is in a yail file, generate a div and append it to the
           // StringBuilder.
-          if (filename.endsWith(YAIL_FILE_EXTENSION)) {
+          if (filename.endsWith(YoungAndroidConstants.YAIL_EXTENSION)) {
             skippedErrorOrWarning = false;
             sb.append("<div><span class='" + spanClass + "'>" + kind + "</span>: " +
                 StringUtils.escape(filename) + " line " + lineNumber + ": " +

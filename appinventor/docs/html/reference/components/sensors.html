@@ -613,10 +613,6 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="LocationSensor-Events">Events</h3>
 
 <dl class="events">
-  <dt id="LocationSensor.GotAddress">GotAddress(<em class="text">address</em>)</dt>
-  <dd>Reports the address in response to a ReverseGeocode request.</dd>
-  <dt id="LocationSensor.GotLocationFromAddress">GotLocationFromAddress(<em class="text">address</em>,<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
-  <dd>Reports the latitude and longitude in response to a Geocode request.</dd>
   <dt id="LocationSensor.LocationChanged">LocationChanged(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="number">altitude</em>,<em class="number">speed</em>)</dt>
   <dd>Indicates that a new location has been detected. Speed is reported in meters/second
  Other values match their properties.</dd>
@@ -628,14 +624,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="LocationSensor-Methods">Methods</h3>
 
 <dl class="methods">
-  <dt id="LocationSensor.Geocode" class="method"><i></i> Geocode(<em class="text">address</em>)</dt>
-  <dd>Converts an address into a latitude and longitude through the GotLocationFromAddress event.</dd>
   <dt id="LocationSensor.LatitudeFromAddress" class="method returns number"><i></i> LatitudeFromAddress(<em class="text">locationName</em>)</dt>
   <dd>Derives latitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
   <dt id="LocationSensor.LongitudeFromAddress" class="method returns number"><i></i> LongitudeFromAddress(<em class="text">locationName</em>)</dt>
   <dd>Derives longitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
-  <dt id="LocationSensor.ReverseGeocode" class="method"><i></i> ReverseGeocode(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
-  <dd>Determines the address associated with the given latitude and  and reports it through the GotAddress event.</dd>
 </dl>
 
 <h2 id="MagneticFieldSensor">MagneticFieldSensor</h2>

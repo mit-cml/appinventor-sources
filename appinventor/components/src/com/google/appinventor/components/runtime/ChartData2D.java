@@ -71,13 +71,6 @@ public final class ChartData2D extends ChartDataBase {
           try {
             // Create a 2-tuple, and add the tuple to the Data Series
             YailList pair = YailList.makeList(Arrays.asList(x, y));
-
-            YailList labelList = container.Labels();
-            int indexList = labelList.indexOf(x);
-            if (indexList > -1){
-              pair = YailList.makeList(Arrays.asList(indexList, y));
-            }
-
             dataModel.addEntryFromTuple(pair);
 
             // Refresh Chart with new data
@@ -122,15 +115,12 @@ public final class ChartData2D extends ChartDataBase {
             // Create a 2-tuple, and remove the tuple from the Data Series
             YailList pair = YailList.makeList(Arrays.asList(x, y));
 
-            YailList labelList = container.Labels();
-            int indexList = labelList.indexOf(x);
-            Entry currEntry = null;
-            if (indexList > -1){ // do we have labels in the x value?
-              pair = YailList.makeList(Arrays.asList(indexList, y));
 
-             // currEntry = dataModel.getEntryFromTuple(pair);
-            }
-            currEntry = dataModel.getEntryFromTuple(pair);
+            //get index of x and remove the color highlight at that index
+            float xValue = Float.parseFloat(x);
+            float yValue = Float.parseFloat(y);
+
+            Entry currEntry = new Entry(xValue, yValue);
             int index = dataModel.findEntryIndex(currEntry);
 
             dataModel.removeEntryFromTuple(pair);
@@ -282,10 +272,8 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   private void resetHighlightAtIndex(int index) {
-    if (dataModel.getDataset() instanceof LineDataSet) {
-      List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
-      defaultColors.remove(index);
-    }
+    List<Integer> defaultColors = ((LineDataSet) dataModel.getDataset()).getCircleColors();
+    defaultColors.remove(index);
   }
 }
 

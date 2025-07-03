@@ -14,11 +14,4 @@ public interface ChartComponent extends Component {
    * Initialize the component's chart data object.
    */
   void initChartData();
-
-  /**
-   * Returns the chart data object associated with the component.
-   *
-   * @return the chart data object
-   */
-  ChartDataModel<?, ?, ?, ?, ?> getDataModel();
 }

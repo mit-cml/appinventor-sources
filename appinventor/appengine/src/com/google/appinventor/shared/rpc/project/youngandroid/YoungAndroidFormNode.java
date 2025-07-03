@@ -6,9 +6,9 @@
 
 package com.google.appinventor.shared.rpc.project.youngandroid;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
-
+import com.google.common.base.Preconditions;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 
 
 /**
@@ -37,6 +37,6 @@ public final class YoungAndroidFormNode extends YoungAndroidSourceNode {
 
   public static String getFormFileId(String qualifiedName) {
     return SRC_PREFIX + qualifiedName.replace('.', '/')
-        + FORM_PROPERTIES_EXTENSION;
+        + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
   }
 }

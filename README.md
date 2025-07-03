@@ -30,14 +30,11 @@ This is a quick guide to get started with the sources. More detailed instruction
 
 ### Dependencies
 
-You will need a full Java JDK (version 11, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) (version 1.10) to compile the sources.
+You will need a full Java JDK (version 11, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) to compile the sources.
 
-You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) to run the development servers. When setting up the gcloud cli you might be asked if you'd like to install Python 3.11, as the cli depends on it. In case of any issues with Python versions, check the value of the CLOUDSDK_PYTHON environment variable, which the cli can use to point to the right version.
+You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) to run the development servers.
 
-If you want to make changes to the sources, you will have to run an automated test suite, and for that you will also need
-a recent version of NodeJS (node 20+ works) and the Firefox browser installed on your machine. Have a look at the testing section for more information.
-
-Finally, if you want to make changes to the markdown docs you will need Ruby (versions 2.6 or 2.7).
+If you want to make changes to the source, you are going to need to run an automated test suite, and for that you will also need [phantomjs](http://phantomjs.org/). Have a look at the testing section for more information.
 
 ### Forking or cloning
 
@@ -62,17 +59,17 @@ Finally, you will also have to make sure that you are ignoring files that need i
 
 ### Checkout dependencies
 
-App Inventor uses the [Closure library](https://github.com/google/closure-library) and the [Picrin](https://picrin.readthedocs.io/en/latest/) Scheme implementation. It is unlikely that most contributors will need to make changes to these dependencies, but they are necessary for local compilation, so you must initialize and track these libraries as submodules. The first time after forking or cloning the repository, you can perform the following commands:
+App Inventor uses Blockly, the web-based visual programming editor from Google, as a core part of its editor. Blockly core is made available to App Inventor as a git submodule. The first time after forking or cloning the repository, you will need to perform the following commands:
 
     $ git submodule update --init
 
-If you need to switch back to a branch that does not contain the dependencies in the tree, you will need to run the command:
+For developers who will be working on Blockly within the context of App Inventor, the preferred checkout procedure is to perform a `git submodule init`, edit the `.git/config` file to use the read/write SSH URL for [MIT CML's Blockly fork](https://github.com/mit-cml/blockly) instead of the public read-only HTTPS URL assumed by default (to support pushing changes). After changing `.git/config`, a `git submodule update` will pull the repository.
+
+If you need to switch back to a branch that does contains the Blockly and Closure Library sources in the tree, you will need to run the command:
 
     $ git submodule deinit --all
 
 to clear out the submodules ___before switching branches___. When switching back, you will need to repeat the initialization and update procedure above.
-
-[Blockly](https://github.com/google/blockly) is also a dependency, currently being used as a slightly modified version 10 that can be found at [mit-cml/blockly](https://github.com/mit-cml/blockly/tree/rc/10.5.0).
 
 ### Troubleshooting common installation issues
 
@@ -188,7 +185,7 @@ Before entering or scanning the QR code in the Companion, check the box labeled 
 
 ### Running tests
 
-The automated tests depend on NodeJS (version 20+) and Firefox, which will be used in headless mode. After that, you can run all tests by typing the following in a terminal window (note you can optionally skip iOS tests with -Dskip.ios=true):
+The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you install it and add it to your path. After that, you can run all tests by typing the following in a terminal window:
 
     $ ant tests
 

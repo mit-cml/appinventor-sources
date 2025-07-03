@@ -488,7 +488,7 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc fileprivate func afterTextInput(sender: UIButton) {
-    DismissActiveDialog()
+    _activeAlert?.dismiss(animated: true)
     if let button = sender as? CustomButton {
       if let field = button.value as? UITextField {
         AfterTextInput(field.text ?? "")
@@ -500,13 +500,14 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc fileprivate func afterChoosing(sender: UIButton) {
-    DismissActiveDialog()
+    _activeAlert?.dismiss(animated: true)
     if let button = sender as? CustomButton, let choice = button.value as? String {
       if choice == "Cancel" {
         ChoosingCanceled()
       }
       AfterChoosing(choice)
     }
+    promoteNextAlert()
   }
 
   @objc fileprivate func cancelChoosing(sender: UIButton) {

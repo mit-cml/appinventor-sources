@@ -15,10 +15,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.text.TextUtils;
@@ -136,8 +134,7 @@ import org.json.JSONObject;
   "screen) and, moreso, even if the app is not running, so long as it's " +
   "installed on the phone. If the phone receives a text message when the " +
   "app is not in the foreground, the phone will show a notification in " +
-  "the notification bar. (User should have granted the POST_NOTIFICATIONS " +
-  "permission). Selecting the notification will bring up the " +
+  "the notification bar.  Selecting the notification will bring up the " +
   "app.  As an app developer, you'll probably want to give your users the " +
   "ability to control ReceivingEnabled so that they can make the phone " +
   "ignore text messages.</p> " +
@@ -164,8 +161,7 @@ import org.json.JSONObject;
   "com.google.android.apps.googlevoice.permission.RECEIVE_SMS, " +
   "com.google.android.apps.googlevoice.permission.SEND_SMS, " +
   "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " +
-  "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS, " +
-  "android.permission.POST_NOTIFICATIONS")
+  "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
 @UsesLibraries(libraries =
   "google-api-client.jar," +
   "google-api-client-android2-beta.jar," +
@@ -614,38 +610,13 @@ public class Texting extends AndroidNonvisibleComponent
   })
   public void ReceivingEnabled(@Options(ReceivingState.class) int enabled) {
     // Make sure enabled is a valid ReceivingState.
-    final ReceivingState state = ReceivingState.fromUnderlyingValue(enabled);
+    ReceivingState state = ReceivingState.fromUnderlyingValue(enabled);
     if (state == null) {
       container.$form().dispatchErrorOccurredEvent(this, "Texting",
           ErrorMessages.ERROR_BAD_VALUE_FOR_TEXT_RECEIVING, enabled);
       return;
     }
-    if (state == ReceivingState.Always && requiresPostNotificationPermission()) {
-      form.askPermission(Manifest.permission.POST_NOTIFICATIONS, new PermissionResultHandler() {
-        @Override
-        public void HandlePermissionResponse(String permission, boolean granted) {
-          if (granted) {
-            Log.i(TAG, "Post Notifications permission granted");
-            ReceivingEnabledAbstract(state);
-          } else {
-            Log.i(TAG, "Post Notifications permission denied");
-            form.dispatchPermissionDeniedEvent(
-                Texting.this,
-                "ReceivingEnabled",
-                Manifest.permission.POST_NOTIFICATIONS);
-          }
-        }
-      });
-      return;
-    }
     ReceivingEnabledAbstract(state);
-  }
-
-
-  private boolean requiresPostNotificationPermission() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
-    return ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS)
-        != PackageManager.PERMISSION_GRANTED;
   }
 
   public static int isReceivingEnabled(Context context) {

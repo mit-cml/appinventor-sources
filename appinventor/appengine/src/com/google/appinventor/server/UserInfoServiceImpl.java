@@ -6,11 +6,9 @@
 
 package com.google.appinventor.server;
 
-import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
-import com.google.appinventor.server.survey.Survey;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
@@ -62,13 +60,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     }
     config.setUser(user);
 
-    String surveyUrl;
-    if (AppInventorFeatures.doingSurvey()) {
-      surveyUrl = Survey.check(user.getUserEmail());
-    } else {
-      surveyUrl = null;
-    }
-
     // Fetch the current splash screen version
     config.setSplashConfig(storageIo.getSplashConfig());
 
@@ -92,7 +83,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setGalleryLocation(Flag.createFlag("gallery.location", "").get());
     config.setDeleteAccountAllowed(deleteAccountAllowed);
     config.setIosExtensions(storageIo.getIosExtensionsConfig());
-    config.setSurveyUrl(surveyUrl);
 
     if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
       config.setSecondBuildserver(true);
@@ -129,6 +119,27 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     } else {
       return storageIo.downloadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, "UTF-8");
     }
+  }
+
+  /**
+   * Returns user information.
+   *
+   * (obsoleted by getSystemConfig())
+   *
+   * @return  user information record
+   */
+
+  @Override
+  public User getUserInformation(String sessionId) {
+    // This is a little evil here. We are fetching the User object
+    // *and* side effecting it by storing the sessionId
+    // A more pedagotically correct way would be to do the store
+    // in a separate RPC. But that would add another round trip.
+    User user = userInfoProvider.getUser();
+    user.setSessionId(sessionId); // Store local copy
+    // Store it in the data store
+    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
+    return user;
   }
 
   /**

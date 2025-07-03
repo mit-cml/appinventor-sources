@@ -150,17 +150,18 @@ public class AssetFetcher {
     Form form = Form.getActiveForm();
     if (depth > 1) {
       synchronized (semaphore) { // We are protecting the inError variable
-        if (!inError) {
+        if (inError) {
+          return null;
+        } else {
           inError = true;
           form.runOnUiThread(new Runnable() {
-            public void run() {
-              RuntimeErrorAlert.alert(Form.getActiveForm(),
-                  "Unable to load file: " + fileName,
+              public void run() {
+                RuntimeErrorAlert.alert(Form.getActiveForm(), "Unable to load file: " + fileName,
                   "Error!", "End Application");
-            }
-          });
+              }
+            });
+          return null;
         }
-        return null;
       }
     }
 

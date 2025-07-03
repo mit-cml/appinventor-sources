@@ -12,7 +12,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <g:FlowPanel styleName="ode-TopPanel" ui:field="header">
     <g:HTML>
-      <img srcset="" class="ode-Logo" ui:field="logo" />
+      <img srcset="" src="/static/images/codi-logo.svg" ui:field="logo" height="37px"/>
     </g:HTML>
     <ode:TopToolbar ui:field="topToolbar"/>
     <g:FlowPanel ui:field="rightPanel">

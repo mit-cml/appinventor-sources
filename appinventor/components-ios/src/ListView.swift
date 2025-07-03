@@ -1,5 +1,5 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
-// Copyright 2017-2025 MIT, All rights reserved
+// Copyright 2017-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -25,7 +25,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _showFilter = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _fontSize = Int32(22)
+  fileprivate var _textSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
@@ -36,13 +36,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _orientation = Int32(1)
   fileprivate let filter = UISearchBar()
   fileprivate var _hint = "Search list..."
-  fileprivate var _dividerColor = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _dividerThickness = Int32(0)
-  fileprivate var _elementColor = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _elementCornerRadius = Int32(0)
-  fileprivate var _elementMarginsWidth = Int32(0)
-  fileprivate var _imageHeight = Int32(200)
-  fileprivate var _imageWidth = Int32(200)
 
 
   public override init(_ parent: ComponentContainer) {
@@ -112,12 +105,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
         _view.reloadData()
         return
       }
-      addElements(elements)
-    }
-  }  
-
-  func addElements(_ elements: [AnyObject]) {
-    if !elements.isEmpty {
       if elements.first is YailDictionary {
         for item in elements {
           if let row = item as? YailDictionary {
@@ -131,25 +118,17 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
           }
         }
       } else {
-        if _elements.isEmpty {
-          _elements = elements.toStringArray()
-        } else {
-          _elements.append(contentsOf: elements.toStringArray())
-        }       
+        _elements = elements.toStringArray()
       }
-      elementsCount()
+      let rows = max(_elements.count, _listData.count)
+      _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
+      if let searchBar = _view.tableHeaderView as? UISearchBar {
+        self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
+      } else {
+        _view.reloadData()
+      }
     }
   }
-
-  func elementsCount() {
-    let rows = max(_elements.count, _listData.count)
-    _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
-    if let searchBar = _view.tableHeaderView as? UISearchBar {
-      self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
-    } else {
-      _view.reloadData()
-    }    
-  }  
 
   @objc open var FontTypeface: String {
     get {
@@ -177,81 +156,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       return false;
     }
     set(addEffect) {
-    }
-  }
-
-  // This property is not fully implemented in iOS
-  @objc open var DividerColor: Int32 {
-    get {
-      return _dividerColor
-    }
-    set(dividerColor) {
-      _dividerColor = dividerColor
-      _view.reloadData()
-    }
-  }
-
-  // This property is not fully implemented in iOS
-  @objc open var DividerThickness: Int32 {
-    get {
-      return _dividerThickness
-    }
-    set(dividerThickness) {
-      _dividerThickness = dividerThickness
-      _view.reloadData()
-    }
-  }
-
-  // This property is not fully implemented in iOS
-  @objc open var ElementColor: Int32 {
-    get {
-      return _elementColor
-    }
-    set(elementColor) {
-      _elementColor = elementColor
-      _view.reloadData()
-    }
-  }
-
-  // This property is not fully implemented in iOS
-  @objc open var ElementCornerRadius: Int32 {
-    get {
-      return _elementCornerRadius
-    }
-    set(elementCornerRadius) {
-      _elementCornerRadius = elementCornerRadius
-      _view.reloadData()
-    }
-  }
-
-  // This property is not fully implemented in iOS
-  @objc open var ElementMarginsWidth: Int32 {
-    get {
-      return _elementMarginsWidth
-    }
-    set(elementMarginsWidth) {
-      _elementMarginsWidth = elementMarginsWidth
-      _view.reloadData()
-    }
-  }
-
-  @objc open var ImageHeight: Int32 {
-    get {
-        return _imageHeight
-    }
-    set(height) {
-        _imageHeight = height
-        _view.reloadData()
-    }
-}
-
-  @objc open var ImageWidth: Int32 {
-    get {
-        return _imageWidth
-    }
-    set(width) {
-        _imageWidth = width
-        _view.reloadData()
     }
   }
 
@@ -310,7 +214,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  // This property is not fully implemented in iOS
   @objc open var Orientation: Int32 {
     get {
       return _orientation
@@ -420,6 +323,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
+
   @objc open var TextColor: Int32 {
     get {
       return _textColor
@@ -440,12 +344,12 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  @objc open var FontSize: Int32 {
+  @objc open var TextSize: Int32 {
     get {
-      return _fontSize
+      return _textSize
     }
-    set(fontSize) {
-      _fontSize = fontSize < 0 ? Int32(7) : fontSize
+    set(textSize) {
+      _textSize = textSize < 0 ? Int32(7) : textSize
       _view.reloadData()
     }
   }
@@ -469,43 +373,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
     _listData.insert(["Text1": mainText, "Text2": detailText, "Image": imageName], at: Int(addIndex - 1))
-  }
-
-  @objc open func AddItems(_ items: [AnyObject]) {
-    guard !elements.isEmpty else {
-        return
-    }
-    addElements(items)
-  }
-
-  @objc open func AddItemsAtIndex(_ addIndex: Int32, _ elements: [AnyObject]) {
-    if elements.isEmpty {
-      return
-    }
-    if addIndex < 1 || addIndex - 1 > max(_listData.count, _elements.count) {
-      _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
-           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
-      return
-    }
-    let index = Int(addIndex - 1)
-    if elements.first is YailDictionary {
-      var newItems: [[String: String]] = []
-      for item in elements {
-        if let row = item as? YailDictionary {
-          if let rowDict = row as? [String:String] {
-            newItems.append(rowDict)
-          }
-        } else if let row = item as? String {
-          newItems.append(["Text1": row, "Text2": "", "Image": ""])
-        } else {
-          // Hmm...
-        }
-      }
-      _listData.insert(contentsOf: newItems, at: index)
-    } else {
-      _elements.insert(contentsOf: elements.toStringArray(), at: index)
-    }
-    elementsCount()
   }
 
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
@@ -566,13 +433,10 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     } else {
       let listDataIndex = indexPath.row - _elements.count
       if _listViewLayoutMode == 1{
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 44
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
       } else if _listViewLayoutMode == 2 {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 60
+        tableView.rowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
 
@@ -603,13 +467,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
         ])
       } else if _listViewLayoutMode == 3 {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 60
+        tableView.rowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         if let imagePath = _listData[listDataIndex]["Image"],
            let image = AssetManager.shared.imageFromPath(path: imagePath) {
           cell.imageView?.image = image
-          cell.imageView?.contentMode = .scaleAspectFit
 
           // Configure the layout
           cell.layoutMargins = UIEdgeInsets.zero
@@ -637,19 +499,16 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
               stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
-              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
           ])
         }
       } else if _listViewLayoutMode == 4 {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 60
+        tableView.rowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
         if let imagePath = _listData[listDataIndex]["Image"],
            let image = AssetManager.shared.imageFromPath(path: imagePath) {
           cell.imageView?.image = image
-          cell.imageView?.contentMode = .scaleAspectFit
 
           // Configure the layout
           cell.layoutMargins = UIEdgeInsets.zero
@@ -688,54 +547,10 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
               horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
-              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
-          ])
-        }
-      } else if _listViewLayoutMode == 5 {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 120
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-          let image = AssetManager.shared.imageFromPath(path: imagePath) {
-          cell.imageView?.image = image
-          cell.imageView?.contentMode = .scaleAspectFit
-
-          // Configure the layout
-          cell.layoutMargins = UIEdgeInsets.zero
-          cell.separatorInset = UIEdgeInsets.zero
-          cell.preservesSuperviewLayoutMargins = true
-
-          // Create a vertical stack view
-          let verticalStackView = UIStackView()
-          verticalStackView.axis = .vertical
-          verticalStackView.alignment = .center
-          verticalStackView.distribution = .fill
-          verticalStackView.spacing = 8.0
-
-          // Add the imageView, textLabel and detailTextLabel to the vertical stack view
-          verticalStackView.addArrangedSubview(cell.imageView!)
-          verticalStackView.addArrangedSubview(cell.textLabel!)
-          verticalStackView.addArrangedSubview(cell.detailTextLabel!)
-
-          // Add the horizontal stack view to the cell's content view
-          cell.contentView.addSubview(verticalStackView)
-
-          // Set up constraints
-          verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-          NSLayoutConstraint.activate([
-            verticalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
-            verticalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
-            verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
-            verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-            cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
-            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
           ])
         }
       } else {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 44
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
       }
 
@@ -743,7 +558,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.textLabel?.lineBreakMode = .byWordWrapping
     }
 
-    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSize))
+    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
 
     guard let form = _container?.form else {
@@ -771,11 +586,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
 
     if _fontTypeface == "1" {
-      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize))
+      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
     } else if _fontTypeface == "2" {
-      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSize))
+      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize))
     } else if _fontTypeface == "3" {
-      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSize))
+      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
     }
 
     if _fontTypefaceDetail == "1" {

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="android">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/appinventor/lib/android/android-34/android.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

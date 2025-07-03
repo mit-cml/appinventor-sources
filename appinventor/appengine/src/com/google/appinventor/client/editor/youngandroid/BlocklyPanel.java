@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2021 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2019 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,16 +13,8 @@ import com.google.appinventor.client.ConnectProgressBar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
-import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
-import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.settings.user.BlocksSettings;
-import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.client.utils.Promise;
-import com.google.appinventor.client.utils.Promise.WrappedException;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Callback;
@@ -316,36 +308,6 @@ public class BlocklyPanel extends HTMLPanel {
     DesignToolbar.popScreen();
   }
 
-  public static Promise<Boolean> startCache() {
-    return new Promise<Boolean>((resolve, reject) -> {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-
-      ChainableCommand cmd = new SaveAllEditorsCommand(
-        new GenerateYailCommand(
-          new ChainableCommand() {
-            @Override
-            public void execute(ProjectNode projectRootNode) {
-              try {
-                long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
-                String projectName = Ode.getCurrentProject().getProjectName();
-                boolean result = connectCache(Long.toString(projectId), projectName);
-                resolve.apply(result);
-              } catch (WrappedException e) {
-                reject.apply(new WrappedException(e));
-              }
-            }
-            @Override
-            public boolean willCallExecuteNextCommand() {
-              return false;
-            }
-          })
-      );
-      final ChainableCommand finalCmd = cmd;
-      finalCmd.startExecuteChain(Tracking.PROJECT_ACTION_CACHE_PROJECT, projectRootNode, null);       
-    });
-    
-  }
-
   public void getBlocksImage(Callback<String, String> callback) {
     doFetchBlocksImage(callback);
   }
@@ -470,10 +432,6 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static String getComponentInstanceTypeName(String formName, String instanceName) {
     return YaBlocksEditor.getComponentInstanceTypeName(formName, instanceName);
-  }
-
-  public static String getComponentContainerUuid(String formName, String instanceName) {
-    return YaBlocksEditor.getComponentContainerUuid(formName, instanceName);
   }
 
   public static String getComponentInstancePropertyValue(String formName, String instanceName, String propertyName) {
@@ -634,7 +592,6 @@ public class BlocklyPanel extends HTMLPanel {
     callback.call(null, arg);
   }-*/;
 
-  @SuppressWarnings("LineLength")
   private static native void exportMethodsToJavascript() /*-{
     $wnd.BlocklyPanel_callToggleWarning =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::callToggleWarning());
@@ -647,8 +604,6 @@ public class BlocklyPanel extends HTMLPanel {
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::pushScreen(Ljava/lang/String;));
     $wnd.BlocklyPanel_popScreen =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::popScreen());
-    $wnd.BlocklyPanel_startCache =
-        $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::startCache());
     $wnd.BlocklyPanel_createDialog =
         $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.BlocklyPanel_hideDialog =
@@ -681,8 +636,7 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getSharedBackpack(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
     $wnd.BlocklyPanel_storeSharedBackpack =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::storeSharedBackpack(Ljava/lang/String;Ljava/lang/String;));
-    $wnd.BlocklyPanel_getComponentContainerUuid =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentContainerUuid(*));
+
   }-*/;
 
   private native void initWorkspace(String projectId, boolean readOnly, boolean rtl)/*-{
@@ -712,15 +666,14 @@ public class BlocklyPanel extends HTMLPanel {
       }
     }.bind(workspace));
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace = workspace;
-    workspace.setVisible(false);  // The workspace is invisible by default
   }-*/;
 
   /**
-   * Inject the workspace into the &lt;div&gt; element with specific mode
+   * Inject the workspace into the &lt;div&gt; element.
    */
-  native void injectWorkspace(boolean isDarkMode)/*-{
+  native void injectWorkspace()/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
-    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace, isDarkMode);
+    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
   }-*/;
 
   /**
@@ -788,10 +741,6 @@ public class BlocklyPanel extends HTMLPanel {
   public native void removeAsset(String name)/*-{
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
       .removeAsset(name);
-  }-*/;
-
-  public static native boolean connectCache(String projectId, String projectName)/*-{
-    return $wnd.Blockly.ReplMgr.connectCache(projectId, projectName);
   }-*/;
 
   /**

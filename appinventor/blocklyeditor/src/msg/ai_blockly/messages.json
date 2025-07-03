@@ -5,8 +5,6 @@
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
-	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "This image references the following blocks which require extensions that are not present in the project:\n\n",
-	"Blockly.Msg.ERROR_PARSING_XML": "Error: Failed to parse XML from the PNG file. Please try again.",
 	"Blockly.Msg.UNDO": "Undo",
 	"Blockly.Msg.REDO": "Redo",
 	"Blockly.Msg.CLEAN_UP": "Clean up Blocks",

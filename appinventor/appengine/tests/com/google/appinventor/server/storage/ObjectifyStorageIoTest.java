@@ -547,7 +547,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     storage.uploadFile(projectId, YAIL_FILE_NAME2, USER_ID, FILE_CONTENT1, StorageUtil.DEFAULT_CHARSET);
     ProjectSourceZip zipFile = storage.exportProjectSourceZip(USER_ID, projectId, false,
             /* includeAndroidKeystore */ true,
-            "project_" + projectId + ".aia", true, false, true, false, false, false);
+            "project_" + projectId + ".aia", true, false, true, false);
     assertEquals(7,zipFile.getFileCount());
   }
 
@@ -571,7 +571,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertTrue(sourcesFiles.contains(YAIL_FILE_NAME2));
     ProjectSourceZip zipFile = storage.exportProjectSourceZip(USER_ID, projectId, false,
             /* includeAndroidKeystore */ true,
-            "project_" + projectId + ".aia", true, false, true, false, false, false);
+            "project_" + projectId + ".aia", true, false, true, false);
     assertEquals(4,zipFile.getFileCount());
     sourcesFiles = storage.getProjectSourceFiles(USER_ID, projectId);
     assertFalse(sourcesFiles.contains(YAIL_FILE_NAME2));

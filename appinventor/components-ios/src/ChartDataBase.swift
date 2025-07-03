@@ -7,14 +7,13 @@ import Foundation
 import DGCharts
 
 @objc open class ChartDataBase: DataCollection, Component, DataSourceChangeListener, ChartViewDelegate, ChartComponent {
+  var _chartDataModel: ChartDataModel?
   var _container: Chart {
     return container as! Chart
   }
   var _color: Int32 = AIComponentKit.Color.black.int32
   var _colors: [UIColor] = []
   var _label: String?
-  
-  var _dataLabelColor: Int32 = AIComponentKit.Color.black.int32
 
   var _lineType = AIComponentKit.LineType.Linear
   var _pointshape = PointStyle.Circle
@@ -34,7 +33,6 @@ import DGCharts
   @objc public init(_ chartContainer: Chart) {
     super.init(chartContainer)
     chartContainer.addDataComponent(self)
-    _dataLabelColor = chartContainer.form?.isDarkTheme ?? true ? AIComponentKit.Color.white.int32 : AIComponentKit.Color.black.int32
     initChartData()
     DataSourceKey("")
   }
@@ -58,7 +56,6 @@ import DGCharts
       ElementsFromPairs = elements
     }
     chartDataModel?.setColor(argbToColor(_color))
-    chartDataModel?.setDataLabelColor(argbToColor(_dataLabelColor))
     if !_colors.isEmpty {
       chartDataModel?.setColors(_colors)
     }
@@ -98,17 +95,6 @@ import DGCharts
      onDataChange()
     }
   }
-  
-  @objc open var DataLabelColor: Int32 {
-    get {
-      return _dataLabelColor
-    }
-    set {
-      _dataLabelColor = newValue
-      chartDataModel?.dataset?.valueTextColor = argbToColor(newValue)
-      refreshChart()
-    }
-  }
 
   func initChartData() {
     dataModel = _container.chartView?.createChartModel()
@@ -116,7 +102,6 @@ import DGCharts
     // set default values
     chartDataModel?.setColor(argbToColor(_color))
     chartDataModel?.setLabel(_label ?? "")
-    chartDataModel?.setDataLabelColor(argbToColor(_dataLabelColor))
     chartDataModel?.view.chart?.delegate = self
   }
 

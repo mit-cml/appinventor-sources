@@ -13,7 +13,7 @@
   <ui:with field="config" type="com.google.appinventor.client.OdeMessages"/>
   <g:FlowPanel styleName="ode-TopPanel">
     <g:HTML>
-      <img srcset="" class="ode-Logo" ui:field="logo" height="37px"/>
+      <img srcset="" src="/static/images/codi-logo.svg" ui:field="logo" height="37px"/>
     </g:HTML>
     <neo:TopToolbarNeo ui:field="topToolbar"/>
     <g:FlowPanel ui:field="rightPanel">

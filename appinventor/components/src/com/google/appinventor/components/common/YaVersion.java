@@ -603,12 +603,7 @@ public class YaVersion {
   // - LISTVIEW_COMPONENT_VERSION was incremented to 8.
   // For YOUNG_ANDROID_VERSION 231:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
-  // For YOUNG_ANDROID_VERSION 232:
-  // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
-  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
-  // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
-  // - CHART_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 232;
+  public static final int YOUNG_ANDROID_VERSION = 231;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -744,9 +739,7 @@ public class YaVersion {
   //   property,method or event of that component) you must also find and
   //   update the description in OdeMessages.java
 
-  // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 1:
-  // - AbsoluteArrangement component was added.
-  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
+
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
@@ -894,16 +887,9 @@ public class YaVersion {
   // For CHART_COMPONENT_VERSION 3:
   // - The ExtendDomainToInclude and ExtendRangeToInclude methods were added
   // - The Type getter block was made visible
-  // For CHART_COMPONENT_VERSION 4:
-  // - The axesTextColor property was added
-  // - The setAxesTextColor method was added
-  // - The ValueFormat property was added
-  public static final int CHART_COMPONENT_VERSION = 4;
+  public static final int CHART_COMPONENT_VERSION = 3;
 
-  // For CHART_DATA_2D_COMPONENT_VERSION 2:
-  // - The dataLabelColor property was added
-  // - The setDataLabelColor method was added
-  public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
 
   // For CHATBOT_COMPONENT_VERSION: Initial Version
   // For CHATBOT_COMPONENT_VERSION 2:
@@ -1202,18 +1188,13 @@ public class YaVersion {
   // - Added HintText property, performance optimization
   // For LISTVIEW_COMPONENT_VERSION 9:
   // - Changed the default ElementColor from Black to None
-  // For LISTVIEW_COMPONENT_VERSION 10:
-  // - Changed TextSize property to FontSize
-  // - Add new layout
-  public static final int LISTVIEW_COMPONENT_VERSION = 10;
+  public static final int LISTVIEW_COMPONENT_VERSION = 9;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
   // - The speed parameter was added to the LocationChanged event
-  // For LOCATIONSENSOR_COMPONENT_VERSION 4:
-  // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 3;
 
   // For MAP_COMPONENT_VERSION 1:
   // - Initial Map implementation using OpenStreetMap
@@ -1231,9 +1212,7 @@ public class YaVersion {
   // - Added ScaleUnits property
   // For MAP_COMPONENT_VERSION 6:
   // - Adds ScaleUnits and MapType dropdowns.
-  // For MAP_COMPONENT_VERSION 7:
-  // - Adds CustomUrl (MapType 4).
-  public static final int MAP_COMPONENT_VERSION = 7;
+  public static final int MAP_COMPONENT_VERSION = 6;
 
   // For MARKER_COMPONENT_VERSION 1:
   // - Initial Marker implementation using OpenStreetMap
@@ -1391,9 +1370,7 @@ public class YaVersion {
   // - Initial version.
   // For SLIDER_COMPONENT_VERSION 2:
   // - Added the property to allow for the removal of the Thumb Slider
-  // For SLIDER_COMPONENT_VERSION 3:
-  // - Added the NumberOfStepsand ThumbColor property, TouchDown and TouchUp events
-  public static final int SLIDER_COMPONENT_VERSION = 3;
+  public static final int SLIDER_COMPONENT_VERSION = 2;
 
   // For SPINNER_COMPONENT_VERSION 1:
   public static final int SPINNER_COMPONENT_VERSION = 1;
@@ -1713,21 +1690,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-<<<<<<< HEAD
   public static final String PREFERRED_COMPANION = "2.75dar3";
   public static final String EMULATOR_UPDATE_URL = " /companions/Emulator.apk"; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "/companions/MITAI2Companion.asc";
   public static final String COMPANION_UPDATE_URL1 = "/companions/MITAI2Companion.apk";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "/companions/Emulator.asc";
   public static final String [] ACCEPTABLE_COMPANIONS = { "2.74", "2.75, 2.75dar3", "2.75dar3u" };
-=======
-  public static final String PREFERRED_COMPANION = "2.75";
-  public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
-  public static final String COMPANION_UPDATE_URL = "";
-  public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.75", "2.75u" };
->>>>>>> master
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

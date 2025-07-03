@@ -131,7 +131,7 @@
 			<arg line="--language_out ECMASCRIPT_NEXT"/>
 			<arg line="--js_output_file ${public.build.dir}/blockly-all.js"/>
 			<arg line="${blockly.src.dir}/blockly_compressed.js"/>
-			<arg line="${blockly.plugin.dir}/block-lexical-variables-core-3.0.1.min.js"/>
+			<arg line="${blockly.plugin.dir}/block-lexical-variables-core-2.0.6.min.js"/>
 			<arg line="src/blocks/utilities.js"/>
 			<arg line="src/mixins/dynamic_connections.js"/>
 			<arg line="src/mixins/mixins.js"/>
@@ -143,11 +143,9 @@
 			<arg line="!${lib.dir}/closure-library/closure/goog/**_perf.js"/>
 			<arg line="--entry_point=goog:AI.Blockly.BlocklyEditor"/>
 			<arg line="--charset UTF-8"/>
-			<arg line="--create_source_map"/>
-			<arg file="${public.build.dir}/blockly-all.js.map"/>
+			<arg line="--create_source_map ${public.build.dir}/blockly-all.js.map"/>
 			<arg line="--source_map_location_mapping src|/ode/static/js"/>
-			<arg line="--source_map_input"/>
-			<arg value="${blockly.src.dir}/blockly_compressed.js|${blockly.src.dir}/blockly_compressed.js.map"/>
+			<arg line="--source_map_input ${blockly.src.dir}/blockly_compressed.js|${blockly.src.dir}/blockly_compressed.js.map"/>
 			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
 		</java>

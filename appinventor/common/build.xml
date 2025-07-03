@@ -40,7 +40,6 @@
     <mkdir dir="${CommonUtils-class.dir}" />
 
     <ai.javac destdir="${CommonUtils-class.dir}">
-      <include name="${common.pkg}/constants/*.java" />
       <include name="${common.pkg}/utils/*.java" />
       <classpath>
         <pathelement location="${lib.dir}/guava/guava-27.1-android.jar" />

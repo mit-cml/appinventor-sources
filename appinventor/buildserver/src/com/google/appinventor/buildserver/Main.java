@@ -6,7 +6,6 @@
 
 package com.google.appinventor.buildserver;
 
-import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.stats.NullStatReporter;
 import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
 
@@ -116,12 +115,6 @@ public final class Main {
       LOG.severe("Problem opening inout zip file: " + commandLineOptions.inputZipFile.getName());
       System.exit(1);
     }
-
-    if (commandLineOptions.isForCompanion) {
-      // If we are building for the Companion, disable timeouts
-      Execution.disableTimeouts();
-    }
-
     Result result = projectBuilder.build(commandLineOptions.userName,
                                          zip,
                                          commandLineOptions.outputDir,

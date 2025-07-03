@@ -22,8 +22,6 @@
 	"Blockly.Msg.EXPAND_ALL": "展開所有程式方塊",
 	"Blockly.Msg.ARRANGE_H": "水平排列所有程式方塊",
 	"Blockly.Msg.ARRANGE_V": "垂直縱向排列所有程式方塊",
-	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "此图像引用了以下需要在项目中存在的扩展的块：\n\n",
-	"Blockly.Msg.ERROR_PARSING_XML": "错误：无法从PNG文件解析XML。请再试一次。",
 	"Blockly.Msg.ARRANGE_S": "斜向排列所有方塊",
 	"Blockly.Msg.SORT_W": "按寬度排序所有程式方塊",
 	"Blockly.Msg.SORT_H": "按高度排序所有程式方塊",

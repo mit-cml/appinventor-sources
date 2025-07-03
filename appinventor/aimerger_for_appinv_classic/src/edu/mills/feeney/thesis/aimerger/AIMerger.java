@@ -59,6 +59,7 @@ public class AIMerger extends JFrame {
   private JLabel secondProjectScreensInstrucL;
   private JLabel secondProjectScreensL;
   private JLabel secondProjectAssetsInstrucL;
+  private JLabel picLabel;
   private JButton mainProjectBrowseB;
   private JButton mainProjectLoadB;
   private JButton secondProjectBrowseB;
@@ -156,16 +157,16 @@ public class AIMerger extends JFrame {
       if (alertToDuplicates()) {
         // List to hold files to be included in the new project from the main
         // project.
-        List<String> filesFromMainProject = new ArrayList<>();
+        List<String> filesFromMainProject = new ArrayList<String>();
         // The properties file from the main project is always included in the new project.
         filesFromMainProject.add(mainProject.getPropertiesFilePath());
 
         // List to hold files to be included in the new project from the second project.
-        List<String> filesFromSecondProject = new ArrayList<>();
+        List<String> filesFromSecondProject = new ArrayList<String>();
 
         // Temporary list to hold the name of the screens from the main project that have been 
         // checked to be included in the new project. 
-        List<String> mainProjectCheckedScreens = new ArrayList<>(mainProjectScreensCBL.getCheckedItems());
+        List<String> mainProjectCheckedScreens = mainProjectScreensCBL.getChecked();
         // Add checked screens to the list of files to include from the main project.
         if (!mainProjectCheckedScreens.isEmpty()) {
           for (AIScreen aiScreen : mainProject.getScreensList()) {
@@ -179,7 +180,7 @@ public class AIMerger extends JFrame {
 
         // Temporary list to hold the name of the assets from the main project that have been 
         // checked to be included in the new project. 
-        List<String> mainProjectCheckedAssets = new ArrayList<>(mainProjectAssetsCBL.getCheckedItems());
+        List<String> mainProjectCheckedAssets = mainProjectAssetsCBL.getChecked();
         // Add checked assets to the list of files to include from the main project.
         if (!mainProjectCheckedAssets.isEmpty()) {
           for (AIAsset aiAsset : mainProject.getAssetsList()) {
@@ -191,21 +192,22 @@ public class AIMerger extends JFrame {
 
         // Temporary list to hold the name of the screens from the second project that have been 
         // checked to be included in the new project. 
-        List<String> secondProjectCheckedScreens = new ArrayList<>(secondProjectScreensCBL.getCheckedItems());
+        List<String> secondProjectCheckedScreens = secondProjectScreensCBL.getChecked();
         // Add checked screens to the list of files to include from the second project.
         if (!secondProjectCheckedScreens.isEmpty()) {
           for (AIScreen aiScreen : secondProject.getScreensList()) {
             if (secondProjectCheckedScreens.contains(aiScreen.getName())) {
               String path = aiScreen.getPath();
               filesFromSecondProject.add(path);
-              filesFromSecondProject.add(path.substring(0, path.lastIndexOf(".scm")).concat(".blk"));
+              filesFromSecondProject
+              .add(path.substring(0, path.lastIndexOf(".scm")).concat(".blk"));
             }
           }
         }
 
         // Temporary list to hold the name of the assets from the second project that have been 
         // checked to be included in the new project. 
-        List<String> secondProjectCheckedAssets = new ArrayList<>(secondProjectAssetsCBL.getCheckedItems());
+        List<String> secondProjectCheckedAssets = secondProjectAssetsCBL.getChecked();
         // Add checked assets to the list of files to include from the second project.
         if (!secondProjectCheckedAssets.isEmpty()) {
           for (AIAsset aiAsset : secondProject.getAssetsList()) {

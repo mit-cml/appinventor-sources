@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="mpandroidchart">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/appinventor/lib/mpandroidchart/mpandroidchart.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

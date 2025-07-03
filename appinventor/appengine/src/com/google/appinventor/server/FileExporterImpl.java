@@ -58,19 +58,16 @@ public final class FileExporterImpl implements FileExporter {
 
   @Override
   public ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
-      boolean includeProjectHistory,
-      boolean includeAndroidKeystore,
-      @Nullable String zipName,
-      boolean includeYail,
-      boolean includeScreenShots,
-      boolean fatalError,
-      boolean forGallery,
-      boolean forAppStore,
-      boolean locallyCachedApp) throws IOException {
+    boolean includeProjectHistory,
+    boolean includeAndroidKeystore,
+    @Nullable String zipName,
+    boolean includeYail,
+    boolean includeScreenShots,
+    boolean fatalError,
+    boolean forGallery) throws IOException {
     // Download project source files as a zip.
     return storageIo.exportProjectSourceZip(userId, projectId,
-        includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots,
-        forGallery, fatalError, forAppStore, locallyCachedApp);
+      includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots, forGallery, fatalError);
   }
 
   @Override
@@ -88,7 +85,7 @@ public final class FileExporterImpl implements FileExporter {
     for (Long projectId : projectIds) {
       try {
         ProjectSourceZip projectSourceZip =
-            exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false, false, false);
+            exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 
@@ -159,7 +156,7 @@ public final class FileExporterImpl implements FileExporter {
         // even for Admins. If you are an admin and want to debug a project, download
         // it explicitly.
         ProjectSourceZip projectSourceZip =
-          exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false, false, false);
+          exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 

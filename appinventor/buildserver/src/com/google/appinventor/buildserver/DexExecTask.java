@@ -234,8 +234,8 @@ public class DexExecTask {
         String[] dxCommandLine = new String[commandLineList.size()];
         commandLineList.toArray(dxCommandLine);
 
-        return Execution.execute(null, dxCommandLine, System.out, System.err,
-            Execution.Timeout.LONG);
+        boolean dxSuccess = Execution.execute(null, dxCommandLine, System.out, System.err);
+        return dxSuccess;
 
     }
 

@@ -26,14 +26,12 @@ public final class MockSlider extends MockVisibleComponent {
 
   protected static final String PROPERTY_NAME_COLORLEFT = "ColorLeft";
   protected static final String PROPERTY_NAME_COLORRIGHT = "ColorRight";
-  protected static final String PROPERTY_NAME_THUMBCOLOR = "ThumbColor";
 
   // Widget for showing the mock slider
   protected final HorizontalPanel panel;
   private boolean initialized = false;
   public String trackColorActive = "orange";
   public String trackColorInactive = "gray";
-  public String thumbColor = "darkgray";
 
   public SVGPanel sliderGraphic;
 
@@ -104,7 +102,7 @@ public final class MockSlider extends MockVisibleComponent {
         + "<path d=\"M0,0H56a4,4,0,0,1,4,4v6a4,4,0,0,1-4,4H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z\""
         + " transform=\"translate(187 189)\" fill=\"" + trackColorInactive + "\"/>\n"
         + "<rect width=\"14\" height=\"20\" rx=\"2\" transform=\"translate(180 186)\""
-        + " fill=\"" + thumbColor +"\"/>\n"
+        + " fill=\"#aaa9ad\"/>\n"
         + "</g>");
   }
 
@@ -125,15 +123,15 @@ public final class MockSlider extends MockVisibleComponent {
         + "<rect width=\"40\" height=\"4\" transform=\"translate(98 31.923)\""
         + " fill=\"" + trackColorInactive + "\"/>\n"
         + "<g transform=\"matrix(1, 0, 0, 1, 58, 18)\" filter=\"url(#Ellipse_1)\">\n"
-        + "<circle cx=\"10\" cy=\"10\" r=\"10\" transform=\"translate(30 6)\" fill=\""+ thumbColor +"\""
+        + "<circle cx=\"10\" cy=\"10\" r=\"10\" transform=\"translate(30 6)\" fill=\"#2abbf1\""
         + " opacity=\"0.64\"/>\n"
         + "</g>\n"
-        + "<circle cx=\"4\" cy=\"4\" r=\"4\" transform=\"translate(94 30)\" fill=\"" + thumbColor + "\"/>\n"
+        + "<circle cx=\"4\" cy=\"4\" r=\"4\" transform=\"translate(94 30)\" fill=\"#33b5e5\"/>\n"
         + "</g>");
   }
 
   private void materialSlider() {
-    //String thumbColor = MockComponentsUtil.getColor(colorAccent).toString();
+    String thumbColor = MockComponentsUtil.getColor(colorAccent).toString();
     sliderGraphic.setInnerSVG("<g transform=\"translate(-217 -337)\">\n"
         + "<path d=\"M2,0H40a0,0,0,0,1,0,0V4a0,0,0,0,1,0,0H2A2,2,0,0,1,0,2V2A2,2,0,0,1,2,0Z\""
         + " transform=\"translate(217 342)\" fill=\"" + trackColorActive + "\"/>\n"
@@ -164,7 +162,7 @@ public final class MockSlider extends MockVisibleComponent {
         + "<g transform=\"translate(26.07 0.5)\" fill=\"#fff\" stroke=\"rgba(0,0,0,0.03)\""
         + " stroke-miterlimit=\"10\" stroke-width=\"0.5\">\n"
         + "<circle cx=\"14\" cy=\"14\" r=\"14\" stroke=\"none\"/>\n"
-        + "<circle cx=\"14\" cy=\"14\" r=\"14.25\" fill=\"" + thumbColor + "\"/>\n"
+        + "<circle cx=\"14\" cy=\"14\" r=\"14.25\" fill=\"none\"/>\n"
         + "</g>\n"
         + "</g>\n"
         + "</g>");
@@ -194,16 +192,6 @@ public final class MockSlider extends MockVisibleComponent {
     }
   }
 
-  /**
-   * Set thumb color for slider
-   */
-  private void setThumbColorProperty(String text) {
-    if (sliderGraphic != null) {
-      thumbColor = MockComponentsUtil.getColor(text).toString();
-      paintSlider();
-    }
-  }
-
   @Override
   protected boolean isPropertyVisible(String propertyName) {
     //We don't want to allow user to change the slider height. S/he can only change the
@@ -227,9 +215,6 @@ public final class MockSlider extends MockVisibleComponent {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_COLORRIGHT)) {
       setTrackColorInactiveProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_THUMBCOLOR)) {
-      setThumbColorProperty(newValue);
       refreshForm();
     }
 

@@ -37,7 +37,7 @@ public final class GeneralSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.DARK_THEME_ENABLED, "false",
         EditableProperty.TYPE_INVISIBLE));
-    addProperty(new EditableProperty(this, SettingsConstants.USER_NEW_LAYOUT, "true",
+    addProperty(new EditableProperty(this, SettingsConstants.USER_NEW_LAYOUT, "false",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.USER_AUTOLOAD_PROJECT, "true",
         EditableProperty.TYPE_INVISIBLE));
