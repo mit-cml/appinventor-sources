@@ -37,4 +37,14 @@ class SystemVariables {
       UserDefaults.standard.set(value, forKey: "isInConnectedApp")
     }
   }
+  
+  static var lastOpenedTable: [String : Date] {
+    get {
+      return UserDefaults.standard.dictionary(forKey: "lastOpenedTable") as? [String : Date] ?? [:]
+    }
+    
+    set(value) {
+      UserDefaults.standard.set(value, forKey: "lastOpenedTable")
+    }
+  }
 }

@@ -51,6 +51,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     var title: String
     var iconPath: String?
     var aiVersioning: Int?
+    var lastOpened: String?
   }
   
   private static var AIVersioning: Int = 231;
@@ -63,7 +64,6 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
 
     self.configureScreen()
     self.updateUIOnAppAvailability()
-  
     self.searchBar.delegate = self
     self.tableView.delegate = self
     self.tableView.dataSource = self
@@ -140,7 +140,6 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
                          title: nil, image: nil, completion: nil)
       }
     }
-//    return appTitles
   }
   
   /**
@@ -149,7 +148,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
    */
   private func getAppProperties(){
     let libraryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-          .appendingPathComponent("apps", isDirectory: true)
+        .appendingPathComponent("apps", isDirectory: true)
     for app in self.downloadedApps.keys {
       let appPropertiesPath = libraryPath.appendingPathComponent("\(app)/youngandroidproject/project.properties")
       
@@ -162,23 +161,37 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
         
         for line in lines {
           if line.trimmingCharacters(in: .whitespaces).hasPrefix("#") || line.trimmingCharacters(in: .whitespaces).isEmpty {
-                          continue
-                      }
+                continue
+              }
           let keyValue = line.components(separatedBy: "=")
           if keyValue.count == 2 {
-              let key = keyValue[0].trimmingCharacters(in: .whitespaces)
-              let value = keyValue[1].trimmingCharacters(in: .whitespaces)
-              if key == "icon" {
-                iconPath = libraryPath.appendingPathComponent("\(app)/assets/\(value)").path
-              } else if key == "aiversioning" {
-                appAIVersioning = Int(value)!
-              }
+            let key = keyValue[0].trimmingCharacters(in: .whitespaces)
+            let value = keyValue[1].trimmingCharacters(in: .whitespaces)
+            if key == "icon" {
+              iconPath = libraryPath.appendingPathComponent("\(app)/assets/\(value)").path
+            } else if key == "aiversioning" {
+              appAIVersioning = Int(value)!
+            }
           }
         }
         
         self.downloadedApps[app]?.iconPath = iconPath
         self.downloadedApps[app]?.aiVersioning = appAIVersioning
         
+        if let lastOpenedDate = SystemVariables.lastOpenedTable[app] {
+          let timeComponents = Calendar.current.dateComponents([.day, .hour, .minute], from: lastOpenedDate, to: Date())
+          if timeComponents.day != 0 {
+            self.downloadedApps[app]?.lastOpened = "\(timeComponents.day!) day\(timeComponents.day! == 1 ? "" : "s") ago"
+          } else if timeComponents.hour != 0 {
+            self.downloadedApps[app]?.lastOpened = "\(timeComponents.hour!) hour\(timeComponents.hour! == 1 ? "" : "s") ago"
+          } else if timeComponents.minute != 0 {
+            self.downloadedApps[app]?.lastOpened = "\(timeComponents.minute!) minute\(timeComponents.minute! == 1 ? "" : "s") ago"
+          } else {
+            self.downloadedApps[app]?.lastOpened = "<1 minute ago"
+          }
+        } else {
+          self.downloadedApps[app]?.lastOpened = "NA"
+        }
       } catch {
         print("Was not able to read project.properties file of \(app).aia properly.")
       }
@@ -215,9 +228,10 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     let title = isSearching ? self.filteredAppsTitles[indexPath.row] : self.downloadedAppsTitles[indexPath.row]
     let iconPath = isSearching ? self.filteredApps[title]!.iconPath : self.downloadedApps[title]!.iconPath
     let projectVersioning = isSearching ? self.filteredApps[title]!.aiVersioning : self.downloadedApps[title]!.aiVersioning
+    let lastOpened = isSearching ? self.filteredApps[title]!.lastOpened : self.downloadedApps[title]!.lastOpened
     
     cell.appName.text = title
-    cell.lastOpened.text = "Last opened: NA"
+    cell.lastOpened.text = "Last opened: " + lastOpened!
     if iconPath == "default" {
       //TODO determine default icon
       cell.appIconImage.image = UIImage(named: "Onboard-1")
@@ -268,6 +282,8 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
             }
           }
           
+          SystemVariables.lastOpenedTable.removeValue(forKey: appName)
+          
           self.tableView.reloadData()
           self.updateUIOnAppAvailability()
           
@@ -300,6 +316,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let name = self.downloadedAppsTitles[indexPath.row]
+    SystemVariables.lastOpenedTable[name] = Date()
     let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
       .appendingPathComponent("samples/\(name).aia", isDirectory: false))
     newapp.makeCurrent()
@@ -320,7 +337,6 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
           self.filteredAppsTitles.append(title)
         }
       }
-      print(self.filteredApps)
     }
     self.tableView.reloadData()
   }

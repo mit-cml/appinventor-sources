@@ -16,6 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Override point for customization after application launch.
     UserDefaults.standard.register(defaults: ["isNewUser": true])
     UserDefaults.standard.register(defaults: ["isInConnectedApp": false])
+    UserDefaults.standard.register(defaults: ["lastOpenedTable" : [String : Date]()])
     AppInventorRuntime.initialize()
     return true
   }

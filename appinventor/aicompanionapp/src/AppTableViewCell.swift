@@ -48,7 +48,6 @@ class AppTableViewCell: UITableViewCell {
   
   @objc func settingsButtonTapped() {
     let currentCell = self
-    print("Settings button tapped")
     delegate?.didTapSettingsButton(for: currentCell)
   }
   
