@@ -123,6 +123,12 @@ public class ServerLayout {
   public static final String DOWNLOAD_USERFILE = "userfile";
 
   /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading a global asset
+   */
+  public static final String DOWNLOAD_GLOBAL_ASSET = "globalasset";
+
+  /**
    * Relative path of the {@link com.google.appinventor.server.UploadServlet}
    * within the ODE GWT module.
    */

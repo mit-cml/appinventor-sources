@@ -27,6 +27,7 @@ import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.client.editor.youngandroid.AssetManagerPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -239,6 +240,11 @@ public class Ode implements EntryPoint {
   @UiField (provided = true) protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
   @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
   @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  @UiField protected AssetManagerPanel assetManagerPanel;
+
+  public AssetManagerPanel getAssetManagerPanel() {
+    return assetManagerPanel;
+  }
   @UiField (provided = true) protected SourceStructureBox sourceStructureBox;
   @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 

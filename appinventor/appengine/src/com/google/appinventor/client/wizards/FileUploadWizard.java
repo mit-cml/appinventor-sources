@@ -193,23 +193,26 @@ public class FileUploadWizard {
 
     if (isGlobalAsset) {
       ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(originalFilename));
-      String globalFolderName = globalFolderTextBox.getText().trim();
-      String targetPath = "_global_/";
+      final String globalFolderName = globalFolderTextBox.getText().trim();
+      final String targetPath;
       if (globalFolderName != null && !globalFolderName.isEmpty()) {
         // Basic sanitization for folder name, can be expanded
-        globalFolderName = globalFolderName.replaceAll("[^a-zA-Z0-9_\\-/]", "");
-        if (!globalFolderName.isEmpty()) {
-            targetPath += globalFolderName + "/";
+        String sanitizedGlobalFolderName = globalFolderName.replaceAll("[^a-zA-Z0-9_\\-/]", "");
+        if (!sanitizedGlobalFolderName.isEmpty()) {
+            targetPath = "_global_/" + sanitizedGlobalFolderName + "/" + originalFilename;
+        } else {
+            targetPath = "_global_/" + originalFilename;
         }
+      } else {
+          targetPath = "_global_/" + originalFilename;
       }
-      targetPath += originalFilename;
 
       // For UPLOAD_GLOBAL_ASSET, the UploadServlet expects the full path in the URI
       // and the file in a form element named UPLOAD_USERFILE_FORM_ELEMENT
       String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
           ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + targetPath;
       
-      upload.setName(ServerLayout.UPLOAD_USERFILE_FORM_ELEMENT);
+      upload.setName(ServerLayout.UPLOAD_GLOBAL_ASSET_FORM_ELEMENT);
 
       Uploader.getInstance().upload(upload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
@@ -218,11 +221,10 @@ public class FileUploadWizard {
               if (uploadResponse.getStatus() == UploadResponse.Status.SUCCESS) {
                 ErrorReporter.hide();
                 ErrorReporter.reportInfo("Global asset " + originalFilename + " uploaded successfully.");
-                // TODO: Trigger refresh of global asset list if a UI component is listening.
-                // For now, no specific callback for global assets to project structure.
                 if (fileUploadedCallback != null) {
-                  // Decide if/how to call. Current signature is project-centric.
-                  // fileUploadedCallback.onFileUploaded(null, new FileNode(originalFilename, targetPath));
+                  // For global assets, we pass null for folderNode as there's no project-specific folder.
+                  // We create a dummy FileNode for the global asset to pass to the callback.
+                  fileUploadedCallback.onFileUploaded(null, new FileNode(originalFilename, targetPath));
                 }
               } else {
                 ErrorReporter.reportError(MESSAGES.fileUploadError() + " (Status: " + uploadResponse.getStatus() + ")");

@@ -146,6 +146,29 @@ public class StoredData {
     String settings;
   }
 
+  // Global assets (tied to user)
+  @Unindexed
+  @Cached
+  public static final class GlobalAssetData {
+    // The file name
+    @Id public String fileName;
+
+    // The user (parent's) key
+    @Parent Key<UserData> userKey;
+
+    // The folder name
+    @Indexed public String folder;
+
+    // Timestamp of last modification
+    public long timestamp;
+
+    // File content, these are raw bytes.
+    public byte[] content;
+
+    // MIME type of the asset
+    public String mimeType;
+  }
+
   // Project files
   // Note: FileData has to be Serializable so we can put it into
   //       memcache.
@@ -200,6 +223,19 @@ public class StoredData {
     String userId;              // The userId which owns this file
                                 // if null or the empty string, we haven't initialized
                                 // it yet
+  }
+
+  // Project-specific global asset references
+  @Unindexed
+  public static final class ProjectGlobalAsset {
+    // The global asset file name
+    @Id public String globalAssetFileName;
+
+    // Key of the project (parent) to which this global asset is linked
+    @Parent Key<ProjectData> projectKey;
+
+    // Timestamp of when this global asset was linked to the project
+    public long timestamp;
   }
 
   // MOTD data.

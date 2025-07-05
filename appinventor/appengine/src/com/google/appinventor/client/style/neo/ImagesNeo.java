@@ -728,4 +728,11 @@ public interface ImagesNeo extends Images {
    */
   @Source("images/trendline.png")
   ImageResource trendline();
+
+  /**
+   * Sync icon for updated global assets.
+   * Material icon: sync
+   */
+  @Source("images/syncIcon.png")
+  ImageResource syncIcon();
 }

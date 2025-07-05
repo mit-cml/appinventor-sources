@@ -31,6 +31,7 @@
               <box:SourceStructureBox ui:field="sourceStructureBox" />
               <box:BlockSelectorBox />
               <box:AssetListBox  ui:field="assetListBox" />
+              <ed:AssetManagerPanel ui:field="assetManagerPanel" />
             </g:FlowPanel>
             <box:PropertiesBox ui:field="propertiesBox" width="222px" />
           </g:FlowPanel>

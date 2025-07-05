@@ -160,40 +160,20 @@ public class UploadServlet extends OdeServlet {
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,
           fileImporter.importTempFile(uploadedStream));
       } else if (uploadKind.equals(ServerLayout.UPLOAD_GLOBAL_ASSET)) {
-        // This case now assumes that the global asset name (including _global_/ prefix)
-        // is part of the URI, similar to UPLOAD_USERFILE.
-        // The client is responsible for constructing this URI correctly.
-        // FileImporterImpl.importGlobalAsset has been modified to expect the
-        // _global_ prefix as part of its assetName parameter.
-        // However, the original plan for UPLOAD_GLOBAL_ASSET was to distinguish it
-        // for potential admin checks or different handling.
-        // Re-routing this to use importUserFile means the distinction of "global asset"
-        // at this servlet level is lost, and FileImporterImpl.importUserFile would
-        // need to be aware of the "_global_/" prefix to treat it as such,
-        // or a new method in FileImporter for this specific URI-based upload is needed.
-
-        // Adopting the user-provided snippet which uses importUserFile:
         uriComponents = uri.split("/", SPLIT_LIMIT_USERFILE);
         if (USERFILE_PATH_INDEX >= uriComponents.length) {
           throw CrashReport.createAndLogError(LOG, req, null,
-              new IllegalArgumentException("Missing user file path for global asset."));
+              new IllegalArgumentException("Missing global asset file path."));
         }
-        String fileName = uriComponents[USERFILE_PATH_INDEX]; // Expected: _global_/folder/asset.png or _global_/asset.png
+        String fileName = uriComponents[USERFILE_PATH_INDEX];
         InputStream uploadedStream;
         try {
-          // Using UPLOAD_USERFILE_FORM_ELEMENT as per the snippet.
-          // This implies the client should use this form element name when uploading global assets via this path.
-          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_USERFILE_FORM_ELEMENT);
+          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_GLOBAL_ASSET_FORM_ELEMENT);
         } catch (Exception e) {
           throw CrashReport.createAndLogError(LOG, req, null, e);
         }
 
-        // Assuming importUserFile can handle a fileName that starts with "_global_/"
-        // and treat it as a global asset. This would be a change in contract for importUserFile
-        // or it implies that "user files" can now also be global.
-        // The FileImporterImpl.importGlobalAsset method expects assetName and folder separately.
-        // The provided snippet uses importUserFile.
-        fileImporter.importUserFile(userInfoProvider.getUserId(), fileName, uploadedStream);
+        fileImporter.importGlobalAsset(userInfoProvider.getUserId(), fileName, uploadedStream);
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
 
       } else {

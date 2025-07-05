@@ -249,6 +249,15 @@ public interface StorageIo {
    */
   String getProjectHistory(String userId, long projectId);
 
+  /**
+   * Returns a list of all global assets linked to a project.
+   *
+   * @param userId a user Id
+   * @param projectId project ID
+   * @return list of ProjectGlobalAsset objects
+   */
+  List<StoredData.ProjectGlobalAsset> getProjectGlobalAssets(String userId, long projectId);
+
   // JIS XXX
   /**
    * Returns the date the project was created.
@@ -314,6 +323,16 @@ public interface StorageIo {
   void uploadRawUserFile(String userId, String fileName, byte[] content);
 
   /**
+   * Uploads a global asset.
+   *
+   * @param userId user ID
+   * @param folder folder name for the asset
+   * @param assetName asset name
+   * @param content asset content
+   */
+  void uploadGlobalAsset(String userId, String folder, String assetName, byte[] content);
+
+  /**
    * Downloads text user file data.
    *
    * @param userId a user Id
@@ -335,13 +354,73 @@ public interface StorageIo {
   byte[] downloadRawUserFile(String userId, String fileName);
 
   /**
+   * Downloads raw global asset file data.
+   *
+   * @param fileName file name
+   *
+   * @return file content
+   */
+  byte[] downloadRawGlobalAsset(String fileName);
+
+  /**
    * Deletes a user file.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param fileId  file ID
    */
   void deleteUserFile(String userId, String fileId);
 
-  // File management
+  /**
+   * Returns a list of all global assets for a user.
+   *
+   * @param userId a user Id
+   * @return list of all global assets
+   */
+  List<StoredData.GlobalAssetData> getGlobalAssets(String userId);
+
+  /**
+   * Deletes a global asset.
+   *
+   * @param userId user ID
+   * @param fileName the file name of the global asset to delete
+   */
+  void deleteGlobalAsset(String userId, String fileName);
+
+  /**
+   * Returns a global asset by its file name.
+   *
+   * @param userId user ID
+   * @param fileName the file name of the global asset
+   * @return the global asset data
+   */
+  StoredData.GlobalAssetData getGlobalAsset(String userId, String fileName);
+
+  /**
+   * Returns a global asset by its file name.
+   *
+   * @param userId user ID
+   * @param fileName the file name of the global asset
+   * @return the global asset data
+   */
+  StoredData.GlobalAssetData getGlobalAssetByFileName(String userId, String fileName);
+
+  /**
+   * Adds a global asset reference to a project.
+   *
+   * @param userId user ID
+   * @param projectId project ID
+   * @param globalAssetFileName the file name of the global asset
+   * @param timestamp the timestamp of the global asset at the time of linking
+   */
+  void addProjectGlobalAsset(String userId, long projectId, String globalAssetFileName, long timestamp);
+
+  /**
+   * Deletes a global asset reference from a project.
+   *
+   * @param userId user ID
+   * @param projectId project ID
+   * @param globalAssetFileName the file name of the global asset to delete
+   */
+  void deleteProjectGlobalAsset(String userId, long projectId, String globalAssetFileName);
 
   /**
    * Returns the maximum allowed job size in bytes.

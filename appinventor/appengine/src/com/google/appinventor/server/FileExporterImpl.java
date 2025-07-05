@@ -11,6 +11,9 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.server.storage.StoredData;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -64,10 +67,26 @@ public final class FileExporterImpl implements FileExporter {
     boolean includeYail,
     boolean includeScreenShots,
     boolean fatalError,
-    boolean forGallery) throws IOException {
+    final boolean forGallery) throws IOException {
+    final boolean forBuildserver = includeAndroidKeystore && includeYail;
     // Download project source files as a zip.
-    return storageIo.exportProjectSourceZip(userId, projectId,
+    ProjectSourceZip projectSourceZip = storageIo.exportProjectSourceZip(userId, projectId,
       includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots, forGallery, fatalError);
+
+    // Add global asset references to metadata
+    List<StoredData.ProjectGlobalAsset> linkedGlobalAssets = storageIo.getProjectGlobalAssets(userId, projectId);
+    if (!linkedGlobalAssets.isEmpty()) {
+      JSONArray jsonArray = new JSONArray();
+      for (StoredData.ProjectGlobalAsset pga : linkedGlobalAssets) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("fileName", pga.globalAssetFileName);
+        jsonObject.put("timestamp", pga.timestamp);
+        jsonArray.put(jsonObject);
+      }
+      projectSourceZip.setMetadata(jsonArray.toString());
+    }
+
+    return projectSourceZip;
   }
 
   @Override
@@ -231,6 +250,20 @@ public final class FileExporterImpl implements FileExporter {
     } catch (RuntimeException e) {
       throw new RuntimeException("Error downloading user file: " + filePath
           + "user=" + userId, e);
+    }
+  }
+
+  @Override
+  public RawFile exportGlobalAsset(String fileName) throws IOException {
+    // Download a specific global asset file.
+    if (fileName == null || fileName.trim().isEmpty()) {
+      throw new IllegalArgumentException("Global asset file name cannot be null or empty.");
+    }
+    try {
+      byte[] content = storageIo.downloadRawGlobalAsset(fileName);
+      return new RawFile(StorageUtil.basename(fileName), content);
+    } catch (RuntimeException e) {
+      throw new RuntimeException("Error downloading global asset file: " + fileName, e);
     }
   }
 

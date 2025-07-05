@@ -840,4 +840,10 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/file.png")
   ImageResource fileIcon();
+
+  /**
+   * Sync icon for updated global assets.
+   */
+  @Source("com/google/appinventor/images/syncIcon.png")
+  ImageResource syncIcon();
 }

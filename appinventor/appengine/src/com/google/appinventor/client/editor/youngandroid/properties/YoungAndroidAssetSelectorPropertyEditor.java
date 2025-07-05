@@ -16,6 +16,7 @@ import com.google.appinventor.client.widgets.properties.AdditionalChoiceProperty
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.shared.rpc.globalasset.GlobalAssetService;
 import com.google.appinventor.shared.rpc.globalasset.GlobalAssetServiceAsync;
+import com.google.appinventor.shared.rpc.project.GlobalAsset;
 import com.google.gwt.core.client.GWT;
 import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.client.wizards.FileUploadWizard.FileUploadedCallback;
@@ -269,13 +270,13 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
     // MOVED to finalizeAssetLoading choices.updateNoneItem();
 
     // Now fetch global assets
-    globalAssetService.getGlobalAssetPaths(new OdeAsyncCallback<List<String>>(
-        MESSAGES.errorFetchingGlobalAssets()) { // Assuming MESSAGES has/will have this
+    globalAssetService.getGlobalAssets(new OdeAsyncCallback<List<GlobalAsset>>(
+        MESSAGES.errorFetchingGlobalAssets()) {
       @Override
-      public void onSuccess(List<String> relativeGlobalPaths) {
-        for (String relativePath : relativeGlobalPaths) {
+      public void onSuccess(List<GlobalAsset> globalAssets) {
+        for (GlobalAsset globalAsset : globalAssets) {
+          String relativePath = globalAsset.getFolder() + "/" + globalAsset.getFileName();
           String fullGlobalFileId = "_global_/" + relativePath;
-          // Pass relativePath as 'name' so addAssetChoice can use it for display logic
           addAssetChoice(relativePath, fullGlobalFileId);
         }
         finalizeAssetLoading();
@@ -283,7 +284,7 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
       @Override
       public void onFailure(Throwable caught) {
         super.onFailure(caught);
-        finalizeAssetLoading(); // Still finalize, e.g. to add "None" from project assets
+        finalizeAssetLoading();
       }
     });
   }

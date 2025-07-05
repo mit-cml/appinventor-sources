@@ -81,6 +81,17 @@ public interface FileImporter {
       throws IOException;
 
   /**
+   * Adds the global asset on the server and imports its content.
+   *
+   * @param userId the userId
+   * @param fileName global asset file name (e.g., "_global_/folder/asset.png")
+   * @param uploadedFileStream uploaded file
+   * @throws IOException if any file operation fails
+   */
+  void importGlobalAsset(String userId, String fileName, InputStream uploadedFileStream)
+      throws IOException;
+
+  /**
    * Returns the names of all the projects belonging to the user.
    *
    * @return The set of project names belonging to the provided {@code userId}.

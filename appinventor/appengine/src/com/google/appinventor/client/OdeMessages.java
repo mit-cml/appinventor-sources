@@ -119,9 +119,44 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text on Toggle Warning Button")
   String hideWarnings();
 
-  @DefaultMessage("Upload File ...")
-  @Description("Text on \"Add...\" button")
-  String addButton();
+  @DefaultMessage("Upload File ...")  @Description("Text on \"Add...\" button")  String addButton();  @DefaultMessage("Preview")  @Description("Text on \"Preview\" button")  String previewButton();  @DefaultMessage("Download")  @Description("Text on \"Download\" button")  String downloadButton();  @DefaultMessage("Link to Project")
+  @Description("Text for button to link a global asset to the current project")
+  String linkToProjectButton();
+
+  @DefaultMessage("Error linking global asset to project.")
+  @Description("Error message when linking global asset to project fails")
+  String linkGlobalAssetError();
+
+  @DefaultMessage("Global asset ''{0}'' linked successfully to project.")
+  @Description("Success message when a global asset is linked to a project")
+  String globalAssetLinked(String assetName);
+
+  @DefaultMessage("No project is currently open. Please open a project to link global assets.")
+  @Description("Warning message when trying to link a global asset without an open project")
+  String noProjectOpenForLinking();
+
+  @DefaultMessage("Global Asset Update")
+  @Description("Title for the global asset update dialog")
+  String globalAssetUpdateDialogTitle();
+
+  @DefaultMessage("The global asset \"{0}\" has been updated.\n\n" +
+      "Current version timestamp: {1}\n" +
+      "New version timestamp: {2}\n\n" +
+      "Do you want to update this asset in your project?")
+  @Description("Message for the global asset update dialog")
+  String globalAssetUpdateMessage(String fileName, String oldTimestamp, String newTimestamp);
+
+  @DefaultMessage("Error updating global asset in project.")
+  @Description("Error message when updating global asset in project fails")
+  String globalAssetUpdateError();
+
+  @DefaultMessage("Global asset \"{0}\" updated successfully.")
+  @Description("Success message when a global asset is updated in the project")
+  String globalAssetUpdatedSuccessfully(String fileName);
+
+  @DefaultMessage("Error checking for global asset updates.")
+  @Description("Error message when checking for global asset updates fails")
+  String errorCheckingGlobalAssetUpdate();
 
   @DefaultMessage("Name")
   @Description("Header for name column of project table")

@@ -197,6 +197,8 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(UserProjectData.class);
     ObjectifyService.register(FileData.class);
     ObjectifyService.register(UserFileData.class);
+    ObjectifyService.register(StoredData.GlobalAssetData.class);
+    ObjectifyService.register(StoredData.ProjectGlobalAsset.class);
     ObjectifyService.register(MotdData.class);
     ObjectifyService.register(RendezvousData.class);
     ObjectifyService.register(WhiteListData.class);
@@ -1135,6 +1137,33 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
+  public void uploadGlobalAsset(final String userId, final String folder, final String assetName, final byte[] content) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.GlobalAssetData gad = datastore.find(globalAssetKey(userKey(userId), assetName));
+          if (gad == null) {
+            gad = new StoredData.GlobalAssetData();
+            gad.fileName = assetName;
+            gad.userKey = userKey(userId);
+          }
+          gad.folder = folder;
+          gad.content = content;
+          gad.timestamp = System.currentTimeMillis();
+          datastore.put(gad);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, assetName), e);
+    }
+  }
+
+  private Key<StoredData.GlobalAssetData> globalAssetKey(Key<UserData> userKey, String fileName) {
+    return new Key<StoredData.GlobalAssetData>(userKey, StoredData.GlobalAssetData.class, fileName);
+  }
+
+  @Override
   public String downloadUserFile(final String userId, final String fileName,
       final String encoding) {
     final Result<String> result = new Result<String>();
@@ -1193,6 +1222,171 @@ public class ObjectifyStorageIo implements StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);
     }
+  }
+
+  @Override
+  public List<StoredData.GlobalAssetData> getGlobalAssets(final String userId) {
+    final List<StoredData.GlobalAssetData> assetList = new ArrayList<StoredData.GlobalAssetData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<UserData> userKey = userKey(userId);
+          Query<StoredData.GlobalAssetData> query = datastore.query(StoredData.GlobalAssetData.class).ancestor(userKey);
+          for (StoredData.GlobalAssetData gad : query) {
+            assetList.add(gad);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return assetList;
+  }
+
+  @Override
+  public void deleteGlobalAsset(final String userId, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.GlobalAssetData> gadKey = globalAssetKey(userKey(userId), fileName);
+          if (datastore.find(gadKey) != null) {
+            datastore.delete(gadKey);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);
+    }
+  }
+
+  @Override
+  public StoredData.GlobalAssetData getGlobalAsset(final String userId, final String fileName) {
+    final Result<StoredData.GlobalAssetData> result = new Result<StoredData.GlobalAssetData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          result.t = datastore.find(globalAssetKey(userKey(userId), fileName));
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public StoredData.GlobalAssetData getGlobalAssetByFileName(final String userId, final String fileName) {
+    final Result<StoredData.GlobalAssetData> result = new Result<StoredData.GlobalAssetData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<UserData> userKey = userKey(userId);
+          Query<StoredData.GlobalAssetData> query = datastore.query(StoredData.GlobalAssetData.class).ancestor(userKey);
+          for (StoredData.GlobalAssetData asset : query) {
+            if (asset.fileName.equals(fileName)) {
+              result.t = asset;
+              return;
+            }
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public byte[] downloadRawGlobalAsset(final String fileName) {
+    final Result<byte[]> result = new Result<byte[]>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          // This method is called without a userId, so we need to search across all users
+          // for the global asset. This is not ideal for performance, but it's the
+          // only way to implement this method given the current StorageIo interface.
+          // A better solution would be to pass the userId to this method.
+          Query<StoredData.GlobalAssetData> query = datastore.query(StoredData.GlobalAssetData.class);
+          for (StoredData.GlobalAssetData asset : query) {
+            if (asset.fileName.equals(fileName)) {
+              result.t = asset.content;
+              return;
+            }
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Error downloading global asset: " + fileName, e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public List<StoredData.ProjectGlobalAsset> getProjectGlobalAssets(final String userId, final long projectId) {
+    final List<StoredData.ProjectGlobalAsset> assetList = new ArrayList<StoredData.ProjectGlobalAsset>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          Query<StoredData.ProjectGlobalAsset> query = datastore.query(StoredData.ProjectGlobalAsset.class).ancestor(projectKey);
+          for (StoredData.ProjectGlobalAsset pga : query) {
+            assetList.add(pga);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return assetList;
+  }
+
+  @Override
+  public void addProjectGlobalAsset(final String userId, final long projectId, final String globalAssetFileName, final long timestamp) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          StoredData.ProjectGlobalAsset pga = datastore.find(projectGlobalAssetKey(projectKey, globalAssetFileName));
+          if (pga == null) {
+            pga = new StoredData.ProjectGlobalAsset();
+            pga.globalAssetFileName = globalAssetFileName;
+            pga.projectKey = projectKey;
+          }
+          pga.timestamp = timestamp;
+          datastore.put(pga);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserProjectErrorInfo(userId, projectId), e);
+    }
+  }
+
+  @Override
+  public void deleteProjectGlobalAsset(final String userId, final long projectId, final String globalAssetFileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectGlobalAsset> pgaKey = projectGlobalAssetKey(projectKey(projectId), globalAssetFileName);
+          if (datastore.find(pgaKey) != null) {
+            datastore.delete(pgaKey);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserProjectErrorInfo(userId, projectId), e);
+    }
+  }
+
+  private Key<StoredData.ProjectGlobalAsset> projectGlobalAssetKey(Key<StoredData.ProjectData> projectKey, String globalAssetFileName) {
+    return new Key<StoredData.ProjectGlobalAsset>(projectKey, StoredData.ProjectGlobalAsset.class, globalAssetFileName);
   }
 
   @Override
@@ -1788,19 +1982,6 @@ public class ObjectifyStorageIo implements StorageIo {
     }
   }
 
-  /**
-   *  Exports project files as a zip archive
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project ID
-   * @param includeProjectHistory  whether or not to include the project history
-   * @param includeAndroidKeystore  whether or not to include the Android keystore
-   * @param zipName  the name of the zip file, if a specific one is desired
-   * @param includeYail include any yail files in the project
-   * @param includeScreenShots include any screen shots stored with the project
-   * @param fatalError Signal a fatal error if a file is not found
-   * @param forGallery flag to indicate we are exporting for the gallery
-   * @return  project with the content as requested by params.
-   */
   @Override
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
     final boolean includeProjectHistory,
@@ -2842,6 +3023,8 @@ public class ObjectifyStorageIo implements StorageIo {
     }
     return result.t;
   }
+
+  
 
   /*
    * Determine which GCS Bucket to use based on filename. In particular
