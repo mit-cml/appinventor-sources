@@ -12,15 +12,17 @@ import AIComponentKit
 
 class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, AppTableCellDelegate {
   
+  private static var AIVersioning: Int = 231;
+  
   @IBOutlet var libraryView: UIView!
   @IBOutlet var tableView: UITableView!
   @IBOutlet var searchBar: UISearchBar!
   @IBOutlet var libraryViewHeaderTitle: UILabel!
+  @IBOutlet var sortButton: UIButton!
   public var form: ReplForm!
-  private var downloadedAppsTitles: [String] = []
-  private var downloadedApps: [String : DownloadedApp] = [:]
-  private var filteredAppsTitles: [String] = []
-  private var filteredApps: [String : DownloadedApp] = [:]
+  private var downloadedAppsMap: [String : DownloadedApp] = [:]
+  private var downloadedApps: [DownloadedApp] = []
+  private var filteredApps: [DownloadedApp] = []
   private var isSearching: Bool = false
   private let noDownloadedAppsTitle: UILabel = {
     let label = UILabel()
@@ -47,32 +49,38 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     return label
   }()
   
-  private struct DownloadedApp {
+  private struct DownloadedApp : Comparable {
     var title: String
     var iconPath: String?
     var aiVersioning: Int?
     var lastOpened: String?
+    
+    static func < (left: DownloadedApp, right: DownloadedApp) -> Bool {
+      left.title.localizedCaseInsensitiveCompare(right.title) == .orderedAscending
+    }
   }
-  
-  private static var AIVersioning: Int = 231;
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
     self.initDownloadedApps()
-    self.getAppProperties()
 
     self.configureScreen()
     self.updateUIOnAppAvailability()
+    
+    self.sortApps()
+      
     self.searchBar.delegate = self
     self.tableView.delegate = self
     self.tableView.dataSource = self
   }
   
   private func configureScreen(){
+    sortButton.addTarget(self, action: #selector(showSortingMenu(_:)), for: .touchUpInside)
     libraryViewHeaderTitle.translatesAutoresizingMaskIntoConstraints = false
     searchBar.translatesAutoresizingMaskIntoConstraints = false
     tableView.translatesAutoresizingMaskIntoConstraints = false
+    sortButton.translatesAutoresizingMaskIntoConstraints = false
     libraryView.addSubview(noDownloadedAppsTitle)
     libraryView.addSubview(noDownloadedAppsDescription)
 
@@ -85,6 +93,10 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
       searchBar.leadingAnchor.constraint(equalTo: libraryView.leadingAnchor, constant: 8),
       searchBar.trailingAnchor.constraint(equalTo: libraryView.trailingAnchor, constant: -8),
       searchBar.heightAnchor.constraint(equalToConstant: 44),
+      
+      sortButton.bottomAnchor.constraint(equalTo: searchBar.topAnchor, constant: -8),
+      sortButton.trailingAnchor.constraint(equalTo: libraryView.trailingAnchor, constant: -16),
+      sortButton.widthAnchor.constraint(equalToConstant: 80),
 
       tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
       tableView.centerXAnchor.constraint(equalTo: libraryView.centerXAnchor),
@@ -105,30 +117,112 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     If not, present a simple screen that informs the user they have no apps downloaded yet, with a description how to do so.
    */
   private func updateUIOnAppAvailability() {
-    let hasDownloadedApps = downloadedApps.isEmpty
+    let hasDownloadedApps = downloadedAppsMap.isEmpty
     tableView.isHidden = hasDownloadedApps
     libraryViewHeaderTitle.isHidden = hasDownloadedApps
     searchBar.isHidden = hasDownloadedApps
+    sortButton.isHidden = hasDownloadedApps
     noDownloadedAppsTitle.isHidden = !hasDownloadedApps
     noDownloadedAppsDescription.isHidden = !hasDownloadedApps
   }
   
+  @objc private func showSortingMenu(_ sender: UIButton){
+    let alert = UIAlertController(title: "Sort By:", message: nil, preferredStyle: .actionSheet)
+    
+    let actions: [(String, () -> Void)] = [
+      ("Recently Opened \(SystemVariables.sortModeValue == .mostRecent ? "✔" : "")", {
+        SystemVariables.sortModeValue = SystemVariables.sortMode.mostRecent
+        self.sortApps()
+      }),
+      ("App Name: A-Z \(SystemVariables.sortModeValue == .AZ ? "✔" : "")", {
+        SystemVariables.sortModeValue = SystemVariables.sortMode.AZ
+        self.sortApps()
+      }),
+      ("App Name: Z-A \(SystemVariables.sortModeValue == .ZA ? "✔" : "")", {
+        SystemVariables.sortModeValue = SystemVariables.sortMode.ZA
+        self.sortApps()
+      })
+    ]
+    
+    for (title, handler) in actions {
+      let alertAction = UIAlertAction(title: title, style: .default) {_ in handler()}
+      alert.addAction(alertAction)
+    }
+    
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+    
+    present(alert, animated: true)
+  }
   
+  /**
+   Access each downloaded app's properties and retrieve the path of the icon and the AI versioning to make sure that
+   downloaded apps are valid and can be launched within the Companion App's system
+   */
   private func initDownloadedApps() {
-    let libraryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    let samplesPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("samples", isDirectory: true)
+    let appPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent("apps", isDirectory: true)
     do {
       // Creates the samples directory for new users in case that it has not be created yet
       try FileManager.default.createDirectory(
-          at: libraryPath,
+          at: samplesPath,
           withIntermediateDirectories: true,
           attributes: nil)
-      let apps = try FileManager.default.contentsOfDirectory(at: libraryPath, includingPropertiesForKeys: nil)
+      let apps = try FileManager.default.contentsOfDirectory(at: samplesPath, includingPropertiesForKeys: nil)
       for app in apps {
         let projectFile = app.path.components(separatedBy: "/").last!
         let appTitle = projectFile.components(separatedBy: ".")[0]
-        self.downloadedAppsTitles.append(appTitle)
-        self.downloadedApps[appTitle] = DownloadedApp(title: appTitle)
+        var curApp = DownloadedApp(title: appTitle)
+        
+        let appPropertiesPath = appPath.appendingPathComponent("\(appTitle)/youngandroidproject/project.properties")
+        
+        var iconPath = "default"
+        var appAIVersioning = -1
+        
+        do {
+          let content = try String(contentsOf: appPropertiesPath)
+          let lines = content.components(separatedBy: .newlines)
+          
+          for line in lines {
+            if line.trimmingCharacters(in: .whitespaces).hasPrefix("#") || line.trimmingCharacters(in: .whitespaces).isEmpty {
+                  continue
+                }
+            let keyValue = line.components(separatedBy: "=")
+            if keyValue.count == 2 {
+              let key = keyValue[0].trimmingCharacters(in: .whitespaces)
+              let value = keyValue[1].trimmingCharacters(in: .whitespaces)
+              if key == "icon" {
+                iconPath = appPath.appendingPathComponent("\(appTitle)/assets/\(value)").path
+              } else if key == "aiversioning" {
+                appAIVersioning = Int(value)!
+              }
+            }
+          }
+          
+          curApp.iconPath = iconPath
+          curApp.aiVersioning = appAIVersioning
+          
+          if let lastOpenedDate = SystemVariables.lastOpenedTable[appTitle] {
+            let timeComponents = Calendar.current.dateComponents([.day, .hour, .minute], from: lastOpenedDate, to: Date())
+            if timeComponents.day != 0 {
+              curApp.lastOpened = "\(timeComponents.day!) day\(timeComponents.day! == 1 ? "" : "s") ago"
+            } else if timeComponents.hour != 0 {
+              curApp.lastOpened = "\(timeComponents.hour!) hour\(timeComponents.hour! == 1 ? "" : "s") ago"
+            } else if timeComponents.minute != 0 {
+              curApp.lastOpened = "\(timeComponents.minute!) minute\(timeComponents.minute! == 1 ? "" : "s") ago"
+            } else {
+              curApp.lastOpened = "<1 minute ago"
+            }
+          } else {
+            curApp.lastOpened = "NA"
+          }
+        } catch {
+          print("Was not able to read project.properties file of \(app).aia properly.")
+        }
+        
+        self.downloadedApps.append(curApp)
+        self.downloadedAppsMap[appTitle] = curApp
       }
     } catch {
       DispatchQueue.main.async {
@@ -142,74 +236,35 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     }
   }
   
-  /**
-   Access each downloaded app's properties and retrieve the path of the icon and the AI versioning to make sure that
-   downloaded apps are valid and can be launched within the Companion App's system
-   */
-  private func getAppProperties(){
-    let libraryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("apps", isDirectory: true)
-    for app in self.downloadedApps.keys {
-      let appPropertiesPath = libraryPath.appendingPathComponent("\(app)/youngandroidproject/project.properties")
-      
-      var iconPath = "default"
-      var appAIVersioning = -1
-      
-      do {
-        let content = try String(contentsOf: appPropertiesPath)
-        let lines = content.components(separatedBy: .newlines)
-        
-        for line in lines {
-          if line.trimmingCharacters(in: .whitespaces).hasPrefix("#") || line.trimmingCharacters(in: .whitespaces).isEmpty {
-                continue
-              }
-          let keyValue = line.components(separatedBy: "=")
-          if keyValue.count == 2 {
-            let key = keyValue[0].trimmingCharacters(in: .whitespaces)
-            let value = keyValue[1].trimmingCharacters(in: .whitespaces)
-            if key == "icon" {
-              iconPath = libraryPath.appendingPathComponent("\(app)/assets/\(value)").path
-            } else if key == "aiversioning" {
-              appAIVersioning = Int(value)!
-            }
-          }
-        }
-        
-        self.downloadedApps[app]?.iconPath = iconPath
-        self.downloadedApps[app]?.aiVersioning = appAIVersioning
-        
-        if let lastOpenedDate = SystemVariables.lastOpenedTable[app] {
-          let timeComponents = Calendar.current.dateComponents([.day, .hour, .minute], from: lastOpenedDate, to: Date())
-          if timeComponents.day != 0 {
-            self.downloadedApps[app]?.lastOpened = "\(timeComponents.day!) day\(timeComponents.day! == 1 ? "" : "s") ago"
-          } else if timeComponents.hour != 0 {
-            self.downloadedApps[app]?.lastOpened = "\(timeComponents.hour!) hour\(timeComponents.hour! == 1 ? "" : "s") ago"
-          } else if timeComponents.minute != 0 {
-            self.downloadedApps[app]?.lastOpened = "\(timeComponents.minute!) minute\(timeComponents.minute! == 1 ? "" : "s") ago"
-          } else {
-            self.downloadedApps[app]?.lastOpened = "<1 minute ago"
-          }
-        } else {
-          self.downloadedApps[app]?.lastOpened = "NA"
-        }
-      } catch {
-        print("Was not able to read project.properties file of \(app).aia properly.")
-      }
+  private func sortApps() {
+    let sortingMode = SystemVariables.sortModeValue
+    
+    switch sortingMode {
+    case SystemVariables.sortMode.mostRecent:
+      self.downloadedApps.sort {(left: DownloadedApp, right: DownloadedApp) in SystemVariables.lastOpenedTable[left.title] ?? .distantPast > SystemVariables.lastOpenedTable[right.title] ?? .distantPast}
+      break
+    case SystemVariables.sortMode.AZ:
+      self.downloadedApps.sort {(left: DownloadedApp, right: DownloadedApp) in left.title.localizedCaseInsensitiveCompare(right.title) == .orderedAscending}
+      break
+    case SystemVariables.sortMode.ZA:
+      self.downloadedApps.sort {(left: DownloadedApp, right: DownloadedApp) in left.title.localizedCaseInsensitiveCompare(right.title) == .orderedDescending}
+      break
     }
+    
+    self.tableView.reloadData()
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return self.isSearching ? self.filteredApps.keys.count : self.downloadedApps.keys.count
+    return self.isSearching ? self.filteredApps.count : self.downloadedApps.count
   }
   
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    guard (self.isSearching ? self.filteredAppsTitles : self.downloadedAppsTitles).indices.contains(indexPath.row) else {
+    guard (self.isSearching ? self.filteredApps : self.downloadedApps).indices.contains(indexPath.row) else {
         return 92
     }
     
-    let title = (self.isSearching ? self.filteredAppsTitles : self.downloadedAppsTitles)[indexPath.row]
-    
-    let projectAIVersion = (self.isSearching ? self.filteredApps : self.downloadedApps)[title]!.aiVersioning!
+    let app = (self.isSearching ? self.filteredApps : self.downloadedApps)[indexPath.row]
+    let projectAIVersion = app.aiVersioning!
     
     if  projectAIVersion < AppLibraryViewController.AIVersioning {
       return 152
@@ -219,16 +274,17 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    guard (self.isSearching ? self.filteredAppsTitles : self.downloadedAppsTitles).indices.contains(indexPath.row) else {
+    guard (self.isSearching ? self.filteredApps : self.downloadedApps).indices.contains(indexPath.row) else {
         return UITableViewCell()
     }
     
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! AppTableViewCell
     
-    let title = isSearching ? self.filteredAppsTitles[indexPath.row] : self.downloadedAppsTitles[indexPath.row]
-    let iconPath = isSearching ? self.filteredApps[title]!.iconPath : self.downloadedApps[title]!.iconPath
-    let projectVersioning = isSearching ? self.filteredApps[title]!.aiVersioning : self.downloadedApps[title]!.aiVersioning
-    let lastOpened = isSearching ? self.filteredApps[title]!.lastOpened : self.downloadedApps[title]!.lastOpened
+    let app = isSearching ? self.filteredApps[indexPath.row] : self.downloadedApps[indexPath.row]
+    let title = app.title
+    let iconPath = app.iconPath
+    let projectVersioning = app.aiVersioning
+    let lastOpened = app.lastOpened
     
     cell.appName.text = title
     cell.lastOpened.text = "Last opened: " + lastOpened!
@@ -270,15 +326,20 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
           try FileManager.default.removeItem(at: appDirectoryPath)
           try FileManager.default.removeItem(at: appAIAPath)
           
-          if let index = self.downloadedAppsTitles.firstIndex(of: appName) {
-            self.downloadedAppsTitles.remove(at: index)
-            self.downloadedApps.removeValue(forKey: appName)
+          // Remove the app from the app dictionary and the corresponding array lists
+          self.downloadedAppsMap.removeValue(forKey: appName)
+          for (index, app) in self.downloadedApps.enumerated() {
+            if app.title == appName {
+              self.downloadedApps.remove(at: index)
+              break
+            }
           }
-          
           if self.isSearching {
-            if let index = self.filteredAppsTitles.firstIndex(of: appName) {
-              self.filteredAppsTitles.remove(at: index)
-              self.filteredApps.removeValue(forKey: appName)
+            for (index, app) in self.filteredApps.enumerated() {
+              if app.title == appName {
+                self.filteredApps.remove(at: index)
+                break
+              }
             }
           }
           
@@ -315,10 +376,10 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let name = self.downloadedAppsTitles[indexPath.row]
-    SystemVariables.lastOpenedTable[name] = Date()
+    let app = self.downloadedApps[indexPath.row]
+    SystemVariables.lastOpenedTable[app.title] = Date()
     let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("samples/\(name).aia", isDirectory: false))
+      .appendingPathComponent("samples/\(app.title).aia", isDirectory: false))
     newapp.makeCurrent()
     newapp.loadScreen1(self.form)
     self.navigationController?.popViewController(animated: true)
@@ -329,12 +390,10 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
       self.isSearching = false
     } else {
       self.isSearching = true
-      self.filteredApps = [:]
-      self.filteredAppsTitles = []
-      for title in self.downloadedApps.keys {
-        if title.lowercased().contains(searchText.lowercased()) {
-          self.filteredApps[title] = self.downloadedApps[title]
-          self.filteredAppsTitles.append(title)
+      self.filteredApps = []
+      for appTitle in self.downloadedAppsMap.keys {
+        if appTitle.lowercased().contains(searchText.lowercased()) {
+          self.filteredApps.append(self.downloadedAppsMap[appTitle]!)
         }
       }
     }

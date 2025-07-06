@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     UserDefaults.standard.register(defaults: ["isNewUser": true])
     UserDefaults.standard.register(defaults: ["isInConnectedApp": false])
     UserDefaults.standard.register(defaults: ["lastOpenedTable" : [String : Date]()])
+    UserDefaults.standard.register(defaults: ["sortMode": "mostRecent"])
     AppInventorRuntime.initialize()
     return true
   }

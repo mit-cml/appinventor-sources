@@ -47,4 +47,18 @@ class SystemVariables {
       UserDefaults.standard.set(value, forKey: "lastOpenedTable")
     }
   }
+  
+  enum sortMode: String {
+    case mostRecent, AZ, ZA
+  }
+  
+  static var sortModeValue: sortMode {
+    get {
+      return sortMode(rawValue: UserDefaults.standard.string(forKey: "sortMode") ?? "mostRecent") ?? sortMode.mostRecent
+    }
+    
+    set(value) {
+      UserDefaults.standard.set(value.rawValue, forKey: "sortMode")
+    }
+  }
 }

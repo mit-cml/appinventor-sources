@@ -169,9 +169,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Saved Apps" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zaW-ad-k7M">
-                                <rect key="frame" x="20" y="70" width="156" height="34"/>
+                                <rect key="frame" x="20" y="70" width="178" height="39"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="32"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -250,6 +250,12 @@
                                 <rect key="frame" x="15" y="114" width="384" height="44"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z8c-6E-KCf">
+                                <rect key="frame" x="290" y="74" width="134" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Button" image="sortBtn"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
@@ -263,6 +269,7 @@
                         <outlet property="libraryView" destination="4Q7-cg-QFf" id="E9Z-Dx-sum"/>
                         <outlet property="libraryViewHeaderTitle" destination="zaW-ad-k7M" id="t3t-EL-rdg"/>
                         <outlet property="searchBar" destination="Cpe-ly-tAI" id="gdU-h9-nHb"/>
+                        <outlet property="sortButton" destination="z8c-6E-KCf" id="cB5-Ro-fxi"/>
                         <outlet property="tableView" destination="rlt-4x-Rs0" id="ymd-7x-taV"/>
                     </connections>
                 </viewController>
@@ -276,11 +283,12 @@
         <image name="connectwCode.png" width="300" height="49"/>
         <image name="connectwQR.png" width="300" height="49"/>
         <image name="myAppLibrary.png" width="300" height="49"/>
+        <image name="sortBtn" width="80" height="32"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
