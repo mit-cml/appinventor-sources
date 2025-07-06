@@ -70,7 +70,7 @@ public abstract class CommonProjectService {
    * @param oldProjectId  old project ID
    * @param newName new project name
    */
-  public abstract long copyProject(String userId, long oldProjectId, String newName);
+  public abstract long copyProject(String userId, long oldProjectId, String newName, String newUserId);
 
   /**
    * Deletes a project.

@@ -12,6 +12,11 @@ message cookie {
 // do not recycle the id number too soon
 //  optional string locale = 5;
   optional uint64 oneProjectId = 6;
+  optional uint64 duedate = 7;  //When this project is due 0 = never
+  optional string displayprojectname = 8; // name to display as project name
   optional string backpackid = 9;         // backpackid for shared backpack
+  optional string displayaccountname = 20; // name to use instead of display name based
+                                           // on an email address
+
 }
 
