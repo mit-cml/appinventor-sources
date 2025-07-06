@@ -80,6 +80,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     libraryViewHeaderTitle.translatesAutoresizingMaskIntoConstraints = false
     searchBar.translatesAutoresizingMaskIntoConstraints = false
     tableView.translatesAutoresizingMaskIntoConstraints = false
+    tableView.separatorInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
     sortButton.translatesAutoresizingMaskIntoConstraints = false
     libraryView.addSubview(noDownloadedAppsTitle)
     libraryView.addSubview(noDownloadedAppsDescription)
@@ -99,7 +100,8 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
       sortButton.widthAnchor.constraint(equalToConstant: 80),
 
       tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
-      tableView.centerXAnchor.constraint(equalTo: libraryView.centerXAnchor),
+      tableView.leadingAnchor.constraint(equalTo: libraryView.leadingAnchor),
+      tableView.trailingAnchor.constraint(equalTo: libraryView.trailingAnchor),
       tableView.bottomAnchor.constraint(equalTo: libraryView.bottomAnchor),
       
       noDownloadedAppsTitle.centerXAnchor.constraint(equalTo: libraryView.centerXAnchor),
