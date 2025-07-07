@@ -79,6 +79,13 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     sortButton.addTarget(self, action: #selector(showSortingMenu(_:)), for: .touchUpInside)
     libraryViewHeaderTitle.translatesAutoresizingMaskIntoConstraints = false
     searchBar.translatesAutoresizingMaskIntoConstraints = false
+    if let field = searchBar.value(forKey: "searchField") as? UITextField {
+      field.layer.cornerRadius = 8
+      field.layer.masksToBounds = true
+      field.layer.borderWidth = 2
+      field.layer.borderColor = UIColor.purple.cgColor
+      field.leftView?.tintColor = .purple
+    }
     tableView.translatesAutoresizingMaskIntoConstraints = false
     tableView.separatorInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
     sortButton.translatesAutoresizingMaskIntoConstraints = false
@@ -89,7 +96,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
       libraryViewHeaderTitle.topAnchor.constraint(equalTo: libraryView.topAnchor, constant: 16),
       libraryViewHeaderTitle.leadingAnchor.constraint(equalTo: libraryView.leadingAnchor, constant: 16),
 
-      searchBar.topAnchor.constraint(equalTo: libraryViewHeaderTitle.bottomAnchor, constant: 4),
+      searchBar.topAnchor.constraint(equalTo: libraryViewHeaderTitle.bottomAnchor, constant: 8),
       searchBar.centerXAnchor.constraint(equalTo: libraryView.centerXAnchor),
       searchBar.leadingAnchor.constraint(equalTo: libraryView.leadingAnchor, constant: 8),
       searchBar.trailingAnchor.constraint(equalTo: libraryView.trailingAnchor, constant: -8),
@@ -262,7 +269,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     guard (self.isSearching ? self.filteredApps : self.downloadedApps).indices.contains(indexPath.row) else {
-        return 92
+        return 86
     }
     
     let app = (self.isSearching ? self.filteredApps : self.downloadedApps)[indexPath.row]
@@ -271,7 +278,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     if  projectAIVersion < AppLibraryViewController.AIVersioning {
       return 152
     } else {
-      return 92
+      return 86
     }
   }
   

@@ -169,9 +169,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Saved Apps" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zaW-ad-k7M">
-                                <rect key="frame" x="20" y="70" width="178" height="39"/>
+                                <rect key="frame" x="20" y="70" width="167" height="36"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="32"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -206,7 +206,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JTg-qp-DCf">
-                                                    <rect key="frame" x="322" y="24" width="35" height="35"/>
+                                                    <rect key="frame" x="322" y="24" width="30" height="30"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="28" id="hE3-nC-vvi"/>
                                                         <constraint firstAttribute="width" constant="28" id="owd-H6-VNC"/>
@@ -225,7 +225,7 @@
                                                 <constraint firstItem="FRT-o0-hQb" firstAttribute="top" secondItem="o5g-K4-JED" secondAttribute="bottom" constant="8" id="2qH-MC-H0K"/>
                                                 <constraint firstItem="o5g-K4-JED" firstAttribute="top" secondItem="1bX-Bm-Qhj" secondAttribute="bottom" constant="8" id="3fu-qs-6ok"/>
                                                 <constraint firstItem="FRT-o0-hQb" firstAttribute="leading" secondItem="Vf4-Vw-FBS" secondAttribute="trailing" constant="16" id="Ged-eJ-gmv"/>
-                                                <constraint firstAttribute="trailing" secondItem="JTg-qp-DCf" secondAttribute="trailing" constant="24" id="Nvv-aD-ZBr"/>
+                                                <constraint firstAttribute="trailing" secondItem="JTg-qp-DCf" secondAttribute="trailing" constant="16" id="Nvv-aD-ZBr"/>
                                                 <constraint firstAttribute="trailing" secondItem="FRT-o0-hQb" secondAttribute="trailing" constant="16" id="PdM-nY-Abr"/>
                                                 <constraint firstItem="o5g-K4-JED" firstAttribute="leading" secondItem="Vf4-Vw-FBS" secondAttribute="trailing" constant="16" id="Vkj-AZ-yKd"/>
                                                 <constraint firstItem="JTg-qp-DCf" firstAttribute="centerY" secondItem="Vf4-Vw-FBS" secondAttribute="centerY" id="Vko-dV-hJx"/>

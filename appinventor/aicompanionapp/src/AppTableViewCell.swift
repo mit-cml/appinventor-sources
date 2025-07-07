@@ -32,9 +32,13 @@ class AppTableViewCell: UITableViewCell {
     lastOpened.font = UIFont.systemFont(ofSize: 16)
     lastOpened.textColor = UIColor(red: 100/255.0, green: 100/255.0, blue: 100/255.0, alpha: 1.0)
     
-    let settingsIcon = UIImage(named: "SettingsIcon")
+    let settingsIcon = UIImage(named: "SettingsIcon2")
     settingsButton.setImage(settingsIcon, for: .normal)
     settingsButton.setTitle("", for: .normal)
+    
+    appIconImage.layer.borderColor = UIColor.purple.cgColor
+    appIconImage.layer.borderWidth = 1
+    appIconImage.layer.cornerRadius = 16
     
     warningLabel.text = "⚠️ WARNING: This project is out of date with the Companion App. \nPlease redownload this project in order to open it without issues."
     warningLabel.textColor = .red
