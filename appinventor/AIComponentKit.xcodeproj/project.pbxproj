@@ -317,6 +317,9 @@
 		681D59072A84139E007B5DB5 /* OptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681D59062A84139E007B5DB5 /* OptionList.swift */; };
 		703C389B22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */; };
 		8B77A2E92AE1EFD9009F09B2 /* PosenetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */; };
+		A403EA1F2E12C6470030262A /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EA1D2E12C6470030262A /* Sidebar.swift */; };
+		A403EA202E12C6470030262A /* SidebarHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EA1E2E12C6470030262A /* SidebarHeader.swift */; };
+		A403EA222E12C6540030262A /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EA212E12C6540030262A /* Menu.swift */; };
 		B48808C82ACFB1AD0046DF4F /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C72ACFB1AD0046DF4F /* LineChartView.swift */; };
 		B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */; };
 		B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CB2ACFB3770046DF4F /* PointChartView.swift */; };
@@ -716,6 +719,9 @@
 		703C389A22B059C6000EA56A /* UIBezierPath+EllipticalArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+EllipticalArc.swift"; sourceTree = "<group>"; };
 		8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosenetExtension.swift; sourceTree = "<group>"; };
 		99F760E80DBC747A467E4900 /* Pods-AIComponentKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.release.xcconfig"; sourceTree = "<group>"; };
+		A403EA1D2E12C6470030262A /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
+		A403EA1E2E12C6470030262A /* SidebarHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarHeader.swift; sourceTree = "<group>"; };
+		A403EA212E12C6540030262A /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 		B48808C72ACFB1AD0046DF4F /* LineChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
 		B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartViewBase.swift; sourceTree = "<group>"; };
 		B48808CB2ACFB3770046DF4F /* PointChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointChartView.swift; sourceTree = "<group>"; };
@@ -1108,11 +1114,14 @@
 				4656A6422A6075E80097DF06 /* LinearProgress.swift */,
 				4656A6442A6076090097DF06 /* CircularProgress.swift */,
 				06B216051DB95155000B3366 /* Image.swift */,
+				A403EA212E12C6540030262A /* Menu.swift */,
 				06E59EB21D92D19600C42804 /* Label.swift */,
 				060119DD1DC24126000FC1E2 /* ListPicker.swift */,
 				0618D2741F34DC3400A127A2 /* ListView.swift */,
 				06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */,
 				068E0E9D1DC243B30086FFDA /* Picker.swift */,
+				A403EA1D2E12C6470030262A /* Sidebar.swift */,
+				A403EA1E2E12C6470030262A /* SidebarHeader.swift */,
 				068E0EB61DC251BA0086FFDA /* Slider.swift */,
 				06B216011DB95134000B3366 /* TextBox.swift */,
 				06159D8B1DEFE20A00593D30 /* TextBoxBase.swift */,
@@ -1910,6 +1919,7 @@
 				062300A81DCE409D0035E4A4 /* BluetoothClient.swift in Sources */,
 				CB9660851F69BC8C009746C3 /* TinyWebDB.swift in Sources */,
 				06D151EA1DC6ED5200FC981E /* HVArrangement.swift in Sources */,
+				A403EA222E12C6540030262A /* Menu.swift in Sources */,
 				DEDBEC461FB288C800B6848E /* Spinner.swift in Sources */,
 				C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */,
 				06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */,
@@ -1918,6 +1928,8 @@
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
 				06678E32233956EE00BD3F19 /* main.swift in Sources */,
 				CBC78690202BA119005363A3 /* Marker.swift in Sources */,
+				A403EA1F2E12C6470030262A /* Sidebar.swift in Sources */,
+				A403EA202E12C6470030262A /* SidebarHeader.swift in Sources */,
 				DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */,
 				15C9E0232C2B11650080EE9D /* LineWithTrendlineRenderer.swift in Sources */,
 				0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */,

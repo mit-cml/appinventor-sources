@@ -39,6 +39,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         headerLabel.centerXAnchor.constraint(equalTo: emptySidebar.view.centerXAnchor),
         headerLabel.topAnchor.constraint(equalTo: emptySidebar.view.safeAreaLayoutGuide.topAnchor, constant: 24)
     ])
+    // Add Return to Screen button below the header
+    let returnButton = UIButton(type: .system)
+    returnButton.setTitle("Return to Screen", for: .normal)
+    returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+    returnButton.translatesAutoresizingMaskIntoConstraints = false
+    emptySidebar.view.addSubview(returnButton)
+    NSLayoutConstraint.activate([
+        returnButton.centerXAnchor.constraint(equalTo: emptySidebar.view.centerXAnchor),
+        returnButton.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 24)
+    ])
+    returnButton.addAction(UIAction { _ in
+        splitVC.show(.secondary)
+    }, for: .touchUpInside)
     splitVC.setViewController(emptySidebar, for: .primary)
 
     window?.rootViewController = splitVC
