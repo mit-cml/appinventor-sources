@@ -15,6 +15,7 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Label;
 import com.google.appinventor.components.runtime.ListPicker;
 import com.google.appinventor.components.runtime.PasswordTextBox;
+import com.google.appinventor.components.runtime.Player;
 import com.google.appinventor.components.runtime.Sound;
 import com.google.appinventor.components.runtime.SpeechRecognizer;
 import com.google.appinventor.components.runtime.TextToSpeech;
@@ -39,6 +40,7 @@ public class ComponentFactory {
     LOOKUP.put("Label", Label::new);
     LOOKUP.put("ListPicker", ListPicker::new);
     LOOKUP.put("PasswordTextBox", PasswordTextBox::new);
+    LOOKUP.put("Player", Player::new);
     LOOKUP.put("Sound", Sound::new);
     LOOKUP.put("SpeechRecognizer", SpeechRecognizer::new);
     LOOKUP.put("TextToSpeech", TextToSpeech::new);

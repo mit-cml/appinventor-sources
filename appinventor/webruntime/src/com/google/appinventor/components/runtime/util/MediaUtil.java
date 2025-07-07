@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
 import com.google.appinventor.components.runtime.Form;
@@ -101,5 +102,9 @@ public class MediaUtil {
     } catch (Exception e) {
       throw new IOException("Unable to determine file path of file url " + mediaPath);
     }
+  }
+
+  public static void loadMediaPlayer(MediaPlayer mp, Form form, String source) {
+    //TODO(lroman10): Real implementation
   }
 }
