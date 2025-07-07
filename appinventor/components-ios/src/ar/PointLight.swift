@@ -2,34 +2,74 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SceneKit
+import RealityKit
+import GLKit
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 class PointLight: ARLightBase, ARPointLight {
   fileprivate var _falloffType = ARFalloffType.quadratic
   
   @objc public init(_ container: ARLightContainer) {
-    super.init(container, type: .omni)
+    super.init(container, type: .directional)
+    setupPointLight()
+  }
+  
+  private func setupPointLight() {
+    // Create point light component
+    var lightComponent = PointLightComponent()
+    lightComponent.color = .white
+    lightComponent.intensity = 1000 // Default intensity
+    lightComponent.attenuationRadius = 10.0 // Default attenuation radius
+    
+    _modelEntity.components.set(lightComponent)
+  }
+  
+  override open var Intensity: Float {
+    get {
+      return _modelEntity.components[PointLightComponent.self]?.intensity ?? 1000
+    }
+    set(intensity) {
+      guard var lightComponent = _modelEntity.components[PointLightComponent.self] else { return }
+      lightComponent.intensity = intensity
+      _modelEntity.components.set(lightComponent)
+    }
+  }
+  
+  override open var Color: Int32 {
+    get {
+      let color = _modelEntity.components[PointLightComponent.self]?.color ?? .white
+      return Int32(color.hashValue)
+    }
+    set(color) {
+      guard var lightComponent = _modelEntity.components[PointLightComponent.self] else { return }
+      // lightComponent.color = UIColor(argbToColor(color)).cgColor
+      _modelEntity.components.set(lightComponent)
+    }
   }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 extension PointLight: HasFalloff {
   @objc open var FalloffStartDistance: Float {
     get {
-      return UnitHelper.metersToCentimeters(_light.attenuationStartDistance)
+      // RealityKit doesn't have separate start/end distances, using attenuation radius
+      return UnitHelper.metersToCentimeters(_modelEntity.components[PointLightComponent.self]?.attenuationRadius ?? 10.0)
     }
     set(distance) {
-      _light.attenuationStartDistance = UnitHelper.centimetersToMeters(max(0, distance))
+      guard var lightComponent = _modelEntity.components[PointLightComponent.self] else { return }
+      lightComponent.attenuationRadius = UnitHelper.centimetersToMeters(max(0, distance))
+      _modelEntity.components.set(lightComponent)
     }
   }
   
   @objc open var FalloffEndDistance: Float {
     get {
-      return UnitHelper.metersToCentimeters(_light.attenuationEndDistance)
+      return UnitHelper.metersToCentimeters(_modelEntity.components[PointLightComponent.self]?.attenuationRadius ?? 10.0)
     }
     set(distance) {
-      _light.attenuationEndDistance = UnitHelper.centimetersToMeters(max(0, distance))
+      guard var lightComponent = _modelEntity.components[PointLightComponent.self] else { return }
+      lightComponent.attenuationRadius = UnitHelper.centimetersToMeters(max(0, distance))
+      _modelEntity.components.set(lightComponent)
     }
   }
   
@@ -44,44 +84,38 @@ extension PointLight: HasFalloff {
       }
       _falloffType = ARFalloffType.init(rawValue: falloff)!
       
-      switch _falloffType {
-      case .none:
-        _light.attenuationFalloffExponent = 0.0
-      case .linear:
-        _light.attenuationFalloffExponent = 1.0
-      case .quadratic:
-        _light.attenuationFalloffExponent = 2.0
-      }
+      // Note: RealityKit doesn't have direct falloff exponent control like SceneKit
+      // The falloff behavior is handled internally by the framework
     }
   }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 extension PointLight: HasPositionEffects {
   @objc open var XPosition: Float {
     get {
-      return UnitHelper.metersToCentimeters(getNode().position.x)
+      return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.x)
     }
     set(position) {
-      getNode().position.x = UnitHelper.centimetersToMeters(position)
+      _modelEntity.transform.translation.x = UnitHelper.centimetersToMeters(position)
     }
   }
   
   @objc open var YPosition: Float {
     get {
-      return UnitHelper.metersToCentimeters(getNode().position.y)
+      return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.y)
     }
     set(position) {
-      getNode().position.y = UnitHelper.centimetersToMeters(position)
+      _modelEntity.transform.translation.y = UnitHelper.centimetersToMeters(position)
     }
   }
   
   @objc open var ZPosition: Float {
     get {
-      return UnitHelper.metersToCentimeters(getNode().position.z)
+      return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.z)
     }
     set(position) {
-      getNode().position.z = UnitHelper.centimetersToMeters(position)
+      _modelEntity.transform.translation.z = UnitHelper.centimetersToMeters(position)
     }
   }
   
@@ -90,7 +124,7 @@ extension PointLight: HasPositionEffects {
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
     let zMeters: Float = UnitHelper.centimetersToMeters(z)
     
-    getNode().simdPosition += simd_float3(xMeters, yMeters, zMeters)
+    _modelEntity.transform.translation += SIMD3<Float>(xMeters, yMeters, zMeters)
   }
   
   @objc open func MoveTo(_ x: Float, _ y: Float, _ z: Float) {
@@ -98,26 +132,26 @@ extension PointLight: HasPositionEffects {
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
     let zMeters: Float = UnitHelper.centimetersToMeters(z)
     
-    getNode().simdPosition = simd_float3(xMeters, yMeters, zMeters)
+    _modelEntity.transform.translation = SIMD3<Float>(xMeters, yMeters, zMeters)
   }
   
   @objc open func DistanceToNode(_ node: ARNode) -> Float {
-    return UnitHelper.metersToCentimeters(getPosition().distanceFromPos(pos: node.getPosition()))
+    return UnitHelper.metersToCentimeters(distance(getPosition(), node.getPosition()))
   }
   
   @objc open func DistanceToSpotlight(_ light: ARSpotlight) -> Float {
-    return UnitHelper.metersToCentimeters(getPosition().distanceFromPos(pos: light.getPosition()))
+    return UnitHelper.metersToCentimeters(distance(getPosition(), light.getPosition()))
   }
   
   @objc open func DistanceToPointLight(_ light: ARPointLight) -> Float {
-    return UnitHelper.metersToCentimeters(getPosition().distanceFromPos(pos: light.getPosition()))
+    return UnitHelper.metersToCentimeters(distance(getPosition(), light.getPosition()))
   }
   
   @objc open func DistanceToDetectedPlane(_ detectedPlane: ARDetectedPlane) -> Float {
-    return UnitHelper.metersToCentimeters(getPosition().distanceFromPos(pos: detectedPlane.getPosition()))
+    return UnitHelper.metersToCentimeters(distance(getPosition(), detectedPlane.getPosition()))
   }
   
-  open func getPosition() -> SCNVector3 {
-    return getNode().position
+  open func getPosition() -> SIMD3<Float> {
+    return _modelEntity.transform.translation
   }
 }

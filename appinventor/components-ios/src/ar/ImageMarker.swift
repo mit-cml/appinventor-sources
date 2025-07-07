@@ -2,17 +2,21 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SceneKit
+import RealityKit
 import ARKit
 import GLKit
 
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 open class ImageMarker: NSObject, ARImageMarker {
+
+  
+
+  
   weak var _container: ARImageMarkerContainer?
   open var _referenceImage: ARReferenceImage? = nil
-  var _attachedNodes: [ARNodeBase] = []
+  public var _attachedNodes: [ARNodeBase] = []
   var _imagePath: String = ""
-  var _node: SCNNode? = nil
+  var _anchorEntity: AnchorEntity? = nil
   var _physicalWidth: Float = 0
   var _name: String = "<unknown>"
   var _lastPushTime = Date()
@@ -36,7 +40,6 @@ open class ImageMarker: NSObject, ARImageMarker {
     set(name) {
       if !_initialized  {
         guard _container?.markerNameIsAvailable(name) ?? true else {
-          /// Because the name is the component name, this should never occur.  Therefore, no error dispatched.
           return
         }
         _referenceImage?.name = name
@@ -44,7 +47,6 @@ open class ImageMarker: NSObject, ARImageMarker {
         
       } else if _referenceImage?.name != name, let oldName = _referenceImage?.name {
         guard _container?.updateMarker(self, for: oldName, with: name) ?? false else {
-          /// Because the name is the component name, this should never occur.  Therefore, no error dispatched.
           return
         }
         _referenceImage?.name = name
@@ -123,29 +125,34 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
   
   open func attach(_ node: ARNodeBase) {
-    node._node.removeFromParentNode()
+    // Remove from previous parent
+    node._modelEntity.removeFromParent()
     _attachedNodes.append(node)
     
-    if let markerNode = self._node {
-      markerNode.addChildNode(node._node)
+    // Attach to our anchor entity if it exists
+    if let anchorEntity = _anchorEntity {
+      anchorEntity.addChild(node._modelEntity)
     }
   }
   
   open func removeNode(_ node: ARNodeBase) {
     if let index = _attachedNodes.firstIndex(of: node) {
       _attachedNodes.remove(at: index)
+      node._modelEntity.removeFromParent()
     }
   }
   
-  private func setNode(node: SCNNode) {
-    _node = node
-    _node?.name = Name
+  private func setAnchorEntity(_ anchorEntity: AnchorEntity) {
+    _anchorEntity = anchorEntity
+    _anchorEntity?.name = Name
+    
+    // Attach all existing nodes to the new anchor
     for attachedNode in _attachedNodes {
-      node.addChildNode(attachedNode._node)
+      anchorEntity.addChild(attachedNode._modelEntity)
     }
   }
   
-  open func pushUpdate(_ position: SCNVector3, _ angles: SCNVector3) {
+  open func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>) {
     let elapsed = Date().timeIntervalSince(_lastPushTime)
     /**
      * As the worldmap gets updated, if the image is constantly in the frame, the position is constantly
@@ -154,14 +161,25 @@ open class ImageMarker: NSObject, ARImageMarker {
      */
     if elapsed > 0.050 {
       _lastPushTime = Date()
-      PositionChanged(position.x, position.y, position.z)
-      RotationChanged(GLKMathRadiansToDegrees(angles.x), GLKMathRadiansToDegrees(angles.y), GLKMathRadiansToDegrees(angles.z))
+      PositionChanged(
+        UnitHelper.metersToCentimeters(position.x),
+        UnitHelper.metersToCentimeters(position.y),
+        UnitHelper.metersToCentimeters(position.z)
+      )
+      RotationChanged(
+        GLKMathRadiansToDegrees(angles.x),
+        GLKMathRadiansToDegrees(angles.y),
+        GLKMathRadiansToDegrees(angles.z)
+      )
     }
   }
   
   // MARK: Events
-  @objc open func FirstDetected(_ node: SCNNode) {
-    setNode(node: node)
+  @objc open func FirstDetected(_ anchor: ARAnchor) {
+    // Create anchor entity from ARKit anchor
+    let anchorEntity = AnchorEntity(anchor: anchor)
+    setAnchorEntity(anchorEntity)
+    
     _isTracking = true
     _lastPushTime = Date()
     AppearedInView()
@@ -171,12 +189,8 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
   
   @objc open func PositionChanged(_ x: Float, _ y: Float, _ z: Float) {
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    
     DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: xMeters as NSNumber, yMeters as NSNumber, zMeters as NSNumber)
+      EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: x as NSNumber, y as NSNumber, z as NSNumber)
     }
   }
   
@@ -216,7 +230,7 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
 }
 
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 extension ImageMarker: LifecycleDelegate {
   @objc public func onResume() {}
   
@@ -235,7 +249,7 @@ extension ImageMarker: LifecycleDelegate {
   }
 }
 
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 extension ImageMarker: VisibleComponent {
   public var Width: Int32 {
     get {

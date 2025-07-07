@@ -2,130 +2,119 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SceneKit
+import RealityKit
 
-@available(iOS 10.0, *)
+enum LightType {
+  case ambient
+  case directional
+  case point
+  case spot
+}
+
+@available(iOS 14.0, *)
 open class ARLightBase: NSObject, ARLight {
   weak var _container: ARLightContainer?
-  private var _node: SCNNode = SCNNode()
-  public var _light: SCNLight
-
-  @objc public init(_ container: ARLightContainer, type: SCNLight.LightType) {
+  public var _modelEntity: Entity
+  private var _lightType: LightType
+  
+  init(_ container: ARLightContainer, type: LightType) {
     _container = container
-    _light = SCNLight()
-    _light.type = type
-    _light.color = UIColor.white
-    _light.shadowMode = .deferred
-    _node.light = _light
+    _lightType = type
+    _modelEntity = Entity()
     super.init()
-    DispatchQueue.main.async {
-      self._container?.addLight(self)
-    }
-  }
-
-  @objc open var Name: String {
-    get {
-      return _light.name ?? ""
-    }
-    set(name) {
-      _light.name = name
-      _node.name = name
-    }
   }
   
   @objc open var `Type`: String {
     get {
-      return String(describing: type(of: self))
+      switch _lightType {
+      case .ambient:
+        return "Ambient"
+      case .directional:
+        return "Directional"
+      case .point:
+        return "Point"
+      case .spot:
+        return "Spot"
+      }
     }
   }
-
+  
   @objc open var Color: Int32 {
     get {
-      if let color = _light.color as? UIColor {
-        return colorToArgb(color)
-      }
-      return Int32(bitPattern: AIComponentKit.Color.none.rawValue)
+      // Default implementation - subclasses should override
+      return Int32(bitPattern: AIComponentKit.Color.white.rawValue)
     }
     set(color) {
-      _light.color = argbToColor(color)
+      // Default implementation - subclasses should override
     }
-
   }
-
+  
   @objc open var Temperature: Float {
     get {
-      return Float(_light.temperature)
+      // RealityKit doesn't have temperature - return default
+      return 6500 // Default daylight temperature
     }
-    set(temp) {
-      let validTemp = min(max(0, temp), 40000)
-      _light.temperature = CGFloat(validTemp)
+    set(temperature) {
+      // RealityKit doesn't support color temperature directly
+      // Could convert to color if needed
     }
   }
-
+  
   @objc open var Intensity: Float {
     get {
-      return Float(_light.intensity)
+      // Default implementation - subclasses should override
+      return 1000
     }
     set(intensity) {
-      _light.intensity = CGFloat(intensity)
+      // Default implementation - subclasses should override
     }
   }
-
-  @objc open var Visible: Bool {
-    get {
-      return !_node.isHidden
-    }
-    set(visible) {
-      _node.isHidden = !visible
-    }
-  }
-
-  public func getNode() -> SCNNode {
-    return _node
-  }
-}
-
-
-@available(iOS 10.0, *)
-extension ARLightBase: VisibleComponent {
+  
+  // MARK: - Component Protocol Implementation
   @objc open var Width: Int32 {
-    get {
-      return 0
-    }
+    get { return 0 }
     set {}
   }
-
+  
   @objc open var Height: Int32 {
-    get {
-      return 0
-    }
+    get { return 0 }
     set {}
   }
-
+  
   @objc open var dispatchDelegate: HandlesEventDispatching? {
-    get {
-      return _container!.form!.dispatchDelegate
-    }
+    get { return _container?.form?.dispatchDelegate }
   }
-
-  public func copy(with zone: NSZone? = nil) -> Any { return (Any).self }
+  
+  public func copy(with zone: NSZone? = nil) -> Any {
+    return self
+  }
+  
   public func setWidthPercent(_ toPercent: Int32) {}
   public func setHeightPercent(_ toPercent: Int32) {}
-}
-
-@available(iOS 10.0, *)
-extension ARLightBase: LifecycleDelegate {
-  @objc public func onResume() {}
-
-  @objc public func onPause() {}
-
-  @objc public func onDelete() {
-    _container?.removeLight(self)
-    _container = nil
+  
+  // MARK: - Helper Methods
+  
+  func colorToArgb(_ color: UIColor) -> Int32 {
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    
+    color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+    
+    let r = Int32(red * 255) & 0xFF
+    let g = Int32(green * 255) & 0xFF
+    let b = Int32(blue * 255) & 0xFF
+    let a = Int32(alpha * 255) & 0xFF
+    
+    return (a << 24) | (r << 16) | (g << 8) | b
   }
-
-  @objc public func onDestroy() {
-    _container?.removeLight(self)
-    _container = nil
+  
+  func argbToColor(_ argb: Int32) -> UIColor {
+    let alpha = CGFloat((argb >> 24) & 0xFF) / 255.0
+    let red = CGFloat((argb >> 16) & 0xFF) / 255.0
+    let green = CGFloat((argb >> 8) & 0xFF) / 255.0
+    let blue = CGFloat(argb & 0xFF) / 255.0
+    return UIColor(red: red, green: green, blue: blue, alpha: alpha)
   }
 }

@@ -2,11 +2,20 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SceneKit
+import RealityKit
 import ARKit
+import UIKit
+import os.log
 
-@available(iOS 11.3, *)
-open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, AbstractMethodsForViewComponent {
+
+@available(iOS 14.0, *)
+open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
+
+  
+  public func getView() -> ARView3D {
+    return self
+  }
+  
   public var container: ComponentContainer? {
     return _container
   }
@@ -23,12 +32,13 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     return []
   }
   
-  fileprivate var _nodesDict: [SCNNode : ARNodeBase] = [:]
-  fileprivate var _detectedPlanesDict: [SCNNode: DetectedPlane] = [:]
+  // Updated data structures for RealityKit
+  fileprivate var _nodeToAnchorDict: [ARNodeBase : AnchorEntity] = [:]
+  fileprivate var _detectedPlanesDict: [ARAnchor: DetectedPlane] = [:]
   fileprivate var _imageMarkers: [String : ImageMarker] = [:]
-  fileprivate var _lights: [SCNNode: ARLightBase] = [:]
+  fileprivate var _lights: [AnchorEntity: ARLightBase] = [:]
 
-  final var _sceneView: ARSCNView
+  final var _arView: ARView
   private var _trackingType: ARTrackingType = .worldTracking
   private var _configuration: ARConfiguration = ARWorldTrackingConfiguration()
   private var _planeDetection: ARPlaneDetectionType = .none
@@ -38,28 +48,31 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
   private var _showBoundingBoxes: Bool = false
   private var _showLightLocations: Bool = false
   private var _showLightAreas: Bool = false
-  fileprivate var trackingNode: ARNodeBase? = nil
+  fileprivate var trackingNode: ARNode? = nil
   fileprivate var _sessionRunning: Bool = false
   fileprivate var _rotation: Float = 0.0
   fileprivate var _containsModelNodes: Bool = false
   fileprivate var _lightingEstimationEnabled: Bool = false
-
-  /// Needed for configuration setting and ensuring intialization
+  
+  // Needed for configuration setting and ensuring initialization
   fileprivate var _trackingSet: Bool = false
   private var _planeDetectionSet: Bool = false
   private var _lightingEstimationSet: Bool = false
   
-  /// Needed that way nodes are only added when the session is running and nodes are disabled when session stopped
+  // Needed that way nodes are only added when the session is running and nodes are disabled when session stopped
   private var _requiresAddNodes = false
   private var startOptions: ARSession.RunOptions = []
   private var _reenableWebViewNodes: Bool = false
+  
+  // Cache for 3D text geometries representing the classification values
+  private var modelsForClassification: [ARMeshClassification: ModelEntity] = [:]
 
   public override init(_ parent: ComponentContainer) {
-    _sceneView = ARSCNView()
+    _arView = ARView()
+    _arView.environment.sceneUnderstanding.options = .occlusion
+    _arView.debugOptions.insert(.showSceneUnderstanding)
     super.init(parent)
-    setDelegate(self)
-    _sceneView.delegate = self
-    _sceneView.automaticallyUpdatesLighting = false
+    _arView.session.delegate = self as? ARSessionDelegate
     initializeGestureRecognizers()
     TrackingType = 1
     PlaneDetectionType = 1
@@ -71,39 +84,38 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
 
   private func initializeGestureRecognizers() {
     let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-    _sceneView.addGestureRecognizer(tapGesture)
+    _arView.addGestureRecognizer(tapGesture)
 
     let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
     panGesture.maximumNumberOfTouches = 1
-    _sceneView.addGestureRecognizer(panGesture)
+    _arView.addGestureRecognizer(panGesture)
 
     let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
     longPressGesture.minimumPressDuration = 0.75
-    _sceneView.addGestureRecognizer(longPressGesture)
+    _arView.addGestureRecognizer(longPressGesture)
 
     tapGesture.require(toFail: longPressGesture)
 
     let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch))
-    _sceneView.addGestureRecognizer(pinchGesture)
+    _arView.addGestureRecognizer(pinchGesture)
     pinchGesture.delegate = self
 
     let rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotation))
-    _sceneView.addGestureRecognizer(rotationGesture)
+    _arView.addGestureRecognizer(rotationGesture)
     rotationGesture.delegate = self
-
   }
 
   // MARK: Properties
 
   @objc open override var view: UIView {
     get {
-      return _sceneView
+      return _arView
     }
   }
 
   @objc open var Nodes: [ARNode] {
     get {
-      return _nodesDict.values.map { $0 }
+      return Array(_nodeToAnchorDict.keys)
     }
   }
 
@@ -112,7 +124,6 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
       return _trackingType.rawValue
     }
     set(type) {
-
       _trackingSet = true
 
       guard 1...3 ~= type else {
@@ -130,7 +141,6 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
       return _planeDetection.rawValue
     }
     set(type) {
-
       _planeDetectionSet = true
 
       guard 1...4 ~= type else {
@@ -145,10 +155,14 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
 
   @objc open var ShowStatistics: Bool {
     get {
-      return _sceneView.showsStatistics
+      return _arView.debugOptions.contains(.showStatistics)
     }
     set(showStatistics) {
-      _sceneView.showsStatistics = showStatistics
+      if showStatistics {
+        _arView.debugOptions.insert(.showStatistics)
+      } else {
+        _arView.debugOptions.remove(.showStatistics)
+      }
     }
   }
 
@@ -158,9 +172,9 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     }
     set(showOrigin) {
       if showOrigin {
-        _sceneView.debugOptions.insert(ARSCNDebugOptions.showWorldOrigin)
+        _arView.debugOptions.insert(.showWorldOrigin)
       } else {
-        _ = _sceneView.debugOptions.remove(ARSCNDebugOptions.showWorldOrigin)
+        _arView.debugOptions.remove(.showWorldOrigin)
       }
       _showWorldOrigin = showOrigin
     }
@@ -172,9 +186,9 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     }
     set(showWireframes) {
       if showWireframes {
-        _sceneView.debugOptions.insert(ARSCNDebugOptions.showWireframe)
+        _arView.debugOptions.insert(.showAnchorGeometry)
       } else {
-        _ = _sceneView.debugOptions.remove(ARSCNDebugOptions.showWireframe)
+        _arView.debugOptions.remove(.showAnchorGeometry)
       }
       _showWireframes = showWireframes
     }
@@ -186,9 +200,9 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     }
     set(showBoundingBoxes) {
       if showBoundingBoxes {
-        _sceneView.debugOptions.insert(ARSCNDebugOptions.showBoundingBoxes)
+        _arView.debugOptions.insert(.showAnchorOrigins)
       } else {
-        _ = _sceneView.debugOptions.remove(ARSCNDebugOptions.showBoundingBoxes)
+        _arView.debugOptions.remove(.showAnchorOrigins)
       }
       _showBoundingBoxes = showBoundingBoxes
     }
@@ -200,27 +214,42 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     }
     set(showFeaturePoints) {
       if showFeaturePoints {
-        _sceneView.debugOptions.insert(ARSCNDebugOptions.showFeaturePoints)
+        _arView.debugOptions.insert(.showFeaturePoints)
       } else {
-        _sceneView.debugOptions.remove(ARSCNDebugOptions.showFeaturePoints)
+        _arView.debugOptions.remove(.showFeaturePoints)
       }
       _showFeaturePoints = showFeaturePoints
     }
   }
 
+  @available(iOS 14.0, *)
   private func setupConfiguration() {
     guard _trackingSet && _planeDetectionSet && _lightingEstimationSet else { return }
 
+ 
+      if !ARGeoTrackingConfiguration.isSupported {
+        // notify user
+      }
+
+      ARGeoTrackingConfiguration.checkAvailability { (available, error) in
+          if !available {
+              let errorDescription = error?.localizedDescription ?? ""
+              let recommendation = "Please try again in an area where geotracking is supported."
+              let restartSession = UIAlertAction(title: "Restart Session", style: .default) { (_) in
+                self._arView.session.run(self._configuration)
+              }
+
+            self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking unavailable", ErrorMessage.ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME.code, "")
+          }
+      }
+ 
+
     switch _trackingType {
-    /**
-     * World tracking configuration
-     * Requires setting the following
-     * - Plane Detection
-     * - Detection Images
-     */
     case .worldTracking:
       let worldTrackingConfiguration = ARWorldTrackingConfiguration()
-      if #available(iOS 12.0, *) { worldTrackingConfiguration.maximumNumberOfTrackedImages = 4 }
+      
+      worldTrackingConfiguration.sceneReconstruction = .mesh
+      worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
       worldTrackingConfiguration.detectionImages = getReferenceImages()
 
       switch _planeDetection {
@@ -239,27 +268,19 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     case .orientationTracking:
       _configuration = AROrientationTrackingConfiguration()
 
-    /**
-    * Image tracking configuration
-    * Requires setting the following
-    * - Detection Images / Tracking Images
-    */
     case .imageTracking:
-      if #available(iOS 12.0, *) {
         let imageTrackingConfiguration = ARImageTrackingConfiguration()
         imageTrackingConfiguration.maximumNumberOfTrackedImages = 4
         imageTrackingConfiguration.trackingImages = getReferenceImages()
         _configuration = imageTrackingConfiguration
-      } else {
-        /// Fallback on earlier versions
-        let worldTrackingConfiguration = ARWorldTrackingConfiguration()
-        worldTrackingConfiguration.detectionImages = getReferenceImages()
-        _configuration = worldTrackingConfiguration
-      }
     }
     
     _configuration.isLightEstimationEnabled = _lightingEstimationEnabled
 
+    _arView.environment.sceneUnderstanding.options = []
+    _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+    _arView.environment.sceneUnderstanding.options.insert(.physics)
+    
     if _sessionRunning {
       ResetTracking()
     }
@@ -276,40 +297,41 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
   }
 
   @objc open func startTracking(_ options: ARSession.RunOptions = []) {
-    _sceneView.session.run(_configuration, options: options)
+    _arView.session.run(_configuration, options: options)
     _sessionRunning = true
     startOptions = []
     
     if _requiresAddNodes {
-      for node in _nodesDict.values {
+      for (node, anchorEntity) in _nodeToAnchorDict {
         if _reenableWebViewNodes, let webViewNode = node as? ARWebView {
           webViewNode.isUserInteractionEnabled = true
         }
-        if node._node.parent != _sceneView.scene.rootNode && !node.IsFollowingImageMarker {
-          _sceneView.scene.rootNode.addChildNode(node._node)
+        
+        if !node.IsFollowingImageMarker {
+          _arView.scene.addAnchor(anchorEntity)
         }
         
         if node._fromPropertyPosition != nil {
-          
-          // Convert pose string to coordinate array
           let position = node._fromPropertyPosition.split(separator: ",")
             .prefix(3)
             .map { Float(String($0)) ?? 0.0 }
           
-          node._node.position = SCNVector3(x: position[0], y: position[1], z: position[2])
+          node._modelEntity.transform.translation = SIMD3<Float>(
+            UnitHelper.centimetersToMeters(position[0]),
+            UnitHelper.centimetersToMeters(position[1]),
+            UnitHelper.centimetersToMeters(position[2])
+          )
         }
       }
       
-      for light in _lights.values {
-        let lightNode = light.getNode()
-        if lightNode.parent != _sceneView.scene.rootNode {
-          _sceneView.scene.rootNode.addChildNode(lightNode)
-        }
+      for (anchorEntity, light) in _lights {
+        _arView.scene.addAnchor(anchorEntity)
       }
+      
       _requiresAddNodes = false
       _reenableWebViewNodes = false
     } else if _reenableWebViewNodes {
-      for node in _nodesDict.values {
+      for node in _nodeToAnchorDict.keys {
         if let webViewNode = node as? ARWebView {
           webViewNode.isUserInteractionEnabled = true
         }
@@ -324,11 +346,11 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
   
   private func pauseTracking(_ disableWebViewInteraction: Bool = false ) {
     _sessionRunning = false
-    _sceneView.session.pause()
+    _arView.session.pause()
     trackingNode = nil
     
     if disableWebViewInteraction {
-      for node in _nodesDict.values {
+      for node in _nodeToAnchorDict.keys {
         if let webViewNode = node as? ARWebView {
           webViewNode.isUserInteractionEnabled = false
           _reenableWebViewNodes = true
@@ -355,31 +377,153 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
       startOptions = [.removeExistingAnchors]
     }
   }
+  
+  
+  @objc open func LoadScene(_ dictionaries: [YailDictionary]) -> [ARNode] {
+         os_log("loading stored scene %@", log: .default, type: .info, String(describing: dictionaries))
+         
+         var loadNode: ARNodeBase?
+         var newNodes: [ARNode] = []
+         
+         for obj in dictionaries {
+             os_log("loadscene obj is %@", log: .default, type: .info, String(describing: obj))
+             
+             // Skip empty dictionaries
+             if obj.isEmpty {
+                 os_log("loadscene empty dictionary", log: .default, type: .info)
+                 continue
+             }
+             
+             let nodeDict = obj
+             guard let type = nodeDict["type"] as? String else {
+                 os_log("loadscene missing type", log: .default, type: .info)
+                 continue
+             }
+             
+             os_log("loadscene TYPE is %@", log: .default, type: .info, type)
+             
+             switch type.lowercased() {
+             case "capsule":
+               loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
+             case "box":
+               loadNode = self.CreateBoxNodeFromYail(nodeDict)
+             case "sphere":
+               loadNode = self.CreateSphereNodeFromYail(nodeDict)
+             case "video":
+               loadNode = self.CreateVideoNodeFromYail(nodeDict)
+             case "webview":
+               loadNode = self.CreateWebViewNodeFromYail(nodeDict)
+               //case "model":
+               //loadNode = self.CreateModelNodeFromYail(nodeDict)
+             default:
+                 // currently not storing or handling modelNode..
+               loadNode = nil
+             }
+             
+             if let node = loadNode {
+                 addNode(node)
+                 newNodes.append(node)
+                 os_log("loaded %@", log: .default, type: .info, String(describing: node))
+             }
+         }
+         
+         os_log("loadscene new nodes are %@", log: .default, type: .info, String(describing: newNodes))
+         return newNodes
+     }
+     
+     @objc open func SaveScene(_ newNodes: [ARNode]) -> [YailDictionary] {
+         var dictionaries: [YailDictionary] = []
+         
+         for node in newNodes {
+             os_log("savescene node %@", log: .default, type: .info, String(describing: node))
+             
+           let type = node.NodeType
+             let nodeDict = node.ARNodeToYail()
+             dictionaries.append(nodeDict)
+             
+             os_log("saving node %@", log: .default, type: .info, type)
+         }
+         
+         return dictionaries
+     }
+     
+     // These methods would need to be implemented based on your ARNode creation logic
+     private func CreateCapsuleNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
+
+       let capNode = CapsuleNode(self) as CapsuleNode
+       let yailNodeObj: YailDictionary = yailNodeObj
+
+
+       let result = ARNodeUtilities.parseYailToNode(
+        capNode as CapsuleNode, yailNodeObj as YailDictionary, _arView.session
+       )
+  
+      
+      return result
+    }
+     
+     private func CreateBoxNodeFromYail(_ nodeDict: YailDictionary) -> ARNodeBase? {
+         // Implementation depends on your ARNode structure
+         return nil
+     }
+     
+     private func CreateSphereNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
+       let sphereNode = SphereNode(self) as SphereNode
+       let yailNodeObj: YailDictionary = yailNodeObj
+
+
+       let result = ARNodeUtilities.parseYailToNode(
+        sphereNode as SphereNode, yailNodeObj as YailDictionary, _arView.session
+       )
+  
+      
+      return result
+     }
+     
+     private func CreateVideoNodeFromYail(_ nodeDict: YailDictionary) -> ARNodeBase? {
+         // Implementation depends on your ARNode structure
+         return nil
+     }
+     
+     private func CreateWebViewNodeFromYail(_ nodeDict: YailDictionary) -> ARNodeBase? {
+         // Implementation depends on your ARNode structure
+         return nil
+     }
+     
 
   @objc open func addNode(_ node: ARNodeBase) {
-    _nodesDict[node._node] = node
-    _containsModelNodes = node is ModelNode ? true : _containsModelNodes
     
-    if _sessionRunning {
-      _sceneView.scene.rootNode.addChildNode(node._node)
+      let anchorEntity = node.createAnchor()
+      let nodeId = ObjectIdentifier(node)
+
+      _nodeToAnchorDict[node] = anchorEntity
+      _containsModelNodes = node is ModelNode ? true : _containsModelNodes
       
-      if node._fromPropertyPosition != nil {
+      if _sessionRunning {
+        _arView.scene.addAnchor(anchorEntity)
         
-        // Convert pose string to coordinate array
-        let position = node._fromPropertyPosition.split(separator: ",")
-          .prefix(3)
-          .map { Float(String($0)) ?? 0.0 }
-        
-        node._node.position = SCNVector3(x: position[0], y: position[1], z: position[2])
+        if !node._fromPropertyPosition.isEmpty {
+          let position = node._fromPropertyPosition.split(separator: ",")
+            .prefix(3)
+            .map { Float(String($0)) ?? 0.0 }
+          
+          node._modelEntity.transform.translation = SIMD3<Float>(
+            UnitHelper.centimetersToMeters(position[0]),
+            UnitHelper.centimetersToMeters(position[1]),
+            UnitHelper.centimetersToMeters(position[2])
+          )
+        }
+      } else {
+        _requiresAddNodes = true
       }
-    } else {
-      _requiresAddNodes = true
     }
-  }
 
   @objc open func removeNode(_ node: ARNodeBase) {
-    _nodesDict.removeValue(forKey: node._node)
-    node._node.removeFromParentNode()
+    guard let anchorEntity = _nodeToAnchorDict[node] else { return }
+    
+    _arView.scene.removeAnchor(anchorEntity)
+    _nodeToAnchorDict.removeValue(forKey: node)
+    node.removeFromAnchor()
   }
 
   @objc open func getARView() -> ARView3D {
@@ -387,8 +531,8 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
   }
 
   @objc open func HideAllNodes() {
-    for node in _nodesDict.values {
-      node._node.isHidden = true
+    for node in _nodeToAnchorDict.keys {
+      node._modelEntity.isEnabled = false
     }
   }
   
@@ -396,65 +540,62 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     return true
   }
 
-  @objc open func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-    /// Plane Detected
-    if let planeAnchor = anchor as? ARPlaneAnchor {
-      let detectedPlane = DetectedPlane(anchor: planeAnchor, node: node, container: self)
-      _detectedPlanesDict[node] = detectedPlane
-      PlaneDetected(detectedPlane)
-    }
-    /// Image Recognized
-    else if let imageAnchor = anchor as? ARImageAnchor {
-      guard let name = imageAnchor.referenceImage.name else { return }
-      let imageMarker = _imageMarkers[name]
-      imageMarker?.FirstDetected(node)
+  // MARK: ARSession Delegate Methods
+  
+  public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+    for anchor in anchors {
+      if let planeAnchor = anchor as? ARPlaneAnchor {
+        let detectedPlane = DetectedPlane(anchor: planeAnchor, container: self)
+        _detectedPlanesDict[anchor] = detectedPlane
+        PlaneDetected(detectedPlane)
+      } else if let imageAnchor = anchor as? ARImageAnchor {
+        guard let name = imageAnchor.referenceImage.name else { return }
+        let imageMarker = _imageMarkers[name]
+        imageMarker?.FirstDetected(anchor)
+      }
     }
   }
 
-  @objc open func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-    /// DetectedPlane Updated
-    if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[node] {
-      updatedPlane.updateFor(anchor: planeAnchor)
-      DetectedPlaneUpdated(updatedPlane)
-    }
-    /// Detected ImageMarker Updated
-    else if let imageAnchor = anchor as? ARImageAnchor {
-      guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
-      if !imageAnchor.isTracked {
-        imageMarker.NoLongerInView()
-      } else if !imageMarker._isTracking {
-        imageMarker.AppearedInView()
+  public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    for anchor in anchors {
+      if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
+        updatedPlane.updateFor(anchor: planeAnchor)
+        DetectedPlaneUpdated(updatedPlane)
+      } else if let imageAnchor = anchor as? ARImageAnchor {
+        guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
+        if !imageAnchor.isTracked {
+          imageMarker.NoLongerInView()
+        } else if !imageMarker._isTracking {
+          imageMarker.AppearedInView()
+        }
+        let position = SIMD3<Float>(imageAnchor.transform.columns.3.x, imageAnchor.transform.columns.3.y, imageAnchor.transform.columns.3.z)
+        let rotation = imageAnchor.transform.eulerAngles
+        imageMarker.pushUpdate(position, rotation)
       }
-      imageMarker.pushUpdate(node.position, node.eulerAngles)
     }
   }
   
-  open func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
-    /**
-     * This occurs when planes are expanded and some are removed.
-     *
-     * Essentially, ARKit might notice that 2+ added planes are colinear and should actually just be one plane.
-     * It then removes one of the planes and expands the other.
-     *
-     */
-    if let _ = anchor as? ARPlaneAnchor, let removedPlane = _detectedPlanesDict[node] {
-      _detectedPlanesDict.removeValue(forKey: node)
-      removedPlane.removed()
-      DetectedPlaneRemoved(removedPlane)
-    } else if let imageAnchor = anchor as? ARImageAnchor {
-      guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
-      imageMarker.Reset()
+  public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
+    for anchor in anchors {
+      if let planeAnchor = anchor as? ARPlaneAnchor, let removedPlane = _detectedPlanesDict[anchor] {
+        _detectedPlanesDict.removeValue(forKey: anchor)
+        removedPlane.removed()
+        DetectedPlaneRemoved(removedPlane)
+      } else if let imageAnchor = anchor as? ARImageAnchor {
+        guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
+        imageMarker.Reset()
+      }
     }
   }
   
-  open func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-    guard _lightingEstimationEnabled, let lightingEstimate = _sceneView.session.currentFrame?.lightEstimate else { return }
+  public func session(_ session: ARSession, didUpdate frame: ARFrame) {
+    guard _lightingEstimationEnabled, let lightingEstimate = frame.lightEstimate else { return }
     
     LightingEstimateUpdated(Float(lightingEstimate.ambientIntensity), Float(lightingEstimate.ambientColorTemperature))
   }
 
   // MARK: Events
-  @objc open func NodeClick(_ node: ARNodeBase) {
+  @objc open func NodeClick(_ node: ARNode) {
     EventDispatcher.dispatchEvent(of: self, called: "NodeClick", arguments: node as AnyObject)
   }
 
@@ -466,7 +607,7 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
     EventDispatcher.dispatchEvent(of: self, called: "TapAtPoint", arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber, isANodeAtPoint as NSNumber)
   }
 
-  @objc open func NodeLongClick(_ node: ARNodeBase) {
+  @objc open func NodeLongClick(_ node: ARNode) {
     EventDispatcher.dispatchEvent(of: self, called: "NodeLongClick", arguments: node as AnyObject)
   }
 
@@ -485,14 +626,13 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer, Abstract
   open func setChildHeight(of component: ViewComponent, to height: Int32) {}
 }
 
-
 // MARK: Functions for Node Creation
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 extension ARView3D {
   @objc open func CreateBoxNode(_ x: Float, _ y: Float, _ z: Float) -> BoxNode {
     let node = BoxNode(self)
     node.Name = "CreatedBoxNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -504,7 +644,7 @@ extension ARView3D {
   @objc open func CreateSphereNode(_ x: Float, _ y: Float, _ z: Float) -> SphereNode {
     let node = SphereNode(self)
     node.Name = "CreatedSphereNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -516,7 +656,7 @@ extension ARView3D {
   @objc open func CreatePlaneNode(_ x: Float, _ y: Float, _ z: Float) -> PlaneNode {
     let node = PlaneNode(self)
     node.Name = "CreatedPlaneNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -524,11 +664,11 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
     return node
   }
-  
+  /*
   @objc open func CreateCylinderNode(_ x: Float, _ y: Float, _ z: Float) -> CylinderNode {
     let node = CylinderNode(self)
     node.Name = "CreatedCylinderNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -540,7 +680,7 @@ extension ARView3D {
   @objc open func CreateConeNode(_ x: Float, _ y: Float, _ z: Float) -> ConeNode {
     let node = ConeNode(self)
     node.Name = "CreatedConeNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -548,11 +688,11 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
     return node
   }
-  
+  */
   @objc open func CreateCapsuleNode(_ x: Float, _ y: Float, _ z: Float) -> CapsuleNode {
     let node = CapsuleNode(self)
     node.Name = "CreatedCapsuleNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -560,11 +700,11 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
     return node
   }
-  
+ /*
   @objc open func CreateTubeNode(_ x: Float, _ y: Float, _ z: Float) -> TubeNode {
     let node = TubeNode(self)
     node.Name = "CreatedTubeNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -576,7 +716,7 @@ extension ARView3D {
   @objc open func CreateTorusNode(_ x: Float, _ y: Float, _ z: Float) -> TorusNode {
     let node = TorusNode(self)
     node.Name = "CreatedTorusNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -588,7 +728,7 @@ extension ARView3D {
   @objc open func CreatePyramidNode(_ x: Float, _ y: Float, _ z: Float) -> PyramidNode {
     let node = PyramidNode(self)
     node.Name = "CreatedPyramidNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -596,11 +736,11 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
     return node
   }
-  
+ 
   @objc open func CreateTextNode(_ x: Float, _ y: Float, _ z: Float) -> TextNode {
     let node = TextNode(self)
     node.Name = "CreatedTextNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -612,7 +752,7 @@ extension ARView3D {
   @objc open func CreateVideoNode(_ x: Float, _ y: Float, _ z: Float) -> VideoNode {
     let node = VideoNode(self)
     node.Name = "CreatedVideoNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -620,11 +760,11 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
     return node
   }
-  
+  */
   @objc open func CreateWebViewNode(_ x: Float, _ y: Float, _ z: Float) -> WebViewNode {
     let node = WebViewNode(self)
     node.Name = "CreatedWebViewNode"
-    node.syncInitialize()
+    node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -634,98 +774,71 @@ extension ARView3D {
   }
 }
 
-
 // MARK: Functions Handling Gestures
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 extension ARView3D: UIGestureRecognizerDelegate {
-  @objc fileprivate func handleTap(sender: UITapGestureRecognizer) {
-    guard _sessionRunning, let areaTapped = sender.view as? SCNView else { return }
-    let tappedCoordinates = sender.location(in: areaTapped)
+  @objc func handleTap(_ sender: UITapGestureRecognizer) {
+    let tapLocation = sender.location(in: _arView)
     var isNodeAtPoint = false
 
-    if let tappedNode = _sceneView.nodeAt(tappedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-      if let ARNode = _nodesDict[tappedNode] {
-        NodeClick(ARNode)
-        ARNode.Click()
-        isNodeAtPoint = true
-      } else if let parentNode = tappedNode.parent, parentNode != _sceneView.scene.rootNode {
-        let rootNode = getRootNodeOfTouchedNode(parentNode: parentNode)
-        
-        if let rootOfTappedNode = rootNode, let ARNode = _nodesDict[rootOfTappedNode] {
-          NodeClick(ARNode)
-          ARNode.Click()
-          isNodeAtPoint = true
-        }
-      }
+    // Check if we hit a node entity
+    if let hitEntity = _arView.entity(at: tapLocation) as? ModelEntity,
+       let node = findNodeForEntity(hitEntity) {
+      NodeClick(node)
+      node.Click()
+      isNodeAtPoint = true
     }
 
-    if let tappedPlaneAt = _sceneView.onPlaneAt(tappedCoordinates), let tappedNode = _sceneView.nodeAt(tappedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-      if let detectedPlane = _detectedPlanesDict[tappedNode] {
-        /// NOTE: this case is essentially never hit
-        ClickOnDetectedPlaneAt(detectedPlane, tappedPlaneAt.x, tappedPlaneAt.y, tappedPlaneAt.z, isNodeAtPoint)
-      } else if let parentNode = tappedNode.parent, let detectedPlane = _detectedPlanesDict[parentNode] {
-        ClickOnDetectedPlaneAt(detectedPlane, tappedPlaneAt.x, tappedPlaneAt.y, tappedPlaneAt.z, isNodeAtPoint)
-      }
-    }
-
-    if let tappedPoint = _sceneView.pointAt(tappedCoordinates) {
-      TapAtPoint(Float(tappedPoint.x), Float(tappedPoint.y), Float(tappedPoint.z), isNodeAtPoint)
-    } else {
-      /// Enable returning the 2D coordinate in screenspace if ever useable
-      /// ie. if overlays are ever allowed in App Inventor
+    // Perform raycast for world interaction
+    if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
+      // Create visualization at hit point
+      let resultAnchor = AnchorEntity(world: result.worldTransform)
+      _arView.scene.addAnchor(resultAnchor)
+      
+      // Remove after 3 seconds
+      /*DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        self._arView.scene.removeAnchor(resultAnchor)
+      }*/
+      
+      // Convert to centimeters for event
+      let position = result.worldTransform.translation
+      TapAtPoint(
+        position.x, //UnitHelper.metersToCentimeters(position.x),
+        position.y, //UnitHelper.metersToCentimeters(position.y),
+        position.z, //UnitHelper.metersToCentimeters(position.z),
+        isNodeAtPoint
+      )
     }
   }
-
-  /**
-   * Moves a node by the pan gesture
-   */
+  
+  // Helper method to find node for entity
+  private func findNodeForEntity(_ entity: ModelEntity) -> ARNodeBase? {
+    for (node, anchor) in _nodeToAnchorDict {
+      if node._modelEntity == entity || anchor.children.contains(entity) {
+        return node
+      }
+    }
+    return nil
+  }
+ 
   @objc fileprivate func handlePan(sender: UIPanGestureRecognizer) {
-    guard _sessionRunning, let areaPanned = sender.view as? SCNView else { return }
-    let tappedCoordinates = sender.location(in: areaPanned)
+    guard _sessionRunning else { return }
+    let tapLocation = sender.location(in: _arView)
 
     switch sender.state {
     case .began:
-      if let tappedNode = _sceneView.nodeAt(tappedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-        if let ARNode = _nodesDict[tappedNode] {
-          guard trackingNode == nil else {
-            trackingNode = nil
-            return
-          }
-          trackingNode = ARNode
-        } else if let parentNode = tappedNode.parent, parentNode != _sceneView.scene.rootNode {
-          let rootNode = getRootNodeOfTouchedNode(parentNode: parentNode)
-          
-          if let rootOfTappedNode = rootNode, let ARNode = _nodesDict[rootOfTappedNode] {
-            guard trackingNode == nil else {
-              trackingNode = nil
-              return
-            }
-            trackingNode = ARNode
-          }
+      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
+         let node = findNodeForEntity(entity) {
+        guard trackingNode == nil else {
+          trackingNode = nil
+          return
         }
+        trackingNode = node
       }
     case .changed:
-      if let tappedNode = _sceneView.nodeAt(tappedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-        if let ARNode = _nodesDict[tappedNode] {
-          guard trackingNode == ARNode else {
-            trackingNode = nil
-            return
-          }
-          let translation = sender.translation(in: areaPanned)
-          ARNode.moveByPan(x: Float(translation.x / 10000.0), y: Float(-translation.y / 10000.0))
-        } else if let parentNode = tappedNode.parent, parentNode != _sceneView.scene.rootNode {
-          let rootNode = getRootNodeOfTouchedNode(parentNode: parentNode)
-          
-          if let rootOfTappedNode = rootNode, let ARNode = _nodesDict[rootOfTappedNode] {
-            guard trackingNode == ARNode else {
-              trackingNode = nil
-              return
-            }
-            let translation = sender.translation(in: areaPanned)
-            ARNode.moveByPan(x: Float(translation.x / 10000.0), y: Float(-translation.y / 10000.0))
-          }
-        }
-      }
+      guard let node = trackingNode else { return }
+      let translation = sender.translation(in: _arView)
+      node.moveByPan(x: Float(translation.x / 10000.0), y: Float(-translation.y / 10000.0))
     case .ended:
       trackingNode = nil
     default:
@@ -733,74 +846,60 @@ extension ARView3D: UIGestureRecognizerDelegate {
     }
   }
 
-  /**
-   * Handles long pressing on the view
-   * - subsequently handles long pressing on a node, detected plane, and the view iteself (a feature point)
-   */
   @objc fileprivate func handleLongPress(sender: UILongPressGestureRecognizer) {
     guard _sessionRunning else { return }
     
     if sender.state == .ended {
-      guard let areaPressed = sender.view as? SCNView else { return }
-      let tappedCoordinates = sender.location(in: areaPressed)
+      let tapLocation = sender.location(in: _arView)
       var isNodeAtPoint = false
 
-      if let tappedNode = _sceneView.nodeAt(tappedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-        if let ARNode = _nodesDict[tappedNode] {
-          NodeLongClick(ARNode)
-          ARNode.LongClick()
-          isNodeAtPoint = true
-        } else if let parentNode = tappedNode.parent, parentNode != _sceneView.scene.rootNode {
-          let rootNode = getRootNodeOfTouchedNode(parentNode: parentNode)
-          
-          if let rootOfTappedNode = rootNode, let ARNode = _nodesDict[rootOfTappedNode] {
-            NodeLongClick(ARNode)
-            ARNode.LongClick()
-            isNodeAtPoint = true
+      // Check for node at press location
+      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
+         let node = findNodeForEntity(entity) {
+        NodeLongClick(node)
+        node.LongClick()
+        isNodeAtPoint = true
+      }
+
+      // Check for detected plane at location
+      if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
+        // Check if this corresponds to a detected plane
+        for (anchor, detectedPlane) in _detectedPlanesDict {
+          if let planeAnchor = anchor as? ARPlaneAnchor {
+            // Simple distance check to see if the tap is on this plane
+            let planeCenter = planeAnchor.transform.translation
+            let hitPoint = result.worldTransform.translation
+            let distance = simd_distance(planeCenter, hitPoint)
+            
+            if distance < 0.5 { // 50cm threshold
+              LongClickOnDetectedPlaneAt(detectedPlane, hitPoint.x, hitPoint.y, hitPoint.z, isNodeAtPoint)
+              break
+            }
           }
         }
-
-      }
-
-      if let tappedPlaneAt = _sceneView.onPlaneAt(tappedCoordinates), let tappedNode = _sceneView.nodeAt(tappedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-        if let detectedPlane = _detectedPlanesDict[tappedNode] {
-          /// NOTE: this case is essentially never hit
-          LongClickOnDetectedPlaneAt(detectedPlane, tappedPlaneAt.x, tappedPlaneAt.y, tappedPlaneAt.z, isNodeAtPoint)
-        } else if let parentNode = tappedNode.parent, let detectedPlane = _detectedPlanesDict[parentNode] {
-          LongClickOnDetectedPlaneAt(detectedPlane, tappedPlaneAt.x, tappedPlaneAt.y, tappedPlaneAt.z, isNodeAtPoint)
-        }
-      }
-
-      if let tappedPoint = _sceneView.pointAt(tappedCoordinates) {
-        LongPressAtPoint(Float(tappedPoint.x), Float(tappedPoint.y), Float(tappedPoint.z), isNodeAtPoint)
-      } else {
-        /// Enable returning the 2D coordinate in screenspace if ever useable
-        /// ie. if overlays are ever allowed in App Inventor
+        
+        // Always dispatch the general long press event
+        let position = result.worldTransform.translation
+        LongPressAtPoint(
+          UnitHelper.metersToCentimeters(position.x),
+          UnitHelper.metersToCentimeters(position.y),
+          UnitHelper.metersToCentimeters(position.z),
+          isNodeAtPoint
+        )
       }
     }
   }
 
-  /**
-   * Scales a node based on pinching
-   */
   @objc fileprivate func handlePinch(sender: UIPinchGestureRecognizer) {
     guard _sessionRunning else { return }
     
     switch sender.state {
     case .changed:
-      guard let areaPinched = sender.view as? SCNView else { return }
-      let tappedCoordinates = sender.location(in: areaPinched)
+      let tapLocation = sender.location(in: _arView)
 
-      if let tappedNode = _sceneView.nodeAt(tappedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-        if let ARNode = _nodesDict[tappedNode] {
-          ARNode.scaleByPinch(scalar: Float(sender.scale))
-        } else if let parentNode = tappedNode.parent, parentNode != _sceneView.scene.rootNode {
-          let rootNode = getRootNodeOfTouchedNode(parentNode: parentNode)
-          
-          if let rootOfTappedNode = rootNode, let ARNode = _nodesDict[rootOfTappedNode] {
-            ARNode.scaleByPinch(scalar: Float(sender.scale))
-          }
-        }
+      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
+         let node = findNodeForEntity(entity) {
+        node.scaleByPinch(scalar: Float(sender.scale))
       }
       sender.scale = 1
     default:
@@ -808,68 +907,31 @@ extension ARView3D: UIGestureRecognizerDelegate {
     }
   }
 
-  /**
-   * Rotates a node via the Y axis
-   */
   @objc fileprivate func handleRotation(sender: UIRotationGestureRecognizer) {
     guard _sessionRunning else { return }
     
     switch sender.state {
     case .began:
-      guard let areaTouched = sender.view as? SCNView else { return }
-      let touchedCoordinates = sender.location(in: areaTouched)
-
-      if let touchedNode = _sceneView.nodeAt(touchedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-        if let ARNode = _nodesDict[touchedNode] {
-          _rotation = ARNode._node.eulerAngles.y
-        } else if let parentNode = touchedNode.parent, parentNode != _sceneView.scene.rootNode {
-          let rootNode = getRootNodeOfTouchedNode(parentNode: parentNode)
-          
-          if let rootOfTappedNode = rootNode, let ARNode = _nodesDict[rootOfTappedNode] {
-            _rotation = ARNode._node.eulerAngles.y
-          }
-        }
+      let tapLocation = sender.location(in: _arView)
+      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
+         let node = findNodeForEntity(entity) {
+            let euler = node.quaternionToEulerAngles(node._modelEntity.transform.rotation)
+            _rotation = euler.y
       }
+      
     case .changed:
-      guard let areaTouched = sender.view as? SCNView else { return }
-      let touchedCoordinates = sender.location(in: areaTouched)
-
-      if let touchedNode = _sceneView.nodeAt(touchedCoordinates, boundingBoxOnly: !_containsModelNodes) {
-        if let ARNode = _nodesDict[touchedNode] {
-          let rotation = _rotation + Float(sender.rotation)
-          ARNode.rotateByGesture(radians: rotation)
-        } else if let parentNode = touchedNode.parent, parentNode != _sceneView.scene.rootNode {
-          let rootNode = getRootNodeOfTouchedNode(parentNode: parentNode)
-          
-          if let rootOfTappedNode = rootNode, let ARNode = _nodesDict[rootOfTappedNode] {
-            let rotation = _rotation + Float(sender.rotation)
-            ARNode.rotateByGesture(radians: rotation)
-          }
-        }
+      let tapLocation = sender.location(in: _arView)
+      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
+         let node = findNodeForEntity(entity) {
+        let rotation = _rotation + Float(sender.rotation)
+        node.rotateByGesture(radians: rotation)
       }
+      
     case .ended, .failed, .cancelled:
       _rotation = 0.0
     default:
       break
     }
-  }
-  
-  /**
-   * When dealing with a reference node (or ModelNode), there may be several nodes in
-   * that are child nodes of the reference's root node.  We want to apply any gestures on
-   * the root node, that way it affects the child nodes as well.  Therefore, when interacting
-   * with one of these nodes, the touch might be registered on one of the child nodes.  We need
-   * to go up the node tree in order to get to the root node.
-   *
-   * The root node will have the scene's root node as its parent.
-   */
-  private func getRootNodeOfTouchedNode(parentNode: SCNNode?) -> SCNNode? {
-    var rootNode: SCNNode? = parentNode
-    while let node = rootNode, node.parent != _sceneView.scene.rootNode {
-      rootNode = node.parent
-    }
-    
-    return rootNode
   }
 
   public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
@@ -889,7 +951,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
 }
 
 // MARK: ARImageMarkerContainer
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 extension ARView3D: ARImageMarkerContainer {
   @objc public var ImageMarkers: [ARImageMarker] {
     get {
@@ -944,7 +1006,8 @@ extension ARView3D: ARImageMarkerContainer {
   }
 }
 
-@available(iOS 11.3, *)
+
+@available(iOS 14.0, *)
 extension ARView3D: ARDetectedPlaneContainer {
   @objc open var DetectedPlanes: [ARDetectedPlane] {
     get {
@@ -986,7 +1049,7 @@ extension ARView3D: ARDetectedPlaneContainer {
 }
 
 // MARK: ARLightContainer
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 extension ARView3D: ARLightContainer {
   @objc open var Lights: [ARLight] {
     get {
@@ -1010,11 +1073,8 @@ extension ARView3D: ARLightContainer {
       return _showLightLocations
     }
     set(showLightLocations) {
-      if showLightLocations {
-        _sceneView.debugOptions.insert(ARSCNDebugOptions.showLightInfluences)
-      } else {
-        _sceneView.debugOptions.remove(ARSCNDebugOptions.showLightInfluences)
-      }
+      // RealityKit doesn't have the same debug options for lights
+      // You might need to implement custom visualization
       _showLightLocations = showLightLocations
     }
   }
@@ -1024,37 +1084,43 @@ extension ARView3D: ARLightContainer {
       return _showLightAreas
     }
     set(showLightAreas) {
-      if showLightAreas {
-        _sceneView.debugOptions.insert(ARSCNDebugOptions.showLightExtents)
-      } else {
-        _sceneView.debugOptions.remove(ARSCNDebugOptions.showLightExtents)
-      }
+      // RealityKit doesn't have the same debug options for lights
+      // You might need to implement custom visualization
       _showLightAreas = showLightAreas
     }
   }
   
   @objc open func HideAllLights() {
-    for light in _lights.values {
-      light.getNode().isHidden = true
+    for (anchorEntity, light) in _lights {
+      anchorEntity.isEnabled = false
     }
   }
   
   public func addLight(_ light: ARLightBase) {
-    let lightNode = light.getNode()
-    _lights[lightNode] = light
+    // Create anchor for light
+    let lightAnchor = AnchorEntity(world: SIMD3<Float>(0, 0, 0))
+    
+    // Add light entity to anchor (you'll need to implement light entity creation)
+    // This depends on how you're handling lights in RealityKit
+    
+    _lights[lightAnchor] = light
     
     if _sessionRunning {
-      _sceneView.scene.rootNode.addChildNode(lightNode)
+      _arView.scene.addAnchor(lightAnchor)
     } else {
       _requiresAddNodes = true
     }
   }
   
   public func removeLight(_ light: ARLightBase) {
-    let lightNode = light.getNode()
-    _lights.removeValue(forKey: lightNode)
-    
-    lightNode.removeFromParentNode()
+    // Find and remove the light's anchor
+    for (anchorEntity, lightBase) in _lights {
+      if lightBase === light {
+        _arView.scene.removeAnchor(anchorEntity)
+        _lights.removeValue(forKey: anchorEntity)
+        break
+      }
+    }
   }
   
   @objc open func LightingEstimateUpdated(_ ambientIntensity: Float, _ ambientTemperature: Float) {
@@ -1065,7 +1131,7 @@ extension ARView3D: ARLightContainer {
 }
 
 // MARK: LifeCycleDelegate
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 extension ARView3D: LifecycleDelegate {
   @objc public func onResume() {}
   
@@ -1084,18 +1150,48 @@ extension ARView3D: LifecycleDelegate {
   }
   
   private func clearView() {
-    _nodesDict.values.forEach {
+    _nodeToAnchorDict.keys.forEach {
       $0.stopFollowing()
-      $0._node.removeFromParentNode()
+      $0.removeFromAnchor()
     }
     
-    _lights.values.forEach {
-      $0.getNode().removeFromParentNode()
+    _lights.keys.forEach {
+      _arView.scene.removeAnchor($0)
     }
     
-    _nodesDict = [:]
+    _nodeToAnchorDict = [:]
     _lights = [:]
     _detectedPlanesDict = [:]
     _imageMarkers = [:]
+  }
+}
+
+// MARK: - Extensions for compatibility
+
+extension matrix_float4x4 {
+  var translation: SIMD3<Float> {
+    return SIMD3<Float>(columns.3.x, columns.3.y, columns.3.z)
+  }
+  
+  var eulerAngles: SIMD3<Float> {
+    // Extract Euler angles from rotation matrix
+    let sy = sqrt(self[0][0] * self[0][0] + self[1][0] * self[1][0])
+    let singular = sy < 1e-6
+    
+    let x: Float
+    let y: Float
+    let z: Float
+    
+    if !singular {
+      x = atan2(self[2][1], self[2][2])
+      y = atan2(-self[2][0], sy)
+      z = atan2(self[1][0], self[0][0])
+    } else {
+      x = atan2(-self[1][2], self[1][1])
+      y = atan2(-self[2][0], sy)
+      z = 0
+    }
+    
+    return SIMD3<Float>(x, y, z)
   }
 }

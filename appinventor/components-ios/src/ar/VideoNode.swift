@@ -6,9 +6,9 @@ import SpriteKit
 import AVKit
 import SceneKit
 
-@available(iOS 11.3, *)
-open class VideoNode: ARNodeBase, ARVideo {
-  private var _videoNode: SKVideoNode
+@available(iOS 14.0, *)
+open class VideoNode{ //}: ARNodeBase, ARVideo {
+  /*private var _videoNode: SKVideoNode
   private var _player: AVPlayer
   private var _videoItem: AVPlayerItem? = nil
   private var _videoPlaneNode: SCNNode
@@ -159,4 +159,5 @@ open class VideoNode: ARNodeBase, ARVideo {
     Completed()
     _videoItem?.seek(to: .zero)
   }
+   */
 }

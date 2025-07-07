@@ -2,46 +2,67 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SceneKit
+import RealityKit
 
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 open class PlaneNode: ARNodeBase, ARPlane {
-  private var _planeGeometry: SCNPlane = SCNPlane(width: 0.06, height: 0.02)
-  private var _planeNode: SCNNode
+  private var _width: Float = 0.06 // stored in meters
+  private var _height: Float = 0.02 // stored in meters
+  private var _cornerRadius: Float = 0.0 // stored in meters
   
   @objc init(_ container: ARNodeContainer) {
-    _planeNode = SCNNode(geometry: _planeGeometry)
-    super.init(container: container, node: _planeNode)
+    // Create initial plane mesh
+    let mesh = MeshResource.generatePlane(width: 0.06, depth: 0.02)
+    super.init(container: container, mesh: mesh)
   }
   
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   
+  private func updatePlaneMesh() {
+    // Generate new plane mesh with current dimensions
+    let mesh = MeshResource.generatePlane(
+      width: _width,
+      depth: _height,
+      cornerRadius: _cornerRadius
+    )
+    
+    // Preserve existing materials when updating mesh
+    let existingMaterials = _modelEntity.model?.materials ?? []
+    _modelEntity.model = ModelComponent(
+      mesh: mesh,
+      materials: existingMaterials.isEmpty ? [SimpleMaterial()] : existingMaterials
+    )
+  }
+  
   @objc open var WidthInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_planeGeometry.width)
+      return UnitHelper.metersToCentimeters(_width)
     }
     set(width) {
-      _planeGeometry.width = UnitHelper.centimetersToMeters(abs(width))
+      _width = UnitHelper.centimetersToMeters(abs(width))
+      updatePlaneMesh()
     }
   }
   
   @objc open var HeightInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_planeGeometry.height)
+      return UnitHelper.metersToCentimeters(_height)
     }
     set(height) {
-      _planeGeometry.height = UnitHelper.centimetersToMeters(abs(height))
+      _height = UnitHelper.centimetersToMeters(abs(height))
+      updatePlaneMesh()
     }
   }
   
   @objc open var CornerRadius: Float {
     get {
-      return UnitHelper.metersToCentimeters(_planeGeometry.cornerRadius)
+      return UnitHelper.metersToCentimeters(_cornerRadius)
     }
     set(radius) {
-      _planeGeometry.cornerRadius = UnitHelper.centimetersToMeters(max(0, radius))
+      _cornerRadius = UnitHelper.centimetersToMeters(max(0, radius))
+      updatePlaneMesh()
     }
   }
 }

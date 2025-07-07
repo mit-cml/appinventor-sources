@@ -4,9 +4,9 @@
 import Foundation
 import SceneKit
 
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 open class CylinderNode: ARNodeBase {
-  private var _cylinderGeometry: SCNCylinder = SCNCylinder(radius: 0.02, height: 0.06)
+ /* private var _cylinderGeometry: SCNCylinder = SCNCylinder(radius: 0.02, height: 0.06)
   private var _cylinderNode: SCNNode
   
   @objc init(_ container: ARNodeContainer) {
@@ -34,5 +34,5 @@ open class CylinderNode: ARNodeBase {
     set(height) {
       _cylinderGeometry.height = UnitHelper.centimetersToMeters(abs(height))
     }
-  }
+  }*/
 }

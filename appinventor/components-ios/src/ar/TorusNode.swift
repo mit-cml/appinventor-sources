@@ -4,9 +4,9 @@
 import Foundation
 import SceneKit
 
-@available(iOS 11.3, *)
-open class TorusNode: ARNodeBase, ARTorus {
-  private var _torusGeometry: SCNTorus = SCNTorus(ringRadius: 0.04, pipeRadius: 0.01)
+@available(iOS 14.0, *)
+open class TorusNode { //}: ARNodeBase, ARTorus {
+  /*private var _torusGeometry: SCNTorus = SCNTorus(ringRadius: 0.04, pipeRadius: 0.01)
   private var _torusNode: SCNNode
   
   @objc init(_ container: ARNodeContainer) {
@@ -35,4 +35,5 @@ open class TorusNode: ARNodeBase, ARTorus {
       _torusGeometry.pipeRadius = UnitHelper.centimetersToMeters(abs(radius))
     }
   }
+   */
 }

@@ -2,23 +2,26 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SceneKit
+import RealityKit
 import WebKit
+import UIKit
 
 /// NOTE: There's a currently a bug where the UIWebView will intercept touches, even though it is
 ///       not in view.  Ie. if a UIWebView overlaps with UIButtons.
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 open class WebViewNode: ARNodeBase, ARWebView {
-  var _webViewNode: SCNNode
-  var _webViewGeometry: SCNPlane = SCNPlane(width: 0.125, height: 0.175)
-  var _webView: UIWebView = UIWebView(frame: CGRect(x: 0, y: 0, width: 400, height: 672))
-  var _url: String = ""
+  private var _webView: WKWebView = WKWebView(frame: CGRect(x: 0, y: 0, width: 400, height: 672))
+  private var _url: String = ""
+  private var _width: Float = 0.125
+  private var _height: Float = 0.175
   
   @objc init(_ container: ARNodeContainer) {
-    self._webViewNode = SCNNode(geometry: self._webViewGeometry)
-    super.init(container: container, node: self._webViewNode)
+    // Create a plane mesh for the web view
+    let mesh = MeshResource.generatePlane(width: 0.125, depth: 0.175)
+    super.init(container: container, mesh: mesh)
+    
     DispatchQueue.main.async {
-      self.setupWebNode()
+      self.setupWebEntity()
     }
   }
   
@@ -26,10 +29,38 @@ open class WebViewNode: ARNodeBase, ARWebView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  private func setupWebNode() {
+  private func setupWebEntity() {
     DispatchQueue.main.async {
-      self._webViewGeometry.firstMaterial?.diffuse.contents = self._webView
-      self._webViewGeometry.firstMaterial?.isDoubleSided = true
+      // Create material with web view content
+      self.updateWebViewTexture()
+    }
+  }
+  
+  private func updateWebViewTexture() {
+    // Convert UIView to texture
+    guard let image = webViewToImage() else { return }
+    
+    do {
+      var material = SimpleMaterial()
+      
+      if #available(iOS 15.0, *) {
+        let texture = try TextureResource.generate(from: image.cgImage!, options: .init(semantic: .color))
+        material.baseColor = MaterialColorParameter.texture(texture)
+      } else {
+        //fail gracefully
+      }
+
+      
+      _modelEntity.model?.materials = [material]
+    } catch {
+      print("Failed to create texture from web view: \(error)")
+    }
+  }
+  
+  private func webViewToImage() -> UIImage? {
+    let renderer = UIGraphicsImageRenderer(bounds: _webView.bounds)
+    return renderer.image { context in
+      _webView.layer.render(in: context.cgContext)
     }
   }
   
@@ -44,7 +75,11 @@ open class WebViewNode: ARNodeBase, ARWebView {
       if let url = Foundation.URL(string: urlString) {
         let request = URLRequest(url: url)
         DispatchQueue.main.async {
-          self._webView.loadRequest(request)
+          self._webView.load(request)
+          // Update texture after loading
+          DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.updateWebViewTexture()
+          }
         }
       } else {
         _container?.form?.dispatchErrorOccurredEvent(self, "HomeUrl", ErrorMessage.ERROR_WEBVIEWNODE_MALFORMED_URL.code)
@@ -52,7 +87,7 @@ open class WebViewNode: ARNodeBase, ARWebView {
     }
   }
   
-  open var isUserInteractionEnabled: Bool {
+  @objc open var isUserInteractionEnabled: Bool {
     get {
       return _webView.isUserInteractionEnabled
     }
@@ -63,19 +98,37 @@ open class WebViewNode: ARNodeBase, ARWebView {
   
   @objc open var WidthInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_webViewGeometry.width)
+      return UnitHelper.metersToCentimeters(_width)
     }
     set(width) {
-      _webViewGeometry.width = UnitHelper.centimetersToMeters(abs(width))
+      _width = UnitHelper.centimetersToMeters(abs(width))
+      updateMesh()
     }
   }
   
   @objc open var HeightInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_webViewGeometry.height)
+      return UnitHelper.metersToCentimeters(_height)
     }
     set(height) {
-      _webViewGeometry.height = UnitHelper.centimetersToMeters(abs(height))
+      _height = UnitHelper.centimetersToMeters(abs(height))
+      updateMesh()
+    }
+  }
+  
+  private func updateMesh() {
+    let mesh = MeshResource.generatePlane(width: _width, depth: _height)
+    
+    // Preserve existing materials when updating mesh
+    let existingMaterials = _modelEntity.model?.materials ?? []
+    _modelEntity.model = ModelComponent(mesh: mesh, materials: existingMaterials)
+    
+    // Update web view frame
+    DispatchQueue.main.async {
+      let screenWidth = CGFloat(self._width * 3200) // Scale factor for resolution
+      let screenHeight = CGFloat(self._height * 3200)
+      self._webView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
+      self.updateWebViewTexture()
     }
   }
   
@@ -116,26 +169,36 @@ open class WebViewNode: ARNodeBase, ARWebView {
   @objc open func GoBack() {
     if _webView.canGoBack {
       _webView.goBack()
-      _webView.reload()
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        self.updateWebViewTexture()
+      }
     }
   }
   
   @objc open func GoForward() {
     if _webView.canGoForward {
       _webView.goForward()
-      _webView.reload()
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        self.updateWebViewTexture()
+      }
     }
   }
   
   @objc open func Reload() {
     _webView.reload()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      self.updateWebViewTexture()
+    }
   }
   
   @objc open func GoToUrl(_ url: String) {
     if let url = Foundation.URL(string: url) {
       let request = URLRequest(url: url)
       DispatchQueue.main.async {
-        self._webView.loadRequest(request)
+        self._webView.load(request)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+          self.updateWebViewTexture()
+        }
       }
     }
   }
@@ -144,7 +207,10 @@ open class WebViewNode: ARNodeBase, ARWebView {
     if let url = Foundation.URL(string: _url) {
       let request = URLRequest(url: url)
       DispatchQueue.main.async {
-        self._webView.loadRequest(request)
+        self._webView.load(request)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+          self.updateWebViewTexture()
+        }
       }
     }
   }

@@ -3,12 +3,14 @@
 
 import Foundation
 import ARKit
-import SceneKit
+import RealityKit
 
-@available(iOS 11.0, *)
-@objc public protocol ARNode: FollowsMarker, CanLook, Component {
+// MARK: - Core Protocols
+
+@available(iOS 14.0, *)
+@objc public protocol ARNode: FollowsMarker, Component {
   var Name: String { get set }
-  var `Type`: String { get }
+  var NodeType: String { get }
   var Visible: Bool { get set }
   var ShowShadow: Bool { get set }
   var Opacity: Int32 { get set }
@@ -36,6 +38,7 @@ import SceneKit
   /*
    * "By" methods act relative to the node's current properties (rotation, scale, etc)
    */
+  func ARNodeToYail() -> YailDictionary
   // RotateAboutBlankAxis https://gamedev.stackexchange.com/questions/116676/why-is-scnnode-rotation-property-a-four-dimensional-vector
   func RotateXBy(_ degrees: Float)
   func RotateYBy(_ degrees: Float)
@@ -47,7 +50,7 @@ import SceneKit
   func Click()
   func LongClick()
 
-  func getPosition() -> SCNVector3
+  func getPosition() -> SIMD3<Float>
   func setPosition(x: Float, y: Float, z: Float)
   func scaleByPinch(scalar: Float)
   func moveByPan(x: Float, y: Float)
@@ -58,8 +61,7 @@ import SceneKit
   func DistanceToPointLight(_ light: ARPointLight) -> Float
   func DistanceToDetectedPlane(_ detectedPlane: ARDetectedPlane) -> Float
 }
-
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 @objc public protocol FollowsMarker {
   var _followingMarker: ARImageMarker? { get }
   var IsFollowingImageMarker: Bool { get }
@@ -72,16 +74,16 @@ import SceneKit
   func StoppedFollowingMarker()
 }
 
-// MARK: Lights
+// MARK: - Light Protocols
+
 @objc public protocol ARLight: Component {
   var `Type`: String { get }
   var Color: Int32 { get set }
   var Temperature: Float { get set }
   var Intensity: Float { get set }
-
 }
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 @objc public protocol HasPositionEffects {
   var XPosition: Float { get set }
   var YPosition: Float { get set }
@@ -94,7 +96,7 @@ import SceneKit
   func DistanceToPointLight(_ light: ARPointLight) -> Float
   func DistanceToDetectedPlane(_ detectedPlane: ARDetectedPlane) -> Float
   
-  func getPosition() -> SCNVector3
+  func getPosition() -> SIMD3<Float>
 }
 
 @objc public protocol HasDirectionEffects {
@@ -125,36 +127,24 @@ public protocol ARAmbientLight: ARLight {
 
 }
 
-public protocol ARDirectionalLight: ARLight, HasDirectionEffects, CastsShadows, CanLook {
+public protocol ARDirectionalLight: ARLight, HasDirectionEffects, CastsShadows {
 
 }
 
+@available(iOS 14.0, *)
 @objc public protocol ARPointLight: ARLight, HasFalloff, HasPositionEffects {
   
-
 }
-
-@objc public protocol ARSpotlight: ARLight, HasFalloff, HasDirectionEffects, HasPositionEffects, CastsShadows, CanLook {
+@available(iOS 14.0, *)
+@objc public protocol ARSpotlight: ARLight, HasFalloff, HasDirectionEffects, HasPositionEffects, CastsShadows {
   var SpotInnerAngle: Float { get set }
   var SpotOuterAngle: Float { get set }
-  // consider the gobo
 
   var MinimumDistanceForShadows: Float { get set }
   var MaximumDistanceForShadows: Float { get set }
 }
 
-// Spotlight, DirectionalLight, Nodes
-@available(iOS 11.0, *)
-@objc public protocol CanLook {
-  func LookAtNode(_ node: ARNode)
-  func LookAtDetectedPlane(_ detectedPlane: ARDetectedPlane)
-  func LookAtSpotlight(_ light: ARSpotlight)
-  func LookAtPointLight(_ light: ARPointLight)
-  func LookAtPosition(_ x: Float, _ y: Float, _ z: Float)
-}
-
-
-// MARK: Nodes
+// MARK: - Node Shape Protocols
 
 public protocol HasCornerRadius {
   var CornerRadius: Float { get set }
@@ -168,67 +158,62 @@ public protocol HasCornerRadius {
   var HeightInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARBox: ARNode, HasCornerRadius, HasWidthInCentimeters, HasHeightInCentimeters {
   var LengthInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARSphere: ARNode {
   var RadiusInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARPlane: ARNode, HasCornerRadius, HasWidthInCentimeters, HasHeightInCentimeters {}
 
+@available(iOS 14.0, *)
 public protocol ARCylinder: ARNode, HasHeightInCentimeters {
   var RadiusInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARCone: ARNode, HasHeightInCentimeters {
   var TopRadiusInCentimeters: Float { get set }
   var BottomRadiusInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARCapsule: ARNode, HasHeightInCentimeters {
   var CapRadiusInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARTube: ARNode, HasHeightInCentimeters {
   var OuterRadiusInCentimeters: Float { get set }
   var InnerRadiusInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARTorus: ARNode {
   var RingRadiusInCentimeters: Float { get set }
   var PipeRadiusInCentimeters: Float { get set }
 }
 
+@available(iOS 14.0, *)
 public protocol ARPyramid: ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
   var LengthInCentimeters: Float { get set }
 }
 
-
-/**
- * Text does have a CornerRadius, but due to current setup, the values need to ridiculously small,
- * on the order of 10^-40.  So, it has been removed for now.
- */
+@available(iOS 14.0, *)
 public protocol ARText: ARNode {
   var Text: String { get set }
   var FontSizeInCentimeters: Float { get set }
   var DepthInCentimeters: Float { get set }
-
-  /**
-   * These have no meaning until a container frame is set -- this container frames needs to be
-   * adjustable by the user.
-   */
-//  var WrapText: Bool  { get set }
-//  var Truncation: Int32 { get set }
-//  var TextAlignment: Int32  { get set }
-
 }
 
+@available(iOS 14.0, *)
 public protocol ARVideo: ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
   var Source: String { get set }
-//  var AspectWidth: Float { get set }
-//  var AspectHeight: Float { get set }
   var IsPlaying: Bool { get }
   var Volume: Int32 { get set }
 
@@ -239,7 +224,7 @@ public protocol ARVideo: ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
   func Completed()
 }
 
-// Note: current issue where if overlapping with button, will intercept the touches
+@available(iOS 14.0, *)
 public protocol ARWebView: ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
   var HomeUrl: String { get set }
   var isUserInteractionEnabled: Bool { get set }
@@ -253,8 +238,8 @@ public protocol ARWebView: ARNode, HasWidthInCentimeters, HasHeightInCentimeters
   func GoHome()
 }
 
+@available(iOS 14.0, *)
 public protocol ARModel: ARNode {
-  var Model: String { get set }
   var RootNodeName: String { get set }
   var BoundingBox: [[Float]] { get }
   var NamesOfNodes: [String] { get }
@@ -274,9 +259,8 @@ public protocol ARModel: ARNode {
   func NodeNotFound(_ name: String)
 }
 
+// MARK: - Detected Objects
 
-// MARK: Detected Objects
-@available(iOS 11.0, *)
 @objc public protocol ARDetectedPlane: Component, HasWidthInCentimeters, HasHeightInCentimeters {
   var FillColor: Int32 { get set }
   var FillColorOpacity: Int32 { get set }
@@ -285,28 +269,28 @@ public protocol ARModel: ARNode {
   var Opacity: Int32 { get set }
   var IsHorizontal: Bool { get }
 
-  func getPosition() -> SCNVector3
+  func getPosition() -> SIMD3<Float>
   func updateFor(anchor: ARPlaneAnchor)
   func removed()
 }
 
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 @objc public protocol ARImageMarker: Component {
   var Name: String { get }
   var Image: String { get set }
   var PhysicalWidthInCentimeters: Float { get set }
   var PhysicalHeightInCentimeters: Float { get }
-  var AttachedNodes: [ARNodeBase] { get }
+  var _attachedNodes: [ARNodeBase] { get }
   var _referenceImage: ARReferenceImage? { get }
   var _isTracking: Bool { get set }
 
   func attach(_ node: ARNodeBase)
   func removeNode(_ node: ARNodeBase)
   func removeAllNodes()
-  func pushUpdate(_ position: SCNVector3, _ angles: SCNVector3)
+  func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>)
 
   // MARK: Events
-  func FirstDetected(_ node: SCNNode)
+  func FirstDetected(_ anchor: ARAnchor)
   func PositionChanged(_ x: Float, _ y: Float, _ z: Float)
   func RotationChanged(_ x: Float, _ y: Float, _ z: Float)
   func NoLongerInView()
@@ -314,9 +298,9 @@ public protocol ARModel: ARNode {
   func Reset()
 }
 
+// MARK: - Container Protocols
 
-// MARK: Containers
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 @objc public protocol ARNodeContainer: ComponentContainer {
   var Nodes: [ARNode] { get }
   var ShowWireframes: Bool { get set }
@@ -326,15 +310,13 @@ public protocol ARModel: ARNode {
   func addNode(_ node: ARNodeBase)
   func removeNode(_ node: ARNodeBase)
 
-
   // Events
-  func NodeClick(_ node: ARNodeBase)
+  func NodeClick(_ node: ARNode)
   func TapAtPoint(_ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool)
   func LongPressAtPoint(_ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool)
-  func NodeLongClick(_ node: ARNodeBase)
+  func NodeLongClick(_ node: ARNode)
 }
 
-@available(iOS 11.0, *)
 @objc public protocol ARDetectedPlaneContainer: ComponentContainer {
   var DetectedPlanes: [ARDetectedPlane] { get }
 
@@ -345,7 +327,7 @@ public protocol ARModel: ARNode {
   func DetectedPlaneRemoved(_ detectedPlane: ARDetectedPlane)
 }
 
-@available(iOS 11.3, *)
+@available(iOS 14.0, *)
 @objc public protocol ARImageMarkerContainer: ComponentContainer {
   var ImageMarkers: [ARImageMarker] { get }
 
@@ -355,7 +337,7 @@ public protocol ARModel: ARNode {
   func markerNameIsAvailable(_ name: String) -> Bool
 }
 
-@available(iOS 10.0, *)
+@available(iOS 14.0, *)
 @objc public protocol ARLightContainer: ComponentContainer {
   var Lights: [ARLight] { get }
   var LightingEstimation: Bool { get set }
@@ -369,6 +351,17 @@ public protocol ARModel: ARNode {
   
   func LightingEstimateUpdated(_ ambientIntensity: Float, _ ambientTemperature: Float)
 }
+
+// MARK: - Additional Protocols
+@available(iOS 14.0, *)
+@objc public protocol CanLook {
+  func LookAtNode(_ node: ARNode)
+  func LookAtDetectedPlane(_ detectedPlane: ARDetectedPlane)
+  func LookAtSpotlight(_ light: ARSpotlight)
+  func LookAtPointLight(_ light: ARPointLight)
+  func LookAtPosition(_ x: Float, _ y: Float, _ z: Float)
+}
+// MARK: - Utility Classes
 
 public class UnitHelper {
   public static func metersToCentimeters(_ meters: Float) -> Float {

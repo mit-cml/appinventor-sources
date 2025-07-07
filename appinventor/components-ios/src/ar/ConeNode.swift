@@ -4,9 +4,9 @@
 import Foundation
 import SceneKit
 
-@available(iOS 11.3, *)
-open class ConeNode: ARNodeBase, ARCone {
-  private var _coneGeometry: SCNCone = SCNCone(topRadius: 0, bottomRadius: 0.03, height: 0.07)
+@available(iOS 14.0, *)
+open class ConeNode { //}: ARNodeBase, ARCone {
+  /*private var _coneGeometry: SCNCone = SCNCone(topRadius: 0, bottomRadius: 0.03, height: 0.07)
   private var _coneNode: SCNNode
   
   @objc init(_ container: ARNodeContainer) {
@@ -43,5 +43,5 @@ open class ConeNode: ARNodeBase, ARCone {
     set(height) {
       _coneGeometry.height = UnitHelper.centimetersToMeters(abs(height))
     }
-  }
+  }*/
 }

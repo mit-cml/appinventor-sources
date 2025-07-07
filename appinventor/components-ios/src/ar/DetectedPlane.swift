@@ -2,67 +2,102 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SceneKit
+import RealityKit
 import ARKit
-import GLKit
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 open class DetectedPlane: NSObject, ARDetectedPlane {
   weak var _container: ARDetectedPlaneContainer?
-  private var _associatedNode: SCNNode
-  private var _geometry: SCNPlane
-  private var _planeNode: SCNNode
+  private var _anchorEntity: AnchorEntity
+  private var _planeEntity: ModelEntity
   private var _alignment: ARPlaneAnchor.Alignment
   fileprivate var _name = "DetectedPlane"
   
   private var _color: Int32 = Int32(bitPattern: AIComponentKit.Color.default.rawValue)
-  private var _colorMaterial: SCNMaterial = SCNMaterial()
-  public var hasTexture = false
-  private var _textureMaterial: SCNMaterial = SCNMaterial()
   private var _texture: String = ""
+  private var _width: Float = 0
+  private var _height: Float = 0
   
+  init(anchor: ARPlaneAnchor, container: ARDetectedPlaneContainer) {
+    _container = container
+    _alignment = anchor.alignment
+    _width = anchor.extent.x
+    _height = anchor.extent.z
+    
+    // Create anchor entity for the plane
+    _anchorEntity = AnchorEntity(anchor: anchor)
+    
+    // Create plane entity
+    let mesh = MeshResource.generatePlane(width: anchor.extent.x, depth: anchor.extent.z)
+    _planeEntity = ModelEntity(mesh: mesh)
+    
+    super.init()
+    
+    setupPlaneEntity()
+    _anchorEntity.addChild(_planeEntity)
+    
+    FillColor = Int32(bitPattern: AIComponentKit.Color.none.rawValue)
+  }
+  
+  // Compatibility init for old SCNNode-based system (deprecated but kept for compatibility)
   init(anchor: ARPlaneAnchor, node: SCNNode, container: ARDetectedPlaneContainer) {
     _container = container
     _alignment = anchor.alignment
-    _associatedNode = node
-    _associatedNode.name = _name
-    _geometry = SCNPlane(width: CGFloat(anchor.extent.x), height: CGFloat(anchor.extent.z))
-    _planeNode = SCNNode(geometry: _geometry)
+    _width = anchor.extent.x
+    _height = anchor.extent.z
+    
+    // Create anchor entity for the plane
+    _anchorEntity = AnchorEntity(anchor: anchor)
+    
+    // Create plane entity
+    let mesh = MeshResource.generatePlane(width: anchor.extent.x, depth: anchor.extent.z)
+    _planeEntity = ModelEntity(mesh: mesh)
     
     super.init()
-    setupPlaneNode(anchor)
+    
+    setupPlaneEntity()
+    _anchorEntity.addChild(_planeEntity)
+    
     FillColor = Int32(bitPattern: AIComponentKit.Color.none.rawValue)
-    setMaterials()
   }
   
-  private func setupPlaneNode(_ anchor: ARPlaneAnchor) {
-    _planeNode.eulerAngles = SCNVector3(GLKMathDegreesToRadians(90), 0, 0)
-    _planeNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
-    _planeNode.renderingOrder = -1
+  private func setupPlaneEntity() {
+    // Rotate to match plane orientation (planes in RealityKit face up by default)
+    if _alignment == .horizontal {
+      // No rotation needed for horizontal planes
+    } else {
+      // Rotate 90 degrees for vertical planes
+      _planeEntity.transform.rotation = simd_quatf(angle: .pi/2, axis: [1, 0, 0])
+    }
     
-    _textureMaterial.isDoubleSided = true
-    _textureMaterial.lightingModel = .constant
-    _textureMaterial.writesToDepthBuffer = true
+    // Set up physics
+    let shape = ShapeResource.generateBox(width: _width, height: 0.001, depth: _height)
+    _planeEntity.components.set(CollisionComponent(shapes: [shape]))
     
-    _colorMaterial.isDoubleSided = true
-    _colorMaterial.lightingModel = .constant
-    _colorMaterial.writesToDepthBuffer = true
-    
-    _associatedNode.addChildNode(_planeNode)
+    // Set up material
+    updateMaterial()
+  }
+  
+  func getAnchorEntity() -> AnchorEntity {
+    return _anchorEntity
   }
   
   @objc open var WidthInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_geometry.width)
+      return UnitHelper.metersToCentimeters(_width)
     }
-    set(width) {}
+    set(width) {
+      // Width is read-only for detected planes
+    }
   }
   
   @objc open var HeightInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_geometry.height)
+      return UnitHelper.metersToCentimeters(_height)
     }
-    set(height) {}
+    set(height) {
+      // Height is read-only for detected planes
+    }
   }
   
   @objc open var IsHorizontal: Bool {
@@ -77,33 +112,27 @@ open class DetectedPlane: NSObject, ARDetectedPlane {
     }
     set(color) {
       _color = color
-      /**
-       * When the color is set to none, we make the plane occulde other items if they are behind it.
-       * In order to do this, we just change the colorBufferMask but don't actually set the fill
-       * color to none.
-       */
-      if color == AIComponentKit.Color.none.rawValue {
-        _colorMaterial.colorBufferWriteMask = []
-      } else {
-        _colorMaterial.colorBufferWriteMask = .all
-        _colorMaterial.diffuse.contents = argbToColor(color)
-      }
+      updateMaterial()
     }
   }
   
   @objc open var FillColorOpacity: Int32 {
     get {
-      return Int32(round(_colorMaterial.transparency * 100))
+      if let material = _planeEntity.model?.materials.first as? SimpleMaterial {
+        return Int32(1 * 100) //material.color.tint.alpha * 100) //CSB HOLD
+      }
+      return 100
     }
     set(opacity) {
-      let floatOpacity = Float(min(max(0, opacity), 100)) / 100.0
-      _colorMaterial.transparency = CGFloat(floatOpacity)
+      let alpha = Float(min(max(0, opacity), 100)) / 100.0
+      if #available(iOS 15.0, *) {
+        updateMaterialOpacity(alpha)
+      } else {
+        // Fallback on earlier versions
+      }
     }
   }
   
-  /*
-   * A Texture is an image that is used to cover the node
-   */
   @objc public var Texture: String {
     get {
       return _texture
@@ -111,61 +140,111 @@ open class DetectedPlane: NSObject, ARDetectedPlane {
     set(path) {
       if let image = AssetManager.shared.imageFromPath(path: path) {
         _texture = path
-        _textureMaterial.diffuse.contents = image
-        hasTexture = true
-        setMaterials()
+        updateTextureFromImage(image)
       } else {
         if !path.isEmpty {
           _container?.form?.dispatchErrorOccurredEvent(self, "Texture", ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code)
         }
-        hasTexture = false
         _texture = ""
-        setMaterials()
+        updateMaterial()
       }
     }
   }
   
   @objc open var TextureOpacity: Int32 {
     get {
-      return Int32(round(_textureMaterial.transparency * 100))
+      return FillColorOpacity // Same as material opacity in RealityKit
     }
     set(opacity) {
-      let floatOpacity = Float(min(max(0, opacity), 100)) / 100.0
-      _textureMaterial.transparency = CGFloat(floatOpacity)
+      FillColorOpacity = opacity
     }
   }
   
   @objc open var Opacity: Int32 {
     get {
-      return Int32(round(_associatedNode.opacity * 100))
+      return FillColorOpacity
     }
     set(opacity) {
-      let floatOpacity = Float(min(max(0, opacity), 100)) / 100.0
-      _planeNode.opacity = CGFloat(floatOpacity)
+      FillColorOpacity = opacity
     }
   }
   
-  open func getPosition() -> SCNVector3 {
-    return _associatedNode.position
+  // FIXED: Return SIMD3<Float> instead of SCNVector3 for RealityKit compatibility
+  open func getPosition() -> SIMD3<Float> {
+    return _anchorEntity.transform.translation
   }
   
   open func updateFor(anchor: ARPlaneAnchor) {
-    _geometry.width = CGFloat(anchor.extent.x)
-    _geometry.height = CGFloat(anchor.extent.z)
+    _width = anchor.extent.x
+    _height = anchor.extent.z
+    
+    // Update the mesh with new dimensions
+    let newMesh = MeshResource.generatePlane(width: anchor.extent.x, depth: anchor.extent.z)
+    
+    // Preserve existing materials
+    let existingMaterials = _planeEntity.model?.materials ?? []
+    _planeEntity.model = ModelComponent(mesh: newMesh, materials: existingMaterials)
+    
+    // Update collision shape
+    let shape = ShapeResource.generateBox(width: _width, height: 0.001, depth: _height)
+    _planeEntity.components.set(CollisionComponent(shapes: [shape]))
   }
   
   open func removed() {
     _container = nil
-    _planeNode.removeFromParentNode()
+    _planeEntity.removeFromParent()
+    _anchorEntity.removeFromParent()
   }
   
-  private func setMaterials() {
-    _planeNode.geometry?.materials = hasTexture ? [_textureMaterial] : [_colorMaterial]
+  private func updateMaterial() {
+    var material = SimpleMaterial()
+    
+    if _color == AIComponentKit.Color.none.rawValue {
+      // Make transparent for occlusion
+      material.baseColor = MaterialColorParameter.color(.clear)
+    } else {
+      material.baseColor = MaterialColorParameter.color(argbToUIColor(_color))
+    }
+    
+    _planeEntity.model?.materials = [material]
   }
   
+  @available(iOS 15.0, *)
+  private func updateMaterialOpacity(_ alpha: Float) {
+    guard var material = _planeEntity.model?.materials.first as? SimpleMaterial else { return }
+    
+   material.baseColor = MaterialColorParameter.color(.blue)
+    _planeEntity.model?.materials = [material]
+  }
+  
+  private func updateTextureFromImage(_ image: UIImage) {
+    do {
+      var material = SimpleMaterial()
+      
+      if #available(iOS 15.0, *) {
+        let texture = try TextureResource.generate(from: image.cgImage!, options: .init(semantic: .color))
+        material.baseColor = MaterialColorParameter.texture(texture)
+      } else {
+        // CSB HOLD
+      }
+      
+
+      _planeEntity.model?.materials = [material]
+    } catch {
+      print("Failed to create texture: \(error)")
+    }
+  }
+  
+  private func argbToUIColor(_ argb: Int32) -> UIColor {
+    let alpha = CGFloat((argb >> 24) & 0xFF) / 255.0
+    let red = CGFloat((argb >> 16) & 0xFF) / 255.0
+    let green = CGFloat((argb >> 8) & 0xFF) / 255.0
+    let blue = CGFloat(argb & 0xFF) / 255.0
+    return UIColor(red: red, green: green, blue: blue, alpha: alpha)
+  }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 extension DetectedPlane: Component {
   public final var Name: String {
     get {
