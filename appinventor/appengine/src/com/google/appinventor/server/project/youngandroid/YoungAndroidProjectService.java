@@ -6,6 +6,14 @@
 
 package com.google.appinventor.server.project.youngandroid;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
@@ -52,11 +60,8 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSource
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.Settings;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
 import java.util.Locale;
@@ -71,12 +76,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -100,24 +103,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private static final Flag<Integer> MAX_PROJECT_SIZE =
       Flag.createFlag("project.maxsize", 30);
-  private static final String ERROR_LARGE_PROJECT =
-      "Sorry, can't package projects larger than %1$d MB. Yours is %2$3.2f MB.";
 
-  // Project folder prefixes
-  public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
-  protected static final String ASSETS_FOLDER = "assets";
-  private static final String EXTERNAL_COMPS_FOLDER = "assets/external_comps";
-  static final String PROJECT_DIRECTORY = "youngandroidproject";
-
-  // TODO(user) Source these from a common constants library.
-  private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
-  private static final String CODEBLOCKS_SOURCE_EXTENSION =
-      YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
-  private static final String BLOCKLY_SOURCE_EXTENSION =
-      YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION;
-  private static final String YAIL_FILE_EXTENSION =
-      YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION;
+  private static final String EXTERNAL_COMPS_FOLDER = ASSETS_FOLDER + "/external_comps";
 
   public static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
       "project.properties";
@@ -126,8 +113,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   // Build folder path
   private static final String BUILD_FOLDER = "build";
-
-  public static final String PROJECT_KEYSTORE_LOCATION = "android.keystore";
 
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
