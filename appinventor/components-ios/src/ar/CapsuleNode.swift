@@ -13,7 +13,7 @@ open class CapsuleNode: ARNodeBase, ARCapsule {
     // Create capsule mesh - RealityKit doesn't have built-in capsule, so we'll create a cylinder with rounded ends
     let mesh = MeshResource.generateBox(width: _capRadius * 2, height: _height, depth: _capRadius * 2)
     super.init(container: container, mesh: mesh)
-    
+    self.Name = "capsule"
     // Update the mesh to be more capsule-like
     updateCapsuleMesh()
   }

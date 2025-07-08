@@ -118,7 +118,7 @@ open class ARNodeBase: NSObject, ARNode {
       return _modelEntity
     }
     set(model) {
-      os_log("setting model", log: .default, type: .info)
+      print("setting model")
       _modelEntity = model
     }
   }
@@ -220,50 +220,48 @@ open class ARNodeBase: NSObject, ARNode {
       os_log("going to try to export ARNode as yail", log: .default, type: .info)
          
       var yailDict: YailDictionary = [:]
-         
+      var transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
+    
         do {
-          yailDict["model"] = self.Model
+          yailDict["model"] = self.ModelUrl // dont  need this unless it's a custom model
           yailDict["texture"] = self.Texture
           yailDict["scale"] = self.Scale
-          yailDict["pose"] = self._modelEntity.transform
-          yailDict["type"] = self.Name
+          yailDict["pose"] = transformDict
+          yailDict["type"] = self.Name // this enables us to create the model mesh
          
         
-          os_log("exporting ARNode as Yail convert toYail %@", log: .default, type: .info, String(describing: yailDict))
+          print("exporting ARNode as Yail convert toYail ")
           return yailDict
-         } catch {
-           os_log("failed to export as yail: %@", log: .default, type: .error, error.localizedDescription)
          }
          
-         return [:]
      }
      
   
   @objc open func PoseToYailDictionary() -> YailDictionary? {
         os_log("anchor pose as YailDict", log: .default, type: .info)
         
-      guard let p = self._anchorEntity else {
+    guard let p = self._modelEntity.transform as? Transform else {
             os_log("pose is nil", log: .default, type: .info)
             return nil
         }
         
-        os_log("pose is %@", log: .default, type: .info, String(describing: p))
+      print("pose is \(p)")
         
-        var translationDict: YailDictionary = [:]
-        var rotationDict: YailDictionary = [:]
-        var yailDictSave: YailDictionary = [:]
+      let translationDict: YailDictionary = [:]
+      let rotationDict: YailDictionary = [:]
+      let yailDictSave: YailDictionary = [:]
         
         // Translation components
-        translationDict["x"] = p.position.x
-        translationDict["y"] = p.position.y
-        translationDict["z"] = p.position.z
+        translationDict["x"] = p.translation.x
+        translationDict["y"] = p.translation.y
+        translationDict["z"] = p.translation.z
         yailDictSave["t"] = translationDict
         
         // Rotation components (quaternion)
-        rotationDict["x"] = p.transform.rotation.vector.x
-        rotationDict["y"] = p.transform.rotation.vector.y
-        rotationDict["z"] = p.transform.rotation.vector.z
-        rotationDict["w"] = p.transform.rotation.vector.w
+        rotationDict["x"] = p.rotation.vector.x
+        rotationDict["y"] = p.rotation.vector.y
+        rotationDict["z"] = p.rotation.vector.z
+        rotationDict["w"] = p.rotation.vector.w
         yailDictSave["q"] = rotationDict
         
         os_log("exporting pose as YailDict with %@", log: .default, type: .info, String(describing: yailDictSave))

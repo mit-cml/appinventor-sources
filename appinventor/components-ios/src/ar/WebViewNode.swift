@@ -19,7 +19,7 @@ open class WebViewNode: ARNodeBase, ARWebView {
     // Create a plane mesh for the web view
     let mesh = MeshResource.generatePlane(width: 0.125, depth: 0.175)
     super.init(container: container, mesh: mesh)
-    
+    self.Name = "webview"
     DispatchQueue.main.async {
       self.setupWebEntity()
     }

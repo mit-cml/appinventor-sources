@@ -1,7 +1,7 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
-import Foundation
+/*import Foundation
 import SceneKit
 import ARKit
 
@@ -23,4 +23,4 @@ public extension ARSCNView {
     let hitTestResults = hitTest(point, types: .featurePoint)
     return hitTestResults.first?.worldTransform.columns.3
   }
-}
+}*/

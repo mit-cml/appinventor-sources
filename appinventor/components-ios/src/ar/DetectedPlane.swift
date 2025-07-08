@@ -39,27 +39,6 @@ open class DetectedPlane: NSObject, ARDetectedPlane {
     FillColor = Int32(bitPattern: AIComponentKit.Color.none.rawValue)
   }
   
-  // Compatibility init for old SCNNode-based system (deprecated but kept for compatibility)
-  init(anchor: ARPlaneAnchor, node: SCNNode, container: ARDetectedPlaneContainer) {
-    _container = container
-    _alignment = anchor.alignment
-    _width = anchor.extent.x
-    _height = anchor.extent.z
-    
-    // Create anchor entity for the plane
-    _anchorEntity = AnchorEntity(anchor: anchor)
-    
-    // Create plane entity
-    let mesh = MeshResource.generatePlane(width: anchor.extent.x, depth: anchor.extent.z)
-    _planeEntity = ModelEntity(mesh: mesh)
-    
-    super.init()
-    
-    setupPlaneEntity()
-    _anchorEntity.addChild(_planeEntity)
-    
-    FillColor = Int32(bitPattern: AIComponentKit.Color.none.rawValue)
-  }
   
   private func setupPlaneEntity() {
     // Rotate to match plane orientation (planes in RealityKit face up by default)

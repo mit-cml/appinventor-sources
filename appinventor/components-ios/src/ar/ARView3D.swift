@@ -9,7 +9,7 @@ import os.log
 
 
 @available(iOS 14.0, *)
-open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
+open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
 
   
   public func getView() -> ARView3D {
@@ -39,9 +39,9 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
   fileprivate var _lights: [AnchorEntity: ARLightBase] = [:]
 
   final var _arView: ARView
-  private var _trackingType: ARTrackingType = .worldTracking
+  private var _trackingType: ARTrackingType = .worldTracking //.geoTracking expose to user
   private var _configuration: ARConfiguration = ARWorldTrackingConfiguration()
-  private var _planeDetection: ARPlaneDetectionType = .none
+  private var _planeDetection: ARPlaneDetectionType = .horizontal
   private var _showWorldOrigin: Bool = false
   private var _showFeaturePoints: Bool = false
   private var _showWireframes: Bool = false
@@ -72,10 +72,10 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
     _arView.environment.sceneUnderstanding.options = .occlusion
     _arView.debugOptions.insert(.showSceneUnderstanding)
     super.init(parent)
-    _arView.session.delegate = self as? ARSessionDelegate
+    _arView.session.delegate = self
     initializeGestureRecognizers()
     TrackingType = 1
-    PlaneDetectionType = 1
+    PlaneDetectionType = 2 // .horizontal
     LightingEstimation = false
     parent.add(self)
     Height = kARViewPreferredHeight
@@ -126,13 +126,14 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
     set(type) {
       _trackingSet = true
 
-      guard 1...3 ~= type else {
+      guard 1...4 ~= type else {
         _container?.form?.dispatchErrorOccurredEvent(self, "TrackingType", ErrorMessage.ERROR_INVALID_TRACKING_TYPE.code, type)
         return
       }
       _trackingType = ARTrackingType(rawValue: type)!
 
       setupConfiguration()
+      
     }
   }
 
@@ -228,21 +229,10 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
 
  
       if !ARGeoTrackingConfiguration.isSupported {
-        // notify user
+        self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking unavailable", ErrorMessage.ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME.code, "")
       }
 
-      ARGeoTrackingConfiguration.checkAvailability { (available, error) in
-          if !available {
-              let errorDescription = error?.localizedDescription ?? ""
-              let recommendation = "Please try again in an area where geotracking is supported."
-              let restartSession = UIAlertAction(title: "Restart Session", style: .default) { (_) in
-                self._arView.session.run(self._configuration)
-              }
-
-            self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking unavailable", ErrorMessage.ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME.code, "")
-          }
-      }
- 
+    
 
     switch _trackingType {
     case .worldTracking:
@@ -265,6 +255,21 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
       
       _configuration = worldTrackingConfiguration
 
+      
+    case .geoTracking:
+      let geoTracking = ARGeoTrackingConfiguration()
+      switch _planeDetection {
+      case .horizontal:
+        geoTracking.planeDetection = .horizontal
+      case .vertical:
+        geoTracking.planeDetection = .vertical
+      case .both:
+        geoTracking.planeDetection = [.horizontal, .vertical]
+      case .none:
+        break
+      }
+      _configuration = geoTracking
+      
     case .orientationTracking:
       _configuration = AROrientationTrackingConfiguration()
 
@@ -379,74 +384,7 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
   }
   
   
-  @objc open func LoadScene(_ dictionaries: [YailDictionary]) -> [ARNode] {
-         os_log("loading stored scene %@", log: .default, type: .info, String(describing: dictionaries))
-         
-         var loadNode: ARNodeBase?
-         var newNodes: [ARNode] = []
-         
-         for obj in dictionaries {
-             os_log("loadscene obj is %@", log: .default, type: .info, String(describing: obj))
-             
-             // Skip empty dictionaries
-             if obj.isEmpty {
-                 os_log("loadscene empty dictionary", log: .default, type: .info)
-                 continue
-             }
-             
-             let nodeDict = obj
-             guard let type = nodeDict["type"] as? String else {
-                 os_log("loadscene missing type", log: .default, type: .info)
-                 continue
-             }
-             
-             os_log("loadscene TYPE is %@", log: .default, type: .info, type)
-             
-             switch type.lowercased() {
-             case "capsule":
-               loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
-             case "box":
-               loadNode = self.CreateBoxNodeFromYail(nodeDict)
-             case "sphere":
-               loadNode = self.CreateSphereNodeFromYail(nodeDict)
-             case "video":
-               loadNode = self.CreateVideoNodeFromYail(nodeDict)
-             case "webview":
-               loadNode = self.CreateWebViewNodeFromYail(nodeDict)
-               //case "model":
-               //loadNode = self.CreateModelNodeFromYail(nodeDict)
-             default:
-                 // currently not storing or handling modelNode..
-               loadNode = nil
-             }
-             
-             if let node = loadNode {
-                 addNode(node)
-                 newNodes.append(node)
-                 os_log("loaded %@", log: .default, type: .info, String(describing: node))
-             }
-         }
-         
-         os_log("loadscene new nodes are %@", log: .default, type: .info, String(describing: newNodes))
-         return newNodes
-     }
-     
-     @objc open func SaveScene(_ newNodes: [ARNode]) -> [YailDictionary] {
-         var dictionaries: [YailDictionary] = []
-         
-         for node in newNodes {
-             os_log("savescene node %@", log: .default, type: .info, String(describing: node))
-             
-           let type = node.NodeType
-             let nodeDict = node.ARNodeToYail()
-             dictionaries.append(nodeDict)
-             
-             os_log("saving node %@", log: .default, type: .info, type)
-         }
-         
-         return dictionaries
-     }
-     
+       
      // These methods would need to be implemented based on your ARNode creation logic
      private func CreateCapsuleNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
 
@@ -543,7 +481,9 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
   // MARK: ARSession Delegate Methods
   
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+
     for anchor in anchors {
+
       if let planeAnchor = anchor as? ARPlaneAnchor {
         let detectedPlane = DetectedPlane(anchor: planeAnchor, container: self)
         _detectedPlanesDict[anchor] = detectedPlane
@@ -557,7 +497,9 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
   }
 
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+
     for anchor in anchors {
+
       if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
         updatedPlane.updateFor(anchor: planeAnchor)
         DetectedPlaneUpdated(updatedPlane)
@@ -603,7 +545,7 @@ open class ARView3D: ViewComponent, ARSCNViewDelegate, ARNodeContainer {
     let xCm: Float = UnitHelper.metersToCentimeters(x)
     let yCm: Float = UnitHelper.metersToCentimeters(y)
     let zCm: Float = UnitHelper.metersToCentimeters(z)
-
+    print("tapped at \(xCm), \(yCm), \(zCm)")
     EventDispatcher.dispatchEvent(of: self, called: "TapAtPoint", arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber, isANodeAtPoint as NSNumber)
   }
 
@@ -643,7 +585,6 @@ extension ARView3D {
   
   @objc open func CreateSphereNode(_ x: Float, _ y: Float, _ z: Float) -> SphereNode {
     let node = SphereNode(self)
-    node.Name = "CreatedSphereNode"
     node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
@@ -691,7 +632,6 @@ extension ARView3D {
   */
   @objc open func CreateCapsuleNode(_ x: Float, _ y: Float, _ z: Float) -> CapsuleNode {
     let node = CapsuleNode(self)
-    node.Name = "CreatedCapsuleNode"
     node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
@@ -763,7 +703,6 @@ extension ARView3D {
   */
   @objc open func CreateWebViewNode(_ x: Float, _ y: Float, _ z: Float) -> WebViewNode {
     let node = WebViewNode(self)
-    node.Name = "CreatedWebViewNode"
     node.Initialize()
     
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
@@ -772,6 +711,78 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
     return node
   }
+  
+  @objc open func LoadScene(_ dictionaries: [AnyObject]) -> [AnyObject] {
+    print("loading stored scene \(dictionaries)")
+     
+     var loadNode: ARNodeBase?
+     var newNodes: [ARNode] = []
+     
+    guard !dictionaries.isEmpty else {
+      return []
+    }
+    
+
+    for obj in dictionaries {
+      if obj is YailDictionary{
+        
+        let nodeDict = obj as! YailDictionary
+        
+        
+        guard let type = nodeDict["type"] as? String else {
+         os_log("loadscene missing type", log: .default, type: .info)
+         continue
+         }
+        
+        os_log("loadscene TYPE is %@", log: .default, type: .info, type)
+        
+        switch type.lowercased() {
+        case "capsule":
+          loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
+        case "box":
+          loadNode = self.CreateBoxNodeFromYail(nodeDict)
+        case "sphere":
+          loadNode = self.CreateSphereNodeFromYail(nodeDict)
+        case "video":
+          loadNode = self.CreateVideoNodeFromYail(nodeDict)
+        case "webview":
+          loadNode = self.CreateWebViewNodeFromYail(nodeDict)
+          //case "model":
+          //loadNode = self.CreateModelNodeFromYail(nodeDict)
+        default:
+          // currently not storing or handling modelNode..
+          loadNode = nil
+        }
+        
+        if let node = loadNode {
+          addNode(node)
+          newNodes.append(node)
+          os_log("loaded %@", log: .default, type: .info, String(describing: node))
+        }
+      }
+    
+     }
+         
+    print("loadscene new nodes are \(newNodes)")
+    return newNodes
+  }
+     
+  //objc signature expects only primitives or object
+     @objc open func SaveScene(_ newNodes: [AnyObject]) -> [YailDictionary] {
+         var dictionaries: [YailDictionary] = []
+        // a list of arnodes
+         for node in newNodes { // swift thinks newnodes is nsarray
+
+             guard let arNode = node as? ARNode else { continue }
+           
+             let nodeDict = arNode.ARNodeToYail()
+             dictionaries.append(nodeDict)
+             
+         }
+       print("returning dictionaries")
+         return dictionaries
+     }
+
 }
 
 // MARK: Functions Handling Gestures

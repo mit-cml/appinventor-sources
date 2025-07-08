@@ -131,6 +131,7 @@ public enum ARTrackingType: Int32 {
   case worldTracking = 1
   case orientationTracking = 2
   case imageTracking = 3
+  case geoTracking = 4
   //  case faceTracking = 4
   //  case objectScanning = 5
 }

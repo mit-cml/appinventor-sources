@@ -12,6 +12,7 @@ open class SphereNode: ARNodeBase, ARSphere {
     // Create initial sphere mesh
     let mesh = MeshResource.generateSphere(radius: 0.05)
     super.init(container: container, mesh: mesh)
+    self.Name = "sphere" // vs type.. ?
   }
   
   required public init?(coder aDecoder: NSCoder) {
