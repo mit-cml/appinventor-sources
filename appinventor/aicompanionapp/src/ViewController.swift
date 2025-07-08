@@ -75,6 +75,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
     self.delegate = self
+
+    // Add button to open Node Test Harness
+    let testHarnessButton = UIBarButtonItem(title: "Node Test", style: .plain, target: self, action: #selector(openNodeTestHarness))
+    self.viewControllers.last?.navigationItem.rightBarButtonItem = testHarnessButton
+  }
+  
+  @objc func openNodeTestHarness() {
+    let testHarnessVC = NodeTestHarnessViewController()
+    self.present(testHarnessVC, animated: true, completion: nil)
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
