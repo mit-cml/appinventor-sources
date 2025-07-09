@@ -107,4 +107,19 @@ public class MediaUtil {
   public static void loadMediaPlayer(MediaPlayer mp, Form form, String source) {
     //TODO(lroman10): Real implementation
   }
+
+  public static String getAssetAsDataUrl(Form form, String assetName) throws IOException {
+    if (form instanceof ReplForm) {
+      ReplForm replForm = (ReplForm) form;
+      if (replForm.isAssetsLoaded()) {
+        try {
+          return AssetFetcher.getLoadedAsset(assetName);
+        } catch (Exception e) {
+          throw new IOException("Failed to get asset: " + assetName, e);
+        }
+      }
+    }
+    throw new IOException("Assets not loaded or unsupported form");
+  }
+  
 }

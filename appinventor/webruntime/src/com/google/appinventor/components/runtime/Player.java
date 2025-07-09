@@ -1,5 +1,7 @@
 package com.google.appinventor.components.runtime;
 
+import java.io.IOException;
+
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -14,6 +16,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsProperty;
@@ -81,9 +84,14 @@ public class Player extends AndroidNonvisibleComponent implements Component {
     @JsProperty(name = "Source")
     public void Source(String src){
         source = src;
-        setAudioSource(src);
+        try {
+            String dataUrl = MediaUtil.getAssetAsDataUrl(form, src);
+            setAudioSource(dataUrl);
+        } catch (IOException e) {
+            setAudioSource(src);
+        }
     }
-
+    
     @SimpleProperty
     @JsProperty(name = "Loop")
     public void Loop(boolean loopFlag) {
