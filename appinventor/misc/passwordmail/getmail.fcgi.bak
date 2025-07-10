@@ -22,7 +22,7 @@ init()
 @route('/', method='POST')
 def store():
     d = {}
-    for k,v in list(request.POST.items()):
+    for k,v in request.POST.items():
         d[k] = v.decode('utf-8')
     message = Message()
     message.email = d['email']

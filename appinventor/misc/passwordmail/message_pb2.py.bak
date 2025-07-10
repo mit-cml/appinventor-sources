@@ -28,21 +28,21 @@ _MESSAGE = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='email', full_name='Message.email', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=str("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='url', full_name='Message.url', index=1,
       number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=str("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='locale', full_name='Message.locale', index=2,
       number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=str("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -61,7 +61,8 @@ _MESSAGE = _descriptor.Descriptor(
 
 DESCRIPTOR.message_types_by_name['Message'] = _MESSAGE
 
-class Message(_message.Message, metaclass=_reflection.GeneratedProtocolMessageType):
+class Message(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _MESSAGE
 
   # @@protoc_insertion_point(class_scope:Message)
