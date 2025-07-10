@@ -31,96 +31,26 @@ open class TextNode: ARNodeBase, ARText {
    * Note: RealityKit doesn't have built-in 3D text like SceneKit, so we create it from a 2D representation
    */
   private func updateTextMesh() {
-    // Create text as image first
-    let textImage = createTextImage()
-    
+
     // Create a plane mesh for the text
     let textBounds = calculateTextBounds()
-    let mesh = MeshResource.generatePlane(width: textBounds.width, depth: textBounds.height)
     
+    let lineHeight: CGFloat = 0.05
+    let font = MeshResource.Font.systemFont(ofSize: lineHeight)
+    let textMesh = MeshResource.generateText(_text,extrusionDepth: UnitHelper.centimetersToMeters(_depth), font: font )
+    let textMaterial = SimpleMaterial(color: .blue, isMetallic: true)
+    
+ 
     // Create material with text texture
-    var material = SimpleMaterial()
-    if let image = textImage {
-      do {
-        if #available(iOS 15.0, *) {
-          let texture = try TextureResource.generate(from: image.cgImage!, options: .init(semantic: .color))
-          material.baseColor = MaterialColorParameter.texture(texture)
-        } else {
-          material.baseColor = MaterialColorParameter.color(.green)
-        }
-        
-      } catch {
-        print("Failed to create text texture: \(error)")
-        material.baseColor = MaterialColorParameter.color(.red)
-      }
-    } else {
-      material.baseColor = MaterialColorParameter.color(.white)
-    }
+   
     
-    // If depth > 0, we could extrude the text (simplified approach)
-    // For now, we'll use a thin box to simulate depth
-    let finalMesh: MeshResource
-    if _depth > 0 {
-      let depthInMeters = _depth * 0.01 // Convert cm to meters
-      finalMesh = MeshResource.generateBox(width: textBounds.width, height: depthInMeters, depth: textBounds.height)
-    } else {
-      finalMesh = mesh
-    }
+    _modelEntity = ModelEntity(mesh: textMesh, materials: [textMaterial])
     
-    _modelEntity.model = ModelComponent(mesh: finalMesh, materials: [material])
     
     // Center the text (similar to updateTextCenter in original)
     updateTextCenter()
   }
   
-  private func createTextImage() -> UIImage? {
-    let font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
-    let textColor = UIColor.white
-    
-    // Configure paragraph style
-    let paragraphStyle = NSMutableParagraphStyle()
-    switch _textAlignment {
-    case Alignment.normal.rawValue:
-      paragraphStyle.alignment = .left
-    case Alignment.center.rawValue:
-      paragraphStyle.alignment = .center
-    case Alignment.opposite.rawValue:
-      paragraphStyle.alignment = .right
-    default:
-      paragraphStyle.alignment = .left
-    }
-    
-    // Configure line break mode based on truncation
-    switch _truncation {
-    case AIComponentKit.Truncation.end.rawValue:
-      paragraphStyle.lineBreakMode = .byTruncatingTail
-    case AIComponentKit.Truncation.start.rawValue:
-      paragraphStyle.lineBreakMode = .byTruncatingHead
-    case AIComponentKit.Truncation.middle.rawValue:
-      paragraphStyle.lineBreakMode = .byTruncatingMiddle
-    default:
-      paragraphStyle.lineBreakMode = _wrapText ? .byWordWrapping : .byClipping
-    }
-    
-    let attributes: [NSAttributedString.Key: Any] = [
-      .font: font,
-      .foregroundColor: textColor,
-      .paragraphStyle: paragraphStyle
-    ]
-    
-    let attributedString = NSAttributedString(string: _text, attributes: attributes)
-    let textBounds = calculateTextBounds()
-    let size = CGSize(width: CGFloat(textBounds.width * 1000), height: CGFloat(textBounds.height * 1000)) // Scale for better resolution
-    
-    let renderer = UIGraphicsImageRenderer(size: size)
-    return renderer.image { context in
-      context.cgContext.setFillColor(UIColor.clear.cgColor)
-      context.cgContext.fill(CGRect(origin: .zero, size: size))
-      
-      let rect = CGRect(origin: .zero, size: size)
-      attributedString.draw(in: rect)
-    }
-  }
   
   private func calculateTextBounds() -> (width: Float, height: Float) {
     let font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
