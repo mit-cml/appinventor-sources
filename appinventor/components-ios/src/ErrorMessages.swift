@@ -131,6 +131,8 @@ import Foundation
   case ERROR_MODELNODE_CANNOT_TEXTURIZE_NODE = 3708
   case ERROR_INVALID_FALLOFF_TYPE = 3709
   case ERROR_WEBVIEWNODE_MALFORMED_URL = 3710
+  case ERROR_GEOANCHOR_NOT_SUPPORTED = 3711
+  case ERROR_INVALID_COORDINATES = 3712
 
   // Navigation Errors
   case ERROR_INVALID_API_KEY = 4001
@@ -398,6 +400,10 @@ import Foundation
       return "Invalid value %d given for FalloffType.  Valid settings are 0, 1, or 2."
     case .ERROR_WEBVIEWNODE_MALFORMED_URL:
       return "The given URL was not valid."
+    case .ERROR_GEOANCHOR_NOT_SUPPORTED:
+      return "GeoAnchors not supported."
+    case .ERROR_INVALID_COORDINATES:
+      return "Invalid coordinates provided."
 
     // Navigation Errors
     case .ERROR_INVALID_API_KEY:

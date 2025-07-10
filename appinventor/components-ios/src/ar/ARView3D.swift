@@ -64,13 +64,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
   private var startOptions: ARSession.RunOptions = []
   private var _reenableWebViewNodes: Bool = false
   
+  private var deviceLocation: CLLocation?
+  private var sessionStartLocation: CLLocation?
+  private var sessionStartTime: Date?
+  
   // Cache for 3D text geometries representing the classification values
   private var modelsForClassification: [ARMeshClassification: ModelEntity] = [:]
 
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
     _arView.environment.sceneUnderstanding.options = .occlusion
-    _arView.debugOptions.insert(.showSceneUnderstanding)
+    _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+
     super.init(parent)
     _arView.session.delegate = self
     initializeGestureRecognizers()
@@ -257,18 +262,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
 
       
     case .geoTracking:
-      let geoTracking = ARGeoTrackingConfiguration()
+      let geoTrackingConfiguration = ARGeoTrackingConfiguration()
+      
+      geoTrackingConfiguration.maximumNumberOfTrackedImages = 4
+      geoTrackingConfiguration.detectionImages = getReferenceImages()
       switch _planeDetection {
       case .horizontal:
-        geoTracking.planeDetection = .horizontal
+        geoTrackingConfiguration.planeDetection = .horizontal
       case .vertical:
-        geoTracking.planeDetection = .vertical
+        geoTrackingConfiguration.planeDetection = .vertical
       case .both:
-        geoTracking.planeDetection = [.horizontal, .vertical]
+        geoTrackingConfiguration.planeDetection = [.horizontal, .vertical]
       case .none:
         break
       }
-      _configuration = geoTracking
+      _configuration = geoTrackingConfiguration
       
     case .orientationTracking:
       _configuration = AROrientationTrackingConfiguration()
@@ -548,6 +556,31 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
     print("tapped at \(xCm), \(yCm), \(zCm)")
     EventDispatcher.dispatchEvent(of: self, called: "TapAtPoint", arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber, isANodeAtPoint as NSNumber)
   }
+  
+  @objc open func TapAtLocation(_ x: Float, _ y: Float, _ z: Float,
+                               _ lat: Double, _ lng: Double, _ alt: Double,
+                               _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) {
+      
+      // Convert world coordinates to centimeters for compatibility
+      let xCm = UnitHelper.metersToCentimeters(x)
+      let yCm = UnitHelper.metersToCentimeters(y)
+      let zCm = UnitHelper.metersToCentimeters(z)
+      
+      if hasGeoCoordinates {
+          // Dispatch with both world and geo coordinates
+          EventDispatcher.dispatchEvent(of: self, called: "TapAtLocation",
+                                      arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber,
+                                               lat as NSNumber, lng as NSNumber, alt as NSNumber,
+                                               true as NSNumber, isANodeAtPoint as NSNumber)
+      } else {
+          // Dispatch with only world coordinates
+          EventDispatcher.dispatchEvent(of: self, called: "TapAtLocation",
+                                      arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber,
+                                               0.0 as NSNumber, 0.0 as NSNumber, 0.0 as NSNumber,
+                                               false as NSNumber, isANodeAtPoint as NSNumber)
+      }
+  }
+  
 
   @objc open func NodeLongClick(_ node: ARNode) {
     EventDispatcher.dispatchEvent(of: self, called: "NodeLongClick", arguments: node as AnyObject)
@@ -594,6 +627,12 @@ extension ARView3D {
     return node
   }
   
+  
+
+  
+  
+  
+  
   @objc open func CreatePlaneNode(_ x: Float, _ y: Float, _ z: Float) -> PlaneNode {
     let node = PlaneNode(self)
     node.Name = "CreatedPlaneNode"
@@ -606,30 +645,30 @@ extension ARView3D {
     return node
   }
   /*
-  @objc open func CreateCylinderNode(_ x: Float, _ y: Float, _ z: Float) -> CylinderNode {
-    let node = CylinderNode(self)
-    node.Name = "CreatedCylinderNode"
-    node.Initialize()
-    
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-    return node
-  }
-  
-  @objc open func CreateConeNode(_ x: Float, _ y: Float, _ z: Float) -> ConeNode {
-    let node = ConeNode(self)
-    node.Name = "CreatedConeNode"
-    node.Initialize()
-    
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-    return node
-  }
-  */
+   @objc open func CreateCylinderNode(_ x: Float, _ y: Float, _ z: Float) -> CylinderNode {
+   let node = CylinderNode(self)
+   node.Name = "CreatedCylinderNode"
+   node.Initialize()
+   
+   let xMeters: Float = UnitHelper.centimetersToMeters(x)
+   let yMeters: Float = UnitHelper.centimetersToMeters(y)
+   let zMeters: Float = UnitHelper.centimetersToMeters(z)
+   node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+   return node
+   }
+   
+   @objc open func CreateConeNode(_ x: Float, _ y: Float, _ z: Float) -> ConeNode {
+   let node = ConeNode(self)
+   node.Name = "CreatedConeNode"
+   node.Initialize()
+   
+   let xMeters: Float = UnitHelper.centimetersToMeters(x)
+   let yMeters: Float = UnitHelper.centimetersToMeters(y)
+   let zMeters: Float = UnitHelper.centimetersToMeters(z)
+   node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+   return node
+   }
+   */
   @objc open func CreateCapsuleNode(_ x: Float, _ y: Float, _ z: Float) -> CapsuleNode {
     let node = CapsuleNode(self)
     node.Initialize()
@@ -640,67 +679,119 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
     return node
   }
- /*
-  @objc open func CreateTubeNode(_ x: Float, _ y: Float, _ z: Float) -> TubeNode {
-    let node = TubeNode(self)
-    node.Name = "CreatedTubeNode"
-    node.Initialize()
-    
+  
+  private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double,node: ARNodeBase, hasGeoCoordinates: Bool) {
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
     let zMeters: Float = UnitHelper.centimetersToMeters(z)
+    
+    // Create geo anchor if we can
+    if hasGeoCoordinates {
+      let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+      if CLLocationCoordinate2DIsValid(coordinate) {
+        let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
+        node.setGeoAnchor(geoAnchor)
+      }else {
+        print("Create NodeAtLocation", ErrorMessage.ERROR_INVALID_COORDINATES.code)
+      }
+    }
+    
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+  }
+  
+  @objc open func CreateCapsuleNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ latitude: Double, _ longitude: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> CapsuleNode? {
+    guard ARGeoTrackingConfiguration.isSupported else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "CreateCapsuleNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+      return nil
+    }
+    
+    let node = CapsuleNode(self)
+    node.Name = "GeoCapsuleNode"
+    node.Initialize()
+    
+    setupLocation(x: x, y: y, z: z, latitude: latitude, longitude: longitude, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+    
     return node
   }
   
-  @objc open func CreateTorusNode(_ x: Float, _ y: Float, _ z: Float) -> TorusNode {
-    let node = TorusNode(self)
-    node.Name = "CreatedTorusNode"
+  @objc open func CreateSphereNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ latitude: Double, _ longitude: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> SphereNode? {
+    guard ARGeoTrackingConfiguration.isSupported else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "CreateSphereNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+      return nil
+    }
+    
+    let node = SphereNode(self)
+    node.Name = "GeoSphereNode"
     node.Initialize()
     
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+    setupLocation(x: x, y: y, z: z, latitude: latitude, longitude: longitude, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+    
     return node
   }
   
-  @objc open func CreatePyramidNode(_ x: Float, _ y: Float, _ z: Float) -> PyramidNode {
-    let node = PyramidNode(self)
-    node.Name = "CreatedPyramidNode"
-    node.Initialize()
-    
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-    return node
-  }
- 
-  @objc open func CreateTextNode(_ x: Float, _ y: Float, _ z: Float) -> TextNode {
-    let node = TextNode(self)
-    node.Name = "CreatedTextNode"
-    node.Initialize()
-    
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-    return node
-  }
   
-  @objc open func CreateVideoNode(_ x: Float, _ y: Float, _ z: Float) -> VideoNode {
-    let node = VideoNode(self)
-    node.Name = "CreatedVideoNode"
-    node.Initialize()
-    
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-    return node
-  }
-  */
+  
+  /*
+   @objc open func CreateTubeNode(_ x: Float, _ y: Float, _ z: Float) -> TubeNode {
+   let node = TubeNode(self)
+   node.Name = "CreatedTubeNode"
+   node.Initialize()
+   
+   let xMeters: Float = UnitHelper.centimetersToMeters(x)
+   let yMeters: Float = UnitHelper.centimetersToMeters(y)
+   let zMeters: Float = UnitHelper.centimetersToMeters(z)
+   node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+   return node
+   }
+   
+   @objc open func CreateTorusNode(_ x: Float, _ y: Float, _ z: Float) -> TorusNode {
+   let node = TorusNode(self)
+   node.Name = "CreatedTorusNode"
+   node.Initialize()
+   
+   let xMeters: Float = UnitHelper.centimetersToMeters(x)
+   let yMeters: Float = UnitHelper.centimetersToMeters(y)
+   let zMeters: Float = UnitHelper.centimetersToMeters(z)
+   node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+   return node
+   }
+   
+   @objc open func CreatePyramidNode(_ x: Float, _ y: Float, _ z: Float) -> PyramidNode {
+   let node = PyramidNode(self)
+   node.Name = "CreatedPyramidNode"
+   node.Initialize()
+   
+   let xMeters: Float = UnitHelper.centimetersToMeters(x)
+   let yMeters: Float = UnitHelper.centimetersToMeters(y)
+   let zMeters: Float = UnitHelper.centimetersToMeters(z)
+   node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+   return node
+   }
+   
+   @objc open func CreateTextNode(_ x: Float, _ y: Float, _ z: Float) -> TextNode {
+   let node = TextNode(self)
+   node.Name = "CreatedTextNode"
+   node.Initialize()
+   
+   let xMeters: Float = UnitHelper.centimetersToMeters(x)
+   let yMeters: Float = UnitHelper.centimetersToMeters(y)
+   let zMeters: Float = UnitHelper.centimetersToMeters(z)
+   node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+   return node
+   }
+   
+   @objc open func CreateVideoNode(_ x: Float, _ y: Float, _ z: Float) -> VideoNode {
+   let node = VideoNode(self)
+   node.Name = "CreatedVideoNode"
+   node.Initialize()
+   
+   let xMeters: Float = UnitHelper.centimetersToMeters(x)
+   let yMeters: Float = UnitHelper.centimetersToMeters(y)
+   let zMeters: Float = UnitHelper.centimetersToMeters(z)
+   node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+   return node
+   }
+   */
   @objc open func CreateWebViewNode(_ x: Float, _ y: Float, _ z: Float) -> WebViewNode {
     let node = WebViewNode(self)
     node.Initialize()
@@ -712,17 +803,32 @@ extension ARView3D {
     return node
   }
   
+  @objc open func CreateWebViewNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ latitude: Double, _ longitude: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> WebViewNode? {
+    guard ARGeoTrackingConfiguration.isSupported else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "CreateWebViewNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+      return nil
+    }
+    
+    let node = WebViewNode(self)
+    node.Name = "GeoWebViewNode"
+    node.Initialize()
+    
+    setupLocation(x: x, y: y, z: z, latitude: latitude, longitude: longitude, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+    
+    return node
+  }
+  
   @objc open func LoadScene(_ dictionaries: [AnyObject]) -> [AnyObject] {
     print("loading stored scene \(dictionaries)")
-     
-     var loadNode: ARNodeBase?
-     var newNodes: [ARNode] = []
-     
+    
+    var loadNode: ARNodeBase?
+    var newNodes: [ARNode] = []
+    
     guard !dictionaries.isEmpty else {
       return []
     }
     
-
+    
     for obj in dictionaries {
       if obj is YailDictionary{
         
@@ -730,9 +836,9 @@ extension ARView3D {
         
         
         guard let type = nodeDict["type"] as? String else {
-         os_log("loadscene missing type", log: .default, type: .info)
-         continue
-         }
+          os_log("loadscene missing type", log: .default, type: .info)
+          continue
+        }
         
         os_log("loadscene TYPE is %@", log: .default, type: .info, type)
         
@@ -760,38 +866,77 @@ extension ARView3D {
           os_log("loaded %@", log: .default, type: .info, String(describing: node))
         }
       }
+      
+    }
     
-     }
-         
     print("loadscene new nodes are \(newNodes)")
     return newNodes
   }
-     
+  
   //objc signature expects only primitives or object
-     @objc open func SaveScene(_ newNodes: [AnyObject]) -> [YailDictionary] {
-         var dictionaries: [YailDictionary] = []
-        // a list of arnodes
-         for node in newNodes { // swift thinks newnodes is nsarray
-
-             guard let arNode = node as? ARNode else { continue }
-           
-             let nodeDict = arNode.ARNodeToYail()
-             dictionaries.append(nodeDict)
-             
-         }
-       print("returning dictionaries")
-         return dictionaries
-     }
-
+  @objc open func SaveScene(_ newNodes: [AnyObject]) -> [YailDictionary] {
+    var dictionaries: [YailDictionary] = []
+    // a list of arnodes
+    for node in newNodes { // swift thinks newnodes is nsarray
+      
+      guard let arNode = node as? ARNode else { continue }
+      
+      let nodeDict = arNode.ARNodeToYail()
+      dictionaries.append(nodeDict)
+      
+    }
+    print("returning dictionaries")
+    return dictionaries
+  }
+  
+  
+  
+  public func worldToGPS(_ worldPoint: SIMD3<Float>) -> (coordinate: CLLocationCoordinate2D, altitude: Double)? {
+    guard let sessionStart = sessionStartLocation else { return nil }
+    
+    // Calculate offset from session origin
+    let deltaX = Double(worldPoint.x)  // East/West
+    let deltaY = Double(worldPoint.y)  // Up/Down (altitude)
+    let deltaZ = Double(worldPoint.z)  // North/South
+    
+    // Convert horizontal meters to degrees
+    let earthRadius = 6371000.0  // meters
+    let latOffset = deltaZ / earthRadius * 180.0 / .pi
+    let lonOffset = deltaX / (earthRadius * cos(sessionStart.coordinate.latitude * .pi / 180.0)) * 180.0 / .pi
+    
+    // Calculate new coordinates
+    let newLatitude = sessionStart.coordinate.latitude + latOffset
+    let newLongitude = sessionStart.coordinate.longitude + lonOffset
+    let newAltitude = sessionStart.altitude + deltaY  // Add Y offset to starting altitude
+    
+    return (
+      coordinate: CLLocationCoordinate2D(latitude: newLatitude, longitude: newLongitude),
+      altitude: newAltitude
+    )
+  }
+  
+  @objc open func  createGeoAnchorManually(_ worldPoint: SIMD3<Float>, _ geoCoord: CLLocationCoordinate2D) {
+    // Create world anchor but store geo coordinates
+    let worldAnchor = AnchorEntity(world: simd_float4x4(
+      SIMD4<Float>(1, 0, 0, 0),
+      SIMD4<Float>(0, 1, 0, 0),
+      SIMD4<Float>(0, 0, 1, 0),
+      SIMD4<Float>(worldPoint.x, worldPoint.y, worldPoint.z, 1)
+    ))
+    
+    _arView.scene.addAnchor(worldAnchor)
+  }
+  
 }
 
 // MARK: Functions Handling Gestures
 @available(iOS 14.0, *)
 extension ARView3D: UIGestureRecognizerDelegate {
+ 
   @objc func handleTap(_ sender: UITapGestureRecognizer) {
     let tapLocation = sender.location(in: _arView)
     var isNodeAtPoint = false
-
+    
     // Check if we hit a node entity
     if let hitEntity = _arView.entity(at: tapLocation) as? ModelEntity,
        let node = findNodeForEntity(hitEntity) {
@@ -799,28 +944,30 @@ extension ARView3D: UIGestureRecognizerDelegate {
       node.Click()
       isNodeAtPoint = true
     }
-
+    
     // Perform raycast for world interaction
     if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
-      // Create visualization at hit point
-      let resultAnchor = AnchorEntity(world: result.worldTransform)
-      _arView.scene.addAnchor(resultAnchor)
-      
-      // Remove after 3 seconds
-      /*DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-        self._arView.scene.removeAnchor(resultAnchor)
-      }*/
-      
-      // Convert to centimeters for event
-      let position = result.worldTransform.translation
-      TapAtPoint(
-        position.x, //UnitHelper.metersToCentimeters(position.x),
-        position.y, //UnitHelper.metersToCentimeters(position.y),
-        position.z, //UnitHelper.metersToCentimeters(position.z),
-        isNodeAtPoint
+      let hitPoint = SIMD3<Float>(
+        result.worldTransform.columns.3.x,
+        result.worldTransform.columns.3.y,
+        result.worldTransform.columns.3.z
       )
+      
+      if let geoData = worldToGPS(hitPoint){
+        // Send whatever we have
+        self.TapAtLocation(hitPoint.x, hitPoint.y, hitPoint.z,
+                           geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
+                           true, isNodeAtPoint)
+      } else {
+        self.TapAtLocation(hitPoint.x, hitPoint.y, hitPoint.z,
+                           0.0,0.0,0.0,
+                           false, isNodeAtPoint)
+        
+      }
     }
   }
+
+  
   
   // Helper method to find node for entity
   private func findNodeForEntity(_ entity: ModelEntity) -> ARNodeBase? {

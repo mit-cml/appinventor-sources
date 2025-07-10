@@ -35,6 +35,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var _followingMarker: ARImageMarker? = nil
   public var _fromPropertyPosition = "0.0,0.0,0.0"
   public var _objectModel: String = ""
+  public var _geoAnchor: ARGeoAnchor?
 
   /**
    * CHANGED: Now takes optional MeshResource instead of SCNNode
@@ -96,11 +97,31 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
+
+  func setGeoAnchor(_ geoAnchor: ARGeoAnchor) {
+      _geoAnchor = geoAnchor  // Much simpler!
+  }
+
+  func getGeoAnchor() -> ARGeoAnchor? {
+      return _geoAnchor
+  }
+  
+  @objc open var IsGeoAnchored: Bool {
+      return getGeoAnchor() != nil
+  }
+  
+  // Get GPS coordinates if geo anchored
+  @objc open var GeoCoordinates: [Double] {
+      guard let geoAnchor = getGeoAnchor() else {
+          return []
+      }
+    return [geoAnchor.coordinate.latitude, geoAnchor.coordinate.longitude, Double(geoAnchor.altitude!)]
+  }
   
   
   @objc open var Name: String {
     get {
-      return _modelEntity.name ?? ""
+      return _modelEntity.name
     }
     set(name) {
       _modelEntity.name = name
@@ -263,6 +284,10 @@ open class ARNodeBase: NSObject, ARNode {
         rotationDict["z"] = p.rotation.vector.z
         rotationDict["w"] = p.rotation.vector.w
         yailDictSave["q"] = rotationDict
+    
+        yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
+        yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
+        yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
         
         os_log("exporting pose as YailDict with %@", log: .default, type: .info, String(describing: yailDictSave))
         return yailDictSave
@@ -588,10 +613,26 @@ open class ARNodeBase: NSObject, ARNode {
   // MARK: - RealityKit Anchor Management
   
   func createAnchor() -> AnchorEntity {
+    
+    if let geoAnchor = getGeoAnchor() {
+        if let existingAnchor = _anchorEntity {
+            return existingAnchor
+        }
+        
+        let anchorEntity = AnchorEntity(anchor: geoAnchor)
+        _anchorEntity = anchorEntity
+        
+        if _anchorEntity != nil {
+            anchorEntity.addChild(_modelEntity)
+        }
+        
+        return anchorEntity
+    }
     if let existingAnchor = _anchorEntity {
       return existingAnchor
     }
     
+
     let anchor: AnchorEntity
     
     if let followingMarker = _followingMarker {

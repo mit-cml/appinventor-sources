@@ -32,13 +32,19 @@ class ARNodeUtilities {
             if let poseDict = keyvalue["pose"] as? [String: Any] {
                 os_log("parsed pose before conversion %@", log: .default, type: .info, String(describing: poseDict))
 
-                if let pose = parsePoseLinkedHashMap(poseDict) { // a transform.. can anchorEntity be created with this?
+                if let pose = parsePoseLinkedHashMap(poseDict) {
                   let transform = Transform(matrix: pose)
                   let anchor = node.createAnchorWithPose(pose: transform)
-                    
+                  
+                  if let geoAnchor = parseGeoData(poseDict){
+                    node.setGeoAnchor(geoAnchor)
+                  }
+
                   os_log("%@ new node from yail now has anchor %@", log: .default, type: .info, type, String(describing: node.Anchor))
                 }
             }
+          
+       
             
         } catch {
             os_log("parseYailToNode error: %@", log: .default, type: .error, error.localizedDescription)
@@ -97,11 +103,25 @@ class ARNodeUtilities {
         
       return items as! YailList<AnyObject>
     }
-    
+  
+    private static func parseGeoData(_ poseDict: [String: Any]) -> ARGeoAnchor? {
+      
+      guard let geoData = poseDict["geoData"] as? [String: Double],
+        
+          let lat = geoData["lat"],
+          let lng = geoData["lng"],
+          let alt = geoData["alt"]
+      else {
+            return nil
+        }
+      // Create geo anchor
+      let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+      let geoAnchor = ARGeoAnchor(coordinate: coordinate,altitude: alt)
+      return geoAnchor
+    }
     // Helper method
     private static func parsePoseLinkedHashMap(_ poseDict: [String: Any]) -> simd_float4x4? {
-        // This would need to be implemented based on your pose data structure
-        // Example implementation:
+
         guard let translation = poseDict["t"] as? [String: Float],
               let rotation = poseDict["q"] as? [String: Float],
               let x = translation["x"],
@@ -110,7 +130,8 @@ class ARNodeUtilities {
               let qx = rotation["x"],
               let qy = rotation["y"],
               let qz = rotation["z"],
-              let qw = rotation["w"] else {
+              let qw = rotation["w"]
+      else {
             return nil
         }
         
