@@ -32,7 +32,23 @@ open class ModelNode: ARNodeBase, ARModel {
     fatalError("init(coder:) has not been implemented")
   }
   
-
+  override open var Model: String {
+    get {
+      return _objectModel
+    }
+    set(model) {
+      loadModel(model)
+    }
+  }
+  
+  override open var ModelUrl: String {
+    get {
+      return _objectModel
+    }
+    set(modelStr) {
+      loadModel(modelStr)
+    }
+  }
   
   @objc public var BoundingBox: [[Float]] {
     get {
@@ -107,7 +123,7 @@ open class ModelNode: ARNodeBase, ARModel {
       // Load using RealityKit's Entity.load for USDZ and other supported formats
       do {
         let entity = try Entity.load(contentsOf: url)
-        
+        print("loading model")
         // If the loaded entity is a ModelEntity, use it directly
         if let modelEntity = entity as? ModelEntity {
           self._modelEntity = modelEntity
@@ -120,7 +136,7 @@ open class ModelNode: ARNodeBase, ARModel {
         
         self.setupEntity()
       } catch {
-        os_log("Failed to load model at %@: %@", log: .default, type: .error, url.path, error.localizedDescription)
+        print("Failed to load model at \(url.path) \(error.localizedDescription)")
         NodeNotFound(path)
       }
     
@@ -378,7 +394,7 @@ extension ModelNode {
     if let modelEntity = entity as? ModelEntity {
       // In RealityKit, shadow casting is typically controlled at the renderer/lighting level
       // For basic shadow control, we can modify material properties
-      if var material = modelEntity.model?.materials.first as? SimpleMaterial {
+      if let material = modelEntity.model?.materials.first as? SimpleMaterial {
         modelEntity.model?.materials = [material]
       }
     }

@@ -19,9 +19,9 @@ class ARNodeUtilities {
             let texture = keyvalue["texture"] as? String ?? ""
             let type = keyvalue["type"] as? String ?? ""
             
-            os_log("parsed model %@", log: .default, type: .info, model)
-            os_log("parsed texture %@", log: .default, type: .info, texture)
-            os_log("parsed type %@", log: .default, type: .info, type)
+            print("parsed model \(model)")
+            print("parsed texture \(texture)")
+ 
             
             node.ModelUrl = model // really only for free form models
             node.Texture = texture
@@ -30,7 +30,7 @@ class ARNodeUtilities {
           
             
             if let poseDict = keyvalue["pose"] as? [String: Any] {
-                os_log("parsed pose before conversion %@", log: .default, type: .info, String(describing: poseDict))
+                print("parsed pose before conversion \( poseDict)")
 
                 if let pose = parsePoseLinkedHashMap(poseDict) {
                   let transform = Transform(matrix: pose)
@@ -38,16 +38,17 @@ class ARNodeUtilities {
                   
                   if let geoAnchor = parseGeoData(poseDict){
                     node.setGeoAnchor(geoAnchor)
+                    print("geoAnchor now \( geoAnchor)")
                   }
 
-                  os_log("%@ new node from yail now has anchor %@", log: .default, type: .info, type, String(describing: node.Anchor))
+                  
                 }
             }
           
        
             
         } catch {
-            os_log("parseYailToNode error: %@", log: .default, type: .error, error.localizedDescription)
+          print("parseYailToNode error")
             //throw error
         }
         

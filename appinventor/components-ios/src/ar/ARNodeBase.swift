@@ -134,15 +134,23 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
-  open var Model: ModelEntity {
+  @objc open var Model: String {
+    get {
+      return _objectModel
+    }
+    set(modelStr) {
+      _objectModel = modelStr
+    }
+  }
+  
+  /*open var Model: ModelEntity {
     get {
       return _modelEntity
     }
     set(model) {
-      print("setting model")
       _modelEntity = model
     }
-  }
+  }*/
   
   // CHANGED: All position properties now work with _modelEntity.transform.translation
   @objc open var XPosition: Float {

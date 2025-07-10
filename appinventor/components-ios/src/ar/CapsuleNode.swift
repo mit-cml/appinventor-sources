@@ -14,8 +14,7 @@ open class CapsuleNode: ARNodeBase, ARCapsule {
     let mesh = MeshResource.generateBox(width: _capRadius * 2, height: _height, depth: _capRadius * 2)
     super.init(container: container, mesh: mesh)
     self.Name = "capsule"
-    // Update the mesh to be more capsule-like
-    updateCapsuleMesh()
+
   }
   
   required public init?(coder aDecoder: NSCoder) {

@@ -9,7 +9,7 @@ import os.log
 
 
 @available(iOS 14.0, *)
-open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
+open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate {
 
   
   public func getView() -> ARView3D {
@@ -64,6 +64,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
   private var startOptions: ARSession.RunOptions = []
   private var _reenableWebViewNodes: Bool = false
   
+  private var locationManager: CLLocationManager?
   private var deviceLocation: CLLocation?
   private var sessionStartLocation: CLLocation?
   private var sessionStartTime: Date?
@@ -71,6 +72,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
   // Cache for 3D text geometries representing the classification values
   private var modelsForClassification: [ARMeshClassification: ModelEntity] = [:]
 
+  private func setupLocationManager() {
+    locationManager = CLLocationManager()
+    locationManager?.delegate = self
+    locationManager?.desiredAccuracy = kCLLocationAccuracyBest
+    locationManager?.requestWhenInUseAuthorization()
+    locationManager?.startUpdatingLocation()
+  }
+
+  public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+      guard let location = locations.last else { return }
+      
+      if sessionStartLocation == nil && _sessionRunning {
+
+          sessionStartLocation = location
+          sessionStartTime = Date()
+          print("AR session anchored to GPS: \(location.coordinate.latitude), \(location.coordinate.longitude), altitude: \(location.altitude)")
+      }
+  }
+  
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
     _arView.environment.sceneUnderstanding.options = .occlusion
@@ -85,6 +105,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
     parent.add(self)
     Height = kARViewPreferredHeight
     Width = kARViewPreferredWidth
+    
+    setupLocationManager()
   }
 
   private func initializeGestureRecognizers() {
@@ -398,8 +420,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
 
        let capNode = CapsuleNode(self) as CapsuleNode
        let yailNodeObj: YailDictionary = yailNodeObj
-
-
        let result = ARNodeUtilities.parseYailToNode(
         capNode as CapsuleNode, yailNodeObj as YailDictionary, _arView.session
        )
@@ -416,8 +436,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer {
      private func CreateSphereNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
        let sphereNode = SphereNode(self) as SphereNode
        let yailNodeObj: YailDictionary = yailNodeObj
-
-
        let result = ARNodeUtilities.parseYailToNode(
         sphereNode as SphereNode, yailNodeObj as YailDictionary, _arView.session
        )
@@ -699,7 +717,7 @@ extension ARView3D {
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
   }
   
-  @objc open func CreateCapsuleNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ latitude: Double, _ longitude: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> CapsuleNode? {
+  @objc open func CreateCapsuleNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> CapsuleNode? {
     guard ARGeoTrackingConfiguration.isSupported else {
       _container?.form?.dispatchErrorOccurredEvent(self, "CreateCapsuleNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
       return nil
@@ -709,12 +727,12 @@ extension ARView3D {
     node.Name = "GeoCapsuleNode"
     node.Initialize()
     
-    setupLocation(x: x, y: y, z: z, latitude: latitude, longitude: longitude, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+    setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
     
     return node
   }
   
-  @objc open func CreateSphereNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ latitude: Double, _ longitude: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> SphereNode? {
+  @objc open func CreateSphereNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> SphereNode? {
     guard ARGeoTrackingConfiguration.isSupported else {
       _container?.form?.dispatchErrorOccurredEvent(self, "CreateSphereNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
       return nil
@@ -724,7 +742,7 @@ extension ARView3D {
     node.Name = "GeoSphereNode"
     node.Initialize()
     
-    setupLocation(x: x, y: y, z: z, latitude: latitude, longitude: longitude, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+    setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
     
     return node
   }
@@ -839,15 +857,13 @@ extension ARView3D {
           os_log("loadscene missing type", log: .default, type: .info)
           continue
         }
-        
-        os_log("loadscene TYPE is %@", log: .default, type: .info, type)
-        
+
         switch type.lowercased() {
-        case "capsule":
+        case "capsule", "geocapsulenode":
           loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
         case "box":
           loadNode = self.CreateBoxNodeFromYail(nodeDict)
-        case "sphere":
+        case "sphere", "geospherenode":
           loadNode = self.CreateSphereNodeFromYail(nodeDict)
         case "video":
           loadNode = self.CreateVideoNodeFromYail(nodeDict)

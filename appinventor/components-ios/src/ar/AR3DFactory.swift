@@ -11,6 +11,7 @@ import RealityKit
 @objc public protocol ARNode: FollowsMarker, Component {
   var Name: String { get set }
   var NodeType: String { get }
+  var Model: String { get set }
   var Visible: Bool { get set }
   var ShowShadow: Bool { get set }
   var Opacity: Int32 { get set }

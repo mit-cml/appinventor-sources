@@ -133,6 +133,7 @@ import Foundation
   case ERROR_WEBVIEWNODE_MALFORMED_URL = 3710
   case ERROR_GEOANCHOR_NOT_SUPPORTED = 3711
   case ERROR_INVALID_COORDINATES = 3712
+  case ERROR_WEBVIEWNODE_LOAD_FAILED=3713
 
   // Navigation Errors
   case ERROR_INVALID_API_KEY = 4001
@@ -404,6 +405,8 @@ import Foundation
       return "GeoAnchors not supported."
     case .ERROR_INVALID_COORDINATES:
       return "Invalid coordinates provided."
+    case .ERROR_WEBVIEWNODE_LOAD_FAILED:
+      return "Failed to load web page."
 
     // Navigation Errors
     case .ERROR_INVALID_API_KEY:
