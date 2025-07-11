@@ -82,9 +82,6 @@ public class Tracking {
   public static final String USER_ACTION_DOWNLOAD_KEYSTORE = USER_ACTION_PREFIX + "DownloadKeystore";
   public static final String USER_ACTION_UPLOAD_KEYSTORE = USER_ACTION_PREFIX + "UploadKeystore";
   public static final String USER_ACTION_DELETE_KEYSTORE = USER_ACTION_PREFIX + "DeleteKeystore";
-  public static final String MENU_EVENT = "Menu";
-  public static final String MENU_ACTION_OPEN = "Open";
-  public static final String MENU_ACTION_CLOSE = "Close";
 
 
   private Tracking() {

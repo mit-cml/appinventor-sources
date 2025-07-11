@@ -776,14 +776,10 @@ public class Ode implements EntryPoint {
         .then0(this::handleUiPreference)
         .then(this::initializeUi)
             .then0(() -> {
-              // Add resize handler after UI initialization
               Window.addResizeHandler(event -> {
                 String newLayout = determineLayout();
-                LOG.info("Window resized to " + event.getWidth() + "x" + event.getHeight());
-                LOG.info("Current layout: " + currentLayout + ", new layout: " + newLayout);
                 if (!newLayout.equals(currentLayout)) {
-                  LOG.info("Layout changed from " + currentLayout + " to " + newLayout + ", reloading...");
-                  Window.Location.reload(); // Reload the app
+                  Window.Location.reload();
                 }
               });
               return projectManager.ensureProjectsLoadedFromServer(projectService);
@@ -954,7 +950,6 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onFailure(Throwable reason) {
-            LOG.info("Failed to load mobile layout: " + reason.getMessage());
             rej.apply(new Promise.WrappedException(reason));
           }
           @Override
@@ -963,7 +958,6 @@ public class Ode implements EntryPoint {
             RootPanel.get().addStyleName("mobile");
             uiFactory = new UiFactoryMobile();
             res.apply(null);
-            LOG.info("Mobile layout loaded successfully");
           }
         });
       }else if (layout.equals("modern")) {
@@ -1088,12 +1082,8 @@ public class Ode implements EntryPoint {
       style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.styleclassicDark() : Resources.INSTANCE.styleclassicLight();
     }
 
-    LOG.info("Injecting style for layout: " + layout);
     style.ensureInjected();
-    LOG.info("Style injected successfully for layout: " + layout);
-    LOG.info("Creating main panel for layout: " + layout);
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
-    LOG.info("Main panel created with " + mainPanel.getWidgetCount() + " widgets for layout: " + layout);
 
 
     deckPanel.showWidget(0);
@@ -1114,9 +1104,7 @@ public class Ode implements EntryPoint {
     // Debugging Panel
     debuggingTabIndex = 3;
 
-    LOG.info("Adding main panel to RootPanel for layout: " + layout);
     RootPanel.get().add(mainPanel);
-    LOG.info("Main panel added to RootPanel for layout: " + layout);
 
     // Add a handler to the RootPanel to keep track of Google Chrome Pinch Zooming and
     // handle relevant bugs. Chrome maps a Pinch Zoom to a MouseWheelEvent with the
@@ -1522,14 +1510,28 @@ public class Ode implements EntryPoint {
    */
   private String determineLayout() {
     int screenWidth = Window.getClientWidth();
-    LOG.info(" dertermine , Screen width: " + screenWidth);
-    if (screenWidth < 768) {
+
+    if (screenWidth <= 768) {
       return "mobile";
-    } else if (Ode.getUserNewLayout()) {
+    }
+    else if (screenWidth <= 1024 && isMobileDevice() && isLandscape()) {
+      return "mobile";
+    }
+    else if (Ode.getUserNewLayout()) {
       return "modern";
     } else {
       return "classic";
     }
+  }
+
+  private boolean isMobileDevice() {
+    String ua = Window.Navigator.getUserAgent().toLowerCase();
+    return ua.contains("iphone") || ua.contains("ipod") ||
+            (ua.contains("android") && ua.contains("mobile"));
+  }
+
+  private boolean isLandscape() {
+    return Window.getClientWidth() > Window.getClientHeight();
   }
 
   /**

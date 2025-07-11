@@ -14,14 +14,14 @@
     <g:FlowPanel ui:field="rootPanel">
         <mob:TopPanelMob ui:field="topPanel" />
         <box:AssetListBox ui:field="assetListBox" visible="false"/>
-        <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel" visible="false">
+        <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
             <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
                 <g:FlowPanel width="100%" >
-                    <ex:ProjectToolbar width="100%" ui:field="projectToolbar" />
+                    <ex:ProjectToolbar width="100%" ui:field="projectToolbar" visible="false"/>
                     <box:ProjectListBox width="100%" ui:field="projectListbox" />
                 </g:FlowPanel>
-                <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
+                <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor" visible="false">
                     <ed:DesignToolbar ui:field="designToolbar" />
                     <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
                         <box:PaletteBox width="240px" ui:field="paletteBox"/>
@@ -33,11 +33,11 @@
                         <box:PropertiesBox ui:field="propertiesBox" width="222px" />
                     </g:FlowPanel>
                 </g:FlowPanel>
-                <g:FlowPanel width="100%">
+                <g:FlowPanel width="100%" visible="false">
                     <box:AdminUserListBox />
                 </g:FlowPanel>
             </g:DeckPanel>
         </g:FlowPanel>
-        <ode:StatusPanel ui:field="statusPanel" />
+        <ode:StatusPanel ui:field="statusPanel" visible="false" />
     </g:FlowPanel>
 </ui:UiBinder>

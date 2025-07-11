@@ -4,6 +4,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.editor.youngandroid.actions.*;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Dictionary;
@@ -35,64 +36,65 @@ public class TopToolbarMob extends TopToolbar {
   @UiField DropDownButton settingsDropDown;
   @UiField DropDownButton adminDropDown;
   @UiField(provided = true) Boolean hasWriteAccess;
-  @UiField Button myProjectsButton;
-  @UiField Button newButton;
-  @UiField Button importProjectButton;
-  @UiField Button importTemplateButton;
-  @UiField Button deleteButton;
-  @UiField Button saveButton;
-  @UiField Button saveAsButton;
-  @UiField Button checkpointButton;
-  @UiField Button ExportProjectButton;
-  @UiField Button ExportAllProjectsButton;
 
-  @UiField Button wirelessButton;
-  @UiField Button emulatorButton;
-  @UiField Button usbButton;
-  @UiField Button chromebookButton;
-  @UiField Button refreshCompanionButton;
-  @UiField Button resetButton;
-  @UiField Button hardResetButton;
-  @UiField Button CompanionInformationButton;
-  @UiField Button CompanionUpdateButton;
+  @UiField TextButton myProjectsButton;
+  @UiField TextButton newButton;
+  @UiField TextButton importProjectButton;
+  @UiField TextButton importTemplateButton;
+  @UiField TextButton deleteButton;
+  @UiField TextButton saveButton;
+  @UiField TextButton saveAsButton;
+  @UiField TextButton checkpointButton;
+  @UiField TextButton ExportProjectButton;
+  @UiField TextButton ExportAllProjectsButton;
 
-  @UiField Button buildApkButton;
-  @UiField Button buildAabButton;
-  @UiField Button buildApk2Button;
-  @UiField Button buildAab2Button;
-  @UiField Button generateYailButton;
+  @UiField TextButton wirelessButton;
+  @UiField TextButton emulatorButton;
+  @UiField TextButton usbButton;
+  @UiField TextButton chromebookButton;
+  @UiField TextButton refreshCompanionButton;
+  @UiField TextButton resetButton;
+  @UiField TextButton hardResetButton;
+  @UiField TextButton CompanionInformationButton;
+  @UiField TextButton CompanionUpdateButton;
 
-  @UiField Button uiSettingsButton;
-  @UiField Button autoloadLastProjectButton;
-  @UiField Button dyslexicFontButton;
-  @UiField Button uploadKeyStoreButton;
-  @UiField Button downloadKeyStoreButton;
-  @UiField Button deleteKeyStoreButton;
+  @UiField TextButton buildApkButton;
+  @UiField TextButton buildAabButton;
+  @UiField TextButton buildApk2Button;
+  @UiField TextButton buildAab2Button;
+  @UiField TextButton generateYailButton;
 
-  @UiField Button downloadUserSourceButton;
-  @UiField Button userAdminButton;
+  @UiField TextButton uiSettingsButton;
+  @UiField TextButton autoloadLastProjectButton;
+  @UiField TextButton dyslexicFontButton;
+  @UiField TextButton uploadKeyStoreButton;
+  @UiField TextButton downloadKeyStoreButton;
+  @UiField TextButton deleteKeyStoreButton;
 
-    @UiField Button aboutButton;
-    @UiField Button guideButton;
-    @UiField Button feedbackButton;
-    @UiField Button libraryButton;
-    @UiField Button getStartedButton;
-    @UiField Button extensionsButton;
-    @UiField Button tutorialsButton;
-    @UiField Button troubleshootingButton;
-    @UiField Button forumsButton;
-    @UiField Button showSplashButton;
-    @UiField Button showShortcutsButton;
+  @UiField TextButton downloadUserSourceButton;
+  @UiField TextButton userAdminButton;
 
-    @UiField Button signOutButton;
-    @UiField Button deleteAccountItem;
-
-    @UiField Button languageButton;
+  @UiField TextButton aboutButton;
+  @UiField TextButton guideButton;
+  @UiField TextButton feedbackButton;
+  @UiField TextButton libraryButton;
+  @UiField TextButton getStartedButton;
+  @UiField TextButton extensionsButton;
+  @UiField TextButton tutorialsButton;
+  @UiField TextButton troubleshootingButton;
+  @UiField TextButton forumsButton;
+  @UiField TextButton showSplashButton;
+  @UiField TextButton showShortcutsButton;
+  @UiField TextButton signOutButton;
+  @UiField TextButton deleteAccountItem;
+  @UiField TextButton languageButton;
 
 
   @UiField  VerticalPanel menuContent;
 
   private PopupPanel menuPopup;
+
+  private static final Dictionary LANGUAGES = Dictionary.getDictionary("LANGUAGES");
 
   interface  Translations extends ClientBundle {
     Translations INSTANCE = GWT.create(Translations.class);
@@ -100,8 +102,6 @@ public class TopToolbarMob extends TopToolbar {
     @Source("languages.json")
     TextResource languages();
   }
-
-  private static final Dictionary LANGUAGES = Dictionary.getDictionary("LANGUAGES");
 
 
   @Override
@@ -118,7 +118,6 @@ public class TopToolbarMob extends TopToolbar {
 
     menuContent.setStyleName("mobile-MenuContainer");
     menuPopup = new PopupPanel(true);
-//    menuPopup.setStyleName("mobile-MenuPopup");
 
     languageButton.setText("Language: " + getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
 

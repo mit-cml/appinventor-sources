@@ -24,20 +24,14 @@ public class TopPanelMob extends TopPanel {
     interface TopPanelUiBinderMob extends UiBinder<FlowPanel, TopPanelMob> {}
 
 
-    @UiField
-    TopToolbarMob topToolbar;
-//  @UiField TopToolbarMob topToolbar;
+    @UiField TopToolbarMob topToolbar;
     @UiField Label readOnly;
     @UiField ImageElement logo;
     @UiField FlowPanel rightPanel;
-    @UiField
-    DropDownButton languageDropDown;
-    @UiField
-    DropDownButton accountButton;
-    @UiField
-    DropDownItem deleteAccountItem;
-    @UiField
-    FlowPanel links;
+    @UiField DropDownButton languageDropDown;
+    @UiField DropDownButton accountButton;
+    @UiField DropDownItem deleteAccountItem;
+    @UiField FlowPanel links;
 
     @Override
     public void bindUI() {

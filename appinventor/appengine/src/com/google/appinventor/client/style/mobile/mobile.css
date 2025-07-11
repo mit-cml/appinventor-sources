@@ -4,133 +4,75 @@
 
 @external .*;
 
-/*.mobile-MenuContainer {*/
-/*    position: absolute;*/
-/*    top: 50%;*/
-/*    left: 50%;*/
-/*    transform: translate(-50%, -50%);*/
-/*    background: white;*/
-/*    padding: 20px;*/
-/*    border-radius: 5px;*/
-/*    width: 80%;*/
-/*    max-height: 80%;*/
-/*    overflow: auto;*/
-/*    box-shadow: 0 0 10px rgba(0,0,0,0.5);*/
-/*}*/
 
-.mobile-MenuContainer {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 50vw; /* Set width to 50% of the viewport width */
-    height: 50vw; /* Set height equal to width for a square shape */
-    overflow: auto;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+body, html {
+    min-width: unset;
+    min-height: unset;
 }
 
-.mobile-SectionHeader {
-    font-weight: bold;
-    background-color: #f0f0f0;
-    padding: 5px;
-}
-
-.mobile-SectionPanel .gwt-Button {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    font-size: 16px;
-    text-align: center;
-}
-
-/*.mobile-MenuPopup {*/
-/*    position: fixed;*/
-/*    width: 50%;*/
-/*    height: 50%;*/
-/*    top: 0;*/
-/*    left: 0;*/
-/*    background: rgba(0, 0, 0, 0.8); !* Full-screen overlay *!*/
-/*    z-index: 1000;*/
-/*}*/
-
-/* mobile.css */
-
-/* Ensure the page allows horizontal scrolling if content overflows */
-html, body {
-    width: 100%;
-    overflow-x: auto;
-}
-
-/* TopPanel: Larger height for mobile touch-friend Likely need to set width here too */
+/*Top -Panel*/
 .ode-TopPanel {
-    height: 90px;
-    min-height: 72px;
-    padding: 8px; /* Increased padding for better spacing */
+    height: 60px;
+    padding: 8px;
     overflow: hidden;
-    /* Keep flex layout as is, no need for min-width since content will dictate width */
+    box-shadow: 4px 4px 24px 0px rgba(0, 0, 0, 0.15);
 }
 
-/* Logo: Adjust size for mobile */
 .ode-TopPanel img {
-    height: 50px;
-    width: 290px; /* Maintain aspect ratio */
+    height: 40px;
+    width: 290px;
     margin-left: -75px;
 }
 
-/* Logo text: Larger font for readability */
-.ode-LogoText {
-    font-size: 20px;
-}
-
-/* Toolbar: No direct size change, inherits TopPanel height */
-.ode-TopToolbar {
-    /* No specific overrides needed unless toolbar has child elements to size */
-}
-
-/* Account section: Larger text and padding */
-.ode-TopPanelAccount {
-}
-
-/* Links: Larger text and spacing */
-.ode-TopPanelLinks .gwt-Label,
-.ode-TopPanelLinks .gwt-Anchor,
-.ode-TopPanelLinks .gwt-TitleLabel {
+.ode-TopPanelButton
+ {
+    height: 50px;
     font-size: 16px;
-    margin-right: 20px; /* Slightly more spacing */
-}
-
-/* Buttons: Match TopPanel height, larger touch area */
-.ode-TopPanelButton,
-.ActionDropDown-Default,
-.ActionDropDown-Options {
-    height: 72px;
-    font-size: 16px;
-    padding: 0; /* Larger touch targets */
+    padding: 0;
     float: right;
 }
 
-/* Icon buttons: Larger margins */
-.ode-TopPanelIconButton {
-    margin: 8px 12px;
+.ode-TopPanelButton .material-icons {
+    font-size: xxx-large;
 }
 
-/* Warning label: Ensure it’s readable if present */
-.ode-TopPanelWarningLabel {
-    font-size: 16px;
+.ode-TopPanelAccount {
+    padding-right: 0;
 }
 
-body, html {
-    height: 100%;
+/*Pop-Up Panel*/
+
+.mobile-MenuContainer {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 320px;
+    max-height: 80vh;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.mobile-SectionHeader {
+    font-weight: bold;
+    margin: 10px 0 5px;
+}
+.mobile-SectionPanel {
+    margin-bottom: 10px;
+}
+
+.mobile-MenuItem,
+.mobile-SectionPanel .ode-TextButton {
+    display: block;
     width: 100%;
-    padding: 0;
-    margin: 0;
-    position: absolute;
-}
-
-.material-icons{
-    font-size: 75px
+    height: 48px;
+    margin: 5px 0;
+    font-size: 16px;
+    text-align: left;
 }

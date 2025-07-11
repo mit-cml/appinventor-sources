@@ -35,14 +35,10 @@ public class UiStyleFactory {
       case "modern":
         OdeUiBinderNeo uibinderNeo = GWT.create(OdeUiBinderNeo.class);
         return uibinderNeo.createAndBindUi(target);
+
       case "mobile":
-        try {
           OdeUiBinderMobile uibinderMobile = GWT.create(OdeUiBinderMobile.class);
           return uibinderMobile.createAndBindUi(target);
-
-        }catch (Exception e) {
-            LOG.severe("Error while creating mobile ODE: " + e.getMessage());
-        }
 
       default:
         OdeUiBinder uibinder = GWT.create(OdeUiBinder.class);

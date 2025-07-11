@@ -87,10 +87,6 @@ public class TopToolbar extends Composite {
 
   protected boolean readOnly;
 
-  public Boolean getHasWriteAccess() {
-    return hasWriteAccess;
-  }
-
   /**
    * This flag is set to true when a check for the android.keystore file is in progress.
    */

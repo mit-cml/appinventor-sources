@@ -12,37 +12,7 @@
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
 
   <ai:Toolbar styleName="ode-TopToolbar">
-    <!-- Projects Menu -->
-    <ai:DropDownButton name="Project" caption="{messages.projectsTabName}" icon="inventory_2"
-                       styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left" visible="false">
-    </ai:DropDownButton>
-
-    <!-- Connect Menu -->
-    <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}" styleName="ode-TopPanelButton"
-                       ui:field="connectDropDown" icon="settings_remote" align="left" visible="false">
-    </ai:DropDownButton>
-
-    <!-- Build Menu -->
-    <ai:DropDownButton name="Build" caption="{messages.buildTabName}" styleName="ode-TopPanelButton"
-                       ui:field="buildDropDown" icon="system_security_update" align="left" visible="false">
-      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
-      <actions:BarcodeAction second="false" isAab="false"/>
-    </ai:DropDownItem>
-      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}">
-        <actions:BarcodeAction second="false" isAab="true"/>
-      </ai:DropDownItem>
-      <ai:DropDownItem name="BuildApk2" caption="{messages.showExportAndroidApk2}">
-        <actions:BarcodeAction second="true" isAab="false"/>
-      </ai:DropDownItem>
-      <ai:DropDownItem name="BuildAab2" caption="{messages.showExportAndroidAab2}">
-        <actions:BarcodeAction second="true" isAab="true"/>
-      </ai:DropDownItem>
-      <ai:DropDownItem name="Yail" caption="{messages.generateYailMenuItem}">
-        <actions:GenerateYailAction/>
-      </ai:DropDownItem>
-    </ai:DropDownButton>
-
-    <!-- Settings Menu -->
+    <!-- MENU -->
     <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
         ui:field="settingsDropDown" align="left" icon="menu">
     </ai:DropDownButton>
@@ -52,25 +22,25 @@
           <g:DisclosurePanel>
               <g:header styleName="mobile-SectionHeader">Projects</g:header>
               <g:VerticalPanel styleName="mobile-SectionPanel">
-                  <g:Button ui:field="myProjectsButton"
-                            text="{messages.projectMenuItem}" visible="false"/>
-                  <g:Button ui:field="newButton"
+                  <ai:TextButton ui:field="myProjectsButton"
+                            text="{messages.projectMenuItem}" visible="{hasWriteAccess}"/>
+                  <ai:TextButton ui:field="newButton"
                             text="{messages.newProjectMenuItem}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="importProjectButton"
+                  <ai:TextButton ui:field="importProjectButton"
                             text="{messages.importProjectMenuItem}" visible="false"/>
-                  <g:Button ui:field="importTemplateButton"
+                  <ai:TextButton ui:field="importTemplateButton"
                             text="{messages.importTemplateButton}" visible="false"/>
-                  <g:Button ui:field="deleteButton"
+                  <ai:TextButton ui:field="deleteButton"
                             text="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="saveButton"
+                  <ai:TextButton ui:field="saveButton"
                             text="{messages.saveMenuItem}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="saveAsButton"
+                  <ai:TextButton ui:field="saveAsButton"
                             text="{messages.saveAsMenuItem}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="checkpointButton"
+                  <ai:TextButton ui:field="checkpointButton"
                             text="{messages.checkpointMenuItem}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="ExportProjectButton"
+                  <ai:TextButton ui:field="ExportProjectButton"
                             text="{messages.exportButton}" visible="false"/>
-                  <g:Button ui:field="ExportAllProjectsButton"
+                  <ai:TextButton ui:field="ExportAllProjectsButton"
                             text="{messages.exportAllProjectsMenuItem}" visible="false"/>
               </g:VerticalPanel>
           </g:DisclosurePanel>
@@ -79,17 +49,17 @@
           <g:DisclosurePanel>
               <g:header styleName="mobile-SectionHeader">Connect</g:header>
               <g:VerticalPanel styleName="mobile-SectionPanel">
-                  <g:Button ui:field="wirelessButton" text="{messages.AICompanionMenuItem}"/>
-                  <g:Button ui:field="emulatorButton" text="{messages.emulatorMenuItem}"/>
-                  <g:Button ui:field="usbButton" text="{messages.usbMenuItem}"/>
-                  <g:Button ui:field="chromebookButton"
+                  <ai:TextButton ui:field="wirelessButton" text="{messages.AICompanionMenuItem}"/>
+                  <ai:TextButton ui:field="emulatorButton" text="{messages.emulatorMenuItem}"/>
+                  <ai:TextButton ui:field="usbButton" text="{messages.usbMenuItem}"/>
+                  <ai:TextButton ui:field="chromebookButton"
                             text="{messages.chromebookMenuItem}" addStyleDependentNames="needsChromebook"/>
-                  <g:Button ui:field="refreshCompanionButton"
+                  <ai:TextButton ui:field="refreshCompanionButton"
                             text="{messages.refreshCompanionMenuItem}"/>
-                  <g:Button ui:field="resetButton" text="{messages.resetConnectionsMenuItem}"/>
-                  <g:Button ui:field="hardResetButton" text="{messages.hardResetConnectionsMenuItem}"/>
-                  <g:Button ui:field="CompanionInformationButton" text="{messages.companionInformation}"/>
-                  <g:Button ui:field="CompanionUpdateButton" text="{messages.companionUpdate}"/>
+                  <ai:TextButton ui:field="resetButton" text="{messages.resetConnectionsMenuItem}"/>
+                  <ai:TextButton ui:field="hardResetButton" text="{messages.hardResetConnectionsMenuItem}"/>
+                  <ai:TextButton ui:field="CompanionInformationButton" text="{messages.companionInformation}"/>
+                  <ai:TextButton ui:field="CompanionUpdateButton" text="{messages.companionUpdate}"/>
               </g:VerticalPanel>
           </g:DisclosurePanel>
 
@@ -97,11 +67,11 @@
           <g:DisclosurePanel>
               <g:header styleName="mobile-SectionHeader">Build</g:header>
               <g:VerticalPanel styleName="mobile-SectionPanel">
-                  <g:Button ui:field="buildApkButton" text="{messages.showExportAndroidApk}"/>
-                  <g:Button ui:field="buildAabButton" text="{messages.showExportAndroidAab}"/>
-                  <g:Button ui:field="buildApk2Button" text="{messages.showExportAndroidApk2}"/>
-                  <g:Button ui:field="buildAab2Button" text="{messages.showExportAndroidAab2}"/>
-                  <g:Button ui:field="generateYailButton" text="{messages.generateYailMenuItem}"/>
+                  <ai:TextButton ui:field="buildApkButton" text="{messages.showExportAndroidApk}"/>
+                  <ai:TextButton ui:field="buildAabButton" text="{messages.showExportAndroidAab}"/>
+                  <ai:TextButton ui:field="buildApk2Button" text="{messages.showExportAndroidApk2}"/>
+                  <ai:TextButton ui:field="buildAab2Button" text="{messages.showExportAndroidAab2}"/>
+                  <ai:TextButton ui:field="generateYailButton" text="{messages.generateYailMenuItem}"/>
               </g:VerticalPanel>
           </g:DisclosurePanel>
 
@@ -109,16 +79,16 @@
           <g:DisclosurePanel>
               <g:header styleName="mobile-SectionHeader">Settings</g:header>
               <g:VerticalPanel styleName="mobile-SectionPanel">
-                  <g:Button ui:field="uiSettingsButton" text="{messages.uiSettings}"/>
-                  <g:Button ui:field="autoloadLastProjectButton"
+                  <ai:TextButton ui:field="uiSettingsButton" text="{messages.uiSettings}"/>
+                  <ai:TextButton ui:field="autoloadLastProjectButton"
                             text="{messages.disableAutoload}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="dyslexicFontButton"
+                  <ai:TextButton ui:field="dyslexicFontButton"
                             text="{messages.disableOpenDyslexic}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="uploadKeyStoreButton"
+                  <ai:TextButton ui:field="uploadKeyStoreButton"
                             text="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="downloadKeyStoreButton"
+                  <ai:TextButton ui:field="downloadKeyStoreButton"
                             text="{messages.downloadKeystoreMenuItem}" visible="{hasWriteAccess}"/>
-                  <g:Button ui:field="deleteKeyStoreButton"
+                  <ai:TextButton ui:field="deleteKeyStoreButton"
                             text="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}"/>
               </g:VerticalPanel>
           </g:DisclosurePanel>
@@ -127,45 +97,44 @@
           <g:DisclosurePanel>
               <g:header styleName="mobile-SectionHeader">Admin</g:header>
               <g:VerticalPanel styleName="mobile-SectionPanel">
-                  <g:Button ui:field="downloadUserSourceButton"
+                  <ai:TextButton ui:field="downloadUserSourceButton"
                             text="{messages.downloadUserSourceMenuItem}"/>
-                  <g:Button ui:field="userAdminButton" text="{messages.userAdminMenuItem}"/>
+                  <ai:TextButton ui:field="userAdminButton" text="{messages.userAdminMenuItem}"/>
               </g:VerticalPanel>
           </g:DisclosurePanel>
 
           <g:DisclosurePanel>
               <g:header styleName="mobile-SectionHeader" icon="help">Help</g:header>
               <g:VerticalPanel styleName="mobile-SectionPanel">
-                  <g:Button ui:field="aboutButton" text="{messages.aboutMenuItem}"/>
-                  <g:Button ui:field="guideButton" text="{messages.guideTabName}"/>
-                  <g:Button ui:field="feedbackButton" text="{messages.feedbackTabName}"/>
-                  <g:Button ui:field="libraryButton" text="{messages.libraryMenuItem}"/>
-                  <g:Button ui:field="getStartedButton" text="{messages.getStartedMenuItem}"/>
-                  <g:Button ui:field="extensionsButton" text="{messages.extensionsMenuItem}"/>
-                  <g:Button ui:field="tutorialsButton" text="{messages.tutorialsMenuItem}"/>
-                  <g:Button ui:field="troubleshootingButton" text="{messages.troubleshootingMenuItem}"/>
-                  <g:Button ui:field="forumsButton" text="{messages.forumsMenuItem}"/>
-                  <g:Button ui:field="showSplashButton" text="{messages.showSplashMenuItem}"/>
-                  <g:Button ui:field="showShortcutsButton" text="{messages.showShortcuts}"/>
-                </g:VerticalPanel>
+                  <ai:TextButton ui:field="aboutButton" text="{messages.aboutMenuItem}"/>
+                  <ai:TextButton ui:field="guideButton" text="{messages.guideTabName}"/>
+                  <ai:TextButton ui:field="feedbackButton" text="{messages.feedbackTabName}"/>
+                  <ai:TextButton ui:field="libraryButton" text="{messages.libraryMenuItem}"/>
+                  <ai:TextButton ui:field="getStartedButton" text="{messages.getStartedMenuItem}"/>
+                  <ai:TextButton ui:field="extensionsButton" text="{messages.extensionsMenuItem}"/>
+                  <ai:TextButton ui:field="tutorialsButton" text="{messages.tutorialsMenuItem}"/>
+                  <ai:TextButton ui:field="troubleshootingButton" text="{messages.troubleshootingMenuItem}"/>
+                  <ai:TextButton ui:field="forumsButton" text="{messages.forumsMenuItem}"/>
+                  <ai:TextButton ui:field="showSplashButton" text="{messages.showSplashMenuItem}"/>
+                  <ai:TextButton ui:field="showShortcutsButton" text="{messages.showShortcuts}"/>
+              </g:VerticalPanel>
           </g:DisclosurePanel>
 
           <g:DisclosurePanel>
-              <g:header styleName="mobile-SectionHeader" >Account</g:header>
-            <g:VerticalPanel>
-              <g:VerticalPanel styleName="mobile-SectionPanel">
-                <g:Button ui:field="signOutButton" text="{messages.signOutLink}"/>
-                <g:Button ui:field="deleteAccountItem" text="{messages.deleteAccountLink}"/>
+              <g:header styleName="mobile-SectionHeader">Account</g:header>
+              <g:VerticalPanel>
+                  <g:VerticalPanel styleName="mobile-SectionPanel">
+                      <ai:TextButton ui:field="signOutButton" text="{messages.signOutLink}"/>
+                      <ai:TextButton ui:field="deleteAccountItem" text="{messages.deleteAccountLink}"/>
+                  </g:VerticalPanel>
               </g:VerticalPanel>
-            </g:VerticalPanel>
           </g:DisclosurePanel>
 
-          <g:Button ui:field="languageButton" text="Language" styleName="mobile-MenuItem"/>
+          <ai:TextButton ui:field="languageButton" text="Language" styleName="mobile-MenuItem"/>
 
       </g:VerticalPanel>
 
-
-    <!-- Admin Menu -->
+    <!-- Admin Menu visible: false -->
     <ai:DropDownButton name="Admin" styleName="ode-TopPanelButton"
                        ui:field="adminDropDown" icon="shield_person" align="left" visible="false">
 
@@ -176,5 +145,35 @@
         <actions:SwitchToUserAdminAction/>
       </ai:DropDownItem>
     </ai:DropDownButton>
+
+      <!-- Projects Menu visible: false -->
+      <ai:DropDownButton name="Project" caption="{messages.projectsTabName}" icon="inventory_2"
+                         styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left" visible="false">
+      </ai:DropDownButton>
+
+      <!-- Connect Menu visible: false -->
+      <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}" styleName="ode-TopPanelButton"
+                         ui:field="connectDropDown" icon="settings_remote" align="left" visible="false">
+      </ai:DropDownButton>
+
+      <!-- Build Menu visible: false -->
+      <ai:DropDownButton name="Build" caption="{messages.buildTabName}" styleName="ode-TopPanelButton"
+                         ui:field="buildDropDown" icon="system_security_update" align="left" visible="false">
+          <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
+              <actions:BarcodeAction second="false" isAab="false"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}">
+              <actions:BarcodeAction second="false" isAab="true"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="BuildApk2" caption="{messages.showExportAndroidApk2}">
+              <actions:BarcodeAction second="true" isAab="false"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="BuildAab2" caption="{messages.showExportAndroidAab2}">
+              <actions:BarcodeAction second="true" isAab="true"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="Yail" caption="{messages.generateYailMenuItem}">
+              <actions:GenerateYailAction/>
+          </ai:DropDownItem>
+      </ai:DropDownButton>
   </ai:Toolbar>
 </ui:UiBinder>
