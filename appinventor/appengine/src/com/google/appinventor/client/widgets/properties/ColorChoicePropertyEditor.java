@@ -9,7 +9,7 @@ package com.google.appinventor.client.widgets.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -237,7 +237,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     private String getProjectColorsHexString() {
-        ProjectEditor projectEditor = Ode.getCurrentProjectEditor();
+        YaProjectEditor projectEditor = (YaProjectEditor) Ode.getCurrentProjectEditor();
         if (projectEditor != null) {
             List<String> projectColorsCopy = new ArrayList<>();
             for (String color : projectEditor.getProjectColors()) {
@@ -373,11 +373,11 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     }
 
     public void addColor(String color) {
-        // check if the color belongs from defaultColors
+        // check if the color belongs to defaultColors
         if (defaultColorsObject.containsKey(formatColor(color)))
             return;
 
-        ProjectEditor projectEditor = Ode.getCurrentProjectEditor();
+        YaProjectEditor projectEditor = (YaProjectEditor) Ode.getCurrentProjectEditor();
         if (projectEditor != null) {
             projectEditor.addColor(color);
         }

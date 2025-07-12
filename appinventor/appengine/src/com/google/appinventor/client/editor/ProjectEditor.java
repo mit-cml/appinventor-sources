@@ -306,60 +306,6 @@ public abstract class ProjectEditor extends Composite {
     }
   }
 
-  /*
-   * Code for handling project specific colors
-   */
-
-  private final HashMap<String, Integer> colorFrequency = new HashMap<>();
-  private final List<String> projectColors = new ArrayList<>();
-  public List<String> getProjectColors() {
-    if (projectColors.isEmpty()) {
-      String projectColorProperty = getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
-      if (projectColorProperty != null) {
-        String[] colorArray = projectColorProperty.split(",");
-        for (String color : colorArray) {
-          if (!color.startsWith("&H"))
-            continue; // reject if does not starts with &H, might be a corrupt value
-
-          // storing 1, can we do something to make the color all over persistent?
-          // storing the frequency in project properties might
-          colorFrequency.put(color, 1);
-          this.projectColors.add(color);
-        }
-      }
-    }
-    return this.projectColors;
-  }
-
-  public void addColor(String color) {
-    colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
-    sortColors();
-
-    changeProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS,
-            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, String.join(",", projectColors));
-  }
-
-  private void sortColors() {
-    List<Map.Entry<String, Integer>> sortedColors = new ArrayList<>(this.colorFrequency.entrySet());
-
-    sortedColors.sort(new Comparator<Map.Entry<String, Integer>>() {
-      @Override
-      public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-        return o2.getValue().compareTo(o1.getValue());
-      }
-    });
-
-    this.projectColors.clear();
-
-    int n = 12; // storing maximum 12 colors, that might fill 3 rows in color dialog
-    if (n > sortedColors.size()) {
-      n = sortedColors.size();
-    }
-    for (int i = 0; i < n; i++) {
-      this.projectColors.add(sortedColors.get(i).getKey());
-    }
-  }
-
   /**
    * Keep track of components that require the
    * "android.permission.ACCESS_FINE_LOCATION" (and related
@@ -428,8 +374,11 @@ public abstract class ProjectEditor extends Composite {
     // project just after the editor is created.
     LOG.info("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
+    LOG.info("onLoad of the project here we are trying to get the project colors and tutorial url");
+    LOG.info(getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS));
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+    LOG.info(tutorialURL);
     if (!tutorialURL.isEmpty()) {
       Ode ode = Ode.getInstance();
       ode.setTutorialURL(tutorialURL);

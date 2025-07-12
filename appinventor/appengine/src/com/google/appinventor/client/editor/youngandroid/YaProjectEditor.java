@@ -7,6 +7,8 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -125,6 +127,60 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
     String curScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
     propertyDialogBox.showDialog(curScreen);
+  }
+
+  /*
+   * Code for handling project specific colors
+   */
+
+  private final HashMap<String, Integer> colorFrequency = new HashMap<>();
+  private final List<String> projectColors = new ArrayList<>();
+  public List<String> getProjectColors() {
+    if (projectColors.isEmpty()) {
+      String projectColorProperty = getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
+      if (projectColorProperty != null) {
+        String[] colorArray = projectColorProperty.split(",");
+        for (String color : colorArray) {
+          if (!color.startsWith("&H"))
+            continue; // reject if does not starts with &H, might be a corrupt value
+
+          // storing 1, can we do something to make the color all over persistent?
+          // storing the frequency in project properties might
+          colorFrequency.put(color, 1);
+          this.projectColors.add(color);
+        }
+      }
+    }
+    return this.projectColors;
+  }
+
+  public void addColor(String color) {
+    colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
+    sortColors();
+
+    changeProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS,
+            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, String.join(",", projectColors));
+  }
+
+  private void sortColors() {
+    List<Map.Entry<String, Integer>> sortedColors = new ArrayList<>(this.colorFrequency.entrySet());
+
+    sortedColors.sort(new Comparator<Map.Entry<String, Integer>>() {
+      @Override
+      public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+        return o2.getValue().compareTo(o1.getValue());
+      }
+    });
+
+    this.projectColors.clear();
+
+    int n = 12; // storing maximum 12 colors, that might fill 3 rows in color dialog
+    if (n > sortedColors.size()) {
+      n = sortedColors.size();
+    }
+    for (int i = 0; i < n; i++) {
+      this.projectColors.add(sortedColors.get(i).getKey());
+    }
   }
 
   public YaProjectEditor(ProjectRootNode projectRootNode, UiStyleFactory styleFactory) {
