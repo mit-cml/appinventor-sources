@@ -30,6 +30,8 @@ import com.google.common.base.Strings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 public class YoungAndroidSettingsBuilder {
@@ -50,7 +52,7 @@ public class YoungAndroidSettingsBuilder {
   private String primaryColorDark = "0";
   private String accentColor = "0";
   private String defaultFileScope = "App";
-  private String projectColors = "";
+  private String projectColors = "{}"; // object of colors with frequency
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -91,8 +93,9 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
     defaultFileScope = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
-    projectColors = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
-            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS));
+    String projectColorsProperty = settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
+    projectColors = projectColorsProperty == null ? "{}" : projectColorsProperty;
   }
 
   /**
@@ -118,7 +121,7 @@ public class YoungAndroidSettingsBuilder {
     primaryColorDark = properties.getProperty("color.primary.dark", "");
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
-    projectColors = properties.getProperty("projectcolors", "");
+    projectColors = properties.getProperty("projectcolors", "{}");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {

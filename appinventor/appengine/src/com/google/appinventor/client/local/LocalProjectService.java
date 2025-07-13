@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class LocalProjectService implements ProjectServiceAsync {
   private final Map<String, UserProject> projects = new HashMap<>();
@@ -122,7 +123,7 @@ public class LocalProjectService implements ProjectServiceAsync {
         "main=" + qualifiedName + ".Screen1\n" +
         "source=../src\n" +
         "actionbar=True\n" +
-        "projectcolors=\n" +
+        "projectcolors={}\n" +
         "useslocation=False\n" +
         "assets=../assets\n" +
         "build=../build\n" +
@@ -357,7 +358,7 @@ public class LocalProjectService implements ProjectServiceAsync {
         child.changePropertyValue(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE,
             properties.getOrDefault("defaultfilescope", ""));
         child.changePropertyValue(YOUNG_ANDROID_SETTINGS_PROJECT_COLORS,
-                properties.getOrDefault("projectcolors", ""));
+                properties.getOrDefault("projectcolors", "{}"));
         callback.onSuccess(settings.encodeSettings());
       } catch (Exception e) {
         callback.onFailure(e);

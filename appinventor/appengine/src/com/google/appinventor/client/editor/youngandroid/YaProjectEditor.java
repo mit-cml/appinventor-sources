@@ -26,10 +26,13 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONString;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
@@ -42,9 +45,12 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.json.client.JSONException;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
@@ -138,15 +144,18 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   public List<String> getProjectColors() {
     if (projectColors.isEmpty()) {
       String projectColorProperty = getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
-      if (projectColorProperty != null) {
-        String[] colorArray = projectColorProperty.split(",");
-        for (String color : colorArray) {
+      if (projectColorProperty != null && !projectColorProperty.isEmpty()) {
+        com.google.gwt.json.client.JSONObject obj = new com.google.gwt.json.client.JSONObject(JsonUtils.safeEval(projectColorProperty));
+        for (String color : obj.keySet()) {
           if (!color.startsWith("&H"))
             continue; // reject if does not starts with &H, might be a corrupt value
 
-          // storing 1, can we do something to make the color all over persistent?
-          // storing the frequency in project properties might
-          colorFrequency.put(color, 1);
+          final com.google.gwt.json.client.JSONValue value = obj.get(color);
+          int frequency = 0;
+          if (value != null) {
+            frequency = (int) value.isNumber().doubleValue();
+          }
+          colorFrequency.put(color, frequency);
           this.projectColors.add(color);
         }
       }
@@ -158,8 +167,13 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
     sortColors();
 
+    com.google.gwt.json.client.JSONObject obj = new com.google.gwt.json.client.JSONObject();
+    for (String colorItem : projectColors) {
+      obj.put(colorItem, new JSONNumber(colorFrequency.getOrDefault(colorItem, 0)));
+    }
+
     changeProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS,
-            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, String.join(",", projectColors));
+            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, obj.toString());
   }
 
   private void sortColors() {

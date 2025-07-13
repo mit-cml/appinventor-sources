@@ -6,9 +6,6 @@
 
 package com.google.appinventor.client.editor;
 
-import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
-import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
-
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
@@ -22,7 +19,6 @@ import com.google.gwt.user.client.ui.DeckPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,7 +183,7 @@ public abstract class ProjectEditor extends Composite {
 
   /**
    * Selects the given file editor in the deck panel and calls its onShow()
-   * method. Calls onHide() for a previously selected file editor
+   * method. Calls onHide() for a previously selected file editor if there was
    * one (and it wasn't the same one).
    *
    * Note: all actions that cause the selected file editor to change should
@@ -374,11 +370,8 @@ public abstract class ProjectEditor extends Composite {
     // project just after the editor is created.
     LOG.info("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
-    LOG.info("onLoad of the project here we are trying to get the project colors and tutorial url");
-    LOG.info(getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS));
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
-    LOG.info(tutorialURL);
     if (!tutorialURL.isEmpty()) {
       Ode ode = Ode.getInstance();
       ode.setTutorialURL(tutorialURL);
