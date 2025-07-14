@@ -1458,6 +1458,7 @@ public class YailEvalTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         return null;
       }
+
       @Override
       public void setComponentName(final String componentName) {}
     };
