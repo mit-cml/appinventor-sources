@@ -19,7 +19,8 @@ public class YoungAndroidARTrackingTypePropertyEditor extends ChoicePropertyEdit
     private static final Choice[] trackingTypes = new Choice[] {
             new Choice(MESSAGES.arTrackingTypeWorldTracking(), "1"),
             new Choice(MESSAGES.arTrackingTypeOrientationTracking(), "2"),
-            new Choice(MESSAGES.arTrackingTypeImageTracking(), "3")
+            new Choice(MESSAGES.arTrackingTypeImageTracking(), "3"),
+            new Choice(MESSAGES.arTrackingTypeGeoTracking(), "4")
     };
 
     public YoungAndroidARTrackingTypePropertyEditor() {

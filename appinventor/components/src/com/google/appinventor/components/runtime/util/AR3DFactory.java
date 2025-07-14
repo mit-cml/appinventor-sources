@@ -85,6 +85,9 @@ public final class AR3DFactory {
      int TextureOpacity();
      void TextureOpacity(int textureOpacity);
 
+     boolean EnablePhysics();
+     void EnablePhysics(boolean enable);
+
      boolean PinchToScale();
      void PinchToScale(boolean pinchToScale);
 

@@ -2,6 +2,8 @@ package com.google.appinventor.components.runtime.ar;
 
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
+import static java.lang.Double.parseDouble;
+import static java.lang.Float.parseFloat;
 
 import android.app.Activity;
 import android.opengl.GLES30;
@@ -13,6 +15,9 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.ar.core.*;
+import com.google.ar.core.Camera;
+import kawa.standard.let;
 import org.json.JSONException;
 
 
@@ -39,25 +44,9 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARNodeContaine
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 import com.google.appinventor.components.runtime.util.JsonUtil;
-import com.google.ar.core.Anchor;
-import com.google.ar.core.ArCoreApk;
-import com.google.ar.core.Camera;
-import com.google.ar.core.Config;
 import com.google.ar.core.Config.InstantPlacementMode;
-import com.google.ar.core.DepthPoint;
-import com.google.ar.core.Frame;
-import com.google.ar.core.HitResult;
-import com.google.ar.core.InstantPlacementPoint;
-import com.google.ar.core.LightEstimate;
-import com.google.ar.core.Plane;
-import com.google.ar.core.Point;
-import com.google.ar.core.Pose;
-import com.google.ar.core.Session;
-import com.google.ar.core.Trackable;
-import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.*;
 
-import com.google.ar.core.Coordinates2d;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -121,17 +110,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private static final String WAITING_FOR_TAP_MESSAGE = "Tap on the Surface.";
 
     private static final float[] sphericalHarmonicFactors = {
-            0.282095f, -0.325735f, 0.325735f, -0.325735f, 0.273137f,
-            -0.273137f, 0.078848f, -0.273137f, 0.136569f,
+        0.282095f, -0.325735f, 0.325735f, -0.325735f, 0.273137f,
+        -0.273137f, 0.078848f, -0.273137f, 0.136569f,
     };
     private static final float TINT_INTENSITY = 0.05f;
     private static final float TINT_ALPHA = 1.0f;
     private static final int[] TINT_COLORS_HEX = {
-            0x000000, 0xF44336, 0xE91E63, 0x9C27B0, 0x673AB7, 0x3F51B5, 0x2196F3, 0x03A9F4, 0x00BCD4,
-            0x009688, 0x4CAF50, 0x8BC34A, 0xCDDC39, 0xFFEB3B, 0xFFC107, 0xFF9800,
+        0x000000, 0xF44336, 0xE91E63, 0x9C27B0, 0x673AB7, 0x3F51B5, 0x2196F3, 0x03A9F4, 0x00BCD4,
+        0x009688, 0x4CAF50, 0x8BC34A, 0xCDDC39, 0xFFEB3B, 0xFFC107, 0xFF9800,
     };
-    private static final float Z_NEAR = 0.1f;
-    private static final float Z_FAR = 40f;
+    private static final float Z_NEAR = 0.085f;
+    private static final float Z_FAR = 20f;
     private static final int CUBE_MAP_RESOLUTION = 16;
     private static final int CUBE_MAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
@@ -194,11 +183,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         this.glview.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         this.glview.setOnTouchListener(tapHelper);
 
-       // glSurfaceView.setEGLContextClientVersion(3);
-       // glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        // glSurfaceView.setEGLContextClientVersion(3);
+        // glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         // Create SurfaceView instead of GLSurfaceView
         this.view = new SurfaceView(container.$form());
-
 
 
         // Add a callback to handle Surface creation and changes
@@ -295,7 +283,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             try {
                 virtualSceneFramebuffer = new Framebuffer(render, width, height);
                 Log.d(LOG_TAG, "Created virtualSceneFramebuffer: " +
-                        virtualSceneFramebuffer.getFramebufferId() + " " + width + "x" + height);
+                    virtualSceneFramebuffer.getFramebufferId() + " " + width + "x" + height);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Failed to create framebuffer: " + e.getMessage());
             }
@@ -327,34 +315,33 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
         Log.d(LOG_TAG, "Surface changed processin" +
-                "g complete");
+            "g complete");
     }
 
     // Filter ARNodes by type and ensure they have anchors
     public List<ARNode> sort(List<ARNode> nodes, String[] nodeType) {
         List<ARNode> filteredNodes = nodes.stream()
-                .filter(n -> {
-                    // Check if any of the types match
-                    boolean match = false;
-                    for (String type : nodeType) {
-                        if (n.Type().contains(type)) {
-                            match = true;
-                            break;  // Exit the loop once we find a match
-                        }
+            .filter(n -> {
+                // Check if any of the types match
+                boolean match = false;
+                for (String type : nodeType) {
+                    if (n.Type().contains(type)) {
+                        match = true;
+                        break;  // Exit the loop once we find a match
                     }
-                    return match;  // Return the match result to the filter
+                }
+                return match;  // Return the match result to the filter
 
-                })
-                .collect(Collectors.toList());
+            })
+            .collect(Collectors.toList());
         System.out.println("Filtered : " + filteredNodes);
         return filteredNodes;
     }
 
 
-
     // Filter ARNodes by type and ensure they have anchors
     public void setDefaultPositions(List<ARNode> nodes) {
-        for (ARNode node: nodes){
+        for (ARNode node : nodes) {
             if (node != null && node.Anchor() == null) {
                 Log.d(LOG_TAG, "Creating default anchor for " + Arrays.toString(node.PoseFromPropertyPosition()));
                 // TBD handle if anchor is loaded from a db
@@ -378,7 +365,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
-    public void drawPlanesAndPoints(ARViewRender render,Camera camera, Frame frame, float[] viewMatrix, float[] projectionMatrix){
+    public void drawPlanesAndPoints(ARViewRender render, Camera camera, Frame frame, float[] viewMatrix, float[] projectionMatrix) {
         if (ShowFeaturePoints()) {
             pointCloudRenderer.draw(arViewRender, frame.acquirePointCloud(), viewMatrix, projectionMatrix);
         }
@@ -394,7 +381,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     }
 
-    public void drawObjects(ARViewRender render, List<ARNode>objectNodes, float[] viewMatrix, float[] projectionMatrix) {
+    public void drawObjects(ARViewRender render, List<ARNode> objectNodes, float[] viewMatrix, float[] projectionMatrix) {
 
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
         GLES30.glViewport(0, 0, virtualSceneFramebuffer.getWidth(), virtualSceneFramebuffer.getHeight());
@@ -404,8 +391,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         GLES30.glDisable(GLES30.GL_BLEND);        // No blending between objects
         //GLES30.glEnable(GLES30.GL_DEPTH_TEST);    // Enable depth testing
-       // GLES30.glDepthFunc(GLES30.GL_LESS);       // Closer objects win
-       // GLES30.glDepthMask(true);
+        // GLES30.glDepthFunc(GLES30.GL_LESS);       // Closer objects win
+        // GLES30.glDepthMask(true);
 
         // Draw the Filament texture to the framebuffer
         Log.d(LOG_TAG, "Drawing virtualSceneFramebuffer texture " + virtualSceneFramebuffer.getColorTexture().getTextureId() +
@@ -416,11 +403,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    public void drawAnimatedObjects(ARViewRender render, Camera camera, List<ARNode>modelNodes, float[] viewMatrix, float[] projectionMatrix) {
+    public void drawAnimatedObjects(ARViewRender render, Camera camera, List<ARNode> modelNodes, float[] viewMatrix, float[] projectionMatrix) {
         arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
         filamentTextureId = arFilamentRenderer.getDisplayTextureId();
 
-        try{
+        try {
             if (filamentTextureId > 0 && currentFilamentTexture == null) {
                 currentFilamentTexture = Texture.createFromId(render, filamentTextureId);
                 Log.d(LOG_TAG, "create texture from filament texture id  " + filamentTextureId + " and should match:" + currentFilamentTexture.getTextureId());
@@ -475,8 +462,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             float[] ndcQuad = {
                 -1f, -1f,  // bottom-left
                 1f, -1f,  // bottom-right
-                -1f,  1f,  // top-left
-                1f,  1f   // top-right
+                -1f, 1f,  // top-left
+                1f, 1f   // top-right
             };
             float[] textureCoords = new float[8];
 
@@ -557,7 +544,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             Frame frame;
             Camera camera;
 
-            try{
+            try {
 
                 // as soon as this is set up, it seems it grabs the surface from the filament renderer
                 // may need to explicitly bind some how
@@ -587,7 +574,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
 
 
-
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
@@ -598,7 +584,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
-            if (backgroundRenderer != null){
+            if (backgroundRenderer != null) {
                 backgroundRenderer.updateDisplayGeometry(frame);
                 try {
                     backgroundRenderer.setUseDepthVisualization(render, false);
@@ -622,7 +608,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 try (android.media.Image depthImage = frame.acquireDepthImage16Bits()) {
                     backgroundRenderer.updateCameraDepthTexture(depthImage);
                     if (arFilamentRenderer != null) {
-                       updateFilamentWithARCoreDepth(frame, depthImage);
+                        updateFilamentWithARCoreDepth(frame, depthImage);
                     }
                 } catch (NotYetAvailableException e) {
                     // This normally means that depth data is not available yet. This is normal so we will not
@@ -644,8 +630,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             List<ARNode> modelNodes = sort(arNodes, modelNodeType);
 
 
-
-
             //Framebuffer A
             if (arFilamentRenderer != null && modelNodes.size() > 0) {
                 drawAnimatedObjects(render, camera, modelNodes, viewMatrix, projectionMatrix);
@@ -659,7 +643,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             GLES30.glFinish();
 
 
-            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER,0);
+            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
             // DISABLE depth for camera background
             GLES30.glDisable(GLES30.GL_DEPTH_TEST);
@@ -676,7 +660,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             //Framebuffer B
             if (virtualSceneFramebuffer != null) {
-                if (objRenderer != null && objectNodes.size() > 0){
+                if (objRenderer != null && objectNodes.size() > 0) {
                     Log.d(LOG_TAG, "objects " + objectNodes);
                     drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
                 }
@@ -699,8 +683,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             GLES30.glDisable(GLES30.GL_BLEND);
             GLES30.glFinish();
 
-        // Note: we don't need to extract texture or draw composed scene manually
-        // Filament renders directly to the swapchain
+            // Note: we don't need to extract texture or draw composed scene manually
+            // Filament renders directly to the swapchain
         } catch (Exception e) {
             Log.e(LOG_TAG, "Exception in onDrawFrame: " + e.getMessage(), e);
         }
@@ -738,7 +722,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         float[] position = defaultOrFromProperty;
         float[] rotation = {0, 0, 0, 1};
         Anchor defaultAnchor = session.createAnchor(new Pose(position, rotation));
-        Log.i(LOG_TAG, "default anchor with pose: from" +defaultOrFromProperty + " "+ defaultAnchor.getPose());
+        Log.i(LOG_TAG, "default anchor with pose: from" + defaultOrFromProperty + " " + defaultAnchor.getPose());
 
         return defaultAnchor;
     }
@@ -765,18 +749,26 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Trackable mostRecentTrackable = hit.getTrackable();
                 Anchor a = hit.createAnchor();
+
+                Pose worldPose = hit.getHitPose();
+                float[] worldPosition = worldPose.getTranslation();
+
+                // Convert to geospatial coordinates
+                Earth earth = session.getEarth();
+                GeospatialPose geospatialPose = earth.getCameraGeospatialPose();
+                //earth.getPose()
                 Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
-                if (mostRecentTrackable instanceof Plane){
-                    ARDetectedPlane arplane = new DetectedPlane((Plane)mostRecentTrackable);
-
+                if (mostRecentTrackable instanceof Plane) {
+                    ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
-
-                }
-                else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
-                    TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
-                }
-                else if ((mostRecentTrackable instanceof InstantPlacementPoint)
-                        || (mostRecentTrackable instanceof DepthPoint)){
+                } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
+                    //send everything, will sort out if we have it or not
+                    // TBD update isGeo
+                    //earth or camera, get coord?
+                    Anchor geoA = earth.createAnchor(a.getPose());
+                    TapAtLocation(geoA.getPose().getTranslation()[0], geoA.getPose().getTranslation()[1], geoA.getPose().getTranslation()[2], 0, 0, 0, false, true);
+                } else if ((mostRecentTrackable instanceof InstantPlacementPoint)
+                    || (mostRecentTrackable instanceof DepthPoint)) {
                     // are there hooks for this?
                 }
             }
@@ -944,6 +936,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public List<Component> getChildren() {
         return new ArrayList<>();
     }
+
     //@Override
     public Activity $context() {
         return container.$context();
@@ -955,13 +948,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     //@Override
-    public void $add(AndroidViewComponent component) {}
+    public void $add(AndroidViewComponent component) {
+    }
 
     //@Override
-    public void setChildWidth(AndroidViewComponent component, int width) {}
+    public void setChildWidth(AndroidViewComponent component, int width) {
+    }
 
     //@Override
-    public void setChildHeight(AndroidViewComponent component, int height) {}
+    public void setChildHeight(AndroidViewComponent component, int height) {
+    }
 
 
     @Override
@@ -1003,7 +999,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         List<ARNode> newNodes = new ArrayList<>();
         for (Object obj : dictionaries) {
             Log.i(LOG_TAG, "loadscene obj is " + obj);
-            if (obj == null || obj instanceof gnu.mapping.Symbol){
+            if (obj == null || obj instanceof gnu.mapping.Symbol) {
                 Log.i(LOG_TAG, "loadscene null or list " + obj);
                 continue;
             }
@@ -1050,7 +1046,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         List<YailDictionary> dictionaries = new ArrayList<>();
         for (Object node : newNodes) {
-            if (node == null || node instanceof gnu.mapping.Symbol){
+            if (node == null || node instanceof gnu.mapping.Symbol) {
                 Log.i(LOG_TAG, "savescene null or list " + node);
                 continue;
             }
@@ -1065,12 +1061,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Sets Visible to false for all Lights.")
-    public void HideAllLights() {}
+    public void HideAllLights() {
+    }
 
 
     //@Override
     @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
-    public void addNode(ARNode node){
+    public void addNode(ARNode node) {
         Log.i("ADDING ARNODE", "");
         arNodes.add(node);
         Log.i("ADDED ARNODE", node.Type() + " and session is null? " + (session == null));
@@ -1078,38 +1075,50 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     // @Override
     @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
-    public void NodeClick(ARNode node) {}
+    public void NodeClick(ARNode node) {
+    }
 
     // @Override
     @SimpleEvent(description = "The user long-pressed a node in the ARView3D.")
-    public void NodeLongClick(ARNode node) {}
+    public void NodeLongClick(ARNode node) {
+    }
 
     //@Override
     @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.")
+        "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+        "at that point and false otherwise.")
     public void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint) {
         Log.i("TAPPED at ARVIEW3D point", "");
         EventDispatcher.dispatchEvent(this, "TapAtPoint", x, y, z);
     }
 
+
+    @SimpleEvent(description = "all world and geo coords if avail")
+    public void TapAtLocation(float x, float y, float z,
+                              double lat, double lng, double alt,
+                              boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+
+        EventDispatcher.dispatchEvent(this, "TapAtLocation", x, y, z, lat, lng, alt, hasGeoCoordinates, isANodeAtPoint);
+    }
+
     //@Override
     @SimpleEvent(description = "The user long-pressed on a point on the ARView3D.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.")
-    public void LongPressAtPoint(float x, float y, float z, boolean isANodeAtPoint) {}
+        "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+        "at that point and false otherwise.")
+    public void LongPressAtPoint(float x, float y, float z, boolean isANodeAtPoint) {
+    }
 
 
     @Override
     @SimpleEvent(description = "A real-world plane was detected.  The detectedPlane is the " +
-            "component added at the location of the real-world plane.  This event will only trigger if " +
-            "PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default " +
-            "FillColor of a DetectedPlane is None, so it is shown visually by default.")
+        "component added at the location of the real-world plane.  This event will only trigger if " +
+        "PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default " +
+        "FillColor of a DetectedPlane is None, so it is shown visually by default.")
     public void PlaneDetected(ARDetectedPlane detectedPlane) {
         container.$form().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                EventDispatcher.dispatchEvent(ARView3D.this, "PlaneDetected",detectedPlane);
+                EventDispatcher.dispatchEvent(ARView3D.this, "PlaneDetected", detectedPlane);
                 Log.i("dispatching detected Plane", " plane is " + detectedPlane);
             }
         });
@@ -1118,47 +1127,50 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     @SimpleEvent(description = "A DetectedPlane updated its properties, either its rotation, " +
-            "position, or size.  This event will only trigger if PlaneDetection is not None, and the " +
-            "TrackingType is WorldTracking.")
+        "position, or size.  This event will only trigger if PlaneDetection is not None, and the " +
+        "TrackingType is WorldTracking.")
     public void DetectedPlaneUpdated(ARDetectedPlane detectedPlane) {
-        EventDispatcher.dispatchEvent(this, "DetectedPlaneUpdated",detectedPlane);
+        EventDispatcher.dispatchEvent(this, "DetectedPlaneUpdated", detectedPlane);
         Log.i("dispatching updated Plane", "");
     }
 
     @Override
     @SimpleEvent(description = "The user long-pressed on a DetectedPlane, detectedPlane.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
-            "None, and the TrackingType is WorldTracking.")
-    public void LongClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, float x, float y, float z, boolean isANodeAtPoint) {}
+        "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+        "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
+        "None, and the TrackingType is WorldTracking.")
+    public void LongClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, float x, float y, float z, boolean isANodeAtPoint) {
+    }
 
     @Override
     @SimpleEvent(description = "The user tapped on a DetectedPlane, detectedPlane.  (x,y,z) is " +
-            "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-            "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
-            "None, and the TrackingType is WorldTracking.")
+        "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+        "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
+        "None, and the TrackingType is WorldTracking.")
     public void ClickOnDetectedPlaneAt(ARDetectedPlane targetPlane, Object p, boolean isANodeAtPoint) {
-            container.$form().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt",targetPlane, p, isANodeAtPoint);
-                    Log.i("dispatching Click On Detected Plane", "");
-                }
-            });
+        container.$form().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", targetPlane, p, isANodeAtPoint);
+                Log.i("dispatching Click On Detected Plane", "");
+            }
+        });
 
     }
 
     @Override
     @SimpleEvent(description = "A DetectedPlane was removed from the ARView3D.  This happens " +
-            "when two DetectedPlanes are combined to form one or the detected items were reset.  " +
-            "This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.")
-    public void DetectedPlaneRemoved(ARDetectedPlane detectedPlane) {}
+        "when two DetectedPlanes are combined to form one or the detected items were reset.  " +
+        "This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.")
+    public void DetectedPlaneRemoved(ARDetectedPlane detectedPlane) {
+    }
 
     @Override
     @SimpleEvent(description = "The lighting estimate has been updated.  This provides an " +
-            "estimate for the real-world ambient lighting.  This event will only trigger if " +
-            "LightingEstimation is true.")
-    public void LightingEstimateUpdated(float ambientIntensity, float ambientTemperature) {}
+        "estimate for the real-world ambient lighting.  This event will only trigger if " +
+        "LightingEstimation is true.")
+    public void LightingEstimateUpdated(float ambientIntensity, float ambientTemperature) {
+    }
 
     // PROPERTIES
 
@@ -1283,24 +1295,29 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     // FUNCTIONS
 
     @SimpleFunction(description = "Starts the live camera feed and begins tracking.")
-    public void StartTracking() {}
+    public void StartTracking() {
+    }
 
     @SimpleFunction(description = "Pauses the live camera feed and pauses tracking.")
-    public void PauseTracking() {}
+    public void PauseTracking() {
+    }
 
     @SimpleFunction(description = "Resets the tracking, resetting all items including DetectedPlanes and ImageMarkers. " +
-            "If this is called while tracking is not paused, then this resets and restarts tracking.  If tracking is paused " +
-            "and this is called, this will reset the ARView3D once StartTracking is called again.")
-    public void ResetTracking() {}
+        "If this is called while tracking is not paused, then this resets and restarts tracking.  If tracking is paused " +
+        "and this is called, this will reset the ARView3D once StartTracking is called again.")
+    public void ResetTracking() {
+    }
 
     @SimpleFunction(description = "Removed DetectedPlanes and resets detection for ImageMarkers.")
-    public void ResetDetectedItems() {}
+    public void ResetDetectedItems() {
+    }
 
     @SimpleFunction(description = "Sets Visible to false for all Nodes.")
-    public void HideAllNodes() {}
+    public void HideAllNodes() {
+    }
 
     @SimpleFunction(description = "Create a new BoxNode with default properties at the " +
-            "specified (x,y,z) position.")
+        "specified (x,y,z) position.")
     public BoxNode CreateBoxNode(float x, float y, float z) {
         return new BoxNode(this);
     }
@@ -1325,24 +1342,37 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         if (session != null) {
             try {
-                Log.i(LOG_TAG," creating block node from " + yailNodeObj);
+                Log.i(LOG_TAG, " creating block node from " + yailNodeObj);
 
                 BoxNode boxNode = new BoxNode(this);
                 ARUtils.parseYailToNode(boxNode, yailNodeObj, session);
 
-                Log.i(LOG_TAG, "SUCCESS created boxNode node from json, anchor is" +  boxNode.Anchor().toString());
+                Log.i(LOG_TAG, "SUCCESS created boxNode node from json, anchor is" + boxNode.Anchor().toString());
                 return boxNode;
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 $form().dispatchErrorOccurredEvent(this, "getfromJSON",
                     ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create boxNode node from db string which is yail list" + e);
                 throw e;
             }
 
         }
-        Log.i("cannot create boxNode "," since there is no session");
+        Log.i("cannot create boxNode ", " since there is no session");
         return null;
+    }
+
+    @SimpleFunction(description = "Create a new CapsuleNode with geo coords")
+    public SphereNode CreateSphereNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating Sphere node", "with geo location");
+
+        SphereNode sphereNode = new SphereNode(this);
+
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+        sphereNode.Anchor(geoAnchor);
+
+        Log.i("created Capsule node, geo anchor is", sphereNode.Anchor().toString());
+        return sphereNode;
     }
 
 
@@ -1363,23 +1393,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public SphereNode CreateSphereNodeFromYail(YailDictionary yailNodeObj) {
         if (session != null) {
             try {
-                Log.i(LOG_TAG," triggered via block, sphere node is " + yailNodeObj);
+                Log.i(LOG_TAG, " triggered via block, sphere node is " + yailNodeObj);
 
                 SphereNode sphereNode = new SphereNode(this);
                 ARUtils.parseYailToNode(sphereNode, yailNodeObj, session);
 
-                Log.i(LOG_TAG, "SUCCESS created SphereNode node from json, anchor is" +  sphereNode.Anchor().toString());
+                Log.i(LOG_TAG, "SUCCESS created SphereNode node from json, anchor is" + sphereNode.Anchor().toString());
                 return sphereNode;
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 $form().dispatchErrorOccurredEvent(this, "getfromJSON",
                     ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create SphereNode node from db string which is yail list" + e);
                 throw e;
             }
 
         }
-        Log.i("cannot create boxNode "," since there is no session");
+        Log.i("cannot create boxNode ", " since there is no session");
         return null;
     }
 
@@ -1443,6 +1473,19 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return capNode;
     }
 
+    @SimpleFunction(description = "Create a new CapsuleNode with geo coords")
+    public CapsuleNode CreateCapsuleNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating Capsule node", "with geo location");
+
+        CapsuleNode capNode = new CapsuleNode(this);
+
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+        capNode.Anchor(geoAnchor);
+
+        Log.i("created Capsule node, geo anchor is", capNode.Anchor().toString());
+        return capNode;
+    }
+
 
     @SimpleFunction(description = "Create a new CapsuleNode with default properties with a pose.")
     public CapsuleNode CreateCapsuleNodeWithPose(String p) {
@@ -1462,7 +1505,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             Log.i("created Capsule node, anchor is", capNode.Anchor().toString());
             return capNode;
         }
-        Log.i("cannot create Capsule node"," since there is no session");
+        Log.i("cannot create Capsule node", " since there is no session");
         return null;
     }
 
@@ -1472,26 +1515,25 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         if (session != null) {
             try {
-                Log.i(LOG_TAG," triggered via block, capnode is  " + yailNodeObj);
+                Log.i(LOG_TAG, " triggered via block, capnode is  " + yailNodeObj);
 
                 CapsuleNode capNode = new CapsuleNode(this);
                 ARUtils.parseYailToNode(capNode, yailNodeObj, session);
 
-                Log.i(LOG_TAG, "SUCCESS created Capsule node from json, anchor is" +  capNode.Anchor().toString());
+                Log.i(LOG_TAG, "SUCCESS created Capsule node from json, anchor is" + capNode.Anchor().toString());
                 return capNode;
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 $form().dispatchErrorOccurredEvent(this, "getfromJSON",
                     ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create capsure node from db string which is yail list" + e);
                 throw e;
             }
 
         }
-        Log.i("cannot create Capsule node"," since there is no session");
+        Log.i("cannot create Capsule node", " since there is no session");
         return null;
     }
-
 
 
     @SimpleFunction(description = "Create a new CapsuleNode with default properties at the specified (x,y,z) position.")
@@ -1506,6 +1548,36 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         capNode.Anchor(myAnchor);
 
         return capNode;
+    }
+
+
+    @SimpleFunction(description = "Create a new ModelNode with default properties at the specified (x,y,z) position.")
+    public ModelNode CreateModelNode(float x, float y, float z, String modelObjectString) {
+        if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
+
+        ModelNode modelNode = new ModelNode(this);
+        modelNode.Model(modelObjectString);
+
+        float[] position = {x, y, z};
+        float[] rotation = {0, 0, 0, 1};
+        Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
+        Log.i("creating Model node, anchor is", myAnchor.toString());
+        modelNode.Anchor(myAnchor);
+
+        return modelNode;
+    }
+
+    @SimpleFunction(description = "Create a new ModelNode with geo coords")
+    public ModelNode CreateModelNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint, String modelObjectString) {
+        Log.i("creating ModelNode ", "with geo location");
+        if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
+        ModelNode modelNode = new ModelNode(this);
+        modelNode.Model(modelObjectString);
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+        modelNode.Anchor(geoAnchor);
+
+        Log.i("created Capsule node, geo anchor is", modelNode.Anchor().toString());
+        return modelNode;
     }
 
     @SimpleFunction(description = "Create a new TubeNode with default properties at the specified (x,y,z) position.")
@@ -1551,29 +1623,57 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public VideoNode CreateVideoNodeFromYail(YailDictionary yailNodeObj) {
         if (session != null) {
             try {
-                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
+                Log.i(LOG_TAG, " from blocks yailDict is " + yailNodeObj);
 
                 VideoNode videoNode = new VideoNode(this);
                 ARUtils.parseYailToNode(videoNode, yailNodeObj, session);
 
-                Log.i(LOG_TAG, "SUCCESS created videoNode node from json, anchor is" +  videoNode.Anchor().toString());
+                Log.i(LOG_TAG, "SUCCESS created videoNode node from json, anchor is" + videoNode.Anchor().toString());
                 return videoNode;
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 $form().dispatchErrorOccurredEvent(this, "getfromJSON",
                     ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create videoNode node from db string which is yail list" + e);
                 throw e;
             }
 
         }
-        Log.i("cannot create boxNode "," since there is no session");
+        Log.i("cannot create boxNode ", " since there is no session");
         return null;
     }
 
     @SimpleFunction(description = "Create a new WebViewNode with default properties at the specified (x,y,z) position.")
     public WebViewNode CreateWebViewNode(float x, float y, float z) {
         return new WebViewNode(this);
+    }
+
+
+    public Anchor setupLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates){
+        double[] position = { x, y, z};
+        double[] geoPosition = { lat, lng };
+
+        float[] rotation = {0,0,0, 1};
+        Log.i(LOG_TAG, position + " " + rotation + " geo is " + geoPosition);
+        Earth earth = session.getEarth();
+        Anchor geoAnchor  = earth.createAnchor(lat,lng, altitude, rotation);
+        // CSB to do
+        return geoAnchor;
+    }
+
+
+    @SimpleFunction(description = "Create a new webViewNode with geo coords")
+    public WebViewNode CreateWebViewNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating WebView node", "with geo location");
+
+        WebViewNode webViewNode = new WebViewNode(this);
+
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+
+        webViewNode.Anchor(geoAnchor);
+
+        Log.i("created webViewNode node, geo anchor is", webViewNode.Anchor().toString());
+        return webViewNode;
     }
 
     @SimpleFunction(description = "Create a new WebViewNode with default properties at the detected plane position.")

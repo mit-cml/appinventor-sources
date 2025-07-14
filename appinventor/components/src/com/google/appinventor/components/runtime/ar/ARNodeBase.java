@@ -268,6 +268,16 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void TextureOpacity(int textureOpacity) {}
 
   @Override
+  @SimpleProperty(description = "If the property is set to true, physics apply")
+  public boolean EnablePhysics() { return false; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void EnablePhysics(boolean enablePhysics) {}
+
+  @Override
   @SimpleProperty(description = "If the property is set to true, then the node can be scaled using " +
     "the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.")
   public boolean PinchToScale() { return false; }

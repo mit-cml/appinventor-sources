@@ -4,6 +4,7 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import android.util.Log;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
+import com.google.ar.core.GeospatialPose;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.gson.Gson;
@@ -70,8 +71,31 @@ public final class ARUtils {
     return pose;
   }
 
+  //CSB only stubbed out
+  public static Pose parseGeoPoseLinkedHashMap(LinkedHashMap op) {
+    // Deserializing the JSON string back to a Java object
+    Log.i("parsing pose hash Json...", "");
 
-  public static ARNode parseNodeObject(ARNode node, String s) {
+    Pose pose = null;
+    LinkedHashMap coordinate = (LinkedHashMap) op.get("coordinates");
+
+
+    try {
+      float x = parseFloat(String.format("%.2f", ((Double) coordinate.get("latitude")).floatValue()));
+      float y = parseFloat(String.format("%.2f", ((Double) coordinate.get("longitude")).floatValue()));
+      float z = parseFloat(String.format("%.2f", ((Double) coordinate.get("altitude")).floatValue()));
+
+      //return new earth.createAnchor(new float[]{x, y, z});
+
+    } catch (Exception e) {
+
+    }
+    return pose; //rn just retuns null
+  }
+
+
+
+      public static ARNode parseNodeObject(ARNode node, String s) {
 
     Gson gson = new Gson();
     Log.i("creating node from Json", s);
