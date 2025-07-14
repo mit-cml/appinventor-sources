@@ -134,7 +134,7 @@ public class CreateManifest implements AndroidTask {
         permissions.add("android.permission.READ_EXTERNAL_STORAGE");
         permissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
       }
-      if (context.isForCompanion() || context.usesSharedFileAccess()) {
+      if (context.isForCompanion()) {
         permissions.add("android.permission.READ_MEDIA_AUDIO");
         permissions.add("android.permission.READ_MEDIA_IMAGES");
         permissions.add("android.permission.READ_MEDIA_VIDEO");
