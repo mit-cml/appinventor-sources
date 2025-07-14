@@ -2053,7 +2053,8 @@ public final class YoungAndroidFormUpgrader {
       // PageLoaded event was added (version 8)
       // BeforePageLoad event and Stop, Reload, and ClearCookies methods added (version 9)
       // ErrorOccurred event and RunJavaScript method added (version 10)
-      srcCompVersion = 10;
+      // The UsesCamera and UsesMicrophone properties were added (version 11)
+      srcCompVersion = 11;
     }
     return srcCompVersion;
   }
