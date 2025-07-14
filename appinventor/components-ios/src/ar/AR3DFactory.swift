@@ -19,6 +19,7 @@ import RealityKit
   var FillColorOpacity: Int32 { get set }
   var Texture: String { get set }
   var TextureOpacity: Int32 { get set }
+  var EnablePhysics: Bool { get set }
   var PinchToScale: Bool { get set }
   var PanToMove: Bool { get set }
   var RotateWithGesture: Bool { get set }
@@ -39,6 +40,7 @@ import RealityKit
   /*
    * "By" methods act relative to the node's current properties (rotation, scale, etc)
    */
+  func EnablePhysics(_ isDynamic: Bool)
   func ARNodeToYail() -> YailDictionary
   // RotateAboutBlankAxis https://gamedev.stackexchange.com/questions/116676/why-is-scnnode-rotation-property-a-four-dimensional-vector
   func RotateXBy(_ degrees: Float)

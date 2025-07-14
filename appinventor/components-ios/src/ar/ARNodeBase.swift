@@ -27,6 +27,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var hasTexture = false
   public var _texture: String = ""
   
+  private var _enablePhysics: Bool = false
   private var _pinchToScale: Bool = false
   private var _panToMove: Bool = false
   private var _rotateWithGesture: Bool = false
@@ -401,6 +402,15 @@ open class ARNodeBase: NSObject, ARNode {
     }
     set(opacity) {
       FillColorOpacity = opacity
+    }
+  }
+  
+  @objc open var EnablePhysics: Bool {
+    get {
+      return _enablePhysics
+    }
+    set(enablePhysics){
+      EnablePhysics(enablePhysics)
     }
   }
   
@@ -803,10 +813,16 @@ open class ARNodeBase: NSObject, ARNode {
 
 
   @objc open func EnablePhysics(_ isDynamic: Bool = true) {
+    
+      if (!isDynamic){
+        _enablePhysics = false
+        return
+      }
       let bounds = _modelEntity.visualBounds(relativeTo: nil)
       let size = bounds.max - bounds.min
       let shape = ShapeResource.generateBox(size: size)
-      
+    
+      _enablePhysics = isDynamic
       _modelEntity.collision = CollisionComponent(shapes: [shape])
       _modelEntity.physicsBody = PhysicsBodyComponent(
           massProperties: .default,

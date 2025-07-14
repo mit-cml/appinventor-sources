@@ -366,13 +366,32 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
 
   private func setupCollisionDetection() {
-      // Remove existing observer if any
+      // Cancel existing observer
       collisionBeganObserver?.cancel()
-    print("Beginning collision detection")
-      // Set up collision detection
-      collisionBeganObserver = _arView.scene.subscribe(to: CollisionEvents.Began.self, on: self) { event in
-          self.onCollisionBegan(event: event)
+      
+      // Create new observer - fix the syntax
+      collisionBeganObserver = _arView.scene.subscribe(
+          to: CollisionEvents.Began.self,
+          on: nil  // Use nil instead of self for global subscription
+      ) { event in
+          print("🔥 COLLISION DETECTED!")
+          print("Entity A: \(event.entityA.name)")
+          print("Entity B: \(event.entityB.name)")
+          
+        self.onCollisionBegan(event: event)
       }
+      
+      print("Collision observer set up successfully")
+    
+      debugCollisionSetup()
+  }
+  
+  private func debugCollisionSetup() {
+      print("=== Collision Debug Info ===")
+      print("Scene understanding options: \(_arView.environment.sceneUnderstanding.options)")
+      print("Collision observer exists: \(collisionBeganObserver != nil)")
+      print("Number of nodes with physics: \(_nodeToAnchorDict.keys.filter { $0._modelEntity.physicsBody != nil }.count)")
+      print("Total nodes: \(_nodeToAnchorDict.count)")
   }
 
   private func onCollisionBegan(event: CollisionEvents.Began) {
@@ -588,6 +607,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             UnitHelper.centimetersToMeters(position[1]),
             UnitHelper.centimetersToMeters(position[2])
           )
+          node.EnablePhysics(node.EnablePhysics)
         }
       } else {
         _requiresAddNodes = true

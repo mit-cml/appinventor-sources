@@ -203,16 +203,6 @@ open class ModelNode: ARNodeBase, ARModel {
     }
   }
   
-  @objc override open func MoveBy(_ x: Float, _ y: Float, _ z: Float) {
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    _modelEntity.transform.translation += SIMD3<Float>(xMeters, yMeters, zMeters)
-    
-    if true{ // TODO give user option
-      EnablePhysics(true)
-    }
-  }
 
   
 }
