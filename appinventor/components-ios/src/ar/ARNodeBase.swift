@@ -801,5 +801,22 @@ open class ARNodeBase: NSObject, ARNode {
   }
 
 
-  
+
+  @objc open func EnablePhysics(_ isDynamic: Bool = true) {
+      let bounds = _modelEntity.visualBounds(relativeTo: nil)
+      let size = bounds.max - bounds.min
+      let shape = ShapeResource.generateBox(size: size)
+      
+      _modelEntity.collision = CollisionComponent(shapes: [shape])
+      _modelEntity.physicsBody = PhysicsBodyComponent(
+          massProperties: .default,
+          material: .default,
+          mode: isDynamic ? .dynamic : .static
+      )
+  }
+
+  @objc open func DisablePhysics() {
+      _modelEntity.collision = nil
+      _modelEntity.physicsBody = nil
+  }
 } // ← This closes the ARNodeBase class

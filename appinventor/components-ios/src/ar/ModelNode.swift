@@ -12,14 +12,11 @@ open class ModelNode: ARNodeBase, ARModel {
   private var _addedEntity: Entity? {
     didSet {
       if _addedEntity != nil {
-        DispatchQueue.main.async {
-          self._container?.addNode(self)
-        }
+        
       }
     }
   }
   private var _nodeNames: [String] = []
-
   private var _rootNodeName: String = ""
   private var _numberToUseForNode: String = "1"
   
@@ -36,8 +33,8 @@ open class ModelNode: ARNodeBase, ARModel {
     get {
       return _objectModel
     }
-    set(model) {
-      loadModel(model)
+    set(modelStr) {
+      loadModel(modelStr)
     }
   }
   
@@ -123,7 +120,6 @@ open class ModelNode: ARNodeBase, ARModel {
       // Load using RealityKit's Entity.load for USDZ and other supported formats
       do {
         let entity = try Entity.load(contentsOf: url)
-        print("loading model")
         // If the loaded entity is a ModelEntity, use it directly
         if let modelEntity = entity as? ModelEntity {
           self._modelEntity = modelEntity
@@ -135,6 +131,8 @@ open class ModelNode: ARNodeBase, ARModel {
         }
         
         self.setupEntity()
+        print("success loading model")
+        PlayAnimationsForAllNodes()
       } catch {
         print("Failed to load model at \(url.path) \(error.localizedDescription)")
         NodeNotFound(path)
@@ -204,6 +202,18 @@ open class ModelNode: ARNodeBase, ARModel {
       getNames(entity: child, list: &list)
     }
   }
+  
+  @objc override open func MoveBy(_ x: Float, _ y: Float, _ z: Float) {
+    let xMeters: Float = UnitHelper.centimetersToMeters(x)
+    let yMeters: Float = UnitHelper.centimetersToMeters(y)
+    let zMeters: Float = UnitHelper.centimetersToMeters(z)
+    _modelEntity.transform.translation = SIMD3<Float>(xMeters, yMeters, zMeters)
+    
+    EnablePhysics(true)
+    
+  }
+
+  
 }
 
 // MARK: FillColor Functions
@@ -502,4 +512,6 @@ extension ModelNode {
       modelEntity.stopAllAnimations()
     }
   }
+  
+
 }

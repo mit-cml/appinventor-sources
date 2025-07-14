@@ -6,10 +6,10 @@ import RealityKit
 import ARKit
 import UIKit
 import os.log
-
+import Combine
 
 @available(iOS 14.0, *)
-open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate {
+open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
 
   
   public func getView() -> ARView3D {
@@ -39,7 +39,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   fileprivate var _lights: [AnchorEntity: ARLightBase] = [:]
 
   final var _arView: ARView
-  private var _trackingType: ARTrackingType = .worldTracking //.geoTracking expose to user
+  private var _trackingType: ARTrackingType = .worldTracking
   private var _configuration: ARConfiguration = ARWorldTrackingConfiguration()
   private var _planeDetection: ARPlaneDetectionType = .horizontal
   private var _showWorldOrigin: Bool = false
@@ -69,6 +69,17 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var sessionStartLocation: CLLocation?
   private var sessionStartTime: Date?
   
+  internal var collisionBeganObserver: Cancellable!
+  
+  enum State {
+      case none,
+      colliding,
+           released,
+      idle
+
+  }
+  var currentState: State = .none
+  
   // Cache for 3D text geometries representing the classification values
   private var modelsForClassification: [ARMeshClassification: ModelEntity] = [:]
 
@@ -95,6 +106,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _arView = ARView()
     _arView.environment.sceneUnderstanding.options = .occlusion
     _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+    
+    
 
     super.init(parent)
     _arView.session.delegate = self
@@ -252,73 +265,176 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
   @available(iOS 14.0, *)
   private func setupConfiguration() {
-    guard _trackingSet && _planeDetectionSet && _lightingEstimationSet else { return }
+      guard _trackingSet && _planeDetectionSet && _lightingEstimationSet else { return }
 
- 
-      if !ARGeoTrackingConfiguration.isSupported {
-        self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking unavailable", ErrorMessage.ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME.code, "")
+      // Check geo tracking support only when needed
+      if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported {
+        self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code, "Geo tracking not supported on this device")
+          return
       }
 
-    
+      switch _trackingType {
+      case .worldTracking:
+          let worldTrackingConfiguration = ARWorldTrackingConfiguration()
+          
+          // Enable scene reconstruction for occlusion and physics
+          worldTrackingConfiguration.sceneReconstruction = .mesh
+          worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
+          worldTrackingConfiguration.detectionImages = getReferenceImages()
 
-    switch _trackingType {
-    case .worldTracking:
-      let worldTrackingConfiguration = ARWorldTrackingConfiguration()
-      
-      worldTrackingConfiguration.sceneReconstruction = .mesh
-      worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
-      worldTrackingConfiguration.detectionImages = getReferenceImages()
+          // Configure plane detection
+          switch _planeDetection {
+          case .horizontal:
+              worldTrackingConfiguration.planeDetection = .horizontal
+          case .vertical:
+              worldTrackingConfiguration.planeDetection = .vertical
+          case .both:
+              worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+          case .none:
+              break
+          }
+          
+          _configuration = worldTrackingConfiguration
 
-      switch _planeDetection {
-      case .horizontal:
-        worldTrackingConfiguration.planeDetection = .horizontal
-      case .vertical:
-        worldTrackingConfiguration.planeDetection = .vertical
-      case .both:
-        worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
-      case .none:
-        break
+      case .geoTracking:
+          let geoTrackingConfiguration = ARGeoTrackingConfiguration()
+          
+          // ARGeoTrackingConfiguration does NOT support sceneReconstruction!
+          // This means limited occlusion capabilities with geo tracking
+          geoTrackingConfiguration.maximumNumberOfTrackedImages = 4
+          geoTrackingConfiguration.detectionImages = getReferenceImages()
+          
+          // Configure plane detection (still available)
+          switch _planeDetection {
+          case .horizontal:
+              geoTrackingConfiguration.planeDetection = .horizontal
+          case .vertical:
+              geoTrackingConfiguration.planeDetection = .vertical
+          case .both:
+              geoTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+          case .none:
+              break
+          }
+          
+          _configuration = geoTrackingConfiguration
+          
+      case .orientationTracking:
+          _configuration = AROrientationTrackingConfiguration()
+
+      case .imageTracking:
+          let imageTrackingConfiguration = ARImageTrackingConfiguration()
+          imageTrackingConfiguration.maximumNumberOfTrackedImages = 4
+          imageTrackingConfiguration.trackingImages = getReferenceImages()
+          _configuration = imageTrackingConfiguration
       }
       
-      _configuration = worldTrackingConfiguration
+      // Enable lighting estimation
+      _configuration.isLightEstimationEnabled = _lightingEstimationEnabled
 
+      // Configure scene understanding options
+      setupSceneUnderstanding()
       
-    case .geoTracking:
-      let geoTrackingConfiguration = ARGeoTrackingConfiguration()
+      // Setup collision detection
+      setupCollisionDetection()
       
-      geoTrackingConfiguration.maximumNumberOfTrackedImages = 4
-      geoTrackingConfiguration.detectionImages = getReferenceImages()
-      switch _planeDetection {
-      case .horizontal:
-        geoTrackingConfiguration.planeDetection = .horizontal
-      case .vertical:
-        geoTrackingConfiguration.planeDetection = .vertical
-      case .both:
-        geoTrackingConfiguration.planeDetection = [.horizontal, .vertical]
-      case .none:
-        break
+      if _sessionRunning {
+          ResetTracking()
       }
-      _configuration = geoTrackingConfiguration
+  }
+
+  private func setupSceneUnderstanding() {
+      // Configure scene understanding based on tracking type
+      _arView.environment.sceneUnderstanding.options = []
       
-    case .orientationTracking:
-      _configuration = AROrientationTrackingConfiguration()
+      if _trackingType == .worldTracking {
+          // Full scene understanding available with world tracking
+          _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+          _arView.environment.sceneUnderstanding.options.insert(.physics)
+          _arView.environment.sceneUnderstanding.options.insert(.collision)
+          
+          print("Scene understanding enabled: occlusion, physics, collision")
+      } else if _trackingType == .geoTracking {
+          // Limited scene understanding with geo tracking
+          _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+          // Note: physics and collision may be limited without sceneReconstruction
+          
+          print("Scene understanding enabled: occlusion only (geo tracking)")
+      } else {
+          print("Scene understanding disabled for tracking type: \(_trackingType)")
+      }
+  }
 
-    case .imageTracking:
-        let imageTrackingConfiguration = ARImageTrackingConfiguration()
-        imageTrackingConfiguration.maximumNumberOfTrackedImages = 4
-        imageTrackingConfiguration.trackingImages = getReferenceImages()
-        _configuration = imageTrackingConfiguration
-    }
-    
-    _configuration.isLightEstimationEnabled = _lightingEstimationEnabled
+  private func setupCollisionDetection() {
+      // Remove existing observer if any
+      collisionBeganObserver?.cancel()
+      
+      // Set up collision detection
+      collisionBeganObserver = _arView.scene.subscribe(to: CollisionEvents.Began.self, on: self) { event in
+          self.onCollisionBegan(event: event)
+      }
+  }
 
-    _arView.environment.sceneUnderstanding.options = []
-    _arView.environment.sceneUnderstanding.options.insert(.occlusion)
-    _arView.environment.sceneUnderstanding.options.insert(.physics)
-    
-    if _sessionRunning {
-      ResetTracking()
-    }
+  private func onCollisionBegan(event: CollisionEvents.Began) {
+      let entityA = event.entityA
+      let entityB = event.entityB
+      
+      print("Collision detected between: \(entityA.name) and \(entityB.name)")
+      
+      // Check if collision involves scene understanding mesh
+      if String(describing: type(of: entityA)).contains("RKSceneUnderstanding") ||
+         String(describing: type(of: entityB)).contains("RKSceneUnderstanding") {
+          print("Collision with scene understanding mesh")
+          
+          // Determine which entity is your AR object
+          let arEntity = String(describing: type(of: entityA)).contains("RKSceneUnderstanding") ? entityB : entityA
+          
+          // Handle collision with real world
+          handleSceneCollision(arEntity: arEntity)
+      } else {
+          // Collision between two AR objects
+          handleObjectCollision(entityA: entityA, entityB: entityB)
+      }
+  }
+
+  private func handleSceneCollision(arEntity: Entity) {
+      print("AR object \(arEntity.name) collided with real world")
+      
+      // Find the corresponding ARNode
+      if let modelEntity = arEntity as? ModelEntity,
+         let node = findNodeForEntity(modelEntity) {
+          // Dispatch collision event
+          EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: node as AnyObject)
+      }
+  }
+
+  private func handleObjectCollision(entityA: Entity, entityB: Entity) {
+      print("Collision between AR objects: \(entityA.name) and \(entityB.name)")
+      
+      // Handle AR object to AR object collision
+      if let nodeA = findNodeForEntity(entityA as? ModelEntity),
+         let nodeB = findNodeForEntity(entityB as? ModelEntity) {
+          EventDispatcher.dispatchEvent(of: self, called: "ObjectsCollided",
+                                      arguments: nodeA as AnyObject, nodeB as AnyObject)
+      }
+  }
+
+  private func findNodeForEntity(_ entity: ModelEntity?) -> ARNodeBase? {
+      guard let entity = entity else { return nil }
+      
+      for (node, anchor) in _nodeToAnchorDict {
+          if node._modelEntity == entity || anchor.children.contains(entity) {
+              return node
+          }
+      }
+      return nil
+  }
+  private func onCollisionBegan(objectHit: Entity) {
+      if objectHit is (Entity & HasSceneUnderstanding) {
+          //if currentState == .released {
+          //    log.debug("Collision with %s", "\(objectHit.name)")
+
+         // }
+      }
   }
   
   private func getReferenceImages() -> Set<ARReferenceImage> {
@@ -457,15 +573,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
   @objc open func addNode(_ node: ARNodeBase) {
     
-      let anchorEntity = node.createAnchor()
+    var anchorEntity = node.Anchor
+    if (anchorEntity == nil){
+      anchorEntity = node.createAnchor()
+    }
       let nodeId = ObjectIdentifier(node)
-
+      print("adding the node")
       _nodeToAnchorDict[node] = anchorEntity
       _containsModelNodes = node is ModelNode ? true : _containsModelNodes
       
       if _sessionRunning {
-        _arView.scene.addAnchor(anchorEntity)
-        
+        _arView.scene.addAnchor(anchorEntity!)
+        print("adding anchor and setting position \(anchorEntity?.position.x) \(anchorEntity?.position.y) \(anchorEntity?.position.z)")
         if !node._fromPropertyPosition.isEmpty {
           let position = node._fromPropertyPosition.split(separator: ",")
             .prefix(3)
@@ -703,17 +822,18 @@ extension ARView3D {
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
     let zMeters: Float = UnitHelper.centimetersToMeters(z)
     
+    print("set up anchor and setting position \(xMeters) \(yMeters) \(zMeters)")
     // Create geo anchor if we can
     if hasGeoCoordinates {
       let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
       if CLLocationCoordinate2DIsValid(coordinate) {
         let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
         node.setGeoAnchor(geoAnchor)
+        print("setup node's geoanchor")
       }else {
         print("Create NodeAtLocation", ErrorMessage.ERROR_INVALID_COORDINATES.code)
       }
     }
-    
     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
   }
   
@@ -725,10 +845,46 @@ extension ARView3D {
     
     let node = CapsuleNode(self)
     node.Name = "GeoCapsuleNode"
-    node.Initialize()
+    node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
+    
     
     setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+    return node
+  }
+  
+  @objc open func CreateModelNode(_ x: Float, _ y: Float, _ z: Float, _ modelObjString: String) -> ModelNode {
+    let node:ModelNode = ModelNode(self)
+    node.Name = "modelNode"
+    //print("adding anchor and setting position \(anchorEntity?.position.x) \(anchorEntity?.position.y) \(anchorEntity?.position.z)")
+    node.Initialize()
+    node.Model = modelObjString
     
+    let xMeters: Float = 1.0 //UnitHelper.centimetersToMeters(x)
+    let yMeters: Float = 0.0 //UnitHelper.centimetersToMeters(y)
+    let zMeters: Float = 1.0 //UnitHelper.centimetersToMeters(z)
+    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+    return node
+  }
+  
+  @objc open func CreateModelNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool, _ modelObjString: String) -> ModelNode? {
+    guard ARGeoTrackingConfiguration.isSupported else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "CreatModelNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+      return nil
+    }
+    
+
+    
+    let node:ModelNode = ModelNode(self)
+    node.Name = "GeoModelNode"
+    node.Model = modelObjString
+    node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
+    
+    setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+
+    //print("adding the node, this also creates an achor..")
+    
+    
+  
     return node
   }
   
@@ -869,7 +1025,7 @@ extension ARView3D {
           loadNode = self.CreateVideoNodeFromYail(nodeDict)
         case "webview":
           loadNode = self.CreateWebViewNodeFromYail(nodeDict)
-          //case "model":
+          //case "model", "geomodelnode:  --think about obj, where would that be stored?
           //loadNode = self.CreateModelNodeFromYail(nodeDict)
         default:
           // currently not storing or handling modelNode..
@@ -930,18 +1086,7 @@ extension ARView3D {
       altitude: newAltitude
     )
   }
-  
-  @objc open func  createGeoAnchorManually(_ worldPoint: SIMD3<Float>, _ geoCoord: CLLocationCoordinate2D) {
-    // Create world anchor but store geo coordinates
-    let worldAnchor = AnchorEntity(world: simd_float4x4(
-      SIMD4<Float>(1, 0, 0, 0),
-      SIMD4<Float>(0, 1, 0, 0),
-      SIMD4<Float>(0, 0, 1, 0),
-      SIMD4<Float>(worldPoint.x, worldPoint.y, worldPoint.z, 1)
-    ))
-    
-    _arView.scene.addAnchor(worldAnchor)
-  }
+
   
 }
 
@@ -1065,22 +1210,37 @@ extension ARView3D: UIGestureRecognizerDelegate {
   }
 
   @objc fileprivate func handlePinch(sender: UIPinchGestureRecognizer) {
-    guard _sessionRunning else { return }
-    
-    switch sender.state {
-    case .changed:
-      let tapLocation = sender.location(in: _arView)
-
-      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
-         let node = findNodeForEntity(entity) {
-        node.scaleByPinch(scalar: Float(sender.scale))
+      guard _sessionRunning else { return }
+      
+      switch sender.state {
+      case .changed:
+          let tapLocation = sender.location(in: _arView)
+          
+          // Get ALL entities at this location, not just the first one
+          let entities = _arView.entities(at: tapLocation)
+          
+          for entity in entities {
+              // Skip scene understanding entities
+              if String(describing: type(of: entity)).contains("RKSceneUnderstanding") {
+                  print("Skipping scene understanding entity: \(entity.name)")
+                  continue
+              }
+              
+              // Look for your ModelEntity
+              if let modelEntity = entity as? ModelEntity {
+                  if let node = findNodeForEntity(modelEntity) {
+                      print("Found your node: \(node.Name)")
+                      node.scaleByPinch(scalar: Float(sender.scale))
+                      break
+                  }
+              }
+          }
+          
+          sender.scale = 1
+      default:
+          break
       }
-      sender.scale = 1
-    default:
-      break
-    }
   }
-
   @objc fileprivate func handleRotation(sender: UIRotationGestureRecognizer) {
     guard _sessionRunning else { return }
     
