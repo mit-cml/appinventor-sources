@@ -21,6 +21,10 @@ public interface Component {
    */
   public HandlesEventDispatching getDispatchDelegate();
 
+  // We add here a method to avoid having Scheme runtime errors of the method
+  //   not being defined, and instead have build errors.
+  void setComponentName(final String componentName);
+
   /*
    * Components asset directory.
    */

@@ -94,6 +94,8 @@
   (let* ((container :: SimpleContainer (lookup-in-current-form-environment container-name))
          (existing-component (lookup-in-current-form-environment component-name))
          (component-to-add (make component-type container)))
+    ;; Set the component name field
+    (*:setComponentName component-to-add component-name)
     (add-to-current-form-environment component-name component-to-add)
     (add-init-thunk component-name
      (lambda ()
@@ -574,6 +576,8 @@
                          ;;  (format #f "making component: ~A of type: ~A with container: ~A (container-name: ~A)"
                          ;;          component-name component-type component-container (car component-info)))
                          (let ((component-object (make component-type component-container)))
+                           ;; Set the component name field
+                           (*:setComponentName component-object component-name)
                            ;; Construct the component and assign it to its corresponding field
                            (set! (field (this) component-name) component-object)
                            ;; Add the mapping from component name -> component object to the
