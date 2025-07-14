@@ -1639,7 +1639,10 @@ public class YaVersion {
   // For WEBVIEWER_COMPONENT_VERSION 10:
   // - Added ErrorOccurred event
   // - Added RunJavaScript method
-  public static final int WEBVIEWER_COMPONENT_VERSION = 10;
+  // Form WEBVIEWER_COMPONENT_VERSION 11:
+  // - Added the UsesCamera property
+  // - Added the UsesMicrophone property
+  public static final int WEBVIEWER_COMPONENT_VERSION = 11;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
