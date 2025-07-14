@@ -74,7 +74,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   enum State {
       case none,
       colliding,
-           released,
+      released,
       idle
 
   }
@@ -346,13 +346,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       // Configure scene understanding based on tracking type
       _arView.environment.sceneUnderstanding.options = []
       
-      if _trackingType == .worldTracking {
+      if _trackingType == .worldTracking { // TODO expose these options to user
           // Full scene understanding available with world tracking
           _arView.environment.sceneUnderstanding.options.insert(.occlusion)
           _arView.environment.sceneUnderstanding.options.insert(.physics)
           _arView.environment.sceneUnderstanding.options.insert(.collision)
-          
           print("Scene understanding enabled: occlusion, physics, collision")
+        
+        _arView.debugOptions.insert(.showSceneUnderstanding)
       } else if _trackingType == .geoTracking {
           // Limited scene understanding with geo tracking
           _arView.environment.sceneUnderstanding.options.insert(.occlusion)
@@ -367,7 +368,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private func setupCollisionDetection() {
       // Remove existing observer if any
       collisionBeganObserver?.cancel()
-      
+    print("Beginning collision detection")
       // Set up collision detection
       collisionBeganObserver = _arView.scene.subscribe(to: CollisionEvents.Began.self, on: self) { event in
           self.onCollisionBegan(event: event)
@@ -428,15 +429,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
       return nil
   }
-  private func onCollisionBegan(objectHit: Entity) {
-      if objectHit is (Entity & HasSceneUnderstanding) {
-          //if currentState == .released {
-          //    log.debug("Collision with %s", "\(objectHit.name)")
 
-         // }
-      }
-  }
-  
   private func getReferenceImages() -> Set<ARReferenceImage> {
     return Set(_imageMarkers.values.compactMap{ $0._referenceImage })
   }
