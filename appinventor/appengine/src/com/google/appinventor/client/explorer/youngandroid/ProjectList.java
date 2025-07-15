@@ -63,8 +63,8 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   private boolean isTrash;
   private boolean projectsLoaded = false;
 
-  private Comparator<Project> projectComparator = ProjectComparators.COMPARE_BY_NAME_ASCENDING;
-  private Comparator<ProjectFolder> folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_ASCENDING;
+  private Comparator<Project> projectComparator = ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING;
+  private Comparator<ProjectFolder> folderComparator = ProjectComparators.COMPARE_BY_FOLDER_DATE_MODIFIED_ASCENDING;
 
   // UI elements
   @UiField protected CheckBox selectAllCheckBox;
