@@ -567,10 +567,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
        let result = ARNodeUtilities.parseYailToNode(
         sphereNode as SphereNode, yailNodeObj as YailDictionary, _arView.session
        )
-  
-      
       return result
      }
+  
+  private func CreateModelNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
+    let modelnode = ModelNode(self) as ModelNode
+    let yailNodeObj: YailDictionary = yailNodeObj
+    let result = ARNodeUtilities.parseYailToNode(
+      modelnode as ModelNode, yailNodeObj as YailDictionary, _arView.session
+    )
+   return result
+  }
+  
+  private func CreateTextNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
+    let textnode = TextNode(self) as TextNode
+    let yailNodeObj: YailDictionary = yailNodeObj
+    let result = ARNodeUtilities.parseYailToNode(
+      textnode as TextNode, yailNodeObj as YailDictionary, _arView.session
+    )
+   return result
+  }
      
      private func CreateVideoNodeFromYail(_ nodeDict: YailDictionary) -> ARNodeBase? {
          // Implementation depends on your ARNode structure
@@ -885,19 +901,12 @@ extension ARView3D {
       return nil
     }
     
-
-    
     let node:ModelNode = ModelNode(self)
     node.Name = "GeoModelNode"
     node.Model = modelObjString
     node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
     
     setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
-
-    //print("adding the node, this also creates an achor..")
-    
-    
-  
     return node
   }
   
@@ -909,6 +918,21 @@ extension ARView3D {
     
     let node = SphereNode(self)
     node.Name = "GeoSphereNode"
+    node.Initialize()
+    
+    setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+    
+    return node
+  }
+  
+  @objc open func CreateTextNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> TextNode? {
+    guard ARGeoTrackingConfiguration.isSupported else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "CreateTextNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+      return nil
+    }
+    
+    let node = TextNode(self)
+    node.Name = "GeoTextNode"
     node.Initialize()
     
     setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
@@ -955,10 +979,7 @@ extension ARView3D {
    return node
    }
    
-   @objc open func CreateTextNode(_ x: Float, _ y: Float, _ z: Float) -> TextNode {
-   let node = TextNode(self)
-   node.Name = "CreatedTextNode"
-   node.Initialize()
+
    
    let xMeters: Float = UnitHelper.centimetersToMeters(x)
    let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -979,6 +1000,18 @@ extension ARView3D {
    return node
    }
    */
+  
+  @objc open func CreateTextNode(_ x: Float, _ y: Float, _ z: Float) -> TextNode {
+    let node = TextNode(self)
+    node.Name = "CreatedTextNode"
+    node.Initialize()
+    let xMeters: Float = UnitHelper.centimetersToMeters(x)
+    let yMeters: Float = UnitHelper.centimetersToMeters(y)
+    let zMeters: Float = UnitHelper.centimetersToMeters(z)
+    node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+    return node
+  }
+    
   @objc open func CreateWebViewNode(_ x: Float, _ y: Float, _ z: Float) -> WebViewNode {
     let node = WebViewNode(self)
     node.Initialize()
@@ -1023,7 +1056,7 @@ extension ARView3D {
         
         
         guard let type = nodeDict["type"] as? String else {
-          os_log("loadscene missing type", log: .default, type: .info)
+          print("loadscene missing type (\type)")
           continue
         }
 
@@ -1038,8 +1071,10 @@ extension ARView3D {
           loadNode = self.CreateVideoNodeFromYail(nodeDict)
         case "webview":
           loadNode = self.CreateWebViewNodeFromYail(nodeDict)
-          //case "model", "geomodelnode:  --think about obj, where would that be stored?
-          //loadNode = self.CreateModelNodeFromYail(nodeDict)
+        case "model", "geomodelnode":
+          loadNode = self.CreateModelNodeFromYail(nodeDict)
+        case "text", "geotextnode":
+          loadNode = self.CreateModelNodeFromYail(nodeDict)
         default:
           // currently not storing or handling modelNode..
           loadNode = nil
@@ -1048,7 +1083,7 @@ extension ARView3D {
         if let node = loadNode {
           addNode(node)
           newNodes.append(node)
-          os_log("loaded %@", log: .default, type: .info, String(describing: node))
+          print("loaded (\node)")
         }
       }
       

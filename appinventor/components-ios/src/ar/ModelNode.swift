@@ -17,12 +17,13 @@ open class ModelNode: ARNodeBase, ARModel {
     }
   }
   private var _nodeNames: [String] = []
-  private var _rootNodeName: String = ""
+  private var _rootNodeName: String = "model"
   private var _numberToUseForNode: String = "1"
   
 
   @objc init(_ container: ARNodeContainer) {
     super.init(container: container)
+    self.Name="model"
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -149,7 +150,7 @@ open class ModelNode: ARNodeBase, ARModel {
     
     let modelEntity = _modelEntity // was guard
     
-    modelEntity.name = modelEntity.name.isEmpty ? Name : modelEntity.name
+    modelEntity.name = "model" //modelEntity.name.isEmpty ? Name : modelEntity.name
     
     if !_rootNodeName.isEmpty, let childEntity = findEntity(in: modelEntity, withName: _rootNodeName) {
       _addedEntity = childEntity

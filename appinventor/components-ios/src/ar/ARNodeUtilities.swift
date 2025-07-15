@@ -18,17 +18,15 @@ class ARNodeUtilities {
             let model = keyvalue["model"] as? String ?? ""
             let texture = keyvalue["texture"] as? String ?? ""
             let type = keyvalue["type"] as? String ?? ""
-            
+            let scale = keyvalue["scale"] as? String ?? ".2"
             print("parsed model \(model)")
             print("parsed texture \(texture)")
  
             
             node.ModelUrl = model // really only for free form models
             node.Texture = texture
+            node.Scale = Float(scale) ?? 0.5
 
-            // scale?
-          
-            
             if let poseDict = keyvalue["pose"] as? [String: Any] {
                 print("parsed pose before conversion \( poseDict)")
 
