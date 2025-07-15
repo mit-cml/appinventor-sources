@@ -325,7 +325,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 // Check if any of the types match
                 boolean match = false;
                 for (String type : nodeType) {
-                    if (n.Type().contains(type)) {
+                    if (n.NodeType().contains(type)) {
                         match = true;
                         break;  // Exit the loop once we find a match
                     }
@@ -1052,7 +1052,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
             Log.i(LOG_TAG, "savescene node" + node);
             ARNode arnode = (ARNode) node;
-            String type = arnode.Type();
+            String type = arnode.NodeType();
             dictionaries.add(arnode.ARNodeToYail());
             Log.i(LOG_TAG, "saving node " + type);
         }
@@ -1070,7 +1070,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void addNode(ARNode node) {
         Log.i("ADDING ARNODE", "");
         arNodes.add(node);
-        Log.i("ADDED ARNODE", node.Type() + " and session is null? " + (session == null));
+        Log.i("ADDED ARNODE", node.NodeType() + " and session is null? " + (session == null));
     }
 
     // @Override
@@ -1597,9 +1597,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleFunction(description = "Create a new TextNode with default properties at the specified (x,y,z) position.")
     public TextNode CreateTextNode(float x, float y, float z) {
-        return new TextNode(this);
-    }
 
+        TextNode textNode = new TextNode(this);
+
+        float[] position = {x, y, z};
+        float[] rotation = {0, 0, 0, 1};
+        Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
+        Log.i("creating textNode, anchor is", myAnchor.toString());
+        textNode.Anchor(myAnchor);
+
+        return textNode;
+    }
     @SimpleFunction(description = "Create a new VideoNode with default properties at the specified (x,y,z) position.")
     public VideoNode CreateVideoNode(float x, float y, float z) {
         return new VideoNode(this);

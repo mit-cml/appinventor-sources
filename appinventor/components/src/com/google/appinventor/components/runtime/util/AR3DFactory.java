@@ -41,7 +41,7 @@ public final class AR3DFactory {
      int Width();
      void Width(int width);
 
-     String Type();
+     String NodeType();
 
      Anchor Anchor();
      void Anchor(Anchor a);

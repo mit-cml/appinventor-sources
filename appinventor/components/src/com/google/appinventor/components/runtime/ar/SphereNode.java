@@ -14,8 +14,6 @@ import com.google.appinventor.components.runtime.*;
 
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
-
-import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;

@@ -5735,6 +5735,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Image tracking AR tracking type")
   String arTrackingTypeImageTracking();
 
+  @DefaultMessage("GeoTracking")
+  @Description("Geo tracking type")
+  String arTrackingTypeGeoTracking();
+
   @DefaultMessage("None")
   @Description("No plane detection")
   String arPlaneDetectionTypeNone();

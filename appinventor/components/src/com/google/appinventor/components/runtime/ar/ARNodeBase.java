@@ -35,6 +35,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected Session session = null;
   protected String texture = "";
   protected Trackable trackable = null;
+  protected String name = "";
 
   protected String objectModel = Form.ASSETS_PREFIX + "";
 
@@ -125,7 +126,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     this.texture = texture;
   }
 
-
   public Trackable Trackable() {
     return this.trackable;
   }
@@ -150,9 +150,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       category = PropertyCategory.APPEARANCE)
   public void Model(String model) {this.objectModel = model;}
 
+
   @Override
-  @SimpleProperty(description = "Returns the type of node as a String.")
-  public String Type() { return getClass().getSimpleName(); };
+  @SimpleProperty(description = "Returns the type of node as a String.")  // ios restriction calling type
+  public String NodeType() { return getClass().getSimpleName(); };
 
   @SimpleProperty(description = "Convert current pose to yail",
       category = PropertyCategory.APPEARANCE)
