@@ -1,4 +1,6 @@
 {
+    "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Aquesta imatge fa referència als blocs següents que requereixen extensions que no són presents al projecte:\n\n",
+    "Blockly.Msg.ERROR_PARSING_XML": "Error: No s'ha pogut analitzar l'XML des del fitxer PNG. Torneu-ho a provar.",
     "Blockly.Msg.DUPLICATE_BLOCK": "Duplica",
     "Blockly.Msg.SHOW": "Mostra els controls de l'Espai de treball",
     "Blockly.Msg.HIDE": "Oculta els controls de l'espai de treball",
