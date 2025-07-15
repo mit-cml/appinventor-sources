@@ -20,11 +20,10 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
-import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
@@ -37,9 +36,14 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+import com.google.appinventor.client.local.LocalGetMotdService;
+import com.google.appinventor.client.local.LocalProjectService;
+import com.google.appinventor.client.local.LocalTokenAuthService;
+import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
+import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
 import com.google.appinventor.client.style.neo.UiFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
@@ -83,11 +87,8 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -123,7 +124,6 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -146,6 +146,7 @@ public class Ode implements EntryPoint {
   // Application level image bundle
   private static Images IMAGES;
   private static boolean useNeoStyle = false;
+  private static boolean useDarkMode = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -466,18 +467,34 @@ public class Ode implements EntryPoint {
     deckPanel.showWidget(userAdminTabIndex);
   }
 
-  public void hideComponentDesigner() {
-    paletteBox.setVisible(false);
-    sourceStructureBox.setVisible(false);
-    propertiesBox.setVisible(false);
-    HiddenComponentsCheckbox.setVisibility(false);
-  }
-
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
     sourceStructureBox.setVisible(true);
     propertiesBox.setVisible(true);
-    HiddenComponentsCheckbox.setVisibility(true);
+    if (currentFileEditor instanceof YaFormEditor) {
+      YaFormEditor formEditor = (YaFormEditor) currentFileEditor;
+      SimpleVisibleComponentsPanel panel = formEditor.getVisibleComponentsPanel();
+      if (panel != null) {
+        panel.showHiddenComponentsCheckbox();
+      } else {
+        LOG.warning("visibleComponentsPanel is null in showComponentDesigner");
+      }
+    }
+  }
+
+  public void hideComponentDesigner() {
+    paletteBox.setVisible(false);
+    sourceStructureBox.setVisible(false);
+    propertiesBox.setVisible(false);
+    if (currentFileEditor instanceof YaFormEditor) {
+      YaFormEditor formEditor = (YaFormEditor) currentFileEditor;
+      SimpleVisibleComponentsPanel panel = formEditor.getVisibleComponentsPanel();
+      if (panel != null) {
+        panel.hideHiddenComponentsCheckbox();
+      } else {
+        LOG.warning("visibleComponentsPanel is null in hideComponentDesigner");
+      }
+    }
   }
 
   /**
@@ -734,6 +751,12 @@ public class Ode implements EntryPoint {
         c -> userInfoService.getSystemConfig(sessionId, c))
         .then(result -> {
           config = result;
+          // Before we get too far into it, let's see if we have to do a survey!
+          String surveyUrl = config.getSurveyUrl();
+          if (surveyUrl != null && !surveyUrl.isEmpty()) {
+            Window.Location.replace(Urls.makeUri(surveyUrl, true));
+            // off we go, no returning
+          }
           user = result.getUser();
           isReadOnly = user.isReadOnly();
           registerIosExtensions(config.getIosExtensions());
@@ -909,6 +932,7 @@ public class Ode implements EntryPoint {
   private Promise<Void> handleUiPreference() {
     return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
       useNeoStyle = Ode.getUserNewLayout();
+      useDarkMode = Ode.getUserDarkThemeEnabled();
       if (useNeoStyle) {
         GWT.runAsync(new RunAsyncCallback() {
           @Override
@@ -918,7 +942,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(ImagesNeo.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImagesNeo.class);
+            } else {
+              IMAGES = GWT.create(ImagesNeo.class);
+            }
             RootPanel.get().addStyleName("neo");
             uiFactory = new UiFactoryNeo();
             res.apply(null);
@@ -933,7 +961,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(Images.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImages.class);
+            } else {
+              IMAGES = GWT.create(Images.class);
+            }
             RootPanel.get().addStyleName("classic");
             uiFactory = new UiStyleFactory();
             res.apply(null);
@@ -956,9 +988,9 @@ public class Ode implements EntryPoint {
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) componentService);
+    rpcStatusPopup.register(projectService);
+    rpcStatusPopup.register(userInfoService);
+    rpcStatusPopup.register(componentService);
 
     overDeckPanel = new FlowPanel("main");
     Window.setTitle(MESSAGES.titleYoungAndroid());
@@ -2430,6 +2462,11 @@ public class Ode implements EntryPoint {
       });
   }
 
+  public static Promise<?> exportProject() {
+    return ((LocalProjectService) instance.projectService).exportProject(
+        instance.getCurrentYoungAndroidProjectId());
+  }
+
   // Used internally here so that the tutorial panel is only shown on
   // the blocks or designer view, not the gallery or projects (or
   // other) views. unlike setTutorialVisible, we do not side effect
@@ -2637,12 +2674,14 @@ public class Ode implements EntryPoint {
     public static final Resources INSTANCE =  GWT.create(Resources.class);
     
     @Source({
-      "com/google/appinventor/client/light.css"
+      "com/google/appinventor/client/style/classic/light.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicLight();
 
     @Source({
-      "com/google/appinventor/client/dark.css"
+      "com/google/appinventor/client/style/classic/dark.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicDark();
 

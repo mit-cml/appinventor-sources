@@ -98,6 +98,11 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Error given when sending fails")
   String GallerySendingError();
 
+  @DefaultMessage("This project contains extensions and cannot be published to gallery.")
+  @Description("Error Message for displaying error when user tries to publish the project" + 
+    "containing extensions")
+  String ProjectContainsExtensions();
+
   @DefaultMessage("Error Logging Into the Gallery")
   @Description("Error given if login fails for some reason")
   String GalleryLoginError();
@@ -810,21 +815,17 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Switch to disable new layouts")
   String disableNewLayout();
 
-  @DefaultMessage("Select Mode")
-  @Description("Select light or dark mode")
-  String selectMode();  
+  @DefaultMessage("Select Theme")
+  @Description("Select light or dark theme")
+  String selectTheme();
 
-  @DefaultMessage("Dark Mode")
+  @DefaultMessage("Light")
+  @Description("Switch to enable light theme")
+  String lightMode();
+
+  @DefaultMessage("Dark")
   @Description("Switch to enable dark theme")
-  String enableDarkTheme();
-
-  @DefaultMessage("Light Mode")
-  @Description("Switch to disable dark theme")
-  String disableDarkTheme();
-
-  @DefaultMessage("Toggle Light/Dark Theme")
-  @Description("Switch to disable dark theme")
-  String toggleTheme();
+  String darkMode();
 
   @DefaultMessage("User Interface Settings")
   @Description("Open wizard for user interface settings")
@@ -1820,13 +1821,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Confirmation message for selecting multiple projects and clicking delete")
   String confirmDeleteManyProjects(String projectNames);
 
-  @DefaultMessage("Are you sure you want to move these projects to trash: {0}?")
+  @DefaultMessage("Are you sure you want to move these items to trash? {0}")
   @Description("Confirmation message for selecting multiple projects and clicking trash")
   String confirmMoveToTrash(String projectNames);
+  @DefaultMessage("Are you sure you want to delete these items permanently? {0}")
+  @Description("Confirmation message for selecting multiple projects in trash and clicking delete")
+  String confirmDeleteForever(String projectNames);
 
-  @DefaultMessage("Are you sure you want to move {0} projects to trash?")
-  @Description("Confirmation message deleting large number of selected projects")
-  String confirmMoveToTrashCount(String projectNames);
+  @DefaultMessage("Projects: {0}")
+  @Description("Information on selected projects for delete/trash confirmation")
+  String confirmTrashDeleteProjects(String projectNames);
+
+  @DefaultMessage("Folders: {0}")
+  @Description("Information on selected folders for delete/trash confirmation")
+  String confirmTrashDeleteFolders(String folderNames);
 
   @DefaultMessage("Server error: could not delete project. Please try again later!")
   @Description("Error message reported when deleting a project failed on the server.")
@@ -2413,6 +2421,18 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Invalid character. Project names can only contain letters, numbers, and underscores")
   @Description("Error shown when user types invalid character into project name.")
   String invalidCharProjectNameError();
+
+  @DefaultMessage("The first character of the folder name must be a letter")
+  @Description("Error shown when user does not type letter as first character in folder name.")
+  String firstCharFolderNameError();
+
+  @DefaultMessage("Invalid character. Folder names can only contain letters, numbers, and underscores")
+  @Description("Error shown when user types invalid character into folder name.")
+  String invalidCharFolderNameError();
+
+  @DefaultMessage("Folder names cannot contain spaces")
+  @Description("Error shown when user types space into folder name.")
+  String whitespaceFolderNameError();
 
   // Used in youngandroid/YoungAndroidFormUpgrader.java
 
@@ -5363,6 +5383,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Terrain map type")
   String mapTypeTerrain();
 
+  @DefaultMessage("Custom")
+  @Description("Custom map type")
+  String mapTypeCustom();
+
+  @DefaultMessage("CustomUrl")
+  @Description("The URL of the custom tile layer to use as the base of the map")
+  String mapCustomUrl();
+
   @DefaultMessage("Metric")
   @Description("Display name for the metric unit system")
   String mapScaleUnitsMetric();
@@ -5430,6 +5458,22 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("The value supplied for {0} was not a valid latitude, longitude pair.")
   @Description("")
   String expectedLatLongPair(String property);
+
+  @DefaultMessage("The provided URL {0} does not contain placeholders for {1}.") // Can't use {x} here, Java compiler tries to interpret the variable x
+  @Description("")
+  String customUrlNoPlaceholders(String property, String placeholders);
+
+  @DefaultMessage("The provided URL {0}, when tested, failed authentication (with HTTP status code {1}).")
+  @Description("")
+  String customUrlBadAuthentication(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned a bad HTTP status code ({1}).")
+  @Description("")
+  String customUrlBadStatusCode(String property, int statusCode);
+
+  @DefaultMessage("The provided URL {0}, when tested, returned an exception ({1}).")
+  @Description("")
+  String customUrlException(String property, String e);
 
   @DefaultMessage("Notice!")
   @Description("Title for the Warning Dialog Box")
@@ -5609,21 +5653,25 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Display Text for ListView layout choice having single text.")
   String singleTextLayout();
 
-  @DefaultMessage("MainText,DetailText(Vertical)")
+  @DefaultMessage("MainText, DetailText (Vertical)")
   @Description("Display Text for ListView layout choice having two lines of text.")
   String twoTextLayout();
 
-  @DefaultMessage("MainText, DetailText(Horizontal)")
+  @DefaultMessage("MainText, DetailText (Horizontal)")
   @Description("Display Text for ListView layout choice having two lines of text in linear manner.")
   String twoTextLinearLayout();
 
-  @DefaultMessage("Image,MainText")
+  @DefaultMessage("Image, MainText")
   @Description("Display Text for ListView layout choice having an image and single line of text.")
   String imageSingleTextLayout();
 
-  @DefaultMessage("Image, MainText, DetailText(Vertical)")
+  @DefaultMessage("Image, MainText, DetailText (Vertical)")
   @Description("Display Text for ListView layout choice having an image and two lines of text.")
   String imageTwoTextLayout();
+
+  @DefaultMessage("Image (Top), MainText, DetailText")
+  @Description("Display Text for ListView layout choice having an image on top and two lines of text.")
+  String imageTopTwoTextLayout();
 
   // File Scope choices
 
@@ -5721,65 +5769,19 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Dialog to introduce users to new UI. Shown once to each user.")
   String selectUIStyle();
 
-  // Augmented Reality
+  @DefaultMessage("Integer")
+  @Description("Set x-axis label values as Integers")
+  String labelInteger();
 
-  @DefaultMessage("WorldTracking")
-  @Description("World tracking AR tracking type")
-  String arTrackingTypeWorldTracking();
+  @DefaultMessage("Decimal")
+  @Description("Set x-axis label values as Decimal")
+  String labelDecimal();
 
-  @DefaultMessage("OrientationTracking")
-  @Description("Orientation tracking AR tracking type")
-  String arTrackingTypeOrientationTracking();
+  @DefaultMessage("Date")
+  @Description("Set x-axis label values Type as Date")
+  String labelDate();
 
-  @DefaultMessage("ImageTracking")
-  @Description("Image tracking AR tracking type")
-  String arTrackingTypeImageTracking();
-
-  @DefaultMessage("GeoTracking")
-  @Description("Geo tracking type")
-  String arTrackingTypeGeoTracking();
-
-  @DefaultMessage("None")
-  @Description("No plane detection")
-  String arPlaneDetectionTypeNone();
-
-  @DefaultMessage("Horizontal")
-  @Description("Detect horizontal planes")
-  String arPlaneDetectionTypeHorizontal();
-
-  @DefaultMessage("Vertical")
-  @Description("Detect vertical planes")
-  String arPlaneDetectionTypeVertical();
-
-  @DefaultMessage("Both")
-  @Description("Detect both horizontal and vertical planes")
-  String arPlaneDetectionTypeBoth();
-
-  @DefaultMessage("None")
-  @Description("No text truncation")
-  String truncationTypeNone();
-
-  @DefaultMessage("End")
-  @Description("Truncate the end of the text")
-  String truncationTypeEnd();
-
-  @DefaultMessage("Middle")
-  @Description("Truncate the middle of the text")
-  String truncationTypeMiddle();
-
-  @DefaultMessage("Start")
-  @Description("Truncate the beginning of the text")
-  String truncationTypeStart();
-
-  @DefaultMessage("None")
-  @Description("No falloff for the light intensity.")
-  String arFalloffTypeNone();
-
-  @DefaultMessage("Linear")
-  @Description("Linear light intensity falloff.")
-  String arFalloffTypeLinear();
-
-  @DefaultMessage("Quadratic")
-  @Description("Further the distance, the greater the light intensity falloff")
-  String arFalloffTypeQuadratic();
+  @DefaultMessage("Time")
+  @Description("Set x-axis label values Type as Time")
+  String labelTime();
 }

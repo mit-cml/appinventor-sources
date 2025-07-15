@@ -1,0 +1,76 @@
+@def logo-image                         url('static/images/codi-logo.svg');
+@def background-image                   url('static/images/squairy_light.png');
+@def closed-backpack                    url('../blocklyeditor/media/backpack-closed-copy.png');
+@def clr-primary-50 #f3f8e6;
+@def clr-primary-75 #f7f9f2;
+@def clr-primary-200 #ccddb3;
+@def clr-primary #a4cf47;
+@def clr-primary-600 #8fc202;
+@def clr-primary-500 #eef2e0;
+
+@def clr-primary-700 #d2e0a6;
+
+/* destructive-action-hover  */
+@def error #ff6666;
+/* item-color-red  */
+@def v-red #ff0000;
+
+/* top-panel-background-image */
+@def gray-50 #fafafa;
+@def gray-75 #f3f3f3;
+/* top-panel-background-color, text-button-background */
+@def gray-100 #f5f5f5;
+@def gray-200 #eeeeee;
+/* border-color */
+@def gray-300 #e6e6e6;
+@def gray-400 #b3b3b3;
+@def gray-450 #a9a9a9;
+/* label-color  */
+@def gray-500 #9e9e9e;
+@def gray-550 #808080;
+/* top-panel-color */
+@def gray-600 #757575;
+@def gray-650 #696969;
+@def gray-700 #555555;
+/* panel-shadow  */
+@def gray-800 #424242;
+@def gray-900 #212121;
+
+/* background-color  */
+@def v-white #ffffff;
+/* tab-bar-color */
+@def v-black #000000;
+
+/* top-panel-end-color  */
+@def srfc-high-emphasis rgba(255, 255, 255, 0.87);
+/* container-shadow */
+@def elevation-6 rgba(255, 255, 255, 0.11);
+/* shadow-color */
+@def elevation-2 rgba(255, 255, 255, 0.07);
+/* button-shadow-color */
+@def elevation-16 rgba(255, 255, 255, 0.15);
+
+
+/* Colors */
+/* orange */
+@def blocks-designer-color              #F88D34;
+@def project-background-color           #fff6c3;
+/* blue TODO get from srlane */
+@def explorer-border                    #D6E9F8;
+@def simple-panel-border                #67A7E3;
+@def simple-panel-shadow                rgba(82, 168, 236, 0.8);
+@def project-color                      #112abb;
+
+
+@def phoneLandscape                      url('static/images/phoneLandscape.png');
+@def phonePortrait                       url('static/images/phonePortrait.png');
+@def phoneLandscapeTablet                url('static/images/phoneLandscapeTablet.png');
+@def phonePortraitTablet                 url('static/images/phonePortraitTablet.png');
+@def phoneLandscapeMonitor               url('static/images/phoneLandscapeMonitor.png');
+@def phonePortraitMonitor                url('static/images/phonePortraitMonitor.png');
+
+@def navigationbarPortrait               url('static/images/navigationbarPortrait.png');
+@def navigationbarLandscape              url('static/images/navigationbarLandscape.png');
+
+@def project-background                  url('static/images/toolbarBG.png');
+@def row-highlight                       #fff6c3;

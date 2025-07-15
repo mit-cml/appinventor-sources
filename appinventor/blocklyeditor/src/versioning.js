@@ -1029,7 +1029,6 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
   }
 };
 
-
 Blockly.Versioning.makeMethodUseHelper =
   function(componentType, methodName, argNum, replaceFunc) {
     return function(blocksRep, workspace) {
@@ -1854,12 +1853,15 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: The SetDomain and SetRange methods were added.
     2: "noUpgrade",
     // AI2: The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // AI2: The property axesTextColor and method setAxesTextColor were added.
+    4: "noUpgrade"
 
   }, // End Chart upgraders
 
   "ChartData2D": {
-
+    // - The property dataLabelColor and method setDataLabelColor were added.
+    2: "noUpgrade"
   }, // End ChartData2D upgraders
 
   "ChatBot" : {
@@ -2460,7 +2462,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // - Added HintText property, performance optimization
     8: "noUpgrade",
     // AI2: Fixed a designer property issue with ElementColor
-    9: "noUpgrade"
+    9: "noUpgrade",
+    // AI2: 
+    // - Changed TextSize property to FontSize
+    // - Add new layout
+    10: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -2471,7 +2477,9 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
     // AI2:
     // The speed parameter to the LocationChanged event
-    3: "noUpgrade"
+    3: "noUpgrade",
+    // AI2: The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling.
+    4: "noUpgrade"
 
   }, // End LocationSensor upgraders
 
@@ -2506,9 +2514,13 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Adds Units and MapType dropdowns.
     6: [Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'ScaleUnits', 'ScaleUnits'),
-        Blockly.Versioning.makeSetterUseDropdown(
-          'Map', 'MapType', 'MapType')]
+      'Map', 'ScaleUnits', 'ScaleUnits'),
+    Blockly.Versioning.makeSetterUseDropdown(
+      'Map', 'MapType', 'MapType')],
+
+    // AI2:
+    // - Adds CustomUrl (MapType 4).
+    7: "noUpgrade"
 
   }, // End Map upgraders
 
@@ -3087,7 +3099,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // Added the property to allow for the removal of the Thumb Slider
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // Added the NumberOfSteps and ColorThumb property, TouchDown and TouchUp events, 
+    3: "noUpgrade"
 
   }, // End Slider upgraders
 
