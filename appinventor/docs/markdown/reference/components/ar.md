@@ -129,6 +129,9 @@ Component for ARView3D
 {:id="ARView3D.PlaneDetected"} PlaneDetected(*detectedPlane*{:.component})
 : A real-world plane was detected.  The detectedPlane is the component added at the location of the real-world plane.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default FillColor of a DetectedPlane is None, so it is shown visually by default.
 
+{:id="ARView3D.TapAtLocation"} TapAtLocation(*x*{:.number},*y*{:.number},*z*{:.number},*lat*{:.number},*lng*{:.number},*alt*{:.number},*hasGeoCoordinates*{:.boolean},*isANodeAtPoint*{:.boolean})
+: all world and geo coords if avail
+
 {:id="ARView3D.TapAtPoint"} TapAtPoint(*x*{:.number},*y*{:.number},*z*{:.number},*isANodeAtPoint*{:.boolean})
 : The user tapped on a point on the ARView3D.  (x,y,z) is the real-world coordinate of the point.  isANoteAtPoint is true if a node is already at that point and false otherwise.
 
@@ -151,6 +154,9 @@ Component for ARView3D
 {:id="ARView3D.CreateCapsuleNode" class="method returns component"} <i/> CreateCapsuleNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new CapsuleNode with default properties at the specified (x,y,z) position.
 
+{:id="ARView3D.CreateCapsuleNodeAtLocation" class="method returns component"} <i/> CreateCapsuleNodeAtLocation(*x*{:.number},*y*{:.number},*z*{:.number},*lat*{:.number},*lng*{:.number},*altitude*{:.number},*hasGeoCoordinates*{:.boolean},*isANodeAtPoint*{:.boolean})
+: Create a new CapsuleNode with geo coords
+
 {:id="ARView3D.CreateCapsuleNodeAtPlane" class="method returns component"} <i/> CreateCapsuleNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
 : Create a new CapsuleNode with default properties at the plane position.
 
@@ -166,6 +172,12 @@ Component for ARView3D
 {:id="ARView3D.CreateCylinderNode" class="method returns component"} <i/> CreateCylinderNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new CylinderNode with default properties at the specified (x,y,z) position.
 
+{:id="ARView3D.CreateModelNode" class="method returns component"} <i/> CreateModelNode(*x*{:.number},*y*{:.number},*z*{:.number},*modelObjectString*{:.text})
+: Create a new ModelNode with default properties at the specified (x,y,z) position.
+
+{:id="ARView3D.CreateModelNodeAtLocation" class="method returns component"} <i/> CreateModelNodeAtLocation(*x*{:.number},*y*{:.number},*z*{:.number},*lat*{:.number},*lng*{:.number},*altitude*{:.number},*hasGeoCoordinates*{:.boolean},*isANodeAtPoint*{:.boolean},*modelObjectString*{:.text})
+: Create a new ModelNode with geo coords
+
 {:id="ARView3D.CreatePlaneAtPlane" class="method returns component"} <i/> CreatePlaneAtPlane(*targetPlane*{:.component},*p*{:.any})
 : Create a new PlaneNode with default properties at the detected plane position.
 
@@ -177,6 +189,9 @@ Component for ARView3D
 
 {:id="ARView3D.CreateSphereNode" class="method returns component"} <i/> CreateSphereNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new SphereNode with default properties at the specified (x,y,z) position.
+
+{:id="ARView3D.CreateSphereNodeAtLocation" class="method returns component"} <i/> CreateSphereNodeAtLocation(*x*{:.number},*y*{:.number},*z*{:.number},*lat*{:.number},*lng*{:.number},*altitude*{:.number},*hasGeoCoordinates*{:.boolean},*isANodeAtPoint*{:.boolean})
+: Create a new CapsuleNode with geo coords
 
 {:id="ARView3D.CreateSphereNodeAtPlane" class="method returns component"} <i/> CreateSphereNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
 : Create a new SphereNode with default properties at the detected plane position.
@@ -204,6 +219,9 @@ Component for ARView3D
 
 {:id="ARView3D.CreateWebViewNode" class="method returns component"} <i/> CreateWebViewNode(*x*{:.number},*y*{:.number},*z*{:.number})
 : Create a new WebViewNode with default properties at the specified (x,y,z) position.
+
+{:id="ARView3D.CreateWebViewNodeAtLocation" class="method returns component"} <i/> CreateWebViewNodeAtLocation(*x*{:.number},*y*{:.number},*z*{:.number},*lat*{:.number},*lng*{:.number},*altitude*{:.number},*hasGeoCoordinates*{:.boolean},*isANodeAtPoint*{:.boolean})
+: Create a new webViewNode with geo coords
 
 {:id="ARView3D.CreateWebViewNodeAtPlane" class="method returns component"} <i/> CreateWebViewNodeAtPlane(*targetPlane*{:.component},*p*{:.any})
 : Create a new WebViewNode with default properties at the detected plane position.
@@ -288,6 +306,9 @@ Component for BoxNode
 {:id="BoxNode.CornerRadius" .number} *CornerRadius*
 : This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the length, height, or width of the BoxNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be set to zero.
 
+{:id="BoxNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="BoxNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -303,8 +324,11 @@ Component for BoxNode
 {:id="BoxNode.LengthInCentimeters" .number} *LengthInCentimeters*
 : How far, in centimeters, the BoxNode extends along the z-axis.  Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode will not appear.
 
-{:id="BoxNode.Model" .text .ro} *Model*
+{:id="BoxNode.Model" .text} *Model*
 : The 3D model file to be loaded.
+
+{:id="BoxNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="BoxNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -331,13 +355,10 @@ Component for BoxNode
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
 {:id="BoxNode.Texture" .text} *Texture*
-: The 3D texturebe loaded.
+: The 3D texture loaded.
 
 {:id="BoxNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="BoxNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="BoxNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -453,6 +474,9 @@ Component for CapsuleNode
 {:id="CapsuleNode.CapRadiusInCentimeters" .number} *CapRadiusInCentimeters*
 : The radius, in centimeters, of two hemispheres or caps at the ends of a CapsuleNode.  Values less than zero will be treated as their absolute values.  When set to zero or when set to greater than half of the Height, the CapsuleNode will not appear.
 
+{:id="CapsuleNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="CapsuleNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -465,8 +489,11 @@ Component for CapsuleNode
 {:id="CapsuleNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
-{:id="CapsuleNode.Model" .text .ro} *Model*
+{:id="CapsuleNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
+
+{:id="CapsuleNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="CapsuleNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -477,7 +504,7 @@ Component for CapsuleNode
 {:id="CapsuleNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
-{:id="CapsuleNode.Pose" .any .bo} *Pose*
+{:id="CapsuleNode.Pose" .any .wo .bo} *Pose*
 : Set the current pose of the object
 
 {:id="CapsuleNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
@@ -499,13 +526,10 @@ Component for CapsuleNode
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
 {:id="CapsuleNode.Texture" .text} *Texture*
-: The 3D texturebe loaded.
+: The 3D texture loaded.
 
 {:id="CapsuleNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="CapsuleNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="CapsuleNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -621,6 +645,9 @@ Component for ConeNode
 {:id="ConeNode.BottomRadiusInCentimeters" .number} *BottomRadiusInCentimeters*
 : This defines the radius of the bottom of the ConeNode.  A value of zero causes the cone to meet at a point at the bottom.  Values less than zero will be treated as their absolute value.  If the BottomRadius is set to zero and this is set to zero, the ConeNode will not be shown.
 
+{:id="ConeNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="ConeNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -633,6 +660,12 @@ Component for ConeNode
 {:id="ConeNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="ConeNode.Model" .text .bo} *Model*
+: The 3D model file to be loaded.
+
+{:id="ConeNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
+
 {:id="ConeNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -641,6 +674,12 @@ Component for ConeNode
 
 {:id="ConeNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="ConeNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="ConeNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="ConeNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
@@ -655,16 +694,13 @@ Component for ConeNode
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
 {:id="ConeNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+: The 3D texture loaded.
 
 {:id="ConeNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
 {:id="ConeNode.TopRadiusInCentimeters" .number} *TopRadiusInCentimeters*
 : This defines the radius of the top of the ConeNode.  A value of zero causes the cone to meet at a point at the top.  Values less than zero will be treated as their absolute value.  If the BottomRadius is set to zero and this is set to zero, the ConeNode will not be shown.
-
-{:id="ConeNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="ConeNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -774,6 +810,9 @@ Component for CylinderNode
 {:id="CylinderNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="CylinderNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="CylinderNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -786,6 +825,12 @@ Component for CylinderNode
 {:id="CylinderNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="CylinderNode.Model" .text .bo} *Model*
+: The 3D model file to be loaded.
+
+{:id="CylinderNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
+
 {:id="CylinderNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -794,6 +839,12 @@ Component for CylinderNode
 
 {:id="CylinderNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="CylinderNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="CylinderNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="CylinderNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
@@ -811,13 +862,10 @@ Component for CylinderNode
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
 {:id="CylinderNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+: The 3D texture loaded.
 
 {:id="CylinderNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="CylinderNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="CylinderNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -1057,6 +1105,9 @@ Component for ModelNode
 {:id="ModelNode.BoundingBox" .list .ro .bo} *BoundingBox*
 : The minimum and maximum coordinates of the ModelNode.  The minimum and maximum are lists of the x-, y-, z-coordinates, and this returns a list of <code>[min, max]</code> where mine and max are <code>[x, y, z]</code>.
 
+{:id="ModelNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="ModelNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -1066,11 +1117,14 @@ Component for ModelNode
 {:id="ModelNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
-{:id="ModelNode.Model" .text .ro} *Model*
+{:id="ModelNode.Model" .text} *Model*
 : The 3D model file to be loaded.
 
 {:id="ModelNode.NamesOfNodes" .list .ro .bo} *NamesOfNodes*
 : Returns a list of the names of all nodes in the model.  If the model did not name a node, then the node will be named by the component Name and number, such as ModelNode1-1.
+
+{:id="ModelNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="ModelNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -1080,6 +1134,9 @@ Component for ModelNode
 
 {:id="ModelNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="ModelNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
 
 {:id="ModelNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
 : Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
@@ -1094,19 +1151,16 @@ Component for ModelNode
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
 {:id="ModelNode.Scale" .number} *Scale*
-: set scale of the node
+: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
 
 {:id="ModelNode.ShowShadow" .boolean .do} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
-{:id="ModelNode.Texture" .text .do} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+{:id="ModelNode.Texture" .text} *Texture*
+: The 3D texture loaded.
 
 {:id="ModelNode.TextureOpacity" .number .do} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="ModelNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="ModelNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -1255,6 +1309,9 @@ Component for PlaneNode
 {:id="PlaneNode.CornerRadius" .number} *CornerRadius*
 : This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the height or width of the PlaneNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be treated as zero.
 
+{:id="PlaneNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="PlaneNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -1267,8 +1324,11 @@ Component for PlaneNode
 {:id="PlaneNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
-{:id="PlaneNode.Model" .text .ro} *Model*
+{:id="PlaneNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
+
+{:id="PlaneNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="PlaneNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -1291,17 +1351,17 @@ Component for PlaneNode
 {:id="PlaneNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
+{:id="PlaneNode.Scale" .number} *Scale*
+: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
+
 {:id="PlaneNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
-{:id="PlaneNode.Texture" .text .do} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+{:id="PlaneNode.Texture" .text} *Texture*
+: The 3D texture loaded.
 
 {:id="PlaneNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="PlaneNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="PlaneNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -1488,6 +1548,9 @@ Component for PyramidNode
 {:id="PyramidNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="PyramidNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="PyramidNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -1503,8 +1566,11 @@ Component for PyramidNode
 {:id="PyramidNode.LengthInCentimeters" .number} *LengthInCentimeters*
 : How far, in centimeters, the PyramidNode extends along the z-axis.  Values less than zero will be treated as their absolute values.  When set to zero, the PyramidNode will not be shown.
 
-{:id="PyramidNode.Model" .text .ro} *Model*
+{:id="PyramidNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
+
+{:id="PyramidNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="PyramidNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -1515,26 +1581,26 @@ Component for PyramidNode
 {:id="PyramidNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
 
+{:id="PyramidNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="PyramidNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
+
 {:id="PyramidNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
 {:id="PyramidNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
-{:id="PyramidNode.Scale" .number} *Scale*
-: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
-
 {:id="PyramidNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
 {:id="PyramidNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+: The 3D texture loaded.
 
 {:id="PyramidNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="PyramidNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="PyramidNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -1647,6 +1713,9 @@ Component for SphereNode
 {:id="SphereNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="SphereNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="SphereNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -1656,8 +1725,11 @@ Component for SphereNode
 {:id="SphereNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
-{:id="SphereNode.Model" .text .ro} *Model*
+{:id="SphereNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
+
+{:id="SphereNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="SphereNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -1683,17 +1755,17 @@ Component for SphereNode
 {:id="SphereNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
+{:id="SphereNode.Scale" .number} *Scale*
+: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
+
 {:id="SphereNode.ShowShadow" .boolean .do} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
-{:id="SphereNode.Texture" .text .do} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+{:id="SphereNode.Texture" .text} *Texture*
+: The 3D texture loaded.
 
 {:id="SphereNode.TextureOpacity" .number .do} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="SphereNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="SphereNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -1970,6 +2042,9 @@ Component for TextNode
 {:id="TextNode.DepthInCentimeters" .number} *DepthInCentimeters*
 : How far, in centimeters, the TextNode extends along the z-axis.  Values less than zero will be treated as zero.
 
+{:id="TextNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="TextNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -1982,6 +2057,12 @@ Component for TextNode
 {:id="TextNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="TextNode.Model" .text .bo} *Model*
+: The 3D model file to be loaded.
+
+{:id="TextNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
+
 {:id="TextNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -1990,6 +2071,12 @@ Component for TextNode
 
 {:id="TextNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="TextNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="TextNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="TextNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
@@ -2007,13 +2094,10 @@ Component for TextNode
 : Text to display by the TextNode.  If this is set to "", the TextNode will not be shown.
 
 {:id="TextNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+: The 3D texture loaded.
 
 {:id="TextNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="TextNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="TextNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -2123,6 +2207,9 @@ Component for TorusNode
 {:id="TorusNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="TorusNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="TorusNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2132,8 +2219,11 @@ Component for TorusNode
 {:id="TorusNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
-{:id="TorusNode.Model" .text .ro} *Model*
+{:id="TorusNode.Model" .text} *Model*
 : The 3D model file to be loaded.
+
+{:id="TorusNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="TorusNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -2150,7 +2240,7 @@ Component for TorusNode
 {:id="TorusNode.Pose" .any .wo .bo} *Pose*
 : Set the current pose of the object
 
-{:id="TorusNode.PoseFromPropertyPosition" .text .wo .bo} *PoseFromPropertyPosition*
+{:id="TorusNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
 : Set the current pose of the object from property
 
 {:id="TorusNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
@@ -2170,9 +2260,6 @@ Component for TorusNode
 
 {:id="TorusNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="TorusNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="TorusNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -2282,6 +2369,9 @@ Component for TubeNode
 {:id="TubeNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="TubeNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="TubeNode.FillColor" .color} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2297,6 +2387,12 @@ Component for TubeNode
 {:id="TubeNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
+{:id="TubeNode.Model" .text .bo} *Model*
+: The 3D model file to be loaded.
+
+{:id="TubeNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
+
 {:id="TubeNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
 
@@ -2308,6 +2404,12 @@ Component for TubeNode
 
 {:id="TubeNode.PinchToScale" .boolean} *PinchToScale*
 : If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node's Scale cannot be changed by the pinch gesture.
+
+{:id="TubeNode.Pose" .any .wo .bo} *Pose*
+: Set the current pose of the object
+
+{:id="TubeNode.PoseFromPropertyPosition" .text .wo} *PoseFromPropertyPosition*
+: Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1
 
 {:id="TubeNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
@@ -2322,13 +2424,10 @@ Component for TubeNode
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
 {:id="TubeNode.Texture" .text} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+: The 3D texture loaded.
 
 {:id="TubeNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="TubeNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="TubeNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -2438,6 +2537,9 @@ Component for VideoNode
 {:id="VideoNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="VideoNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="VideoNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2453,8 +2555,11 @@ Component for VideoNode
 {:id="VideoNode.IsPlaying" .boolean .ro .bo} *IsPlaying*
 : Returns true if the video is currently playing false otherwise.
 
-{:id="VideoNode.Model" .text .ro} *Model*
+{:id="VideoNode.Model" .text} *Model*
 : The 3D model file to be loaded.
+
+{:id="VideoNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="VideoNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -2477,6 +2582,9 @@ Component for VideoNode
 {:id="VideoNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
+{:id="VideoNode.Scale" .number} *Scale*
+: The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.
+
 {:id="VideoNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
@@ -2484,13 +2592,10 @@ Component for VideoNode
 : The "path" to the video.  Usually, this will be the name of the video file, which should be added in the Designer.
 
 {:id="VideoNode.Texture" .text .do} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+: The 3D texture loaded.
 
 {:id="VideoNode.TextureOpacity" .number .do} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="VideoNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="VideoNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
@@ -2621,6 +2726,9 @@ Component for WebViewNode
 {:id="WebViewNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="WebViewNode.EnablePhysics" .boolean} *EnablePhysics*
+: If the property is set to true, physics apply
+
 {:id="WebViewNode.FillColor" .color .do} *FillColor*
 : The color of the node.  If the Texture is set, the color is not shown.
 
@@ -2636,8 +2744,11 @@ Component for WebViewNode
 {:id="WebViewNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
 
-{:id="WebViewNode.Model" .text .ro} *Model*
+{:id="WebViewNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
+
+{:id="WebViewNode.NodeType" .text .ro .bo} *NodeType*
+: Returns the type of node as a String.
 
 {:id="WebViewNode.Opacity" .number} *Opacity*
 : Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -2666,14 +2777,11 @@ Component for WebViewNode
 {:id="WebViewNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
 
-{:id="WebViewNode.Texture" .text .do} *Texture*
-: The image used to texture the node.  If set, the FillColor is not shown.
+{:id="WebViewNode.Texture" .text} *Texture*
+: The 3D texture loaded.
 
 {:id="WebViewNode.TextureOpacity" .number .do} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
-
-{:id="WebViewNode.Type" .text .ro .bo} *Type*
-: Returns the type of node as a String.
 
 {:id="WebViewNode.Visible" .boolean} *Visible*
 : Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.
