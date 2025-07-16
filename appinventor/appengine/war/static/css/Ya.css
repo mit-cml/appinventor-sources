@@ -310,16 +310,6 @@ div.StatusPanel {
 }
 
 /*
- * MotdBox
- */
-
-.ode-Motd {
-  background-color: #f7f9f2;
-  font-size: small;
-  color: #555;
-}
-
-/*
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
 .ode-ProjectFieldSpan {
@@ -510,16 +500,7 @@ div.StatusPanel {
 
 .ode-Logo {
   margin: 0 0 4px 4px;
-/*  -webkit-filter: drop-shadow(0px 0px 1px #222);
-  filter:         drop-shadow(0px 0px 1px #222); */
 }
-
-/*
-.ode-Logo:hover {
-  -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
-}
-*/
 
 .ode-LogoText {
   font-size: 16px;
@@ -921,13 +902,12 @@ div.StatusPanel {
   box-shadow: none;
 }
 
-.ode-TextButton:hover,
-.gwt-Button:hover {
+.ode-TextButton-up-hovering,
+.gwt-Button-up-hovering:hover {
   color: #333333;
   border-color: #e6e6e6 #e6e6e6 #bfbfbf;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   background-color: #e6e6e6;
-  *background-color: #d9d9d9;
   text-decoration: none;
   background-position: 0 -15px;
   -webkit-transition: background-position 0.1s linear;
@@ -1298,7 +1278,7 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 11px 43px 7px 48px;
+  padding: 11px 70px 10px 48px;
 }
 
 .ode-SimpleMockFormPhonePortrait {
@@ -3269,6 +3249,7 @@ textarea::-webkit-input-placeholder {
 .ac-active {
   background-color: #b2b4bf;
 }
+
 .ai_type_block {
   position: absolute;
   z-index: 2000;
@@ -3424,7 +3405,7 @@ div.dropdiv p {
   transition: border-color 0.2s ease-in-out;
 }
 
-.hidden-radio:checked + img {
+.hidden-radio:checked + div img {
   border-color: #7D9D36;
 }
 
@@ -3432,7 +3413,7 @@ div.dropdiv p {
   border-color: #b3c833;
 }
 
-.hidden-radio:focus + img {
+.hidden-radio:focus div + img {
   box-shadow: 0 0 0 2px rgba(186, 238, 86, 0.6);
 }
 
@@ -3481,4 +3462,7 @@ div.dropdiv p {
 .popup a {
   color: #fff;
   text-decoration: underline;
+}
+.ode-DialogBox-light .dark, .ode-DialogBox-dark .light {
+  display: none;
 }

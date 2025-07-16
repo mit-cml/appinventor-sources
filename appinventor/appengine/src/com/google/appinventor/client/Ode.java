@@ -36,13 +36,13 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.local.LocalGetMotdService;
 import com.google.appinventor.client.local.LocalProjectService;
 import com.google.appinventor.client.local.LocalTokenAuthService;
 import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
+import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
 import com.google.appinventor.client.style.neo.UiFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
@@ -60,8 +60,6 @@ import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.UISettingsWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.shared.rpc.GetMotdService;
-import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
@@ -147,6 +145,7 @@ public class Ode implements EntryPoint {
   // Application level image bundle
   private static Images IMAGES;
   private static boolean useNeoStyle = false;
+  private static boolean useDarkMode = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -159,8 +158,6 @@ public class Ode implements EntryPoint {
 
   // User settings
   private static UserSettings userSettings;
-
-  private MotdFetcher motdFetcher;
 
   // User information
   private User user;
@@ -259,9 +256,6 @@ public class Ode implements EntryPoint {
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
-
-  // Web service for get motd information
-  private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
 
   // Web service for component related operations
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
@@ -740,7 +734,6 @@ public class Ode implements EntryPoint {
 
     setupOrigin(projectService);
     setupOrigin(userInfoService);
-    setupOrigin(getMotdService);
     setupOrigin(componentService);
     setupOrigin(adminInfoService);
     setupOrigin(tokenAuthService);
@@ -930,6 +923,7 @@ public class Ode implements EntryPoint {
   private Promise<Void> handleUiPreference() {
     return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
       useNeoStyle = Ode.getUserNewLayout();
+      useDarkMode = Ode.getUserDarkThemeEnabled();
       if (useNeoStyle) {
         GWT.runAsync(new RunAsyncCallback() {
           @Override
@@ -939,7 +933,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(ImagesNeo.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImagesNeo.class);
+            } else {
+              IMAGES = GWT.create(ImagesNeo.class);
+            }
             RootPanel.get().addStyleName("neo");
             uiFactory = new UiFactoryNeo();
             res.apply(null);
@@ -954,7 +952,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(Images.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImages.class);
+            } else {
+              IMAGES = GWT.create(Images.class);
+            }
             RootPanel.get().addStyleName("classic");
             uiFactory = new UiStyleFactory();
             res.apply(null);
@@ -1079,34 +1081,12 @@ public class Ode implements EntryPoint {
       }
     });
 
-    setupMotd();
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
       showSplashScreens();
     }
     return resolve(result);
-  }
-
-  private void setupMotd() {
-    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        LOG.info(MESSAGES.getMotdFailed());
-      }
-
-      @Override
-      public void onSuccess(Integer intervalSecs) {
-        if (intervalSecs > 0) {
-          topPanel.showMotd();
-          motdFetcher = new MotdFetcher(intervalSecs);
-          motdFetcher.register((ExtendedServiceProxy<?>) projectService);
-          motdFetcher.register((ExtendedServiceProxy<?>) userInfoService);
-        }
-      }
-    };
-
-    getGetMotdService().getCheckInterval(callback);
   }
 
   /**
@@ -1206,15 +1186,6 @@ public class Ode implements EntryPoint {
    */
   public UserInfoServiceAsync getUserInfoService() {
     return userInfoService;
-  }
-
-  /**
-   * Get an instance of the motd web service.
-   *
-   * @return motd web service instance
-   */
-  public GetMotdServiceAsync getGetMotdService() {
-    return getMotdService;
   }
 
   /**
@@ -1556,11 +1527,6 @@ public class Ode implements EntryPoint {
   private void onClosing() {
     // At this point, we aren't allowed to do any UI.
     windowClosing = true;
-
-    if (motdFetcher != null) {
-      motdFetcher.unregister((ExtendedServiceProxy<?>) projectService);
-      motdFetcher.unregister((ExtendedServiceProxy<?>) userInfoService);
-    }
 
     // Unregister services with RPC status popup.
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) projectService);
@@ -2671,12 +2637,14 @@ public class Ode implements EntryPoint {
     public static final Resources INSTANCE =  GWT.create(Resources.class);
     
     @Source({
-      "com/google/appinventor/client/light.css"
+      "com/google/appinventor/client/style/classic/light.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicLight();
 
     @Source({
-      "com/google/appinventor/client/dark.css"
+      "com/google/appinventor/client/style/classic/dark.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicDark();
 

@@ -122,7 +122,7 @@ Blockly.WarningIndicator.prototype.createDom = function() {
 
   this.warningToggleGroup_ = Blockly.utils.dom.createSvgElement('g', {}, this.svgGroup_);
   this.warningToggle_ = Blockly.utils.dom.createSvgElement('rect',
-      {'fill': "#eeeeee",'width':"120", 'height':"20", 'x':"-15",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {'width':"120", 'height':"20", 'x':"-15",'y':"20",'class':"warningNav"},
       this.warningToggleGroup_);
   this.warningToggleText_ = Blockly.utils.dom.createSvgElement('text',
       {'fill': "black", 'transform':"translate(45,35)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
@@ -130,19 +130,19 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.warningToggleText_.textContent = Blockly.Msg.SHOW_WARNINGS;
 
   this.warningNavPrevious_ = Blockly.utils.dom.createSvgElement('path',
-      {'fill': "#eeeeee", "d": "M 0,7 L 10,17 L 20,7 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {"d": "M 0,7 L 10,17 L 20,7 Z", 'class':"warningNav"},
       this.svgGroup_);
 
   this.warningNavNext_ = Blockly.utils.dom.createSvgElement('path',
-      {'fill': "#eeeeee", "d": "M 10,-31 L 0,-21 L 20,-21 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {"d": "M 10,-31 L 0,-21 L 20,-21 Z", 'class':"warningNav"},
       this.svgGroup_);
 
   this.errorNavPrevious_ = Blockly.utils.dom.createSvgElement('path',
-      {'fill': "#eeeeee", "d": "M 67,7 L 77,17 L 87,7 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {"d": "M 67,7 L 77,17 L 87,7 Z", 'class':"warningNav"},
       this.svgGroup_);
 
   this.errorNavNext_ = Blockly.utils.dom.createSvgElement('path',
-      {'fill': "#eeeeee", "d": "M 87,-21 L 67,-21 L 77,-31 Z", 'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {"d": "M 87,-21 L 67,-21 L 77,-31 Z", 'class':"warningNav"},
       this.svgGroup_);
 
   return this.svgGroup_;

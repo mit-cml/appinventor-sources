@@ -390,13 +390,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("error message when fail to send to user from moderator")
   String moderationErrorFailToSendEmail();
 
-
-  // Used in MotdFetcher.java
-
-  @DefaultMessage("Failed to contact server to get the MOTD.")
-  @Description("Message displayed when cannot get a MOTD from the server.")
-  String getMotdFailed();
-
   // Used in Ode.java
 
   @DefaultMessage("MIT App Inventor")
@@ -815,21 +808,17 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Switch to disable new layouts")
   String disableNewLayout();
 
-  @DefaultMessage("Select Mode")
-  @Description("Select light or dark mode")
-  String selectMode();  
+  @DefaultMessage("Select Theme")
+  @Description("Select light or dark theme")
+  String selectTheme();
 
-  @DefaultMessage("Dark Mode")
+  @DefaultMessage("Light")
+  @Description("Switch to enable light theme")
+  String lightMode();
+
+  @DefaultMessage("Dark")
   @Description("Switch to enable dark theme")
-  String enableDarkTheme();
-
-  @DefaultMessage("Light Mode")
-  @Description("Switch to disable dark theme")
-  String disableDarkTheme();
-
-  @DefaultMessage("Toggle Light/Dark Theme")
-  @Description("Switch to disable dark theme")
-  String toggleTheme();
+  String darkMode();
 
   @DefaultMessage("User Interface Settings")
   @Description("Open wizard for user interface settings")
@@ -932,12 +921,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Messages")
   @Description("Caption for message output box.")
   String messagesOutputBoxCaption();
-
-  // Used in boxes/MotdBox.java
-
-  @DefaultMessage("Welcome to App Inventor!")
-  @Description("Initial caption for MOTD box.")
-  String motdBoxCaption();
 
   // Used in boxes/OdeLogBox.java
 
