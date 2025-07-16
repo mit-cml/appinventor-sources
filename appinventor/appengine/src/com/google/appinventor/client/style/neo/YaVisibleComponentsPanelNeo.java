@@ -6,9 +6,10 @@
 package com.google.appinventor.client.style.neo;
 
 import com.google.appinventor.client.components.Icon;
-import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
-import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
+import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -17,9 +18,9 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class SimpleVisibleComponentsPanelNeo extends SimpleVisibleComponentsPanel {
+public class YaVisibleComponentsPanelNeo extends YaVisibleComponentsPanel {
   interface SimpleVisibleComponentsPanelUiBinderNeo extends UiBinder<VerticalPanel,
-      SimpleVisibleComponentsPanelNeo> {}
+      YaVisibleComponentsPanelNeo> {}
   @UiField protected VerticalPanel phoneScreen;
   @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   @UiField(provided = true) protected ListBox listboxPhonePreview;
@@ -27,9 +28,9 @@ public class SimpleVisibleComponentsPanelNeo extends SimpleVisibleComponentsPane
   @UiField Icon size_icon;
   @UiField CheckBox HiddenComponentsCheckbox;
 
-  public SimpleVisibleComponentsPanelNeo(final SimpleEditor editor,
-                                         SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
-    super(editor, nonVisibleComponentsPanel);
+  public YaVisibleComponentsPanelNeo(final ProjectEditor projectEditor,
+      SimpleNonVisibleComponentsPanel<MockForm> nonVisibleComponentsPanel) {
+    super(projectEditor, nonVisibleComponentsPanel);
   }
 
   @Override
