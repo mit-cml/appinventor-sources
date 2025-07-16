@@ -116,21 +116,11 @@ body {
 /*
    * MessagesOutputBox
    */
+  .ode-MessagesOutput {
+    background-color: background-color;
+  }
 
-.ode-MessagesOutput {
-  background-color: v-white;
-}
-
-/*
-   * MotdBox
-   */
-
-.ode-Motd {
-  background-color: clr-primary-75;
-  color: gray-700;
-}
-
-/*
+  /*
    * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
    */
 .ode-ProjectListButton {

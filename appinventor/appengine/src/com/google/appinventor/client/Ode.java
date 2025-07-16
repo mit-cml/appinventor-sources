@@ -36,7 +36,6 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.local.LocalGetMotdService;
 import com.google.appinventor.client.local.LocalProjectService;
 import com.google.appinventor.client.local.LocalTokenAuthService;
 import com.google.appinventor.client.local.LocalUserInfoService;
@@ -60,8 +59,6 @@ import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.UISettingsWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.shared.rpc.GetMotdService;
-import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
@@ -160,8 +157,6 @@ public class Ode implements EntryPoint {
   // User settings
   private static UserSettings userSettings;
 
-  private MotdFetcher motdFetcher;
-
   // User information
   private User user;
 
@@ -259,9 +254,6 @@ public class Ode implements EntryPoint {
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
-
-  // Web service for get motd information
-  private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
 
   // Web service for component related operations
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
@@ -742,7 +734,6 @@ public class Ode implements EntryPoint {
 
     setupOrigin(projectService);
     setupOrigin(userInfoService);
-    setupOrigin(getMotdService);
     setupOrigin(componentService);
     setupOrigin(adminInfoService);
     setupOrigin(tokenAuthService);
@@ -1094,31 +1085,9 @@ public class Ode implements EntryPoint {
       }
     });
 
-    setupMotd();
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
     return resolve(result);
-  }
-
-  private void setupMotd() {
-    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        LOG.info(MESSAGES.getMotdFailed());
-      }
-
-      @Override
-      public void onSuccess(Integer intervalSecs) {
-        if (intervalSecs > 0) {
-          topPanel.showMotd();
-          motdFetcher = new MotdFetcher(intervalSecs);
-          motdFetcher.register((ExtendedServiceProxy<?>) projectService);
-          motdFetcher.register((ExtendedServiceProxy<?>) userInfoService);
-        }
-      }
-    };
-
-    getGetMotdService().getCheckInterval(callback);
   }
 
   /**
@@ -1218,15 +1187,6 @@ public class Ode implements EntryPoint {
    */
   public UserInfoServiceAsync getUserInfoService() {
     return userInfoService;
-  }
-
-  /**
-   * Get an instance of the motd web service.
-   *
-   * @return motd web service instance
-   */
-  public GetMotdServiceAsync getGetMotdService() {
-    return getMotdService;
   }
 
   /**
@@ -1568,11 +1528,6 @@ public class Ode implements EntryPoint {
   private void onClosing() {
     // At this point, we aren't allowed to do any UI.
     windowClosing = true;
-
-    if (motdFetcher != null) {
-      motdFetcher.unregister((ExtendedServiceProxy<?>) projectService);
-      motdFetcher.unregister((ExtendedServiceProxy<?>) userInfoService);
-    }
 
     // Unregister services with RPC status popup.
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) projectService);
