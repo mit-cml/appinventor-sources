@@ -1264,23 +1264,34 @@ extension ARView3D: UIGestureRecognizerDelegate {
       case .changed:
           let tapLocation = sender.location(in: _arView)
           
-          // Get ALL entities at this location, not just the first one
-          let entities = _arView.entities(at: tapLocation)
-          
-          for entity in entities {
-              // Skip scene understanding entities
-              if String(describing: type(of: entity)).contains("RKSceneUnderstanding") {
-                  print("Skipping scene understanding entity: \(entity.name)")
-                  continue
+          // Use raycast to get world position
+          if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
+              let hitPoint = SIMD3<Float>(
+                  result.worldTransform.columns.3.x,
+                  result.worldTransform.columns.3.y,
+                  result.worldTransform.columns.3.z
+              )
+              
+              // Find the closest node to the hit point
+              var closestNode: ARNodeBase?
+              var closestDistance: Float = Float.greatestFiniteMagnitude
+              let maxDistance: Float = 0.2 // 20cm threshold
+              
+              for (node, _) in _nodeToAnchorDict {
+                  let nodePosition = node._modelEntity.transform.translation
+                  let distance = simd_distance(nodePosition, hitPoint)
+                  
+                  if distance < closestDistance && distance < maxDistance {
+                      closestDistance = distance
+                      closestNode = node
+                  }
               }
               
-              // Look for your ModelEntity
-              if let modelEntity = entity as? ModelEntity {
-                  if let node = findNodeForEntity(modelEntity) {
-                      print("Found your node: \(node.Name)")
-                      node.scaleByPinch(scalar: Float(sender.scale))
-                      break
-                  }
+              if let node = closestNode {
+                  print("Found closest node: \(node.Name) at distance: \(closestDistance)m")
+                  node.scaleByPinch(scalar: Float(sender.scale))
+              } else {
+                  print("No nodes within \(maxDistance)m of tap location")
               }
           }
           
