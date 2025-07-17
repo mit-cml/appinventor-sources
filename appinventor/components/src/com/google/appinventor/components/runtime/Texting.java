@@ -161,8 +161,6 @@ import org.json.JSONObject;
 
 @SimpleObject
 @UsesPermissions(permissionNames =
-  "com.google.android.apps.googlevoice.permission.RECEIVE_SMS, " +
-  "com.google.android.apps.googlevoice.permission.SEND_SMS, " +
   "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " +
   "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS, " +
   "android.permission.POST_NOTIFICATIONS")
@@ -523,6 +521,10 @@ public class Texting extends AndroidNonvisibleComponent
                   @ActionElement(name = "com.google.android.apps.googlevoice.SMS_RECEIVED")
               })
           })
+  })
+  @UsesPermissions({
+    "com.google.android.apps.googlevoice.permission.RECEIVE_SMS",
+    "com.google.android.apps.googlevoice.permission.SEND_SMS"
   })
   public void GoogleVoiceEnabled(boolean enabled) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
