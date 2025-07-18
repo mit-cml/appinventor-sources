@@ -750,18 +750,36 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Trackable mostRecentTrackable = hit.getTrackable();
                 Anchor a = hit.createAnchor();
 
-                Pose worldPose = hit.getHitPose();
+                /*Pose worldPose = hit.getHitPose();
                 float[] worldPosition = worldPose.getTranslation();
 
                 // Convert to geospatial coordinates
-                Earth earth = session.getEarth();
+               Earth earth = session.getEarth();
                 GeospatialPose geospatialPose = earth.getCameraGeospatialPose();
                 //earth.getPose()
                 Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
                 if (mostRecentTrackable instanceof Plane) {
-                    ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
+
+                */
+
+                Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
+                if (mostRecentTrackable instanceof Plane){
+                    ARDetectedPlane arplane = new DetectedPlane((Plane)mostRecentTrackable);
+
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
-                } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
+
+
+                }
+                else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
+                    TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
+                }
+                else if ((mostRecentTrackable instanceof InstantPlacementPoint)
+                    || (mostRecentTrackable instanceof DepthPoint)){
+
+
+                    //ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
+                    //ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
+                } /*else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
                     //send everything, will sort out if we have it or not
                     // TBD update isGeo
                     //earth or camera, get coord?
@@ -770,7 +788,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 } else if ((mostRecentTrackable instanceof InstantPlacementPoint)
                     || (mostRecentTrackable instanceof DepthPoint)) {
                     // are there hooks for this?
-                }
+                }*/
             }
         }
     }
@@ -971,6 +989,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         session.pause();
     }
 
+
     @Override
     public void onClear() {
         onPause();
@@ -990,6 +1009,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             arFilamentRenderer.destroy();
             arFilamentRenderer = null;
         }
+    }
+
+    @SimpleFunction(description = "Delete")
+    public void onDelete() {
     }
 
     @SimpleFunction(description = "Load scene from storage")
@@ -1293,6 +1316,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     // FUNCTIONS
+
+    @Override
+    public void setChildNeedsLayout(AndroidViewComponent component) {
+        throw new UnsupportedOperationException("Canvas.setChildNeedsLayout() called");
+    }
 
     @SimpleFunction(description = "Starts the live camera feed and begins tracking.")
     public void StartTracking() {

@@ -13,9 +13,14 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 
 import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
+
+import com.google.appinventor.client.editor.simple.components.MockARView3D;
+import com.google.appinventor.client.editor.simple.components.MockAmbientLight;
 import com.google.appinventor.client.editor.simple.components.MockBall;
+import com.google.appinventor.client.editor.simple.components.MockBoxNode;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
+import com.google.appinventor.client.editor.simple.components.MockCapsuleNode;
 import com.google.appinventor.client.editor.simple.components.MockChatBot;
 import com.google.appinventor.client.editor.simple.components.MockChart;
 import com.google.appinventor.client.editor.simple.components.MockChartData2D;
@@ -24,9 +29,12 @@ import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCircularProgress;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockConeNode;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
+import com.google.appinventor.client.editor.simple.components.MockCylinderNode;
 import com.google.appinventor.client.editor.simple.components.MockDataFile;
 import com.google.appinventor.client.editor.simple.components.MockDatePicker;
+import com.google.appinventor.client.editor.simple.components.MockDirectionalLight;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockFeatureCollection;
 import com.google.appinventor.client.editor.simple.components.MockFilePicker;
@@ -39,6 +47,7 @@ import com.google.appinventor.client.editor.simple.components.MockSpreadsheet;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImageBot;
+import com.google.appinventor.client.editor.simple.components.MockImageMarker;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
@@ -47,24 +56,35 @@ import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockMap;
 import com.google.appinventor.client.editor.simple.components.MockMarker;
+import com.google.appinventor.client.editor.simple.components.MockModelNode;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
+import com.google.appinventor.client.editor.simple.components.MockPointLight;
 import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
+import com.google.appinventor.client.editor.simple.components.MockPlaneNode;
 import com.google.appinventor.client.editor.simple.components.MockPolygon;
+import com.google.appinventor.client.editor.simple.components.MockPyramidNode;
 import com.google.appinventor.client.editor.simple.components.MockRadioButton;
 import com.google.appinventor.client.editor.simple.components.MockRectangle;
 import com.google.appinventor.client.editor.simple.components.MockScrollHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockScrollVerticalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockSlider;
+import com.google.appinventor.client.editor.simple.components.MockSphereNode;
 import com.google.appinventor.client.editor.simple.components.MockSpinner;
+import com.google.appinventor.client.editor.simple.components.MockSpotlight;
 import com.google.appinventor.client.editor.simple.components.MockSwitch;
 import com.google.appinventor.client.editor.simple.components.MockTableArrangement;
 import com.google.appinventor.client.editor.simple.components.MockTextBox;
+import com.google.appinventor.client.editor.simple.components.MockTextNode;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
+import com.google.appinventor.client.editor.simple.components.MockTorusNode;
 import com.google.appinventor.client.editor.simple.components.MockTranslator;
+import com.google.appinventor.client.editor.simple.components.MockTubeNode;
 import com.google.appinventor.client.editor.simple.components.MockVerticalArrangement;
+import com.google.appinventor.client.editor.simple.components.MockVideoNode;
 import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
+import com.google.appinventor.client.editor.simple.components.MockWebViewNode;
 
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -225,6 +245,35 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/anomaly.png", images.anomalyDetection());
     bundledImages.put("images/filepicker.png", images.file());
     bundledImages.put("images/trendline.png", images.trendline());
+    bundledImages.put("images/capsuleNode.png", images.capsuleNode());
+    bundledImages.put("images/coneNode.png", images.coneNode());
+    bundledImages.put("images/boxNode.png", images.boxNode());
+    bundledImages.put("images/cylinderNode.png", images.cylinderNode());
+    bundledImages.put("images/planeNode.png", images.planeNode());
+    bundledImages.put("images/pyramidNode.png", images.pyramidNode());
+    bundledImages.put("images/sphereNode.png", images.sphereNode());
+    bundledImages.put("images/textNode.png", images.textNode());
+    bundledImages.put("images/torusNode.png", images.torusNode());
+    bundledImages.put("images/tubeNode.png", images.tubeNode());
+    bundledImages.put("images/videoNode.png", images.videoNode());
+    bundledImages.put("images/videoNodeBig.png", images.videoNodeBig());
+    bundledImages.put("images/webViewNode.png", images.webViewNode());
+    bundledImages.put("images/webViewNodeBig.png", images.webViewNodeBig());
+    bundledImages.put("images/ambientLight.png", images.ambientLight());
+    bundledImages.put("images/ambientLightBig.png", images.ambientLightBig());
+    bundledImages.put("images/arView3D.png", images.arView3D());
+    bundledImages.put("images/arView3DBig.png", images.arView3DBig());
+    bundledImages.put("images/detectedPlane.png", images.detectedPlane());
+    bundledImages.put("images/directionalLight.png", images.directionalLight());
+    bundledImages.put("images/directionalLightBig.png", images.directionalLightBig());
+    bundledImages.put("images/imageMarker.png", images.imageMarker());
+    bundledImages.put("images/imageMarkerBig.png", images.imageMarkerBig());
+    bundledImages.put("images/modelNode.png", images.modelNode());
+    bundledImages.put("images/modelNodeBig.png", images.modelNodeBig());
+    bundledImages.put("images/pointLight.png", images.pointLight());
+    bundledImages.put("images/pointLightBig.png", images.pointLightBig());
+    bundledImages.put("images/spotlight.png", images.spotlight());
+    bundledImages.put("images/spotlightBig.png", images.spotlightBig());
 
     imagesInitialized = true;
   }
@@ -486,36 +535,36 @@ public final class SimpleComponentDescriptor {
     if (SimpleComponentDatabase.getInstance(editor.getProjectId()).getNonVisible(name)) {
       if(name.equals(MockFirebaseDB.TYPE)) {
         return new MockFirebaseDB(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if(name.equals(MockCloudDB.TYPE)) {
         return new MockCloudDB(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if(name.equals(MockFusionTablesControl.TYPE)) {
         return new MockFusionTablesControl(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if(name.equals(MockTwitter.TYPE)) {
         return new MockTwitter(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if(name.equals(MockTranslator.TYPE)) {
         return new MockTranslator(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if(name.equals(MockChatBot.TYPE)) {
         return new MockChatBot(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if(name.equals(MockImageBot.TYPE)) {
         return new MockImageBot(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if(name.equals(MockSpreadsheet.TYPE)) {
         return new MockSpreadsheet(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            null, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                null, editor.getProjectId()));
       } else if (name.equals(MockDataFile.TYPE)) {
         return new MockDataFile(editor, name,
             getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId())
@@ -524,8 +573,8 @@ public final class SimpleComponentDescriptor {
       } else {
         String pkgName = type.contains(".") ? type.substring(0, type.lastIndexOf('.')) : null;
         return new MockNonVisibleComponent(editor, name,
-          getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
-            pkgName, editor.getProjectId()));
+            getImageFromPath(SimpleComponentDatabase.getInstance(editor.getProjectId()).getIconName(name),
+                pkgName, editor.getProjectId()));
       }
     } else if (name.equals(MockButton.TYPE)) {
       return new MockButton(editor);
@@ -577,6 +626,7 @@ public final class SimpleComponentDescriptor {
       return new MockTableArrangement(editor);
     } else if (name.equals(MockAbsoluteArrangement.TYPE)) {
       return new MockAbsoluteArrangement(editor);
+
     } else if (name.equals(MockImageSprite.TYPE)) {
       return new MockImageSprite(editor);
     } else if (name.equals(MockBall.TYPE)) {
@@ -613,6 +663,44 @@ public final class SimpleComponentDescriptor {
       return new MockLinearProgress(editor);
     } else if (name.equals(MockTrendline.TYPE)) {
       return new MockTrendline(editor);
+    } else if (name.equals(MockARView3D.TYPE)) {
+      return new MockARView3D(editor);
+    } else if (name.equals(MockBoxNode.TYPE)) {
+      return new MockBoxNode(editor);
+    } else if (name.equals(MockSphereNode.TYPE)) {
+      return new MockSphereNode(editor);
+    } else if (name.equals(MockPlaneNode.TYPE)) {
+      return new MockPlaneNode(editor);
+    } else if (name.equals(MockCylinderNode.TYPE)) {
+      return new MockCylinderNode(editor);
+    } else if (name.equals(MockConeNode.TYPE)) {
+      return new MockConeNode(editor);
+    } else if (name.equals(MockCapsuleNode.TYPE)) {
+      return new MockCapsuleNode(editor);
+    } else if (name.equals(MockTubeNode.TYPE)) {
+      return new MockTubeNode(editor);
+    } else if (name.equals(MockTorusNode.TYPE)) {
+      return new MockTorusNode(editor);
+    } else if (name.equals(MockPyramidNode.TYPE)) {
+      return new MockPyramidNode(editor);
+    } else if (name.equals(MockTextNode.TYPE)) {
+      return new MockTextNode(editor);
+    } else if (name.equals(MockVideoNode.TYPE)) {
+      return new MockVideoNode(editor);
+    } else if (name.equals(MockWebViewNode.TYPE)) {
+      return new MockWebViewNode(editor);
+    } else if (name.equals(MockImageMarker.TYPE)) {
+      return new MockImageMarker(editor);
+    } else if (name.equals(MockModelNode.TYPE)) {
+      return new MockModelNode(editor);
+    } else if (name.equals(MockAmbientLight.TYPE)) {
+      return new MockAmbientLight(editor);
+    } else if (name.equals(MockDirectionalLight.TYPE)) {
+      return new MockDirectionalLight(editor);
+    } else if (name.equals(MockPointLight.TYPE)) {
+      return new MockPointLight(editor);
+    } else if (name.equals(MockSpotlight.TYPE)) {
+      return new MockSpotlight(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

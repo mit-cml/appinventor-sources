@@ -218,8 +218,8 @@ public class ObjectRenderer {
       Matrix.multiplyMM(localModelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
       Matrix.multiplyMM(localModelViewProjectionMatrix, 0, cameraProjection, 0, localModelViewMatrix, 0);
 
-      shader.setMat4("u_ModelView", localModelViewMatrix);
-      shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
+     // shader.setMat4("u_ModelView", localModelViewMatrix);
+     // shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
 
       render.draw(nodeMesh, shader, virtualFrameBuffer);
 

@@ -4,7 +4,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.ar;
-
+import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -19,6 +19,11 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
+import android.util.Log;
+import com.google.ar.core.Anchor;
+import com.google.ar.core.Pose;
+import com.google.ar.core.Trackable;
+
 // TODO: update the component version
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a text in an ARView3D.  The text is positioned " +
@@ -28,10 +33,20 @@ import com.google.appinventor.components.common.YaVersion;
   @SimpleObject
 
   public final class TextNode extends ARNodeBase implements ARText {
-    public TextNode(final ARNodeContainer container) {
-      super(container);
-      // Additional updates
-    }
+
+
+  private Anchor anchor = null;
+
+  private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
+  private String texture = "";
+
+  public TextNode(final ARNodeContainer container) {
+    super(container);
+    // Additional updates
+    Model( objectModel);
+    Texture(texture);
+    container.addNode(this);
+  }
 
     @Override
     @SimpleProperty(description = "Text to display by the TextNode.  If this is " +

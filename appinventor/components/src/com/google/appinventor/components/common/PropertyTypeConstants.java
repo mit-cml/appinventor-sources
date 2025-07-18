@@ -462,7 +462,7 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARFalloffTypePropertyEditor
    */
   public static final String PROPERTY_TYPE_AR_FALLOFF_TYPE = "ARFallOffType";
-   * Chart Value type for x-axis values.
+   /** Chart Value type for x-axis values.
    *
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
    */
