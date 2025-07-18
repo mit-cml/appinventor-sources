@@ -166,6 +166,7 @@ public class Form extends AppInventorCompatActivity
   protected final Handler androidUIHandler = new Handler();
 
   protected String formName;
+  protected String componentName;
 
   private boolean screenInitialized;
 
@@ -3003,5 +3004,11 @@ public class Form extends AppInventorCompatActivity
     } else {
       return FileUtil.openFile(this, path);
     }
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    // Note this here will have the same value as formName, but formName is specific to only Forms
+    this.componentName = componentName;
   }
 }
