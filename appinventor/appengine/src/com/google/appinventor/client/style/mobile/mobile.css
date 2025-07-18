@@ -76,3 +76,724 @@ body, html {
     font-size: 16px;
     text-align: left;
 }
+
+
+/* stop scrolling for the project List*/
+
+/*.ode-Box-body-padding {*/
+/*    flex-wrap: wrap;*/
+/*    overflow-x: hidden; !* Keep this to prevent scrolling, but the wrapping should handle most cases *!*/
+/*}*/
+
+/*.ode-Box-body-padding > div { !* Target the direct child div *!*/
+/*    flex-wrap: wrap;*/
+/*}*/
+
+/*.ode-Box-body-padding {*/
+/*    overflow-x: hidden; !* Keep this as a safeguard *!*/
+/*}*/
+
+/*element.style {*/
+/*    overflow: clip;*/
+/*    position: relative;*/
+/*    zoom: 3;*/
+/*}*/
+
+.ode-Box-projectlist {
+    flex-grow: 1;
+    flex-shrink: 0;
+    height: 40px;
+    overflow: hidden;
+}
+
+.ode-Box-content {
+    /*all:unset;*/
+    background-image: unset;
+    background-color: unset;
+    border: unset;
+    box-shadow: unset;
+    display: flex;
+    flex-grow: 1;
+    margin:unset;
+    height: 100%;
+}
+
+
+.ode-Box-body-padding {
+    padding: unset;
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+}
+
+.ode-Box-body-padding>* {
+    display: flex;
+    flex-grow: 1;
+}
+
+.ode-Box-toolkit {
+    /*all: unset;*/
+}
+.ode-Box-header {
+    /* all: unset; */
+    visibility: collapse;
+    display: none;
+}
+
+.ode-Box-header-caption,
+.ode-Box-header-caption-highlighted {
+    /*all: unset;*/
+}
+
+.ode-Box-header-caption {
+}
+
+.ode-Box-body {
+}
+
+.ode-Box-body-padding {
+    padding: unset;
+}
+
+.ode-BoxResizeControl {
+    background-color: darkgray !important;
+}
+
+.ode-Box-projectlist {
+    flex-grow: 1;
+    flex-shrink: 0;
+    height: 40px;
+    overflow: hidden;
+}
+
+.ode-Box-content {
+    /*all:unset;*/
+    background-image: unset;
+    background-color: unset;
+    border: unset;
+    box-shadow: unset;
+    display: flex;
+    flex-grow: 1;
+    margin:unset;
+    height: 100%;
+    color: gray-700;
+}
+
+
+.ode-Box-body-padding {
+    padding: unset;
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+}
+
+.ode-Box-body-padding>* {
+    display: flex;
+    flex-grow: 1;
+}
+
+.ode-ProjectTable {
+    /*all: unset;*/
+    border: 1px solid gray-300;
+    border-radius: 4px;
+    overflow: auto;
+    height: auto;
+    width: auto;
+}
+
+.ode-ProjectCheckBox {
+    padding-right: 5px;
+    padding-left: 20px;
+    align-self: center;
+}
+
+.ode-ProjectHeaderLabel {
+    /*display: flex;*/
+    /* all: unset; */
+    align-items: center;
+    height: 40px;
+    display: inline-flex;
+    font-size: unset !important;
+    color: gray-900;
+}
+
+.ode-ProjectListName {
+    min-width: unset;
+    white-space: nowrap;
+    width: max-content;
+    height: 40px;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.ode-ProjectListDate {
+    width: 200px;
+}
+
+.ode-ProjectRowList {
+    display: contents;
+}
+
+.ode-Project-FlexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* experiment */
+/*ProjectList sortDropDown---------------*/
+
+.ode-ProjectTable {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ode-ProjectHeaderRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ode-ProjectHeaderRow .ode-ProjectCheckBox {
+    flex-shrink: 0;
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.ode-NameFocusPanel {
+    flex: 1;
+    min-width: 0;
+    margin-right: 16px;
+    outline: none !important;
+}
+
+.ode-ProjectListName {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 40px;
+}
+
+.ode-ProjectListName .gwt-Label {
+    font-weight: 600;
+    font-size: 16px;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
+}
+
+.ode-ProjectListName .gwt-InlineLabel {
+    font-size: 14px;
+    color: #6c757d;
+    flex-shrink: 0;
+}
+
+.ode-SortDropdown {
+    flex-shrink: 0;
+    background: #fff;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.15);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 22px;
+    margin-right: 10px;
+}
+
+.ode-SortDropdown:hover {
+    background: #007bff;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.25);
+}
+
+.ode-SortDropdown .material-icons {
+    font-size: 20px;
+    color: inherit;
+}
+
+.ode-CreateDateFocusPanel,
+.ode-ModifiedDateFocusPanel {
+    display: none !important;
+}
+
+.ode-ProjectRowList {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+.ode-Project-FlexColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: #f8f9fa;
+}
+
+@media (max-width: 320px) {
+    .ode-ProjectHeaderRow {
+        padding: 0 8px;
+        height: 52px;
+    }
+
+    .ode-ProjectCheckBox {
+        margin-right: 8px;
+    }
+
+    .ode-ProjectListName .gwt-Label {
+        font-size: 14px;
+    }
+
+    .ode-SortDropdown {
+        min-width: 44px;
+        height: 36px;
+        padding: 6px 10px;
+    }
+
+    .ode-SortDropdown .material-icons {
+        font-size: 18px;
+    }
+}
+
+.ode-NameFocusPanel:focus,
+.ode-SortDropdown:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.ode-ProjectHeaderRow * {
+    transition: all 0.2s ease;
+}
+
+.ode-ProjectHeaderRow {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+
+/*ProjectListItem*/
+
+.ode-ProjectItemMobile {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin: 8px 0;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.ode-ProjectItemMobile:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #007bff;
+}
+
+.ode-ProjectItemContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.ode-ProjectItemLeft {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.ode-ProjectItemRight {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.ode-ProjectItemMobile .ode-ProjectCheckBox {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.ode-ProjectItemMobile .ode-ProjectNameFocusPanel {
+    flex: 1;
+    min-width: 0;
+    outline: none;
+}
+
+.ode-ProjectItemMobile .ode-ProjectNameLabel {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.ode-ProjectDateDropdown {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    min-width: 48px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ode-ProjectDateDropdown:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+.ode-ProjectDateDropdown .material-icons {
+    font-size: 20px;
+    color: #6c757d;
+}
+
+/* Highlighted state */
+.ode-ProjectRowHighlighted.ode-ProjectItemMobile {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 320px) {
+    .ode-ProjectItemMobile {
+        padding: 12px;
+        margin: 6px 0;
+    }
+
+    .ode-ProjectItemMobile .ode-ProjectNameLabel {
+        font-size: 14px;
+    }
+
+    .ode-ProjectDateDropdown {
+        min-width: 44px;
+        height: 36px;
+        padding: 6px 10px;
+    }
+}
+
+/*ProjectFolderMob-----------------*/
+
+.ode-Box-content {
+    color: #6c757d;
+}
+
+.ode-Box-header-caption-highlighted {
+    color: #dc3545;
+}
+
+.ode-ProjectTable {
+    border: 1px solid #dee2e6;
+}
+
+.ode-ProjectHeaderRow {
+    border-bottom: 1px solid #dee2e6;
+    background: #ffffff;
+}
+
+.ode-ProjectHeaderLabel {
+    color: #212529;
+}
+
+.ode-ProjectFolderMobile {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin: 8px 0;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.ode-ProjectFolderMobile:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #007bff;
+}
+
+.ode-FolderNameContainer {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+}
+
+.ode-FolderIcon {
+    color: #ffc107;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+
+.ode-ExpandIcon {
+    transition: transform 0.25s ease;
+    transform-origin: center;
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.ode-ProjectRowExpanded .ode-ExpandIcon {
+    transform: rotate(90deg);
+}
+
+.ode-ProjectFolderMobile .ode-ProjectNameLabel {
+    font-weight: 600;
+    font-size: 16px;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+}
+
+.ode-ProjectRowExpanded {
+    border-color: #28a745;
+    background: #f8fff9;
+}
+
+.ode-ProjectRowExpanded .ode-FolderIcon {
+    color: #28a745;
+}
+
+.ode-ProjectFolderList {
+    margin-left: 20px;
+    margin-top: 12px;
+    border-left: 2px solid #e9ecef;
+    padding-left: 16px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(90deg, rgba(0, 123, 255, 0.02) 0%, transparent 30%);
+}
+
+.ode-ProjectFolderList.ode-ProjectRowHidden {
+    display: none;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile,
+.ode-ProjectFolderList .ode-ProjectItem {
+    background: #f8f9ff !important;
+    border: 1px solid #e0e6ff !important;
+    border-left: 3px solid #007bff !important;
+    border-radius: 8px 12px 12px 8px !important;
+    margin: 6px 0 !important;
+    padding: 14px 16px !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.2s ease !important;
+    position: relative;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile:hover,
+.ode-ProjectFolderList .ode-ProjectItem:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12) !important;
+    border-color: #0056b3 !important;
+    transform: translateX(2px);
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile::before,
+.ode-ProjectFolderList .ode-ProjectItem::before {
+    content: '';
+    position: absolute;
+    left: -19px;
+    top: 50%;
+    width: 12px;
+    height: 1px;
+    background: #dee2e6;
+    transform: translateY(-50%);
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectItemContent,
+.ode-ProjectFolderList .ode-ProjectItem {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectItemLeft {
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectItemRight {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    margin-left: 12px !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectCheckBox,
+.ode-ProjectFolderList .ode-ProjectItem .ode-ProjectCheckBox {
+    margin-right: 12px !important;
+    transform: scale(1.1) !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectNameLabel,
+.ode-ProjectFolderList .ode-ProjectItem .ode-ProjectNameLabel {
+    font-weight: 500 !important;
+    font-size: 15px !important;
+    color: #495057 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectDateDropdown {
+    background: #e3f2fd !important;
+    border: 1px solid #bbdefb !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    min-width: 48px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectDateDropdown:hover {
+    background: #2196f3 !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3) !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectDateDropdown .material-icons {
+    font-size: 18px !important;
+    color: inherit !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectRowHighlighted.ode-ProjectItemMobile,
+.ode-ProjectFolderList .ode-ProjectRowHighlighted {
+    background: #fff3cd !important;
+    border-color: #ffc107 !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectNameFocusPanel:focus {
+    outline: 2px solid #007bff !important;
+    outline-offset: 2px !important;
+    border-radius: 4px !important;
+}
+
+.ode-ProjectFolderList::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #007bff 0%, #28a745 100%);
+    opacity: 0.6;
+}
+
+@media (max-width: 320px) {
+    .ode-ProjectFolderMobile {
+        padding: 12px;
+        margin: 6px 0;
+    }
+
+    .ode-ProjectFolderMobile .ode-ProjectNameLabel {
+        font-size: 14px;
+    }
+
+    .ode-FolderNameContainer {
+        gap: 6px;
+    }
+
+    .ode-FolderIcon {
+        font-size: 18px;
+    }
+
+    .ode-ExpandIcon {
+        font-size: 16px;
+    }
+
+    .ode-ProjectFolderList {
+        margin-left: 16px;
+        padding-left: 12px;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectItemMobile,
+    .ode-ProjectFolderList .ode-ProjectItem {
+        padding: 12px 14px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectNameLabel,
+    .ode-ProjectFolderList .ode-ProjectItem .ode-ProjectNameLabel {
+        font-size: 14px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectDateDropdown {
+        min-width: 42px !important;
+        height: 32px !important;
+        padding: 6px 10px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectDateDropdown .material-icons {
+        font-size: 16px !important;
+    }
+}
+
+.ode-ProjectFolderList {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-contrast: high) {
+    .ode-ProjectFolderList .ode-ProjectItemMobile,
+    .ode-ProjectFolderList .ode-ProjectItem {
+        border-width: 2px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectDateDropdown {
+        border-width: 2px !important;
+    }
+}
+
+/*project tabBar*/
+

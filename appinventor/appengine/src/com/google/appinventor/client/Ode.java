@@ -1002,33 +1002,7 @@ public class Ode implements EntryPoint {
     });
   }
 
-  private void updateLayout(String newLayout) {
-    if (newLayout.equals("mobile")) {
-      RootPanel.get().removeStyleName("classic");
-      RootPanel.get().removeStyleName("modern");
-      RootPanel.get().addStyleName("mobile");
-      IMAGES = GWT.create(ImagesMobile.class);
-      uiFactory = new UiFactoryMobile();
-    } else if (newLayout.equals("modern")) {
-      RootPanel.get().removeStyleName("classic");
-      RootPanel.get().removeStyleName("mobile");
-      RootPanel.get().addStyleName("neo");
-      IMAGES = GWT.create(ImagesNeo.class);
-      uiFactory = new UiFactoryNeo();
-    } else {
-      RootPanel.get().removeStyleName("mobile");
-      RootPanel.get().removeStyleName("neo");
-      RootPanel.get().addStyleName("classic");
-      IMAGES = GWT.create(Images.class);
-      uiFactory = new UiStyleFactory();
-    }
-    if (style == null) {
-      LOG.warning("Resources.Style object is null. Ensure the CSS files are correctly loaded.");
-    } else {
-      style.ensureInjected();
-    }
-    currentLayout = newLayout;
-  }
+
 
     /*
    * Initializes all UI elements.
@@ -1082,6 +1056,7 @@ public class Ode implements EntryPoint {
       style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.styleclassicDark() : Resources.INSTANCE.styleclassicLight();
     }
 
+    Ode.style = style;
     style.ensureInjected();
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
 

@@ -18,7 +18,6 @@
             <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
                 <g:FlowPanel width="100%" >
-                    <ex:ProjectToolbar width="100%" ui:field="projectToolbar" visible="false"/>
                     <box:ProjectListBox width="100%" ui:field="projectListbox" />
                 </g:FlowPanel>
                 <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor" visible="false">
@@ -39,5 +38,6 @@
             </g:DeckPanel>
         </g:FlowPanel>
         <ode:StatusPanel ui:field="statusPanel" visible="false" />
+        <mob:ProjectToolbarMob ui:field="projectToolbar" />
     </g:FlowPanel>
 </ui:UiBinder>
