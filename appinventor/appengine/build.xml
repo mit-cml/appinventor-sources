@@ -28,6 +28,7 @@
   <property name="release" value="false"/>
   <property name="sourceMaps" value="false"/>
   <property name="local.services" value="false"/>
+  <property name="rest" value="false"/>
 
   <condition property="client.module"
              value="com.google.appinventor.YaClient"
@@ -660,7 +661,10 @@
       <arg line="-logLevel INFO"/>
       <arg value="-extra"/>
       <arg value="${build.extra.dir}"/>
+      <arg line="-generateJsInteropExports"/>
+      <arg line="-includeJsInteropExports com\.google\.appinventor\.shared\.rpc\..*"/>
       <arg line="-setProperty local.services=${local.services}"/>
+      <arg line="-setProperty rest=${rest}"/>
       <arg line="-setProperty locale=${locale}" if:set="locale"/>
       <arg line="${client.flags} ${client.module}"/>
     </java>
