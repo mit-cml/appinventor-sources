@@ -139,6 +139,11 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setProjectColors(String projectColors) {
+    this.projectColors = projectColors;
+    return this;
+  }
+
   public YoungAndroidSettingsBuilder setVersionCode(String versionCode) {
     this.versionCode = versionCode;
     return this;
@@ -264,14 +269,15 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "color.primary.dark", primaryColorDark);
     addPropertyIfSet(result, "color.accent", accentColor);
     addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
-    addPropertyIfSet(result, "projectcolors", projectColors);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
     } catch (IOException e) {
       throw new RuntimeException("Unexpected IOException writing to byte buffer", e);
     }
-    return out.toString();
+    StringBuilder builder = new StringBuilder(out.toString());
+    builder.append("projectcolors=").append(projectColors); // ByteArrayOutputStream corrupts the projectColors JSON string because of escape character
+    return builder.toString();
   }
 
   private static void addPropertyIfSet(Properties properties, String key, String value) {
