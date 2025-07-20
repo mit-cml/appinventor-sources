@@ -18,9 +18,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Property editor for color properties.
@@ -85,7 +83,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
         static String getHtmlDescription(String rgbString, String name) {
             return "<span style=\"background:#" + rgbString + "; display: inline-block; " +
-                    "width:15px; height:15px; border-radius:200px; vertical-align: middle\"; border: 1px solid var(--border-color);>&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" + name;
+                    "width:15px; height:15px; border-radius:200px; vertical-align: middle; border:1px solid black;\">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" + name;
         }
     }
 
@@ -115,7 +113,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
      * @param defaultValue the color of the default value, for display in the editor only
      */
 
-    private final HashMap<String, String> defaultColorsObject;
+    private final List<String> defaultColorsList;
 
     private final boolean restrict; // for handling LEGO colors
     private final Color[] colors;
@@ -123,10 +121,10 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     public ColorChoicePropertyEditor(Color[] colors, final String hexPrefix, final String defaultValue, boolean restrict) {
         this.colors = colors;
         this.restrict = restrict;
-        defaultColorsObject = new HashMap<>();
+        defaultColorsList = new ArrayList<>();
 
         for (Color color : colors) {
-            defaultColorsObject.put("#" + color.rgbString, color.name);
+            defaultColorsList.add("#" + color.rgbString + color.alphaString);
         }
 
         this.hexPrefix = hexPrefix;
@@ -223,11 +221,8 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
     private void showCustomColorPicker() {
         JSONObject defaultColors = new JSONObject();
-        if (!defaultColorsObject.containsKey(pickerColor)) {
-            defaultColors.put(pickerColor, new JSONString(pickerColor));
-        }
-        for (Map.Entry<String, String> entry : defaultColorsObject.entrySet()) {
-            defaultColors.put(entry.getKey(), new JSONString(entry.getValue()));
+        for (Color color : colors) {
+            defaultColors.put("#" + color.rgbString + color.alphaString, new JSONString(color.name));
         }
         if (restrict) {
             showAdvancedPicker(getElement(), pickerColor, defaultColors.toString());
@@ -241,7 +236,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         if (projectEditor != null) {
             List<String> projectColorsCopy = new ArrayList<>();
             for (String color : projectEditor.getProjectColors()) {
-                projectColorsCopy.add(color.startsWith("#") ? color : getAlphaHexString(color));
+                projectColorsCopy.add("#" + color);
             }
             return String.join(",", projectColorsCopy);
         }
@@ -374,17 +369,18 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
     public void addColor(String color) {
         // check if the color belongs to defaultColors
-        if (defaultColorsObject.containsKey(formatColor(color)))
+        final String hexa = formatColor(color);
+        if (defaultColorsList.contains(hexa))
             return;
 
         YaProjectEditor projectEditor = (YaProjectEditor) Ode.getCurrentProjectEditor();
         if (projectEditor != null) {
-            projectEditor.addColor(color);
+            projectEditor.addColor(hexa.substring(1));
         }
     }
 
-    public static String formatColor(String color) { // color : &HFF303F9F, output : #303F9F (to check wether it is a color from primary colors list)
-        return "#" + color.substring(4);
+    public static String formatColor(String color) {
+        return "#" + color.substring(4) + color.substring(2, 4);
     }
 
     public static String getAlphaHexString(String color) {

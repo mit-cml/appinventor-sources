@@ -147,9 +147,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       if (projectColorProperty != null && !projectColorProperty.isEmpty()) {
         com.google.gwt.json.client.JSONObject obj = new com.google.gwt.json.client.JSONObject(JsonUtils.safeEval(projectColorProperty));
         for (String color : obj.keySet()) {
-          if (!color.startsWith("&H"))
-            continue; // reject if does not starts with &H, might be a corrupt value
-
           final com.google.gwt.json.client.JSONValue value = obj.get(color);
           int frequency = 0;
           if (value != null) {
