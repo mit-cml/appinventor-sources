@@ -11,10 +11,10 @@
              xmlns:ode="urn:import:com.google.appinventor.client"
              xmlns:Ui="urn:ui:com.google.gwt.uibinder">
     <Ui:with field="style" />
-    <g:FlowPanel ui:field="rootPanel">
+    <g:FlowPanel ui:field="rootPanel" styleName="ode-MobileRoot">
         <mob:TopPanelMob ui:field="topPanel" />
         <box:AssetListBox ui:field="assetListBox" visible="false"/>
-        <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
+        <g:FlowPanel styleName="ode-TutorialWrapper ode-MainContent" ui:field="overDeckPanel">
             <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
                 <g:FlowPanel width="100%" >
@@ -38,6 +38,6 @@
             </g:DeckPanel>
         </g:FlowPanel>
         <ode:StatusPanel ui:field="statusPanel" visible="false" />
-        <mob:ProjectToolbarMob ui:field="projectToolbar" />
+        <mob:ProjectToolbarMob ui:field="projectToolbar" styleName="ode-BottomNavBar" />
     </g:FlowPanel>
 </ui:UiBinder>

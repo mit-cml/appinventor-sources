@@ -795,5 +795,62 @@ body, html {
     }
 }
 
-/*project tabBar*/
+/* Mobile Root Layout */
+.ode-MobileRoot {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important;
+    position: relative !important;
+}
+
+.ode-MainContent {
+    flex: 1 !important;
+    padding-bottom: 80px !important;
+    overflow-y: auto !important;
+}
+
+/* Bottom Navigation Bar */
+.ode-BottomNavBar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border-top: 1px solid #e9ecef !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    height: 80px !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ode-TextButton {
+    display: flex;
+    width: 60px;
+    height: 60px;
+    padding: 10px 0px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    background: #FFF;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.15);
+}
+
+  .ode-BottomNavBar .left,
+  .ode-BottomNavBar .center,
+  .ode-BottomNavBar .right {
+      display: flex;
+  }
+
+  .ode-BottomNavBar .center {
+      display: flex;
+      justify-content: space-around;
+  }
+
 
