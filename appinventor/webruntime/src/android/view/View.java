@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.util.Log;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
@@ -38,6 +39,7 @@ public class View {
   private OnClickListener mOnClickListener;
   private OnFocusChangeListener mOnFocusChangeListener;
   protected ViewGroup.LayoutParams mLayoutParams;
+  private JavaScriptObject nativeClickListener;
 
   public void setOnTouchListener(OnTouchListener l) {
     mOnTouchListener = l;
@@ -162,6 +164,31 @@ public class View {
     });
     Event.sinkEvents(element, Event.ONCLICK);
   }
+
+  public native void setFocusable(boolean focusable) /*-{
+    if (focusable) {
+      this.@android.view.View::element.setAttribute("tabindex", "0");
+    } else {
+      this.@android.view.View::element.removeAttribute("tabindex");
+    }
+  }-*/;
+
+  public native void setClickable(boolean clickable) /*-{
+    if (this.@android.view.View::nativeClickListener != null) {
+      this.@android.view.View::element.removeEventListener("click", this.@android.view.View::nativeClickListener);
+      this.@android.view.View::nativeClickListener = null;
+    }
+    if (clickable) {
+      this.@android.view.View::element.setAttribute("role", "button");
+      this.@android.view.View::nativeClickListener = $entry(function(event) {
+        if (this.@android.view.View::mOnClickListener != null) {
+          this.@android.view.View::mOnClickListener.@android.view.View.OnClickListener::onClick(*)(this);
+        }
+      });
+    } else {
+      this.@android.view.View::element.removeAttribute("role");
+    }
+  }-*/;
 
   public static interface OnClickListener {
     abstract void onClick(View v);
@@ -408,6 +435,19 @@ public class View {
   }
 
   public void resolveLayoutParams() {
+    // TODO(ewpatton): Real implementation
+  }
+
+  public native void setRotation(float rotation) /*-{
+    this.@android.view.View::element.style.transform = "rotate(" + rotation + "deg)";
+  }-*/;
+
+  public void clearAnimation() {
+    // TODO(ewpatton): Real implementation
+    element.getStyle().setProperty("animation", "none");
+  }
+
+  public void startAnimation(Object animation) {
     // TODO(ewpatton): Real implementation
   }
 }
