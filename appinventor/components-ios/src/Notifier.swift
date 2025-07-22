@@ -353,21 +353,21 @@ open class Notifier: NonvisibleComponent {
 
   @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
-    if isRepl {
+    if _form?.isRepl ?? false {
       RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Error")
     }
   }
 
   @objc open func LogInfo(_ message: String) {
     NSLog("Info: \(message)")
-    if isRepl {
+    if _form?.isRepl ?? false {
       RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Info")
     }
   }
 
   @objc open func LogWarning(_ message: String) {
     NSLog("Warning: \(message)")
-    if isRepl {
+    if _form?.isRepl ?? false {
       RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Warning")
     }
   }
