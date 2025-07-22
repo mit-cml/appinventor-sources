@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -166,6 +166,7 @@ public class Form extends AppInventorCompatActivity
   protected final Handler androidUIHandler = new Handler();
 
   protected String formName;
+  protected String componentName;
 
   private boolean screenInitialized;
 
@@ -2360,6 +2361,11 @@ public class Form extends AppInventorCompatActivity
     ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
   }
 
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for linear layout
+  }
+
   /*
    * This is called from runtime.scm at the beginning of each event handler.
    * It allows runtime.scm to know which form environment should be used for
@@ -2998,5 +3004,11 @@ public class Form extends AppInventorCompatActivity
     } else {
       return FileUtil.openFile(this, path);
     }
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    // Note this here will have the same value as formName, but formName is specific to only Forms
+    this.componentName = componentName;
   }
 }

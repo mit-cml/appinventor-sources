@@ -20,12 +20,11 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
-import com.google.appinventor.client.editor.youngandroid.HiddenComponentsCheckbox;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
@@ -38,9 +37,13 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+import com.google.appinventor.client.local.LocalProjectService;
+import com.google.appinventor.client.local.LocalTokenAuthService;
+import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
+import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
 import com.google.appinventor.client.style.neo.UiFactoryNeo;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
@@ -51,14 +54,13 @@ import com.google.appinventor.client.utils.Promise.ResolveCallback;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 
+import com.google.appinventor.client.widgets.TutorialPopup;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.UISettingsWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.shared.rpc.GetMotdService;
-import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
@@ -84,11 +86,9 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -124,7 +124,6 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -147,6 +146,7 @@ public class Ode implements EntryPoint {
   // Application level image bundle
   private static Images IMAGES;
   private static boolean useNeoStyle = false;
+  private static boolean useDarkMode = false;
 
   // ProjectEditor registry
   private static final ProjectEditorRegistry EDITORS = new ProjectEditorRegistry();
@@ -159,8 +159,6 @@ public class Ode implements EntryPoint {
 
   // User settings
   private static UserSettings userSettings;
-
-  private MotdFetcher motdFetcher;
 
   // User information
   private User user;
@@ -262,9 +260,6 @@ public class Ode implements EntryPoint {
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
-
-  // Web service for get motd information
-  private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
 
   // Web service for component related operations
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
@@ -470,18 +465,34 @@ public class Ode implements EntryPoint {
     deckPanel.showWidget(userAdminTabIndex);
   }
 
-  public void hideComponentDesigner() {
-    paletteBox.setVisible(false);
-    sourceStructureBox.setVisible(false);
-    propertiesBox.setVisible(false);
-    HiddenComponentsCheckbox.setVisibility(false);
-  }
-
   public void showComponentDesigner() {
     paletteBox.setVisible(true);
     sourceStructureBox.setVisible(true);
     propertiesBox.setVisible(true);
-    HiddenComponentsCheckbox.setVisibility(true);
+    if (currentFileEditor instanceof YaFormEditor) {
+      YaFormEditor formEditor = (YaFormEditor) currentFileEditor;
+      SimpleVisibleComponentsPanel panel = formEditor.getVisibleComponentsPanel();
+      if (panel != null) {
+        panel.showHiddenComponentsCheckbox();
+      } else {
+        LOG.warning("visibleComponentsPanel is null in showComponentDesigner");
+      }
+    }
+  }
+
+  public void hideComponentDesigner() {
+    paletteBox.setVisible(false);
+    sourceStructureBox.setVisible(false);
+    propertiesBox.setVisible(false);
+    if (currentFileEditor instanceof YaFormEditor) {
+      YaFormEditor formEditor = (YaFormEditor) currentFileEditor;
+      SimpleVisibleComponentsPanel panel = formEditor.getVisibleComponentsPanel();
+      if (panel != null) {
+        panel.hideHiddenComponentsCheckbox();
+      } else {
+        LOG.warning("visibleComponentsPanel is null in hideComponentDesigner");
+      }
+    }
   }
 
   /**
@@ -529,9 +540,7 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
-    if (templateLoadingFlag && !getShowUIPicker()) {  // We are loading a template, open it instead unless UI needs to be picked
-                                // of the last project
-
+    if (templateLoadingFlag) {  // We are loading a template, open it instead
       //check to see what kind of file is in url, binary (*.aia) or base64(*.apk)
       if (templatePath.endsWith(".aia")){
         HTML5DragDrop.importProjectFromUrl(templatePath);
@@ -729,7 +738,6 @@ public class Ode implements EntryPoint {
 
     setupOrigin(projectService);
     setupOrigin(userInfoService);
-    setupOrigin(getMotdService);
     setupOrigin(componentService);
     setupOrigin(adminInfoService);
     setupOrigin(tokenAuthService);
@@ -738,6 +746,12 @@ public class Ode implements EntryPoint {
         c -> userInfoService.getSystemConfig(sessionId, c))
         .then(result -> {
           config = result;
+          // Before we get too far into it, let's see if we have to do a survey!
+          String surveyUrl = config.getSurveyUrl();
+          if (surveyUrl != null && !surveyUrl.isEmpty()) {
+            Window.Location.replace(Urls.makeUri(surveyUrl, true));
+            // off we go, no returning
+          }
           user = result.getUser();
           isReadOnly = user.isReadOnly();
           registerIosExtensions(config.getIosExtensions());
@@ -913,6 +927,7 @@ public class Ode implements EntryPoint {
   private Promise<Void> handleUiPreference() {
     return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
       useNeoStyle = Ode.getUserNewLayout();
+      useDarkMode = Ode.getUserDarkThemeEnabled();
       if (useNeoStyle) {
         GWT.runAsync(new RunAsyncCallback() {
           @Override
@@ -922,7 +937,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(ImagesNeo.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImagesNeo.class);
+            } else {
+              IMAGES = GWT.create(ImagesNeo.class);
+            }
             RootPanel.get().addStyleName("neo");
             uiFactory = new UiFactoryNeo();
             res.apply(null);
@@ -937,7 +956,11 @@ public class Ode implements EntryPoint {
 
           @Override
           public void onSuccess() {
-            IMAGES = GWT.create(Images.class);
+            if (useDarkMode) {
+              IMAGES = GWT.create(DarkModeImages.class);
+            } else {
+              IMAGES = GWT.create(Images.class);
+            }
             RootPanel.get().addStyleName("classic");
             uiFactory = new UiStyleFactory();
             res.apply(null);
@@ -960,9 +983,9 @@ public class Ode implements EntryPoint {
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
-    rpcStatusPopup.register((ExtendedServiceProxy<?>) componentService);
+    rpcStatusPopup.register(projectService);
+    rpcStatusPopup.register(userInfoService);
+    rpcStatusPopup.register(componentService);
 
     overDeckPanel = new FlowPanel("main");
     Window.setTitle(MESSAGES.titleYoungAndroid());
@@ -1009,10 +1032,6 @@ public class Ode implements EntryPoint {
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
     deckPanel.showWidget(0);
-    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
-
-      showSplashScreens();
-    }
 
     // Projects tab
     projectsTabIndex = 0;
@@ -1066,31 +1085,12 @@ public class Ode implements EntryPoint {
       }
     });
 
-    setupMotd();
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
+    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
+      showSplashScreens();
+    }
     return resolve(result);
-  }
-
-  private void setupMotd() {
-    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        LOG.info(MESSAGES.getMotdFailed());
-      }
-
-      @Override
-      public void onSuccess(Integer intervalSecs) {
-        if (intervalSecs > 0) {
-          topPanel.showMotd();
-          motdFetcher = new MotdFetcher(intervalSecs);
-          motdFetcher.register((ExtendedServiceProxy<?>) projectService);
-          motdFetcher.register((ExtendedServiceProxy<?>) userInfoService);
-        }
-      }
-    };
-
-    getGetMotdService().getCheckInterval(callback);
   }
 
   /**
@@ -1190,15 +1190,6 @@ public class Ode implements EntryPoint {
    */
   public UserInfoServiceAsync getUserInfoService() {
     return userInfoService;
-  }
-
-  /**
-   * Get an instance of the motd web service.
-   *
-   * @return motd web service instance
-   */
-  public GetMotdServiceAsync getGetMotdService() {
-    return getMotdService;
   }
 
   /**
@@ -1541,11 +1532,6 @@ public class Ode implements EntryPoint {
     // At this point, we aren't allowed to do any UI.
     windowClosing = true;
 
-    if (motdFetcher != null) {
-      motdFetcher.unregister((ExtendedServiceProxy<?>) projectService);
-      motdFetcher.unregister((ExtendedServiceProxy<?>) userInfoService);
-    }
-
     // Unregister services with RPC status popup.
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) projectService);
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) userInfoService);
@@ -1733,6 +1719,18 @@ public class Ode implements EntryPoint {
       }
       return null;
     });
+    if (getShowUIPicker()) {
+      TutorialPopup popup = new TutorialPopup(MESSAGES.neoWelcomeMessage(), () -> {
+        setUserNewLayout(false);
+        saveUserDesignSettings();
+      });
+      setShowUIPicker(false);
+      userSettings.saveSettings(null);
+      Scheduler.get().scheduleFixedDelay(() -> {
+        popup.show(getTopToolbar().getSettingsDropDown().getElement());
+        return false;
+      }, 375);
+    }
   }
 
   /*
@@ -1829,10 +1827,7 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash() {
-
-    if (getShowUIPicker()) {
-      new UISettingsWizard(true).show();
-    } else if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
+    if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
     } else {
       maybeShowNoProjectsDialog();
@@ -2434,6 +2429,11 @@ public class Ode implements EntryPoint {
       });
   }
 
+  public static Promise<?> exportProject() {
+    return ((LocalProjectService) instance.projectService).exportProject(
+        instance.getCurrentYoungAndroidProjectId());
+  }
+
   // Used internally here so that the tutorial panel is only shown on
   // the blocks or designer view, not the gallery or projects (or
   // other) views. unlike setTutorialVisible, we do not side effect
@@ -2658,12 +2658,14 @@ public class Ode implements EntryPoint {
     public static final Resources INSTANCE =  GWT.create(Resources.class);
     
     @Source({
-      "com/google/appinventor/client/light.css"
+      "com/google/appinventor/client/style/classic/light.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicLight();
 
     @Source({
-      "com/google/appinventor/client/dark.css"
+      "com/google/appinventor/client/style/classic/dark.css",
+      "com/google/appinventor/client/style/classic/variableColors.css"
     })
     Style styleclassicDark();
 
