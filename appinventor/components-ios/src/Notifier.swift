@@ -353,17 +353,23 @@ open class Notifier: NonvisibleComponent {
 
   @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
-    RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Error")
+    if isRepl {
+      RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Error")
+    }
   }
 
   @objc open func LogInfo(_ message: String) {
     NSLog("Info: \(message)")
-    RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Info")
+    if isRepl {
+      RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Info")
+    }
   }
 
   @objc open func LogWarning(_ message: String) {
     NSLog("Warning: \(message)")
-    RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Warning")
+    if isRepl {
+      RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Warning")
+    }
   }
 
   @objc open func ShowAlert(_ notice: String) {
