@@ -273,7 +273,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     let app = (self.isSearching ? self.filteredApps : self.downloadedApps)[indexPath.row]
-    let projectAIVersion = app.aiVersioning!
+    let projectAIVersion = app.aiVersioning ?? -1
     
     if  projectAIVersion < AppLibraryViewController.AIVersioning {
       return 152
@@ -291,19 +291,19 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     
     let app = isSearching ? self.filteredApps[indexPath.row] : self.downloadedApps[indexPath.row]
     let title = app.title
-    let iconPath = app.iconPath
-    let projectVersioning = app.aiVersioning
-    let lastOpened = app.lastOpened
+    let iconPath = app.iconPath ?? "default"
+    let projectVersioning = app.aiVersioning ?? -1
+    let lastOpened = app.lastOpened ?? "NA"
     
     cell.appName.text = title
-    cell.lastOpened.text = "Last opened: " + lastOpened!
+    cell.lastOpened.text = "Last opened: " + lastOpened
     if iconPath == "default" {
       //TODO determine default icon
       cell.appIconImage.image = UIImage(named: "Onboard-1")
     } else {
-      cell.appIconImage.image = UIImage(named: iconPath!)
+      cell.appIconImage.image = UIImage(named: iconPath)
     }
-    if projectVersioning! < AppLibraryViewController.AIVersioning {
+    if projectVersioning < AppLibraryViewController.AIVersioning {
       cell.warningLabel.isHidden = false
     } else {
       cell.warningLabel.isHidden = true
