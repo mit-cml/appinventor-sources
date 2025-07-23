@@ -786,20 +786,24 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="ListView.DividerColor" class="color"><em>DividerColor</em></dt>
   <dd>The color of the <code class="highlighter-rouge">ListView</code> divider.</dd>
   <dt id="ListView.DividerThickness" class="number"><em>DividerThickness</em></dt>
-  <dd>Specifies the divider thickness of list view</dd>
+  <dd>Specifies the divider thickness of list view.
+ If the thickness is 0, the divider is not visible.</dd>
   <dt id="ListView.ElementColor" class="color"><em>ElementColor</em></dt>
   <dd>The color of the <code class="highlighter-rouge">ListView</code> element.</dd>
   <dt id="ListView.ElementCornerRadius" class="number"><em>ElementCornerRadius</em></dt>
   <dd>Specifies the corner radius of the list view element.</dd>
   <dt id="ListView.ElementMarginsWidth" class="number"><em>ElementMarginsWidth</em></dt>
-  <dd>Specifies the width of the margins of a list view element</dd>
+  <dd>Specifies the width of the margins of a list view element.
+ If margins width &gt; 0, then the divider is not displayed.</dd>
   <dt id="ListView.Elements" class="list bo"><em>Elements</em></dt>
   <dd>Specifies the list of choices to display.</dd>
   <dt id="ListView.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
   <dd>Set the list of choices specified as a string with the elements separated by commas
  such as: Cheese,Fruit,Bacon,Radish.</dd>
+  <dt id="ListView.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the font size of the element’s main text.</dd>
   <dt id="ListView.FontSizeDetail" class="number"><em>FontSizeDetail</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">ListView</code> item’s text font size</dd>
+  <dd>Specifies the font size of the element’s detail text.</dd>
   <dt id="ListView.FontTypeface" class="text do"><em>FontTypeface</em></dt>
   <dd>Specifies the label’s text’s font face as default, serif, sans
  serif, or monospace.</dd>
@@ -1286,15 +1290,18 @@ having dark grey components.</li>
  AbsoluteArrangement.</dd>
   <dt id="Slider.MaxValue" class="number"><em>MaxValue</em></dt>
   <dd>Sets the maximum value of slider. If the new maximum is less than the
- current minimum, then minimum and maximum will both be set to this value.
- Setting <code class="highlighter-rouge">MaxValue</code> resets the thumb position to halfway between <a href="#Slider.MinValue"><code class="highlighter-rouge">MinValue</code></a>
- and <code class="highlighter-rouge">MaxValue</code> and signals the <a href="#Slider.PositionChanged"><code class="highlighter-rouge">PositionChanged</code></a>` event.</dd>
+ current minimum, then minimum and maximum will both be set to this value.</dd>
   <dt id="Slider.MinValue" class="number"><em>MinValue</em></dt>
   <dd>Sets the minimum value of slider. If the new minimum is greater than the
- current maximum, then minimum and maximum will both be set to this value.
- Setting <code class="highlighter-rouge">MinValue</code> resets the thumb position to halfway between <code class="highlighter-rouge">MinValue</code>
- and <a href="#Slider.MaxValue"><code class="highlighter-rouge">MaxValue</code></a> and signals the <a href="#Slider.PositionChanged"><code class="highlighter-rouge">PositionChanged</code></a>`
- event.</dd>
+ current maximum, then minimum and maximum will both be set to this value.</dd>
+  <dt id="Slider.NumberOfSteps" class="number"><em>NumberOfSteps</em></dt>
+  <dd>Set the number of points on the slider scale.
+ Combined with MinValue and MaxValue, it allows you to get the slider precision that you want,
+ e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.</dd>
+  <dt id="Slider.ThumbColor" class="color"><em>ThumbColor</em></dt>
+  <dd>Specifies the color of the thumb slider as an alpha-red-green-blue
+ integer, i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code>
+ indicates fully transparent and <code class="highlighter-rouge">FF</code> means opaque.</dd>
   <dt id="Slider.ThumbEnabled" class="boolean"><em>ThumbEnabled</em></dt>
   <dd>Whether or not the slider thumb is being be shown.</dd>
   <dt id="Slider.ThumbPosition" class="number"><em>ThumbPosition</em></dt>
@@ -1319,6 +1326,10 @@ having dark grey components.</li>
 <dl class="events">
   <dt id="Slider.PositionChanged">PositionChanged(<em class="number">thumbPosition</em>)</dt>
   <dd>Indicates that position of the slider thumb has changed.</dd>
+  <dt id="Slider.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the user has started a touch gesture.</dd>
+  <dt id="Slider.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the user has finished a touch gesture.</dd>
 </dl>
 
 <h3 id="Slider-Methods">Methods</h3>
@@ -1711,13 +1722,13 @@ having dark grey components.</li>
  <code class="highlighter-rouge">window.AppInventor</code> object, using the methods <code class="highlighter-rouge">getWebViewString()</code> and <code class="highlighter-rouge">setWebViewString(text)</code>.</p>
 
 <p>For example, if the <code class="highlighter-rouge">WebViewer</code> opens to a page that contains the Javascript command</p>
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">"The answer is"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AppInventor</span><span class="p">.</span><span class="nx">getWebViewString</span><span class="p">());</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="dl">"</span><span class="s2">The answer is</span><span class="dl">"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AppInventor</span><span class="p">.</span><span class="nx">getWebViewString</span><span class="p">());</span>
 </code></pre></div></div>
 <p>and if you set <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> to “hello”, then the web page will show</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> The answer is hello.
 </code></pre></div></div>
 <p>And if the Web page contains Javascript that executes the command</p>
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">windowAppInventor</span><span class="p">.</span><span class="nx">setWebViewString</span><span class="p">(</span><span class="s2">"hello from Javascript"</span><span class="p">),</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">windowAppInventor</span><span class="p">.</span><span class="nx">setWebViewString</span><span class="p">(</span><span class="dl">"</span><span class="s2">hello from Javascript</span><span class="dl">"</span><span class="p">),</span>
 </code></pre></div></div>
 <p>then the value of the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property will be</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> hello from Javascript.

@@ -6,6 +6,8 @@
 
 package com.google.appinventor.server;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
@@ -48,7 +50,7 @@ import javax.annotation.Nullable;
 public final class FileImporterImpl implements FileImporter {
 
   // Maximum size of an uploaded asset, in megabytes.
-  private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 9f);
+  private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 10f);
 
   private static final Logger LOG = Logger.getLogger(FileImporterImpl.class.getName());
 
@@ -124,7 +126,7 @@ public final class FileImporterImpl implements FileImporter {
 
           } else {
 
-            if (fileName.startsWith(YoungAndroidProjectService.SRC_FOLDER)) {
+            if (fileName.startsWith(SRC_FOLDER)) {
               // For files within the src folder, we need to update the directory that we put files
               // in. Adjust the fileName so that it corresponds to this project's package.
               fileName = srcDirectory + '/' + StorageUtil.basename(fileName);

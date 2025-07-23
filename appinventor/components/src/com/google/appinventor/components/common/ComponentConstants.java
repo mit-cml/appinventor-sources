@@ -120,11 +120,34 @@ public class ComponentConstants {
   public static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
   public static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
   public static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
+  public static final int LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT = 5;
+
 
   /*
    * Chart Components
    */
   public static final int CHART_PREFERRED_WIDTH = 176;
   public static final int CHART_PREFERRED_HEIGHT = 144;
-}
 
+  /*
+   * Augmented Reality Components
+   */
+  public static final int AR_VIEW_PREFERRED_WIDTH = 250;
+  public static final int AR_VIEW_PREFERRED_HEIGHT = 300;
+  public static final int AR_NODE_PREFERRED_WIDTH = 34;
+  public static final int AR_NODE_PREFERRED_HEIGHT = 35;
+  public static final int AR_CAPSULE_PREFERRED_WIDTH = 30;
+  public static final int AR_TORUS_PREFERRED_WIDTH = 40;
+  public static final int AR_TORUS_PREFERRED_HEIGHT = 30;
+  public static final int AR_CYLINDER_PREFERRED_WIDTH = 23;
+  public static final int AR_CYLINDER_PREFERRED_HEIGHT = 23;
+  public static final int AR_TUBE_PREFERRED_WIDTH = 23;
+  public static final int AR_TUBE_PREFERRED_HEIGHT = 23;
+  public static final int AR_PLANE_PREFERRED_WIDTH = 32;
+  public static final int AR_PLANE_PREFERRED_HEIGHT = 24;
+  public static final int AR_SPHERE_PREFERRED_WIDTH = 32;
+  public static final int AR_SPHERE_PREFERRED_HEIGHT = 32;
+  public static final int AR_PYRAMID_PREFERRED_WIDTH = 46;
+  public static final int AR_TEXT_PREFERRED_WIDTH = 57;
+  public static final int AR_TEXT_PREFERRED_HEIGHT = 23;
+}

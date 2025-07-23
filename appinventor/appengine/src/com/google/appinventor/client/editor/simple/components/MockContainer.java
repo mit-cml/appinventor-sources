@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract superclass for all container mock components.
+ * Abstract superclass for all container k components.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -161,6 +161,16 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
 
     addComponent(component, beforeActualIndex);
+  }
+
+  /**
+   * Called when a component is pasted into this container in case additional
+   * processing is needed.
+   *
+   * @param child the child component that was pasted
+   */
+  public void onPaste(MockComponent child) {
+    // Provided for subclasses
   }
 
   /**
@@ -306,8 +316,12 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // Sprites are only allowed on Canvas, not other containers.
       // Map features are only allowed on Map, not other containers.
       // Chart Data components are only allowed on Charts, not other containers.
+      // AR nodes are only allowed on ARView3D, not other containers.
+      // AR image markers are only allowed on ARView3D, not other containers.
+      // AR lights are only allowed on ARView3D, not other containers.
       if (!(component instanceof MockSprite) && !(component instanceof MockMapFeature)
-              && !(component instanceof MockChartData)) {
+          && !(component instanceof MockChartData) && !(component instanceof MockARNode)
+          && !(component instanceof MockImageMarker) && !(component instanceof MockARLight)) {
         return true;
       }
     }
@@ -316,6 +330,18 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   public boolean willAcceptComponentType(String type) {
     return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);
+  }
+
+  /**
+   * Indicates whether a component of the given type can be pasted into this container. By default,
+   * this is the same as {@link #willAcceptComponentType(String)}. Subclasses may override this
+   * behavior if they have custom rules.
+   *
+   * @param type the type of the component being considered for pasting
+   * @return true if the component can be pasted, false otherwise
+   */
+  public boolean canPasteComponentOfType(String type) {
+    return willAcceptComponentType(type);
   }
 
   // TODO(user): Draw a colored border around the edges of the container

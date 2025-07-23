@@ -88,6 +88,31 @@
 		067D2BD12040FE0500D1EB16 /* procedures.yail in Resources */ = {isa = PBXBuildFile; fileRef = 067D2BD02040FE0500D1EB16 /* procedures.yail */; };
 		067EFDDD2B9B727D001C852C /* AreaChartDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067EFDDC2B9B727D001C852C /* AreaChartDataModel.swift */; };
 		067EFDDF2B9B787A001C852C /* AreaChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067EFDDE2B9B787A001C852C /* AreaChartView.swift */; };
+		067F44802D5560D800ABB1F7 /* TubeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F447C2D5560D800ABB1F7 /* TubeNode.swift */; };
+		067F44812D5560D800ABB1F7 /* SphereNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44782D5560D800ABB1F7 /* SphereNode.swift */; };
+		067F44822D5560D800ABB1F7 /* CapsuleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F446E2D5560D800ABB1F7 /* CapsuleNode.swift */; };
+		067F44832D5560D800ABB1F7 /* PlaneNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44752D5560D800ABB1F7 /* PlaneNode.swift */; };
+		067F44842D5560D800ABB1F7 /* BoxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F446D2D5560D800ABB1F7 /* BoxNode.swift */; };
+		067F44852D5560D800ABB1F7 /* PyramidNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44772D5560D800ABB1F7 /* PyramidNode.swift */; };
+		067F44862D5560D800ABB1F7 /* VideoNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F447D2D5560D800ABB1F7 /* VideoNode.swift */; };
+		067F44872D5560D800ABB1F7 /* ConeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F446F2D5560D800ABB1F7 /* ConeNode.swift */; };
+		067F44882D5560D800ABB1F7 /* ARNodeBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F446B2D5560D800ABB1F7 /* ARNodeBase.swift */; };
+		067F44892D5560D800ABB1F7 /* PointLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44762D5560D800ABB1F7 /* PointLight.swift */; };
+		067F448A2D5560D800ABB1F7 /* Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44792D5560D800ABB1F7 /* Spotlight.swift */; };
+		067F448B2D5560D800ABB1F7 /* CylinderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44702D5560D800ABB1F7 /* CylinderNode.swift */; };
+		067F448C2D5560D800ABB1F7 /* ARLightBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F446A2D5560D800ABB1F7 /* ARLightBase.swift */; };
+		067F448D2D5560D800ABB1F7 /* AmbientLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44682D5560D800ABB1F7 /* AmbientLight.swift */; };
+		067F448E2D5560D800ABB1F7 /* WebViewNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F447E2D5560D800ABB1F7 /* WebViewNode.swift */; };
+		067F448F2D5560D800ABB1F7 /* DirectionalLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44722D5560D800ABB1F7 /* DirectionalLight.swift */; };
+		067F44902D5560D800ABB1F7 /* TorusNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F447B2D5560D800ABB1F7 /* TorusNode.swift */; };
+		067F44912D5560D800ABB1F7 /* DetectedPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44712D5560D800ABB1F7 /* DetectedPlane.swift */; };
+		067F44922D5560D800ABB1F7 /* AR3DFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44692D5560D800ABB1F7 /* AR3DFactory.swift */; };
+		067F44932D5560D800ABB1F7 /* ARView3D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F446C2D5560D800ABB1F7 /* ARView3D.swift */; };
+		067F44942D5560D800ABB1F7 /* ModelNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44742D5560D800ABB1F7 /* ModelNode.swift */; };
+		067F44952D5560D800ABB1F7 /* TextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F447A2D5560D800ABB1F7 /* TextNode.swift */; };
+		067F44962D5560D800ABB1F7 /* ImageMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44732D5560D800ABB1F7 /* ImageMarker.swift */; };
+		067F44982D55646600ABB1F7 /* SCNVector3+Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44972D55646600ABB1F7 /* SCNVector3+Operations.swift */; };
+		067F449A2D5572CB00ABB1F7 /* ARSCNView+HitResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067F44992D5572CB00ABB1F7 /* ARSCNView+HitResults.swift */; };
 		0680ED591E012A2100732883 /* TableArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0680ED581E012A2100732883 /* TableArrangement.swift */; };
 		0681C4B326024E6800F70BC6 /* WebTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0681C4B226024E6800F70BC6 /* WebTests.swift */; };
 		0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0685B5B22003C931005153ED /* ThemeEnum.swift */; };
@@ -489,6 +514,31 @@
 		067D2BD02040FE0500D1EB16 /* procedures.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = procedures.yail; sourceTree = "<group>"; };
 		067EFDDC2B9B727D001C852C /* AreaChartDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaChartDataModel.swift; sourceTree = "<group>"; };
 		067EFDDE2B9B787A001C852C /* AreaChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaChartView.swift; sourceTree = "<group>"; };
+		067F44682D5560D800ABB1F7 /* AmbientLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientLight.swift; sourceTree = "<group>"; };
+		067F44692D5560D800ABB1F7 /* AR3DFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR3DFactory.swift; sourceTree = "<group>"; };
+		067F446A2D5560D800ABB1F7 /* ARLightBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARLightBase.swift; sourceTree = "<group>"; };
+		067F446B2D5560D800ABB1F7 /* ARNodeBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARNodeBase.swift; sourceTree = "<group>"; };
+		067F446C2D5560D800ABB1F7 /* ARView3D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView3D.swift; sourceTree = "<group>"; };
+		067F446D2D5560D800ABB1F7 /* BoxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxNode.swift; sourceTree = "<group>"; };
+		067F446E2D5560D800ABB1F7 /* CapsuleNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleNode.swift; sourceTree = "<group>"; };
+		067F446F2D5560D800ABB1F7 /* ConeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConeNode.swift; sourceTree = "<group>"; };
+		067F44702D5560D800ABB1F7 /* CylinderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CylinderNode.swift; sourceTree = "<group>"; };
+		067F44712D5560D800ABB1F7 /* DetectedPlane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectedPlane.swift; sourceTree = "<group>"; };
+		067F44722D5560D800ABB1F7 /* DirectionalLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalLight.swift; sourceTree = "<group>"; };
+		067F44732D5560D800ABB1F7 /* ImageMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMarker.swift; sourceTree = "<group>"; };
+		067F44742D5560D800ABB1F7 /* ModelNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelNode.swift; sourceTree = "<group>"; };
+		067F44752D5560D800ABB1F7 /* PlaneNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaneNode.swift; sourceTree = "<group>"; };
+		067F44762D5560D800ABB1F7 /* PointLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointLight.swift; sourceTree = "<group>"; };
+		067F44772D5560D800ABB1F7 /* PyramidNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PyramidNode.swift; sourceTree = "<group>"; };
+		067F44782D5560D800ABB1F7 /* SphereNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SphereNode.swift; sourceTree = "<group>"; };
+		067F44792D5560D800ABB1F7 /* Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spotlight.swift; sourceTree = "<group>"; };
+		067F447A2D5560D800ABB1F7 /* TextNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextNode.swift; sourceTree = "<group>"; };
+		067F447B2D5560D800ABB1F7 /* TorusNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorusNode.swift; sourceTree = "<group>"; };
+		067F447C2D5560D800ABB1F7 /* TubeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TubeNode.swift; sourceTree = "<group>"; };
+		067F447D2D5560D800ABB1F7 /* VideoNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoNode.swift; sourceTree = "<group>"; };
+		067F447E2D5560D800ABB1F7 /* WebViewNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewNode.swift; sourceTree = "<group>"; };
+		067F44972D55646600ABB1F7 /* SCNVector3+Operations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SCNVector3+Operations.swift"; sourceTree = "<group>"; };
+		067F44992D5572CB00ABB1F7 /* ARSCNView+HitResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARSCNView+HitResults.swift"; sourceTree = "<group>"; };
 		0680ED581E012A2100732883 /* TableArrangement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableArrangement.swift; sourceTree = "<group>"; };
 		0681C4B226024E6800F70BC6 /* WebTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebTests.swift; sourceTree = "<group>"; };
 		0685B5B22003C931005153ED /* ThemeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeEnum.swift; sourceTree = "<group>"; };
@@ -823,10 +873,12 @@
 		0417585120093F24007D2C31 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				067F44992D5572CB00ABB1F7 /* ARSCNView+HitResults.swift */,
 				06A623832507BC3200961743 /* Array+AIHelpers.swift */,
 				0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */,
 				0655BED72614CCD000EBE3F6 /* Form+Debugging.swift */,
 				06925558228B01B60091057E /* NSLock+Synchronized.swift */,
+				067F44972D55646600ABB1F7 /* SCNVector3+Operations.swift */,
 				041758522009417D007D2C31 /* String+ChopAffix.swift */,
 				06009FF1227CF5D400E4EC4A /* String+Format.swift */,
 				CB4CF6BB20ACC130002AF423 /* String+Matches+isNumber.swift */,
@@ -961,6 +1013,36 @@
 				8B77A2E82AE1EFD9009F09B2 /* PosenetExtension.swift */,
 			);
 			name = extensions;
+			sourceTree = "<group>";
+		};
+		067F447F2D5560D800ABB1F7 /* ar */ = {
+			isa = PBXGroup;
+			children = (
+				067F44682D5560D800ABB1F7 /* AmbientLight.swift */,
+				067F44692D5560D800ABB1F7 /* AR3DFactory.swift */,
+				067F446A2D5560D800ABB1F7 /* ARLightBase.swift */,
+				067F446B2D5560D800ABB1F7 /* ARNodeBase.swift */,
+				067F446C2D5560D800ABB1F7 /* ARView3D.swift */,
+				067F446D2D5560D800ABB1F7 /* BoxNode.swift */,
+				067F446E2D5560D800ABB1F7 /* CapsuleNode.swift */,
+				067F446F2D5560D800ABB1F7 /* ConeNode.swift */,
+				067F44702D5560D800ABB1F7 /* CylinderNode.swift */,
+				067F44712D5560D800ABB1F7 /* DetectedPlane.swift */,
+				067F44722D5560D800ABB1F7 /* DirectionalLight.swift */,
+				067F44732D5560D800ABB1F7 /* ImageMarker.swift */,
+				067F44742D5560D800ABB1F7 /* ModelNode.swift */,
+				067F44752D5560D800ABB1F7 /* PlaneNode.swift */,
+				067F44762D5560D800ABB1F7 /* PointLight.swift */,
+				067F44772D5560D800ABB1F7 /* PyramidNode.swift */,
+				067F44782D5560D800ABB1F7 /* SphereNode.swift */,
+				067F44792D5560D800ABB1F7 /* Spotlight.swift */,
+				067F447A2D5560D800ABB1F7 /* TextNode.swift */,
+				067F447B2D5560D800ABB1F7 /* TorusNode.swift */,
+				067F447C2D5560D800ABB1F7 /* TubeNode.swift */,
+				067F447D2D5560D800ABB1F7 /* VideoNode.swift */,
+				067F447E2D5560D800ABB1F7 /* WebViewNode.swift */,
+			);
+			path = ar;
 			sourceTree = "<group>";
 		};
 		068F9856289A2FB800E2883F /* charts */ = {
@@ -1294,6 +1376,7 @@
 		06E59EAB1D92C91800C42804 /* visible */ = {
 			isa = PBXGroup;
 			children = (
+				067F447F2D5560D800ABB1F7 /* ar */,
 				068F9856289A2FB800E2883F /* charts */,
 				04AB2222202129BD0033281F /* maps */,
 				06D151931DC464BB00FC981E /* core */,
@@ -1951,6 +2034,7 @@
 				1585F44D2B7D1F68005C905F /* BarChartView.swift in Sources */,
 				06D151901DC45E9700FC981E /* ErrorMessages.swift in Sources */,
 				4656A6432A6075E80097DF06 /* LinearProgress.swift in Sources */,
+				067F44982D55646600ABB1F7 /* SCNVector3+Operations.swift in Sources */,
 				DE0FFBDD20C5D4C20049A748 /* DateTimePickerBase.swift in Sources */,
 				06B216021DB95134000B3366 /* TextBox.swift in Sources */,
 				086DC634210157BF00FDA182 /* Ev3Constants.swift in Sources */,
@@ -1971,6 +2055,7 @@
 				0846B64820BBBF9C008FB20C /* ImageSprite.swift in Sources */,
 				C4D38CC7230DCDF300D09FE3 /* VerticalScrollArrangement.swift in Sources */,
 				064218BC2C776D7100F10FBD /* Vector2D.swift in Sources */,
+				067F449A2D5572CB00ABB1F7 /* ARSCNView+HitResults.swift in Sources */,
 				0417585720098EE0007D2C31 /* LinkedList.swift in Sources */,
 				068E0E9E1DC243B30086FFDA /* Picker.swift in Sources */,
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,
@@ -2055,6 +2140,29 @@
 				080C7FE5210784F2007C94A8 /* Ev3ReportDelegate.swift in Sources */,
 				DE2EE36A20DBD3B700927587 /* LineString.swift in Sources */,
 				DE4EA34620AE2CDD009681D8 /* HTMLEntities.swift in Sources */,
+				067F44802D5560D800ABB1F7 /* TubeNode.swift in Sources */,
+				067F44812D5560D800ABB1F7 /* SphereNode.swift in Sources */,
+				067F44822D5560D800ABB1F7 /* CapsuleNode.swift in Sources */,
+				067F44832D5560D800ABB1F7 /* PlaneNode.swift in Sources */,
+				067F44842D5560D800ABB1F7 /* BoxNode.swift in Sources */,
+				067F44852D5560D800ABB1F7 /* PyramidNode.swift in Sources */,
+				067F44862D5560D800ABB1F7 /* VideoNode.swift in Sources */,
+				067F44872D5560D800ABB1F7 /* ConeNode.swift in Sources */,
+				067F44882D5560D800ABB1F7 /* ARNodeBase.swift in Sources */,
+				067F44892D5560D800ABB1F7 /* PointLight.swift in Sources */,
+				067F448A2D5560D800ABB1F7 /* Spotlight.swift in Sources */,
+				067F448B2D5560D800ABB1F7 /* CylinderNode.swift in Sources */,
+				067F448C2D5560D800ABB1F7 /* ARLightBase.swift in Sources */,
+				067F448D2D5560D800ABB1F7 /* AmbientLight.swift in Sources */,
+				067F448E2D5560D800ABB1F7 /* WebViewNode.swift in Sources */,
+				067F448F2D5560D800ABB1F7 /* DirectionalLight.swift in Sources */,
+				067F44902D5560D800ABB1F7 /* TorusNode.swift in Sources */,
+				067F44912D5560D800ABB1F7 /* DetectedPlane.swift in Sources */,
+				067F44922D5560D800ABB1F7 /* AR3DFactory.swift in Sources */,
+				067F44932D5560D800ABB1F7 /* ARView3D.swift in Sources */,
+				067F44942D5560D800ABB1F7 /* ModelNode.swift in Sources */,
+				067F44952D5560D800ABB1F7 /* TextNode.swift in Sources */,
+				067F44962D5560D800ABB1F7 /* ImageMarker.swift in Sources */,
 				06B216041DB95146000B3366 /* Notifier.swift in Sources */,
 				DE3E730820C72AFE0063B339 /* GyroscopeSensor.swift in Sources */,
 				DE4CDF572093982F008412BC /* FontUtil.swift in Sources */,

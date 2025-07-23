@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout.LayoutParams;
 
+
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -22,6 +23,7 @@ import java.util.List;
  * layout. Closely follows the implementation of LinearLayout with certain
  * changes.
  */
+
 @SimpleObject
 public class RelativeLayout implements Layout {
 
