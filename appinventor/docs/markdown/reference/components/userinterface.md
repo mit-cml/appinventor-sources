@@ -845,7 +845,8 @@ This is a visible component that displays a list of text and image elements in y
 : The color of the `ListView` divider.
 
 {:id="ListView.DividerThickness" .number} *DividerThickness*
-: Specifies the divider thickness of list view
+: Specifies the divider thickness of list view.
+ If the thickness is 0, the divider is not visible.
 
 {:id="ListView.ElementColor" .color} *ElementColor*
 : The color of the `ListView` element.
@@ -854,7 +855,8 @@ This is a visible component that displays a list of text and image elements in y
 : Specifies the corner radius of the list view element.
 
 {:id="ListView.ElementMarginsWidth" .number} *ElementMarginsWidth*
-: Specifies the width of the margins of a list view element
+: Specifies the width of the margins of a list view element.
+ If margins width > 0, then the divider is not displayed.
 
 {:id="ListView.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
@@ -863,8 +865,11 @@ This is a visible component that displays a list of text and image elements in y
 : Set the list of choices specified as a string with the elements separated by commas
  such as: Cheese,Fruit,Bacon,Radish.
 
+{:id="ListView.FontSize" .number} *FontSize*
+: Specifies the font size of the element's main text.
+
 {:id="ListView.FontSizeDetail" .number} *FontSizeDetail*
-: Specifies the `ListView` item's text font size
+: Specifies the font size of the element's detail text.
 
 {:id="ListView.FontTypeface" .text .do} *FontTypeface*
 : Specifies the label's text's font face as default, serif, sans
@@ -933,9 +938,6 @@ This is a visible component that displays a list of text and image elements in y
 
 {:id="ListView.TextColorDetail" .color} *TextColorDetail*
 : Specifies the color of the secondary text in a ListView layout
-
-{:id="ListView.TextSize" .number} *TextSize*
-: Specifies the `ListView` item's text font size
 
 {:id="ListView.Top" .number} *Top*
 : Specifies the position of the Top edge of the component relative to an
@@ -1462,15 +1464,20 @@ This class is used to display a `Slider`.
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the
  current minimum, then minimum and maximum will both be set to this value.
- Setting `MaxValue` resets the thumb position to halfway between [`MinValue`](#Slider.MinValue)
- and `MaxValue` and signals the [`PositionChanged`](#Slider.PositionChanged)` event.
 
 {:id="Slider.MinValue" .number} *MinValue*
 : Sets the minimum value of slider. If the new minimum is greater than the
  current maximum, then minimum and maximum will both be set to this value.
- Setting `MinValue` resets the thumb position to halfway between `MinValue`
- and [`MaxValue`](#Slider.MaxValue) and signals the [`PositionChanged`](#Slider.PositionChanged)`
- event.
+
+{:id="Slider.NumberOfSteps" .number} *NumberOfSteps*
+: Set the number of points on the slider scale.
+ Combined with MinValue and MaxValue, it allows you to get the slider precision that you want,
+ e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.
+
+{:id="Slider.ThumbColor" .color} *ThumbColor*
+: Specifies the color of the thumb slider as an alpha-red-green-blue
+ integer, i.e., `0xAARRGGBB`.  An alpha of `00`
+ indicates fully transparent and `FF` means opaque.
 
 {:id="Slider.ThumbEnabled" .boolean} *ThumbEnabled*
 : Whether or not the slider thumb is being be shown.
@@ -1501,6 +1508,12 @@ This class is used to display a `Slider`.
 
 {:id="Slider.PositionChanged"} PositionChanged(*thumbPosition*{:.number})
 : Indicates that position of the slider thumb has changed.
+
+{:id="Slider.TouchDown"} TouchDown()
+: Indicates that the user has started a touch gesture.
+
+{:id="Slider.TouchUp"} TouchUp()
+: Indicates that the user has finished a touch gesture.
 
 ### Methods  {#Slider-Methods}
 

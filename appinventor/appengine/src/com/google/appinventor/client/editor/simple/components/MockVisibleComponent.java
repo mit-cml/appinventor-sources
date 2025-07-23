@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -47,6 +47,16 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_TEXTCOLOR = "TextColor";
   // to set color for secondary text of listview items
   protected static final String PROPERTY_NAME_DETAILTEXTCOLOR = "TextColorDetail";
+  protected static final String PROPERTY_NAME_FONTSIZEDETAIL = "FontSizeDetail";
+  protected static final String PROPERTY_NAME_FONTTYPEFACEDETAIL = "FontTypefaceDetail";
+  protected static final String PROPERTY_NAME_ELEMENTCOLOR = "ElementColor";
+  protected static final String PROPERTY_NAME_DIVIDERCOLOR = "DividerColor";
+  protected static final String PROPERTY_NAME_DIVIDERTHICKNESS = "DividerThickness";
+  protected static final String PROPERTY_NAME_ELEMENTCORNERRADIUS = "ElementCornerRadius";
+  protected static final String PROPERTY_NAME_ELEMENTMARGINSWIDTH = "ElementMarginsWidth";
+  protected static final String PROPERTY_NAME_ORIENTATION = "Orientation";
+  protected static final String PROPERTY_NAME_IMAGEHEIGHT = "ImageHeight";
+  protected static final String PROPERTY_NAME_IMAGEWIDTH = "ImageWidth";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
   protected static final String PROPERTY_NAME_HINT = "HintText";
@@ -204,13 +214,16 @@ public abstract class MockVisibleComponent extends MockComponent {
    * @param value true or false
    */
   public void setCoordPropertiesVisible(boolean value) {
-    this.coordPropertiesVisible = value;
-
-    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
-
     EditableProperty x = properties.getProperty(PROPERTY_NAME_LEFT);
     EditableProperty y = properties.getProperty(PROPERTY_NAME_TOP);
 
+    if (x == null || y == null) {
+      // The subclass hasn't yet been added to an arrangement so it doesn't have positioning
+      return;
+    }
+
+    this.coordPropertiesVisible = value;
+    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
     x.setType(type);
     y.setType(type);
   }

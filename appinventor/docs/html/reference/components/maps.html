@@ -438,7 +438,7 @@
 
 <p>A two-dimensional container that renders map tiles in the background and allows for multiple
  <a href="#Marker"><code class="highlighter-rouge">Marker</code></a> elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- contributors and the the United States Geological Survey.</p>
+ contributors and the the United States Geological Survey, or a custom basemap URL can be provided.</p>
 
 <p>The <code class="highlighter-rouge">Map</code> component provides three utilities for manipulating its boundaries with App Inventor.
  First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -464,6 +464,10 @@
  <a href="#Map.PanTo"><code class="highlighter-rouge">PanTo</code></a> with numerical latitude and longitude rather than convert
  to the string representation for use with this property.</p>
   </dd>
+  <dt id="Map.CustomUrl" class="text"><em>CustomUrl</em></dt>
+  <dd>Update the custom URL of the base tile layer in use by the map.
+ e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+ e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername</dd>
   <dt id="Map.EnablePan" class="boolean"><em>EnablePan</em></dt>
   <dd>Enables or disables the ability of the user to move the Map.</dd>
   <dt id="Map.EnableRotation" class="boolean"><em>EnableRotation</em></dt>
@@ -499,6 +503,7 @@
       <li>Roads</li>
       <li>Aerial</li>
       <li>Terrain</li>
+      <li>Custom</li>
     </ol>
 
     <p><strong>Note:</strong> Road layers are provided by OpenStreetMap and aerial and terrain layers are
