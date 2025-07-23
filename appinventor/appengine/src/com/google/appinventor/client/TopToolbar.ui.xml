@@ -145,7 +145,7 @@
           visible="{hasWriteAccess}">
         <actions:SetFontRegularAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="AppStoreSettings" caption="App Store Settings">
+      <ai:DropDownItem name="AppStoreSettings" caption="{messages.appStoreSettingsMenuTitle}">
         <actions:ShowAppStoreSettingsDialog />
       </ai:DropDownItem>
     </ai:DropDownButton>
