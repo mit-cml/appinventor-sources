@@ -943,6 +943,10 @@ This is a visible component that displays a list of text and image elements in y
 : Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.
 
+{:id="ListView.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `ListView` is showing and `false`{:.logic.block} if hidden.

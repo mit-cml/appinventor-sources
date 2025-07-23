@@ -13,7 +13,6 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 
 import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
-
 import com.google.appinventor.client.editor.simple.components.MockARView3D;
 import com.google.appinventor.client.editor.simple.components.MockAmbientLight;
 import com.google.appinventor.client.editor.simple.components.MockBall;
@@ -626,7 +625,6 @@ public final class SimpleComponentDescriptor {
       return new MockTableArrangement(editor);
     } else if (name.equals(MockAbsoluteArrangement.TYPE)) {
       return new MockAbsoluteArrangement(editor);
-
     } else if (name.equals(MockImageSprite.TYPE)) {
       return new MockImageSprite(editor);
     } else if (name.equals(MockBall.TYPE)) {

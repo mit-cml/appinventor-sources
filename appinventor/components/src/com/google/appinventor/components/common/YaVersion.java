@@ -604,10 +604,12 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 231:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 9.
   // For YOUNG_ANDROID_VERSION 232:
+  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
   // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
   // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
   // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
   // - CHART_COMPONENT_VERSION was incremented to 4
+
   public static final int YOUNG_ANDROID_VERSION = 232;
 
   // ............................... Blocks Language Version Number ...............................
