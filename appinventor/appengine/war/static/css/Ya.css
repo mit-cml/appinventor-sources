@@ -3466,3 +3466,18 @@ div.dropdiv p {
 .ode-DialogBox-light .dark, .ode-DialogBox-dark .light {
   display: none;
 }
+
+#aiConsolePanel {
+  height: 100%;
+  background-color: white;
+}
+
+#aiConsolePanel .Warning {
+  color: rgb(255, 153, 0);
+  font-weight: bold;
+}
+
+#aiConsolePanel .Error {
+  color: red;
+  font-weight: bolder;
+}

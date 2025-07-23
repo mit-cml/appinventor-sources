@@ -23,6 +23,7 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -224,6 +225,7 @@ public class Ode implements EntryPoint {
   @UiField(provided = true) protected DeckPanel deckPanel;
   @UiField(provided = true) protected FlowPanel overDeckPanel;
   @UiField protected TutorialPanel tutorialPanel;
+  @UiField protected ConsolePanel consolePanel;
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
@@ -246,6 +248,8 @@ public class Ode implements EntryPoint {
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
+
+  private boolean consoleVisible = false;
 
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
@@ -2458,6 +2462,19 @@ public class Ode implements EntryPoint {
     }
   }
 
+  public void setConsoleVisible(boolean visible) {
+    consoleVisible = visible;
+    if (visible) {
+      consolePanel.setVisible(true);
+      consolePanel.setWidth("300px");
+    } else {;
+      consolePanel.setVisible(false);
+    }
+    if (currentFileEditor != null) {
+      currentFileEditor.resize();
+    }
+  }
+
   /**
    * Indicate if the tutorial panel is currently visible.
    * @return true if the tutorial panel is visible.
@@ -2470,6 +2487,10 @@ public class Ode implements EntryPoint {
 
   public boolean isTutorialVisible() {
     return tutorialVisible;
+  }
+
+  public boolean isConsoleVisible() {
+    return consoleVisible;
   }
 
   public void setTutorialURL(String newURL) {
