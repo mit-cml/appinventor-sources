@@ -50,7 +50,7 @@ import javax.annotation.Nullable;
 public final class FileImporterImpl implements FileImporter {
 
   // Maximum size of an uploaded asset, in megabytes.
-  private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 9f);
+  private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 10f);
 
   private static final Logger LOG = Logger.getLogger(FileImporterImpl.class.getName());
 

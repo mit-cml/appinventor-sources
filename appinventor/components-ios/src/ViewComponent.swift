@@ -25,6 +25,48 @@ import Foundation
   fileprivate var _row = kDefaultRowColumn
 
   private var _visible = true
+  
+  
+  private var _left: Int = -1 //ComponentConstants.DEFAULT_X_Y  // Default invalid position
+  private var _top: Int = -1   // Default invalid position
+      
+  // Getter methods that RelativeLayout will use to query position
+  open func left() -> Int {
+      return _left
+  }
+  
+  open func top() -> Int {
+      return _top
+  }
+    
+  // Properties that users will set via App Inventor
+  @objc open var Left: Int {
+      get {
+          return _left
+      }
+      set {
+          if _left != newValue {
+              _left = newValue
+              // Notify container to update position
+            _container?.setChildNeedsLayout?(component:self)
+          }
+      }
+  }
+  
+  @objc open var Top: Int {
+      get {
+          return _top
+      }
+      set {
+          if _top != newValue {
+              _top = newValue
+              // Notify container to update position
+              _container?.setChildNeedsLayout?(component:self)
+          }
+      }
+  }
+
+      
 
   // needs to be public for extensions
   @objc public init(_ parent: ComponentContainer) {
