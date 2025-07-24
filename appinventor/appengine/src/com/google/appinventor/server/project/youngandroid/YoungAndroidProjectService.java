@@ -6,6 +6,14 @@
 
 package com.google.appinventor.server.project.youngandroid;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
@@ -52,11 +60,8 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSource
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.Settings;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
 import java.util.Locale;
@@ -71,12 +76,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -100,24 +103,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private static final Flag<Integer> MAX_PROJECT_SIZE =
       Flag.createFlag("project.maxsize", 30);
-  private static final String ERROR_LARGE_PROJECT =
-      "Sorry, can't package projects larger than %1$d MB. Yours is %2$3.2f MB.";
 
-  // Project folder prefixes
-  public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
-  protected static final String ASSETS_FOLDER = "assets";
-  private static final String EXTERNAL_COMPS_FOLDER = "assets/external_comps";
-  static final String PROJECT_DIRECTORY = "youngandroidproject";
-
-  // TODO(user) Source these from a common constants library.
-  private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
-  private static final String CODEBLOCKS_SOURCE_EXTENSION =
-      YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
-  private static final String BLOCKLY_SOURCE_EXTENSION =
-      YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION;
-  private static final String YAIL_FILE_EXTENSION =
-      YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION;
+  private static final String EXTERNAL_COMPS_FOLDER = ASSETS_FOLDER + "/external_comps";
 
   public static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
       "project.properties";
@@ -126,8 +113,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   // Build folder path
   private static final String BUILD_FOLDER = "build";
-
-  public static final String PROJECT_KEYSTORE_LOCATION = "android.keystore";
 
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
@@ -238,12 +223,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     YoungAndroidSettingsBuilder oldProperties = new YoungAndroidSettingsBuilder(properties);
 
 
+    // Project settings do not include the name and package (main). So we add them
+    // here so the comparison below is accurate. Before this change, we always write out the
+    // project properties file, even when there are no changes to it.
+    String projectName = properties.getProperty("name");
+    String qualifiedName = properties.getProperty("main");
+    newProperties.setProjectName(projectName)
+      .setQualifiedFormName(qualifiedName);
+
     if (!oldProperties.equals(newProperties)) {
       // Recreate the project.properties and upload it to storageIo.
-      String projectName = properties.getProperty("name");
-      String qualifiedName = properties.getProperty("main");
-      String newContent = newProperties.setProjectName(projectName)
-          .setQualifiedFormName(qualifiedName).toProperties();
+      String newContent = newProperties.toProperties();
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -540,7 +530,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
-        projectName + ".aia", true, false, true, false);
+        projectName + ".aia", true, false, true, false, false, false);
       // The code below tests the size of the compressed project before
       // we send it off to the buildserver. When using URLFetch we know that
       // this size is limited to 10MB based on Google's documentation.
@@ -669,7 +659,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     try {
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
-        false, projectName + ".aia", false, false, true, true);
+        false, projectName + ".aia", false, false, true, true, false, false);
       String token = GalleryToken.makeToken(userId, projectId, projectName);
       newGalleryUrl = new URL(galleryLocation + "/fromappinventor?token=" +
         token + "&id=" + galleryId);

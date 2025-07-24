@@ -211,6 +211,10 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
 : Specifies the `Canvas`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="Canvas.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Canvas.LineWidth" .number} *LineWidth*
 : Specifies the width of lines drawn on the Canvas.
 
@@ -229,6 +233,10 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
  or opposite (ending at the specified point in
  [`DrawText`](#Canvas.DrawText) or
  [`DrawTextAtAngle`](#Canvas.DrawTextAtAngle)).
+
+{:id="Canvas.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Canvas.Visible" .boolean} *Visible*
 : Specifies whether the `Canvas` should be visible on the screen.  Value is `true`{:.logic.block}

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -281,7 +281,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public void onShow() {
     LOG.info("YaFormEditor: got onShow() for " + getFileId());
     super.onShow();
-    HiddenComponentsCheckbox.show(form);
+    // Replace the old singleton call with the new panel method
+    visibleComponentsPanel.show(form);
     loadDesigner();
     Tracking.trackEvent(Tracking.EDITOR_EVENT, Tracking.EDITOR_ACTION_SHOW_DESIGNER);
   }
@@ -1195,13 +1196,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     for (JSONValue element : components.getElements()) {
       JSONObject object = element.asObject();
       String type = object.get("$Type").asString().getString();
-      if (container.willAcceptComponentType(type)) {
+      if (container.willAcceptComponentType(type) && container.canPasteComponentOfType(type)) {
         MockComponent pasted = createMockComponent(object, container, substitution);
         if (pasted.isVisibleComponent()) {
           container.removeComponent(pasted, false);
           container.addVisibleComponent(pasted, insertBefore);
           insertBefore = container.getChildren().indexOf(pasted) + 1;
         }
+        container.onPaste(pasted);
         lastComponentCreated = pasted;
       }
     }

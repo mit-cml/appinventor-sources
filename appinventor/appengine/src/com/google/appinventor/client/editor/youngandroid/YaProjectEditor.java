@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -39,7 +40,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNo
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.json.client.JSONException;
@@ -406,8 +406,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return new Comparator<String>() {
       @Override
       public int compare(String fileId1, String fileId2) {
-        boolean isForm1 = fileId1.endsWith(YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION);
-        boolean isForm2 = fileId2.endsWith(YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION);
+        boolean isForm1 = fileId1.endsWith(FORM_PROPERTIES_EXTENSION);
+        boolean isForm2 = fileId2.endsWith(FORM_PROPERTIES_EXTENSION);
 
         // Give priority to screen1.
         if (YoungAndroidSourceNode.isScreen1(fileId1)) {
