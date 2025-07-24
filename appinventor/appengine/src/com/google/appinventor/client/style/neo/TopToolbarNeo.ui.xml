@@ -102,6 +102,15 @@
         <actions:BarcodeAction second="true" isAab="true"/>
       </ai:DropDownItem>
       <hr/>
+      <ai:DropDownItem name="BuildIPA" caption="{messages.showExportiOSAdHoc}"
+                       beta="true">
+        <actions:BarcodeAction foriOS="true" forAppStore="false" />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="BuildIPAStore" caption="{messages.showExportiOSAppStore}"
+                       beta="true">
+        <actions:BarcodeAction foriOS="true" forAppStore="true" />
+      </ai:DropDownItem>
+      <hr/>
       <ai:DropDownItem name="Yail" caption="{messages.generateYailMenuItem}">
         <actions:GenerateYailAction/>
       </ai:DropDownItem>

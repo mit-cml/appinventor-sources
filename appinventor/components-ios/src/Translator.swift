@@ -66,7 +66,7 @@ public let TRANSLATOR_SERVICE_URL = "https://tr.appinventor.mit.edu/tr/v1"
       var request = URLRequest(url: url)
       request.httpMethod = "POST"
       request.httpBody = try body.serializedData()
-      _urlSession.dataTask(with: request) { data, response, error in
+      let task = _urlSession.dataTask(with: request) { data, response, error in
         DispatchQueue.main.async {
           if let response = response as? HTTPURLResponse, let data = data {
             var content: String? = nil
@@ -83,7 +83,9 @@ public let TRANSLATOR_SERVICE_URL = "https://tr.appinventor.mit.edu/tr/v1"
             print("Unknown path")
           }
         }
-      }.resume()
+      }
+      task.priority = 1.0
+      task.resume()
     } catch {
       print("Error in translation: \(error)")
     }

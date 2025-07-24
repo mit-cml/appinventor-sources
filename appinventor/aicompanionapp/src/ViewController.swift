@@ -6,6 +6,7 @@
 import UIKit
 import AIComponentKit
 import AVKit
+import Zip
 
 /**
  * Menu for the iPad REPL.
@@ -59,6 +60,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
+  @IBOutlet weak var libraryButton: UIButton?
   @IBOutlet weak var legacyCheckbox: CheckBoxView!
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
@@ -171,6 +173,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
+      libraryButton = form.view.viewWithTag(7) as! UIButton?
       legacyCheckbox.Text = "Use Legacy Connection"
       let ipaddr: String! = NetworkUtils.getIPAddress()
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
@@ -180,6 +183,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
+      libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
@@ -210,7 +214,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     guard let text = connectCode?.text else {
       return
     }
-    if text.hasPrefix("https:") {
+    if (text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}")) || text.hasPrefix("https:") {
       ViewController.gotText(text)
       return
     }
@@ -257,11 +261,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NSLog("Values = \(values)")
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
-    URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+    let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
       if self.phoneStatus.WebRTC {
         guard let data = data, let responseContent = String(data: data, encoding: .utf8) else {
           return
         }
+        print("response content: \(responseContent)")
         DispatchQueue.main.async {
           self.connectProgressDialog?.message = "Waiting for remote..."
           self.connectProgressView?.progress = 0.15
@@ -278,8 +283,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         }
         self.setPopup(popup: responseContent)
       }
+      SystemVariables.inConnectedApp = true
     }
-    ).resume()
+    )
+    task.priority = 1.0
+    task.resume()
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
@@ -289,10 +297,21 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
   
+  @objc func openLibrary(){
+      let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as! AppLibraryViewController
+      libraryVC.form = self.form
+      self.pushViewController(libraryVC, animated:true)
+    }
+  
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
-      ViewController.controller?.connect(nil)
+      if let first = text.first, Character("a") <= first && first <= Character("z") {
+        ViewController.controller?.connect(nil)
+      } else if text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}") {
+        let code = String(text[text.index(after: text.startIndex)..<text.index(before: text.endIndex)])
+        ViewController.controller?.openProject(named: code)
+      }
     }
   }
   
@@ -305,8 +324,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
       controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { [weak self] (UIAlertAction) in
         self?.reset()
+        SystemVariables.inConnectedApp = false
         controller.dismiss(animated: false)
       })
+      if SystemVariables.inConnectedApp {
+        controller.addAction(UIAlertAction(title: "Download Project", style: .default) { (UIAlertAction) in
+          RetValManager.shared().startCache()
+          controller.dismiss(animated:true)
+        })
+      }
       controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in
         controller.dismiss(animated: true)
       })
@@ -355,8 +381,50 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
 
+  private func openProject(named name: String) {
+    if Bundle.main.path(forResource: "Screen1", ofType: "yail", inDirectory: "samples/\(name)/") != nil {
+      print("----Creating new app-----")
+      let newapp = BundledApp(named: name, at: "samples/\(name)/")
+      newapp.makeCurrent()
+      newapp.loadScreen1(form)
+    } else {
+      openProjectFromWeb(named: name)
+    }
+  }
+
   private func setPopup(popup: String) {
     phoneStatus.setPopup(popup)
+  }
+
+  private var urlSession = URLSession(configuration: .ephemeral)
+
+  private func openProjectFromWeb(named name: String) {
+    DispatchQueue(label: "ProjectLoader").async {
+      guard let url = URL(string: "https://appserver.appinventor.mit.edu/serve/\(name).aia") else {
+        return
+      }
+      let task = self.urlSession.dataTask(with: url) { (data, response, error) in
+        do {
+          let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+          var destination = paths[0]
+          destination.appendPathComponent("\(name).aia")
+          if let data = data {
+            do {
+              try data.write(to: destination)
+              let app = BundledApp(aiaPath: destination)
+              DispatchQueue.main.async {
+                app.makeCurrent()
+                app.loadScreen1(self.form)
+              }
+            } catch {
+              print(error)
+            }
+          }
+        }
+      }
+      task.priority = 1.0
+      task.resume()
+    }
   }
 
   /**

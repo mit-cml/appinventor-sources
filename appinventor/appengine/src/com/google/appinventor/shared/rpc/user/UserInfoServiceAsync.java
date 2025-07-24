@@ -72,4 +72,9 @@ public interface UserInfoServiceAsync {
 
   void deleteAccount(AsyncCallback<String> callback);
 
+  /**
+   * @see UserInfoService#storeAppStoreSettings(String)
+   */
+  void storeAppStoreSettings(String content, AsyncCallback<Void> callback);
+
 }

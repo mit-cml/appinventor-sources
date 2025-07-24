@@ -333,9 +333,12 @@ public abstract class CommonProjectService {
    * @param target  build target (optional, implementation dependent)
    * @param secondBuildserver use second buildserver
    *
+   * @param foriOS
+   * @param forAppStore
    * @return  build results
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab);
+  public abstract RpcResult build(User user, long projectId, String nonce, String target,
+      boolean secondBuildserver, boolean isAab, boolean foriOS, boolean forAppStore);
 
   /**
    * Gets the result of a build command for the project.
