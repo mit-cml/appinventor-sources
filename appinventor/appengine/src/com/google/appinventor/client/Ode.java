@@ -23,6 +23,7 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.SimpleVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -36,7 +37,6 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.local.LocalGetMotdService;
 import com.google.appinventor.client.local.LocalProjectService;
 import com.google.appinventor.client.local.LocalTokenAuthService;
 import com.google.appinventor.client.local.LocalUserInfoService;
@@ -54,14 +54,13 @@ import com.google.appinventor.client.utils.Promise.ResolveCallback;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 
+import com.google.appinventor.client.widgets.TutorialPopup;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.UISettingsWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.shared.rpc.GetMotdService;
-import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.admin.AdminInfoService;
@@ -87,6 +86,7 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
@@ -160,8 +160,6 @@ public class Ode implements EntryPoint {
   // User settings
   private static UserSettings userSettings;
 
-  private MotdFetcher motdFetcher;
-
   // User information
   private User user;
 
@@ -227,6 +225,7 @@ public class Ode implements EntryPoint {
   @UiField(provided = true) protected DeckPanel deckPanel;
   @UiField(provided = true) protected FlowPanel overDeckPanel;
   @UiField protected TutorialPanel tutorialPanel;
+  @UiField protected ConsolePanel consolePanel;
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
@@ -250,6 +249,8 @@ public class Ode implements EntryPoint {
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
 
+  private boolean consoleVisible = false;
+
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -259,9 +260,6 @@ public class Ode implements EntryPoint {
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
-
-  // Web service for get motd information
-  private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
 
   // Web service for component related operations
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
@@ -542,9 +540,7 @@ public class Ode implements EntryPoint {
         .getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
     TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
 
-    if (templateLoadingFlag && !getShowUIPicker()) {  // We are loading a template, open it instead unless UI needs to be picked
-                                // of the last project
-
+    if (templateLoadingFlag) {  // We are loading a template, open it instead
       //check to see what kind of file is in url, binary (*.aia) or base64(*.apk)
       if (templatePath.endsWith(".aia")){
         HTML5DragDrop.importProjectFromUrl(templatePath);
@@ -742,7 +738,6 @@ public class Ode implements EntryPoint {
 
     setupOrigin(projectService);
     setupOrigin(userInfoService);
-    setupOrigin(getMotdService);
     setupOrigin(componentService);
     setupOrigin(adminInfoService);
     setupOrigin(tokenAuthService);
@@ -1037,10 +1032,6 @@ public class Ode implements EntryPoint {
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
     deckPanel.showWidget(0);
-    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
-
-      showSplashScreens();
-    }
 
     // Projects tab
     projectsTabIndex = 0;
@@ -1094,31 +1085,12 @@ public class Ode implements EntryPoint {
       }
     });
 
-    setupMotd();
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
+    if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
+      showSplashScreens();
+    }
     return resolve(result);
-  }
-
-  private void setupMotd() {
-    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        LOG.info(MESSAGES.getMotdFailed());
-      }
-
-      @Override
-      public void onSuccess(Integer intervalSecs) {
-        if (intervalSecs > 0) {
-          topPanel.showMotd();
-          motdFetcher = new MotdFetcher(intervalSecs);
-          motdFetcher.register((ExtendedServiceProxy<?>) projectService);
-          motdFetcher.register((ExtendedServiceProxy<?>) userInfoService);
-        }
-      }
-    };
-
-    getGetMotdService().getCheckInterval(callback);
   }
 
   /**
@@ -1218,15 +1190,6 @@ public class Ode implements EntryPoint {
    */
   public UserInfoServiceAsync getUserInfoService() {
     return userInfoService;
-  }
-
-  /**
-   * Get an instance of the motd web service.
-   *
-   * @return motd web service instance
-   */
-  public GetMotdServiceAsync getGetMotdService() {
-    return getMotdService;
   }
 
   /**
@@ -1569,11 +1532,6 @@ public class Ode implements EntryPoint {
     // At this point, we aren't allowed to do any UI.
     windowClosing = true;
 
-    if (motdFetcher != null) {
-      motdFetcher.unregister((ExtendedServiceProxy<?>) projectService);
-      motdFetcher.unregister((ExtendedServiceProxy<?>) userInfoService);
-    }
-
     // Unregister services with RPC status popup.
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) projectService);
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) userInfoService);
@@ -1761,6 +1719,18 @@ public class Ode implements EntryPoint {
       }
       return null;
     });
+    if (getShowUIPicker()) {
+      TutorialPopup popup = new TutorialPopup(MESSAGES.neoWelcomeMessage(), () -> {
+        setUserNewLayout(false);
+        saveUserDesignSettings();
+      });
+      setShowUIPicker(false);
+      userSettings.saveSettings(null);
+      Scheduler.get().scheduleFixedDelay(() -> {
+        popup.show(getTopToolbar().getSettingsDropDown().getElement());
+        return false;
+      }, 375);
+    }
   }
 
   /*
@@ -1857,10 +1827,7 @@ public class Ode implements EntryPoint {
   }
 
   private void maybeShowSplash() {
-
-    if (getShowUIPicker()) {
-      new UISettingsWizard(true).show();
-    } else if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
+    if (AppInventorFeatures.showSplashScreen() && !isReadOnly) {
       createWelcomeDialog(false);
     } else {
       maybeShowNoProjectsDialog();
@@ -2495,6 +2462,19 @@ public class Ode implements EntryPoint {
     }
   }
 
+  public void setConsoleVisible(boolean visible) {
+    consoleVisible = visible;
+    if (visible) {
+      consolePanel.setVisible(true);
+      consolePanel.setWidth("300px");
+    } else {;
+      consolePanel.setVisible(false);
+    }
+    if (currentFileEditor != null) {
+      currentFileEditor.resize();
+    }
+  }
+
   /**
    * Indicate if the tutorial panel is currently visible.
    * @return true if the tutorial panel is visible.
@@ -2507,6 +2487,10 @@ public class Ode implements EntryPoint {
 
   public boolean isTutorialVisible() {
     return tutorialVisible;
+  }
+
+  public boolean isConsoleVisible() {
+    return consoleVisible;
   }
 
   public void setTutorialURL(String newURL) {

@@ -21,6 +21,14 @@ public interface Component {
    */
   public HandlesEventDispatching getDispatchDelegate();
 
+  /**
+   * Sets the component name from Scheme runtime.
+   * @param componentName component name
+   */
+  // We add the method here to force a build error in case a component did not
+  //   implement it, rather than receiving runtime errors.
+  void setComponentName(final String componentName);
+
   /*
    * Components asset directory.
    */
