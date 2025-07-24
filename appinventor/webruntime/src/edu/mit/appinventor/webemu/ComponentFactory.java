@@ -14,6 +14,7 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Label;
 import com.google.appinventor.components.runtime.ListPicker;
+import com.google.appinventor.components.runtime.ListView;
 import com.google.appinventor.components.runtime.PasswordTextBox;
 import com.google.appinventor.components.runtime.Player;
 import com.google.appinventor.components.runtime.Sound;
@@ -39,6 +40,7 @@ public class ComponentFactory {
 //    LOOKUP.put("Clock", Clock::new);
     LOOKUP.put("Label", Label::new);
     LOOKUP.put("ListPicker", ListPicker::new);
+    LOOKUP.put("ListView", ListView::new);
     LOOKUP.put("PasswordTextBox", PasswordTextBox::new);
     LOOKUP.put("Player", Player::new);
     LOOKUP.put("Sound", Sound::new);
