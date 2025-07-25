@@ -33,11 +33,20 @@ public final class FileExporterImpl implements FileExporter {
   @Override
   public RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target)
       throws IOException {
+    return exportProjectOutputFile(userId, projectId, target, null);
+  }
+
+  @Override
+  public RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target,
+      @Nullable String extension) throws IOException {
     // Download project output file.
     List<String> files = storageIo.getProjectOutputFiles(userId, projectId);
     if (target != null) {
       // Target given - filter file list
       files = filterByFilePrefix(files, "build/" + target + '/');
+    }
+    if (extension != null) {
+      files = filterByFileSuffix(files, extension);
     }
 
     // We expect the files List to contain:
@@ -47,7 +56,7 @@ public final class FileExporterImpl implements FileExporter {
     // There should never be more than one .apk file.
 
     for (String fileName : files) {
-      if (fileName.endsWith(".apk") || fileName.endsWith(".aab")) {
+      if (fileName.endsWith(".apk") || fileName.endsWith(".aab") || (extension != null && fileName.endsWith(extension))) {
         byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
         return new RawFile(StorageUtil.basename(fileName), content);
       }
@@ -244,6 +253,16 @@ public final class FileExporterImpl implements FileExporter {
     List<String> filteredFiles = new ArrayList<String>();
     for (String file : files) {
       if (file.startsWith(prefix)) {
+        filteredFiles.add(file);
+      }
+    }
+    return filteredFiles;
+  }
+
+  private List<String> filterByFileSuffix(List<String> files, String suffix) {
+    List<String> filteredFiles = new ArrayList<>();
+    for (String file : files) {
+      if (file.endsWith(suffix)) {
         filteredFiles.add(file);
       }
     }
