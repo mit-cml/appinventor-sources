@@ -7,7 +7,7 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.blocks.BlocklyPanel;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;

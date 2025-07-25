@@ -5,8 +5,10 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.ElementParserToUse;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Image;
 
 @ElementParserToUse(className = "com.google.appinventor.client.widgets.DropDownItemParser")
 public class DropDownItem {
@@ -16,6 +18,7 @@ public class DropDownItem {
   String styleName = null;
   String dependentStyleName = null;
   boolean visible = true;
+  Image icon = null;
 
   @SuppressWarnings("unused")  // invoked by GWT
   public DropDownItem() {
@@ -32,6 +35,14 @@ public class DropDownItem {
     this.caption = caption;
     this.command = command;
     this.styleName = style;
+  }
+
+  public DropDownItem(String widgetName, String caption, Command command, Image image) {
+    this.name = widgetName;
+    this.caption = caption;
+    this.command = command;
+    this.styleName = null;
+    icon = image;
   }
 
   public DropDownItem(String name, String caption, Command command, String style, boolean visible) {
@@ -76,4 +87,11 @@ public class DropDownItem {
     return dependentStyleName;
   }
 
+  public void setIcon(ImageResource icon) {
+    this.icon = new Image(icon);
+  }
+
+  public Image getIcon() {
+    return this.icon;
+  }
 }
