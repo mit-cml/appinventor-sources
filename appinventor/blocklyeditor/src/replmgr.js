@@ -1893,6 +1893,22 @@ Blockly.ReplMgr.getCookie = function() {
     }
     return cookie;
 };
+Blockly.ReplMgr.connectCache = function(projectId, projectName) {
+    if (top.ReplState === undefined)
+        return false;
+    if (top.ReplState.state != this.rsState.ASSET && top.ReplState.state != this.rsState.CONNECTED)
+        return false;
+
+    var uri = window.location.origin;
+    var cookie = this.getCookie();
+    console.log("connectCache uri = " + uri + " cookie = " + cookie);
+    var yail = "(AssetFetcher:fetchCachedProject \"" + cookie + "\" \"" + projectId + "\" \"" + uri + "\" \"" + projectName + "\")";
+    console.log("Yail for connectCache = " + yail);
+    this.putYail();
+    this.putYail.putAsset(yail)
+    return true;
+}
+
 
 Blockly.ReplMgr.connectCache = function(projectId, projectName) {
     if (top.ReplState === undefined)
@@ -2026,7 +2042,7 @@ Blockly.ReplMgr.makeqrcode = function(instring) {
     try {
         q.make();
     } catch (e) {
-        q = this.qrcode(5, 'L'); // OK, that failed try type 5
+        q = this.qrcode(6, 'L'); // OK, that failed try type 6
         q.addData(instring);
         q.make();
     }

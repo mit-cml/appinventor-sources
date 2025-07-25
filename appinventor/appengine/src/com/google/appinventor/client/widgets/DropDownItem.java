@@ -16,6 +16,7 @@ public class DropDownItem {
   String styleName = null;
   String dependentStyleName = null;
   boolean visible = true;
+  boolean beta = false;
 
   @SuppressWarnings("unused")  // invoked by GWT
   public DropDownItem() {
@@ -74,6 +75,14 @@ public class DropDownItem {
 
   public String getDependentStyleName() {
     return dependentStyleName;
+  }
+
+  public void setBeta(boolean beta) {
+    this.beta = beta;
+  }
+
+  public boolean isBeta() {
+    return beta;
   }
 
 }

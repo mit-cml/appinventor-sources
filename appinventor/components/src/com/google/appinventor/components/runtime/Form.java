@@ -1906,6 +1906,57 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Specifies the iOS privacy explanation of why the app needs access to
+   * Bluetooth on iOS 13 and later.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSBluetoothAlwaysUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to
+   * Bluetooth peripherals prior to iOS 13.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSBluetoothPeripheralUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to Contacts.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSContactsUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to the microphone.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSMicrophoneUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to the camera.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSCameraUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to speech recognition.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSSpeechRecognitionUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to user location.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSLocationWhenInUseUsageDescription(String message) {}
+
+  /**
    * If set to responsive (the default), screen layouts will use the actual resolution of the
    * device. See the [documentation on responsive design](../other/responsiveDesign.html) in App
    * Inventor for more information.

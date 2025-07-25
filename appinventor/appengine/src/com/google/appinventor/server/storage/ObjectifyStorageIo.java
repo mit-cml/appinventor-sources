@@ -7,6 +7,7 @@
 package com.google.appinventor.server.storage;
 
 import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
 
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
@@ -64,6 +65,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
+
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -1545,7 +1548,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @VisibleForTesting
   boolean useGCSforFile(String fileName, int length) {
     boolean shouldUse =  fileName.contains("assets/")
-      || fileName.endsWith(".apk") || fileName.endsWith(".aab");
+      || fileName.endsWith(".apk") || fileName.endsWith(".aab") || fileName.endsWith(".ipa");
     if (shouldUse)
       return true;              // Use GCS for package output and assets
     boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
@@ -1775,17 +1778,19 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   /**
-   *  Exports project files as a zip archive
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project ID
+   * Exports project files as a zip archive
+   *
+   * @param userId                 a user Id (the request is made on behalf of this user)
+   * @param projectId              project ID
    * @param includeProjectHistory  whether or not to include the project history
-   * @param includeAndroidKeystore  whether or not to include the Android keystore
-   * @param zipName  the name of the zip file, if a specific one is desired
-   * @param includeYail include any yail files in the project
-   * @param includeScreenShots include any screen shots stored with the project
-   * @param fatalError Signal a fatal error if a file is not found
-   * @param forGallery flag to indicate we are exporting for the gallery
-   * @return  project with the content as requested by params.
+   * @param includeAndroidKeystore whether or not to include the Android keystore
+   * @param zipName                the name of the zip file, if a specific one is desired
+   * @param includeYail            include any yail files in the project
+   * @param includeScreenShots     include any screen shots stored with the project
+   * @param forGallery             flag to indicate we are exporting for the gallery
+   * @param fatalError             Signal a fatal error if a file is not found
+   * @param forAppStore            true if the export is for an App Store build
+   * @return project with the content as requested by params.
    */
   @Override
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
@@ -2015,6 +2020,12 @@ public class ObjectifyStorageIo implements StorageIo {
                   if (ufd.fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME) &&
                       (ufd.content.length > 0)) {
                     out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
+                    out.write(ufd.content, 0, ufd.content.length);
+                    out.closeEntry();
+                    fileCount.t++;
+                  } else if (forAppStore && ufd.fileName.equals(APPSTORE_CREDENTIALS_FILENAME)
+                      && ufd.content.length > 0) {
+                    out.putNextEntry(new ZipEntry(APPSTORE_CREDENTIALS_FILENAME));;
                     out.write(ufd.content, 0, ufd.content.length);
                     out.closeEntry();
                     fileCount.t++;

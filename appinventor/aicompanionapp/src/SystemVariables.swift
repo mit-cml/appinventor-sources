@@ -20,4 +20,45 @@ class SystemVariables {
       UserDefaults.standard.set(value, forKey: "isNewUser")
     }
   }
+  
+  /**
+   * Specifies whether the user is currently in a connected app screen.
+   * Allows for changing the viewable options in the menu button.
+   * Default (false) is set in `AppDelegate.swift`
+   */
+  static var inConnectedApp: Bool {
+    
+    /// Access variable to add "Download Project" option when connected to an app.
+    get {
+      return UserDefaults.standard.bool(forKey: "isInConnectedApp")
+    }
+    
+    set(value) {
+      UserDefaults.standard.set(value, forKey: "isInConnectedApp")
+    }
+  }
+  
+  static var lastOpenedTable: [String : Date] {
+    get {
+      return UserDefaults.standard.dictionary(forKey: "lastOpenedTable") as? [String : Date] ?? [:]
+    }
+    
+    set(value) {
+      UserDefaults.standard.set(value, forKey: "lastOpenedTable")
+    }
+  }
+  
+  enum sortMode: String {
+    case mostRecent, AZ, ZA
+  }
+  
+  static var sortModeValue: sortMode {
+    get {
+      return sortMode(rawValue: UserDefaults.standard.string(forKey: "sortMode") ?? "mostRecent") ?? sortMode.mostRecent
+    }
+    
+    set(value) {
+      UserDefaults.standard.set(value.rawValue, forKey: "sortMode")
+    }
+  }
 }
