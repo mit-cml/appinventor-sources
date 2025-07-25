@@ -82,6 +82,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc func settingsChanged(_ sender: AnyObject?) {
     maybeShowOnboardingScreen()
   }
+  
+  
 
   public override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -132,6 +134,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
     return interpreter
   }
+  
 
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -186,6 +189,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       form.updateNavbar()
       form.Initialize()
     }
+    
   }
 
   public override func didReceiveMemoryWarning() {
@@ -516,4 +520,6 @@ extension ViewController: WebRTCConnectionDelegate {
     connectProgressView = nil
     connectProgressDialog = nil
   }
+  
+  
 }

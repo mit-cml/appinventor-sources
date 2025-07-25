@@ -11,7 +11,9 @@ import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.interfaces.IosTask;
 import com.google.appinventor.buildserver.util.Execution;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,8 +27,8 @@ public class UploadPackage implements IosTask {
   public TaskResult execute(IosCompilerContext context) {
     final String username = context.getAppleId();
     final String password = context.getAppSpecificPassword();
-    StringBuffer outBuffer = new StringBuffer();
-    StringBuffer errBuffer = new StringBuffer();
+    ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
+    ByteArrayOutputStream errBuffer = new ByteArrayOutputStream();
     try {
       Execution.execute(context.getWorkDir(), new String[]{
           ITMS_TRANSPORTER,
@@ -36,8 +38,8 @@ public class UploadPackage implements IosTask {
           username,
           "-p",
           password
-      }, outBuffer, errBuffer);
-    } catch (IOException e) {
+      }, new PrintStream(outBuffer), new PrintStream(errBuffer));
+    } catch (Exception e) {
       return TaskResult.generateError(e);
     }
     String shortName = context.getShortName();
@@ -58,8 +60,8 @@ public class UploadPackage implements IosTask {
         return TaskResult.generateError("Unable to determine the App Store Connect short name.");
       }
     }
-    outBuffer = new StringBuffer();
-    errBuffer = new StringBuffer();
+    outBuffer = new ByteArrayOutputStream();
+    errBuffer = new ByteArrayOutputStream();
     try {
       if (Execution.execute(context.getWorkDir(), new String[]{
           ITMS_TRANSPORTER,
@@ -73,7 +75,7 @@ public class UploadPackage implements IosTask {
           password,
           "-asc_provider",
           shortName
-      }, outBuffer, errBuffer) == 0) {
+      }, new PrintStream(outBuffer), new PrintStream(errBuffer))) {
         return TaskResult.generateSuccess();
       }
       String error = errBuffer.toString();
@@ -82,7 +84,7 @@ public class UploadPackage implements IosTask {
             + "and resubmit your app.");
       }
       return TaskResult.generateError(errBuffer.toString());
-    } catch (IOException e) {
+    } catch (Exception e) {
       return TaskResult.generateError(e);
     }
   }

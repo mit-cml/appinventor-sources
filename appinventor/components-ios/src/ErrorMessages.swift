@@ -119,6 +119,22 @@ import Foundation
   case ERROR_INVALID_ANCHOR_HORIZONTAL = 3417
   case ERROR_INVALID_MAP_TYPE = 3421
 
+  // Augmented Reality Errors
+  case ERROR_INVALID_TRACKING_TYPE = 3700
+  case ERROR_INVALID_PLANE_DETECTION_TYPE = 3701
+  case ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME = 3702
+  case ERROR_IMAGEMARKER_DOES_NOT_EXIST_WITH_NAME = 3703
+  case ERROR_ALREADY_FOLLOWING_IMAGEMARKER = 3704
+  case ERROR_MODELNODE_COULD_NOT_LOAD = 3705
+  case ERROR_MODELNODE_NOT_LOADED = 3706
+  case ERROR_MODELNODE_CANNOT_COLOR_NODE = 3707
+  case ERROR_MODELNODE_CANNOT_TEXTURIZE_NODE = 3708
+  case ERROR_INVALID_FALLOFF_TYPE = 3709
+  case ERROR_WEBVIEWNODE_MALFORMED_URL = 3710
+  case ERROR_GEOANCHOR_NOT_SUPPORTED = 3711
+  case ERROR_INVALID_COORDINATES = 3712
+  case ERROR_WEBVIEWNODE_LOAD_FAILED=3713
+
   // Navigation Errors
   case ERROR_INVALID_API_KEY = 4001
   case ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002
@@ -361,6 +377,36 @@ import Foundation
       return "CloudDB %s property cannot be blank"
     case .ERROR_CLOUDDB_JSON_MALFORMED:
       return "The JSON is malformed and cannot be parsed: %s"
+
+    // Augmented Reality Errors
+    case .ERROR_INVALID_TRACKING_TYPE:
+      return "Invalid value %d given for TrackingType.  Valid settings are 1, 2, or 3."
+    case .ERROR_INVALID_PLANE_DETECTION_TYPE:
+      return "Invalid value %d given for PlaneDetectionType.  Valid settings are 1, 2, 3, or 4."
+    case .ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME:
+      return "An image marker already exists with name %s."
+    case .ERROR_IMAGEMARKER_DOES_NOT_EXIST_WITH_NAME:
+      return "An image marker does not exist with name %s."
+    case .ERROR_ALREADY_FOLLOWING_IMAGEMARKER:
+      return "The node could not follow the ImageMarker because it is already following an ImageMarker."
+    case .ERROR_MODELNODE_COULD_NOT_LOAD:
+      return "The supplied model could not be loaded."
+    case .ERROR_MODELNODE_NOT_LOADED:
+      return "This function can only be called when a ModelNode has successfully loaded."
+    case .ERROR_MODELNODE_CANNOT_COLOR_NODE:
+      return "The node named %s cannot be colored, and you did not try to color its children. You may be able to color its children."
+    case .ERROR_MODELNODE_CANNOT_TEXTURIZE_NODE:
+      return "The node named %s cannot have a texture applied, and you did not try to apply a texture to its children. You may be able to apply a texture to its children."
+    case .ERROR_INVALID_FALLOFF_TYPE:
+      return "Invalid value %d given for FalloffType.  Valid settings are 0, 1, or 2."
+    case .ERROR_WEBVIEWNODE_MALFORMED_URL:
+      return "The given URL was not valid."
+    case .ERROR_GEOANCHOR_NOT_SUPPORTED:
+      return "GeoAnchors not supported."
+    case .ERROR_INVALID_COORDINATES:
+      return "Invalid coordinates provided."
+    case .ERROR_WEBVIEWNODE_LOAD_FAILED:
+      return "Failed to load web page."
 
     // Navigation Errors
     case .ERROR_INVALID_API_KEY:
