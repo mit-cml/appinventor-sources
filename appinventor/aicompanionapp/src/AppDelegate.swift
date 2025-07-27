@@ -39,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         headerLabel.centerXAnchor.constraint(equalTo: emptySidebar.view.centerXAnchor),
         headerLabel.topAnchor.constraint(equalTo: emptySidebar.view.safeAreaLayoutGuide.topAnchor, constant: 24)
     ])
+    
     // Add Return to Screen button below the header
     let returnButton = UIButton(type: .system)
     returnButton.setTitle("Return to Screen", for: .normal)
@@ -52,6 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     returnButton.addAction(UIAction { _ in
         splitVC.show(.secondary)
     }, for: .touchUpInside)
+    
     splitVC.setViewController(emptySidebar, for: .primary)
 
     window?.rootViewController = splitVC

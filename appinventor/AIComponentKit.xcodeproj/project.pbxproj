@@ -320,6 +320,8 @@
 		A403EA1F2E12C6470030262A /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EA1D2E12C6470030262A /* Sidebar.swift */; };
 		A403EA202E12C6470030262A /* SidebarHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EA1E2E12C6470030262A /* SidebarHeader.swift */; };
 		A403EA222E12C6540030262A /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EA212E12C6540030262A /* Menu.swift */; };
+		A42756332E2E3DFB00815ECB /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42756322E2E3DFB00815ECB /* MenuItem.swift */; };
+		A476916C2E1C0956005427CA /* FloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A476916B2E1C0956005427CA /* FloatingActionButton.swift */; };
 		B48808C82ACFB1AD0046DF4F /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C72ACFB1AD0046DF4F /* LineChartView.swift */; };
 		B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */; };
 		B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CB2ACFB3770046DF4F /* PointChartView.swift */; };
@@ -722,6 +724,8 @@
 		A403EA1D2E12C6470030262A /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
 		A403EA1E2E12C6470030262A /* SidebarHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarHeader.swift; sourceTree = "<group>"; };
 		A403EA212E12C6540030262A /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
+		A42756322E2E3DFB00815ECB /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
+		A476916B2E1C0956005427CA /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
 		B48808C72ACFB1AD0046DF4F /* LineChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
 		B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartViewBase.swift; sourceTree = "<group>"; };
 		B48808CB2ACFB3770046DF4F /* PointChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointChartView.swift; sourceTree = "<group>"; };
@@ -1115,10 +1119,12 @@
 				4656A6442A6076090097DF06 /* CircularProgress.swift */,
 				06B216051DB95155000B3366 /* Image.swift */,
 				A403EA212E12C6540030262A /* Menu.swift */,
+				A42756322E2E3DFB00815ECB /* MenuItem.swift */,
 				06E59EB21D92D19600C42804 /* Label.swift */,
 				060119DD1DC24126000FC1E2 /* ListPicker.swift */,
 				0618D2741F34DC3400A127A2 /* ListView.swift */,
 				06159D8D1DEFF0C600593D30 /* PasswordTextBox.swift */,
+				A476916B2E1C0956005427CA /* FloatingActionButton.swift */,
 				068E0E9D1DC243B30086FFDA /* Picker.swift */,
 				A403EA1D2E12C6470030262A /* Sidebar.swift */,
 				A403EA1E2E12C6470030262A /* SidebarHeader.swift */,
@@ -1962,6 +1968,7 @@
 				086DC634210157BF00FDA182 /* Ev3Constants.swift in Sources */,
 				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
 				461809A12A671463001854C4 /* ProximitySensor.swift in Sources */,
+				A476916C2E1C0956005427CA /* FloatingActionButton.swift in Sources */,
 				DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */,
 				068F5D7E2B8D16EA00A24EB0 /* PieChartView.swift in Sources */,
 				06C791D12950E94500C1BB1B /* ChartView.swift in Sources */,
@@ -1981,6 +1988,7 @@
 				06DA9F5F1D8D0CAA00389B04 /* AppInvHTTPD.m in Sources */,
 				0618D2751F34DC3400A127A2 /* ListView.swift in Sources */,
 				CBC786822006AD2F005363A3 /* FileUtil.swift in Sources */,
+				A42756332E2E3DFB00815ECB /* MenuItem.swift in Sources */,
 				061A3C692CEEE66E000E2FBB /* Regression.swift in Sources */,
 				DEB9C5502101199E0069BAD7 /* PolygonBaseWithPoints.swift in Sources */,
 				06E79ACD2D1601BD007BFAC0 /* PersonalAudioClassifier.swift in Sources */,

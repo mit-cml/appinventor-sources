@@ -22,7 +22,7 @@ let kMinimumToastWait = 10.0
   fileprivate var applicationIsBeingClosed = false
   @objc var formName: String = ""
   fileprivate var _components: [Component] = []
-  fileprivate var _aboutScreen: String?
+  fileprivate var _aboutScreen: String = ""
   fileprivate var _appName: String?
   fileprivate var _accentColor: Int32 = Int32(bitPattern: 0xFFFF4081)
   fileprivate var _defaultFileScope = FileScope.App
@@ -55,6 +55,17 @@ let kMinimumToastWait = 10.0
   private var _lastToastTime = 0.0
   private var _bigDefaultText = false
   private var _highContrast = false
+
+  // MARK: Properties
+
+  @objc open var ShowAbout: String {
+    get {
+      return _aboutScreen
+    }
+    set(about) {
+      _aboutScreen = about
+    }
+  }
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -379,7 +390,7 @@ let kMinimumToastWait = 10.0
     Scrollable = false
     Sizing = "Responsive"
     BackgroundImage = ""
-    AboutScreen = ""
+ 
     BackgroundColor = Int32(bitPattern: Color.default.rawValue)
     BigDefaultText = false
     AlignHorizontal = HorizontalGravity.left.rawValue
@@ -392,15 +403,7 @@ let kMinimumToastWait = 10.0
     ScreenOrientation = "unspecified"
   }
   
-  // MARK: Form Properties
-  @objc open var AboutScreen: String? {
-    get {
-      return _aboutScreen
-    }
-    set(aboutScreen) {
-      _aboutScreen = aboutScreen
-    }
-  }
+  // MARK: Properties
 
   @objc open var AccentColor: Int32 {
     get {

@@ -136,3 +136,4 @@ open class FloatingActionButton: ViewComponent, AbstractMethodsForViewComponent 
         }
     }
 }
+
