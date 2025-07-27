@@ -5,9 +5,7 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
-
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;

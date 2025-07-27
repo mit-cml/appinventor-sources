@@ -5,17 +5,15 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
-
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
+import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.context.AndroidPaths;
 import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,8 @@ public class RunAapt2 implements AndroidTask {
     ExecutorUtils.createDir(buildDir, "generated/src");
     final File symbolOutputDir = ExecutorUtils.createDir(buildDir, "generated/symbols");
     // Need to make sure assets directory exists otherwise aapt2 will fail.
-    context.getPaths().setAssetsDir(ExecutorUtils.createDir(buildDir, ASSETS_FOLDER));
+    context.getPaths().setAssetsDir(
+        ExecutorUtils.createDir(buildDir, YoungAndroidConstants.ASSET_DIR_NAME));
 
     String aapt2Tool = context.getResources().aapt2();
     if (aapt2Tool == null) {
@@ -63,7 +62,7 @@ public class RunAapt2 implements AndroidTask {
     String[] aapt2CompileCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2CompileCommandLine,
-        System.out, System.err, Execution.Timeout.MEDIUM)) {
+        System.out, System.err)) {
       context.getReporter().error("Could not execute AAPT2 compile step");
       return false;
     }
@@ -98,7 +97,7 @@ public class RunAapt2 implements AndroidTask {
     String[] aapt2LinkCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2LinkCommandLine,
-        System.out, System.err, Execution.Timeout.MEDIUM)) {
+        System.out, System.err)) {
       context.getReporter().error("Could not execute AAPT2 link step");
       return false;
     }

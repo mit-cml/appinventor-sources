@@ -27,8 +27,8 @@ import SchemeKit
     }
   }
 
-  public override init(application: Application) {
-    super.init(application: application)
+  public init(application: Application) {
+    super.init(application: application, screen: "Screen1")
     if ReplForm.topform == nil {
       makeTopForm()
     }
@@ -37,6 +37,16 @@ import SchemeKit
   open func makeTopForm() {
     ReplForm.topform = self
     formName = "Screen1"
+  }
+
+  @objc open override func clear() {
+    super.clear()
+    SCMInterpreter.shared.runGC()
+  }
+
+  override func defaultPropertyValues() {
+    super.defaultPropertyValues()
+    ScreenOrientation = "unspecified"
   }
 
   open func processException(ex: NSException) {
@@ -183,7 +193,7 @@ import SchemeKit
     ReplForm._webRtcManager = nil
   }
 
-  override func doCloseScreen(withValue value: AnyObject? = nil) {
+  override open func doCloseScreen(withValue value: AnyObject? = nil) {
     super.doCloseScreen(withValue: value)
     _isScreenClosed = true
     do {
@@ -193,7 +203,7 @@ import SchemeKit
     }
   }
 
-  override func doCloseScreen(withPlainText text: String) {
+  override open func doCloseScreen(withPlainText text: String) {
     super.doCloseScreen(withPlainText: text)
     _isScreenClosed = true
     Application.current?.popScreen(with: text)
