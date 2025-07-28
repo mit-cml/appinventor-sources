@@ -37,7 +37,8 @@ open class ARNodeBase: NSObject, ARNode {
   public var _fromPropertyPosition = "0.0,0.0,0.0"
   public var _objectModel: String = ""
   public var _geoAnchor: ARGeoAnchor?
-
+  public var _worldOffset: SIMD3<Float>?
+  public var _creatorSessionStart: CLLocation?
   /**
    * CHANGED: Now takes optional MeshResource instead of SCNNode
    */
@@ -637,15 +638,13 @@ open class ARNodeBase: NSObject, ARNode {
             return existingAnchor
         }
         
-        let anchorEntity = AnchorEntity(anchor: geoAnchor)
-        _anchorEntity = anchorEntity
-        
-        if _anchorEntity != nil {
-            anchorEntity.addChild(_modelEntity)
-        }
-        
-        return anchorEntity
+        //create a placeholder if we don't have it, will update it after we start tracking
+        let placeholderAnchor = AnchorEntity(world: SIMD3<Float>(0, 0, 0))
+        _anchorEntity = placeholderAnchor
+
+        return placeholderAnchor
     }
+    
     if let existingAnchor = _anchorEntity {
       return existingAnchor
     }

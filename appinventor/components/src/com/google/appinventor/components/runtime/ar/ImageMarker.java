@@ -48,6 +48,11 @@ public final class ImageMarker implements ARImageMarker {
   public void Image(String image) {}
 
   @Override
+  public void setComponentName(String name) {
+    name = name;
+  }
+
+  @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
                   description = "The width of the image, in centimeters, in the real-world.  " +
     "This is used to determine how far the image is from the camera when it is detected.  " +

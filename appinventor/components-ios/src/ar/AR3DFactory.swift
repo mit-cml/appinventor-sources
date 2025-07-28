@@ -293,7 +293,7 @@ public protocol ARModel: ARNode {
   func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>)
 
   // MARK: Events
-  func FirstDetected(_ anchor: ARAnchor)
+  func FirstDetected(_ anchor: AnyObject)
   func PositionChanged(_ x: Float, _ y: Float, _ z: Float)
   func RotationChanged(_ x: Float, _ y: Float, _ z: Float)
   func NoLongerInView()

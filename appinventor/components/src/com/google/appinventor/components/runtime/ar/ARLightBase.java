@@ -39,6 +39,10 @@ public abstract class ARLightBase implements ARLight {
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void Color(int color) {}
 
+  @Override
+  public void setComponentName(String name) {
+    name = name;
+  }
 
   @Override
   @SimpleProperty(description = "<p>The temperature of the light, in degrees Kelvin. " +

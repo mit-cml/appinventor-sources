@@ -124,7 +124,7 @@ public final class AR3DFactory {
      // float YScale();
      //
      // float ZScale();
-
+     void setComponentName(String name);
      // Methods
      void RotateXBy(float degrees);
      void RotateYBy(float degrees);

@@ -9,9 +9,6 @@ import GLKit
 @available(iOS 14.0, *)
 open class ImageMarker: NSObject, ARImageMarker {
 
-  
-
-  
   weak var _container: ARImageMarkerContainer?
   open var _referenceImage: ARReferenceImage? = nil
   public var _attachedNodes: [ARNodeBase] = []
@@ -26,6 +23,23 @@ open class ImageMarker: NSObject, ARImageMarker {
   var _detecting: Bool = false
   var _widthSet: Bool = false
   var _imageSet: Bool = false
+  
+  // Override the protocol extension to provide actual storage
+  open var Anchor: AnchorEntity? {
+    get {
+      if let anchor = _anchorEntity {
+        return anchor
+      }
+      
+      //_anchorEntity = createAnchor()
+      return _anchorEntity
+    }
+    set(a) {
+      _anchorEntity = a
+      
+    }
+  }
+  
   
   @objc init(_ container: ARImageMarkerContainer) {
     _container = container
@@ -142,16 +156,6 @@ open class ImageMarker: NSObject, ARImageMarker {
     }
   }
   
-  private func setAnchorEntity(_ anchorEntity: AnchorEntity) {
-    _anchorEntity = anchorEntity
-    _anchorEntity?.name = Name
-    
-    // Attach all existing nodes to the new anchor
-    for attachedNode in _attachedNodes {
-      anchorEntity.addChild(attachedNode._modelEntity)
-    }
-  }
-  
   open func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>) {
     let elapsed = Date().timeIntervalSince(_lastPushTime)
     /**
@@ -175,10 +179,9 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
   
   // MARK: Events
-  @objc open func FirstDetected(_ anchor: ARAnchor) {
+  @objc open func FirstDetected(_ anchor: AnyObject) {
     // Create anchor entity from ARKit anchor
-    let anchorEntity = AnchorEntity(anchor: anchor)
-    setAnchorEntity(anchorEntity)
+    _anchorEntity = anchor as! AnchorEntity
     
     _isTracking = true
     _lastPushTime = Date()

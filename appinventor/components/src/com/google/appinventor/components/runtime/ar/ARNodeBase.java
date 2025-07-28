@@ -46,6 +46,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   @Override
+  public void setComponentName(String name) {
+    name = name;
+  }
+
+  @Override
   public int Height() { return 0; }
 
   @Override

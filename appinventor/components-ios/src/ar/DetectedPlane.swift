@@ -8,7 +8,7 @@ import ARKit
 @available(iOS 14.0, *)
 open class DetectedPlane: NSObject, ARDetectedPlane {
   weak var _container: ARDetectedPlaneContainer?
-  private var _anchorEntity: AnchorEntity
+  private var _anchorEntity: AnchorEntity?
   private var _planeEntity: ModelEntity
   private var _alignment: ARPlaneAnchor.Alignment
   fileprivate var _name = "DetectedPlane"
@@ -20,25 +20,56 @@ open class DetectedPlane: NSObject, ARDetectedPlane {
   
   init(anchor: ARPlaneAnchor, container: ARDetectedPlaneContainer) {
     _container = container
-    _alignment = anchor.alignment
-    _width = anchor.extent.x
-    _height = anchor.extent.z
-    
-    // Create anchor entity for the plane
-    _anchorEntity = AnchorEntity(anchor: anchor)
-    
+
     // Create plane entity
     let mesh = MeshResource.generatePlane(width: anchor.extent.x, depth: anchor.extent.z)
     _planeEntity = ModelEntity(mesh: mesh)
-    
+    _alignment = anchor.alignment
     super.init()
     
     setupPlaneEntity()
-    _anchorEntity.addChild(_planeEntity)
+    _anchorEntity?.addChild(_planeEntity)
     
     FillColor = Int32(bitPattern: AIComponentKit.Color.none.rawValue)
   }
   
+  open var Anchor: AnchorEntity? {
+    get {
+      if let anchor = _anchorEntity {
+        return anchor
+      }
+      
+      _anchorEntity = createAnchor()
+      return _anchorEntity
+    }
+    set(a) {
+      _anchorEntity = a
+      
+    }
+  }
+  
+  func createAnchor() -> AnchorEntity {
+    
+    
+    
+    if let existingAnchor = _anchorEntity {
+      return existingAnchor
+    }
+
+    let anchor: AnchorEntity
+    
+    
+      // Default world anchor
+    let worldTransform = _planeEntity.transformMatrix(relativeTo: nil)
+    anchor = AnchorEntity(world: worldTransform)
+    
+    
+    _anchorEntity = anchor
+    if _anchorEntity != nil {
+      anchor.addChild(_planeEntity)
+    }
+    return anchor
+  }
   
   private func setupPlaneEntity() {
     // Rotate to match plane orientation (planes in RealityKit face up by default)
@@ -57,7 +88,7 @@ open class DetectedPlane: NSObject, ARDetectedPlane {
     updateMaterial()
   }
   
-  func getAnchorEntity() -> AnchorEntity {
+  func getAnchorEntity() -> AnchorEntity? {
     return _anchorEntity
   }
   
@@ -150,7 +181,7 @@ open class DetectedPlane: NSObject, ARDetectedPlane {
   
   // FIXED: Return SIMD3<Float> instead of SCNVector3 for RealityKit compatibility
   open func getPosition() -> SIMD3<Float> {
-    return _anchorEntity.transform.translation
+    return _anchorEntity?.transform.translation ?? SIMD3<Float>(0, 0, 0)
   }
   
   open func updateFor(anchor: ARPlaneAnchor) {
@@ -172,7 +203,7 @@ open class DetectedPlane: NSObject, ARDetectedPlane {
   open func removed() {
     _container = nil
     _planeEntity.removeFromParent()
-    _anchorEntity.removeFromParent()
+    _anchorEntity?.removeFromParent()
   }
   
   private func updateMaterial() {

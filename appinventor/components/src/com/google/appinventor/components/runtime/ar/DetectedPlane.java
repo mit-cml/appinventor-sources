@@ -48,6 +48,10 @@ public class DetectedPlane implements ARDetectedPlane {
   @Override
   public Plane DetectedPlane(){return detectedPlane;}
 
+  @Override
+  public void setComponentName(String name) {
+    name = name;
+  }
 
   @SimpleProperty(description = "The width, in centimeters, of the DetectedPlane.")
   public float WidthInCentimeters() { return 0.5f; }

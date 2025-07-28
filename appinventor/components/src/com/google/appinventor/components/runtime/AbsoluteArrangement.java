@@ -6,14 +6,18 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.os.Handler;
+
+import android.util.Log;
+
+import android.view.View;
+import android.view.ViewGroup;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
-import android.util.Log;
 
-import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -57,7 +61,7 @@ public class AbsoluteArrangement extends AndroidViewComponent
   private Drawable backgroundImageDrawable;
   // Image path
   private String imagePath = "";
-
+  private final Handler androidUIHandler = new Handler();
   private static final String LOG_TAG = "AArrangement";
 
   /**
@@ -96,40 +100,48 @@ public class AbsoluteArrangement extends AndroidViewComponent
     viewLayout.add(component);
   }
 
+
   @Override
-  public void setChildWidth(AndroidViewComponent component, int width) {
+  public void setChildWidth(final AndroidViewComponent component, int width) {
+    setChildWidth(component, width, 0);
+  }
 
-    Log.d(LOG_TAG, "setChildWidth: width = " + width + " component = " + component);
+  public void setChildWidth(final AndroidViewComponent component, int width, final int trycount) {
+    int cWidth = container.$form().Width();
+    if (cWidth == 0 && trycount < 2) {     // We're not really ready yet...
+      final int fWidth = width;            // but give up after two tries...
+      androidUIHandler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          Log.d(LOG_TAG, "(AbsoluteArrangement )Width not stable yet... trying again");
+          setChildWidth(component, fWidth, trycount + 1);
+        }
+      }, 100);                // Try again in 1/10 of a second
+    }
     if (width <= LENGTH_PERCENT_TAG) {
-
-      int childWidth = container.$form().Width();
-
-      if ((childWidth > LENGTH_PERCENT_TAG) && (childWidth <= 0)) {
-        // FILL_PARENT OR LENGTH_PREFERRED
-        width = LENGTH_PREFERRED;
-      } else {
-        Log.d(LOG_TAG, "%%setChildWidth(): width = " + width + " parent Width = " + childWidth
-            + " child = " + component);
-        width = childWidth * (-(width - LENGTH_PERCENT_TAG)) / 100;
-      }
+      Log.d(LOG_TAG, "AbsoluteArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+      width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
     }
 
     component.setLastWidth(width);
 
     ViewUtil.setChildWidthForRelativeLayout(component.getView(), width);
   }
-
   @Override
-  public void setChildHeight(AndroidViewComponent component, int height) {
+  public void setChildHeight(final AndroidViewComponent component, int height) {
+    int cHeight = container.$form().Height();
+    if (cHeight == 0) {         // Not ready yet...
+      final int fHeight = height;
+      androidUIHandler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          Log.d(LOG_TAG, "(AbsoluteArrangement)Height not stable yet... trying again");
+          setChildHeight(component, fHeight);
+        }
+      }, 100);                // Try again in 1/10 of a second
+    }
     if (height <= LENGTH_PERCENT_TAG) {
-      int childHeight = container.$form().Height();
-
-      if ((childHeight > LENGTH_PERCENT_TAG) && (childHeight <= 0)) {
-        // FILL_PARENT OR LENGTH_PREFERRED
-        height = LENGTH_PREFERRED;
-      } else {
-        height = childHeight * (-(height - LENGTH_PERCENT_TAG)) / 100;
-      }
+      height = cHeight * (- (height - LENGTH_PERCENT_TAG)) / 100;
     }
 
     component.setLastHeight(height);

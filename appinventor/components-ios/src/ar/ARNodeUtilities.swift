@@ -31,13 +31,17 @@ class ARNodeUtilities {
                 print("parsed pose before conversion \( poseDict)")
 
                 if let pose = parsePoseLinkedHashMap(poseDict) {
-                  let transform = Transform(matrix: pose)
-                  let anchor = node.createAnchorWithPose(pose: transform)
-                  
-                  if let geoAnchor = parseGeoData(poseDict){
-                    node.setGeoAnchor(geoAnchor)
-                    print("geoAnchor now \( geoAnchor)")
-                  }
+                    if let geoAnchor = parseGeoData(poseDict){
+                      node.setGeoAnchor(geoAnchor)
+                      print("geoAnchor now \( geoAnchor)")
+                      }// else {
+                        
+                    let transform = Transform(matrix: pose)
+                        
+                    let anchor = node.createAnchorWithPose(pose: transform)
+                        
+
+                     // }
 
                   
                 }
@@ -105,17 +109,17 @@ class ARNodeUtilities {
   
     private static func parseGeoData(_ poseDict: [String: Any]) -> ARGeoAnchor? {
       
-      guard let geoData = poseDict["geoData"] as? [String: Double],
+     // guard let geoData = poseDict["geoData"] as? [String:Any],
         
-          let lat = geoData["lat"],
-          let lng = geoData["lng"],
-          let alt = geoData["alt"]
-      else {
-            return nil
-        }
+          let lat = poseDict["lat"]
+          let lng = poseDict["lng"]
+          let alt = poseDict["alt"]
+      //else {
+      //      return nil
+       // }
       // Create geo anchor
-      let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
-      let geoAnchor = ARGeoAnchor(coordinate: coordinate,altitude: alt)
+      let coordinate = CLLocationCoordinate2D(latitude: lat as! CLLocationDegrees, longitude: lng as! CLLocationDegrees)
+      let geoAnchor = ARGeoAnchor(coordinate: coordinate,altitude: alt as! CLLocationDistance)
       return geoAnchor
     }
     // Helper method
