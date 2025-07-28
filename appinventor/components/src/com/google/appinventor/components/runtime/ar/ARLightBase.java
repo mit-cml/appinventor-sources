@@ -46,11 +46,6 @@ public abstract class ARLightBase implements ARLight {
   public void Color(int color) {}
 
   @Override
-  public void setComponentName(String name) {
-    name = name;
-  }
-
-  @Override
   @SimpleProperty(description = "<p>The temperature of the light, in degrees Kelvin. " +
     "This, paired with the Color, determine the color of the light rays.  The default " +
     "value, 6,500 represents white light.  Lower values add a warmer, or yellow, effect " +
