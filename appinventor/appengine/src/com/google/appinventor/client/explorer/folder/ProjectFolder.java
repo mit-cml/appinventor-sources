@@ -5,8 +5,6 @@
 
 package com.google.appinventor.client.explorer.folder;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.UiStyleFactory;
@@ -39,6 +37,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 
 
 public class ProjectFolder extends Composite {
