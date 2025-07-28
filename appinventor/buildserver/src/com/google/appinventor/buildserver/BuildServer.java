@@ -11,21 +11,11 @@ import com.google.appinventor.buildserver.stats.StatCalculator;
 import com.google.appinventor.buildserver.stats.StatCalculator.Stats;
 import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
+import com.google.appinventor.buildserver.tasks.ios.IosBuildFactory;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-
-import java.net.URI;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.StringArrayOptionHandler;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
@@ -42,9 +32,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
-import java.lang.Math;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
@@ -56,7 +46,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -64,6 +53,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 /**
  * Top level class for exposing the building of App Inventor APK files as a RESTful web service.
@@ -164,6 +161,10 @@ public class BuildServer {
     @Option(name = "--statreporter",
         usage = "the reporter to use for collecting stats")
     String statReporter = "com.google.appinventor.buildserver.stats.SimpleStatReporter";
+
+    @Option(name = "--ios",
+        usage = "Enables iOS builds for the buildserver")
+    boolean ios = false;
 
   }
 
@@ -652,6 +653,7 @@ public class BuildServer {
               }
             } catch (Exception e) {
               // TODO(user): Maybe send a failure callback
+              e.printStackTrace();
               LOG.severe("Exception: " + e.getMessage()+ " and the length is of inputZip is "+ inputZip.length());
             } finally {
               cleanUp();
@@ -692,12 +694,13 @@ public class BuildServer {
     ZipOutputStream zipOutputStream =
       new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outputZip)));
     if (buildSucceeded) {
-      if (outputKeystore != null) {
-        zipOutputStream.putNextEntry(new ZipEntry(outputKeystore.getName()));
-        Files.copy(outputKeystore, zipOutputStream);
+      File[] files = outputDir.listFiles();
+      if (files != null) {
+        for (File file : files) {
+          zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+          Files.copy(file, zipOutputStream);
+        }
       }
-      zipOutputStream.putNextEntry(new ZipEntry(outputApk.getName()));
-      Files.copy(outputApk, zipOutputStream);
       successfulBuildRequests.getAndIncrement();
     } else {
       LOG.severe("Build " + buildCount.get() + " Failed: " + buildResult.getResult() + " " + buildResult.getError());
@@ -710,6 +713,7 @@ public class BuildServer {
     zipPrintStream.flush();
     zipOutputStream.flush();
     zipOutputStream.close();
+    LOG.info("Output zip at " + outputZip.getAbsolutePath());
   }
 
   private String genBuildOutput(Result buildResult) throws JSONException {
@@ -832,7 +836,10 @@ public class BuildServer {
 
     // Now that the command line options have been processed, we can create the buildExecutor.
     AndroidBuildFactory.install();
-    // TODO(ewpatton): Enable iOS build factory here when published
+    if (commandLineOptions.ios) {
+      LOG.info("Enabling iOS builds");
+      IosBuildFactory.install();
+    }
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
 
     int port = commandLineOptions.port;

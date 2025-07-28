@@ -5,7 +5,7 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
