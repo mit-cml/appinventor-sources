@@ -2040,7 +2040,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 10) {
+    if (srcCompVersion < 11) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
