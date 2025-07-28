@@ -588,10 +588,14 @@ public final class MockForm extends MockContainer {
     // if the SimpleComponentsPanel menu is wider than the phonebar.
     phoneWidget.setWidth(usableScreenWidth + scrollbarWidth + "px");
     // Store properties
-    changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
+    if (hasProperty(PROPERTY_NAME_WIDTH)) {  // Not true when project initializing
+      changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
+    }
     boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
     if (!scrollable) {
-      changeProperty(PROPERTY_NAME_HEIGHT, "" + usableScreenHeight);
+      if (hasProperty(PROPERTY_NAME_HEIGHT)) {  // Not true when project initializing
+        changeProperty(PROPERTY_NAME_HEIGHT, "" + usableScreenHeight);
+      }
     }
   }
 
