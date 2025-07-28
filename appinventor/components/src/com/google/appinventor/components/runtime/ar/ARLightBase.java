@@ -19,10 +19,16 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 public abstract class ARLightBase implements ARLight {
 
   protected ARView3D arView = null;
+  protected String name = "";
 
   @SuppressWarnings("WeakerAccess")
   protected ARLightBase(ARLightContainer container) {
     // any initializing that needs to be done here
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    this.name = componentName;
   }
 
   @Override

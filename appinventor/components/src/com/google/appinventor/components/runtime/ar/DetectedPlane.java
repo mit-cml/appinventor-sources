@@ -34,13 +34,19 @@ public class DetectedPlane implements ARDetectedPlane {
   protected ARView3D arView = null;
 
   protected Plane detectedPlane = null;
-
+  protected String name = "";
 
   public DetectedPlane(Plane arPlane) {
     // Additional
     detectedPlane = arPlane;
     //super(container);
   }
+
+  @Override
+  public void setComponentName(String componentName) {
+    this.name = componentName;
+  }
+
   @Override
   public void DetectedPlane(Plane detectedPlane){
     this.detectedPlane = detectedPlane;

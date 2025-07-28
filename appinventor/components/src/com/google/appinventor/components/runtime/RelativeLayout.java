@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout.LayoutParams;
 
-
-import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import java.util.LinkedList;
@@ -23,8 +21,6 @@ import java.util.List;
  * layout. Closely follows the implementation of LinearLayout with certain
  * changes.
  */
-
-@SimpleObject
 public class RelativeLayout implements Layout {
 
   private final android.widget.RelativeLayout layoutManager;
@@ -139,8 +135,8 @@ public class RelativeLayout implements Layout {
     }
     View view = component.getView();
     LayoutParams params = (LayoutParams) view.getLayoutParams();
-    params.leftMargin = x;
-    params.topMargin = y;
+    params.leftMargin = ViewUtil.calculatePixels(view, x);
+    params.topMargin = ViewUtil.calculatePixels(view, y);
     view.requestLayout();
   }
 
@@ -156,10 +152,11 @@ public class RelativeLayout implements Layout {
         handler.post(new Runnable() {
           public void run() {
             synchronized (componentsToAdd) {
-              for (AndroidViewComponent component : componentsToAdd) {
+              List<AndroidViewComponent> copy = new LinkedList<>(componentsToAdd);
+              componentsToAdd.clear();
+              for (AndroidViewComponent component : copy) {
                 addComponent(component);
               }
-              componentsToAdd.clear();
             }
           }
         });

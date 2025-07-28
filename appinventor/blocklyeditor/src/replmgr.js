@@ -1141,10 +1141,10 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         case "startCache":
             top.BlocklyPanel_startCache().then((success) => {
                 if (!success) {
-                    console.log("Failed to cache project.");
+                    runtimeerr("Failed to cache project");
                 }})
                 .catch((error) => {
-                    console.log("Error while caching project: " + error);
+                    runtimeerr("Encountered issue while caching project: " + error);
                 });
             break;
         case "error":

@@ -943,10 +943,6 @@ This is a visible component that displays a list of text and image elements in y
 : Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.
 
-{:id="ListView.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
-
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `ListView` is showing and `false`{:.logic.block} if hidden.
@@ -2101,9 +2097,15 @@ Component for viewing Web pages.
 : Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.
 
+{:id="WebViewer.UsesCamera" .boolean .wo .do} *UsesCamera*
+: Specifies whether this `WebViewer` can access the camera.
+
 {:id="WebViewer.UsesLocation" .boolean .wo .do} *UsesLocation*
 : Specifies whether or not this `WebViewer` can access the JavaScript
  geolocation API.
+
+{:id="WebViewer.UsesMicrophone" .boolean .wo .do} *UsesMicrophone*
+: Specifies whether this `WebViewer` can access the microphone.
 
 {:id="WebViewer.Visible" .boolean} *Visible*
 : Specifies whether the `WebViewer` should be visible on the screen.  Value is `true`{:.logic.block}

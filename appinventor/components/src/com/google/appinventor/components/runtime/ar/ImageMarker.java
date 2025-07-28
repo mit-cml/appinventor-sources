@@ -30,9 +30,15 @@ import java.util.ArrayList;
 @SimpleObject
 public final class ImageMarker implements ARImageMarker {
   protected ARView3D arView = null;
+  protected String name = "";
 
   public ImageMarker(ARImageMarkerContainer container) {
     // Additional
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    this.name = componentName;
   }
 
   @Override

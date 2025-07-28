@@ -168,6 +168,9 @@
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
   <dt id="ARView3D.ImageMarkers" class="list ro bo"><em>ImageMarkers</em></dt>
   <dd>The list of ImageMarkers added to the ARView3D.</dd>
+  <dt id="ARView3D.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="ARView3D.LightingEstimation" class="boolean ro"><em>LightingEstimation</em></dt>
   <dd>Determines whether the real-world ambient light intensity and temperature should be estimated. If this property is set to true, lighting estimates are provided.  Otherwise, not lighting estimates are are provided.</dd>
   <dt id="ARView3D.Lights" class="list ro bo"><em>Lights</em></dt>
@@ -193,6 +196,9 @@
   <dd>Determines whether to show the wireframe of nodes’ geometries on top of their FillColor of Texture.</dd>
   <dt id="ARView3D.ShowWorldOrigin" class="boolean"><em>ShowWorldOrigin</em></dt>
   <dd>Determines whether to place a coordinate plane at the world origin (0,0,0) which displays the x, y, and z axes.</dd>
+  <dt id="ARView3D.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
   <dt id="ARView3D.TrackingType" class="number ro"><em>TrackingType</em></dt>
   <dd>
     <p>The tracking type for the AR session.  WorldTracking allows for plane detection, image detection with ImageMarkers, and the placement of nodes in the world.  The devices's position and orientation are used to track the placemet of the world.  Nodes will remain where you place them in the world, even if you move.  OrientationTracking allows for placing a nodes but using the devices's orientation to determine location.  If you move, the items will move too.  They do not stay in place. ImageTracking allows for using ImageMarkers and placing items relative to the images.Valid values are: 1 (WorldTracking), 2 (OrientationTracking), 3 (ImageTracking)
@@ -212,7 +218,7 @@
 <h3 id="ARView3D-Events">Events</h3>
 
 <dl class="events">
-  <dt id="ARView3D.ClickOnDetectedPlaneAt">ClickOnDetectedPlaneAt(<em class="component">detectedPlane</em>,<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="boolean">isANodeAtPoint</em>)</dt>
+  <dt id="ARView3D.ClickOnDetectedPlaneAt">ClickOnDetectedPlaneAt(<em class="component">targetPlane</em>,<em class="any">p</em>,<em class="boolean">isANodeAtPoint</em>)</dt>
   <dd>The user tapped on a DetectedPlane, detectedPlane.  (x,y,z) is the real-world coordinate of the point.  isANoteAtPoint is true if a node is already at that point and false otherwise.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.</dd>
   <dt id="ARView3D.DetectedPlaneRemoved">DetectedPlaneRemoved(<em class="component">detectedPlane</em>)</dt>
   <dd>A DetectedPlane was removed from the ARView3D.  This happens when two DetectedPlanes are combined to form one or the detected items were reset.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.</dd>
@@ -230,8 +236,12 @@
   <dd>The user long-pressed a node in the ARView3D.</dd>
   <dt id="ARView3D.PlaneDetected">PlaneDetected(<em class="component">detectedPlane</em>)</dt>
   <dd>A real-world plane was detected.  The detectedPlane is the component added at the location of the real-world plane.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default FillColor of a DetectedPlane is None, so it is shown visually by default.</dd>
+  <dt id="ARView3D.TapAtLocation">TapAtLocation(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="number">lat</em>,<em class="number">lng</em>,<em class="number">alt</em>,<em class="boolean">hasGeoCoordinates</em>,<em class="boolean">isANodeAtPoint</em>)</dt>
+  <dd>all world and geo coords if avail</dd>
   <dt id="ARView3D.TapAtPoint">TapAtPoint(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="boolean">isANodeAtPoint</em>)</dt>
   <dd>The user tapped on a point on the ARView3D.  (x,y,z) is the real-world coordinate of the point.  isANoteAtPoint is true if a node is already at that point and false otherwise.</dd>
+  <dt id="ARView3D.addNode">addNode(<em class="component">node</em>)</dt>
+  <dd>The user tapped on a node in the ARView3D.</dd>
 </dl>
 
 <h3 id="ARView3D-Methods">Methods</h3>
@@ -239,18 +249,42 @@
 <dl class="methods">
   <dt id="ARView3D.CreateBoxNode" class="method returns component"><i></i> CreateBoxNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new BoxNode with default properties at the specified (x,y,z) position.</dd>
+  <dt id="ARView3D.CreateBoxNodeAtPlane" class="method returns component"><i></i> CreateBoxNodeAtPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Create a new BoxNode with default properties at the plane position.</dd>
+  <dt id="ARView3D.CreateBoxNodeFromYail" class="method returns component"><i></i> CreateBoxNodeFromYail(<em class="dictionary">yailNodeObj</em>)</dt>
+  <dd>Create a new boxNode with default properties with a pose.</dd>
   <dt id="ARView3D.CreateCapsuleNode" class="method returns component"><i></i> CreateCapsuleNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new CapsuleNode with default properties at the specified (x,y,z) position.</dd>
+  <dt id="ARView3D.CreateCapsuleNodeAtLocation" class="method returns component"><i></i> CreateCapsuleNodeAtLocation(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="number">lat</em>,<em class="number">lng</em>,<em class="number">altitude</em>,<em class="boolean">hasGeoCoordinates</em>,<em class="boolean">isANodeAtPoint</em>)</dt>
+  <dd>Create a new CapsuleNode with geo coords</dd>
+  <dt id="ARView3D.CreateCapsuleNodeAtPlane" class="method returns component"><i></i> CreateCapsuleNodeAtPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Create a new CapsuleNode with default properties at the plane position.</dd>
+  <dt id="ARView3D.CreateCapsuleNodeFromYail" class="method returns component"><i></i> CreateCapsuleNodeFromYail(<em class="dictionary">yailNodeObj</em>)</dt>
+  <dd>Create a new CapsuleNode with default properties with a pose.</dd>
+  <dt id="ARView3D.CreateCapsuleNodeWithPose" class="method returns component"><i></i> CreateCapsuleNodeWithPose(<em class="text">p</em>)</dt>
+  <dd>Create a new CapsuleNode with default properties with a pose.</dd>
   <dt id="ARView3D.CreateConeNode" class="method returns component"><i></i> CreateConeNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new ConeNode with default properties at the specified (x,y,z) position.</dd>
   <dt id="ARView3D.CreateCylinderNode" class="method returns component"><i></i> CreateCylinderNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new CylinderNode with default properties at the specified (x,y,z) position.</dd>
+  <dt id="ARView3D.CreateModelNode" class="method returns component"><i></i> CreateModelNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="text">modelObjectString</em>)</dt>
+  <dd>Create a new ModelNode with default properties at the specified (x,y,z) position.</dd>
+  <dt id="ARView3D.CreateModelNodeAtLocation" class="method returns component"><i></i> CreateModelNodeAtLocation(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="number">lat</em>,<em class="number">lng</em>,<em class="number">altitude</em>,<em class="boolean">hasGeoCoordinates</em>,<em class="boolean">isANodeAtPoint</em>,<em class="text">modelObjectString</em>)</dt>
+  <dd>Create a new ModelNode with geo coords</dd>
+  <dt id="ARView3D.CreatePlaneAtPlane" class="method returns component"><i></i> CreatePlaneAtPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Create a new PlaneNode with default properties at the detected plane position.</dd>
   <dt id="ARView3D.CreatePlaneNode" class="method returns component"><i></i> CreatePlaneNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new PlaneNode with default properties at the specified (x,y,z) position.</dd>
   <dt id="ARView3D.CreatePyramidNode" class="method returns component"><i></i> CreatePyramidNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new PyramidNode with default properties at the specified (x,y,z) position.</dd>
   <dt id="ARView3D.CreateSphereNode" class="method returns component"><i></i> CreateSphereNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new SphereNode with default properties at the specified (x,y,z) position.</dd>
+  <dt id="ARView3D.CreateSphereNodeAtLocation" class="method returns component"><i></i> CreateSphereNodeAtLocation(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="number">lat</em>,<em class="number">lng</em>,<em class="number">altitude</em>,<em class="boolean">hasGeoCoordinates</em>,<em class="boolean">isANodeAtPoint</em>)</dt>
+  <dd>Create a new CapsuleNode with geo coords</dd>
+  <dt id="ARView3D.CreateSphereNodeAtPlane" class="method returns component"><i></i> CreateSphereNodeAtPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Create a new SphereNode with default properties at the detected plane position.</dd>
+  <dt id="ARView3D.CreateSphereNodeFromYail" class="method returns component"><i></i> CreateSphereNodeFromYail(<em class="dictionary">yailNodeObj</em>)</dt>
+  <dd>Create a new boxNode with default properties with a pose.</dd>
   <dt id="ARView3D.CreateTextNode" class="method returns component"><i></i> CreateTextNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new TextNode with default properties at the specified (x,y,z) position.</dd>
   <dt id="ARView3D.CreateTorusNode" class="method returns component"><i></i> CreateTorusNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
@@ -259,20 +293,36 @@
   <dd>Create a new TubeNode with default properties at the specified (x,y,z) position.</dd>
   <dt id="ARView3D.CreateVideoNode" class="method returns component"><i></i> CreateVideoNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new VideoNode with default properties at the specified (x,y,z) position.</dd>
+  <dt id="ARView3D.CreateVideoNodeAtPlane" class="method returns component"><i></i> CreateVideoNodeAtPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Create a new VideoNode with default properties at the detected plane position.</dd>
+  <dt id="ARView3D.CreateVideoNodeFromYail" class="method returns component"><i></i> CreateVideoNodeFromYail(<em class="dictionary">yailNodeObj</em>)</dt>
+  <dd>Create a new boxNode with default properties with a pose.</dd>
   <dt id="ARView3D.CreateWebViewNode" class="method returns component"><i></i> CreateWebViewNode(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Create a new WebViewNode with default properties at the specified (x,y,z) position.</dd>
+  <dt id="ARView3D.CreateWebViewNodeAtLocation" class="method returns component"><i></i> CreateWebViewNodeAtLocation(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>,<em class="number">lat</em>,<em class="number">lng</em>,<em class="number">altitude</em>,<em class="boolean">hasGeoCoordinates</em>,<em class="boolean">isANodeAtPoint</em>)</dt>
+  <dd>Create a new webViewNode with geo coords</dd>
+  <dt id="ARView3D.CreateWebViewNodeAtPlane" class="method returns component"><i></i> CreateWebViewNodeAtPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Create a new WebViewNode with default properties at the detected plane position.</dd>
+  <dt id="ARView3D.CreateWebViewNodeFromYail" class="method returns component"><i></i> CreateWebViewNodeFromYail(<em class="dictionary">yailNodeObj</em>)</dt>
+  <dd>Create a new webviewer with default properties with a pose.</dd>
   <dt id="ARView3D.HideAllLights" class="method"><i></i> HideAllLights()</dt>
   <dd>Sets Visible to false for all Lights.</dd>
   <dt id="ARView3D.HideAllNodes" class="method"><i></i> HideAllNodes()</dt>
   <dd>Sets Visible to false for all Nodes.</dd>
+  <dt id="ARView3D.LoadScene" class="method returns list"><i></i> LoadScene(<em class="list">dictionaries</em>)</dt>
+  <dd>Load scene from storage</dd>
   <dt id="ARView3D.PauseTracking" class="method"><i></i> PauseTracking()</dt>
   <dd>Pauses the live camera feed and pauses tracking.</dd>
   <dt id="ARView3D.ResetDetectedItems" class="method"><i></i> ResetDetectedItems()</dt>
   <dd>Removed DetectedPlanes and resets detection for ImageMarkers.</dd>
   <dt id="ARView3D.ResetTracking" class="method"><i></i> ResetTracking()</dt>
   <dd>Resets the tracking, resetting all items including DetectedPlanes and ImageMarkers. If this is called while tracking is not paused, then this resets and restarts tracking.  If tracking is paused and this is called, this will reset the ARView3D once StartTracking is called again.</dd>
+  <dt id="ARView3D.SaveScene" class="method returns list"><i></i> SaveScene(<em class="list">newNodes</em>)</dt>
+  <dd>Get scene from storage</dd>
   <dt id="ARView3D.StartTracking" class="method"><i></i> StartTracking()</dt>
   <dd>Starts the live camera feed and begins tracking.</dd>
+  <dt id="ARView3D.onDelete" class="method"><i></i> onDelete()</dt>
+  <dd>Delete</dd>
 </dl>
 
 <h2 id="AmbientLight">AmbientLight</h2>
@@ -312,8 +362,12 @@
 <h3 id="BoxNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="BoxNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
   <dt id="BoxNode.CornerRadius" class="number"><em>CornerRadius</em></dt>
   <dd>This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the length, height, or width of the BoxNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be set to zero.</dd>
+  <dt id="BoxNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="BoxNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="BoxNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -324,24 +378,30 @@
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
   <dt id="BoxNode.LengthInCentimeters" class="number"><em>LengthInCentimeters</em></dt>
   <dd>How far, in centimeters, the BoxNode extends along the z-axis.  Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode will not appear.</dd>
+  <dt id="BoxNode.Model" class="text"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="BoxNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="BoxNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="BoxNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="BoxNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="BoxNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="BoxNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="BoxNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="BoxNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
-  <dt id="BoxNode.Scale" class="number"><em>Scale</em></dt>
-  <dd>The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.</dd>
   <dt id="BoxNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="BoxNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="BoxNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="BoxNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="BoxNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="BoxNode.WidthInCentimeters" class="number"><em>WidthInCentimeters</em></dt>
@@ -397,9 +457,11 @@
   <dt id="BoxNode.LookAtSpotlight" class="method"><i></i> LookAtSpotlight(<em class="component">light</em>)</dt>
   <dd>Rotates the node to look at the Spotlight.</dd>
   <dt id="BoxNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
   <dt id="BoxNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dt id="BoxNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a capsule node properties to detectedplane.</dd>
   <dt id="BoxNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="BoxNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -419,8 +481,12 @@
 <h3 id="CapsuleNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="CapsuleNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
   <dt id="CapsuleNode.CapRadiusInCentimeters" class="number"><em>CapRadiusInCentimeters</em></dt>
   <dd>The radius, in centimeters, of two hemispheres or caps at the ends of a CapsuleNode.  Values less than zero will be treated as their absolute values.  When set to zero or when set to greater than half of the Height, the CapsuleNode will not appear.</dd>
+  <dt id="CapsuleNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="CapsuleNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="CapsuleNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -429,12 +495,24 @@
   <dd>How far, in centimeters, the CapsuleNode extends along the y-axis.  Values less than zero will be treated as their absolute value.  When set to zero or when set to less than double the CapRadius, the CapsuleNode will not appear.</dd>
   <dt id="CapsuleNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="CapsuleNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="CapsuleNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="CapsuleNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="CapsuleNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="CapsuleNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="CapsuleNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="CapsuleNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="CapsuleNode.PoseToJson" class="any ro bo"><em>PoseToJson</em></dt>
+  <dd>Get the current pose of the object</dd>
+  <dt id="CapsuleNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="CapsuleNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="CapsuleNode.Scale" class="number"><em>Scale</em></dt>
@@ -442,11 +520,9 @@
   <dt id="CapsuleNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="CapsuleNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="CapsuleNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="CapsuleNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="CapsuleNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="CapsuleNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -500,9 +576,13 @@
   <dt id="CapsuleNode.LookAtSpotlight" class="method"><i></i> LookAtSpotlight(<em class="component">light</em>)</dt>
   <dd>Rotates the node to look at the Spotlight.</dd>
   <dt id="CapsuleNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
   <dt id="CapsuleNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
+  <dt id="CapsuleNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a capsule node properties to detectedplane.</dd>
+  <dt id="CapsuleNode.MoveToPose" class="method"><i></i> MoveToPose(<em class="text">p</em>)</dt>
+  <dd>move a capsule node properties to detectedplane.</dd>
   <dt id="CapsuleNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="CapsuleNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -522,8 +602,12 @@
 <h3 id="ConeNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="ConeNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
   <dt id="ConeNode.BottomRadiusInCentimeters" class="number"><em>BottomRadiusInCentimeters</em></dt>
   <dd>This defines the radius of the bottom of the ConeNode.  A value of zero causes the cone to meet at a point at the bottom.  Values less than zero will be treated as their absolute value.  If the BottomRadius is set to zero and this is set to zero, the ConeNode will not be shown.</dd>
+  <dt id="ConeNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="ConeNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="ConeNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -532,12 +616,22 @@
   <dd>How far, in centimeters, the ConeNode extends along the y-axis.  Values less than zero will be treated as their absolute value.  When set to zero, the ConeNode will not be shown.</dd>
   <dt id="ConeNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="ConeNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="ConeNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="ConeNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="ConeNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="ConeNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="ConeNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="ConeNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="ConeNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="ConeNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="ConeNode.Scale" class="number"><em>Scale</em></dt>
@@ -545,13 +639,11 @@
   <dt id="ConeNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="ConeNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="ConeNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="ConeNode.TopRadiusInCentimeters" class="number"><em>TopRadiusInCentimeters</em></dt>
   <dd>This defines the radius of the top of the ConeNode.  A value of zero causes the cone to meet at a point at the top.  Values less than zero will be treated as their absolute value.  If the BottomRadius is set to zero and this is set to zero, the ConeNode will not be shown.</dd>
-  <dt id="ConeNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="ConeNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="ConeNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -608,6 +700,8 @@
   <dd>Changes the node’s position by (x,y,z).</dd>
   <dt id="ConeNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the node’s position to (x,y,z).</dd>
+  <dt id="ConeNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Changes the node’s position to (x,y,z).</dd>
   <dt id="ConeNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="ConeNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -627,6 +721,10 @@
 <h3 id="CylinderNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="CylinderNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
+  <dt id="CylinderNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="CylinderNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="CylinderNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -635,12 +733,22 @@
   <dd>How far, in centimeters, the CylinderNode extends along the y-axis.  Values less than zero will be treated as their absolute value.  When set to zero, the CylinderNode will not be shown.</dd>
   <dt id="CylinderNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="CylinderNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="CylinderNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="CylinderNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="CylinderNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="CylinderNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="CylinderNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="CylinderNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="CylinderNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="CylinderNode.RadiusInCentimeters" class="number"><em>RadiusInCentimeters</em></dt>
   <dd>The radius of the CylinderNode determines the size of the cicular base and top.  Values less than zero will be treated as their absolute value.  When set to zero, the CylinderNode will not be shown.</dd>
   <dt id="CylinderNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
@@ -650,11 +758,9 @@
   <dt id="CylinderNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="CylinderNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="CylinderNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="CylinderNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="CylinderNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="CylinderNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -710,6 +816,8 @@
   <dt id="CylinderNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the node’s position by (x,y,z).</dd>
   <dt id="CylinderNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
+  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dt id="CylinderNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
   <dd>Changes the node’s position to (x,y,z).</dd>
   <dt id="CylinderNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
@@ -827,24 +935,36 @@
 <h3 id="ModelNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="ModelNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
   <dt id="ModelNode.BoundingBox" class="list ro bo"><em>BoundingBox</em></dt>
   <dd>The minimum and maximum coordinates of the ModelNode.  The minimum and maximum are lists of the x-, y-, z-coordinates, and this returns a list of <code>[min, max]</code> where mine and max are <code>[x, y, z]</code>.</dd>
+  <dt id="ModelNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="ModelNode.FillColor" class="color do"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="ModelNode.FillColorOpacity" class="number do"><em>FillColorOpacity</em></dt>
   <dd>The opacity of the node’s FillColor.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="ModelNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
-  <dt id="ModelNode.Model" class="text ro"><em>Model</em></dt>
+  <dt id="ModelNode.Model" class="text"><em>Model</em></dt>
   <dd>The 3D model file to be loaded.</dd>
   <dt id="ModelNode.NamesOfNodes" class="list ro bo"><em>NamesOfNodes</em></dt>
   <dd>Returns a list of the names of all nodes in the model.  If the model did not name a node, then the node will be named by the component Name and number, such as ModelNode1-1.</dd>
+  <dt id="ModelNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="ModelNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="ModelNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="ModelNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="ModelNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="ModelNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="ModelNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="ModelNode.RootNodeName" class="text ro"><em>RootNodeName</em></dt>
   <dd>The name of the root node to add to the scene.  If this is “” or a node with the given name does not exist, then the model’s default root node will be added.</dd>
   <dt id="ModelNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
@@ -853,12 +973,10 @@
   <dd>The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.</dd>
   <dt id="ModelNode.ShowShadow" class="boolean do"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
-  <dt id="ModelNode.Texture" class="text do"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dt id="ModelNode.Texture" class="text"><em>Texture</em></dt>
+  <dd>The 3D texture loaded.</dd>
   <dt id="ModelNode.TextureOpacity" class="number do"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="ModelNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="ModelNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="ModelNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -914,9 +1032,11 @@
   <dt id="ModelNode.LookAtSpotlight" class="method"><i></i> LookAtSpotlight(<em class="component">light</em>)</dt>
   <dd>Rotates the node to look at the Spotlight.</dd>
   <dt id="ModelNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dd>move a model node properties at the specified (x,y,z) position.</dd>
   <dt id="ModelNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dt id="ModelNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
   <dt id="ModelNode.PlayAnimationsForAllNodes" class="method"><i></i> PlayAnimationsForAllNodes()</dt>
   <dd>Plays all animations in the model, if it has animations.</dd>
   <dt id="ModelNode.PlayAnimationsForNode" class="method"><i></i> PlayAnimationsForNode(<em class="text">name</em>,<em class="boolean">shouldPlayChildNodes</em>)</dt>
@@ -968,8 +1088,12 @@
 <h3 id="PlaneNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="PlaneNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
   <dt id="PlaneNode.CornerRadius" class="number"><em>CornerRadius</em></dt>
   <dd>This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the height or width of the PlaneNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be treated as zero.</dd>
+  <dt id="PlaneNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="PlaneNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="PlaneNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -978,12 +1102,22 @@
   <dd>How far, in centimeters, the PlaneNode extends along the y-axis.  Values less than zero will be treated as their absolute value.  When set to zero, the PlaneNode will not be shown.</dd>
   <dt id="PlaneNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="PlaneNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="PlaneNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="PlaneNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="PlaneNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="PlaneNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="PlaneNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="PlaneNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="PlaneNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="PlaneNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="PlaneNode.Scale" class="number"><em>Scale</em></dt>
@@ -991,11 +1125,9 @@
   <dt id="PlaneNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="PlaneNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="PlaneNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="PlaneNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="PlaneNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="PlaneNode.WidthInCentimeters" class="number"><em>WidthInCentimeters</em></dt>
@@ -1051,9 +1183,11 @@
   <dt id="PlaneNode.LookAtSpotlight" class="method"><i></i> LookAtSpotlight(<em class="component">light</em>)</dt>
   <dd>Rotates the node to look at the Spotlight.</dd>
   <dt id="PlaneNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
   <dt id="PlaneNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dt id="PlaneNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a sphere node properties at the specified (x,y,z) position.</dd>
   <dt id="PlaneNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="PlaneNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -1122,6 +1256,8 @@
   <dd>Changes the PointLight’s position by (x,y,z).</dd>
   <dt id="PointLight.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the PointLight’s position to (x,y,z).</dd>
+  <dt id="PointLight.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a capsule node properties to detectedplane.</dd>
 </dl>
 
 <h2 id="PyramidNode">PyramidNode</h2>
@@ -1131,6 +1267,10 @@
 <h3 id="PyramidNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="PyramidNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
+  <dt id="PyramidNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="PyramidNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="PyramidNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -1141,24 +1281,30 @@
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
   <dt id="PyramidNode.LengthInCentimeters" class="number"><em>LengthInCentimeters</em></dt>
   <dd>How far, in centimeters, the PyramidNode extends along the z-axis.  Values less than zero will be treated as their absolute values.  When set to zero, the PyramidNode will not be shown.</dd>
+  <dt id="PyramidNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="PyramidNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="PyramidNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="PyramidNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="PyramidNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="PyramidNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="PyramidNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="PyramidNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="PyramidNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
-  <dt id="PyramidNode.Scale" class="number"><em>Scale</em></dt>
-  <dd>The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.</dd>
   <dt id="PyramidNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="PyramidNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="PyramidNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="PyramidNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="PyramidNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="PyramidNode.WidthInCentimeters" class="number"><em>WidthInCentimeters</em></dt>
@@ -1216,7 +1362,9 @@
   <dt id="PyramidNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the node’s position by (x,y,z).</dd>
   <dt id="PyramidNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
+  <dt id="PyramidNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a capsule node properties to detectedplane.</dd>
   <dt id="PyramidNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="PyramidNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -1236,32 +1384,44 @@
 <h3 id="SphereNode-Properties">Properties</h3>
 
 <dl class="properties">
-  <dt id="SphereNode.FillColor" class="color"><em>FillColor</em></dt>
+  <dt id="SphereNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
+  <dt id="SphereNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
+  <dt id="SphereNode.FillColor" class="color do"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
-  <dt id="SphereNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
+  <dt id="SphereNode.FillColorOpacity" class="number do"><em>FillColorOpacity</em></dt>
   <dd>The opacity of the node’s FillColor.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="SphereNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="SphereNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="SphereNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="SphereNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="SphereNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="SphereNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="SphereNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="SphereNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="SphereNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="SphereNode.RadiusInCentimeters" class="number"><em>RadiusInCentimeters</em></dt>
   <dd>The radius of the sphere in centimeters.</dd>
   <dt id="SphereNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="SphereNode.Scale" class="number"><em>Scale</em></dt>
   <dd>The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.</dd>
-  <dt id="SphereNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
+  <dt id="SphereNode.ShowShadow" class="boolean do"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="SphereNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
-  <dt id="SphereNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
+  <dd>The 3D texture loaded.</dd>
+  <dt id="SphereNode.TextureOpacity" class="number do"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="SphereNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="SphereNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="SphereNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -1285,6 +1445,8 @@
   <dd>The user clicked on the node.</dd>
   <dt id="SphereNode.LongClick">LongClick()</dt>
   <dd>The user long-pressed on the node.</dd>
+  <dt id="SphereNode.NodeNotFound">NodeNotFound(<em class="text">name</em>)</dt>
+  <dd>This event is triggered when the user tries to access a node named “name”, but a node with that “name” does not exist.</dd>
   <dt id="SphereNode.StoppedFollowingMarker">StoppedFollowingMarker()</dt>
   <dd>The node stopped following an ImageMarker.  This event will trigger after the StopFollowingImageMarker block is called.</dd>
 </dl>
@@ -1315,9 +1477,17 @@
   <dt id="SphereNode.LookAtSpotlight" class="method"><i></i> LookAtSpotlight(<em class="component">light</em>)</dt>
   <dd>Rotates the node to look at the Spotlight.</dd>
   <dt id="SphereNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
   <dt id="SphereNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dt id="SphereNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a sphere node properties at the specified (x,y,z) position.</dd>
+  <dt id="SphereNode.PlayAnimationsForAllNodes" class="method"><i></i> PlayAnimationsForAllNodes()</dt>
+  <dd>Plays all animations in the model, if it has animations.</dd>
+  <dt id="SphereNode.PlayAnimationsForNode" class="method"><i></i> PlayAnimationsForNode(<em class="text">name</em>,<em class="boolean">shouldPlayChildNodes</em>)</dt>
+  <dd>Plays animations attached to a node named “name”.  If a node named “name” does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldPlayChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their animations played.</dd>
+  <dt id="SphereNode.RenameNode" class="method"><i></i> RenameNode(<em class="text">oldName</em>,<em class="text">newName</em>)</dt>
+  <dd>Renames a node named “oldName” to “newName”.  If no node exists with name “oldName”, then the <code>NodeNotFound</code> event will be triggered.</dd>
   <dt id="SphereNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="SphereNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -1326,6 +1496,32 @@
   <dd>Changes the node’s z rotation by the given degrees.</dd>
   <dt id="SphereNode.ScaleBy" class="method"><i></i> ScaleBy(<em class="number">scalar</em>)</dt>
   <dd>Changes the node’s scale by the given scalar.</dd>
+  <dt id="SphereNode.SetFillColorForAllNodes" class="method"><i></i> SetFillColorForAllNodes(<em class="number">color</em>,<em class="number">opacity</em>)</dt>
+  <dd>Sets the color of all nodes with the given opacity.  Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.</dd>
+  <dt id="SphereNode.SetFillColorForNode" class="method"><i></i> SetFillColorForNode(<em class="text">name</em>,<em class="number">color</em>,<em class="number">opacity</em>,<em class="boolean">shouldColorChildNodes</em>)</dt>
+  <dd>
+    <p>Sets the color of a node named "name" with the given opacity.  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldColorChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their color set.  If <code>shouldColorChildNodes</code> is false and the named node cannot be colored, an error will occur.  Otherwise, no error will occur, and the child nodes will attempt to be colored.</p>
+    <p>Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.</p>
+  </dd>
+  <dt id="SphereNode.SetShowShadowForAllNodes" class="method"><i></i> SetShowShadowForAllNodes(<em class="boolean">showShadow</em>)</dt>
+  <dd>Sets if all nodes show a shadow.</dd>
+  <dt id="SphereNode.SetShowShadowForNode" class="method"><i></i> SetShowShadowForNode(<em class="text">name</em>,<em class="boolean">showShadow</em>,<em class="boolean">shouldShadowChildNodes</em>)</dt>
+  <dd>
+    <p>Sets whether the shadow is shown for a node named "name".  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldShadowChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their shadow set.
+
+</p>
+  </dd>
+  <dt id="SphereNode.SetTextureForAllNodes" class="method"><i></i> SetTextureForAllNodes(<em class="text">texture</em>,<em class="number">opacity</em>)</dt>
+  <dd>Sets the texture of all nodes with the given opacity.Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.</dd>
+  <dt id="SphereNode.SetTextureForNode" class="method"><i></i> SetTextureForNode(<em class="text">name</em>,<em class="text">texture</em>,<em class="number">opacity</em>,<em class="boolean">shouldTexturizeChildNodes</em>)</dt>
+  <dd>
+    <p>Sets the texture of a node named "name" with the given opacity.  If a node named "name" does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldTexturizeChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their color set.  If <code>shouldTexturizeChildNodes</code> is false and the named node cannot be textured, an error will occur.  Otherwise, no error will occur, and the child nodes will attempt to be textured.</p>
+    <p>Opacity vales less than 0 will be treated as 0, and values greater than 100 will be treated as 100.</p>
+  </dd>
+  <dt id="SphereNode.StopAnimationsForAllNodes" class="method"><i></i> StopAnimationsForAllNodes()</dt>
+  <dd>Stops all animations in the model, if it has animations.</dd>
+  <dt id="SphereNode.StopAnimationsForNode" class="method"><i></i> StopAnimationsForNode(<em class="text">name</em>,<em class="boolean">shouldStopChildNodes</em>)</dt>
+  <dd>Stops animations attached to a node named “name”.  If a node named “name” does not exist, then the <code>NodeNotFound</code> event will be triggered.  <code>shouldStopChildNodes</code> specifies if all nodes below below the named node in the node tree should also have their animations stopped.</dd>
   <dt id="SphereNode.StopFollowingImageMarker" class="method"><i></i> StopFollowingImageMarker()</dt>
   <dd>Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.</dd>
 </dl>
@@ -1416,6 +1612,8 @@
   <dd>Changes the PointLight’s position by (x,y,z).</dd>
   <dt id="Spotlight.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the PointLight’s position to (x,y,z).</dd>
+  <dt id="Spotlight.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a capsule node properties to detectedplane.</dd>
   <dt id="Spotlight.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the Spotlight’s x rotation by the given degrees.</dd>
   <dt id="Spotlight.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -1431,8 +1629,12 @@
 <h3 id="TextNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="TextNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
   <dt id="TextNode.DepthInCentimeters" class="number"><em>DepthInCentimeters</em></dt>
   <dd>How far, in centimeters, the TextNode extends along the z-axis.  Values less than zero will be treated as zero.</dd>
+  <dt id="TextNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="TextNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="TextNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -1441,12 +1643,22 @@
   <dd>The font size in centimeters.  Values less than zero will be treated as their absolute value.  When set to zero, the TextNode will not be shown.</dd>
   <dt id="TextNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="TextNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="TextNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="TextNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="TextNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="TextNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="TextNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="TextNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="TextNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="TextNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="TextNode.Scale" class="number do"><em>Scale</em></dt>
@@ -1456,11 +1668,9 @@
   <dt id="TextNode.Text" class="text"><em>Text</em></dt>
   <dd>Text to display by the TextNode.  If this is set to “”, the TextNode will not be shown.</dd>
   <dt id="TextNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="TextNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="TextNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="TextNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="TextNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -1517,6 +1727,8 @@
   <dd>Changes the node’s position by (x,y,z).</dd>
   <dt id="TextNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the node’s position to (x,y,z).</dd>
+  <dt id="TextNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Changes the node’s position to (x,y,z).</dd>
   <dt id="TextNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="TextNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -1536,12 +1748,20 @@
 <h3 id="TorusNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="TorusNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
+  <dt id="TorusNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="TorusNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="TorusNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
   <dd>The opacity of the node’s FillColor.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="TorusNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="TorusNode.Model" class="text"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="TorusNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="TorusNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="TorusNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
@@ -1550,6 +1770,12 @@
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
   <dt id="TorusNode.PipeRadiusInCentimeters" class="number"><em>PipeRadiusInCentimeters</em></dt>
   <dd>The pipe radius defines the size of the surface that encircles the ring, or the pipe radius.  This can be thought of as the band of the ring.  Values less than zero will be treated as their absolute value.  When set to zero, the TorusNode will not be shown.</dd>
+  <dt id="TorusNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="TorusNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property</dd>
+  <dt id="TorusNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="TorusNode.RingRadiusInCentimeters" class="number"><em>RingRadiusInCentimeters</em></dt>
   <dd>The ring radius defines the size of the overall torus (or major radius) in centimeters.  Values less than zero will be treated as their absolute value.  When set to zero, the TorusNode will not be shown.</dd>
   <dt id="TorusNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
@@ -1558,12 +1784,8 @@
   <dd>The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.</dd>
   <dt id="TorusNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
-  <dt id="TorusNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
   <dt id="TorusNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="TorusNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="TorusNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="TorusNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -1620,6 +1842,8 @@
   <dd>Changes the node’s position by (x,y,z).</dd>
   <dt id="TorusNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the node’s position to (x,y,z).</dd>
+  <dt id="TorusNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Changes the node’s position to (x,y,z).</dd>
   <dt id="TorusNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="TorusNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -1639,6 +1863,10 @@
 <h3 id="TubeNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="TubeNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
+  <dt id="TubeNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="TubeNode.FillColor" class="color"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="TubeNode.FillColorOpacity" class="number"><em>FillColorOpacity</em></dt>
@@ -1649,6 +1877,10 @@
   <dd>The inner radius of the TubeNode determines the size of the cicular cutout from the middle of the TubeNode.  Values less than zero will be treated as ther absolute value.  When set to zero or when set to equal to or greater than the OuterRadius, the TubeNode will not be shown.</dd>
   <dt id="TubeNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="TubeNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="TubeNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="TubeNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="TubeNode.OuterRadiusInCentimeters" class="number"><em>OuterRadiusInCentimeters</em></dt>
@@ -1657,6 +1889,12 @@
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="TubeNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="TubeNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="TubeNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="TubeNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="TubeNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="TubeNode.Scale" class="number"><em>Scale</em></dt>
@@ -1664,11 +1902,9 @@
   <dt id="TubeNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
   <dt id="TubeNode.Texture" class="text"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="TubeNode.TextureOpacity" class="number"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="TubeNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="TubeNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="TubeNode.XPosition" class="number bo"><em>XPosition</em></dt>
@@ -1725,6 +1961,8 @@
   <dd>Changes the node’s position by (x,y,z).</dd>
   <dt id="TubeNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
   <dd>Changes the node’s position to (x,y,z).</dd>
+  <dt id="TubeNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>Changes the node’s position to (x,y,z).</dd>
   <dt id="TubeNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>
   <dd>Changes the node’s x rotation by the given degrees.</dd>
   <dt id="TubeNode.RotateYBy" class="method"><i></i> RotateYBy(<em class="number">degrees</em>)</dt>
@@ -1744,6 +1982,10 @@
 <h3 id="VideoNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="VideoNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
+  <dt id="VideoNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="VideoNode.FillColor" class="color do"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="VideoNode.FillColorOpacity" class="number do"><em>FillColorOpacity</em></dt>
@@ -1754,12 +1996,22 @@
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
   <dt id="VideoNode.IsPlaying" class="boolean ro bo"><em>IsPlaying</em></dt>
   <dd>Returns true if the video is currently playing false otherwise.</dd>
+  <dt id="VideoNode.Model" class="text"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="VideoNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="VideoNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="VideoNode.PanToMove" class="boolean"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="VideoNode.PinchToScale" class="boolean"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="VideoNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="VideoNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="VideoNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="VideoNode.RotateWithGesture" class="boolean"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="VideoNode.Scale" class="number"><em>Scale</em></dt>
@@ -1769,11 +2021,9 @@
   <dt id="VideoNode.Source" class="text wo"><em>Source</em></dt>
   <dd>The “path” to the video.  Usually, this will be the name of the video file, which should be added in the Designer.</dd>
   <dt id="VideoNode.Texture" class="text do"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dd>The 3D texture loaded.</dd>
   <dt id="VideoNode.TextureOpacity" class="number do"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="VideoNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="VideoNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="VideoNode.Volume" class="number wo"><em>Volume</em></dt>
@@ -1835,9 +2085,11 @@
   <dt id="VideoNode.LookAtSpotlight" class="method"><i></i> LookAtSpotlight(<em class="component">light</em>)</dt>
   <dd>Rotates the node to look at the Spotlight.</dd>
   <dt id="VideoNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
   <dt id="VideoNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dt id="VideoNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a sphere node properties at the specified (x,y,z) position.</dd>
   <dt id="VideoNode.Pause" class="method"><i></i> Pause()</dt>
   <dd>Pauses playback of the video.</dd>
   <dt id="VideoNode.Play" class="method"><i></i> Play()</dt>
@@ -1863,6 +2115,10 @@
 <h3 id="WebViewNode-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="WebViewNode.ARNodeToYail" class="dictionary ro bo"><em>ARNodeToYail</em></dt>
+  <dd>Serialize the arnode to yail</dd>
+  <dt id="WebViewNode.EnablePhysics" class="boolean"><em>EnablePhysics</em></dt>
+  <dd>If the property is set to true, physics apply</dd>
   <dt id="WebViewNode.FillColor" class="color do"><em>FillColor</em></dt>
   <dd>The color of the node.  If the Texture is set, the color is not shown.</dd>
   <dt id="WebViewNode.FillColorOpacity" class="number do"><em>FillColorOpacity</em></dt>
@@ -1873,24 +2129,32 @@
   <dd>URL of the page the WebViewNode should initially open to.  Setting this will load the page.</dd>
   <dt id="WebViewNode.IsFollowingImageMarker" class="boolean ro bo"><em>IsFollowingImageMarker</em></dt>
   <dd>Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.</dd>
+  <dt id="WebViewNode.Model" class="text bo"><em>Model</em></dt>
+  <dd>The 3D model file to be loaded.</dd>
+  <dt id="WebViewNode.NodeType" class="text ro bo"><em>NodeType</em></dt>
+  <dd>Returns the type of node as a String.</dd>
   <dt id="WebViewNode.Opacity" class="number"><em>Opacity</em></dt>
   <dd>Sets the opacity of the node.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
   <dt id="WebViewNode.PanToMove" class="boolean do"><em>PanToMove</em></dt>
   <dd>If the property is set to true, then the node can be moved using a one finger pan gesture.  Otherwise, a node’s x,y-position cannot be changed by the pan gesture.</dd>
   <dt id="WebViewNode.PinchToScale" class="boolean do"><em>PinchToScale</em></dt>
   <dd>If the property is set to true, then the node can be scaled using the pinch gesture.  Otherwise, a node’s Scale cannot be changed by the pinch gesture.</dd>
+  <dt id="WebViewNode.Pose" class="any wo bo"><em>Pose</em></dt>
+  <dd>Set the current pose of the object</dd>
+  <dt id="WebViewNode.PoseFromPropertyPosition" class="text wo"><em>PoseFromPropertyPosition</em></dt>
+  <dd>Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1</dd>
+  <dt id="WebViewNode.PoseToYailDictionary" class="dictionary ro bo"><em>PoseToYailDictionary</em></dt>
+  <dd>Convert current pose to yail</dd>
   <dt id="WebViewNode.RotateWithGesture" class="boolean do"><em>RotateWithGesture</em></dt>
   <dd>If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node’s rotation cannot be changed with a rotation gesutre.</dd>
   <dt id="WebViewNode.Scale" class="number"><em>Scale</em></dt>
   <dd>The scale of the node.  This is used to multiply its sizing properties.  Values less than zero will be treated as their absolute value.</dd>
   <dt id="WebViewNode.ShowShadow" class="boolean"><em>ShowShadow</em></dt>
   <dd>Specifies whether the node should show a shadow when it is lit by Lights.</dd>
-  <dt id="WebViewNode.Texture" class="text do"><em>Texture</em></dt>
-  <dd>The image used to texture the node.  If set, the FillColor is not shown.</dd>
+  <dt id="WebViewNode.Texture" class="text"><em>Texture</em></dt>
+  <dd>The 3D texture loaded.</dd>
   <dt id="WebViewNode.TextureOpacity" class="number do"><em>TextureOpacity</em></dt>
   <dd>The opacity of the node’s Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.</dd>
-  <dt id="WebViewNode.Type" class="text ro bo"><em>Type</em></dt>
-  <dd>Returns the type of node as a String.</dd>
   <dt id="WebViewNode.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
   <dt id="WebViewNode.WidthInCentimeters" class="number"><em>WidthInCentimeters</em></dt>
@@ -1954,9 +2218,11 @@
   <dt id="WebViewNode.LookAtSpotlight" class="method"><i></i> LookAtSpotlight(<em class="component">light</em>)</dt>
   <dd>Rotates the node to look at the Spotlight.</dd>
   <dt id="WebViewNode.MoveBy" class="method"><i></i> MoveBy(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dd>move a capsule node properties at the specified (x,y,z) position.</dd>
   <dt id="WebViewNode.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>,<em class="number">z</em>)</dt>
-  <dd>Changes the node’s position to (x,y,z).</dd>
+  <dd>Changes the node’s position by (x,y,z).</dd>
+  <dt id="WebViewNode.MoveToDetectedPlane" class="method"><i></i> MoveToDetectedPlane(<em class="component">targetPlane</em>,<em class="any">p</em>)</dt>
+  <dd>move a webview node properties at the specified (x,y,z) position.</dd>
   <dt id="WebViewNode.Reload" class="method"><i></i> Reload()</dt>
   <dd>Reloads the current webpage.</dd>
   <dt id="WebViewNode.RotateXBy" class="method"><i></i> RotateXBy(<em class="number">degrees</em>)</dt>

@@ -51,6 +51,10 @@ Component for ARView3D
 {:id="ARView3D.ImageMarkers" .list .ro .bo} *ImageMarkers*
 : The list of ImageMarkers added to the ARView3D.
 
+{:id="ARView3D.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="ARView3D.LightingEstimation" .boolean .ro} *LightingEstimation*
 : Determines whether the real-world ambient light intensity and temperature should be estimated. If this property is set to true, lighting estimates are provided.  Otherwise, not lighting estimates are are provided.
 
@@ -83,6 +87,10 @@ Component for ARView3D
 
 {:id="ARView3D.ShowWorldOrigin" .boolean} *ShowWorldOrigin*
 : Determines whether to place a coordinate plane at the world origin (0,0,0) which displays the x, y, and z axes.
+
+{:id="ARView3D.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="ARView3D.TrackingType" .number .ro} *TrackingType*
 : <p>The tracking type for the AR session.  WorldTracking allows for plane detection, image detection with ImageMarkers, and the placement of nodes in the world.  The devices's position and orientation are used to track the placemet of the world.  Nodes will remain where you place them in the world, even if you move.  OrientationTracking allows for placing a nodes but using the devices's orientation to determine location.  If you move, the items will move too.  They do not stay in place. ImageTracking allows for using ImageMarkers and placing items relative to the images.Valid values are: 1 (WorldTracking), 2 (OrientationTracking), 3 (ImageTracking)
@@ -252,6 +260,9 @@ Component for ARView3D
 
 {:id="ARView3D.StartTracking" class="method"} <i/> StartTracking()
 : Starts the live camera feed and begins tracking.
+
+{:id="ARView3D.onDelete" class="method"} <i/> onDelete()
+: Delete
 
 ## AmbientLight  {#AmbientLight}
 

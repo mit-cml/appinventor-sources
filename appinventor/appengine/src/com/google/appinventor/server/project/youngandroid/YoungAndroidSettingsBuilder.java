@@ -32,9 +32,6 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
-import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING;
-import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.ASSETS_FOLDER;
-import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.SRC_FOLDER;
 
 import com.google.appinventor.shared.settings.Settings;
 import com.google.common.base.Strings;

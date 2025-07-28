@@ -23,6 +23,7 @@
 		0602B270203481F900ED60A8 /* FormTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0602B26F203481F900ED60A8 /* FormTests.swift */; };
 		060395451F342ADE006D6E66 /* language-codes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 060395431F342ADE006D6E66 /* language-codes.plist */; };
 		060395461F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 060395441F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist */; };
+		0607AEE02E33487800C80899 /* ARNodeUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0607AEDF2E33487800C80899 /* ARNodeUtilities.swift */; };
 		0609147D1DE61B530049B7AB /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147B1DE61B530049B7AB /* SQLite.framework */; };
 		0609147E1DE61B530049B7AB /* Toast_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0609147C1DE61B530049B7AB /* Toast_Swift.framework */; };
 		060A83D51E004E1E00C6B7D9 /* JsonUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */; };
@@ -439,6 +440,7 @@
 		0602B26F203481F900ED60A8 /* FormTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormTests.swift; sourceTree = "<group>"; };
 		060395431F342ADE006D6E66 /* language-codes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "language-codes.plist"; sourceTree = "<group>"; };
 		060395441F342ADE006D6E66 /* iso3166_1_2_to_iso3166_1_3.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iso3166_1_2_to_iso3166_1_3.plist; sourceTree = "<group>"; };
+		0607AEDF2E33487800C80899 /* ARNodeUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ARNodeUtilities.swift; path = ar/ARNodeUtilities.swift; sourceTree = "<group>"; };
 		0609147B1DE61B530049B7AB /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = "build/Debug-iphoneos/SQLite.swift/SQLite.framework"; sourceTree = "<group>"; };
 		0609147C1DE61B530049B7AB /* Toast_Swift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Toast_Swift.framework; path = "build/Debug-iphoneos/Toast-Swift/Toast_Swift.framework"; sourceTree = "<group>"; };
 		060A83D41E004E1E00C6B7D9 /* JsonUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonUtil.swift; sourceTree = "<group>"; };
@@ -1299,6 +1301,7 @@
 				06D1519D1DC4F49C00FC981E /* AppManager.swift */,
 				068AA8181DE61D8E0011CC74 /* Application.swift */,
 				068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */,
+				0607AEDF2E33487800C80899 /* ARNodeUtilities.swift */,
 				06B5872B1DC02B190092C9DD /* AssetManager.swift */,
 				06F91463252CE50B00AF8F88 /* BundledApp.swift */,
 				06D81F472BA352CA0058E94F /* ChartDataSourceUtil.swift */,
@@ -2120,6 +2123,7 @@
 				041758532009417D007D2C31 /* String+ChopAffix.swift in Sources */,
 				0650F5181F1F1B7A00D4E6FA /* HMAC.swift in Sources */,
 				CBC787022032272E005363A3 /* String+Replace.swift in Sources */,
+				0607AEE02E33487800C80899 /* ARNodeUtilities.swift in Sources */,
 				4656A6452A6076090097DF06 /* CircularProgress.swift in Sources */,
 				06C8CE962A3B5EFA00C39EBC /* chat.pb.swift in Sources */,
 				B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */,

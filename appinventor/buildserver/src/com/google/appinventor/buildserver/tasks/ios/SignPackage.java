@@ -12,12 +12,14 @@ import com.google.appinventor.buildserver.interfaces.IosTask;
 import com.google.appinventor.buildserver.util.Execution;
 import com.google.common.annotations.VisibleForTesting;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -173,9 +175,9 @@ public class SignPackage implements IosTask {
         "-d",
         "user"
     };
-    StringBuffer out = new StringBuffer();
-    StringBuffer err = new StringBuffer();
-    Execution.execute(context.getPaths().getBuildDir(), args, out, err);
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    Execution.execute(context.getPaths().getBuildDir(), args, new PrintStream(out), new PrintStream(err));
     String[] existingKeychains = out.toString().split("\n");
     for (int i = 0; i < existingKeychains.length; i++) {
       int left = existingKeychains[i].indexOf("\"");

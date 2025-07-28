@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server.storage;
 
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
 import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
 
 import com.google.appengine.api.appidentity.AppIdentityService;

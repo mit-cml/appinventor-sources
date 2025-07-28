@@ -38,6 +38,7 @@ message request {
     optional string provider = 7 [default = "chatgpt"];
     optional string model = 8;
     optional bytes inputimage = 9;
+    optional bool doimage = 20;
 }
 
 message response {
@@ -45,4 +46,5 @@ message response {
     optional uint64 status = 2 [default = 0]; // 0 = success, otherwise error code
     optional string uuid = 3;
     optional string answer = 4;
+    optional bytes outputimage = 5;
 }
