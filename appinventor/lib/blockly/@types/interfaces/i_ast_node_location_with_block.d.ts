@@ -3,8 +3,8 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { IASTNodeLocation } from './i_ast_node_location.js';
 import type { Block } from '../block.js';
+import type { IASTNodeLocation } from './i_ast_node_location.js';
 /**
  * An AST node location that has an associated block.
  */

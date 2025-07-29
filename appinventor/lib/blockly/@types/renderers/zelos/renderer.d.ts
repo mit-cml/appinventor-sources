@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../../block_svg.js';
-import type { Connection } from '../../connection.js';
 import { InsertionMarkerManager } from '../../insertion_marker_manager.js';
 import type { Marker } from '../../keyboard_nav/marker.js';
 import type { RenderedConnection } from '../../rendered_connection.js';
@@ -74,7 +73,10 @@ export declare class Renderer extends BaseRenderer {
      * @returns The constant provider.
      */
     getConstants(): ConstantProvider;
-    shouldHighlightConnection(conn: Connection): boolean;
+    /**
+     * @deprecated v10 - This function is no longer respected. A custom
+     *    IConnectionPreviewer may be able to fulfill the functionality.
+     */
     getConnectionPreviewMethod(closest: RenderedConnection, local: RenderedConnection, topBlock: BlockSvg): InsertionMarkerManager.PREVIEW_TYPE;
 }
 //# sourceMappingURL=renderer.d.ts.map

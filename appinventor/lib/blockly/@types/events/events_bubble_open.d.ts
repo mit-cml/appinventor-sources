@@ -8,10 +8,11 @@
  *
  * @class
  */
-import type { AbstractEventJson } from './events_abstract.js';
 import type { BlockSvg } from '../block_svg.js';
-import { UiBase } from './events_ui_base.js';
 import type { Workspace } from '../workspace.js';
+import type { AbstractEventJson } from './events_abstract.js';
+import { UiBase } from './events_ui_base.js';
+import { EventType } from './type.js';
 /**
  * Class for a bubble open event.
  */
@@ -22,7 +23,7 @@ export declare class BubbleOpen extends UiBase {
     isOpen?: boolean;
     /** The type of bubble; one of 'mutator', 'comment', or 'warning'. */
     bubbleType?: BubbleType;
-    type: string;
+    type: EventType;
     /**
      * @param opt_block The associated block. Undefined for a blank event.
      * @param opt_isOpen Whether the bubble is opening (false if closing).

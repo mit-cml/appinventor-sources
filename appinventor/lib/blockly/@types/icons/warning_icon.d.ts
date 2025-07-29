@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../block_svg.js';
-import { Coordinate } from '../utils/coordinate.js';
-import { Icon } from './icon.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import { Size } from '../utils.js';
+import { Coordinate } from '../utils/coordinate.js';
+import { Icon } from './icon.js';
 import { IconType } from './icon_types.js';
 /**
  * An icon that warns the user that something is wrong with their block.
@@ -59,7 +59,7 @@ export declare class WarningIcon extends Icon implements IHasBubble {
     onClick(): void;
     isClickableInFlyout(): boolean;
     bubbleIsVisible(): boolean;
-    setBubbleVisible(visible: boolean): void;
+    setBubbleVisible(visible: boolean): Promise<void>;
     /**
      * @returns the location the bubble should be anchored to.
      *     I.E. the middle of this icon.
