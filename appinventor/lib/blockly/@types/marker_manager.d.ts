@@ -19,13 +19,13 @@ export declare class MarkerManager {
     /** The name of the local marker. */
     static readonly LOCAL_MARKER = "local_marker_1";
     /** The cursor. */
-    private cursor_;
+    private cursor;
     /** The cursor's SVG element. */
-    private cursorSvg_;
+    private cursorSvg;
     /** The map of markers for the workspace. */
     private markers;
     /** The marker's SVG element. */
-    private markerSvg_;
+    private markerSvg;
     /**
      * @param workspace The workspace for the marker manager.
      * @internal

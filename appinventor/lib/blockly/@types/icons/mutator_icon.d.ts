@@ -3,15 +3,13 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { Abstract } from '../events/events_abstract.js';
-import type { Block } from '../block.js';
 import type { BlockSvg } from '../block_svg.js';
-import type { Connection } from '../connection.js';
-import { Coordinate } from '../utils/coordinate.js';
+import type { Abstract } from '../events/events_abstract.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
-import { Icon } from './icon.js';
+import { Coordinate } from '../utils/coordinate.js';
 import { Size } from '../utils/size.js';
 import type { WorkspaceSvg } from '../workspace_svg.js';
+import { Icon } from './icon.js';
 import { IconType } from './icon_types.js';
 /**
  * An icon that allows the user to change the shape of the block.
@@ -55,7 +53,7 @@ export declare class MutatorIcon extends Icon implements IHasBubble {
     onClick(): void;
     isClickableInFlyout(): boolean;
     bubbleIsVisible(): boolean;
-    setBubbleVisible(visible: boolean): void;
+    setBubbleVisible(visible: boolean): Promise<void>;
     /** @returns the configuration the mini workspace should have. */
     private getMiniWorkspaceConfig;
     /**
@@ -91,18 +89,5 @@ export declare class MutatorIcon extends Icon implements IHasBubble {
      *     currently open.
      */
     getWorkspace(): WorkspaceSvg | undefined;
-    /**
-     * Reconnects the given connection to the mutated input on the given block.
-     *
-     * @deprecated Use connection.reconnect instead. To be removed in v11.
-     */
-    static reconnect(connectionChild: Connection | null, block: Block, inputName: string): boolean;
-    /**
-     * Returns the parent workspace of a workspace that is inside a mini workspace
-     * bubble, taking into account whether the workspace is a flyout.
-     *
-     * @deprecated Use workspace.getRootWorkspace. To be removed in v11.
-     */
-    static findParentWs(workspace: WorkspaceSvg): WorkspaceSvg | null;
 }
 //# sourceMappingURL=mutator_icon.d.ts.map
