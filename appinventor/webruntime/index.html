@@ -321,6 +321,22 @@ function runYail() {
       .vertical.top { justify-content: flex-start; }
       .vertical.center_vertical { justify-content: center; }
       .vertical.bottom { justify-content: flex-end; }
+      .ListView {
+        display: block;
+        height: 300px;         
+        width: 100%;
+        overflow-y: auto;
+        background-color: white;
+        border: 1px solid #888;
+        margin: 8px;
+        padding: 4px;
+      }
+      .ListView > * {
+        padding: 8px;
+        border-bottom: 1px solid #ccc;
+        font-size: 16px;
+        background: #f9f9f9;
+      }
     </style>
   </head>
   <body>

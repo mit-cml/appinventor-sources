@@ -16,6 +16,7 @@ public class ArrayAdapter<T> implements Adapter {
   private ArrayList<T> mOriginalValues;
   private final int mResource;
   private int mDropDownResource;
+  private DataSetObserver mObserver;
 
   public ArrayAdapter(Context context, int resource, T[] objects) {
     mContext = context;
@@ -32,34 +33,42 @@ public class ArrayAdapter<T> implements Adapter {
   }
 
   public void notifyDataSetChanged() {
+    if (mObserver != null) {
+      mObserver.onChanged();
+    }
   }
 
   public void notifyDataSetInvalidated() {
+    if (mObserver != null) {
+      mObserver.onInvalidated();
+    }
   }
 
   @Override
   public void registerDataSetObserver(DataSetObserver observer) {
-
+    mObserver = observer;
   }
 
   @Override
   public void unregisterDataSetObserver(DataSetObserver observer) {
-
+    if (mObserver == observer) {
+      mObserver = null;
+    }
   }
 
   @Override
   public int getCount() {
-    return 0;
+    return mObjects.size();
   }
 
   @Override
   public T getItem(int position) {
-    return null;
+    return mObjects.get(position);
   }
 
   @Override
   public long getItemId(int position) {
-    return 0;
+    return position;
   }
 
   @Override
@@ -69,7 +78,8 @@ public class ArrayAdapter<T> implements Adapter {
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
-    return null;
+    com.google.gwt.user.client.ui.Label label = new com.google.gwt.user.client.ui.Label("Item " + position);
+    return new android.view.View(label);
   }
 
   @Override

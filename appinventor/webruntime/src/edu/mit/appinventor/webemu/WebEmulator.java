@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.res.Resources;
 import com.google.appinventor.components.runtime.ListPickerActivity;
 import com.google.appinventor.components.runtime.ReplApplication;
+import com.google.appinventor.components.runtime.Form;
 
 /**
  * Entry point for the Web-based App Inventor emulator.

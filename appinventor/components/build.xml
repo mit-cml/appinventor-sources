@@ -609,6 +609,7 @@
         <include name="${components.pkg}/runtime/AccessibleComponent.java" />
         <include name="${components.pkg}/runtime/AlarmHandler.java" />
         <include name="${components.pkg}/runtime/AndroidNonvisibleComponent.java" />
+        <include name="${components.pkg}/runtime/AndroidViewComponent.java" />
         <include name="${components.pkg}/runtime/Button.java" />
         <include name="${components.pkg}/runtime/ButtonBase.java" />
         <include name="${components.pkg}/runtime/ChatBot.java" />

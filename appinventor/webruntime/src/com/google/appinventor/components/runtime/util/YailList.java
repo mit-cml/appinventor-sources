@@ -200,4 +200,8 @@ public class YailList implements List<Object> {
   public String getString(int index) {
     return contents.get(index).toString();
   }
+
+  public Object getObject(int index) {
+    return contents.get(index);
+  }
 }
