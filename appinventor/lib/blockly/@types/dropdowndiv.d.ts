@@ -97,7 +97,7 @@ export declare function setColour(backgroundColour: string, borderColour: string
  * @param opt_secondaryYOffset Optional Y offset for above-block positioning.
  * @returns True if the menu rendered below block; false if above.
  */
-export declare function showPositionedByBlock<T>(field: Field<T>, block: BlockSvg, opt_onHide?: Function, opt_secondaryYOffset?: number): boolean;
+export declare function showPositionedByBlock<T>(field: Field<T>, block: BlockSvg, opt_onHide?: () => void, opt_secondaryYOffset?: number): boolean;
 /**
  * Shortcut to show and place the drop-down with positioning determined
  * by a particular field. The primary position will be below the field,
@@ -109,7 +109,7 @@ export declare function showPositionedByBlock<T>(field: Field<T>, block: BlockSv
  * @param opt_secondaryYOffset Optional Y offset for above-block positioning.
  * @returns True if the menu rendered below block; false if above.
  */
-export declare function showPositionedByField<T>(field: Field<T>, opt_onHide?: Function, opt_secondaryYOffset?: number): boolean;
+export declare function showPositionedByField<T>(field: Field<T>, opt_onHide?: () => void, opt_secondaryYOffset?: number): boolean;
 /**
  * Show and place the drop-down.
  * The drop-down is placed with an absolute "origin point" (x, y) - i.e.,
@@ -129,7 +129,7 @@ export declare function showPositionedByField<T>(field: Field<T>, opt_onHide?: F
  * @returns True if the menu rendered at the primary origin point.
  * @internal
  */
-export declare function show<T>(newOwner: Field<T>, rtl: boolean, primaryX: number, primaryY: number, secondaryX: number, secondaryY: number, opt_onHide?: Function): boolean;
+export declare function show<T>(newOwner: Field<T>, rtl: boolean, primaryX: number, primaryY: number, secondaryX: number, secondaryY: number, opt_onHide?: () => void): boolean;
 /**
  * Get the x positions for the left side of the DropDownDiv and the arrow,
  * accounting for the bounds of the workspace.

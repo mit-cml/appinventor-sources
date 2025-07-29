@@ -55,6 +55,14 @@ export declare function registerDelete(): void;
  * Option to open help for a block.
  */
 export declare function registerHelp(): void;
+/** Registers an option for deleting a workspace comment. */
+export declare function registerCommentDelete(): void;
+/** Registers an option for duplicating a workspace comment. */
+export declare function registerCommentDuplicate(): void;
+/** Registers an option for adding a workspace comment to the workspace. */
+export declare function registerCommentCreate(): void;
+/** Registers all workspace comment related menu items. */
+export declare function registerCommentOptions(): void;
 /**
  * Registers all default context menu items. This should be called once per
  * instance of ContextMenuRegistry.

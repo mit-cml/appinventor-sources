@@ -10,6 +10,7 @@ import type { BlockCreate } from './events_block_create.js';
 import type { BlockMove } from './events_block_move.js';
 import type { CommentCreate } from './events_comment_create.js';
 import type { CommentMove } from './events_comment_move.js';
+import type { CommentResize } from './events_comment_resize.js';
 /**
  * Sets whether events should be added to the undo stack.
  *
@@ -23,150 +24,118 @@ export declare function setRecordUndo(newValue: boolean): void;
  */
 export declare function getRecordUndo(): boolean;
 /**
- * Name of event that creates a block. Will be deprecated for BLOCK_CREATE.
- */
-export declare const CREATE = "create";
-/**
- * Name of event that creates a block.
- */
-export declare const BLOCK_CREATE = "create";
-/**
- * Name of event that deletes a block. Will be deprecated for BLOCK_DELETE.
- */
-export declare const DELETE = "delete";
-/**
- * Name of event that deletes a block.
- */
-export declare const BLOCK_DELETE = "delete";
-/**
- * Name of event that changes a block. Will be deprecated for BLOCK_CHANGE.
- */
-export declare const CHANGE = "change";
-/**
- * Name of event that changes a block.
- */
-export declare const BLOCK_CHANGE = "change";
-/**
- * Name of event representing an in-progress change to a field of a block, which
- * is expected to be followed by a block change event.
- */
-export declare const BLOCK_FIELD_INTERMEDIATE_CHANGE = "block_field_intermediate_change";
-/**
- * Name of event that moves a block. Will be deprecated for BLOCK_MOVE.
- */
-export declare const MOVE = "move";
-/**
- * Name of event that moves a block.
- */
-export declare const BLOCK_MOVE = "move";
-/**
- * Name of event that creates a variable.
- */
-export declare const VAR_CREATE = "var_create";
-/**
- * Name of event that deletes a variable.
- */
-export declare const VAR_DELETE = "var_delete";
-/**
- * Name of event that renames a variable.
- */
-export declare const VAR_RENAME = "var_rename";
-/**
- * Name of generic event that records a UI change.
- */
-export declare const UI = "ui";
-/**
- * Name of event that record a block drags a block.
- */
-export declare const BLOCK_DRAG = "drag";
-/**
- * Name of event that records a change in selected element.
- */
-export declare const SELECTED = "selected";
-/**
- * Name of event that records a click.
- */
-export declare const CLICK = "click";
-/**
- * Name of event that records a marker move.
- */
-export declare const MARKER_MOVE = "marker_move";
-/**
- * Name of event that records a bubble open.
- */
-export declare const BUBBLE_OPEN = "bubble_open";
-/**
- * Name of event that records a trashcan open.
- */
-export declare const TRASHCAN_OPEN = "trashcan_open";
-/**
- * Name of event that records a toolbox item select.
- */
-export declare const TOOLBOX_ITEM_SELECT = "toolbox_item_select";
-/**
- * Name of event that records a theme change.
- */
-export declare const THEME_CHANGE = "theme_change";
-/**
- * Name of event that records a viewport change.
- */
-export declare const VIEWPORT_CHANGE = "viewport_change";
-/**
- * Name of event that creates a comment.
- */
-export declare const COMMENT_CREATE = "comment_create";
-/**
- * Name of event that deletes a comment.
- */
-export declare const COMMENT_DELETE = "comment_delete";
-/**
- * Name of event that changes a comment.
- */
-export declare const COMMENT_CHANGE = "comment_change";
-/**
- * Name of event that moves a comment.
- */
-export declare const COMMENT_MOVE = "comment_move";
-/**
- * Name of event that records a workspace load.
- */
-export declare const FINISHED_LOADING = "finished_loading";
-/**
  * Type of events that cause objects to be bumped back into the visible
  * portion of the workspace.
  *
  * Not to be confused with bumping so that disconnected connections do not
  * appear connected.
  */
-export type BumpEvent = BlockCreate | BlockMove | CommentCreate | CommentMove;
+export type BumpEvent = BlockCreate | BlockMove | CommentCreate | CommentMove | CommentResize;
 /**
- * List of events that cause objects to be bumped back into the visible
- * portion of the workspace.
+ * Enqueue an event to be dispatched to change listeners.
  *
- * Not to be confused with bumping so that disconnected connections do not
- * appear connected.
- */
-export declare const BUMP_EVENTS: string[];
-/**
- * Create a custom event and fire it.
+ * Notes:
  *
- * @param event Custom data for event.
+ * - Events are enqueued until a timeout, generally after rendering is
+ *   complete or at the end of the current microtask, if not running
+ *   in a browser.
+ * - Queued events are subject to destructive modification by being
+ *   combined with later-enqueued events, but only until they are
+ *   fired.
+ * - Events are dispatched via the fireChangeListener method on the
+ *   affected workspace.
+ *
+ * @param event Any Blockly event.
  */
 export declare function fire(event: Abstract): void;
 /**
  * Private version of fireInternal for stubbing in tests.
  */
 declare function fireInternal(event: Abstract): void;
-/** Fire all queued events. */
+/** Dispatch all queued events. */
 declare function fireNow(): void;
 /**
- * Filter the queued events and merge duplicates.
+ * Enqueue an event on FIRE_QUEUE.
  *
- * @param queueIn Array of events.
+ * Normally this is equivalent to FIRE_QUEUE.push(event), but if the
+ * enqueued event is a BlockChange event and the most recent event(s)
+ * on the queue are BlockMove events that (re)connect other blocks to
+ * the changed block (and belong to the same event group) then the
+ * enqueued event will be enqueued before those events rather than
+ * after.
+ *
+ * This is a workaround for a problem caused by the fact that
+ * MutatorIcon.prototype.recomposeSourceBlock can only fire a
+ * BlockChange event after the mutating block's compose method
+ * returns, meaning that if the compose method reconnects child blocks
+ * the corresponding BlockMove events are emitted _before_ the
+ * BlockChange event, causing issues with undo, mirroring, etc.; see
+ * https://github.com/google/blockly/issues/8225#issuecomment-2195751783
+ * (and following) for details.
+ */
+declare function enqueueEvent(event: Abstract): void;
+/**
+ * Filter the queued events by merging duplicates, removing null
+ * events and reording BlockChange events.
+ *
+ * History of this function:
+ *
+ * This function was originally added in commit cf257ea5 with the
+ * intention of dramatically reduing the total number of dispatched
+ * events.  Initialy it affected only BlockMove events but others were
+ * added over time.
+ *
+ * Code was added to reorder BlockChange events added in commit
+ * 5578458, for uncertain reasons but most probably as part of an
+ * only-partially-successful attemp to fix problems with event
+ * ordering during block mutations.  This code should probably have
+ * been added to the top of the function, before merging and
+ * null-removal, but was added at the bottom for now-forgotten
+ * reasons.  See these bug investigations for a fuller discussion of
+ * the underlying issue and some of the failures that arose because of
+ * this incomplete/incorrect fix:
+ *
+ * https://github.com/google/blockly/issues/8225#issuecomment-2195751783
+ * https://github.com/google/blockly/issues/2037#issuecomment-2209696351
+ *
+ * Later, in PR #1205 the original O(n^2) implementation was replaced
+ * by a linear-time implementation, though additonal fixes were made
+ * subsequently.
+ *
+ * In August 2024 a number of significant simplifications were made:
+ *
+ * This function was previously called from Workspace.prototype.undo,
+ * but the mutation of events by this function was the cause of issue
+ * #7026 (note that events would combine differently in reverse order
+ * vs. forward order).  The originally-chosen fix for this was the
+ * addition (in PR #7069) of code to fireNow to post-filter the
+ * .undoStack_ and .redoStack_ of any workspace that had just been
+ * involved in dispatching events; this apparently resolved the issue
+ * but added considerable additional complexity and made it difficult
+ * to reason about how events are processed for undo/redo, so both the
+ * call from undo and the post-processing code was removed, and
+ * forward=true was made the default while calling the function with
+ * forward=false was deprecated.
+ *
+ * At the same time, the buggy code to reorder BlockChange events was
+ * replaced by a less-buggy version of the same functionality in a new
+ * function, enqueueEvent, called from fireInternal, thus assuring
+ * that events will be in the correct order at the time filter is
+ * called.
+ *
+ * Additionally, the event merging code was modified so that only
+ * immediately adjacent events would be merged.  This simplified the
+ * implementation while ensuring that the merging of events cannot
+ * cause them to be reordered.
+ *
+ * @param queue Array of events.
  * @param forward True if forward (redo), false if backward (undo).
+ *     This parameter is deprecated: true is now the default and
+ *     calling filter with it set to false will in future not be
+ *     supported.
  * @returns Array of filtered events.
  */
-export declare function filter(queueIn: Abstract[], forward: boolean): Abstract[];
+export declare function filter(queue: Abstract[], forward?: boolean): Abstract[];
 /**
  * Modify pending undo events so that when they are fired they don't land
  * in the undo stack.  Called by Workspace.clearUndo.
@@ -229,16 +198,15 @@ export declare function fromJson(json: any, workspace: Workspace): Abstract;
  */
 export declare function get(eventType: string): new (...p1: any[]) => Abstract;
 /**
- * Enable/disable a block depending on whether it is properly connected.
+ * Set if a block is disabled depending on whether it is properly connected.
  * Use this on applications where all blocks should be connected to a top block.
- * Recommend setting the 'disable' option to 'false' in the config so that
- * users don't try to re-enable disabled orphan blocks.
  *
  * @param event Custom data for event.
  */
 export declare function disableOrphans(event: Abstract): void;
 export declare const TEST_ONLY: {
     FIRE_QUEUE: Abstract[];
+    enqueueEvent: typeof enqueueEvent;
     fireNow: typeof fireNow;
     fireInternal: typeof fireInternal;
     setGroupInternal: typeof setGroupInternal;

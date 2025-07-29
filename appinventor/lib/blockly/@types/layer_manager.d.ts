@@ -3,19 +3,30 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { WorkspaceSvg } from './workspace_svg.js';
 import { IRenderedElement } from './interfaces/i_rendered_element.js';
 import { Coordinate } from './utils/coordinate.js';
+import { WorkspaceSvg } from './workspace_svg.js';
 /** @internal */
 export declare class LayerManager {
     private workspace;
     /** The layer elements being dragged are appended to. */
     private dragLayer;
+    /** The layer elements being animated are appended to. */
+    private animationLayer;
     /** The layers elements not being dragged are appended to.  */
     private layers;
     /** @internal */
     constructor(workspace: WorkspaceSvg);
     private createDragLayer;
+    private createAnimationLayer;
+    /**
+     * Appends the element to the animation layer. The animation layer doesn't
+     * move when the workspace moves, so e.g. delete animations don't move
+     * when a block delete triggers a workspace resize.
+     *
+     * @internal
+     */
+    appendToAnimationLayer(elem: IRenderedElement): void;
     /**
      * Translates layers when the workspace is dragged or zoomed.
      *

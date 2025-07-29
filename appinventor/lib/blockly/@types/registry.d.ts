@@ -5,12 +5,15 @@
  */
 import type { Abstract } from './events/events_abstract.js';
 import type { Field } from './field.js';
-import type { IBlockDragger } from './interfaces/i_block_dragger.js';
-import type { IConnectionChecker } from './interfaces/i_connection_checker.js';
-import type { IFlyout } from './interfaces/i_flyout.js';
-import type { IMetricsManager } from './interfaces/i_metrics_manager.js';
-import type { IIcon } from './interfaces/i_icon.js';
 import type { Input } from './inputs/input.js';
+import type { IConnectionChecker } from './interfaces/i_connection_checker.js';
+import type { IConnectionPreviewer } from './interfaces/i_connection_previewer.js';
+import type { ICopyable } from './interfaces/i_copyable.js';
+import type { IDragger } from './interfaces/i_dragger.js';
+import type { IFlyout } from './interfaces/i_flyout.js';
+import type { IIcon } from './interfaces/i_icon.js';
+import type { IMetricsManager } from './interfaces/i_metrics_manager.js';
+import type { IPaster } from './interfaces/i_paster.js';
 import type { ISerializer } from './interfaces/i_serializer.js';
 import type { IToolbox } from './interfaces/i_toolbox.js';
 import type { Cursor } from './keyboard_nav/cursor.js';
@@ -18,8 +21,6 @@ import type { Options } from './options.js';
 import type { Renderer } from './renderers/common/renderer.js';
 import type { Theme } from './theme.js';
 import type { ToolboxItem } from './toolbox/toolbox_item.js';
-import { IPaster } from './interfaces/i_paster.js';
-import { ICopyable } from './interfaces/i_copyable.js';
 export declare const TEST_ONLY: {
     typeMap: {
         [key: string]: {
@@ -45,6 +46,7 @@ export declare class Type<_T> {
      */
     toString(): string;
     static CONNECTION_CHECKER: Type<IConnectionChecker>;
+    static CONNECTION_PREVIEWER: Type<IConnectionPreviewer>;
     static CURSOR: Type<Cursor>;
     static EVENT: Type<Abstract>;
     static FIELD: Type<Field<any>>;
@@ -56,7 +58,11 @@ export declare class Type<_T> {
     static FLYOUTS_VERTICAL_TOOLBOX: Type<IFlyout>;
     static FLYOUTS_HORIZONTAL_TOOLBOX: Type<IFlyout>;
     static METRICS_MANAGER: Type<IMetricsManager>;
-    static BLOCK_DRAGGER: Type<IBlockDragger>;
+    /**
+     * Type for an IDragger. Formerly behavior was mostly covered by
+     * BlockDraggeers, which is why the name is inaccurate.
+     */
+    static BLOCK_DRAGGER: Type<IDragger>;
     /** @internal */
     static SERIALIZER: Type<ISerializer>;
     /** @internal */
