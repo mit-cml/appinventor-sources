@@ -34,11 +34,10 @@ export declare class DeleteArea extends DragTarget implements IDeleteArea {
      * before onDragEnter/onDragOver/onDragExit.
      *
      * @param element The block or bubble currently being dragged.
-     * @param couldConnect Whether the element could could connect to another.
      * @returns Whether the element provided would be deleted if dropped on this
      *     area.
      */
-    wouldDelete(element: IDraggable, couldConnect: boolean): boolean;
+    wouldDelete(element: IDraggable): boolean;
     /**
      * Updates the internal wouldDelete_ state.
      *
