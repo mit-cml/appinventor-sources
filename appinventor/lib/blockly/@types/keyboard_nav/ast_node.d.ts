@@ -9,9 +9,10 @@
  *
  * @class
  */
-import type { Block } from '../block.js';
+import { Block } from '../block.js';
 import type { Connection } from '../connection.js';
 import type { Field } from '../field.js';
+import { FlyoutButton } from '../flyout_button.js';
 import type { Input } from '../inputs/input.js';
 import type { IASTNodeLocation } from '../interfaces/i_ast_node_location.js';
 import { Coordinate } from '../utils/coordinate.js';
@@ -120,6 +121,22 @@ export declare class ASTNode {
      */
     private navigateBetweenStacks;
     /**
+     * Navigate between buttons and stacks of blocks on the flyout workspace.
+     *
+     * @param forward True to go forward. False to go backwards.
+     * @returns The next button, or next stack's first block, or null
+     */
+    private navigateFlyoutContents;
+    /**
+     * Finds the next (or previous if navigating backward) item in the flyout that should be navigated to.
+     *
+     * @param flyoutContents Contents of the current flyout.
+     * @param currentLocation Current ASTNode location.
+     * @param forward True if we're navigating forward, else false.
+     * @returns The next (or previous) FlyoutItem, or null if there is none.
+     */
+    private findNextLocationInFlyout;
+    /**
      * Finds the top most AST node for a given block.
      * This is either the previous connection, output connection or block
      * depending on what kind of connections the block has.
@@ -150,7 +167,7 @@ export declare class ASTNode {
      * Finds the source block of the location of this node.
      *
      * @returns The source block of the location, or null if the node is of type
-     *     workspace.
+     *     workspace or button.
      */
     getSourceBlock(): Block | null;
     /**
@@ -233,6 +250,16 @@ export declare class ASTNode {
      */
     static createStackNode(topBlock: Block): ASTNode | null;
     /**
+     * Create an AST node of type button. A button in this case refers
+     * specifically to a button in a flyout.
+     *
+     * @param button A top block has no parent and can be found in the list
+     *     returned by workspace.getTopBlocks().
+     * @returns An AST node of type stack that points to the top block on the
+     *     stack.
+     */
+    static createButtonNode(button: FlyoutButton): ASTNode | null;
+    /**
      * Creates an AST node pointing to a workspace.
      *
      * @param workspace The workspace that we are on.
@@ -262,7 +289,8 @@ export declare namespace ASTNode {
         NEXT = "next",
         PREVIOUS = "previous",
         STACK = "stack",
-        WORKSPACE = "workspace"
+        WORKSPACE = "workspace",
+        BUTTON = "button"
     }
 }
 export type Params = ASTNode.Params;

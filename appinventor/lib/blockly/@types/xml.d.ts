@@ -4,17 +4,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Block } from './block.js';
+import { WorkspaceComment } from './comments/workspace_comment.js';
 import type { VariableModel } from './variable_model.js';
 import type { Workspace } from './workspace.js';
-import type { WorkspaceSvg } from './workspace_svg.js';
+import { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Encode a block tree as XML.
  *
  * @param workspace The workspace containing blocks.
- * @param opt_noId True if the encoder should skip the block IDs.
+ * @param skipId True if the encoder should skip the block IDs. False by
+ *     default.
  * @returns XML DOM element.
  */
-export declare function workspaceToDom(workspace: Workspace, opt_noId?: boolean): Element;
+export declare function workspaceToDom(workspace: Workspace, skipId?: boolean): Element;
+/** Serializes the given workspace comment to XML. */
+export declare function saveWorkspaceComment(comment: WorkspaceComment, skipId?: boolean): Element;
 /**
  * Encode a list of variables as XML.
  *
@@ -73,6 +77,8 @@ export declare function clearWorkspaceAndLoadFromXml(xml: Element, workspace: Wo
  * @returns An array containing new block IDs.
  */
 export declare function domToWorkspace(xml: Element, workspace: Workspace): string[];
+/** Deserializes the given comment state into the given workspace. */
+export declare function loadWorkspaceComment(elem: Element, workspace: Workspace): WorkspaceComment;
 /**
  * Decode an XML DOM and create blocks on the workspace. Position the new
  * blocks immediately below prior blocks, aligned by their starting edge.
