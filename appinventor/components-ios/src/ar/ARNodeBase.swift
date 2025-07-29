@@ -813,21 +813,30 @@ open class ARNodeBase: NSObject, ARNode {
 
   @objc open func EnablePhysics(_ isDynamic: Bool = true) {
     
-      if (!isDynamic){
-        _enablePhysics = false
-        return
-      }
-      let bounds = _modelEntity.visualBounds(relativeTo: nil)
-      let size = bounds.max - bounds.min
-      let shape = ShapeResource.generateBox(size: size)
+    if (!isDynamic){
+      _enablePhysics = false
+      return
+    }
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let size = bounds.max - bounds.min
+    let radius = max(size.x, size.y, size.z) / 2
+    let shape = ShapeResource.generateSphere(radius: radius)
     
-      _enablePhysics = isDynamic
-      _modelEntity.collision = CollisionComponent(shapes: [shape])
-      _modelEntity.physicsBody = PhysicsBodyComponent(
-          massProperties: .default,
-          material: .default,
-          mode: isDynamic ? .dynamic : .static
-      )
+    // Create a custom physics material for gentle collisions
+    let gentleMaterial = PhysicsMaterialResource.generate(
+        staticFriction: 0.8,    // Higher friction prevents sliding
+        dynamicFriction: 0.7,   // Friction when moving
+        restitution: 0.1        // Low restitution = less bouncy (0.0 to 1.0)
+    )
+    
+    
+    _enablePhysics = isDynamic
+    _modelEntity.collision = CollisionComponent(shapes: [shape])
+    _modelEntity.physicsBody = PhysicsBodyComponent(
+      massProperties: .init(shape: shape, density:20.0),
+        material: gentleMaterial,
+        mode: isDynamic ? .dynamic : .static
+    )
   }
 
   @objc open func DisablePhysics() {
