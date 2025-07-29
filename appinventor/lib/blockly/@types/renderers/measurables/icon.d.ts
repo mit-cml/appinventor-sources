@@ -12,11 +12,6 @@ import { Measurable } from './base.js';
  */
 export declare class Icon extends Measurable {
     icon: BlocklyIcon;
-    /**
-     * @deprecated Will be removed in v11. Create a subclass of the Icon
-     *     measurable if this data is necessary for you.
-     */
-    isVisible: boolean;
     flipRtl: boolean;
     /**
      * An object containing information about the space an icon takes up during

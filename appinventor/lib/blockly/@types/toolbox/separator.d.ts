@@ -15,7 +15,7 @@ export declare class ToolboxSeparator extends ToolboxItem {
     static registrationName: string;
     /** All the CSS class names that are used to create a separator. */
     protected cssConfig_: CssConfig;
-    private htmlDiv_;
+    private htmlDiv;
     /**
      * @param separatorDef The information needed to create a separator.
      * @param toolbox The parent toolbox for the separator.

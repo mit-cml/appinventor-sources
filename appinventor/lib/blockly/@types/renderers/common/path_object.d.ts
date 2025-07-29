@@ -5,7 +5,9 @@
  */
 import type { BlockSvg } from '../../block_svg.js';
 import type { Connection } from '../../connection.js';
+import { RenderedConnection } from '../../rendered_connection.js';
 import type { BlockStyle } from '../../theme.js';
+import { Coordinate } from '../../utils/coordinate.js';
 import type { ConstantProvider } from './constants.js';
 import type { IPathObject } from './i_path_object.js';
 /**
@@ -27,6 +29,10 @@ export declare class PathObject implements IPathObject {
     markerSvg: SVGElement | null;
     constants: ConstantProvider;
     style: BlockStyle;
+    /** Highlight paths associated with connections. */
+    private connectionHighlights;
+    /** Locations of connection highlights. */
+    private highlightOffsets;
     /**
      * @param root The root SVG element.
      * @param style The style object to use for colouring.
@@ -138,5 +144,12 @@ export declare class PathObject implements IPathObject {
      * @param _enable True if styling should be added.
      */
     updateShapeForInputHighlight(_conn: Connection, _enable: boolean): void;
+    /** Adds the given path as a connection highlight for the given connection. */
+    addConnectionHighlight(connection: RenderedConnection, connectionPath: string, offset: Coordinate, rtl: boolean): void;
+    private currentHighlightMatchesNew;
+    /**
+     * Removes any highlight associated with the given connection, if it exists.
+     */
+    removeConnectionHighlight(connection: RenderedConnection): void;
 }
 //# sourceMappingURL=path_object.d.ts.map

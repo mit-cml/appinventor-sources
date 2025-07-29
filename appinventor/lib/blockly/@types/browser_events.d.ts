@@ -23,7 +23,7 @@ export type Data = [EventTarget, string, (e: Event) => void][];
  *     simultaneous touches.  False by default.
  * @returns Opaque data that can be passed to unbindEvent_.
  */
-export declare function conditionalBind(node: EventTarget, name: string, thisObject: Object | null, func: Function, opt_noCaptureIdentifier?: boolean): Data;
+export declare function conditionalBind(node: EventTarget, name: string, thisObject: object | null, func: Function, opt_noCaptureIdentifier?: boolean): Data;
 /**
  * Bind an event handler that should be called regardless of whether it is part
  * of the active touch stream.
@@ -36,7 +36,7 @@ export declare function conditionalBind(node: EventTarget, name: string, thisObj
  * @param func Function to call when event is triggered.
  * @returns Opaque data that can be passed to unbindEvent_.
  */
-export declare function bind(node: EventTarget, name: string, thisObject: Object | null, func: Function): Data;
+export declare function bind(node: EventTarget, name: string, thisObject: object | null, func: Function): Data;
 /**
  * Unbind one or more events event from a function call.
  *

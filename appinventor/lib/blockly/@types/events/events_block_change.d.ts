@@ -12,12 +12,13 @@ import type { Block } from '../block.js';
 import type { BlockSvg } from '../block_svg.js';
 import { Workspace } from '../workspace.js';
 import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when some element of a block has changed (e.g.
  * field values, comments, etc).
  */
 export declare class BlockChange extends BlockBase {
-    type: string;
+    type: EventType;
     /**
      * The element that changed; one of 'field', 'comment', 'collapsed',
      * 'disabled', 'inline', or 'mutation'
@@ -29,6 +30,11 @@ export declare class BlockChange extends BlockBase {
     oldValue: unknown;
     /** The new value of the element. */
     newValue: unknown;
+    /**
+     * If element is 'disabled', this is the language-neutral identifier of the
+     * reason why the block was or was not disabled.
+     */
+    private disabledReason?;
     /**
      * @param opt_block The changed block.  Undefined for a blank event.
      * @param opt_element One of 'field', 'comment', 'disabled', etc.
@@ -53,6 +59,15 @@ export declare class BlockChange extends BlockBase {
      * @internal
      */
     static fromJson(json: BlockChangeJson, workspace: Workspace, event?: any): BlockChange;
+    /**
+     * Set the language-neutral identifier for the reason why the block was or was
+     * not disabled. This is only valid for events where element is 'disabled'.
+     * Defaults to 'MANUALLY_DISABLED'.
+     *
+     * @param disabledReason The identifier of the reason why the block was or was
+     *     not disabled.
+     */
+    setDisabledReason(disabledReason: string): void;
     /**
      * Does this event record any change of state?
      *
@@ -80,5 +95,6 @@ export interface BlockChangeJson extends BlockBaseJson {
     name?: string;
     newValue: unknown;
     oldValue: unknown;
+    disabledReason?: string;
 }
 //# sourceMappingURL=events_block_change.d.ts.map

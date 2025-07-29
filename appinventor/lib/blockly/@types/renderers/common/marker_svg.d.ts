@@ -15,13 +15,13 @@ import type { ConstantProvider, Notch, PuzzleTab } from './constants.js';
  * SVG.
  */
 export declare class MarkerSvg {
-    private readonly workspace;
-    private readonly marker;
+    protected readonly workspace: WorkspaceSvg;
+    protected readonly marker: Marker;
     /**
      * The workspace, field, or block that the marker SVG element should be
      * attached to.
      */
-    private parent;
+    protected parent: IASTNodeLocationSvg | null;
     /** The current SVG element for the marker. */
     currentMarkerSvg: SVGElement | null;
     colour_: string;
@@ -94,7 +94,7 @@ export declare class MarkerSvg {
      *
      * @param curNode The node to draw the marker for.
      */
-    private showWithBlockPrevOutput;
+    protected showWithBlockPrevOutput(curNode: ASTNode): void;
     /**
      * Position and display the marker for a block.
      *
@@ -148,6 +148,13 @@ export declare class MarkerSvg {
      * @param curNode The node to draw the marker for.
      */
     protected showWithStack_(curNode: ASTNode): void;
+    /**
+     * Position and display the marker for a flyout button.
+     * This is a box with extra padding around the button.
+     *
+     * @param curNode The node to draw the marker for.
+     */
+    protected showWithButton_(curNode: ASTNode): void;
     /** Show the current marker. */
     protected showCurrent_(): void;
     /**************************
@@ -222,7 +229,7 @@ export declare class MarkerSvg {
      * @param oldNode The old node the marker used to be on.
      * @param curNode The new node the marker is currently on.
      */
-    private fireMarkerEvent;
+    protected fireMarkerEvent(oldNode: ASTNode, curNode: ASTNode): void;
     /**
      * Get the properties to make a marker blink.
      *

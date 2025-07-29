@@ -10,33 +10,33 @@
  */
 import './events/events_selected.js';
 import { Block } from './block.js';
-import { CommentIcon } from './icons/comment_icon.js';
+import { IDeletable } from './blockly.js';
+import { BlockCopyData } from './clipboard/block_paster.js';
 import type { Connection } from './connection.js';
 import { ConnectionType } from './connection_type.js';
 import { ContextMenuOption, LegacyContextMenuOption } from './contextmenu_registry.js';
 import type { Field } from './field.js';
+import { IconType } from './icons/icon_types.js';
+import { MutatorIcon } from './icons/mutator_icon.js';
 import type { Input } from './inputs/input.js';
 import type { IASTNodeLocationSvg } from './interfaces/i_ast_node_location_svg.js';
 import type { IBoundedElement } from './interfaces/i_bounded_element.js';
 import type { ICopyable } from './interfaces/i_copyable.js';
-import type { IDraggable } from './interfaces/i_draggable.js';
+import type { IDragStrategy, IDraggable } from './interfaces/i_draggable.js';
 import { IIcon } from './interfaces/i_icon.js';
-import { MutatorIcon } from './icons/mutator_icon.js';
 import { RenderedConnection } from './rendered_connection.js';
 import type { IPathObject } from './renderers/common/i_path_object.js';
 import type { BlockStyle } from './theme.js';
 import { Coordinate } from './utils/coordinate.js';
 import { Rect } from './utils/rect.js';
-import { WarningIcon } from './icons/warning_icon.js';
+import { FlyoutItemInfo } from './utils/toolbox.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
-import { IconType } from './icons/icon_types.js';
-import { BlockCopyData } from './clipboard/block_paster.js';
 /**
  * Class for a block's SVG representation.
  * Not normally called directly, workspace.newBlock() is preferred.
  */
-export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBoundedElement, ICopyable<BlockCopyData>, IDraggable {
+export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBoundedElement, ICopyable<BlockCopyData>, IDraggable, IDeletable {
     /**
      * Constant for identifying rows that are to be rendered inline.
      * Don't collide with Blockly.inputTypes.
@@ -49,7 +49,23 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      */
     static readonly COLLAPSED_WARNING_ID = "TEMP_COLLAPSED_WARNING_";
     decompose?: (p1: Workspace) => BlockSvg;
-    saveConnections?: (p1: BlockSvg) => void;
+    /**
+     * An optional method which saves a record of blocks connected to
+     * this block so they can be later restored after this block is
+     * recoomposed (reconfigured).  Typically records the connected
+     * blocks on properties on blocks in the mutator flyout, so that
+     * rearranging those component blocks will automatically rearrange
+     * the corresponding connected blocks on this block after this block
+     * is recomposed.
+     *
+     * To keep the saved connection information up-to-date, MutatorIcon
+     * arranges for an event listener to call this method any time the
+     * mutator flyout is open and a change occurs on this block's
+     * workspace.
+     *
+     * @param rootBlock The root block in the mutator flyout.
+     */
+    saveConnections?: (rootBlock: BlockSvg) => void;
     customContextMenu?: (p1: Array<ContextMenuOption | LegacyContextMenuOption>) => void;
     /**
      * Height of this block, not including any statement blocks above or below.
@@ -62,41 +78,31 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      */
     width: number;
     /**
+     * Width of this block, not including any connected value blocks.
+     * Width is in workspace units.
+     *
+     * @internal
+     */
+    childlessWidth: number;
+    /**
      * Map from IDs for warnings text to PIDs of functions to apply them.
      * Used to be able to maintain multiple warnings.
      */
     private warningTextDb;
     /** Block's mutator icon (if any). */
     mutator: MutatorIcon | null;
-    /**
-     * Block's warning icon (if any).
-     *
-     * @deprecated Use `setWarningText` to modify warnings on this block.
-     */
-    warning: WarningIcon | null;
-    private svgGroup_;
+    private svgGroup;
     style: BlockStyle;
     /** @internal */
     pathObject: IPathObject;
-    rendered: boolean;
+    /** Is this block a BlockSVG? */
+    readonly rendered = true;
     private visuallyDisabled;
-    /**
-     * Is this block currently rendering? Used to stop recursive render calls
-     * from actually triggering a re-render.
-     */
-    private renderIsInProgress_;
-    /** Whether mousedown events have been bound yet. */
-    private eventsInit_;
     workspace: WorkspaceSvg;
     outputConnection: RenderedConnection;
     nextConnection: RenderedConnection;
     previousConnection: RenderedConnection;
     private translation;
-    /**
-     * The ID of the setTimeout callback for bumping neighbours, or 0 if no bump
-     * is currently scheduled.
-     */
-    private bumpNeighboursPid;
     /** Whether this block is currently being dragged. */
     private dragging;
     /**
@@ -107,6 +113,7 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * @internal
      */
     relativeCoords: Coordinate;
+    private dragStrategy;
     /**
      * @param workspace The block's workspace.
      * @param prototypeName Name of the language object containing type-specific
@@ -125,22 +132,16 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      *
      * @returns #RRGGBB string.
      */
-    getColourSecondary(): string | undefined;
+    getColourSecondary(): string;
     /**
      * Get the tertiary colour of a block.
      *
      * @returns #RRGGBB string.
      */
-    getColourTertiary(): string | undefined;
-    /**
-     * Selects this block. Highlights the block visually and fires a select event
-     * if the block is not already selected.
-     */
+    getColourTertiary(): string;
+    /** Selects this block. Highlights the block visually. */
     select(): void;
-    /**
-     * Unselects this block. Unhighlights the block and fires a select (false)
-     * event if the block is currently selected.
-     */
+    /** Unselects this block. Unhighlights the block visually. */
     unselect(): void;
     /**
      * Sets the parent of this block to be a new block or null.
@@ -207,6 +208,15 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      */
     getBoundingRectangle(): Rect;
     /**
+     * Returns the coordinates of a bounding box describing the dimensions of this
+     * block alone.
+     * Coordinate system: workspace coordinates.
+     *
+     * @returns Object with coordinates of the bounding box.
+     */
+    getBoundingRectangleWithoutChildren(): Rect;
+    private getBoundingRectangleWithDimensions;
+    /**
      * Notify every input on this block to mark its fields as dirty.
      * A dirty field is a field that needs to be re-rendered.
      */
@@ -221,7 +231,7 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * Makes sure that when the block is collapsed, it is rendered correctly
      * for that state.
      */
-    private updateCollapsed_;
+    private updateCollapsed;
     /**
      * Open the next (or previous) FieldTextInput.
      *
@@ -234,7 +244,7 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      *
      * @param e Pointer down event.
      */
-    private onMouseDown_;
+    private onMouseDown;
     /**
      * Load the block's help page in a new window.
      *
@@ -253,7 +263,7 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * @param e Mouse event.
      * @internal
      */
-    showContextMenu(e: Event): void;
+    showContextMenu(e: PointerEvent): void;
     /**
      * Updates the locations of any parts of the block that need to know where
      * they are (e.g. connections, icons).
@@ -350,14 +360,6 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      */
     updateDisabled(): void;
     /**
-     * Get the comment icon attached to this block, or null if the block has no
-     * comment.
-     *
-     * @returns The comment icon attached to this block, or null.
-     * @deprecated Use getIcon. To be remove in v11.
-     */
-    getCommentIcon(): CommentIcon | null;
-    /**
      * Set this block's warning text.
      *
      * @param text The text, or null to delete.
@@ -379,11 +381,31 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
     private createIconPointerDownListener;
     removeIcon(type: IconType<IIcon>): boolean;
     /**
-     * Set whether the block is enabled or not.
+     * @deprecated v11 - Set whether the block is manually enabled or disabled.
+     * The user can toggle whether a block is disabled from a context menu
+     * option. A block may still be disabled for other reasons even if the user
+     * attempts to manually enable it, such as when the block is in an invalid
+     * location. This method is deprecated and setDisabledReason should be used
+     * instead.
      *
      * @param enabled True if enabled.
      */
     setEnabled(enabled: boolean): void;
+    /**
+     * Add or remove a reason why the block might be disabled. If a block has
+     * any reasons to be disabled, then the block itself will be considered
+     * disabled. A block could be disabled for multiple independent reasons
+     * simultaneously, such as when the user manually disables it, or the block
+     * is invalid.
+     *
+     * @param disabled If true, then the block should be considered disabled for
+     *     at least the provided reason, otherwise the block is no longer disabled
+     *     for that reason.
+     * @param reason A language-neutral identifier for a reason why the block
+     *     could be disabled. Call this method again with the same identifier to
+     *     update whether the block is currently disabled for this reason.
+     */
+    setDisabledReason(disabled: boolean, reason: string): void;
     /**
      * Set whether the block is highlighted or not.  Block highlighting is
      * often used to visually mark blocks currently being executed.
@@ -432,14 +454,21 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      */
     setStyle(blockStyleName: string): void;
     /**
+     * Returns the BlockStyle object used to style this block.
+     *
+     * @returns This block's style object.
+     */
+    getStyle(): BlockStyle;
+    /**
      * Move this block to the front of the visible workspace.
      * <g> tags do not respect z-index so SVG renders them in the
      * order that they are in the DOM.  By placing this block first within the
      * block group's <g>, it will render on top of any other blocks.
+     * Use sparingly, this method is expensive because it reorders the DOM
+     * nodes.
      *
-     * @param blockOnly: True to only move this block to the front without
+     * @param blockOnly True to only move this block to the front without
      *     adjusting its parents.
-     * @internal
      */
     bringToFront(blockOnly?: boolean): void;
     /**
@@ -506,8 +535,7 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * Returns connections originating from this block.
      *
      * @param all If true, return all connections even hidden ones.
-     *     Otherwise, for a non-rendered block return an empty list, and for a
-     *     collapsed block don't return inputs connections.
+     *     Otherwise, for a collapsed block don't return inputs connections.
      * @returns Array of connections.
      * @internal
      */
@@ -562,14 +590,8 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      */
     bumpNeighbours(): void;
     /**
-     * Bumps unconnected blocks out of alignment.
-     */
-    private bumpNeighboursInternal;
-    /**
-     * Schedule snapping to grid and bumping neighbours to occur after a brief
-     * delay.
-     *
-     * @internal
+     * Snap to grid, and then bump neighbouring blocks away at the end of the next
+     * render.
      */
     scheduleSnapAndBump(): void;
     /**
@@ -674,5 +696,21 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * @internal
      */
     highlightShapeForInput(conn: RenderedConnection, add: boolean): void;
+    /** Sets the drag strategy for this block. */
+    setDragStrategy(dragStrategy: IDragStrategy): void;
+    /** Returns whether this block is movable or not. */
+    isMovable(): boolean;
+    /** Starts a drag on the block. */
+    startDrag(e?: PointerEvent): void;
+    /** Drags the block to the given location. */
+    drag(newLoc: Coordinate, e?: PointerEvent): void;
+    /** Ends the drag on the block. */
+    endDrag(e?: PointerEvent): void;
+    /** Moves the block back to where it was at the start of a drag. */
+    revertDrag(): void;
+    /**
+     * Returns a representation of this block that can be displayed in a flyout.
+     */
+    toFlyoutInfo(): FlyoutItemInfo[];
 }
 //# sourceMappingURL=block_svg.d.ts.map
