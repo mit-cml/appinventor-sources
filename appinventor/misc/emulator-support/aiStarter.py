@@ -22,7 +22,7 @@ KILL_EMULATOR = os.path.join(PLATDIR, 'kill-emulator')
 
 @route('/ping/')
 def ping():
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = 'https://ai2.appinventor.mit.edu'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     response.headers['Content-Type'] = 'application/json'
     return {
