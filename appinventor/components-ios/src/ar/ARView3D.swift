@@ -107,6 +107,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _arView.environment.sceneUnderstanding.options = .occlusion
     _arView.environment.sceneUnderstanding.options.insert(.occlusion)
     
+    _arView.translatesAutoresizingMaskIntoConstraints = false
     
     
     super.init(parent)
@@ -352,6 +353,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       _arView.environment.sceneUnderstanding.options.insert(.physics)
       _arView.environment.sceneUnderstanding.options.insert(.collision)
       print("Scene understanding enabled: occlusion, physics, collision")
+      
+      _arView.translatesAutoresizingMaskIntoConstraints = false
       
       _arView.debugOptions.insert(.showSceneUnderstanding)
     } else if _trackingType == .geoTracking {
@@ -1293,7 +1296,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 // MARK: Functions Handling Gestures
 @available(iOS 14.0, *)
 extension ARView3D: UIGestureRecognizerDelegate {
- 
+  
   @objc func handleTap(_ sender: UITapGestureRecognizer) {
     let tapLocation = sender.location(in: _arView)
     var isNodeAtPoint = false
@@ -1322,7 +1325,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
         
       } else {
         print("❌ Failed to convert to GPS - sessionStartLocation: \(sessionStartLocation)")
-
+        
         self.TapAtLocation(hitPoint.x, hitPoint.y, hitPoint.z,
                            0.0,0.0,0.0,
                            false, isNodeAtPoint)
@@ -1332,7 +1335,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
       
     }
   }
-
+  
   
   
   // Helper method to find node for entity
@@ -1344,11 +1347,11 @@ extension ARView3D: UIGestureRecognizerDelegate {
     }
     return nil
   }
- 
+  
   @objc fileprivate func handlePan(sender: UIPanGestureRecognizer) {
     guard _sessionRunning else { return }
     let tapLocation = sender.location(in: _arView)
-
+    
     switch sender.state {
     case .began:
       if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
@@ -1369,14 +1372,14 @@ extension ARView3D: UIGestureRecognizerDelegate {
       trackingNode = nil
     }
   }
-
+  
   @objc fileprivate func handleLongPress(sender: UILongPressGestureRecognizer) {
     guard _sessionRunning else { return }
     
     if sender.state == .ended {
       let tapLocation = sender.location(in: _arView)
       var isNodeAtPoint = false
-
+      
       // Check for node at press location
       if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
          let node = findNodeForEntity(entity) {
@@ -1384,7 +1387,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
         node.LongClick()
         isNodeAtPoint = true
       }
-
+      
       // Check for detected plane at location
       if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
         // Check if this corresponds to a detected plane
@@ -1413,15 +1416,58 @@ extension ARView3D: UIGestureRecognizerDelegate {
       }
     }
   }
-
+  
   @objc fileprivate func handlePinch(sender: UIPinchGestureRecognizer) {
+    guard _sessionRunning else { return }
+    
+    switch sender.state {
+    case .changed:
+      let tapLocation = sender.location(in: _arView)
+      
+      // Use raycast to get world position
+      if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
+        let hitPoint = SIMD3<Float>(
+          result.worldTransform.columns.3.x,
+          result.worldTransform.columns.3.y,
+          result.worldTransform.columns.3.z
+        )
+        
+        // Find the closest node to the hit point
+        var closestNode: ARNodeBase?
+        var closestDistance: Float = Float.greatestFiniteMagnitude
+        let maxDistance: Float = 0.2 // 20cm threshold
+        
+        for (node, _) in _nodeToAnchorDict {
+          let nodePosition = node._modelEntity.transform.translation
+          let distance = simd_distance(nodePosition, hitPoint)
+          
+          if distance < closestDistance && distance < maxDistance {
+            closestDistance = distance
+            closestNode = node
+          }
+        }
+        
+        if let node = closestNode {
+          print("Found closest node: \(node.Name) at distance: \(closestDistance)m")
+          node.scaleByPinch(scalar: Float(sender.scale))
+        } else {
+          print("No nodes within \(maxDistance)m of tap location")
+        }
+      }
+      
+      sender.scale = 1
+    default:
+      break
+    }
+  }
+  @objc fileprivate func handleRotation(sender: UIRotationGestureRecognizer) {
       guard _sessionRunning else { return }
       
       switch sender.state {
-      case .changed:
+      case .changed:  // Only handle .changed like pinch does
           let tapLocation = sender.location(in: _arView)
           
-          // Use raycast to get world position
+          // Use raycast to get world position (same as pinch)
           if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
               let hitPoint = SIMD3<Float>(
                   result.worldTransform.columns.3.x,
@@ -1445,58 +1491,43 @@ extension ARView3D: UIGestureRecognizerDelegate {
               }
               
               if let node = closestNode {
-                  print("Found closest node: \(node.Name) at distance: \(closestDistance)m")
-                  node.scaleByPinch(scalar: Float(sender.scale))
+                  print("Found closest node for rotation: \(node.Name) at distance: \(closestDistance)m")
+                  node.rotateByGesture(radians: Float(sender.rotation))
               } else {
-                  print("No nodes within \(maxDistance)m of tap location")
+                  print("No nodes within \(maxDistance)m of rotation gesture")
               }
           }
           
-          sender.scale = 1
+          sender.rotation = 0  // Reset rotation like pinch resets scale
       default:
           break
       }
   }
-  @objc fileprivate func handleRotation(sender: UIRotationGestureRecognizer) {
-    guard _sessionRunning else { return }
-    
-    switch sender.state {
-    case .began:
-      let tapLocation = sender.location(in: _arView)
-      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
-         let node = findNodeForEntity(entity) {
-            let euler = node.quaternionToEulerAngles(node._modelEntity.transform.rotation)
-            _rotation = euler.y
-      }
-      
-    case .changed:
-      let tapLocation = sender.location(in: _arView)
-      if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
-         let node = findNodeForEntity(entity) {
-        let rotation = _rotation + Float(sender.rotation)
-        node.rotateByGesture(radians: rotation)
-      }
-      
-    case .ended, .failed, .cancelled:
-      _rotation = 0.0
-    default:
-      break
-    }
-  }
-
+  
   public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
-                         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-
-      let rotationAndPinch = gestureRecognizer is UIRotationGestureRecognizer &&
-        otherGestureRecognizer is UIPinchGestureRecognizer
-      let pinchAndRotation = gestureRecognizer is UIPinchGestureRecognizer &&
-        otherGestureRecognizer is UIRotationGestureRecognizer
-
-      if rotationAndPinch || pinchAndRotation {
-        return true
-      }
-
-      return false
+                                shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    
+    // Allow rotation + pinch (scale while rotating)
+    let rotationAndPinch = gestureRecognizer is UIRotationGestureRecognizer &&
+    otherGestureRecognizer is UIPinchGestureRecognizer
+    let pinchAndRotation = gestureRecognizer is UIPinchGestureRecognizer &&
+    otherGestureRecognizer is UIRotationGestureRecognizer
+    
+    // Allow pan + pinch (move while scaling)
+    let panAndPinch = gestureRecognizer is UIPanGestureRecognizer &&
+    otherGestureRecognizer is UIPinchGestureRecognizer
+    let pinchAndPan = gestureRecognizer is UIPinchGestureRecognizer &&
+    otherGestureRecognizer is UIPanGestureRecognizer
+    
+    // Allow pan + rotation (move while rotating)
+    let panAndRotation = gestureRecognizer is UIPanGestureRecognizer &&
+    otherGestureRecognizer is UIRotationGestureRecognizer
+    let rotationAndPan = gestureRecognizer is UIRotationGestureRecognizer &&
+    otherGestureRecognizer is UIPanGestureRecognizer
+    
+    return rotationAndPinch || pinchAndRotation ||
+    panAndPinch || pinchAndPan ||
+    panAndRotation || rotationAndPan
   }
 }
 

@@ -98,8 +98,8 @@ import Foundation
       }
       container.setVisible(component: self, to: visibility)
       if attachedToWindow {
-        container.setChildWidth(of: self, to: _lastSetWidth)
-        container.setChildHeight(of: self, to: _lastSetHeight)
+          container.setChildWidth(of: self, to: _lastSetWidth)
+          container.setChildHeight(of: self, to: _lastSetHeight)
       }
     }
   }
@@ -114,7 +114,9 @@ import Foundation
         return
       }
       if attachedToWindow {
-        container.setChildWidth(of: self, to: width)
+        if Visible {
+          container.setChildWidth(of: self, to: width)
+        }
       }
       _lastSetWidth = width
     }
@@ -140,7 +142,9 @@ import Foundation
         return
       }
       if attachedToWindow {
-        container.setChildHeight(of: self, to: height)
+        if Visible {
+          container.setChildHeight(of: self, to: height)
+        }
       }
       _lastSetHeight = height
     }
