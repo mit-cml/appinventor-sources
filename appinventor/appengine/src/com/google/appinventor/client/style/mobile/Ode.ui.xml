@@ -6,7 +6,6 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:mob="urn:import:com.google.appinventor.client.style.mobile"
              xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
-             xmlns:ex="urn:import:com.google.appinventor.client.explorer.youngandroid"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
              xmlns:ode="urn:import:com.google.appinventor.client"
              xmlns:Ui="urn:ui:com.google.gwt.uibinder">
@@ -20,9 +19,9 @@
                 <g:FlowPanel width="100%" >
                     <box:ProjectListBox width="100%" ui:field="projectListbox" />
                 </g:FlowPanel>
-                <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor" visible="false">
-                    <ed:DesignToolbar ui:field="designToolbar" />
-                    <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
+                <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
+                    <mob:DesignToolbarMob ui:field="designToolbar" />
+                    <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns" visible="false">
                         <box:PaletteBox width="240px" ui:field="paletteBox"/>
                         <box:ViewerBox ui:field="viewerBox" />
                         <g:FlowPanel ui:field="structureAndAssets">

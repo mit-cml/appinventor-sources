@@ -11,7 +11,7 @@
              ui:generateLocales="default">
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
     <!-- Bottom Navigation Bar -->
-    <ai:Toolbar styleName="ode-BottomNavToolbar">
+    <ai:Toolbar>
         <g:Label text="{messages.projectsTabName}" styleName="ya-ProjectName ode-NavLabel"
                  ui:field="projectLabel" visible="false"/>
         <g:Label text="{messages.trashButton}" styleName="ya-ProjectName ode-NavLabel" visible="false"
