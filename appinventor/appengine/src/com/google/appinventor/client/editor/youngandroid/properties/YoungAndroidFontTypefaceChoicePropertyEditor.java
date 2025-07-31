@@ -9,7 +9,7 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
@@ -50,7 +50,7 @@ public final class YoungAndroidFontTypefaceChoicePropertyEditor extends Addition
    *
    * @param editor the editor that this property editor belongs to
    */
-  public YoungAndroidFontTypefaceChoicePropertyEditor(final YaFormEditor editor) {
+  public YoungAndroidFontTypefaceChoicePropertyEditor(final DesignerEditor editor) {
     Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
     assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
     project.addProjectChangeListener(this);

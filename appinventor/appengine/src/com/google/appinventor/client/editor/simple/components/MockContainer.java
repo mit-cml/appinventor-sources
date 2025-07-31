@@ -94,7 +94,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     return this.buildTree(1);
   }
 
-  protected TreeItem buildTree(Integer view) {
+  protected TreeItem buildTree(int view) {
     TreeItem itemNode = super.buildTree();
     //hide all containers except form if only nonvisible components are to be shown
     //in such a case, we need only the form's treeItem because all non-visible components are attached to it
@@ -202,7 +202,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       refreshForm();
     }
 
-    getForm().fireComponentAdded(component);
+    getRoot().fireComponentAdded(component);
   }
 
   /**
@@ -260,7 +260,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       editor.getNonVisibleComponentsPanel().removeComponent(component);
     }
 
-    getForm().fireComponentRemoved(component, permanentlyDeleted);
+    getRoot().fireComponentRemoved(component, permanentlyDeleted);
   }
 
   /**

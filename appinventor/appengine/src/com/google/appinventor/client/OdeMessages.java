@@ -167,6 +167,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button for removing a screen")
   String removeFormButton();
 
+  @DefaultMessage("Toggle Console")
+  @Description("Label of the button for toggling the console panel")
+  String toggleConsoleButton();
+
   @DefaultMessage("Connect")
   @Description("Label of the button for selecting phone connection")
   String connectButton();
@@ -389,13 +393,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Fail to send out the email, please try again later")
   @Description("error message when fail to send to user from moderator")
   String moderationErrorFailToSendEmail();
-
-
-  // Used in MotdFetcher.java
-
-  @DefaultMessage("Failed to contact server to get the MOTD.")
-  @Description("Message displayed when cannot get a MOTD from the server.")
-  String getMotdFailed();
 
   // Used in Ode.java
 
@@ -928,12 +925,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Messages")
   @Description("Caption for message output box.")
   String messagesOutputBoxCaption();
-
-  // Used in boxes/MotdBox.java
-
-  @DefaultMessage("Welcome to App Inventor!")
-  @Description("Initial caption for MOTD box.")
-  String motdBoxCaption();
 
   // Used in boxes/OdeLogBox.java
 
@@ -5800,4 +5791,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Time")
   @Description("Set x-axis label values Type as Time")
   String labelTime();
+
+  @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
+  @Description("Message shown in the info popup when the user first opens the Neo UI.")
+  String neoWelcomeMessage();
 }

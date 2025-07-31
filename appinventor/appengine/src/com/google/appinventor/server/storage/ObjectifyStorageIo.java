@@ -18,10 +18,6 @@ import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
@@ -51,7 +47,6 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
-import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -68,7 +63,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 
 import com.googlecode.objectify.Key;
@@ -113,8 +107,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.json.JSONObject;
-
 /**
  * Implements the StorageIo interface using Objectify as the underlying data
  * store.
@@ -129,7 +121,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
   private static final String DEFAULT_ENCODING = "UTF-8";
 
-  private static final long MOTD_ID = 1;
   private static final long ALLOWEDURL_ID = 1;
   private static final long SPLASHDATA_ID = 1;
   private static final long ALLOWED_IOS_EXTENSIONS_ID = 1;
@@ -258,7 +249,6 @@ public class ObjectifyStorageIo implements StorageIo {
     }
     gcsService = GcsServiceFactory.createGcsService(retryParams);
     memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
-    initMotd();
     initAllowedTutorialUrls();
   }
 
@@ -2053,27 +2043,6 @@ public class ObjectifyStorageIo implements StorageIo {
     return projectSourceZip;
   }
 
-  @Override
-  public Motd getCurrentMotd() {
-    final Result<Motd> motd = new Result<Motd>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          MotdData motdData = datastore.find(MotdData.class, MOTD_ID);
-          if (motdData != null) { // it shouldn't be!
-            motd.t =  new Motd(motdData.id, motdData.caption, motdData.content);
-          } else {
-            motd.t = new Motd(MOTD_ID, "Oops, no message of the day!", null);
-          }
-        }
-      }, false);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, null, e);
-    }
-    return motd.t;
-  }
-
   // Find a user by email address. This version does *not* create a new user
   // if the user does not exist
   @Override
@@ -2182,28 +2151,6 @@ public class ObjectifyStorageIo implements StorageIo {
       }, true);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, "Initing Allowed Urls", e);
-    }
-  }
-
-  private void initMotd() {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          MotdData motdData = datastore.find(MotdData.class, MOTD_ID);
-          if (motdData == null) {
-            MotdData firstMotd = new MotdData();
-            firstMotd.id = MOTD_ID;
-            firstMotd.caption = "Hello!";
-            firstMotd.content = "Welcome to the experimental App Inventor system from MIT. " +
-                "This is still a prototype.  It would be a good idea to frequently back up " +
-                "your projects to local storage.";
-            datastore.put(firstMotd);
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, "Initing MOTD", e);
     }
   }
 
