@@ -6,7 +6,7 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.wizards.MarkOriginWizard;
@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Button;
 public class YoungAndroidSpriteOriginPropertyEditor extends PropertyEditor {
 
   public static final String PROPERTY_NAME_PICTURE = "Picture";
-  private final YaFormEditor editor;
+  private final SimpleEditor editor;
 
   /**
    * Returns the asset node with the given name.
@@ -69,7 +69,7 @@ public class YoungAndroidSpriteOriginPropertyEditor extends PropertyEditor {
    *
    * @param editor the editor that this property editor belongs to
    */
-  public YoungAndroidSpriteOriginPropertyEditor(final YaFormEditor editor) {
+  public YoungAndroidSpriteOriginPropertyEditor(final SimpleEditor editor) {
     this.editor = editor;
 
     Button markOriginButton = new Button(Ode.MESSAGES.markOriginButton());

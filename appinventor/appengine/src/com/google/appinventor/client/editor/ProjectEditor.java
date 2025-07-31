@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -12,6 +12,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.SourceNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Composite;
@@ -50,6 +51,7 @@ public abstract class ProjectEditor extends Composite {
   // is non-null, it is one of the file editors in openFileEditors and the
   // one currently showing in deckPanel.
   private final Map<String, FileEditor> openFileEditors;
+  private final Map<String, Map<String, FileEditor>> editorsByType;
   protected final List<String> fileIds;
   private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
   private final DeckPanel deckPanel;
@@ -69,6 +71,7 @@ public abstract class ProjectEditor extends Composite {
 
     openFileEditors = Maps.newHashMap();
     fileIds = new ArrayList<String>();
+    editorsByType = Maps.newHashMap();
 
     deckPanel = new DeckPanel();
 
@@ -154,19 +157,6 @@ public abstract class ProjectEditor extends Composite {
   }
 
   /**
-   * Adds a file editor to this project editor.
-   *
-   * @param fileEditor  file editor to add
-   */
-  public final void addFileEditor(FileEditor fileEditor) {
-    String fileId = fileEditor.getFileId();
-    openFileEditors.put(fileId, fileEditor);
-    fileIds.add(fileId);
-
-    deckPanel.add(fileEditor);
-  }
-
-  /**
    * Inserts a file editor in this editor at the specified index.
    *
    * @param fileEditor  file editor to insert
@@ -178,7 +168,17 @@ public abstract class ProjectEditor extends Composite {
     fileIds.add(beforeIndex, fileId);
     deckPanel.insert(fileEditor, beforeIndex);
     LOG.info("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
+  }
 
+  protected final void addFileEditorByType(FileEditor fileEditor) {
+    String entityName = SourceNode.getEntityName(fileEditor.getFileId());
+    if (!editorsByType.containsKey(entityName)) {
+      Map<String, FileEditor> editorMap = new HashMap<>();
+      editorMap.put(fileEditor.getEditorType(), fileEditor);
+      editorsByType.put(entityName, editorMap);
+    } else {
+      editorsByType.get(entityName).put(fileEditor.getEditorType(), fileEditor);
+    }
   }
 
   /**
@@ -203,9 +203,9 @@ public abstract class ProjectEditor extends Composite {
       }
     }
     LOG.info("ProjectEditor: got selectFileEditor for "
-            + ((fileEditor == null) ? null : fileEditor.getFileId())
-            +  " selectedFileEditor is "
-            + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
+        + ((fileEditor == null) ? null : fileEditor.getFileId())
+        +  " selectedFileEditor is "
+        + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
     if (selectedFileEditor != null && selectedFileEditor != fileEditor) {
       selectedFileEditor.onHide();
     }
@@ -224,6 +224,22 @@ public abstract class ProjectEditor extends Composite {
    */
   public final FileEditor getFileEditor(String fileId) {
     return openFileEditors.get(fileId);
+  }
+
+  /**
+   * Get the file editor of the given <code>editorType</code>, if any, for <code>entityName</code>.
+   *
+   * @param entityName
+   * @param editorType
+   * @return
+   */
+  public final FileEditor getFileEditor(String entityName, String editorType) {
+    Map<String, FileEditor> entityEditors = editorsByType.get(entityName);
+    if (entityEditors != null) {
+      return entityEditors.get(editorType);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -321,7 +337,6 @@ public abstract class ProjectEditor extends Composite {
    * @param componentName The name of the component registering location permission
    * @param newValue either "True" or "False" indicating whether permission is need.
    */
-
   public final void recordLocationSetting(String componentName, String newValue) {
     LOG.info("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
     locationHashMap.put(componentName, newValue);

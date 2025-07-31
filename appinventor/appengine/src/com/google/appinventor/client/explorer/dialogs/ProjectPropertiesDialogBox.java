@@ -117,7 +117,7 @@ public class ProjectPropertiesDialogBox {
     // Get current instance of YaProjectEditor
     this.projectEditor = projectEditor;
 
-    MockForm form = projectEditor.getFormFileEditor("Screen1").getForm();
+    MockForm form = (MockForm) projectEditor.getFormFileEditor("Screen1").getRoot();
 
     // Get project properties from the screen1 MockForm
     EditableProperties editableProperties = form.getProperties();
@@ -198,7 +198,7 @@ public class ProjectPropertiesDialogBox {
 
   void applyPropertyChanges() {
     if (!"Screen1".equals(currentScreen)) {
-      MockForm currentform = projectEditor.getFormFileEditor(currentScreen).getForm();
+      MockForm currentform = (MockForm) projectEditor.getFormFileEditor(currentScreen).getRoot();
       if (currentform != null) {
         currentform.projectPropertyChanged();
       }

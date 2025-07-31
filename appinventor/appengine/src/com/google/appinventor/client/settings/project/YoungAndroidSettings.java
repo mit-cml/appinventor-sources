@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.settings.project;
 
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
@@ -82,7 +84,13 @@ public final class YoungAndroidSettings extends Settings {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, "App",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, "{}",
-            EditableProperty.TYPE_INVISIBLE));
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, "{}",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED, "Screen1",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING, YOUNG_ANDROID_VERSION + "",
+        EditableProperty.TYPE_INVISIBLE));
   }
 }
