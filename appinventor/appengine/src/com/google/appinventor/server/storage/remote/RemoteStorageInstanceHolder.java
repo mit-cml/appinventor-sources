@@ -16,13 +16,15 @@ import com.google.common.annotations.VisibleForTesting;
 public class RemoteStorageInstanceHolder {
   private static final Flag<String> PROVIDER_NAME = Flag.createFlag("remotestorage", null);
 
+  private static Boolean IS_LOADED = false;
   private static RemoteStorage INSTANCE;
 
   private RemoteStorageInstanceHolder() {} // not to be instantiated
 
   public static RemoteStorage getInstance() {
-    if (INSTANCE == null) {
+    if (!IS_LOADED) {
       INSTANCE = createRemoteInstance();
+      IS_LOADED = true;
     }
 
     return INSTANCE;
