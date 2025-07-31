@@ -41,6 +41,10 @@ import RealityKit
    * "By" methods act relative to the node's current properties (rotation, scale, etc)
    */
   func EnablePhysics(_ isDynamic: Bool)
+  func CollisionDetected()
+  func ObjectCollidedWithScene(_ node: ARNodeBase)
+  func ObjectCollidedWithObject(_ node: ARNodeBase, _ node2: ARNodeBase)
+  
   func ARNodeToYail() -> YailDictionary
   // RotateAboutBlankAxis https://gamedev.stackexchange.com/questions/116676/why-is-scnnode-rotation-property-a-four-dimensional-vector
   func RotateXBy(_ degrees: Float)

@@ -9,7 +9,7 @@ class ARNodeUtilities {
     private static let ERROR_UNKNOWN_TYPE = "Unknown type in JSON conversion"
     
 
-  public static func parseYailToNode(_ node: ARNodeBase, _ yailObj: Any, _ trackingObj: ARSession) -> ARNodeBase {
+  public static func parseYailToNode(_ node: ARNodeBase, _ yailObj: Any, _ trackingObj: ARSession, sessionStartLocation:CLLocation?) -> ARNodeBase {
         do {
             guard let keyvalue = yailObj as? YailDictionary else {
                 throw NSError(domain: "ParseError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid Yail object"])
@@ -24,26 +24,40 @@ class ARNodeUtilities {
  
             
             node.ModelUrl = model // really only for free form models
+           
             node.Texture = texture
             node.Scale = Float(scale) ?? 0.5
 
+            // position node either by lat/long or by x, y, z
             if let poseDict = keyvalue["pose"] as? [String: Any] {
                 print("parsed pose before conversion \( poseDict)")
 
                 if let pose = parsePoseLinkedHashMap(poseDict) {
-                    if let geoAnchor = parseGeoData(poseDict){
-                      node.setGeoAnchor(geoAnchor)
-                      print("geoAnchor now \( geoAnchor)")
-                      }// else {
-                        
+                    let geoAnchor = parseGeoData(poseDict)
                     let transform = Transform(matrix: pose)
-                        
-                    let anchor = node.createAnchorWithPose(pose: transform)
-                        
-
-                     // }
-
+                    if geoAnchor != nil && sessionStartLocation != nil {
+                      node.setGeoAnchor(geoAnchor!)
+                      print("geoAnchor now \( geoAnchor)")
                   
+                      let creatorLocation = CLLocation(latitude: geoAnchor!.coordinate.latitude , longitude: geoAnchor!.coordinate.longitude)
+                      let currentDistance = sessionStartLocation!.distance(from: creatorLocation)
+                      
+                      if currentDistance < 5.0 {
+                        // User is very close to original creation location - use precise world coordinates
+                        
+                          //let precisePosition = creatorStartWorldPos + worldOffset
+                        node.setPosition(x:transform.translation.x,y:transform.translation.y, z:transform.translation.z)
+          
+                      }
+                      
+                    
+                      let anchor = node.createAnchorWithPose(pose: transform)
+                    } else { // if no geo information, set according to xyz pose
+                      node.setPosition(x:transform.translation.x,y:transform.translation.y, z:transform.translation.z)
+                    }
+                  
+                    //
+
                 }
             }
           

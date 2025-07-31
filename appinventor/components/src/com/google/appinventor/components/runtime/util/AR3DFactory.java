@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.util;
 
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 
@@ -88,6 +89,7 @@ public final class AR3DFactory {
      boolean EnablePhysics();
      void EnablePhysics(boolean enable);
 
+
      boolean PinchToScale();
      void PinchToScale(boolean pinchToScale);
 
@@ -138,10 +140,13 @@ public final class AR3DFactory {
      float DistanceToPointLight(ARPointLight light);
      float DistanceToDetectedPlane(ARDetectedPlane detectedPlane);
 
-     // Events
+    // Events
      void Click();
      void LongClick();
 
+    void CollisionDetection();
+    void ObjectCollidedWithScene();
+    void ObjectCollidedWithObject();
    }
 
    public interface FollowsMarker {

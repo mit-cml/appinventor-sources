@@ -388,6 +388,17 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   // Functions
 
+  @Override
+  @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
+  public void CollisionDetection() {}
+
+  @Override
+  @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
+  public void ObjectCollidedWithScene() {}
+
+  @Override
+  @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
+  public void ObjectCollidedWithObject() {}
 
 
   @Override

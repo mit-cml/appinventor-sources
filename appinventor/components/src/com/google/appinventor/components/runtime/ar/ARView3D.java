@@ -1106,6 +1106,25 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void NodeLongClick(ARNode node) {
     }
 
+
+    @SimpleEvent(description = " Collision detected")
+    public void CollisionDetected() {
+        EventDispatcher.dispatchEvent(this, "CollisionDetected");
+
+    }
+
+    @SimpleEvent(description = " Object collided with Scene detected")
+    public void ObjectCollidedWithScene(ARNode node){
+        EventDispatcher.dispatchEvent(this, "ObjectCollidedWithScene", node);
+
+    }
+
+    @SimpleEvent(description = " Object collided with Object detected")
+    public void ObjectCollidedWithObject(ARNode node, ARNode node2) {
+        EventDispatcher.dispatchEvent( this, "ObjectCollidedWithObject", node, node2);
+
+    }
+
     //@Override
     @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is " +
         "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +

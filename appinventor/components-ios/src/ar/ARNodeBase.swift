@@ -252,9 +252,10 @@ open class ARNodeBase: NSObject, ARNode {
          
       var yailDict: YailDictionary = [:]
       var transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
-    
+      //var coordDict: YailDictionary = CoordinatesToYailDictionary() ?? [:]
         do {
           yailDict["model"] = self.ModelUrl // dont  need this unless it's a custom model
+          //yailDict["creatorSessionStart"] = coordDict // dont' need, in transformDict
           yailDict["texture"] = self.Texture
           yailDict["scale"] = self.Scale
           yailDict["pose"] = transformDict
@@ -267,6 +268,18 @@ open class ARNodeBase: NSObject, ARNode {
          
      }
      
+  //csb not currently using but may
+  open func CoordinatesToYailDictionary() -> YailDictionary? {
+    
+    let yailDictSave: YailDictionary = [:]
+    yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
+    yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
+    yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
+    
+    print("creator coordinates are \(yailDictSave)")
+    return yailDictSave
+  }
+  
   
   @objc open func PoseToYailDictionary() -> YailDictionary? {
         os_log("anchor pose as YailDict", log: .default, type: .info)
@@ -674,13 +687,13 @@ open class ARNodeBase: NSObject, ARNode {
     
     let anchor: AnchorEntity
     
-    if pose != nil{
+    //if pose != nil{
       anchor = AnchorEntity(components: pose)
-    } else {
+    /*} else {
       // Default world anchor
       let worldTransform = _modelEntity.transformMatrix(relativeTo: nil)
       anchor = AnchorEntity(world: worldTransform)
-    }
+    }*/
     
     _anchorEntity = anchor
     if _anchorEntity != nil {
@@ -819,8 +832,21 @@ open class ARNodeBase: NSObject, ARNode {
     }
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let size = bounds.max - bounds.min
-    let radius = max(size.x, size.y, size.z) / 2
-    let shape = ShapeResource.generateSphere(radius: radius)
+    let safeSize = SIMD3<Float>(
+        max(size.x, 0.01),
+        max(size.y, 0.01),
+        max(size.z, 0.01)
+    )
+    
+    let shape = ShapeResource.generateBox(size: safeSize)
+    
+    _enablePhysics = isDynamic
+    _modelEntity.collision = CollisionComponent(shapes: [shape])
+    
+    // Create mass properties separately
+    let massProperties = PhysicsMassProperties(mass: 1.0)
+
+  
     
     // Create a custom physics material for gentle collisions
     let gentleMaterial = PhysicsMaterialResource.generate(
@@ -833,7 +859,7 @@ open class ARNodeBase: NSObject, ARNode {
     _enablePhysics = isDynamic
     _modelEntity.collision = CollisionComponent(shapes: [shape])
     _modelEntity.physicsBody = PhysicsBodyComponent(
-      massProperties: .init(shape: shape, density:20.0),
+      massProperties: massProperties,
         material: gentleMaterial,
         mode: isDynamic ? .dynamic : .static
     )
@@ -843,4 +869,13 @@ open class ARNodeBase: NSObject, ARNode {
       _modelEntity.collision = nil
       _modelEntity.physicsBody = nil
   }
+  
+  @objc open func CollisionDetected() {}
+  @objc open func ObjectCollidedWithScene(_ node: ARNodeBase) {
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: node)
+  }
+  @objc open func ObjectCollidedWithObject(_ node: ARNodeBase, _ node2: ARNodeBase) {
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: node, node2)
+  }
+  
 } // ← This closes the ARNodeBase class

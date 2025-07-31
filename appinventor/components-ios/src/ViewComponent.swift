@@ -113,11 +113,11 @@ import Foundation
       guard let container = _container else {
         return
       }
-      if attachedToWindow {
-        if Visible {
-          container.setChildWidth(of: self, to: width)
-        }
+
+      if Visible {
+        container.setChildWidth(of: self, to: width)
       }
+      
       _lastSetWidth = width
     }
   }
@@ -141,10 +141,9 @@ import Foundation
       guard let container = _container else {
         return
       }
-      if attachedToWindow {
-        if Visible {
-          container.setChildHeight(of: self, to: height)
-        }
+
+      if Visible {
+        container.setChildHeight(of: self, to: height)
       }
       _lastSetHeight = height
     }

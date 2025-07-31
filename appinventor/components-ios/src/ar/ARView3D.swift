@@ -112,6 +112,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     super.init(parent)
     _arView.session.delegate = self
+    setupLocationManager()
     initializeGestureRecognizers()
     TrackingType = 1
     PlaneDetectionType = 2 // .horizontal
@@ -120,7 +121,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     Height = kARViewPreferredHeight
     Width = kARViewPreferredWidth
     
-    setupLocationManager()
+
   }
   
   private func initializeGestureRecognizers() {
@@ -354,7 +355,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       _arView.environment.sceneUnderstanding.options.insert(.collision)
       print("Scene understanding enabled: occlusion, physics, collision")
       
-      _arView.translatesAutoresizingMaskIntoConstraints = false
       
       _arView.debugOptions.insert(.showSceneUnderstanding)
     } else if _trackingType == .geoTracking {
@@ -381,7 +381,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       print("Entity A: \(event.entityA.name)")
       print("Entity B: \(event.entityB.name)")
       
-      self.onCollisionBegan(event: event)
+      self.CollisionDetectedBegin(event)
     }
     
     print("Collision observer set up successfully")
@@ -397,7 +397,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     print("Total nodes: \(_nodeToAnchorDict.count)")
   }
   
-  private func onCollisionBegan(event: CollisionEvents.Began) {
+
+  private func CollisionDetectedBegin(_ event: CollisionEvents.Began){
     let entityA = event.entityA
     let entityB = event.entityB
     
@@ -412,14 +413,17 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let arEntity = String(describing: type(of: entityA)).contains("RKSceneUnderstanding") ? entityB : entityA
       
       // Handle collision with real world
-      handleSceneCollision(arEntity: arEntity)
+      ObjectCollidedWithScene(arEntity)
     } else {
       // Collision between two AR objects
-      handleObjectCollision(entityA: entityA, entityB: entityB)
+      ObjectCollidedWithObject(entityA, entityB)
     }
   }
   
-  private func handleSceneCollision(arEntity: Entity) {
+  
+  
+  @objc open func ObjectCollidedWithScene(_ entity: AnyObject) {
+    let arEntity = entity as! ModelEntity
     print("AR object \(arEntity.name) collided with real world")
     
     // Find the corresponding ARNode
@@ -430,7 +434,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
-  private func handleObjectCollision(entityA: Entity, entityB: Entity) {
+  @objc open func ObjectCollidedWithObject(_ entity1: AnyObject, _ entity2: AnyObject) {
+    let entityA = entity1 as! ModelEntity
+    let entityB = entity2 as! ModelEntity
     print("Collision between AR objects: \(entityA.name) and \(entityB.name)")
     
     // Handle AR object to AR object collision
@@ -564,7 +570,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     let capNode = CapsuleNode(self) as CapsuleNode
     let yailNodeObj: YailDictionary = yailNodeObj
     let result = ARNodeUtilities.parseYailToNode(
-      capNode as CapsuleNode, yailNodeObj as YailDictionary, _arView.session
+      capNode as CapsuleNode, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
     )
     
     
@@ -580,7 +586,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     let sphereNode = SphereNode(self) as SphereNode
     let yailNodeObj: YailDictionary = yailNodeObj
     let result = ARNodeUtilities.parseYailToNode(
-      sphereNode as SphereNode, yailNodeObj as YailDictionary, _arView.session
+      sphereNode as SphereNode, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
     )
     return result
   }
@@ -589,7 +595,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     let modelnode = ModelNode(self) as ModelNode
     let yailNodeObj: YailDictionary = yailNodeObj
     let result = ARNodeUtilities.parseYailToNode(
-      modelnode as ModelNode, yailNodeObj as YailDictionary, _arView.session
+      modelnode as ModelNode, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
     )
     return result
   }
@@ -598,7 +604,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     let textnode = TextNode(self) as TextNode
     let yailNodeObj: YailDictionary = yailNodeObj
     let result = ARNodeUtilities.parseYailToNode(
-      textnode as TextNode, yailNodeObj as YailDictionary, _arView.session
+      textnode as TextNode, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
     )
     return result
   }
@@ -1290,22 +1296,56 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
 
 
-
   
   
 // MARK: Functions Handling Gestures
 @available(iOS 14.0, *)
 extension ARView3D: UIGestureRecognizerDelegate {
   
+  func findClosestNode(tapLocation: CGPoint) -> ARNodeBase? {
+    
+    // Use raycast to get world position
+    if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
+      let hitPoint = SIMD3<Float>(
+        result.worldTransform.columns.3.x,
+        result.worldTransform.columns.3.y,
+        result.worldTransform.columns.3.z
+      )
+      
+      // Find the closest node to the hit point
+      var closestNode: ARNodeBase?
+      var closestDistance: Float = Float.greatestFiniteMagnitude
+      let maxDistance: Float = 0.25 // 20cm threshold
+      
+      for (node, _) in _nodeToAnchorDict {
+        let nodePosition = node._modelEntity.transform.translation
+        let distance = simd_distance(nodePosition, hitPoint)
+        
+        if distance < closestDistance && distance < maxDistance {
+          closestDistance = distance
+          closestNode = node
+        }
+      }
+      
+      if let node = closestNode {
+        print("Found closest node for scaling: \(node.Name) at distance: \(closestDistance)m")
+        return node
+      } else {
+        print("No nodes within \(maxDistance)m of tap location")
+        
+      }
+    }
+    return nil
+  }
+  
   @objc func handleTap(_ sender: UITapGestureRecognizer) {
     let tapLocation = sender.location(in: _arView)
     var isNodeAtPoint = false
     
     // Check if we hit a node entity
-    if let hitEntity = _arView.entity(at: tapLocation) as? ModelEntity,
-       let node = findNodeForEntity(hitEntity) {
-      NodeClick(node)
-      node.Click()
+    if let nodeEntity = findClosestNode(tapLocation:tapLocation) {
+      NodeClick(nodeEntity)
+      nodeEntity.Click()
       isNodeAtPoint = true
     }
     
@@ -1421,113 +1461,68 @@ extension ARView3D: UIGestureRecognizerDelegate {
     guard _sessionRunning else { return }
     
     switch sender.state {
-    case .changed:
-      let tapLocation = sender.location(in: _arView)
-      
-      // Use raycast to get world position
-      if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
-        let hitPoint = SIMD3<Float>(
-          result.worldTransform.columns.3.x,
-          result.worldTransform.columns.3.y,
-          result.worldTransform.columns.3.z
-        )
-        
-        // Find the closest node to the hit point
-        var closestNode: ARNodeBase?
-        var closestDistance: Float = Float.greatestFiniteMagnitude
-        let maxDistance: Float = 0.2 // 20cm threshold
-        
-        for (node, _) in _nodeToAnchorDict {
-          let nodePosition = node._modelEntity.transform.translation
-          let distance = simd_distance(nodePosition, hitPoint)
+      case .changed:
+          let tapLocation = sender.location(in: _arView)
           
-          if distance < closestDistance && distance < maxDistance {
-            closestDistance = distance
-            closestNode = node
-          }
-        }
-        
-        if let node = closestNode {
-          print("Found closest node: \(node.Name) at distance: \(closestDistance)m")
-          node.scaleByPinch(scalar: Float(sender.scale))
-        } else {
-          print("No nodes within \(maxDistance)m of tap location")
-        }
+          let nodeEntity = findClosestNode(tapLocation:  tapLocation )
+              if nodeEntity != nil {
+                print("Found closest node for scaling: \(nodeEntity!.Name) at distance:")
+                nodeEntity!.scaleByPinch(scalar: Float(sender.scale))
+              } else {
+                  print("No nodes close to tap location")
+              }
+          sender.scale = 1
+      default:
+          break
       }
-      
-      sender.scale = 1
-    default:
-      break
-    }
-  }
+}
+   
+    
   @objc fileprivate func handleRotation(sender: UIRotationGestureRecognizer) {
       guard _sessionRunning else { return }
       
       switch sender.state {
-      case .changed:  // Only handle .changed like pinch does
+      case .began:
           let tapLocation = sender.location(in: _arView)
           
-          // Use raycast to get world position (same as pinch)
-          if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
-              let hitPoint = SIMD3<Float>(
-                  result.worldTransform.columns.3.x,
-                  result.worldTransform.columns.3.y,
-                  result.worldTransform.columns.3.z
-              )
-              
-              // Find the closest node to the hit point
-              var closestNode: ARNodeBase?
-              var closestDistance: Float = Float.greatestFiniteMagnitude
-              let maxDistance: Float = 0.2 // 20cm threshold
-              
-              for (node, _) in _nodeToAnchorDict {
-                  let nodePosition = node._modelEntity.transform.translation
-                  let distance = simd_distance(nodePosition, hitPoint)
-                  
-                  if distance < closestDistance && distance < maxDistance {
-                      closestDistance = distance
-                      closestNode = node
-                  }
-              }
-              
-              if let node = closestNode {
-                  print("Found closest node for rotation: \(node.Name) at distance: \(closestDistance)m")
-                  node.rotateByGesture(radians: Float(sender.rotation))
-              } else {
-                  print("No nodes within \(maxDistance)m of rotation gesture")
-              }
+          if let closestNode = findClosestNode(tapLocation: tapLocation) {
+              trackingNode = closestNode
+              // Store the starting rotation
+              let euler = closestNode.quaternionToEulerAngles(closestNode._modelEntity.transform.rotation)
+              _rotation = euler.y
+              print("Started rotating node: \(closestNode.Name)")
           }
           
-          sender.rotation = 0  // Reset rotation like pinch resets scale
+      case .changed:
+          if let node = trackingNode {
+              // Add the gesture rotation to the starting rotation
+              let newRotation = _rotation + Float(sender.rotation)
+              node.rotateByGesture(radians: newRotation)
+          }
+          
+      case .ended, .cancelled, .failed:
+          trackingNode = nil
+          _rotation = 0.0
+          
       default:
           break
       }
   }
   
+  
   public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
                                 shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     
-    // Allow rotation + pinch (scale while rotating)
     let rotationAndPinch = gestureRecognizer is UIRotationGestureRecognizer &&
     otherGestureRecognizer is UIPinchGestureRecognizer
     let pinchAndRotation = gestureRecognizer is UIPinchGestureRecognizer &&
     otherGestureRecognizer is UIRotationGestureRecognizer
     
-    // Allow pan + pinch (move while scaling)
-    let panAndPinch = gestureRecognizer is UIPanGestureRecognizer &&
-    otherGestureRecognizer is UIPinchGestureRecognizer
-    let pinchAndPan = gestureRecognizer is UIPinchGestureRecognizer &&
-    otherGestureRecognizer is UIPanGestureRecognizer
+    if rotationAndPinch || pinchAndRotation {
+      return true
+    }
     
-    // Allow pan + rotation (move while rotating)
-    let panAndRotation = gestureRecognizer is UIPanGestureRecognizer &&
-    otherGestureRecognizer is UIRotationGestureRecognizer
-    let rotationAndPan = gestureRecognizer is UIRotationGestureRecognizer &&
-    otherGestureRecognizer is UIPanGestureRecognizer
-    
-    return rotationAndPinch || pinchAndRotation ||
-    panAndPinch || pinchAndPan ||
-    panAndRotation || rotationAndPan
+    return false
   }
 }
 
