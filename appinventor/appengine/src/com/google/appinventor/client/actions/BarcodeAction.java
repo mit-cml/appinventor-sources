@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2023 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,8 +16,8 @@ import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.commands.WarningDialogCommand;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.util.BuildOutputFiles;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.user.client.Command;
 
 public class BarcodeAction implements Command {
@@ -50,7 +50,7 @@ public class BarcodeAction implements Command {
   public void execute() {
     ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
     if (projectRootNode != null) {
-      String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+      String target = BuildOutputFiles.getTargetName();
       ChainableCommand cmd = new SaveAllEditorsCommand(
           new GenerateYailCommand(
               new BuildCommand(target, secondBuildserver, isAab,

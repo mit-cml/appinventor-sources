@@ -192,5 +192,15 @@
     <!-- https://example.com/something. -->
     <property name="ode.base" value="" />
 
+    <!-- Remote Storage Provider -->
+    <property name="remotestorage" value="" />
+
+    <!-- S3 Compatible Storage Configuration -->
+    <property name="remotestorage.s3.endpoint" value="" />
+    <property name="remotestorage.s3.bucketname" value="" />
+    <property name="remotestorage.s3.bucketregion" value="" />
+    <property name="remotestorage.s3.accesskeyid" value="" />
+    <property name="remotestorage.s3.secretaccesskey" value="" />
+
   </system-properties>
 </appengine-web-app>
