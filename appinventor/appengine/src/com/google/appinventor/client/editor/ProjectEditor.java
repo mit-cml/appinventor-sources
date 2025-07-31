@@ -90,17 +90,17 @@ public abstract class ProjectEditor extends Composite {
   public abstract void processProject();
 
   /**
-   * Called when the ProjectEditor widget is loaded after having been hidden.
-   * Subclasses must implement this method, taking responsibility for causing
-   * the onShow method of the selected file editor to be called and for updating
+   * Called when the ProjectEditor widget is loaded after having been hidden. 
+   * Subclasses must implement this method, taking responsibility for causing 
+   * the onShow method of the selected file editor to be called and for updating 
    * any other UI elements related to showing the project editor.
    */
   protected abstract void onShow();
 
   /**
    * Called when the ProjectEditor widget is about to be unloaded. Subclasses
-   * must implement this method, taking responsibility for causing the onHide
-   * method of the selected file editor to be called and for updating any
+   * must implement this method, taking responsibility for causing the onHide 
+   * method of the selected file editor to be called and for updating any 
    * other UI elements related to hiding the project editor.
    */
   protected abstract void onHide();
@@ -112,9 +112,9 @@ public abstract class ProjectEditor extends Composite {
   public final void setScreenCheckboxState(String screen, Boolean isChecked) {
     screenHashMap.put(screen, isChecked);
     changeProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
-            getScreenCheckboxMapString()
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
+        getScreenCheckboxMapString()
     );
   }
 
@@ -144,8 +144,8 @@ public abstract class ProjectEditor extends Composite {
 
   public final void buildScreenHashMap() {
     String screenCheckboxMap = getProjectSettingsProperty(
-            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
     );
     String[] pairs = screenCheckboxMap.split(" ");
     for (String pair : pairs) {
@@ -307,7 +307,7 @@ public abstract class ProjectEditor extends Composite {
     String currentValue = settings.getPropertyValue(name);
     if (!newValue.equals(currentValue)) {
       LOG.info("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
-              " => " + newValue);
+                 " => " + newValue);
       settings.changePropertyValue(name, newValue);
       // Deal with the Tutorial Panel
       Ode ode = Ode.getInstance();
@@ -353,7 +353,7 @@ public abstract class ProjectEditor extends Composite {
       }
     }
     changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION,
-            usesLocation);
+      usesLocation);
   }
 
   public void clearLocation(String componentName) {
@@ -386,7 +386,7 @@ public abstract class ProjectEditor extends Composite {
     LOG.info("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+                                                    SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
     if (!tutorialURL.isEmpty()) {
       Ode ode = Ode.getInstance();
       ode.setTutorialURL(tutorialURL);
