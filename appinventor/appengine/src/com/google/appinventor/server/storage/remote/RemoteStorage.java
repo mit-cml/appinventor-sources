@@ -5,6 +5,11 @@
 
 package com.google.appinventor.server.storage.remote;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+
 /**
  * Interface which abstracts the remote storage access patterns.
  * This allows AI2 to store different files, like build outputs, outside
@@ -69,17 +74,43 @@ public abstract class RemoteStorage {
   /**
    * Generates a constant object key for a given specific project export.
    *
+   * @param downloadKind the type of download
    * @param userId the user ID owning the project
-   * @param projectId the given project ID
-   * @param projectName the name of the project to store
-   * @return export/userId/projectId/projectName.aia
+   * @param fileName the name of the file to store
+   * @return export/userId/downloadKind/timestampHash/file.name
    */
-  public final String getProjectExportObjectKey(final String userId, final Long projectId,
-      final String projectName) {
-    final String filePath = userId + "/" + projectId;
-    final String fileName = projectName + ".aia";
+  public final String getProjectExportObjectKey(final String downloadKind, final String userId, final String fileName) {
+    final String timestamp = String.valueOf(Instant.now().getEpochSecond());
+    final String timestampHash = generateFieldsHash(userId, downloadKind, fileName, timestamp);
 
+    // We introduce a timestamp in between the URL to ensure we don't overwrite objects, and let any lifecycle
+    //   rule clean them up.
+    final String filePath = userId + "/" + downloadKind + "/" + timestampHash;
     return PROJECT_EXPORT_PREFIX + "/" + filePath + "/" + fileName;
+  }
+
+  /**
+   * Generates a hash based on the input strings, separated by a pipe.
+   *
+   * @param fields the current timestamp
+   * @return a SHA-256 hash as hexadecimal string
+   */
+  private String generateFieldsHash(final String ...fields) {
+    final String input = String.join("|", fields);
+    try {
+      final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      final byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+
+      final StringBuilder hexString = new StringBuilder();
+      for (byte b : hashBytes) {
+        hexString.append(String.format("%02x", b));
+      }
+      return hexString.toString();
+
+    } catch (NoSuchAlgorithmException e) {
+      // Fallback to a simple hash if SHA-256 is not available
+      return String.valueOf(Math.abs((input).hashCode()));
+    }
   }
 
 }
