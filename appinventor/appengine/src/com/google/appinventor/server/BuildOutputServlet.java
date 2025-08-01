@@ -99,7 +99,7 @@ public class BuildOutputServlet extends OdeServlet {
       final String userId = nonce.getUserId();
       final long projectId = nonce.getProjectId();
 
-      if (RemoteStorageInstanceHolder.isRemoteConfigured()) {
+      if (RemoteStorageInstanceHolder.isRemoteConfigured(RemoteStorageInstanceHolder.Usage.BUILD)) {
         final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
         // Given all the output files, try to find the one that matches an output extension
         final List<String> files = storageIo.getProjectOutputFiles(userId, projectId);
@@ -115,7 +115,7 @@ public class BuildOutputServlet extends OdeServlet {
           throw new FileNotFoundException("No target file found!");
         }
 
-        final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance();
+        final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance(RemoteStorageInstanceHolder.Usage.BUILD);
         // For now, we use Android always. If we eventually support iOS, we should decide here
         //   whether we are going for Android or Apple, as well as in the BarcodeAction.
         final String target = BuildOutputFiles.getTargetName();

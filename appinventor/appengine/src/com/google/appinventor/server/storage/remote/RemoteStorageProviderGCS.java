@@ -27,10 +27,12 @@ public final class RemoteStorageProviderGCS extends RemoteStorage {
 
   private static final String GCS_BASE_URL = "https://storage.googleapis.com";
 
+  private static RemoteStorageProviderGCS INSTANCE = null;
+
   private final AppIdentityService appIdentityService;
   private final String bucketName;
 
-  public RemoteStorageProviderGCS() {
+  private RemoteStorageProviderGCS() {
     SystemProperty.Environment.Value server = SystemProperty.environment.value();
     if (server != SystemProperty.Environment.Value.Production) {
       throw new UnsupportedOperationException("GCS Remote Storage can only be used in Production environment!");
@@ -44,6 +46,14 @@ public final class RemoteStorageProviderGCS extends RemoteStorage {
     } else {
       this.bucketName = bucketNameFlag;
     }
+  }
+
+  public static RemoteStorageProviderGCS getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new RemoteStorageProviderGCS();
+    }
+
+    return INSTANCE;
   }
 
   @Override

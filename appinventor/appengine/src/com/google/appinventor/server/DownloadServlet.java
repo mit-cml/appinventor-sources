@@ -353,7 +353,7 @@ public class DownloadServlet extends OdeServlet {
       return null;
     }
 
-    if (!RemoteStorageInstanceHolder.isRemoteConfigured()) {
+    if (!RemoteStorageInstanceHolder.isRemoteConfigured(RemoteStorageInstanceHolder.Usage.EXPORT)) {
       // Skip any further checks if unconfigured
       return null;
     }
@@ -366,7 +366,7 @@ public class DownloadServlet extends OdeServlet {
     final String fileName = file.getFileName();
     LOG.info("Sending file to Remote Storage: " + fileName);
 
-    final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance();
+    final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance(RemoteStorageInstanceHolder.Usage.EXPORT);
     final String objectKey = remoteStorage.getProjectExportObjectKey(downloadKind, userId, fileName);
 
     final String uploadUrlStr = remoteStorage.generateUploadUrl(objectKey);
