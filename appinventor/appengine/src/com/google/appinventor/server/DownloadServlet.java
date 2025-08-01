@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -103,6 +104,16 @@ public class DownloadServlet extends OdeServlet {
   // If unconfigured, still use GAE, but it may fail for large files due to response
   //   payload limit.
   private static final int DIRECT_DOWNLOAD_MAX_FILE_SIZE = 20_000_000;
+
+  // Only use remote downloads for specific kind of downloads (and avoid using for other
+  //   files like assets, even if "larger", although impossible).
+  private static final Set<String> REMOTE_DOWNLOAD_KINDS = Set.of(
+      ServerLayout.DOWNLOAD_PROJECT_OUTPUT,
+      ServerLayout.DOWNLOAD_PROJECT_SOURCE,
+      ServerLayout.DOWNLOAD_USER_PROJECT_SOURCE,
+      ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE,
+      ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE
+  );
 
   // Logging support
   private static final Logger LOG = Logger.getLogger(DownloadServlet.class.getName());
@@ -337,6 +348,11 @@ public class DownloadServlet extends OdeServlet {
 
   private String shouldUseRemoteStorageDownload(final String downloadKind, final String userId, final RawFile file)
       throws IOException {
+    if (!REMOTE_DOWNLOAD_KINDS.contains(downloadKind)) {
+      // Skip non-project related downloads
+      return null;
+    }
+
     if (!RemoteStorageInstanceHolder.isRemoteConfigured()) {
       // Skip any further checks if unconfigured
       return null;
