@@ -8,12 +8,17 @@ package com.google.appinventor.server.storage.remote;
 import com.google.appinventor.server.flags.Flag;
 import com.google.common.annotations.VisibleForTesting;
 
+import java.util.logging.Logger;
+
+
 /**
  * Holds the singleton BuildOutputRemoteStorage subclass object. We introduce this class
  * so that we can switch out the underlying BuildOutputRemoteStorage subclass without changing
  * the references in the code to the INSTANCE.
  */
 public class RemoteStorageInstanceHolder {
+  private static final Logger LOG = Logger.getLogger(RemoteStorageInstanceHolder.class.getName());
+
   private static final Flag<String> PROVIDER_NAME = Flag.createFlag("remotestorage", null);
 
   private static Boolean IS_LOADED = false;
@@ -44,6 +49,15 @@ public class RemoteStorageInstanceHolder {
     if (providerName == null || providerName.isBlank()) {
       // If not configured, then use the default provider (aka none).
       return null;
+    }
+
+    if (providerName.equals("gcp")) {
+      try {
+        return new RemoteStorageProviderGCS();
+      } catch (UnsupportedOperationException e) {
+        LOG.severe("Could not initialize Remote GCP Storage in non-Production environment!");
+        return null;
+      }
     }
 
     if (providerName.equals("s3")) {

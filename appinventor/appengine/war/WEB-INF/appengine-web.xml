@@ -195,7 +195,10 @@
     <!-- Remote Storage Provider -->
     <property name="remotestorage" value="" />
 
-    <!-- S3 Compatible Storage Configuration -->
+    <!-- GCP Remote Storage Configuration -->
+    <property name="remotestorage.gcp.bucketname" value="" />
+
+    <!-- S3 Compatible Remote Storage Configuration -->
     <property name="remotestorage.s3.endpoint" value="" />
     <property name="remotestorage.s3.bucketname" value="" />
     <property name="remotestorage.s3.bucketregion" value="" />
