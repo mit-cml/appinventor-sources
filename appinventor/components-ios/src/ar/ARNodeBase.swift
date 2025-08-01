@@ -832,14 +832,23 @@ open class ARNodeBase: NSObject, ARNode {
     }
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let size = bounds.max - bounds.min
+    
+    // Ensure minimum size and make slightly larger for stability
     let safeSize = SIMD3<Float>(
-        max(size.x, 0.01),
-        max(size.y, 0.01),
-        max(size.z, 0.01)
+        max(size.x, 0.05) * 1.1,  // 10% larger for stability
+        max(size.y, 0.05) * 1.1,
+        max(size.z, 0.05) * 1.1
     )
     
-    let shape = ShapeResource.generateBox(size: safeSize)
-    
+    // For round objects, use sphere collision (more stable)
+    let shape: ShapeResource
+    if abs(safeSize.x - safeSize.y) < 0.01 && abs(safeSize.y - safeSize.z) < 0.01 {
+        // Nearly cubic - use sphere for stability
+        let radius = (safeSize.x + safeSize.y + safeSize.z) / 6.0
+        shape = ShapeResource.generateSphere(radius: radius)
+    } else {
+        shape = ShapeResource.generateBox(size: safeSize)
+    }
     _enablePhysics = isDynamic
     _modelEntity.collision = CollisionComponent(shapes: [shape])
     
@@ -854,7 +863,6 @@ open class ARNodeBase: NSObject, ARNode {
         dynamicFriction: 0.7,   // Friction when moving
         restitution: 0.1        // Low restitution = less bouncy (0.0 to 1.0)
     )
-    
     
     _enablePhysics = isDynamic
     _modelEntity.collision = CollisionComponent(shapes: [shape])
