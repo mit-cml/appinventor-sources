@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import static com.google.appinventor.client.Ode.CLog;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
@@ -173,8 +174,8 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         long argbValue = Long.valueOf(propertyValue, radix) & 0xFFFFFFFFL;
         String hex = argbToHex(argbValue);
         if (argbValue == this.defaultValueArgb || argbValue == 0) {
-            String displayValue = hex.endsWith("FF") ? hex.substring(0, hex.length() - 2) : hex;
-            selectColor.setHTML(Color.getHtmlDescription(defaultValue, displayValue));
+//            String displayValue = hex.endsWith("FF") ? hex.substring(0, hex.length() - 2) : hex;
+            selectColor.setHTML(Color.getHtmlDescription(defaultValue, MESSAGES.defaultColor()));
             setPickerColor(this.defaultValueArgb);
             return;
         }
@@ -200,9 +201,8 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
      */
     private static String makeCustomHTML(long argbValue, double a, int r, int g, int b) {
         String hex = argbToHex(argbValue);
-        String displayValue = hex.endsWith("FF") ? hex.substring(0, hex.length() - 2) : hex;
         return "<span style=\"background:rgba(" + r + "," + g + "," + b + "," + a + "); display: inline-block; " +
-                "width:15px; height:15px; border-radius:200px; border: 1px solid var(--border-color);\">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" + displayValue;
+                "width:15px; height:15px; border-radius:200px; border: 1px solid var(--border-color);\">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" + hex;
     }
 
     /**
@@ -383,15 +383,4 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         return "#" + color.substring(4) + color.substring(2, 4);
     }
 
-    public static String getAlphaHexString(String color) {
-        if (color.isEmpty()) return "";
-        color = color.startsWith("&H") ? color.substring(2) : Long.toHexString(Long.parseLong(color));
-        int len = color.length();
-        if (len < 8) {
-            do {
-                color = 'F' + color;
-            } while (++len < 8);
-        }
-        return '#' + color.substring(2) + color.substring(0, 2);
-    }
 }
