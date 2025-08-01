@@ -13,9 +13,10 @@ import java.util.logging.Logger;
 
 
 /**
- * Holds the singleton BuildOutputRemoteStorage subclass object. We introduce this class
- * so that we can switch out the underlying BuildOutputRemoteStorage subclass without changing
- * the references in the code to the INSTANCE.
+ * Holds the singleton BuildOutputRemoteStorage subclass object. We will actually have
+ *   multiple instances depending on the particular usage. This allows to for example
+ *   store build outputs in a server/provider closer to the buildserver, but project
+ *   exports in Google Cloud, for example.
  */
 public class RemoteStorageInstanceHolder {
   public enum Usage {
