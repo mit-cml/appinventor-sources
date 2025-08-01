@@ -32,18 +32,28 @@ public final class RemoteStorageProviderS3 extends RemoteStorage {
   private static final String SERVICE = "s3";
   private static final String REQUEST_TYPE = "aws4_request";
 
+  private static RemoteStorageProviderS3 INSTANCE = null;
+
   private final String endpoint;
   private final String bucketName;
   private final String bucketRegion;
   private final String accessKeyId;
   private final String secretAccessKey;
 
-  public RemoteStorageProviderS3() {
+  private RemoteStorageProviderS3() {
     this.endpoint = validateOptionalParameter(ENDPOINT.get());
     this.bucketName = validateRequiredParameter(BUCKET_NAME.get(), "bucketName");
     this.bucketRegion = validateRequiredParameter(BUCKET_REGION.get(), "bucketRegion");
     this.accessKeyId = validateRequiredParameter(ACCESS_KEY_ID.get(), "accesskeyid");
     this.secretAccessKey = validateRequiredParameter(SECRET_ACCESS_KEY.get(), "secretaccesskey");
+  }
+
+  public static RemoteStorageProviderS3 getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new RemoteStorageProviderS3();
+    }
+
+    return INSTANCE;
   }
 
   private String validateRequiredParameter(final String param, final String paramName) {

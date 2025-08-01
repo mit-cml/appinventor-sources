@@ -6,8 +6,9 @@
 package com.google.appinventor.server.storage.remote;
 
 import com.google.appinventor.server.flags.Flag;
-import com.google.common.annotations.VisibleForTesting;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -17,35 +18,47 @@ import java.util.logging.Logger;
  * the references in the code to the INSTANCE.
  */
 public class RemoteStorageInstanceHolder {
+  public enum Usage {
+    BUILD("build"),  // APK/AAB Artifacts
+    EXPORT("export"),  // AIA Downloads
+    ;
+
+    private final String flagName;
+
+    Usage(final String flagName) {
+      this.flagName = flagName;
+    }
+
+    public String getFlagName() {
+      return flagName;
+    }
+  }
+
   private static final Logger LOG = Logger.getLogger(RemoteStorageInstanceHolder.class.getName());
 
-  private static final Flag<String> PROVIDER_NAME = Flag.createFlag("remotestorage", null);
-
-  private static Boolean IS_LOADED = false;
-  private static RemoteStorage INSTANCE;
+  // Here we store each provider for each specific usage
+  private static final Map<Usage, RemoteStorage> INSTANCES_USAGE_MAP = new HashMap<>();
 
   private RemoteStorageInstanceHolder() {} // not to be instantiated
 
-  public static RemoteStorage getInstance() {
-    if (!IS_LOADED) {
-      INSTANCE = createRemoteInstance();
-      IS_LOADED = true;
+  public static RemoteStorage getInstance(final Usage usage) {
+    if (INSTANCES_USAGE_MAP.containsKey(usage)) {
+      return INSTANCES_USAGE_MAP.get(usage);
     }
 
-    return INSTANCE;
+    RemoteStorage instance = createRemoteInstance(usage);
+    INSTANCES_USAGE_MAP.put(usage, instance);
+
+    return instance;
   }
 
-  public static boolean isRemoteConfigured() {
-    return getInstance() != null;
+  public static boolean isRemoteConfigured(final Usage usage) {
+    return getInstance(usage) != null;
   }
 
-  @VisibleForTesting
-  public static void setInstance(RemoteStorage instance) {
-    INSTANCE = instance;
-  }
-
-  private static RemoteStorage createRemoteInstance() {
-    final String providerName = PROVIDER_NAME.get();
+  private static RemoteStorage createRemoteInstance(final Usage usage) {
+    final String flagName = "remotestorage." + usage.getFlagName();
+    final String providerName = Flag.createFlag(flagName, null).get();
     if (providerName == null || providerName.isBlank()) {
       // If not configured, then use the default provider (aka none).
       return null;
@@ -53,7 +66,7 @@ public class RemoteStorageInstanceHolder {
 
     if (providerName.equals("gcp")) {
       try {
-        return new RemoteStorageProviderGCS();
+        return RemoteStorageProviderGCS.getInstance();
       } catch (UnsupportedOperationException e) {
         LOG.severe("Could not initialize Remote GCP Storage in non-Production environment!");
         return null;
@@ -61,7 +74,7 @@ public class RemoteStorageInstanceHolder {
     }
 
     if (providerName.equals("s3")) {
-      return new RemoteStorageProviderS3();
+      return RemoteStorageProviderS3.getInstance();
     }
 
     throw new UnsupportedOperationException("Unknown remote storage provider: " + providerName);

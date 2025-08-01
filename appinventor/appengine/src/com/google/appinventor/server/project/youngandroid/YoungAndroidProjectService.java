@@ -792,8 +792,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       uriBuilder.add("gitBuildVersion", GitBuildId.getVersion());
     }
 
-    if (RemoteStorageInstanceHolder.isRemoteConfigured()) {
-      final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance();
+    if (RemoteStorageInstanceHolder.isRemoteConfigured(RemoteStorageInstanceHolder.Usage.BUILD)) {
+      final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance(RemoteStorageInstanceHolder.Usage.BUILD);
       final String objectKey = remoteStorage.getBuildOutputObjectKey(target, userId, projectId, projectName, extName);
       final String uploadUrl = remoteStorage.generateUploadUrl(objectKey);
 

@@ -193,7 +193,8 @@
     <property name="ode.base" value="" />
 
     <!-- Remote Storage Provider -->
-    <property name="remotestorage" value="" />
+    <property name="remotestorage.build" value="" />
+    <property name="remotestorage.export" value="" />
 
     <!-- GCP Remote Storage Configuration -->
     <property name="remotestorage.gcp.bucketname" value="" />
