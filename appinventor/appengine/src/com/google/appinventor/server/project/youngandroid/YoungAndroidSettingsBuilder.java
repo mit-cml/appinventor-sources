@@ -18,6 +18,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME;
@@ -31,6 +32,8 @@ import com.google.common.base.Strings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 public class YoungAndroidSettingsBuilder {
@@ -51,6 +54,7 @@ public class YoungAndroidSettingsBuilder {
   private String primaryColorDark = "0";
   private String accentColor = "0";
   private String defaultFileScope = "App";
+  private String projectColors = "{}";
   private String aiVersioning = "";
   private String lastOpened = "Screen1";
 
@@ -93,6 +97,9 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
     defaultFileScope = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
+    String projectColorsProperty = settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
+    projectColors = projectColorsProperty == null ? "{}" : projectColorsProperty;
     aiVersioning = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_AIVERSIONING));
     lastOpened = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -122,6 +129,7 @@ public class YoungAndroidSettingsBuilder {
     primaryColorDark = properties.getProperty("color.primary.dark", "");
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
+    projectColors = properties.getProperty("projectcolors", "{}");
     aiVersioning = properties.getProperty("aiversioning", "");
     lastOpened = properties.getProperty("lastopened", "");
   }
@@ -138,6 +146,11 @@ public class YoungAndroidSettingsBuilder {
 
   public YoungAndroidSettingsBuilder setIcon(String icon) {
     this.icon = icon;
+    return this;
+  }
+
+  public YoungAndroidSettingsBuilder setProjectColors(String projectColors) {
+    this.projectColors = projectColors;
     return this;
   }
 
@@ -243,6 +256,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, primaryColorDark);
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
+    object.put(YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, projectColors);
     object.put(YOUNG_ANDROID_SETTINGS_AIVERSIONING, aiVersioning);
     object.put(YOUNG_ANDROID_SETTINGS_LAST_OPENED, lastOpened);
     JSONObject wrapper = new JSONObject();
@@ -285,7 +299,9 @@ public class YoungAndroidSettingsBuilder {
     } catch (IOException e) {
       throw new RuntimeException("Unexpected IOException writing to byte buffer", e);
     }
-    return out.toString();
+    StringBuilder builder = new StringBuilder(out.toString());
+    builder.append("projectcolors=").append(projectColors); // ByteArrayOutputStream corrupts the projectColors JSON string because of escape character
+    return builder.toString();
   }
 
   private static void addPropertyIfSet(Properties properties, String key, String value) {
@@ -323,6 +339,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.primaryColorDark.equals(primaryColorDark);
       result &= other.accentColor.equals(accentColor);
       result &= other.defaultFileScope.equals(defaultFileScope);
+      result &= other.projectColors.equals(projectColors);
       result &= other.aiVersioning.equals(aiVersioning);
       result &= other.lastOpened.equals(lastOpened);
       return result;
