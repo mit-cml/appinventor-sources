@@ -345,17 +345,21 @@ public class DownloadServlet extends OdeServlet {
       return null;
     }
 
-    LOG.info("Sending file to Remote Storage: " + file.getFileName());
+    final String fileName = file.getFileName();
+    LOG.info("Sending file to Remote Storage: " + fileName);
 
     final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance();
-    final String objectKey = remoteStorage.getProjectExportObjectKey(downloadKind, userId, file.getFileName());
+    final String objectKey = remoteStorage.getProjectExportObjectKey(downloadKind, userId, fileName);
 
     final String uploadUrlStr = remoteStorage.generateUploadUrl(objectKey);
 
     HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrlStr).openConnection();
     connection.setDoOutput(true);
     connection.setRequestMethod("PUT");
-    connection.addRequestProperty("Content-Type", StorageUtil.getContentTypeForFilePath(file.getFileName()));
+    connection.addRequestProperty("Content-Type", StorageUtil.getContentTypeForFilePath(fileName));
+    // Ensure that, when downloading the file from remote, it preserves the same name
+    // If this is not set, and Content-Type is set to ZIP for AIA, browsers will rewrite .aia to .zip
+    connection.addRequestProperty("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
     connection.setConnectTimeout(60000);
     connection.setReadTimeout(60000);
     try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream())) {
