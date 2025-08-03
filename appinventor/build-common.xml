@@ -250,6 +250,14 @@
        ==================================================================== -->
   <property name="lib.dir" location="${appinventor.dir}/lib" />
 
+  <path id="compile.classpath">
+    <fileset dir="${lib.dir}">
+      <include name="servlet-api.jar"/>
+      <include name="appengine-api.jar"/>
+      <include name="appinventor-server.jar"/>
+    </fileset>
+  </path>
+
   <!-- ====================================================================
        Define property for docs directory.
        ==================================================================== -->

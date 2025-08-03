@@ -6,6 +6,8 @@
 
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import com.google.appengine.api.utils.SystemProperty;
+import com.google.appinventor.server.ServerLayout;
 
 public class Server {
 
