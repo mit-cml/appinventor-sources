@@ -13,7 +13,12 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import jsinterop.annotations.JsMethod;
+
 import java.util.Arrays;
+import java.util.List;
+
+import android.util.Log;
 
 @DesignerComponent(
     version = YaVersion.LISTVIEW_COMPONENT_VERSION,
@@ -23,6 +28,9 @@ import java.util.Arrays;
 @SimpleObject
 public class ListView extends AndroidViewComponent {
 
+    @JsMethod(namespace = "console")
+    public static native void log(String message);
+
     private final View view;
     private android.widget.ListView listView;
 
@@ -31,7 +39,9 @@ public class ListView extends AndroidViewComponent {
     private String elementsFromString = "";
 
     public ListView(ComponentContainer container) {
-        super(container);
+        super(container);        
+        log("ListView constructor called");
+        Log.i("ListView Tag", "Listview constructor called");
 
         Context context = container.$context();
 
@@ -45,6 +55,11 @@ public class ListView extends AndroidViewComponent {
 
         Width(300);
         Height(400);
+
+        ElementsFromString("alpha, beta, gamma");
+        log("hard coded elementsfromstring called");
+
+        Elements(YailList.makeList(Arrays.asList("one", "two", "three")));
     }
 
     @Override
@@ -62,19 +77,49 @@ public class ListView extends AndroidViewComponent {
 
     @SimpleProperty
     public void Elements(YailList elements) {
+        log("ListView.Elements() called with: " + elements);
+        log("YailList.toString(): " + elements.toString());
+        log("YailList size (manual): " + (elements == null ? "null" : elements.size()));
         this.elements = elements;
 
-        int size = elements.size();
-        String[] items = new String[size];
-        for (int i = 0; i < size; i++) {
-            Object item = elements.getObject(i + 1);
+        if (elements instanceof YailList) {
+            log("elements is instance of YailList");
+        } else {
+            log("elements is NOT a YailList instance");
+        }
+
+        log("YailList class: " + elements.getClass().getName());
+
+        Object[] objArray;
+        try {
+            objArray = elements.toArray();
+            if (objArray == null) {
+                log("ListView.Elements: toArray() returned null");
+                return;
+            }
+        } catch (Exception e) {
+            log("ListView.Elements: toArray() threw exception: " + e.getMessage());
+            return;
+        }
+
+        if (elements.size() == 0) {
+            log("YailList appears empty");
+        }
+        log("Converted to Object[] with length: " + objArray.length);
+
+        String[] items = new String[objArray.length];
+        for (int i = 0; i < objArray.length; i++) {
+            Object item = objArray[i];
             items[i] = (item == null) ? "" : item.toString();
         }
 
         adapter = new ArrayAdapter<>(container.$context(), android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);
-
         adapter.notifyDataSetChanged();
+
+        YailList testList = YailList.makeList(Arrays.asList("item 1", "item 2", "item 3"));
+        Object[] objArray2 = testList.toArray();
+        log("HARD CODE fallback array size: " + objArray2.length);
     }
 
     @SimpleProperty(
