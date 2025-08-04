@@ -1517,6 +1517,10 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
+                if (!rs.android && json.extensions) {
+                    // Newer iOS versions will report the extensions that they support
+                    top.ALLOWED_IOS_EXTENSIONS = JSON.parse(json.extensions);
+                }
                 if (!(rs.android) && Blockly.ReplMgr.hasDisallowedIosExtensions()) {
                     rs.dialog.hide();
                     top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
