@@ -115,6 +115,16 @@ public final class AR3DFactory {
     float Mass();
     void Mass(float mass);
 
+    float ImpulseScale();
+    void ImpulseScale(float scale);
+
+    float GravityScale();
+    void GravityScale(float scale);
+
+    float DragSensitivity();
+    void DragSensitivity(float mass);
+
+
     String CollisionShape();
     void CollisionShape(String collisionShape);
 

@@ -7,7 +7,15 @@ import RealityKit
 @available(iOS 14.0, *)
 open class SphereNode: ARNodeBase, ARSphere {
   private var _radius: Float = 0.05 // stored in meters
-    
+  private var _storedPhysicsSettings: PhysicsSettings?
+  private var _totalRolling: SIMD3<Float> = SIMD3<Float>(0, 0, 0)  // Track total rotation
+
+   struct PhysicsSettings {
+       let mass: Float
+       let material: PhysicsMaterialResource
+       let mode: PhysicsBodyMode
+   }
+  
   @objc init(_ container: ARNodeContainer) {
     // Create initial sphere mesh
     let mesh = MeshResource.generateSphere(radius: 0.05)
@@ -42,90 +50,110 @@ open class SphereNode: ARNodeBase, ARSphere {
   }
   
   
-  override open func startDrag() {
-        guard let physicsBody = _modelEntity.physicsBody else {
-            print("⚠️ SphereNode needs physics enabled for dragging")
-            return
-        }
-        
-        // Disable gravity while dragging
-        isBeingDragged = true
-        
-        // Store original material for visual feedback
-        OriginalMaterial = self._modelEntity.model?.materials.first
-    if #available(iOS 15.0, *) {
-      showDragEffect()
-    } else {
-      // Fallback on earlier versions
-    }
-        
-        print("🎾 SphereNode drag started - RealityKit physics paused")
-    }
-    
-  override open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
-
-        // Convert screen drag to world movement
-        let dragMagnitude = sqrt(dragVector.x * dragVector.x + dragVector.y * dragVector.y)
-        let movementScale = min(Float(dragMagnitude) * DragSensitivity, 0.01)
-        
-        // Move sphere directly while dragging (override physics temporarily)
-        let currentPos = _modelEntity.transform.translation
-        let movement = worldDirection * movementScale
-        let newPos = currentPos + movement
-        
-        // Simple bounds check
-        if newPos.y > -2.0 {  // Don't drag below reasonable floor
-            _modelEntity.transform.translation = newPos
-            
-            // Add rolling rotation for visual feedback
-            addVisualRolling(movement: movement)
-        }
-    }
-    
-    override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
-        guard let physicsBody = _modelEntity.physicsBody else { return }
-
-        
-        // Convert release velocity to physics impulse
-        let velocityMagnitude = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
-        let impulseScale = min(Float(velocityMagnitude) * ReleaseForceMultiplier, 0.03)
-        
-        let releaseImpulse = worldDirection * impulseScale
-        
-        // Re-enable RealityKit physics
-        isBeingDragged = false
-        
-        // Apply custom gravity if different from default
-        if GravityScale != 1.0 {
-            startCustomGravity()
-        }
-        
-        // Apply release impulse
-        if #available(iOS 18.0, *) {
-            // Use real impulse methods when available
-            // physicsBody.applyLinearImpulse(releaseImpulse, relativeTo: nil)
-        } else {
-            // iOS 16 workaround
-            applyReleaseImpulse(releaseImpulse)
-        }
-        
-        restoreMaterial()
-        
-        print("🎾 SphereNode released - RealityKit physics resumed with custom gravity: \(GravityScale)")
-    }
-    
-    private func applyReleaseImpulse(_ impulse: SIMD3<Float>) {
-        // iOS 16 workaround - micro movement that physics responds to
-        let currentPos = _modelEntity.transform.translation
-        let impulseMovement = impulse * 0.002  // Small movement in impulse direction
-        let newPos = currentPos + impulseMovement
-        
-        _modelEntity.transform.translation = newPos
-      isBeingDragged = false
-        
-        // Physics will take over from this new position with momentum
-    }
-    
+      
+      override open func startDrag() {
+          print("🎾 Starting drag with nuclear physics removal")
+          
+          // ✅ Store physics settings if they exist
+          if let physicsBody = _modelEntity.physicsBody {
+              _storedPhysicsSettings = PhysicsSettings(
+                  mass: physicsBody.massProperties.mass,
+                  material: physicsBody.material,
+                  mode: physicsBody.mode
+              )
+              
+              // ✅ Remove physics completely - don't call EnablePhysics(false)
+              _modelEntity.physicsBody = nil
+              _modelEntity.collision = nil  // Also remove collision
+          }
+          
+          isBeingDragged = true
+          OriginalMaterial = self._modelEntity.model?.materials.first
+          
+          if #available(iOS 15.0, *) {
+              showDragEffect()
+          }
+          
+          print("🎾 Physics completely removed - ready for free dragging")
+      }
+      
+      override open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
+          // ✅ Debug all values
+          print("🎾 === DRAG DEBUG ===")
+          print("🎾 dragVector: \(dragVector)")
+          print("🎾 worldDirection: \(worldDirection)")
+          print("🎾 DragSensitivity: \(DragSensitivity)")
+          
+          // ✅ Much higher sensitivity and movement scale
+          let dragMagnitude = sqrt(dragVector.x * dragVector.x + dragVector.y * dragVector.y)
+          let movementScale = min(Float(dragMagnitude) * DragSensitivity, 0.05)  // Increased from 0.02 to 0.1
+          
+          print("🎾 dragMagnitude: \(dragMagnitude)")
+          print("🎾 movementScale: \(movementScale)")
+          
+          let currentPos = _modelEntity.transform.translation
+          let movement = worldDirection * movementScale
+          let newPos = currentPos + movement
+          
+          print("🎾 currentPos: \(currentPos)")
+          print("🎾 movement: \(movement)")
+          print("🎾 newPos: \(newPos)")
+          
+          // ✅ No bounds checking - allow movement anywhere
+          _modelEntity.transform.translation = newPos
+          addVisualRolling(movement: movement)
+          
+          print("🎾 Moved to: \(newPos)")
+          print("🎾 ==================")
+      }
+      
+      override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+          print("🎾 Ending drag - restoring physics")
+          
+          // ✅ Restore physics if it was enabled before
+          if let storedSettings = _storedPhysicsSettings {
+              // Recreate collision first
+              let bounds = _modelEntity.visualBounds(relativeTo: nil)
+              let size = bounds.max - bounds.min
+              let radius = max(size.x, size.y, size.z) / 2
+              let shape = ShapeResource.generateSphere(radius: max(radius, 0.03))
+              _modelEntity.collision = CollisionComponent(shapes: [shape])
+              
+              // Recreate physics body
+              _modelEntity.physicsBody = PhysicsBodyComponent(
+                  massProperties: PhysicsMassProperties(mass: storedSettings.mass),
+                  material: storedSettings.material,
+                  mode: storedSettings.mode
+              )
+              
+              print("🎾 Physics restored with mass: \(storedSettings.mass)")
+          }
+          
+          // ✅ Apply release impulse after a short delay
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+              let velocityMagnitude = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
+              let impulseScale = min(Float(velocityMagnitude) * self.ReleaseForceMultiplier, 0.05)  // Increased
+              let releaseImpulse = worldDirection * impulseScale
+              
+              print("🎾 Applying release impulse: \(releaseImpulse)")
+              self.applyReleaseImpulse(releaseImpulse)
+          }
+          
+          isBeingDragged = false
+          restoreMaterial()
+          _storedPhysicsSettings = nil
+      }
+      
+      private func applyReleaseImpulse(_ impulse: SIMD3<Float>) {
+          let currentPos = _modelEntity.transform.translation
+          let impulseMovement = impulse * 0.005  // Increased from 0.002
+          let newPos = currentPos + impulseMovement
+          
+          _modelEntity.transform.translation = newPos
+          
+          print("🎾 Applied impulse movement: \(impulseMovement)")
+      }
+  
     private func startCustomGravity() {
         guard GravityScale != 1.0 else { return }
         
@@ -168,16 +196,26 @@ open class SphereNode: ARNodeBase, ARSphere {
             _modelEntity.model?.materials = [original]
         }
     }
-    
-    private func addVisualRolling(movement: SIMD3<Float>) {
-        let movementMagnitude = simd_length(movement)
-        guard movementMagnitude > 0.0001 else { return }
-        
-        let normalizedMovement = simd_normalize(movement)
-        let rollAxis = SIMD3<Float>(normalizedMovement.z, 0, -normalizedMovement.x)
-        let rollAngle = movementMagnitude * 30.0
-        
-        let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
-        _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-    }
+
+  
+
+  private func addVisualRolling(movement: SIMD3<Float>) {
+      let movementMagnitude = simd_length(movement)
+      guard movementMagnitude > 0.0001 else { return }
+      
+      let normalizedMovement = simd_normalize(movement)
+      let rollAxis = SIMD3<Float>(normalizedMovement.z, 0, -normalizedMovement.x)
+      let rollAngle = movementMagnitude * 30.0
+      
+      // ✅ Accumulate total rolling instead of multiplying rotations
+      _totalRolling += rollAxis * rollAngle
+      
+      // ✅ Apply fresh rotation from identity
+      _modelEntity.transform.rotation = simd_quatf(
+          angle: simd_length(_totalRolling),
+          axis: simd_length(_totalRolling) > 0 ? simd_normalize(_totalRolling) : SIMD3<Float>(0, 1, 0)
+      )
+      
+      print("🎾 Total rolling: \(_totalRolling)")
+  }
 }

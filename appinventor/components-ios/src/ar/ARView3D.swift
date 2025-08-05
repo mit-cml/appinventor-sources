@@ -1486,21 +1486,25 @@ extension ARView3D: UIGestureRecognizerDelegate {
         
         // Check for RealityKit scene understanding
         if entityType.contains("RKSceneUnderstanding") {
+            print("rkscene collision")
             return classifySceneUnderstandingEntity(entity, position: position)
         }
         
         // Check for your invisible floor
         if entityName == "InvisibleFloor" {
+          print("invisible floor collision")
             return .floor
         }
         
         // Check for detected planes
         if entityName.contains("DetectedPlane") {
+          print("detected plane collision")
             return classifyDetectedPlane(entity)
         }
         
         // Check for mesh entities
         if entityType.contains("MeshEntity") {
+            print("mesh entity collision")
             return classifyMeshEntity(entity, position: position)
         }
         
@@ -1510,7 +1514,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
       
     private func classifySceneUnderstandingEntity(_ entity: Entity, position: SIMD3<Float>) -> SceneEntityType {
         // For RealityKit scene understanding, we can often get more info
-        if position.y < -1.0 {
+      if position.y < -0.5 {
             return .floor
         } else if position.y > 2.0 {
             return .ceiling
@@ -1636,35 +1640,44 @@ extension ARView3D: UIGestureRecognizerDelegate {
           case unknown = "unknown"
       }
   
+
   
-
-      func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
-          let cameraTransform = _arView.cameraTransform
-          
-        let rightVector = SIMD3<Float>(cameraTransform.matrix.columns.0.x, 0, cameraTransform.matrix.columns.0.z)
-        let forwardVector = SIMD3<Float>(-cameraTransform.matrix.columns.2.x, 0, -cameraTransform.matrix.columns.2.z)
-          
-          let normalizedRight = simd_normalize(rightVector)
-          let normalizedForward = simd_normalize(forwardVector)
-          
-          let worldDirection = normalizedRight * Float(screenVector.x) * 0.001 +
-                              normalizedForward * Float(-screenVector.y) * 0.001
-          
-          return worldDirection
-      }
+  
+    func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
+      let cameraTransform = _arView.cameraTransform
       
-      func screenVelocityToWorldDirection(_ screenVelocity: CGPoint) -> SIMD3<Float> {
-          let cameraTransform = _arView.cameraTransform
+      let rightVector = simd_normalize(SIMD3<Float>(
+          cameraTransform.matrix.columns.0.x,
+          cameraTransform.matrix.columns.0.y,
+          cameraTransform.matrix.columns.0.z
+      ))
+      
+      // ✅ Choose forward vs up vector based on camera angle
+      let cameraUpComponent = cameraTransform.matrix.columns.1.y  // How "up" is the camera?
+      
+      if abs(cameraUpComponent) > 0.7 {  // Camera mostly level
+          // Use up vector for lifting
+          let upVector = simd_normalize(SIMD3<Float>(
+            cameraTransform.matrix.columns.1.x,
+              cameraTransform.matrix.columns.1.y,
+              cameraTransform.matrix.columns.1.z
+          ))
           
-        let rightVector = SIMD3<Float>(cameraTransform.matrix.columns.0.x, 0, cameraTransform.matrix.columns.0.z)
-        let forwardVector = SIMD3<Float>(-cameraTransform.matrix.columns.2.x, 0, -cameraTransform.matrix.columns.2.z)
+          return rightVector * Float(screenVector.x) * 0.001 +
+                 upVector * Float(-screenVector.y) * 0.001
           
-          let normalizedRight = simd_normalize(rightVector)
-          let normalizedForward = simd_normalize(forwardVector)
+      } else {  // Camera angled down (looking at floor)
+          // Use forward vector for ground movement
+          let forwardVector = simd_normalize(SIMD3<Float>(
+              -cameraTransform.matrix.columns.2.x,
+              0,  // Keep on ground plane
+              -cameraTransform.matrix.columns.2.z
+          ))
           
-          return normalizedRight * Float(screenVelocity.x) + normalizedForward * Float(-screenVelocity.y)
+          return rightVector * Float(screenVector.x) * 0.001 +
+                 forwardVector * Float(-screenVector.y) * 0.001
       }
-
+  }
     // Simple, clean drag handler
     @objc fileprivate func handlePan(_ gesture: UIPanGestureRecognizer) {
         guard _sessionRunning else { return }
@@ -1682,7 +1695,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
             // Let the dragged node handle the update
             if let draggedNode = findDraggedNode(at: location) {
               let worldDirection = screenDragToWorldDirection(calculateDragVector(gesture))
-
+              print ("updating drag change")
               draggedNode.updateDrag(dragVector: calculateDragVector(gesture), velocity: gesture.velocity(in: _arView), worldDirection: worldDirection)
             }
             

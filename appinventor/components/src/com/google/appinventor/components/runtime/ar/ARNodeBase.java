@@ -43,6 +43,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float restitution = 0.5f;
   protected float mass = 0.5f;
   protected float force = 0.5f;
+  protected float impulseScale = 0.5f;
+  protected float gravityScale = 0.5f;
+  protected float dragSensitivity = 0.5f;
 
   protected boolean rotateWithGesture = false;
 
@@ -363,6 +366,28 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void RollingForce(float f) { force = f;}
   public float RollingForce() { return force;}
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.5")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void ImpulseScale(float s) { impulseScale = s; }
+  public float ImpulseScale() { return impulseScale; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.5")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void GravityScale(float s) { gravityScale = s; }
+  public float GravityScale() { return gravityScale; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.5")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void DragSensitivity(float d) { dragSensitivity = d; }
+  public float DragSensitivity() { return dragSensitivity; }
+
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,

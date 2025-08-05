@@ -36,8 +36,8 @@ open class ARNodeBase: NSObject, ARNode {
   private var _lastDragLocation: CGPoint = .zero
   private var _originalMaterial: Material?
   
-  private var _gravityScale = Float(0.0)
-  private var _dragSensitivity = Float(0.0)
+  private var _gravityScale = Float(0.5)
+  private var _dragSensitivity = Float(1.0)
   private var _releaseForceMultiplier = Float(0.0)
   
   private var _currentVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
@@ -1178,14 +1178,16 @@ extension ARNodeBase {
                   
                   var collisionMaterial = SimpleMaterial()
                   switch type {
-                  case .floor:
-                      collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))
+                  //case .floor:
+                      //collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))
                   case .wall:
                       collisionMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
                   case .object:
                       collisionMaterial.color = .init(tint: .orange.withAlphaComponent(0.5))
                   case .none:
                       return
+                  default:
+                    return
                   }
                   
                   _modelEntity.model?.materials = [collisionMaterial]
