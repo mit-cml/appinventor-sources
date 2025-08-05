@@ -86,9 +86,10 @@ public final class AR3DFactory {
      int TextureOpacity();
      void TextureOpacity(int textureOpacity);
 
+
+
      boolean EnablePhysics();
      void EnablePhysics(boolean enable);
-
 
      boolean PinchToScale();
      void PinchToScale(boolean pinchToScale);
@@ -98,6 +99,24 @@ public final class AR3DFactory {
 
      boolean RotateWithGesture();
      void RotateWithGesture(boolean rotateWithGesture);
+
+     float StaticFriction();
+     void StaticFriction(float friction);
+
+     float DynamicFriction();
+     void DynamicFriction(float friction);
+
+    float Restitution();
+    void Restitution(float restitution);
+
+    float RollingForce();
+    void RollingForce(float mass);
+
+    float Mass();
+    void Mass(float mass);
+
+    String CollisionShape();
+    void CollisionShape(String collisionShape);
 
      float XPosition();
      void XPosition(float xPosition);

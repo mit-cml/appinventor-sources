@@ -81,14 +81,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   var currentState: State = .none
   
   
-  private var _isDragging = false
-  private var _dragStartLocation: CGPoint = .zero
-  private var _lastDragLocation: CGPoint = .zero
-  private var _nodeBeingDragged = nil as ARNodeBase?
-  
-  private var _currentVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
-  private var _momentumTask: Task<Void, Never>?
-  
   // Cache for 3D text geometries representing the classification values
   private var modelsForClassification: [ARMeshClassification: ModelEntity] = [:]
   
@@ -398,7 +390,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       print("Entity A: \(event.entityA.name)")
       print("Entity B: \(event.entityB.name)")
       
-      self.CollisionDetectedBegin(event)
+      self.forwardCollisionToNodes(event)
     }
     
     print("Collision observer set up successfully")
@@ -1452,409 +1444,279 @@ extension ARView3D: UIGestureRecognizerDelegate {
   }
   
   
-  @available(iOS 16.0, *)
-  private func applyDragMovement(dragVector: CGPoint, in arView: ARView) {
-    // Convert screen drag to world direction
-    let worldDirection = screenDragToWorldDirection(dragVector)
-    
-    // Scale movement
-    let dragMagnitude = sqrt(dragVector.x * dragVector.x + dragVector.y * dragVector.y)
-    let movementScale = min(Float(dragMagnitude) * 0.0005, 0.01)
-    
-    // Move the chicken using transform
-    let currentPos = _nodeBeingDragged!._modelEntity.transform.translation
-    let movement = worldDirection * movementScale
-    let newPos = currentPos + movement
-    
-    // Check for collisions before moving
-    if isPositionValid(newPos) {
-      _nodeBeingDragged!._modelEntity.transform.translation = newPos
-      
-      // Add rolling rotation
-      addRollingRotation(movement: movement)
-      
-      // Store velocity for momentum
-      _currentVelocity = movement * 60.0  // Convert to per-second
-      
-      _isDragging = true
-    }
-  }
-  
   private func isPositionValid(_ position: SIMD3<Float>) -> Bool {
     // Basic collision check - make sure we're not going below floor
     return position.y > -1.5
   }
-  
-  private func addRollingRotation(movement: SIMD3<Float>) {
-    let movementMagnitude = simd_length(movement)
-    guard movementMagnitude > 0.0001 else { return }
-    
-    // Calculate roll axis perpendicular to movement
-    let normalizedMovement = simd_normalize(movement)
-    let rollAxis = SIMD3<Float>(-normalizedMovement.z, 0, normalizedMovement.x)
-    
-    // Roll amount proportional to movement
-    let rollAngle = movementMagnitude * 30.0
-    
-    // Apply rotation
-    let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
-    _nodeBeingDragged!._modelEntity.transform.rotation = rollRotation * _nodeBeingDragged!._modelEntity.transform.rotation
+
+  private func forwardCollisionToNodes(_ event: CollisionEvents.Began) {
+      let entityA = event.entityA
+      let entityB = event.entityB
+      
+      print("🔥 Collision between: \(entityA.name) and \(entityB.name)")
+      
+      // Evaluate each entity to determine what it is
+      let entityAInfo = evaluateEntity(entityA)
+      let entityBInfo = evaluateEntity(entityB)
+      
+      print("🔥 EntityA: \(entityAInfo.description)")
+      print("🔥 EntityB: \(entityBInfo.description)")
+      
+      // Handle collision based on what each entity is
+      handleCollisionBetween(entityAInfo, and: entityBInfo, event: event)
   }
   
-  @available(iOS 16.0, *)
-  private func startMomentumMovement(gestureVelocity: CGPoint, in arView: ARView) {
-    // Convert gesture velocity to momentum
-    let worldDirection = screenDragToWorldDirection(gestureVelocity)
-    let velocityMagnitude = sqrt(gestureVelocity.x * gestureVelocity.x + gestureVelocity.y * gestureVelocity.y)
-    let scaledMagnitude = min(Float(velocityMagnitude) * 0.00008, 0.03)
-    
-    _currentVelocity = worldDirection * scaledMagnitude
-    
-    print("Starting momentum: \(_currentVelocity)")
-    
-    // Animate momentum with physics collision awareness
-    _momentumTask = Task {
-      await animateMomentumWithCollisions()
+  private func evaluateEntity(_ entity: Entity) -> EntityInfo {
+      // First, check if it's one of our AR nodes
+      if let node = findNodeForEntity(entity as? ModelEntity) {
+          return EntityInfo(type: .arNode, entity: entity, node: node)
+      }
+      
+      // If not an AR node, classify as scene element
+      let sceneType = classifySceneEntity(entity)
+      return EntityInfo(type: .sceneElement, entity: entity, sceneType: sceneType)
+  }
+      
+    private func classifySceneEntity(_ entity: Entity) -> SceneEntityType {
+        let entityType = String(describing: type(of: entity))
+        let entityName = entity.name
+        let position = entity.transform.translation
+        
+        print("🔍 Classifying entity: \(entityName), type: \(entityType), position: \(position)")
+        
+        // Check for RealityKit scene understanding
+        if entityType.contains("RKSceneUnderstanding") {
+            return classifySceneUnderstandingEntity(entity, position: position)
+        }
+        
+        // Check for your invisible floor
+        if entityName == "InvisibleFloor" {
+            return .floor
+        }
+        
+        // Check for detected planes
+        if entityName.contains("DetectedPlane") {
+            return classifyDetectedPlane(entity)
+        }
+        
+        // Check for mesh entities
+        if entityType.contains("MeshEntity") {
+            return classifyMeshEntity(entity, position: position)
+        }
+        
+        // Fallback classification based on position and bounds
+        return classifyByPosition(entity, position: position)
     }
-  }
-  
-  private func animateMomentumWithCollisions() async {
-    let dampingFactor: Float = 0.97
-    let minVelocity: Float = 0.0002
-    
-    while !Task.isCancelled && simd_length(_currentVelocity) > minVelocity {
-      await MainActor.run {
-        let currentPos = _nodeBeingDragged!._modelEntity.transform.translation
-        let nextPos = currentPos + _currentVelocity
-        
-        // Check collisions before moving
-        let collisionResult = checkCollisions(from: currentPos, to: nextPos)
-        
-        if collisionResult.hasCollision {
-          handleCollisionResponse(collisionResult)
+      
+    private func classifySceneUnderstandingEntity(_ entity: Entity, position: SIMD3<Float>) -> SceneEntityType {
+        // For RealityKit scene understanding, we can often get more info
+        if position.y < -1.0 {
+            return .floor
+        } else if position.y > 2.0 {
+            return .ceiling
         } else {
-          // Safe to move
-          _nodeBeingDragged!._modelEntity.transform.translation = nextPos
-          addRollingRotation(movement: _currentVelocity)
+            // Could be wall or furniture - check bounds if available
+            return .wall
         }
-        
-        // Apply damping
-        _currentVelocity *= dampingFactor
-      }
+    }
       
-      try? await Task.sleep(nanoseconds: 16_666_667)
+    private func classifyDetectedPlane(_ entity: Entity) -> SceneEntityType {
+        // Most detected planes are floors, but we could check orientation
+        // if we had access to the ARPlaneAnchor
+        return .floor
     }
-    
-    await MainActor.run {
-      _currentVelocity = SIMD3<Float>(0, 0, 0)
-      _isDragging = false
-      print("momentum stopped")
-    }
-  }
-  
-  
-  
-  struct CollisionResult {
-    let hasCollision: Bool
-    let collisionPoint: SIMD3<Float>
-    let collisionNormal: SIMD3<Float>  // Direction to bounce
-    let collisionType: CollisionType
-  }
-  
-  enum CollisionType {
-    case floor
-    case wall
-    case object
-    case none
-  }
-  
-  private func checkCollisions(from startPos: SIMD3<Float>, to endPos: SIMD3<Float>) -> CollisionResult {
-    // Check floor collision first
-    if endPos.y < -0.3 {  // Below reasonable floor level
-      return CollisionResult(
-        hasCollision: true,
-        collisionPoint: SIMD3<Float>(endPos.x, -0.3, endPos.z),
-        collisionNormal: SIMD3<Float>(0, 1, 0),  // Up direction
-        collisionType: .floor
-      )
-    }
-    
-    // Cast ray from current position to next position
-    let direction = endPos - startPos
-    let distance = simd_length(direction)
-    
-    if distance > 0.001 {  // Only check if actually moving
-      let normalizedDirection = simd_normalize(direction)
       
-      // Check for collisions using scene understanding
-      if let collisionInfo = raycastForCollision(from: startPos, direction: normalizedDirection, distance: distance) {
-        return collisionInfo
-      }
-    }
-    
-    return CollisionResult(hasCollision: false, collisionPoint: endPos, collisionNormal: SIMD3<Float>(0, 0, 0), collisionType: .none)
-  }
-  
-  
-  
-  private func raycastForCollision(from origin: SIMD3<Float>, direction: SIMD3<Float>, distance: Float) -> CollisionResult? {
-    
-    // Convert world position to screen point for raycasting
-    let screenOrigin = _arView.project(origin)
-    let targetWorld = origin + (direction * distance)
-    let screenTarget = _arView.project(targetWorld)
-    
-    // Calculate screen direction
-    let screenDirection = CGPoint(
-      x: screenTarget!.x - screenOrigin!.x,
-      y: screenTarget!.y - screenOrigin!.y
-    )
-    
-    // Perform raycast
-    let raycastResults = _arView.raycast(
-      from: screenOrigin!,
-      allowing: .estimatedPlane,
-      alignment: .any
-    )
-    
-    if let hit = raycastResults.first {
-      let hitPoint = SIMD3<Float>(
-        hit.worldTransform.columns.3.x,
-        hit.worldTransform.columns.3.y,
-        hit.worldTransform.columns.3.z
-      )
-      
-      // Check if hit point is closer than our intended movement
-      let hitDistance = simd_distance(origin, hitPoint)
-      
-      if hitDistance < distance + 0.05 {  // 5cm buffer
-        // Calculate collision normal (simplified)
-        let collisionNormal = calculateCollisionNormal(from: origin, to: hitPoint)
-        
-        return CollisionResult(
-          hasCollision: true,
-          collisionPoint: hitPoint,
-          collisionNormal: collisionNormal,
-          collisionType: .wall
-        )
-      }
-    }
-    
-    return nil
-  }
-  
-  private func calculateCollisionNormal(from origin: SIMD3<Float>, to hitPoint: SIMD3<Float>) -> SIMD3<Float> {
-    let toHit = hitPoint - origin
-    let distance = simd_length(toHit)
-    
-    if distance > 0.001 {
-      // Normal points away from the collision surface
-      return simd_normalize(-toHit)
-    }
-    
-    return SIMD3<Float>(0, 1, 0)  // Default to up
-  }
-  
-  
-  private func handleCollisionResponse(_ collision: CollisionResult) {
-    print("collided with \(collision.collisionType)!")
-    
-    switch collision.collisionType {
-    case .floor:
-      handleFloorCollision(collision)
-    case .wall:
-      handleWallCollision(collision)
-    case .object:
-      handleObjectCollision(collision)
-    case .none:
-      break
-    }
-    
-    // Visual/audio feedback
-    if #available(iOS 15.0, *) {
-      showCollisionEffect(collision.collisionType)
-    } else {
-      // Fallback on earlier versions
-    }
-  }
-  
-  private func handleFloorCollision(_ collision: CollisionResult) {
-    print("hit the floor!")
-    
-    // Stop downward movement and place on floor
-    _nodeBeingDragged!._modelEntity.transform.translation = SIMD3<Float>(
-      collision.collisionPoint.x,
-      collision.collisionPoint.y + 0.05,  // Slightly above floor
-      collision.collisionPoint.z
-    )
-    
-    // Bounce velocity upward if moving down
-    if _currentVelocity.y < 0 {
-      _currentVelocity.y = -_currentVelocity.y * 0.3  // 30% upward bounce
-    }
-    
-    // Reduce horizontal velocity (friction)
-    _currentVelocity.x *= 0.7
-    _currentVelocity.z *= 0.7
-    
-    // Minimum upward bounce to prevent getting stuck
-    _currentVelocity.y = max(_currentVelocity.y, 0.002)
-  }
-  
-  private func handleWallCollision(_ collision: CollisionResult) {
-    print("bounced off wall!")
-    
-    // Move to collision point with small buffer
-    let safePosition = collision.collisionPoint + (collision.collisionNormal * 0.05)
-    _nodeBeingDragged!._modelEntity.transform.translation = safePosition
-    
-    // Calculate bounce velocity
-    let bounceVelocity = calculateBounceVelocity(_currentVelocity, collision.collisionNormal)
-    _currentVelocity = bounceVelocity
-    
-    // Add chicken personality - slight random bounce
-    let randomFactor = SIMD3<Float>(
-      Float.random(in: -0.001...0.001),
-      Float.random(in: 0...0.002),  // Slight upward randomness
-      Float.random(in: -0.001...0.001)
-    )
-    _currentVelocity += randomFactor
-  }
-  
-  private func handleObjectCollision(_ collision: CollisionResult) {
-    print(" hit another object!")
-    
-    // Similar to wall collision but with more chaos
-    let safePosition = collision.collisionPoint + (collision.collisionNormal * 0.05)
-    _nodeBeingDragged!._modelEntity.transform.translation = safePosition
-    
-    let bounceVelocity = calculateBounceVelocity(_currentVelocity, collision.collisionNormal)
-    _currentVelocity = bounceVelocity * 0.8  // Less bouncy than walls
-    
-    // More chicken chaos for object collisions
-    let chaosFactor = SIMD3<Float>(
-      Float.random(in: -0.003...0.003),
-      Float.random(in: 0...0.003),
-      Float.random(in: -0.003...0.003)
-    )
-    _currentVelocity += chaosFactor
-  }
-  
-  private func calculateBounceVelocity(_ velocity: SIMD3<Float>, _ normal: SIMD3<Float>) -> SIMD3<Float> {
-    // Physics: v' = v - 2(v·n)n
-    let velocityDotNormal = simd_dot(velocity, normal)
-    let reflection = velocity - (2.0 * velocityDotNormal * normal)
-    
-    // Apply restitution (bounciness) - chickens aren't super bouncy
-    let restitution: Float = 0.4
-    return reflection * restitution
-  }
-  
-  @available(iOS 15.0, *)
-  private func showCollisionEffect(_ collisionType: CollisionType) {
-    Task {
-      await MainActor.run {
-        let originalMaterial =  _nodeBeingDragged!._modelEntity.model?.materials.first
-        
-        var collisionMaterial = SimpleMaterial()
-        
-        switch collisionType {
-        case .floor:
-          collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))  // Dirt color
-        case .wall:
-          collisionMaterial.color = .init(tint: .red.withAlphaComponent(0.8))    // Impact color
-        case .object:
-          collisionMaterial.color = .init(tint: .orange.withAlphaComponent(0.8)) // Object hit color
-        case .none:
-          return
+    private func classifyMeshEntity(_ entity: Entity, position: SIMD3<Float>) -> SceneEntityType {
+        // Check bounds and position for mesh entities
+        if position.y < -0.5 {
+            return .floor
+        } else if position.y > 2.0 {
+            return .ceiling
+        } else {
+            // Could be wall or furniture
+            return .wall
         }
+    }
+      
+    private func classifyByPosition(_ entity: Entity, position: SIMD3<Float>) -> SceneEntityType {
+        if position.y < -0.5 {
+            return .floor
+        } else if position.y > 2.5 {
+            return .ceiling
+        } else {
+            return .wall
+        }
+    }
+      
+    private func handleCollisionBetween(_ entityAInfo: EntityInfo, and entityBInfo: EntityInfo, event: CollisionEvents.Began) {
         
-        _nodeBeingDragged!._modelEntity.model?.materials = [collisionMaterial]
+        switch (entityAInfo.type, entityBInfo.type) {
+        case (.arNode, .arNode):
+            // Node-to-Node collision
+            handleNodeToNodeCollision(
+                nodeA: entityAInfo.node!,
+                nodeB: entityBInfo.node!,
+                event: event
+            )
+            
+        case (.arNode, .sceneElement):
+            // Node hit scene element
+            handleNodeToSceneCollision(
+                node: entityAInfo.node!,
+                sceneEntity: entityBInfo.entity,
+                sceneType: entityBInfo.sceneType!,
+                event: event
+            )
+            
+        case (.sceneElement, .arNode):
+            // Scene element hit node (same as node hit scene element)
+            handleNodeToSceneCollision(
+                node: entityBInfo.node!,
+                sceneEntity: entityAInfo.entity,
+                sceneType: entityAInfo.sceneType!,
+                event: event
+            )
+            
+        case (.sceneElement, .sceneElement):
+            // Scene-only collision (no AR nodes involved)
+            print("🔥 Scene-only collision: \(entityAInfo.sceneType!) vs \(entityBInfo.sceneType!)")
+        }
+    }
+      
+      private func handleNodeToNodeCollision(nodeA: ARNodeBase, nodeB: ARNodeBase, event: CollisionEvents.Began) {
+          print("🔥 Node-to-Node collision: \(nodeA.Name) <-> \(nodeB.Name)")
+          
+          // Both nodes handle the collision
+          nodeA.handleNodeCollision(with: nodeB, event: event)
+          nodeB.handleNodeCollision(with: nodeA, event: event)
+      }
+      
+      private func handleNodeToSceneCollision(node: ARNodeBase, sceneEntity: Entity, sceneType: SceneEntityType, event: CollisionEvents.Began) {
+          print("🔥 Node-to-Scene collision: \(node.Name) hit \(sceneType)")
+          
+          // Only the node handles the collision
+        node.handleSceneCollision(sceneEntity: sceneEntity, sceneType: sceneType, event: event)
+      }
+      
+      // MARK: - Supporting Types
+      
+      struct EntityInfo {
+          let type: EntityType
+          let entity: Entity
+          let node: ARNodeBase?
+          let sceneType: SceneEntityType?
+          
+          init(type: EntityType, entity: Entity, node: ARNodeBase? = nil, sceneType: SceneEntityType? = nil) {
+              self.type = type
+              self.entity = entity
+              self.node = node
+              self.sceneType = sceneType
+          }
+          
+          var description: String {
+              switch type {
+              case .arNode:
+                  return "ARNode(\(node?.Name ?? "unknown"))"
+              case .sceneElement:
+                  return "SceneElement(\(sceneType?.rawValue ?? "unknown"))"
+              }
+          }
+      }
+      
+      enum EntityType {
+          case arNode
+          case sceneElement
+      }
+      
+      enum SceneEntityType: String {
+          case floor = "floor"
+          case wall = "wall"
+          case ceiling = "ceiling"
+          case furniture = "furniture"
+          case unknown = "unknown"
+      }
+  
+  
+
+      func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
+          let cameraTransform = _arView.cameraTransform
+          
+        let rightVector = SIMD3<Float>(cameraTransform.matrix.columns.0.x, 0, cameraTransform.matrix.columns.0.z)
+        let forwardVector = SIMD3<Float>(-cameraTransform.matrix.columns.2.x, 0, -cameraTransform.matrix.columns.2.z)
+          
+          let normalizedRight = simd_normalize(rightVector)
+          let normalizedForward = simd_normalize(forwardVector)
+          
+          let worldDirection = normalizedRight * Float(screenVector.x) * 0.001 +
+                              normalizedForward * Float(-screenVector.y) * 0.001
+          
+          return worldDirection
+      }
+      
+      func screenVelocityToWorldDirection(_ screenVelocity: CGPoint) -> SIMD3<Float> {
+          let cameraTransform = _arView.cameraTransform
+          
+        let rightVector = SIMD3<Float>(cameraTransform.matrix.columns.0.x, 0, cameraTransform.matrix.columns.0.z)
+        let forwardVector = SIMD3<Float>(-cameraTransform.matrix.columns.2.x, 0, -cameraTransform.matrix.columns.2.z)
+          
+          let normalizedRight = simd_normalize(rightVector)
+          let normalizedForward = simd_normalize(forwardVector)
+          
+          return normalizedRight * Float(screenVelocity.x) + normalizedForward * Float(-screenVelocity.y)
+      }
+
+    // Simple, clean drag handler
+    @objc fileprivate func handlePan(_ gesture: UIPanGestureRecognizer) {
+        guard _sessionRunning else { return }
         
-        Task {
-          try? await Task.sleep(nanoseconds: 200_000_000)  // 0.2 seconds
-          await MainActor.run {
-            if let original = originalMaterial {
-              _nodeBeingDragged!._modelEntity.model?.materials = [original]
+        let location = gesture.location(in: _arView)
+        
+        switch gesture.state {
+        case .began:
+            // Find node and let it handle drag start
+            if let draggedNode = findClosestNode(tapLocation: location) {
+                draggedNode.startDrag()
             }
-          }
+            
+        case .changed:
+            // Let the dragged node handle the update
+            if let draggedNode = findDraggedNode(at: location) {
+              let worldDirection = screenDragToWorldDirection(calculateDragVector(gesture))
+
+              draggedNode.updateDrag(dragVector: calculateDragVector(gesture), velocity: gesture.velocity(in: _arView), worldDirection: worldDirection)
+            }
+            
+        case .ended, .cancelled, .failed:
+            // Let the dragged node handle the release
+            if let draggedNode = findDraggedNode(at: location) {
+              let worldDirection = screenDragToWorldDirection(calculateDragVector(gesture))
+              draggedNode.endDrag(releaseVelocity: gesture.velocity(in: _arView), worldDirection: worldDirection)
+            }
+            
+        default:
+            break
         }
-      }
     }
-  }
-  
-  
-  private func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
-    // Get camera transform
-    let cameraTransform = _arView.cameraTransform
     
-    // Convert screen drag to camera-relative directions
-    let rightVector = SIMD3<Float>(cameraTransform.translation.x, 0, cameraTransform.translation.z)
-    let forwardVector = SIMD3<Float>(-cameraTransform.translation.x, 0, -cameraTransform.translation.z)
-    
-    // Normalize vectors
-    let normalizedRight = simd_normalize(rightVector)
-    let normalizedForward = simd_normalize(forwardVector)
-    
-    // Convert screen coordinates to world direction
-    let worldDirection = normalizedRight * Float(screenVector.x) * 0.001 +
-    normalizedForward * Float(-screenVector.y) * 0.001
-    
-    return worldDirection
-  }
-
-
-
-  @available(iOS 16.0, *)
-  @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
-      guard _sessionRunning else { return }
-    
-      let location = gesture.location(in: _arView)
-        
-      switch gesture.state {
-      case .began:
-          // Check if drag started on node
-        if let closestNodeToDrag = findClosestNode(tapLocation: location) {
-            self._isDragging = true
-              _dragStartLocation = location
-              _lastDragLocation = location
-              _nodeBeingDragged = closestNodeToDrag
-              print("Started dragging")
-          }
-          
-      case .changed:
-          guard _isDragging else { return }
-          
-          // Calculate drag vector
-          let dragVector = CGPoint(
-              x: location.x - _lastDragLocation.x,
-              y: location.y - _lastDragLocation.y
-          )
-          
-          // Apply rolling force based on drag direction
-          applyDragMovement(dragVector: dragVector, in: _arView)
-          _lastDragLocation = location
-          
-      case .ended, .cancelled, .failed:
-  
-          if _isDragging {
-            let velocity = gesture.velocity(in: _arView)
-            startMomentumMovement(gestureVelocity: velocity, in: _arView)
-              
-            //showDragEndEffect()
-          
-            _isDragging = false
-            print("Finished dragging")
-
+    private func findDraggedNode(at location: CGPoint) -> ARNodeBase? {
+        // Find the node currently being dragged
+        for (node, _) in _nodeToAnchorDict {
+            if node.isBeingDragged {
+                return node
+            }
         }
-          
-      default:
-          break
-      }
+        return nil
     }
-      
+    
+    private func calculateDragVector(_ gesture: UIPanGestureRecognizer) -> CGPoint {
+        let currentLocation = gesture.location(in: _arView)
+        let translation = gesture.translation(in: _arView)
+        return CGPoint(x: translation.x, y: translation.y)
+    }
+  
 
   
+  @available(iOS 14.0, *)
   private func isNodeAtLocation(_ location: CGPoint, in arView: ARView) -> Bool {
       // Use your proven findClosestNode approach
     if let closestNode = findClosestNode(tapLocation: location) {

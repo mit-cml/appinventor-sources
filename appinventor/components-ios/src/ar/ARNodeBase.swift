@@ -16,8 +16,6 @@ import os.log
 @available(iOS 14.0, *)
 open class ARNodeBase: NSObject, ARNode {
 
-  
-  
   weak var _container: ARNodeContainer?
 
   public var _modelEntity: ModelEntity
@@ -32,6 +30,33 @@ open class ARNodeBase: NSObject, ARNode {
   private var _panToMove: Bool = false
   private var _rotateWithGesture: Bool = false
   
+
+  private var _isBeingDragged = false
+  private var _dragStartLocation: CGPoint = .zero
+  private var _lastDragLocation: CGPoint = .zero
+  private var _originalMaterial: Material?
+  
+  private var _gravityScale = Float(0.0)
+  private var _dragSensitivity = Float(0.0)
+  private var _releaseForceMultiplier = Float(0.0)
+  
+  private var _currentVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
+  private var _momentumTask: Task<Void, Never>?
+  private var _isCurrentlyColliding = false
+  private var _collisionEffectTask: Task<Void, Never>?
+  
+
+  private var _linearDamping  = Float(0.0)
+  private var _angularDamping  = Float(0.0)
+  private var _rollingForce = Float(0.0)
+  private var _impulseScale = Float(0.0)
+  private var _dampingTask = Task {}
+
+  private var _collisionWidth = Float(0.0)
+  private var _collisionHeight = Float(0.0)
+  private var _collisionDepth = Float(0.0)
+  private var _collisionRadius = Float(0.0)
+
   public var _anchorEntity: AnchorEntity?
   public var _followingMarker: ARImageMarker? = nil
   public var _fromPropertyPosition = "0.0,0.0,0.0"
@@ -455,6 +480,26 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
+  @objc open var CollisionShape: String = "sphere" {
+    didSet { updateCollisionShape()}
+  }
+  
+  
+  @objc open var StaticFriction: Float = 0.6 {
+      didSet { updatePhysicsMaterial() }
+  }
+  @objc open var DynamicFriction: Float = 0.6 {
+      didSet { updatePhysicsMaterial() }
+  }
+  @objc open var Restitution: Float = 0.3 {
+      didSet { updatePhysicsMaterial() }
+  }
+  @objc open var Mass: Float = 1.0 {
+      didSet { updateMassProperties() }
+  }
+    
+  
+  
   @objc open var IsFollowingImageMarker: Bool {
     get {
       return _followingMarker != nil
@@ -853,15 +898,15 @@ open class ARNodeBase: NSObject, ARNode {
     _modelEntity.collision = CollisionComponent(shapes: [shape])
     
     // Create mass properties separately
-    let massProperties = PhysicsMassProperties(mass: 1.0)
+    let massProperties = PhysicsMassProperties(mass: Mass)
 
   
     
     // Create a custom physics material for gentle collisions
     let gentleMaterial = PhysicsMaterialResource.generate(
-        staticFriction: 0.8,    // Higher friction prevents sliding
-        dynamicFriction: 0.7,   // Friction when moving
-        restitution: 0.1        // Low restitution = less bouncy (0.0 to 1.0)
+      staticFriction: StaticFriction,    // Higher friction prevents sliding
+      dynamicFriction: DynamicFriction,   // Friction when moving
+      restitution: Restitution       // Low restitution = less bouncy (0.0 to 1.0)
     )
     
     _enablePhysics = isDynamic
@@ -886,4 +931,308 @@ open class ARNodeBase: NSObject, ARNode {
     EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: node, node2)
   }
   
-} // ← This closes the ARNodeBase class
+
+
+
+} // end ARNodeBase base class
+
+@available(iOS 14.0, *)
+extension ARNodeBase {
+  
+      private func updatePhysicsMaterial() {
+          guard var physicsBody = _modelEntity.physicsBody else { return }
+          
+          let newMaterial = PhysicsMaterialResource.generate(
+              staticFriction: StaticFriction,
+              dynamicFriction: DynamicFriction,
+              restitution: Restitution
+          )
+          
+          physicsBody.material = newMaterial
+          print("🎾 Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
+      }
+      
+      private func updateMassProperties() {
+          guard var physicsBody = _modelEntity.physicsBody else { return }
+          
+          physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
+          print("🎾 Updated mass to: \(Mass)")
+      }
+      
+      private func updateDamping() {
+          // Note: RealityKit might not expose damping directly in iOS 16
+          // This is a placeholder for when it's available
+          print("🎾 Damping updated: linear(\(_linearDamping)), angular(\(_angularDamping))")
+          
+          // For iOS 16, you might need to simulate damping manually
+        if _linearDamping > 0 || _angularDamping > 0 {
+              startDampingSimulation()
+          }
+      }
+
+      private func startDampingSimulation() {
+          _dampingTask.cancel()
+          
+          guard _linearDamping > 0 || _angularDamping > 0 else { return }
+          
+          _dampingTask = Task {
+              while !Task.isCancelled {
+                  await applyCustomDamping()
+                  try? await Task.sleep(nanoseconds: 33_000_000) // ~30fps
+              }
+          }
+      }
+      
+      private func applyCustomDamping() async {
+          await MainActor.run {
+              guard var physicsBody = _modelEntity.physicsBody else { return }
+              
+              // Since we can't directly access velocity in iOS 16,
+              // we simulate damping by slightly adjusting physics properties
+              
+              // This is a simplified approach - real damping would need velocity access
+           /* if !physicsBody.is {
+                  // Gradually increase friction to simulate damping
+                  let currentMaterial = physicsBody.material
+                  
+                  // This is a conceptual approach - actual implementation would depend
+                  // on available RealityKit APIs in iOS 16
+                  print("🎾 Applying custom damping...")
+              }*/
+          }
+      }
+      
+      @objc func stopDamping() {
+          _dampingTask.cancel()
+        _dampingTask = Task{}
+      }
+  
+  private func updateCollisionShape() {
+      let shape: ShapeResource
+      let bounds = _modelEntity.visualBounds(relativeTo: nil)
+      let autoSize = bounds.max - bounds.min
+      let safeSize = SIMD3<Float>(
+          max(autoSize.x, 0.05) * 1.1,
+          max(autoSize.y, 0.05) * 1.1,
+          max(autoSize.z, 0.05) * 1.1
+      )
+      shape = generateCollisionShape(size: safeSize)
+      _modelEntity.collision = CollisionComponent(shapes: [shape])
+  }
+  
+  private func generateCollisionShape(size: SIMD3<Float>) -> ShapeResource {
+      // Determine best collision shape based on object type and proportions
+      let avgSize = (size.x + size.y + size.z) / 3.0
+      let variance = max(abs(size.x - avgSize), abs(size.y - avgSize), abs(size.z - avgSize))
+      
+      if variance < 0.02 {
+          let radius = avgSize / 2.0
+          return ShapeResource.generateSphere(radius: radius)
+      } else if abs(size.x - size.z) < 0.02 && size.y > size.x * 1.5 {
+          let radius = min(size.x, size.z) / 2.0
+        return ShapeResource.generateCapsule(height: size.y, radius: radius)
+      } else {
+          // Use box for everything else
+          return ShapeResource.generateBox(size: size)
+      }
+  }
+  
+  
+ 
+// Rolling/Movement Properties
+    @objc open var RollingForce: Float {
+        get { return _rollingForce }
+        set { _rollingForce = newValue }
+    }
+    
+    @objc open var ImpulseScale: Float {
+        get { return _impulseScale }
+        set { _impulseScale = newValue }
+    }
+
+      
+      // Customizable physics parameters
+      @objc open var GravityScale: Float {
+          get { return _gravityScale }
+          set { _gravityScale = newValue }
+      }
+      
+      @objc open var DragSensitivity: Float {
+          get { return _dragSensitivity }
+          set { _dragSensitivity = newValue }
+      }
+      
+      @objc open var ReleaseForceMultiplier: Float {
+          get { return _releaseForceMultiplier }
+          set { _releaseForceMultiplier = newValue }
+      }
+      
+ 
+      
+      // Track drag state at the node level
+      @objc open var isBeingDragged: Bool {
+          get { return _isBeingDragged }
+          set (newValue) { _isBeingDragged = newValue }
+      }
+      
+      private var LastDragLocation: CGPoint {
+          get { return _lastDragLocation}
+          set (newValue){ _lastDragLocation = newValue}
+      }
+      
+      public var OriginalMaterial: Material? {
+          get { return _originalMaterial }
+          set(newValue) { _originalMaterial = newValue}
+      }
+      
+
+      
+      // Base drag methods with state management
+      @objc open func startDrag() {
+          isBeingDragged = true
+          _originalMaterial = _modelEntity.model?.materials.first
+          print("🎯 \(Name) started being dragged")
+      }
+      
+  @objc open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
+          // Override in subclasses
+          print("🎯 \(Name) drag update - override in subclass")
+      }
+      
+      @objc open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+          isBeingDragged = false
+          if let original = _originalMaterial {
+              _modelEntity.model?.materials = [original]
+              _originalMaterial = nil
+          }
+          print("🎯 \(Name) drag ended - override in subclass")
+      }
+ 
+      // Handle collision with another AR node (we know it's a node)
+      @objc open func handleNodeCollision(with otherNode: ARNodeBase, event: Any) {
+          print("🔥 \(Name) collision with AR node: \(otherNode.Name)")
+          
+          // Dispatch existing event for backward compatibility
+          EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: self as AnyObject, otherNode as AnyObject)
+          
+          // Call overrideable method for custom node collision behavior
+        respondToNodeCollision(with: otherNode, event: event as! CollisionEvents.Began)
+      }
+      
+      // Handle collision with scene element (we know what type of scene element)
+      @objc open func handleSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
+        print("🔥 \(Name) collision with \(sceneType): \(sceneEntity as! Entity) (\(String(describing: (sceneEntity as! Entity).name)).name)")
+          
+          // Dispatch existing event for backward compatibility
+          EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: self as AnyObject)
+          
+          // Call overrideable method for custom scene collision behavior
+        respondToSceneCollision(sceneEntity: sceneEntity as! Entity, sceneType: sceneType as! ARView3D.SceneEntityType, event: event)
+      }
+      
+      // MARK: - Overrideable Methods for Subclasses
+      
+      // Override this in subclasses for custom node collision behavior
+      @objc open func respondToNodeCollision(with otherNode: ARNodeBase, event: Any) {
+          print("🔥 \(Name) base node collision response with \(otherNode.Name) - override in subclass")
+        if #available(iOS 15.0, *) {
+          showCollisionEffect(type: .object)
+        } else {
+          // Fallback on earlier versions
+        }
+      }
+      
+      // Override this in subclasses for custom scene collision behavior
+      @objc open func respondToSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
+          print("🔥 \(Name) base scene collision response with \(sceneType) - override in subclass")
+          
+          let collisionType: CollisionType
+        switch sceneType as! ARView3D.SceneEntityType {
+          case .floor:
+              collisionType = .floor
+          case .wall, .ceiling, .furniture:
+              collisionType = .wall
+          case .unknown:
+              collisionType = .wall
+          }
+          
+        if #available(iOS 15.0, *) {
+          showCollisionEffect(type: collisionType)
+        } else {
+          // Fallback on earlier versions
+        }
+      }
+      
+      enum CollisionType {
+          case floor
+          case wall
+          case object
+          case none
+      }
+      
+  @available(iOS 15.0, *)
+  private func showCollisionEffect(type: CollisionType) {
+          Task {
+              await MainActor.run {
+                  let originalMaterial = _modelEntity.model?.materials.first
+                  
+                  var collisionMaterial = SimpleMaterial()
+                  switch type {
+                  case .floor:
+                      collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))
+                  case .wall:
+                      collisionMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
+                  case .object:
+                      collisionMaterial.color = .init(tint: .orange.withAlphaComponent(0.5))
+                  case .none:
+                      return
+                  }
+                  
+                  _modelEntity.model?.materials = [collisionMaterial]
+                  
+                  Task {
+                      try? await Task.sleep(nanoseconds: 200_000_000)
+                      await MainActor.run {
+                          if let original = originalMaterial {
+                              _modelEntity.model?.materials = [original]
+                          }
+                      }
+                  }
+              }
+          }
+    }
+  
+      
+  @available(iOS 15.0, *)
+  private func showCollisionEffect(type: ARView3D.SceneEntityType) {
+          Task {
+              await MainActor.run {
+                  let originalMaterial = _modelEntity.model?.materials.first
+                  
+                  var collisionMaterial = SimpleMaterial()
+                  switch type {
+                  case .floor:
+                      collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))
+                  case .wall:
+                      collisionMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
+                  case .furniture, .unknown:
+                      collisionMaterial.color = .init(tint: .orange.withAlphaComponent(0.5))
+                  default:
+                      return
+                  }
+                  
+                  _modelEntity.model?.materials = [collisionMaterial]
+                  
+                  Task {
+                      try? await Task.sleep(nanoseconds: 200_000_000)
+                      await MainActor.run {
+                          if let original = originalMaterial {
+                              _modelEntity.model?.materials = [original]
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  
+}

@@ -8,10 +8,17 @@
   open class CapsuleNode: ARNodeBase, ARCapsule {
     private var _capRadius: Float = 0.02 // stored in meters
     private var _height: Float = 0.07 // stored in meters
+    private var _width: Float = 0.05 // stored in meters
+
     
     @objc init(_ container: ARNodeContainer) {
       // Create capsule mesh - RealityKit doesn't have built-in capsule, so we'll create a cylinder with rounded ends
-      let mesh = MeshResource.generateBox(width: _capRadius * 2, height: _height, depth: _capRadius * 2)
+      var mesh = MeshResource.generateBox(width: _width, height: _height, depth: _width)
+
+      if #available(iOS 18.0, *) {
+        mesh = MeshResource.generateCylinder(height: _height, radius: _height)
+      }
+      
       super.init(container: container, mesh: mesh)
       self.Name = "capsule"
 

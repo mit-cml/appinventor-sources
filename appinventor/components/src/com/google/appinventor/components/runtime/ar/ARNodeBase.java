@@ -37,6 +37,15 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected Trackable trackable = null;
   protected String name = "";
 
+  protected String collisionShape = "sphere";
+  protected float staticFriction = 0.5f;
+  protected float dynamicFriction = 0.5f;
+  protected float restitution = 0.5f;
+  protected float mass = 0.5f;
+  protected float force = 0.5f;
+
+  protected boolean rotateWithGesture = false;
+
   protected String objectModel = Form.ASSETS_PREFIX + "";
 
   @SuppressWarnings("WeakerAccess")
@@ -311,13 +320,58 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     "around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and " +
     "counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed " +
     "with a rotation gesutre.")
-  public boolean RotateWithGesture() { return false; }
+  public boolean RotateWithGesture() { return rotateWithGesture;}
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public void RotateWithGesture(boolean rotateWithGesture) {}
+  public void RotateWithGesture(boolean r) {rotateWithGesture = r;}
+
+//////////////////  physics
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.6")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void StaticFriction(float friction) { staticFriction = friction; }
+  public float StaticFriction() { return staticFriction; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.4")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void DynamicFriction(float friction) { dynamicFriction = friction; }
+  public float DynamicFriction() { return dynamicFriction; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.5")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void Restitution(float rest) { restitution = rest; }
+  public float Restitution(){ return restitution; }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "1.0")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void Mass(float m) { mass = m;}
+  public float Mass() { return mass;}
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+      defaultValue = "0.5")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void RollingForce(float f) { force = f;}
+  public float RollingForce() { return force;}
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "sphere")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public String CollisionShape() { return "sphere";}
+  public void CollisionShape(String shape) { collisionShape = shape; }
+
+  //////////////
 
   @Override
   @SimpleProperty(description = "The x position in centimeters of the node.")
