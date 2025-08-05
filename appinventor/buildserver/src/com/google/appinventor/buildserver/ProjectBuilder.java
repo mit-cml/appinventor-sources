@@ -227,12 +227,8 @@ public final class ProjectBuilder {
 
         if (success) {
           // Locate output file
-          String fileName = outputFileName;
-          if (fileName == null) {
-            fileName = project.getProjectName() + "." + ext;
-          }
           File outputFile = new File(projectRoot,
-              "build" + SEPARATOR + "deploy" + SEPARATOR + fileName);
+              "build" + SEPARATOR + "deploy" + SEPARATOR + outputFileName);
           if (!outputFile.exists()) {
             LOG.warning("Young Android build - " + outputFile + " does not exist");
           } else {
