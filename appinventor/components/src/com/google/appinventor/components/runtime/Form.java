@@ -74,6 +74,7 @@ import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileCache;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
@@ -268,6 +269,8 @@ public class Form extends AppInventorCompatActivity
 
   private ProgressDialog progress;
   private static boolean _initialized = false;
+  
+  public FileCache fileCache;
 
   // It should be changed from 100000 to 65535 if the functionality to extend
   // FragmentActivity is added in future.
@@ -312,6 +315,10 @@ public class Form extends AppInventorCompatActivity
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
     super.onCreate(icicle);
+
+    if (this.fileCache == null) {
+      this.fileCache = new FileCache(new java.io.File(this.getCacheDir(), "file_cache"));
+    }
 
     // This version is for production apps. See {@link ReplForm#onCreate} for the REPL version,
     // which overrides this method.
