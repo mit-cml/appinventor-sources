@@ -102,11 +102,6 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
   }
 
   @Override
-  public String getEntityName() {
-    return getForm().getName();
-  }
-
-  @Override
   public void onWorkspaceChange(BlocklyPanel panel, JavaScriptObject event) {
     super.onWorkspaceChange(panel, event);
     if (!EventHelper.isUi(event)) {
@@ -212,16 +207,6 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
       path = path.substring(0, extensionIndex);
     }
     return path.replaceAll("/", ".");
-  }
-
-  public MockForm getForm() {
-    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
-    YaFormEditor myFormEditor = (YaFormEditor) yaProjectEditor.getFormFileEditor(blocksNode.getFormName());
-    if (myFormEditor != null) {
-      return myFormEditor.getForm();
-    } else {
-      return null;
-    }
   }
 
   private String yailFileName() {
