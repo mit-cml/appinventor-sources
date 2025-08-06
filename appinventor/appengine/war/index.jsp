@@ -110,7 +110,7 @@
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="static/js/scroll-options-6.0.16.min.js"></script>
-    <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
+    <script type="text/javascript" src="static/js/workspace-search-9.1.10.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.6.0.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
 <%--    <script type="text/javascript" src="static/js/workspace-multiselect-0.1.14-beta2.min.js"></script>--%>
