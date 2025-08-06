@@ -201,6 +201,11 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
      */
     private static String makeCustomHTML(long argbValue, double a, int r, int g, int b) {
         String hex = argbToHex(argbValue);
+        if (hex.length() == 7) {
+            hex = "#FF" + hex.substring(1);
+        } else if (hex.length() == 9) {
+            hex = "#" + hex.substring(7, 9) + hex.substring(1, 7);
+        }
         return "<span style=\"background:rgba(" + r + "," + g + "," + b + "," + a + "); display: inline-block; " +
                 "width:15px; height:15px; border-radius:200px; border: 1px solid var(--border-color);\">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;" + hex;
     }
@@ -227,20 +232,31 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
         if (restrict) {
             showAdvancedPicker(getElement(), pickerColor, defaultColors.toString());
         } else {
-            showPicker(getElement(), pickerColor, getProjectColorsHexString(), defaultColors.toString());
+            List<String> projectColors = getProjectColorsHexString();
+            JSONObject projectColorsObject = new JSONObject();
+            for (String color : projectColors) {
+                String colorName = color;
+                if (color.length() == 7) {
+                    colorName = "#FF" + color.substring(1);
+                } else if (color.length() == 9) {
+                    colorName = "#" + color.substring(7, 9) + color.substring(1, 7);
+                }
+                projectColorsObject.put(color, new JSONString(colorName));
+            }
+            showPicker(getElement(), pickerColor, projectColorsObject.toString(), defaultColors.toString());
         }
     }
 
-    private String getProjectColorsHexString() {
+    private List<String> getProjectColorsHexString() {
         YaProjectEditor projectEditor = (YaProjectEditor) Ode.getCurrentProjectEditor();
         if (projectEditor != null) {
             List<String> projectColorsCopy = new ArrayList<>();
             for (String color : projectEditor.getProjectColors()) {
                 projectColorsCopy.add("#" + color);
             }
-            return String.join(",", projectColorsCopy);
+            return projectColorsCopy;
         }
-        return "";
+        return new ArrayList<>();
     }
 
     public static String argbToHex(long argbValue) {
@@ -271,7 +287,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
             sliders: "h",
             position: 'bottom-middle',
             swatches: JSON.parse(defaultColors),
-            swatches2: projectColors.split(","),
+            swatches2: JSON.parse(projectColors),
             components: {
                 preview: true,
                 opacity: true,
