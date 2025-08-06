@@ -114,7 +114,7 @@
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.7.16.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-multiselect-mjgallag-update-to-blockly-11-4ae2fff.min.js"></script>
-    <script type="text/javascript" src="static/js/keyboard-navigation-0.5.13.min.js"></script>
+    <script type="text/javascript" src="static/js/keyboard-navigation-0.7.0.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
