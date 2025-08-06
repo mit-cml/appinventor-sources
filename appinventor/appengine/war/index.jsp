@@ -109,8 +109,7 @@
     <script src="static/js/tutorial.js"></script>
     <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
-<%--    FIXME: (v11 upgrade) set plugins back --%>
-<%--    <script type="text/javascript" src="static/js/scroll-options-5.0.11.min.js"></script>--%>
+    <script type="text/javascript" src="static/js/scroll-options-6.0.16.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.6.0.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
