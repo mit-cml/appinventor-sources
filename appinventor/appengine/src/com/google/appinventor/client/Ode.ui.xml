@@ -9,6 +9,7 @@
              xmlns:ex="urn:import:com.google.appinventor.client.explorer.youngandroid"
              xmlns:ode="urn:import:com.google.appinventor.client"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             xmlns:assetlib="urn:import:com.google.appinventor.client.assetlibrary"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -31,13 +32,16 @@
               <box:SourceStructureBox ui:field="sourceStructureBox" />
               <box:BlockSelectorBox />
               <box:AssetListBox  ui:field="assetListBox" />
-              <ed:AssetManagerPanel ui:field="assetManagerPanel" />
             </g:FlowPanel>
             <box:PropertiesBox ui:field="propertiesBox" width="222px" />
           </g:FlowPanel>
         </g:FlowPanel>
         <g:FlowPanel width="100%">
           <box:AdminUserListBox />
+        </g:FlowPanel>
+        <g:FlowPanel width="100%" />
+        <g:FlowPanel>
+          <assetlib:AssetLibraryWidgetClassic />
         </g:FlowPanel>
       </g:DeckPanel>
     </g:FlowPanel>

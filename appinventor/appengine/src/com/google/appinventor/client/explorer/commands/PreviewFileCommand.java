@@ -100,7 +100,7 @@ public class PreviewFileCommand extends ChainableCommand {
     String fileUrl;
     if (node instanceof GlobalAssetProjectNode) {
       fileSuffix = node.getFileId();
-      fileUrl = "/ode/download/globalasset/" + node.getFileId();
+      fileUrl = "/download/globalasset/" + node.getFileId();
     } else {
       fileSuffix = node.getProjectId() + "/" + node.getFileId();
       fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
@@ -110,7 +110,7 @@ public class PreviewFileCommand extends ChainableCommand {
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
       // Support preview for file types that all major browser support
       if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif")
-          || fileType.endsWith("bmp") || fileType.endsWith("svg+xml")) {
+          || fileType.endsWith("bmp") || fileType.endsWith("svg+xml") || fileType.endsWith("webp")) {
         Image img = new Image(fileUrl);
         img.getElement().getStyle().setProperty("maxWidth","600px");
         return img;

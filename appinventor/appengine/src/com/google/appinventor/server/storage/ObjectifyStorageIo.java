@@ -72,6 +72,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
+import java.util.ArrayList;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -198,6 +199,7 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(FileData.class);
     ObjectifyService.register(UserFileData.class);
     ObjectifyService.register(StoredData.GlobalAssetData.class);
+    ObjectifyService.register(StoredData.ProjectGlobalAssetData.class);
     ObjectifyService.register(StoredData.ProjectGlobalAsset.class);
     ObjectifyService.register(MotdData.class);
     ObjectifyService.register(RendezvousData.class);
@@ -1258,6 +1260,24 @@ public class ObjectifyStorageIo implements StorageIo {
       }, true);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, fileName), e);
+    }
+  }
+
+  @Override
+  public void updateGlobalAssetFolder(final String userId, final String assetId, final String folder) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.GlobalAssetData gad = datastore.find(globalAssetKey(userKey(userId), assetId));
+          if (gad != null) {
+            gad.folder = folder;
+            datastore.put(gad);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, assetId), e);
     }
   }
 
@@ -3038,4 +3058,165 @@ public class ObjectifyStorageIo implements StorageIo {
       return GCS_BUCKET_NAME;
     }
   }
+
+  @Override
+  public void updateGlobalAssetReferencedBy(final String userId, final String assetId, final List<Long> referencedBy) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.GlobalAssetData gad = datastore.find(globalAssetKey(userKey(userId), assetId));
+          if (gad != null) {
+            gad.referencedBy = referencedBy;
+            datastore.put(gad);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId, assetId), e);
+    }
+  }
+
+  // New efficient relationship-based methods for ProjectGlobalAssetData
+  @Override
+  public void addProjectGlobalAssetRelation(final long projectId, final String globalAssetFileName, 
+                                          final String globalAssetUserId, final boolean trackUsage, 
+                                          final String localAssetPath) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          StoredData.ProjectGlobalAssetData relation = new StoredData.ProjectGlobalAssetData(
+              projectKey, globalAssetFileName, globalAssetUserId, trackUsage, localAssetPath);
+          datastore.put(relation);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, 
+          "projectId=" + projectId + ", assetFileName=" + globalAssetFileName, e);
+    }
+  }
+
+  @Override
+  public void removeProjectGlobalAssetRelation(final long projectId, final String globalAssetFileName, 
+                                             final String globalAssetUserId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          Query<StoredData.ProjectGlobalAssetData> query = datastore.query(StoredData.ProjectGlobalAssetData.class)
+              .ancestor(projectKey)
+              .filter("globalAssetFileName", globalAssetFileName)
+              .filter("globalAssetUserId", globalAssetUserId);
+          
+          StoredData.ProjectGlobalAssetData relation = query.get();
+          if (relation != null) {
+            datastore.delete(relation);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, 
+          "projectId=" + projectId + ", assetFileName=" + globalAssetFileName, e);
+    }
+  }
+
+  @Override
+  public StoredData.ProjectGlobalAssetData getProjectGlobalAssetRelation(final long projectId, 
+                                                                        final String globalAssetFileName, 
+                                                                        final String globalAssetUserId) {
+    final StoredData.ProjectGlobalAssetData[] result = new StoredData.ProjectGlobalAssetData[1];
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          Query<StoredData.ProjectGlobalAssetData> query = datastore.query(StoredData.ProjectGlobalAssetData.class)
+              .ancestor(projectKey)
+              .filter("globalAssetFileName", globalAssetFileName)
+              .filter("globalAssetUserId", globalAssetUserId);
+          
+          result[0] = query.get();
+        }
+      }, false);
+      return result[0];
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, 
+          "projectId=" + projectId + ", assetFileName=" + globalAssetFileName, e);
+    }
+  }
+
+  @Override
+  public List<StoredData.ProjectGlobalAssetData> getProjectGlobalAssetRelations(final long projectId) {
+    final List<StoredData.ProjectGlobalAssetData> assetList = new ArrayList<StoredData.ProjectGlobalAssetData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          Query<StoredData.ProjectGlobalAssetData> query = datastore.query(StoredData.ProjectGlobalAssetData.class)
+              .ancestor(projectKey);
+          
+          for (StoredData.ProjectGlobalAssetData relation : query) {
+            assetList.add(relation);
+          }
+        }
+      }, false);
+      return assetList;
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, "projectId=" + projectId, e);
+    }
+  }
+
+  @Override
+  public List<Long> getProjectsUsingGlobalAsset(final String globalAssetFileName, final String globalAssetUserId) {
+    final List<Long> projectIds = new ArrayList<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Query<StoredData.ProjectGlobalAssetData> query = datastore.query(StoredData.ProjectGlobalAssetData.class)
+              .filter("globalAssetFileName", globalAssetFileName)
+              .filter("globalAssetUserId", globalAssetUserId);
+          
+          for (StoredData.ProjectGlobalAssetData relation : query) {
+            projectIds.add(relation.projectKey.getId());
+          }
+        }
+      }, false);
+      return projectIds;
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, 
+          "assetFileName=" + globalAssetFileName + ", userId=" + globalAssetUserId, e);
+    }
+  }
+
+  @Override
+  public void updateProjectGlobalAssetSyncTimestamp(final long projectId, final String globalAssetFileName, 
+                                                  final String globalAssetUserId, final long syncTimestamp) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          Query<StoredData.ProjectGlobalAssetData> query = datastore.query(StoredData.ProjectGlobalAssetData.class)
+              .ancestor(projectKey)
+              .filter("globalAssetFileName", globalAssetFileName)
+              .filter("globalAssetUserId", globalAssetUserId);
+          
+          StoredData.ProjectGlobalAssetData relation = query.get();
+          if (relation != null) {
+            relation.syncedTimestamp = syncTimestamp;
+            datastore.put(relation);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, 
+          "projectId=" + projectId + ", assetFileName=" + globalAssetFileName, e);
+    }
+  }
+
 }

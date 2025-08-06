@@ -577,6 +577,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Name of Import Template menuitem")
   String importTemplateButton();
 
+  @DefaultMessage("Asset Library")
+  @Description("Name of Asset Library menuitem")
+  String assetLibraryMenuItem();
+
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
   String exportProjectMenuItem();

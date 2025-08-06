@@ -6,6 +6,8 @@
 
 package com.google.appinventor.shared.rpc.project;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -17,16 +19,18 @@ public class GlobalAsset implements IsSerializable {
   private String fileName;
   private String folder;
   private long timestamp;
+  private List<String> tags;
 
   // For GWT RPC
   @SuppressWarnings("unused")
   private GlobalAsset() {}
 
-  public GlobalAsset(String userId, String fileName, String folder, long timestamp) {
+  public GlobalAsset(String userId, String fileName, String folder, long timestamp, List<String> tags) {
     this.userId = userId;
     this.fileName = fileName;
     this.folder = folder;
     this.timestamp = timestamp;
+    this.tags = tags;
   }
 
   public String getUserId() {
@@ -43,5 +47,9 @@ public class GlobalAsset implements IsSerializable {
 
   public long getTimestamp() {
     return timestamp;
+  }
+
+  public List<String> getTags() {
+    return tags;
   }
 }

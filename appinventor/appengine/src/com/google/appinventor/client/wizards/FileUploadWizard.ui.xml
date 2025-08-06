@@ -11,7 +11,7 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
   <wiz:Dialog ui:field="uploadDialog" caption="{messages.fileUploadWizardCaption}" styleName="ode-DialogBox">
-    <g:FlowPanel ui:field="uploadDialogPanel">
+    <g:FlowPanel>
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <g:FileUpload ui:field="upload" name="uploadFile" />
       <g:FlowPanel styleName="buttonRow" >

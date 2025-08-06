@@ -386,6 +386,24 @@ public interface StorageIo {
   void deleteGlobalAsset(String userId, String fileName);
 
   /**
+   * Updates the folder of a global asset.
+   *
+   * @param userId user ID
+   * @param assetId the file name of the global asset
+   * @param folder the new folder for the asset
+   */
+  void updateGlobalAssetFolder(String userId, String assetId, String folder);
+
+  /**
+   * Updates the referencedBy list of a global asset.
+   *
+   * @param userId user ID
+   * @param assetId the file name of the global asset
+   * @param referencedBy the updated list of project IDs that reference this global asset
+   */
+  void updateGlobalAssetReferencedBy(String userId, String assetId, List<Long> referencedBy);
+
+  /**
    * Returns a global asset by its file name.
    *
    * @param userId user ID
@@ -421,6 +439,38 @@ public interface StorageIo {
    * @param globalAssetFileName the file name of the global asset to delete
    */
   void deleteProjectGlobalAsset(String userId, long projectId, String globalAssetFileName);
+
+  // New efficient relationship-based methods for ProjectGlobalAssetData
+  /**
+   * Creates a project-global asset relationship
+   */
+  void addProjectGlobalAssetRelation(long projectId, String globalAssetFileName, String globalAssetUserId, 
+                                   boolean trackUsage, String localAssetPath);
+
+  /**
+   * Removes a project-global asset relationship
+   */
+  void removeProjectGlobalAssetRelation(long projectId, String globalAssetFileName, String globalAssetUserId);
+
+  /**
+   * Gets a specific project-global asset relationship
+   */
+  StoredData.ProjectGlobalAssetData getProjectGlobalAssetRelation(long projectId, String globalAssetFileName, String globalAssetUserId);
+
+  /**
+   * Gets all project-global asset relationships for a project
+   */
+  List<StoredData.ProjectGlobalAssetData> getProjectGlobalAssetRelations(long projectId);
+
+  /**
+   * Gets all projects that use a specific global asset
+   */
+  List<Long> getProjectsUsingGlobalAsset(String globalAssetFileName, String globalAssetUserId);
+
+  /**
+   * Updates sync timestamp for a project-global asset relationship
+   */
+  void updateProjectGlobalAssetSyncTimestamp(long projectId, String globalAssetFileName, String globalAssetUserId, long syncTimestamp);
 
   /**
    * Returns the maximum allowed job size in bytes.

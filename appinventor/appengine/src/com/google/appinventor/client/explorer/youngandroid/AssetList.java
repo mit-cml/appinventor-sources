@@ -212,7 +212,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
         if (userObject instanceof AssetListItemData) {
           AssetListItemData itemData = (AssetListItemData) userObject;
           if (!itemData.isGlobal && itemData.projectNode != null) {
-            Ode.getInstance().getAssetManagerPanel().updatePreviewPanel(itemData.projectNode);
+            // Ode.getInstance().getAssetManagerPanel().updatePreviewPanel(itemData.projectNode);
           } else if (itemData.isGlobal) {
             // For global assets, create a ProjectNode from GlobalAsset for preview
             // This is a temporary ProjectNode for preview purposes only
@@ -220,7 +220,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
                 itemData.globalAsset.getFileName(),
                 itemData.globalAsset.getFolder() + "/" + itemData.globalAsset.getFileName() // Use folder/filename as fileId for preview
             );
-            Ode.getInstance().getAssetManagerPanel().updatePreviewPanel(globalAssetProjectNode);
+            //            Ode.getInstance().getAssetManagerPanel().updatePreviewPanel(globalAssetProjectNode);
           }
         }
       }
@@ -260,54 +260,23 @@ public class AssetList extends Composite implements ProjectChangeListener {
     }
 
     // Fetch and Prepare Global Assets
-    globalAssetService.getGlobalAssets(new OdeAsyncCallback<List<GlobalAsset>>(
-        MESSAGES.errorFetchingGlobalAssets()) {
-      @Override
-      public void onSuccess(List<GlobalAsset> globalAssets) {
-        for (GlobalAsset globalAsset : globalAssets) {
-          String displayName = "(g) " + globalAsset.getFolder() + "/" + globalAsset.getFileName();
-          String fullPath = "_global_/" + globalAsset.getFolder() + "/" + globalAsset.getFileName();
-          itemsToDisplay.add(new AssetListItemData(displayName, fullPath, true, null, globalAsset));
-        }
-        populateTreeItems(itemsToDisplay);
-      }
-
-      @Override
-      public void onFailure(Throwable caught) {
-        super.onFailure(caught);
-        populateTreeItems(itemsToDisplay); // Populate with project assets even if global fails
-      }
-    });
+    populateTreeItems(itemsToDisplay);
   }
 
   private void populateTreeItems(List<AssetListItemData> items) {
-    // Split items into project assets and global assets
-    List<AssetListItemData> projectAssets = new ArrayList<>();
-    List<AssetListItemData> globalAssets = new ArrayList<>();
-    for (AssetListItemData item : items) {
-      if (item.isGlobal) {
-        globalAssets.add(item);
-      } else {
-        projectAssets.add(item);
-      }
-    }
-    // Sort both lists by displayName
-    Collections.sort(projectAssets, new Comparator<AssetListItemData>() {
+    // Sort the items by displayName
+    Collections.sort(items, new Comparator<AssetListItemData>() {
       @Override
       public int compare(AssetListItemData o1, AssetListItemData o2) {
         return o1.displayName.compareToIgnoreCase(o2.displayName);
       }
     });
-    Collections.sort(globalAssets, new Comparator<AssetListItemData>() {
-      @Override
-      public int compare(AssetListItemData o1, AssetListItemData o2) {
-        return o1.displayName.compareToIgnoreCase(o2.displayName);
-      }
-    });
+
     assetList.clear(); // Clear again before adding sorted items
     final Images images = Ode.getImageBundle();
-    // Add project assets first
-    for (AssetListItemData itemData : projectAssets) {
+
+    // Add project assets
+    for (AssetListItemData itemData : items) {
       String treeItemText = "<span style='cursor: pointer'>";
       String pathForIconDetection = (itemData.projectNode != null ? itemData.projectNode.getProjectId() + "/" + itemData.projectNode.getFileId() : itemData.fullPath);
       if (StorageUtil.isImageFile(pathForIconDetection)) {
@@ -322,75 +291,6 @@ public class AssetList extends Composite implements ProjectChangeListener {
       treeItemText += itemData.displayName + "</span>";
       TreeItem treeItem = new TreeItem(new HTML(treeItemText));
       treeItem.setUserObject(itemData);
-      assetList.addItem(treeItem);
-    }
-    // Add separator if there are global assets
-    if (!globalAssets.isEmpty()) {
-      TreeItem separatorItem = new TreeItem(new HTML("<div style='margin: 6px 0; font-weight: bold; border-top: 1px solid #ccc; padding-top: 4px;'>Global Assets</div>"));
-      separatorItem.setUserObject(null); // Not selectable
-      assetList.addItem(separatorItem);
-    }
-    // Add global assets
-    for (AssetListItemData itemData : globalAssets) {
-      String treeItemText = "<span style='cursor: pointer'>";
-      String pathForIconDetection = itemData.fullPath;
-      if (StorageUtil.isImageFile(pathForIconDetection)) {
-        treeItemText += new Image(images.mediaIconImg());
-      } else if (StorageUtil.isAudioFile(pathForIconDetection)) {
-        treeItemText += new Image(images.mediaIconAudio());
-      } else if (StorageUtil.isVideoFile(pathForIconDetection)) {
-        treeItemText += new Image(images.mediaIconVideo());
-      } else {
-        treeItemText += new Image(images.fileIcon());
-      }
-      treeItemText += itemData.displayName + "</span>";
-      TreeItem treeItem = new TreeItem(new HTML(treeItemText));
-      treeItem.setUserObject(itemData);
-      // (existing global asset logic for sync icon and link button)
-      if (itemData.isGlobal) {
-        globalAssetService.isGlobalAssetUpdated(itemData.globalAsset.getFileName(), itemData.globalAsset.getTimestamp(),
-            new OdeAsyncCallback<Boolean>(MESSAGES.errorCheckingGlobalAssetUpdate()) {
-              @Override
-              public void onSuccess(Boolean isUpdated) {
-                if (isUpdated) {
-                  Image syncIcon = new Image(images.syncIcon());
-                  syncIcon.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                      globalAssetService.getGlobalAsset(itemData.globalAsset.getFileName(), new OdeAsyncCallback<GlobalAsset>(MESSAGES.errorFetchingGlobalAssets()) {
-                        @Override
-                        public void onSuccess(GlobalAsset latestAsset) {
-                          GlobalAssetUpdateDialog dialog = new GlobalAssetUpdateDialog(projectId, itemData.globalAsset, latestAsset);
-                          dialog.center();
-                          dialog.show();
-                        }
-                      });
-                    }
-                  });
-                  treeItem.getElement().appendChild(syncIcon.getElement());
-                }
-              }
-            });
-        TextButton linkButton = new TextButton(MESSAGES.linkToProjectButton());
-        linkButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            if (projectId != 0) {
-              globalAssetService.linkGlobalAssetToProject(projectId, itemData.globalAsset.getFileName(), itemData.globalAsset.getTimestamp(),
-                  new OdeAsyncCallback<Void>(MESSAGES.linkGlobalAssetError()) {
-                    @Override
-                    public void onSuccess(Void result) {
-                      Ode.getInstance().getEditorManager().getOpenProjectEditor(projectId).getFileEditor(itemData.fullPath);
-                      refreshAssetList();
-                    }
-                  });
-            } else {
-              Window.alert(MESSAGES.noProjectOpenForLinking());
-            }
-          }
-        });
-        treeItem.getElement().appendChild(linkButton.getElement());
-      }
       assetList.addItem(treeItem);
     }
   }
