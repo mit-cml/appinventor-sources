@@ -20,8 +20,7 @@ module.exports = function(config) {
       'lib/closure-library/closure/goog/base.js',
       'build/blocklyeditor/blockly-all.js',
       'build/blocklyeditor/component-types.js',
-        // FIXME: (v11 Upgrade) set plugins back on
-      // 'appengine/war/static/js/scroll-options-5.0.11.min.js',
+      'appengine/war/static/js/scroll-options-6.0.16.min.js',
       'appengine/war/static/js/workspace-search.min.js',
       'appengine/war/static/js/block-dynamic-connection-0.6.0.min.js',
       'appengine/war/static/js/blockly-field-colour-5.0.0.min.js',
