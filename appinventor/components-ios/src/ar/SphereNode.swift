@@ -8,8 +8,12 @@ import RealityKit
 open class SphereNode: ARNodeBase, ARSphere {
   private var _radius: Float = 0.05 // stored in meters
   private var _storedPhysicsSettings: PhysicsSettings?
+  private var _accumulatedRoll: Float = 0.0
+  private var _rollDirection: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
   private var _totalRolling: SIMD3<Float> = SIMD3<Float>(0, 0, 0)  // Track total rotation
 
+  
+  
    struct PhysicsSettings {
        let mass: Float
        let material: PhysicsMaterialResource
@@ -18,7 +22,7 @@ open class SphereNode: ARNodeBase, ARSphere {
   
   @objc init(_ container: ARNodeContainer) {
     // Create initial sphere mesh
-    let mesh = MeshResource.generateSphere(radius: 0.05)
+    let mesh = MeshResource.generateSphere(radius: _radius)
     super.init(container: container, mesh: mesh)
     self.Name = "sphere" // vs type.. ?
   }
@@ -49,141 +53,182 @@ open class SphereNode: ARNodeBase, ARSphere {
     }
   }
   
-  
+
+      
+      // MARK: - Simple Drag Methods
       
       override open func startDrag() {
-          print("🎾 Starting drag with nuclear physics removal")
+          print("🎾 Starting simple drag")
           
-          // ✅ Store physics settings if they exist
+          // ✅ Remove physics during drag
           if let physicsBody = _modelEntity.physicsBody {
               _storedPhysicsSettings = PhysicsSettings(
                   mass: physicsBody.massProperties.mass,
                   material: physicsBody.material,
                   mode: physicsBody.mode
               )
-              
-              // ✅ Remove physics completely - don't call EnablePhysics(false)
-              _modelEntity.physicsBody = nil
-              _modelEntity.collision = nil  // Also remove collision
           }
+          
+          _modelEntity.physicsBody = nil
+          _modelEntity.collision = nil
           
           isBeingDragged = true
-          OriginalMaterial = self._modelEntity.model?.materials.first
           
-          if #available(iOS 15.0, *) {
-              showDragEffect()
-          }
+          // ✅ Store original material if you have custom materials
+          OriginalMaterial = _modelEntity.model?.materials.first
           
-          print("🎾 Physics completely removed - ready for free dragging")
+          print("🎾 Drag started - physics disabled")
       }
       
       override open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
-          // ✅ Debug all values
-          print("🎾 === DRAG DEBUG ===")
-          print("🎾 dragVector: \(dragVector)")
-          print("🎾 worldDirection: \(worldDirection)")
-          print("🎾 DragSensitivity: \(DragSensitivity)")
-          
-          // ✅ Much higher sensitivity and movement scale
-          let dragMagnitude = sqrt(dragVector.x * dragVector.x + dragVector.y * dragVector.y)
-          let movementScale = min(Float(dragMagnitude) * DragSensitivity, 0.05)  // Increased from 0.02 to 0.1
-          
-          print("🎾 dragMagnitude: \(dragMagnitude)")
-          print("🎾 movementScale: \(movementScale)")
+          // ✅ Simple movement - sphere follows finger
+          let movement = worldDirection * DragSensitivity
           
           let currentPos = _modelEntity.transform.translation
-          let movement = worldDirection * movementScale
           let newPos = currentPos + movement
-          
-          print("🎾 currentPos: \(currentPos)")
-          print("🎾 movement: \(movement)")
-          print("🎾 newPos: \(newPos)")
-          
-          // ✅ No bounds checking - allow movement anywhere
           _modelEntity.transform.translation = newPos
-          addVisualRolling(movement: movement)
           
-          print("🎾 Moved to: \(newPos)")
-          print("🎾 ==================")
-      }
-      
-      override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
-          print("🎾 Ending drag - restoring physics")
-          
-          // ✅ Restore physics if it was enabled before
-          if let storedSettings = _storedPhysicsSettings {
-              // Recreate collision first
-              let bounds = _modelEntity.visualBounds(relativeTo: nil)
-              let size = bounds.max - bounds.min
-              let radius = max(size.x, size.y, size.z) / 2
-              let shape = ShapeResource.generateSphere(radius: max(radius, 0.03))
-              _modelEntity.collision = CollisionComponent(shapes: [shape])
-              
-              // Recreate physics body
-              _modelEntity.physicsBody = PhysicsBodyComponent(
-                  massProperties: PhysicsMassProperties(mass: storedSettings.mass),
-                  material: storedSettings.material,
-                  mode: storedSettings.mode
-              )
-              
-              print("🎾 Physics restored with mass: \(storedSettings.mass)")
+          // ✅ Simple rolling decision
+          if shouldRoll(currentHeight: currentPos.y, movement: movement) {
+              applySimpleRolling(movement: movement)
           }
           
-          // ✅ Apply release impulse after a short delay
+          print("🎾 Dragged to: \(newPos)")
+      }
+      
+  override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+      let finalPosition = _modelEntity.transform.translation
+      print("🎾 Ending drag at: \(finalPosition)")
+      
+      // ✅ Restore physics with velocity reset
+      restorePhysicsWithVelocityReset(at: finalPosition)
+      
+      // ✅ Apply end behavior
+      let isOnGround = isNearGround(height: finalPosition.y)
+      if isOnGround {
+          print("🎾 On ground - will slow down and stop rolling")
+          startGroundMomentum()
+      } else {
+          print("🎾 In air - will fall and bounce naturally")
+      }
+      
+      isBeingDragged = false
+  }
+
+  private func restorePhysicsWithVelocityReset(at position: SIMD3<Float>) {
+      // ✅ Enable physics
+      EnablePhysics(true)
+      _modelEntity.transform.translation = position
+      
+      // ✅ Reset velocity immediately
+      /*if #available(iOS 18.0, *) {
+          _modelEntity.physicsBody?.linearVelocity = SIMD3<Float>(0, 0, 0)
+          _modelEntity.physicsBody?.angularVelocity = SIMD3<Float>(0, 0, 0)
+      } else {*/
+          // iOS 16 workaround
+          let currentMass = _modelEntity.physicsBody?.massProperties.mass ?? 1.0
+          _modelEntity.physicsBody?.massProperties = PhysicsMassProperties(mass: 50.0)  // Heavy
+          
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-              let velocityMagnitude = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
-              let impulseScale = min(Float(velocityMagnitude) * self.ReleaseForceMultiplier, 0.05)  // Increased
-              let releaseImpulse = worldDirection * impulseScale
-              
-              print("🎾 Applying release impulse: \(releaseImpulse)")
-              self.applyReleaseImpulse(releaseImpulse)
-          }
-          
-          isBeingDragged = false
-          restoreMaterial()
-          _storedPhysicsSettings = nil
+              self._modelEntity.physicsBody?.massProperties = PhysicsMassProperties(mass: currentMass)
+          //}
       }
       
-      private func applyReleaseImpulse(_ impulse: SIMD3<Float>) {
-          let currentPos = _modelEntity.transform.translation
-          let impulseMovement = impulse * 0.005  // Increased from 0.002
-          let newPos = currentPos + impulseMovement
-          
-          _modelEntity.transform.translation = newPos
-          
-          print("🎾 Applied impulse movement: \(impulseMovement)")
+      // ✅ Restore material
+      if let original = OriginalMaterial {
+          _modelEntity.model?.materials = [original]
+          OriginalMaterial = nil
       }
+      
+      print("🎾 Physics restored with velocity reset")
+  }
+
   
-    private func startCustomGravity() {
-        guard GravityScale != 1.0 else { return }
-        
-        // Monitor and adjust gravity effect
-        Task {
-            while !Task.isCancelled {
-                await adjustGravityEffect()
-                try? await Task.sleep(nanoseconds: 33_000_000) // ~30fps
-            }
-        }
-    }
-    
-    private func adjustGravityEffect() async {
-        await MainActor.run {
-            guard let physicsBody = _modelEntity.physicsBody else { return }
-            
-            let currentPos = _modelEntity.transform.translation
-            
-            // Apply additional downward force if gravity scale > 1.0
-            if GravityScale > 1.0 && currentPos.y > -1.5 {
-                let extraGravity = SIMD3<Float>(0, -0.001 * (GravityScale - 1.0), 0)
-                let newPos = currentPos + extraGravity
-                _modelEntity.transform.translation = newPos
-              isBeingDragged = false
-            }
-            // For gravity scale < 1.0, we'd need to counteract default gravity
-            // This is more complex and might require disabling physics gravity entirely
-        }
-    }
-    
+      
+      // MARK: - Simple Helper Methods
+      
+      private func shouldRoll(currentHeight: Float, movement: SIMD3<Float>) -> Bool {
+          let groundLevel: Float = -0.5  // Adjust for your floor
+          let ballRadius = _radius * _modelEntity.transform.scale.x
+          let isOnGround = currentHeight <= (groundLevel + ballRadius + 0.05)
+          
+          // ✅ Roll if on ground and moving horizontally
+          let horizontalMovement = sqrt(movement.x * movement.x + movement.z * movement.z)
+          let verticalMovement = abs(movement.y)
+          
+          return isOnGround && horizontalMovement > verticalMovement * 0.5
+      }
+      
+      private func applySimpleRolling(movement: SIMD3<Float>) {
+          let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
+          let distance = simd_length(horizontalMovement)
+          
+          guard distance > 0.001 else { return }
+          
+          // ✅ Calculate roll angle: distance = radius × angle
+          let ballRadius = _radius * _modelEntity.transform.scale.x
+          let rollAngle = distance / ballRadius
+          
+          // ✅ Roll axis perpendicular to movement
+          let direction = simd_normalize(horizontalMovement)
+          let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
+          
+          // ✅ Apply rotation
+          let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
+          _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
+          
+          // ✅ Track for momentum
+          _accumulatedRoll += rollAngle
+          _rollDirection = direction
+          
+          print("🎾 Rolling: distance=\(distance), angle=\(rollAngle)")
+      }
+      
+      private func isNearGround(height: Float) -> Bool {
+          let groundLevel: Float = -0.5
+          let ballRadius = _radius * _modelEntity.transform.scale.x
+          return height <= (groundLevel + ballRadius + 0.1)
+      }
+      
+      private func restorePhysics(at position: SIMD3<Float>) {
+          // ✅ Recreate physics
+          EnablePhysics(true)
+          _modelEntity.transform.translation = position
+          
+          // ✅ Restore original material
+          if let original = OriginalMaterial {
+              _modelEntity.model?.materials = [original]
+              OriginalMaterial = nil
+          }
+          
+          print("🎾 Physics restored")
+      }
+      
+      private func startGroundMomentum() {
+          // ✅ Simple momentum - gradually slow down rolling
+          guard _accumulatedRoll > 0.1 else { return }
+          
+          Task {
+              var remainingRoll = _accumulatedRoll * 0.3  // 30% momentum
+              let dampingRate: Float = 0.9  // 10% slower each frame
+              
+              while remainingRoll > 0.01 && !isBeingDragged {
+                  await MainActor.run {
+                      let rollAngle = remainingRoll * 0.1  // Small increments
+                      let rollRotation = simd_quatf(angle: rollAngle, axis: _rollDirection)
+                      _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
+                      
+                      remainingRoll *= dampingRate
+                  }
+                  
+                  try? await Task.sleep(nanoseconds: 33_000_000)  // ~30fps
+              }
+              
+              print("🎾 Rolling momentum stopped")
+          }
+      }
+
+
   @available(iOS 15.0, *)
   private func showDragEffect() {
         var dragMaterial = SimpleMaterial()
@@ -196,26 +241,7 @@ open class SphereNode: ARNodeBase, ARSphere {
             _modelEntity.model?.materials = [original]
         }
     }
-
   
 
-  private func addVisualRolling(movement: SIMD3<Float>) {
-      let movementMagnitude = simd_length(movement)
-      guard movementMagnitude > 0.0001 else { return }
-      
-      let normalizedMovement = simd_normalize(movement)
-      let rollAxis = SIMD3<Float>(normalizedMovement.z, 0, -normalizedMovement.x)
-      let rollAngle = movementMagnitude * 30.0
-      
-      // ✅ Accumulate total rolling instead of multiplying rotations
-      _totalRolling += rollAxis * rollAngle
-      
-      // ✅ Apply fresh rotation from identity
-      _modelEntity.transform.rotation = simd_quatf(
-          angle: simd_length(_totalRolling),
-          axis: simd_length(_totalRolling) > 0 ? simd_normalize(_totalRolling) : SIMD3<Float>(0, 1, 0)
-      )
-      
-      print("🎾 Total rolling: \(_totalRolling)")
-  }
+  
 }

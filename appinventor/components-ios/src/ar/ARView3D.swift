@@ -39,6 +39,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   fileprivate var _lights: [AnchorEntity: ARLightBase] = [:]
   
   final var _arView: ARView
+  
+  private var _invisibleFloor: ModelEntity?
+  private var _floorAnchor: AnchorEntity?
+  
   private var _trackingType: ARTrackingType = .worldTracking
   private var _configuration: ARConfiguration = ARWorldTrackingConfiguration()
   private var _planeDetection: ARPlaneDetectionType = .horizontal
@@ -123,7 +127,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     Height = kARViewPreferredHeight
     Width = kARViewPreferredWidth
     
-
+    ensureFloorExists()
   }
   
 
@@ -376,6 +380,108 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       print("Scene understanding disabled for tracking type: \(_trackingType)")
     }
   }
+
+      
+      @objc func createInvisibleFloor(at height: Float = -0.8) {
+          print("🏠 Creating invisible floor at height: \(height)m")
+          
+          // ✅ Remove existing floor if any
+          removeInvisibleFloor()
+          
+          // ✅ Create large invisible plane
+          let floorSize: Float = 20.0  // 20m x 20m floor
+          let floorMesh = MeshResource.generatePlane(width: floorSize, depth: floorSize)
+          
+          // ✅ Create invisible material
+          var invisibleMaterial = SimpleMaterial()
+        if #available(iOS 15.0, *) {
+          invisibleMaterial.color = .init(tint: .clear)
+        } else {
+          // Fallback on earlier versions
+        }  // Completely transparent
+          
+          // ✅ Create floor entity
+          _invisibleFloor = ModelEntity(mesh: floorMesh, materials: [invisibleMaterial])
+          _invisibleFloor?.name = "InvisibleFloor"
+          
+          // ✅ Position the floor
+          _invisibleFloor?.transform.translation = SIMD3<Float>(0, height, 0)
+          
+          // ✅ Add collision for physics
+          let floorShape = ShapeResource.generateBox(width: floorSize, height: 0.01, depth: floorSize)
+          _invisibleFloor?.collision = CollisionComponent(shapes: [floorShape])
+          
+          // ✅ Make it static physics body
+          _invisibleFloor?.physicsBody = PhysicsBodyComponent(
+              massProperties: PhysicsMassProperties(mass: 1000.0),  // Very heavy
+              material: PhysicsMaterialResource.generate(
+                  staticFriction: 0.6,
+                  dynamicFriction: 0.4,
+                  restitution: 0.3  // Some bounce
+              ),
+              mode: .static  // Never moves
+          )
+          
+          // ✅ Create anchor and add to scene
+          _floorAnchor = AnchorEntity(world: SIMD3<Float>(0, height, 0))
+          _floorAnchor?.addChild(_invisibleFloor!)
+          _arView.scene.addAnchor(_floorAnchor!)
+          
+          print("🏠 Invisible floor created successfully")
+      }
+      
+      @objc func removeInvisibleFloor() {
+          if let floorAnchor = _floorAnchor {
+              _arView.scene.removeAnchor(floorAnchor)
+              _floorAnchor = nil
+          }
+          _invisibleFloor = nil
+          print("🏠 Invisible floor removed")
+      }
+      
+      @objc func adjustFloorHeight(_ newHeight: Float) {
+          guard let floor = _invisibleFloor else {
+              print("🏠 No invisible floor to adjust")
+              return
+          }
+          
+          floor.transform.translation.y = newHeight
+          _floorAnchor?.transform.translation.y = newHeight
+          print("🏠 Floor height adjusted to: \(newHeight)m")
+      }
+      
+      @objc var hasInvisibleFloor: Bool {
+          return _invisibleFloor != nil
+      }
+  
+  @objc func ensureFloorExists() {
+          // ✅ Check if scene understanding found a floor
+          let hasDetectedFloor = checkForDetectedFloor()
+          
+          if !hasDetectedFloor && !hasInvisibleFloor {
+              print("🏠 No floor detected - creating invisible floor")
+              createInvisibleFloor()
+          } else if hasDetectedFloor && hasInvisibleFloor {
+              print("🏠 Real floor detected - removing invisible floor")
+              removeInvisibleFloor()
+          }
+      }
+      
+      private func checkForDetectedFloor() -> Bool {
+          // ✅ Check if RealityKit scene understanding found any horizontal planes
+          for anchor in _arView.scene.anchors {
+              for child in anchor.children {
+                  if child.name.contains("Mesh Entity") {
+                      // Check if it's a floor-like entity
+                      let position = child.transform.translation
+                      if position.y < -0.3 {  // Below camera level = likely floor
+                          return true
+                      }
+                  }
+              }
+          }
+          return false
+      }
   
   private func setupCollisionDetection() {
     // Cancel existing observer
@@ -1677,6 +1783,8 @@ extension ARView3D: UIGestureRecognizerDelegate {
           return rightVector * Float(screenVector.x) * 0.001 +
                  forwardVector * Float(-screenVector.y) * 0.001
       }
+      
+
   }
     // Simple, clean drag handler
     @objc fileprivate func handlePan(_ gesture: UIPanGestureRecognizer) {
@@ -1695,6 +1803,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
             // Let the dragged node handle the update
             if let draggedNode = findDraggedNode(at: location) {
               let worldDirection = screenDragToWorldDirection(calculateDragVector(gesture))
+              print("🌍 World: \(worldDirection)")
               print ("updating drag change")
               draggedNode.updateDrag(dragVector: calculateDragVector(gesture), velocity: gesture.velocity(in: _arView), worldDirection: worldDirection)
             }

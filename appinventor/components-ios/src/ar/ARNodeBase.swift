@@ -37,7 +37,7 @@ open class ARNodeBase: NSObject, ARNode {
   private var _originalMaterial: Material?
   
   private var _gravityScale = Float(0.5)
-  private var _dragSensitivity = Float(1.0)
+  private var _dragSensitivity = Float(0.5)
   private var _releaseForceMultiplier = Float(0.0)
   
   private var _currentVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
@@ -559,6 +559,7 @@ open class ARNodeBase: NSObject, ARNode {
   
   @objc open func ScaleBy(_ scalar: Float) {
     _modelEntity.transform.scale *= abs(scalar)
+    updateCollisionShape()
   }
   
   @objc open func MoveBy(_ x: Float, _ y: Float, _ z: Float) {
@@ -1007,7 +1008,7 @@ extension ARNodeBase {
         _dampingTask = Task{}
       }
   
-  private func updateCollisionShape() {
+    private func updateCollisionShape() {
       let shape: ShapeResource
       let bounds = _modelEntity.visualBounds(relativeTo: nil)
       let autoSize = bounds.max - bounds.min
@@ -1018,7 +1019,29 @@ extension ARNodeBase {
       )
       shape = generateCollisionShape(size: safeSize)
       _modelEntity.collision = CollisionComponent(shapes: [shape])
-  }
+    
+    
+    // ✅ Update physics body
+      if _modelEntity.physicsBody != nil {
+             // ✅ Update mass based on new volume (realistic)
+             let volumeScale = Scale
+             let newMass = Mass * volumeScale
+             
+             let material = PhysicsMaterialResource.generate(
+                 staticFriction: StaticFriction,
+                 dynamicFriction: DynamicFriction,
+                 restitution: Restitution
+             )
+             
+             _modelEntity.physicsBody = PhysicsBodyComponent(
+                 massProperties: PhysicsMassProperties(mass: newMass),
+                 material: material,
+                 mode: .dynamic
+             )
+             
+             print("🎾  collision updated: width=\(Width), mass=\(newMass)")
+         }
+    }
   
   private func generateCollisionShape(size: SIMD3<Float>) -> ShapeResource {
       // Determine best collision shape based on object type and proportions
@@ -1175,10 +1198,10 @@ extension ARNodeBase {
           Task {
               await MainActor.run {
                   let originalMaterial = _modelEntity.model?.materials.first
-                  
+                  /*
                   var collisionMaterial = SimpleMaterial()
                   switch type {
-                  //case .floor:
+                  case .floor:
                       //collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))
                   case .wall:
                       collisionMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
@@ -1192,14 +1215,14 @@ extension ARNodeBase {
                   
                   _modelEntity.model?.materials = [collisionMaterial]
                   
-                  Task {
+                  Task { // this never changed back b/c always colliding somehow?
                       try? await Task.sleep(nanoseconds: 200_000_000)
                       await MainActor.run {
                           if let original = originalMaterial {
                               _modelEntity.model?.materials = [original]
                           }
                       }
-                  }
+                  }*/
               }
           }
     }
