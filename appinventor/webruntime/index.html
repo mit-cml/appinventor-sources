@@ -41,6 +41,8 @@ class FileSystemSimulator {
   }
 }
 
+top.FileSystemSimulator = FileSystemSimulator;
+
 class AssetFetcher {
   static loadedAssets = {};
   static async fetchAssets(cookie, projectId, baseUrl, filename) {

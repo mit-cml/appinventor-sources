@@ -54,6 +54,7 @@
   <!--
   <source path="edu/mit/appinventor/webemu" />
   -->
+  <source path="weblib" />
 
   <!--
   <extend-property name="locale" values="en" />
