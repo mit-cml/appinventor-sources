@@ -118,7 +118,7 @@
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
-    <script type="text/javascript" src="static/js/blockly-field-colour-5.0.0.min.js"></script>
+    <script type="text/javascript" src="static/js/blockly-field-colour-5.0.19.min.js"></script>
     <script type="text/javascript">
       // Register FieldColour plugin for Blockly v11 compatibility
       if (typeof window.registerFieldColour === 'function') {
