@@ -6,8 +6,6 @@
 
 package com.google.appinventor.server.util;
 
-import com.google.appengine.api.utils.SystemProperty;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,8 +16,8 @@ import java.util.Date;
  */
 public class BuildData {
 
-  private static long timestamp = 0;
-  private static Date date = null;
+  private static long timestamp = new Date().getTime();
+  private static Date date = new Date(timestamp);
 
   /**
    * Returns the timestamp for when the app was deployed (as a Unix time,
@@ -27,19 +25,6 @@ public class BuildData {
    *
    */
   public static long getTimestamp() {
-    if (timestamp == 0) {
-      // Note: the applicationVersion string has the format version.timestamp
-      // The timestamp currently (when this was written) needs to be divided
-      // by 2^28 to get it into unix epoch seconds. This could change according
-      // to comments I found on the web, but there doesn't seem
-      // to be any more stable API to get this info.
-      String applicationVersion = SystemProperty.applicationVersion.get();
-      if (applicationVersion != null) {
-        String parts[] = applicationVersion.split("\\.");
-        timestamp = (Long.parseLong(parts[1]) >> 28) * 1000;
-        date = new Date(timestamp);
-      }
-    }
     return timestamp;
   }
 
@@ -51,12 +36,6 @@ public class BuildData {
    *
    */
   public static String getTimestampAsString() {
-    if (timestamp == 0) {
-      getTimestamp();
-    }
-    if (date != null) {
-      return new SimpleDateFormat("EEE, d MMM yyyy HH:mm z").format(date);
-    }
-    return "";
+    return new SimpleDateFormat("EEE, d MMM yyyy HH:mm z").format(date);
   }
 }

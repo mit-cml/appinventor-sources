@@ -15,7 +15,6 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 import static com.google.appinventor.server.ios.ProvisioningProfileUtil.validateProvisioningProfile;
 
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.common.version.GitBuildId;
@@ -842,9 +841,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   private String getCurrentHost() {
     if (Server.isProductionServer()) {
       if (StringUtils.isNullOrEmpty(appengineHost.get())) {
-        String applicationVersionId = SystemProperty.applicationVersion.get();
-        String applicationId = SystemProperty.applicationId.get();
-        return applicationVersionId + "." + applicationId + ".appspot.com";
+        // String applicationVersionId = SystemProperty.applicationVersion.get();
+        // String applicationId = SystemProperty.applicationId.get();
+        // return applicationVersionId + "." + applicationId + ".appspot.com";
+        // TODO(diego@barreiro.dev): This is wrong
+        return "appspot.com";
       } else {
         return appengineHost.get();
       }
