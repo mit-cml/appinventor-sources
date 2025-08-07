@@ -59,7 +59,7 @@ public class ListView extends View {
     // TODO
   }
 
-  private void draw() {
+  public void draw() {
     while (element.getFirstChild() != null) {
       element.removeChild(element.getFirstChild());
     }

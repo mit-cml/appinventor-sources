@@ -450,4 +450,29 @@ public class View {
   public void startAnimation(Object animation) {
     // TODO(ewpatton): Real implementation
   }
+
+  public void setImeOptions(int input) {
+    // TODO(lroman10): Real implementation
+  }
+
+  public void setInputType(int input) {
+    // TODO(lroman10): Real implementation
+  }
+
+  public void setHintTextColor(int input) {
+    // TODO(lroman10): Real implementation
+  }
+
+  public void setSelection(int input) {
+    // TODO(lroman10): Real implemenation
+  }
+
+  public int getCurrentHintTextColor() {
+    return 0;
+    // TODO(lroman10): Real implementation
+  }
+
+  public void requestFocus() {
+    // TODO(lroman): Real implementation
+  }
 }

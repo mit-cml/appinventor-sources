@@ -43,4 +43,11 @@ public class EditText extends TextView {
   public void setInputType(int inputType) {
     // TODO: Implement input type handling
   }
+
+  public void setTransformationMethod(Object method) {
+    if (!isTextArea) {
+      InputElement.as(element).setAttribute("type", "password");
+    }
+    // TODO(lroman10): Real implementation
+  }
 }

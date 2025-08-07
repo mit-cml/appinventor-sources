@@ -5,6 +5,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 public class ViewUtil {
+
+  private static View childContainer;
+  
   public static void setBackgroundImage(View view, Drawable drawable) {
     view.setBackgroundDrawable(drawable);
     view.requestLayout();
@@ -32,5 +35,19 @@ public class ViewUtil {
   public static void setBackgroundDrawable(View view, Drawable drawable) {
     view.setBackgroundDrawable(drawable);
     view.requestLayout();
+  }
+
+  public static void setChildContainer(View container) {
+    childContainer = container;
+  }
+
+  public static View getChildContainer() {
+    return childContainer;
+  }
+
+  public static void addChild(View child) {
+    if (childContainer != null && child != null) {
+      childContainer.getElement().appendChild(child.getElement());
+    }
   }
 }

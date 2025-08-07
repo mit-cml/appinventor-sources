@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
@@ -117,6 +118,24 @@ public class MediaUtil {
     } catch (Exception e) {
       throw new IOException("Unable to determine file path of file url " + mediaPath);
     }
+  }
+
+  public static void loadMediaPlayer(MediaPlayer mp, Form form, String source) {
+    //TODO(lroman10): Real implementation
+  }
+
+  public static String getAssetAsDataUrl(Form form, String assetName) throws IOException {
+    if (form instanceof ReplForm) {
+      ReplForm replForm = (ReplForm) form;
+      if (replForm.isAssetsLoaded()) {
+        try {
+          return AssetFetcher.getLoadedAsset(assetName);
+        } catch (Exception e) {
+          throw new IOException("Failed to get asset: " + assetName, e);
+        }
+      }
+    }
+    throw new IOException("Assets not loaded or unsupported form");
   }
 
   private static native String toDataUri(byte[] content) /*-{

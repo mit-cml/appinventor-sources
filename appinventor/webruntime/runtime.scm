@@ -41,6 +41,9 @@
 
 (!s "window.yailListHeader = @1@;" '*list*)
 
+(define (make-yail-list . args)
+  (cons '*list* args))
+
 (define-syntax try-catch
   (syntax-rules ()
     ((_ program (exception type handler))
