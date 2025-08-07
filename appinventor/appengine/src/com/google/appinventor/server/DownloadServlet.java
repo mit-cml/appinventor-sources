@@ -210,7 +210,9 @@ public class DownloadServlet extends OdeServlet {
         String[] projectIdStrings = uriComponents[PROJECT_ID_INDEX].split("-");
         List<Long> projectIds = new ArrayList<Long>();
         for (String projectId : projectIdStrings) {
-          projectIds.add(Long.valueOf(projectId));
+          long pid = Long.parseLong(projectId);
+          StorageIoInstanceHolder.getInstance().assertUserHasProject(userId, pid);
+          projectIds.add(pid);
         }
         ProjectSourceZip zipFile = fileExporter.exportSelectedProjectsSourceZip(
           userId, "selected-projects.zip", projectIds);
