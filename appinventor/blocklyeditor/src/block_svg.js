@@ -118,6 +118,10 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  * Check to see if the block is marked as bad.
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
+  // Return false for unrendered blocks - they can't be visually marked as bad
+  if (!this.svgGroup_ || !this.rendered) {
+    return false;
+  }
   return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.svgGroup_),
     'badBlock');
 };
@@ -141,8 +145,12 @@ Blockly.BlockSvg.prototype.notBadBlock = function() {
   this.isBad = false;
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
-    goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
-    this.removeBadBlock();
+    // For Blockly v11 compatibility: allow unrendered blocks during XML loading
+    if (this.svgGroup_) {
+      this.removeBadBlock();
+    }
+    // If block is not rendered yet (during XML loading), skip visual updates
+    // The block will be properly rendered later in the loading process
   }
 };
 

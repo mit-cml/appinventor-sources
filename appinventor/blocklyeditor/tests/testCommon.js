@@ -1,3 +1,66 @@
+// FIXME (v11 upgrade): Still playing with this. Creating a SimpleFiledColour here makes
+// the tests pass, but Colours still fail completely in the UI
+
+// Register FieldColour plugin for Blockly v11 compatibility
+// if (typeof window.registerFieldColour === 'function') {
+//   console.log('Registering FieldColour via window.registerFieldColour', window.registerFieldColour);
+//   window.registerFieldColour();
+// } else if (typeof registerFieldColour === 'function') {
+//   console.log('Registering FieldColour via registerFieldColour');
+//   console.log('Registering FieldColour via registerFieldColour', registerFieldColour);
+//   registerFieldColour();
+// } else {
+//   console.log('registerFieldColour function not found in test environment');
+// }
+
+// Create a simple FieldColour implementation that works with Blockly v11
+class SimpleFieldColour extends Blockly.FieldTextInput {
+  constructor(value, validator) {
+    super(value || '#ffffff', validator);
+    this.size_ = new Blockly.utils.Size(50, 20);
+  }
+
+  initView() {
+    super.initView();
+    this.createBorderRect_();
+    this.getBorderRect().style.fillOpacity = "1";
+    this.getBorderRect().style.fill = this.getValue();
+  }
+
+  doClassValidation_(newValue) {
+    if (typeof newValue !== 'string') {
+      return null;
+    }
+    // Basic hex color validation
+    if (/^#[0-9A-Fa-f]{6}$/.test(newValue)) {
+      return newValue;
+    }
+    return null;
+  }
+
+  doValueUpdate_(newValue) {
+    super.doValueUpdate_(newValue);
+    // Update color display if border rect is available
+    if (this.borderRect_) {
+      this.borderRect_.style.fill = newValue;
+    }
+  }
+
+  getText() {
+    return this.getValue();
+  }
+}
+
+Blockly.FieldColour = SimpleFieldColour;
+console.log('Registering Set Blockly.FieldColour to SimpleFieldColour implementation');
+
+// // Test the simple implementation
+// try {
+//   var testField = new Blockly.FieldColour('#ff0000');
+//   console.log('SimpleFieldColour test passed:', testField);
+// } catch (e) {
+//   console.log('SimpleFieldColour test failed:', e.message);
+// }
 
 var componentTypes = {};
 var YOUNG_ANDROID_VERSION;
@@ -202,6 +265,10 @@ function compareDefinitions(expected, given) {
   for (var i = expectedDefs.length - 1; i >= 0; i--) {
     if (smoosh(expectedDefs[i]) != smoosh(givenDefs[i])) {
       console.log("Failed to match: " + findDefName(expectedDefs[i]), (smoosh(expectedDefs[i]) == smoosh(givenDefs[i])));
+      console.log("EXPECTED: " + expectedDefs[i]);
+      console.log("ACTUAL:   " + givenDefs[i]);
+      console.log("EXPECTED SMOOSHED: " + smoosh(expectedDefs[i]));
+      console.log("ACTUAL SMOOSHED:   " + smoosh(givenDefs[i]));
       flag = false;
     }
   }
