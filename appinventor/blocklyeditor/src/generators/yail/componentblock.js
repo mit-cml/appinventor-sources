@@ -26,22 +26,28 @@ goog.provide('AI.Yail.componentblock');
  * @param {String} eventName  the type of event, e.g., Click
  * @returns {Function} event code generation function with instanceName and eventName bound in
  */
-AI.Yail.component_event = function() {
+AI.Yail.forBlock['component_event'] = function(block, generator) {
 
   var preamble;
-  if (this.isGeneric) {
+  if (block.isGeneric) {
     preamble = AI.Yail.YAIL_DEFINE_GENERIC_EVENT
-      + this.typeName
+      + block.typeName
       + AI.Yail.YAIL_SPACER
-      + this.eventName;
+      + block.eventName;
   } else {
     preamble = AI.Yail.YAIL_DEFINE_EVENT
-      + this.getFieldValue("COMPONENT_SELECTOR")
+      + block.getFieldValue("COMPONENT_SELECTOR")
       + AI.Yail.YAIL_SPACER
-      + this.eventName;
+      + block.eventName;
   }
 
-  var body = AI.Yail.statementToCode(this, 'DO');
+  var body = '';
+  var doBlock = block.getInputTargetBlock('DO');
+  while (doBlock) {
+    body += generator.blockToCode(doBlock);
+    doBlock = doBlock.getNextBlock();
+  }
+  body = body || AI.Yail.YAIL_FALSE;
   // TODO: handle deactivated block, null body
   if(body == ""){
     body = AI.Yail.YAIL_NULL;
@@ -52,11 +58,11 @@ AI.Yail.component_event = function() {
     + AI.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
     // declaredNames gives us names in local language, but we want the default
-    // + this.declaredNames()
+    // + block.declaredNames()
     //       .map(function (name) {return AI.Yail.YAIL_LOCAL_VAR_TAG+name;})
     //       .join(' ')
     // So we do this instead:
-    + this.getParameters()
+    + block.getParameters()
           .map(function (param) {return AI.Yail.YAIL_LOCAL_VAR_TAG+param.name;})
           .join(' ')
     + AI.Yail.YAIL_CLOSE_COMBINATION
@@ -67,10 +73,10 @@ AI.Yail.component_event = function() {
   return code;
 }
 
-AI.Yail.component_method = function() {
-  var methodHelperYailString = AI.Yail.methodHelper(this, (this.isGeneric ? this.typeName : this.instanceName), this.methodName, this.isGeneric);
+AI.Yail.forBlock['component_method'] = function(block, generator) {
+  var methodHelperYailString = AI.Yail.methodHelper(block, (block.isGeneric ? block.typeName : block.instanceName), block.methodName, block.isGeneric);
   //if the method returns a value
-  if(this.getMethodTypeObject() && this.getMethodTypeObject().returnType) {
+  if(block.getMethodTypeObject() && block.getMethodTypeObject().returnType) {
     return [methodHelperYailString, AI.Yail.ORDER_ATOMIC];
   } else {
     return methodHelperYailString;
@@ -210,18 +216,18 @@ AI.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
     + AI.Yail.YAIL_CLOSE_COMBINATION;
 };
 
-AI.Yail.component_set_get = function() {
-  if(this.setOrGet == "set") {
-    if(this.isGeneric) {
-      return AI.Yail.genericSetproperty.call(this);
+AI.Yail.forBlock['component_set_get'] = function(block, generator) {
+  if(block.setOrGet == "set") {
+    if(block.isGeneric) {
+      return AI.Yail.genericSetproperty.call(block);
     } else {
-      return AI.Yail.setproperty.call(this);
+      return AI.Yail.setproperty.call(block);
     }
   } else {
-    if(this.isGeneric) {
-      return AI.Yail.genericGetproperty.call(this);
+    if(block.isGeneric) {
+      return AI.Yail.genericGetproperty.call(block);
     } else {
-      return AI.Yail.getproperty.call(this);
+      return AI.Yail.getproperty.call(block);
     }
   }
 };
@@ -330,8 +336,8 @@ AI.Yail.genericGetproperty = function(typeName) {
  * @param {String} instanceName
  * @returns {Function} component getter code generation function with instanceName bound in
  */
-AI.Yail.component_component_block = function() {
-  return [AI.Yail.YAIL_GET_COMPONENT + this.getFieldValue("COMPONENT_SELECTOR") + AI.Yail.YAIL_CLOSE_COMBINATION,
+AI.Yail.forBlock['component_component_block'] = function(block, generator) {
+  return [AI.Yail.YAIL_GET_COMPONENT + block.getFieldValue("COMPONENT_SELECTOR") + AI.Yail.YAIL_CLOSE_COMBINATION,
           AI.Yail.ORDER_ATOMIC];
 };
 
@@ -343,8 +349,8 @@ AI.Yail.component_component_block = function() {
  * @param {String} instanceName
  * @returns {Function} component getter code generation function with instanceName bound in
  */
-AI.Yail['component_all_component_block'] = function() {
-  var fqcn = this.workspace.getComponentDatabase().getType(this.getFieldValue("COMPONENT_TYPE_SELECTOR")).componentInfo.type;
+AI.Yail.forBlock['component_all_component_block'] = function(block, generator) {
+  var fqcn = block.workspace.getComponentDatabase().getType(block.getFieldValue("COMPONENT_TYPE_SELECTOR")).componentInfo.type;
   return [AI.Yail.YAIL_GET_ALL_COMPONENT + fqcn + AI.Yail.YAIL_CLOSE_COMBINATION,
           AI.Yail.ORDER_ATOMIC];
 };

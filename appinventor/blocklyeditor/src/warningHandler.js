@@ -777,7 +777,7 @@ Blockly.WarningHandler.prototype['checkEmptySockets'] = function(block){
   var containsEmptySockets = false;
   for(var i=0;i<block.inputList.length;i++){
     var inputName = block.inputList[i].name;
-    if(block.inputList[i].type == Blockly.INPUT_VALUE && block.inputList[i].connection && !block.getInputTargetBlock(inputName)){
+    if(block.inputList[i].type == Blockly.inputs.inputTypes.VALUE && block.inputList[i].connection && !block.getInputTargetBlock(inputName)){
       containsEmptySockets = true;
       break;
     }
