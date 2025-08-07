@@ -24,11 +24,12 @@ public class EditText extends TextView {
     setText(Context.resources.getString(stringId));
   }
 
-  public void setText(String text) {
+  @Override
+  public void setText(CharSequence text) {
     if (isTextArea) {
-      TextAreaElement.as(element).setValue(text);
+      TextAreaElement.as(element).setValue(text.toString());
     } else {
-      InputElement.as(element).setValue(text);
+      InputElement.as(element).setValue(text.toString());
     }
   }
 
