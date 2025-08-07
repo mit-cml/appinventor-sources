@@ -37,24 +37,36 @@
 
 goog.provide('AI.Yail.control');
 
-AI.Yail['controls_if'] = function() {
+AI.Yail.forBlock['controls_if'] = function(block, generator) {
 
   var code = "";
-  for(var i=0;i<this.elseifCount_ + 1;i++){
-    var argument = AI.Yail.valueToCode(this, 'IF'+ i, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
-    var branch = AI.Yail.statementToCode(this, 'DO'+ i) || AI.Yail.YAIL_FALSE;
+  for(var i=0;i<block.elseifCount_ + 1;i++){
+    var argument = generator.valueToCode(block, 'IF'+ i, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+    var branch = '';
+    var doBlock = block.getInputTargetBlock('DO' + i);
+    while (doBlock) {
+      branch += generator.blockToCode(doBlock);
+      doBlock = doBlock.getNextBlock();
+    }
+    branch = branch || AI.Yail.YAIL_FALSE;
     if(i != 0) {
       code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_BEGIN;
     }
     code += AI.Yail.YAIL_IF + argument + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_BEGIN
       + branch + AI.Yail.YAIL_CLOSE_COMBINATION;
   }
-  if(this.elseCount_ == 1){
-    var branch = AI.Yail.statementToCode(this, 'ELSE') || AI.Yail.YAIL_FALSE;
+  if(block.elseCount_ == 1){
+    var branch = '';
+    var elseBlock = block.getInputTargetBlock('ELSE');
+    while (elseBlock) {
+      branch += generator.blockToCode(elseBlock);
+      elseBlock = elseBlock.getNextBlock();
+    }
+    branch = branch || AI.Yail.YAIL_FALSE;
     code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_BEGIN + branch + AI.Yail.YAIL_CLOSE_COMBINATION;
   }
 
-  for(var i=0;i<this.elseifCount_;i++){
+  for(var i=0;i<block.elseifCount_;i++){
     code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_CLOSE_COMBINATION;
   }
   code += AI.Yail.YAIL_CLOSE_COMBINATION;
@@ -62,11 +74,11 @@ AI.Yail['controls_if'] = function() {
 };
 
 // [lyn, 01/15/2013] Edited to make consistent with removal of "THEN-DO" and "ELSE-DO"
-AI.Yail['controls_choose'] = function() {
+AI.Yail.forBlock['controls_choose'] = function(block, generator) {
   // Choose.
-  var test = AI.Yail.valueToCode(this, 'TEST', AI.Yail.ORDER_NONE)  || AI.Yail.YAIL_FALSE;
-  var thenReturn = AI.Yail.valueToCode(this, 'THENRETURN', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
-  var elseReturn = AI.Yail.valueToCode(this, 'ELSERETURN', AI.Yail.ORDER_NONE)  || AI.Yail.YAIL_FALSE;
+  var test = generator.valueToCode(block, 'TEST', AI.Yail.ORDER_NONE)  || AI.Yail.YAIL_FALSE;
+  var thenReturn = generator.valueToCode(block, 'THENRETURN', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var elseReturn = generator.valueToCode(block, 'ELSERETURN', AI.Yail.ORDER_NONE)  || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_IF + test
              + AI.Yail.YAIL_SPACER +  thenReturn
              + AI.Yail.YAIL_SPACER +  elseReturn
@@ -75,7 +87,7 @@ AI.Yail['controls_choose'] = function() {
 };
 
 // [lyn, 12/27/2012]
-AI.Yail['controls_forEach'] = function() {
+AI.Yail.forBlock['controls_forEach'] = function(block, generator) {
   // For each loop.
   var emptyListCode = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + AI.Yail.YAIL_SPACER;
   emptyListCode += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
@@ -85,21 +97,27 @@ AI.Yail['controls_forEach'] = function() {
   emptyListCode += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_DOUBLE_QUOTE + "make a list" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
 
 
-  var loopIndexName = AI.Yail.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR');
-  var listCode = AI.Yail.valueToCode(this, 'LIST', AI.Yail.ORDER_NONE) || emptyListCode;
-  var bodyCode = AI.Yail.statementToCode(this, 'DO', AI.Yail.ORDER_NONE) ||  AI.Yail.YAIL_FALSE;
+  var loopIndexName = AI.Yail.YAIL_LOCAL_VAR_TAG + block.getFieldValue('VAR');
+  var listCode = generator.valueToCode(block, 'LIST', AI.Yail.ORDER_NONE) || emptyListCode;
+  var bodyCode = '';
+  var doBlock = block.getInputTargetBlock('DO');
+  while (doBlock) {
+    bodyCode += generator.blockToCode(doBlock);
+    doBlock = doBlock.getNextBlock();
+  }
+  bodyCode = bodyCode || AI.Yail.YAIL_FALSE;
   return AI.Yail.YAIL_FOREACH + loopIndexName + AI.Yail.YAIL_SPACER
          + AI.Yail.YAIL_BEGIN + bodyCode + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER
          + listCode + AI.Yail.YAIL_CLOSE_COMBINATION;
 };
 
-AI.Yail['controls_for_each_dict'] = function() {
+AI.Yail.forBlock['controls_for_each_dict'] = function(block, gen) {
   var yail = AI.Yail;
-  var generator = AI.Yail['controls_for_each_dict'];
+  var generator = AI.Yail.forBlock['controls_for_each_dict'];
 
   var prefix = Blockly.usePrefixInYail ? 'local_' : '';
-  var keyName = yail.YAIL_LOCAL_VAR_TAG + prefix + this.getFieldValue('KEY');
-  var valueName = yail.YAIL_LOCAL_VAR_TAG + prefix + this.getFieldValue('VALUE');
+  var keyName = yail.YAIL_LOCAL_VAR_TAG + prefix + block.getFieldValue('KEY');
+  var valueName = yail.YAIL_LOCAL_VAR_TAG + prefix + block.getFieldValue('VALUE');
 
   var loopIndexName = 'item';
   var loopIndexCommandAndName = yail.getVariableCommandAndName(loopIndexName);
@@ -114,8 +132,14 @@ AI.Yail['controls_for_each_dict'] = function() {
   var letCode = yail.YAIL_LET + yail.YAIL_OPEN_COMBINATION + yail.YAIL_SPACER
       + setKeyCode + yail.YAIL_SPACER + setValueCode
       + yail.YAIL_CLOSE_COMBINATION;
-  var bodyCode = yail.statementToCode(this, 'DO') || yail.YAIL_FALSE;
-  var dictionaryCode = yail.valueToCode(this, 'DICT', yail.ORDER_NONE)
+  var bodyCode = '';
+  var doBlock = block.getInputTargetBlock('DO');
+  while (doBlock) {
+    bodyCode += gen.blockToCode(doBlock);
+    doBlock = doBlock.getNextBlock();
+  }
+  bodyCode = bodyCode || yail.YAIL_FALSE;
+  var dictionaryCode = gen.valueToCode(block, 'DICT', yail.ORDER_NONE)
       || yail.YAIL_EMPTY_DICT;
 
   return yail.YAIL_FOREACH + loopIndexName + yail.YAIL_SPACER
@@ -123,7 +147,7 @@ AI.Yail['controls_for_each_dict'] = function() {
       + yail.YAIL_SPACER + dictionaryCode + yail.YAIL_CLOSE_COMBINATION;
 };
 
-AI.Yail['controls_for_each_dict'].generateGetListItemCode =
+AI.Yail.forBlock['controls_for_each_dict'].generateGetListItemCode =
   function(getListCode, index) {
     var yail = AI.Yail;
     return yail.YAIL_CALL_YAIL_PRIMITIVE + 'yail-list-get-item' + yail.YAIL_SPACER
@@ -136,7 +160,7 @@ AI.Yail['controls_for_each_dict'].generateGetListItemCode =
         + yail.YAIL_CLOSE_COMBINATION;
   };
 
-AI.Yail['controls_for_each_dict'].generateSetVarCode =
+AI.Yail.forBlock['controls_for_each_dict'].generateSetVarCode =
     function(varName, getVarCode) {
       var yail = AI.Yail;
       return yail.YAIL_OPEN_COMBINATION
@@ -148,7 +172,7 @@ AI.Yail['controls_for_each_dict'].generateSetVarCode =
 // none of our block language loops return values, so we won't use that capability.
 
 // [hal, 1/20/2018]
-AI.Yail['controls_break'] = function() {
+AI.Yail.forBlock['controls_break'] = function(block, generator) {
   // generates the literal string: (break #f)
   // which if evaluated inside the body of a loop will call
   // the "break" function passed to the loop macro
@@ -159,13 +183,19 @@ AI.Yail['controls_break'] = function() {
 
 
 // [lyn, 12/27/2012]
-AI.Yail['controls_forRange'] = function() {
+AI.Yail.forBlock['controls_forRange'] = function(block, generator) {
   // For range loop.
-  var loopIndexName = AI.Yail.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR');
-  var startCode = AI.Yail.valueToCode(this, 'START', AI.Yail.ORDER_NONE) || 0;
-  var endCode = AI.Yail.valueToCode(this, 'END', AI.Yail.ORDER_NONE) || 0;
-  var stepCode = AI.Yail.valueToCode(this, 'STEP', AI.Yail.ORDER_NONE) || 0;
-  var bodyCode = AI.Yail.statementToCode(this, 'DO', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var loopIndexName = AI.Yail.YAIL_LOCAL_VAR_TAG + block.getFieldValue('VAR');
+  var startCode = generator.valueToCode(block, 'START', AI.Yail.ORDER_NONE) || 0;
+  var endCode = generator.valueToCode(block, 'END', AI.Yail.ORDER_NONE) || 0;
+  var stepCode = generator.valueToCode(block, 'STEP', AI.Yail.ORDER_NONE) || 0;
+  var bodyCode = '';
+  var doBlock = block.getInputTargetBlock('DO');
+  while (doBlock) {
+    bodyCode += generator.blockToCode(doBlock);
+    doBlock = doBlock.getNextBlock();
+  }
+  bodyCode = bodyCode || AI.Yail.YAIL_FALSE;
   return AI.Yail.YAIL_FORRANGE + loopIndexName + AI.Yail.YAIL_SPACER
          + AI.Yail.YAIL_BEGIN + bodyCode + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER
          + startCode + AI.Yail.YAIL_SPACER
@@ -173,22 +203,37 @@ AI.Yail['controls_forRange'] = function() {
          + stepCode + AI.Yail.YAIL_CLOSE_COMBINATION;
 };
 
-AI.Yail['for_lexical_variable_get'] = function() {
-  return AI.Yail.lexical_variable_get.call(this);
-}
+AI.Yail.forBlock['for_lexical_variable_get'] = function(block, generator) {
+  return AI.Yail.lexical_variable_get.call(block);
+};
 
-AI.Yail['controls_while'] = function() {
+AI.Yail.forBlock['controls_while'] = function(block, generator) {
   // While condition.
-  var test = AI.Yail.valueToCode(this, 'TEST', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
-  var toDo = AI.Yail.statementToCode(this, 'DO') || AI.Yail.YAIL_FALSE;
+  var test = generator.valueToCode(block, 'TEST', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+
+  // In Blockly v11, we need to manually handle chained statements
+  var toDo = '';
+  var doBlock = block.getInputTargetBlock('DO');
+  while (doBlock) {
+    toDo += generator.blockToCode(doBlock);
+    doBlock = doBlock.getNextBlock();
+  }
+  toDo = toDo || AI.Yail.YAIL_FALSE;
+
   var code = AI.Yail.YAIL_WHILE + test + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_BEGIN + toDo + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // [lyn, 01/15/2013] Added
-AI.Yail['controls_do_then_return'] = function() {
-  var stm = AI.Yail.statementToCode(this, 'STM', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
-  var value = AI.Yail.valueToCode(this, 'VALUE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+AI.Yail.forBlock['controls_do_then_return'] = function(block, generator) {
+  var stm = '';
+  var stmBlock = block.getInputTargetBlock('STM');
+  while (stmBlock) {
+    stm += generator.blockToCode(stmBlock);
+    stmBlock = stmBlock.getNextBlock();
+  }
+  stm = stm || AI.Yail.YAIL_FALSE;
+  var value = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_BEGIN + stm + AI.Yail.YAIL_SPACER + value + AI.Yail.YAIL_CLOSE_COMBINATION;
   return [code, AI.Yail.ORDER_ATOMIC];
 };
@@ -196,20 +241,20 @@ AI.Yail['controls_do_then_return'] = function() {
  // [lyn, 01/15/2013] Added
 // adding 'ignored' here is only for the printout in Do-It.  The value will be ignored because the block shape
 // has no output
-AI.Yail['controls_eval_but_ignore'] = function() {
-  var toEval = AI.Yail.valueToCode(this, 'VALUE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+AI.Yail.forBlock['controls_eval_but_ignore'] = function(block, generator) {
+  var toEval = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_BEGIN + toEval + AI.Yail.YAIL_SPACER + '"ignored"' + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // [lyn, 01/15/2013] Added
-AI.Yail['controls_nothing'] = function() {
+AI.Yail.forBlock['controls_nothing'] = function(block, generator) {
   return ['*the-null-value*', AI.Yail.ORDER_NONE];
 };
 
-AI.Yail['controls_openAnotherScreen'] = function() {
+AI.Yail.forBlock['controls_openAnotherScreen'] = function(block, generator) {
   // Open another screen
-  var argument0 = AI.Yail.valueToCode(this, 'SCREEN', AI.Yail.ORDER_NONE) || null;
+  var argument0 = generator.valueToCode(block, 'SCREEN', AI.Yail.ORDER_NONE) || null;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "open-another-screen" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
   code = code + argument0 + AI.Yail.YAIL_CLOSE_COMBINATION;
@@ -219,10 +264,10 @@ AI.Yail['controls_openAnotherScreen'] = function() {
   return code;
 };
 
-AI.Yail['controls_openAnotherScreenWithStartValue'] = function() {
+AI.Yail.forBlock['controls_openAnotherScreenWithStartValue'] = function(block, generator) {
   // Open another screen with start value
-  var argument0 = AI.Yail.valueToCode(this, 'SCREENNAME', AI.Yail.ORDER_NONE) || null;
-  var argument1 = AI.Yail.valueToCode(this, 'STARTVALUE', AI.Yail.ORDER_NONE) || null;
+  var argument0 = generator.valueToCode(block, 'SCREENNAME', AI.Yail.ORDER_NONE) || null;
+  var argument1 = generator.valueToCode(block, 'STARTVALUE', AI.Yail.ORDER_NONE) || null;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "open-another-screen-with-start-value" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
   code = code + argument0 + AI.Yail.YAIL_SPACER + argument1 + AI.Yail.YAIL_CLOSE_COMBINATION;
@@ -232,7 +277,7 @@ AI.Yail['controls_openAnotherScreenWithStartValue'] = function() {
   return code;
 };
 
-AI.Yail['controls_getStartValue'] = function() {
+AI.Yail.forBlock['controls_getStartValue'] = function(block, generator) {
   // Get start value
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "get-start-value" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
@@ -243,7 +288,7 @@ AI.Yail['controls_getStartValue'] = function() {
   return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-AI.Yail['controls_closeScreen'] = function() {
+AI.Yail.forBlock['controls_closeScreen'] = function(block, generator) {
   // Close screen
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "close-screen" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
@@ -254,9 +299,9 @@ AI.Yail['controls_closeScreen'] = function() {
   return code;
 };
 
-AI.Yail['controls_closeScreenWithValue'] = function() {
+AI.Yail.forBlock['controls_closeScreenWithValue'] = function(block, generator) {
   // Close screen with value
-  var argument0 = AI.Yail.valueToCode(this, 'SCREEN', AI.Yail.ORDER_NONE) || null;
+  var argument0 = generator.valueToCode(block, 'SCREEN', AI.Yail.ORDER_NONE) || null;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "close-screen-with-value" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
   code = code + argument0 + AI.Yail.YAIL_CLOSE_COMBINATION;
@@ -266,7 +311,7 @@ AI.Yail['controls_closeScreenWithValue'] = function() {
   return code;
 };
 
-AI.Yail['controls_closeApplication'] = function() {
+AI.Yail.forBlock['controls_closeApplication'] = function(block, generator) {
   // Close application
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "close-application" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
@@ -277,7 +322,7 @@ AI.Yail['controls_closeApplication'] = function() {
   return code;
 };
 
-AI.Yail['controls_getPlainStartText'] = function() {
+AI.Yail.forBlock['controls_getPlainStartText'] = function(block, generator) {
   // Get plain start text
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "get-plain-start-text" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
@@ -288,9 +333,9 @@ AI.Yail['controls_getPlainStartText'] = function() {
   return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-AI.Yail['controls_closeScreenWithPlainText'] = function() {
+AI.Yail.forBlock['controls_closeScreenWithPlainText'] = function(block, generator) {
   // Close screen with plain text
-  var argument0 = AI.Yail.valueToCode(this, 'TEXT', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var argument0 = generator.valueToCode(block, 'TEXT', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "close-screen-with-plain-text" + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
   code = code + argument0 + AI.Yail.YAIL_CLOSE_COMBINATION;

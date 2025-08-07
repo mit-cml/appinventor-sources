@@ -5,10 +5,10 @@
 
 goog.provide('AI.Yail.helpers');
 
-AI.Yail['helpers_dropdown'] = function() {
-  var optionList = this.workspace.getComponentDatabase()
-      .getOptionList(this.key_);
-  var enumConstantName = this.getFieldValue('OPTION');
+AI.Yail.forBlock['helpers_dropdown'] = function(block, generator) {
+  var optionList = block.workspace.getComponentDatabase()
+      .getOptionList(block.key_);
+  var enumConstantName = block.getFieldValue('OPTION');
 
   var option = optionList.options.find(function(opt) {
     return opt.name == enumConstantName;
@@ -32,36 +32,36 @@ AI.Yail['helpers_dropdown'] = function() {
   }
 
   return [code, AI.Yail.ORDER_ATOMIC];
-}
+};
 
-AI.Yail['helpers_screen_names'] = function() {
-  var value = AI.Yail.quote_(this.getFieldValue('SCREEN'));
+AI.Yail.forBlock['helpers_screen_names'] = function(block, generator) {
+  var value = AI.Yail.quote_(block.getFieldValue('SCREEN'));
   return [value, AI.Yail.ORDER_ATOMIC];
-}
+};
 
-AI.Yail['helpers_assets'] = function() {
-  var field = this.getField('ASSET');
+AI.Yail.forBlock['helpers_assets'] = function(block, generator) {
+  var field = block.getField('ASSET');
   if (!field) {
     return [AI.Yail.quote_(''), AI.Yail.ORDER_ATOMIC];
   }
   return [AI.Yail.quote_(field.getValue()), AI.Yail.ORDER_ATOMIC];
-}
+};
 
-AI.Yail['helpers_providermodel'] = function() {
-  var field = this.getField('PROVIDERMODEL');
+AI.Yail.forBlock['helpers_providermodel'] = function(block, generator) {
+  var field = block.getField('PROVIDERMODEL');
   if (!field) {
     return [AI.Yail.quote_(''), AI.Yail.ORDER_ATOMIC];
   }
   var fielddisplayvalue = field.getValue();
   var fieldvalue = top.chatproxyinfo['model'][fielddisplayvalue];
   return [AI.Yail.quote_(fieldvalue), AI.Yail.ORDER_ATOMIC];
-}
+};
 
-AI.Yail['helpers_provider'] = function() {
-  var field = this.getField('PROVIDER');
+AI.Yail.forBlock['helpers_provider'] = function(block, generator) {
+  var field = block.getField('PROVIDER');
   if (!field) {
     return [AI.Yail.quote_(''), AI.Yail.ORDER_ATOMIC];
   }
   var fieldvalue = field.getValue();
   return [AI.Yail.quote_(fieldvalue), AI.Yail.ORDER_ATOMIC];
-}
+};

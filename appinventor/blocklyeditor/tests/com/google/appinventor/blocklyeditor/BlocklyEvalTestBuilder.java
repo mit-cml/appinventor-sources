@@ -62,6 +62,7 @@ public class BlocklyEvalTestBuilder {
     generateTest("clock");
     generateTest("copyCat");
     generateTest("factorial");
+    generateTest("globalLocalVars");
     generateTest("helloPurr");
     generateTest("makeQuiz");
     generateTest("mathsconvert");
