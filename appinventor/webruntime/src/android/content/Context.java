@@ -68,6 +68,6 @@ public class Context {
   }
 
   public File getExternalFilesDir(@Nullable String type) {
-    return null;
+    return new File("/storage/emulated/0/Android/data/edu.mit.appinventor.aicompanion3/files/" + type);
   }
 }

@@ -2,13 +2,10 @@ package com.google.appinventor.components.runtime.util;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.media.SoundPool;
-import android.os.Build;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import weblib.FileSystemSimulator;
 
 public class MediaUtil {
 
@@ -25,8 +22,27 @@ public class MediaUtil {
 
   public static BitmapDrawable getBitmapDrawable(Form form, String mediaPath)
       throws IOException {
+    if (mediaPath == null || mediaPath.isEmpty()) {
+      return null;
+    }
     // TODO(ewpatton): Real implementation
     try {
+      if (mediaPath.startsWith("file:") || mediaPath.startsWith("/")) {
+        // Non-asset path
+        String path;
+        if (mediaPath.startsWith("file://")) {
+          path = mediaPath.substring(7);
+        } else if (mediaPath.startsWith("file:")) {
+          path = mediaPath.substring(5);
+        } else {
+          path = mediaPath;
+        }
+        byte[] contents = FileSystemSimulator.getFile(path);
+        if (contents == null) {
+          throw new IOException("File not found: " + path);
+        }
+        return new BitmapDrawable(toDataUri(contents));
+      }
       return new BitmapDrawable(AssetFetcher.getLoadedAsset(mediaPath));
     } catch (Exception e) {
       // If the asset is not loaded, we will try to load it from the file system.
@@ -102,4 +118,8 @@ public class MediaUtil {
       throw new IOException("Unable to determine file path of file url " + mediaPath);
     }
   }
+
+  private static native String toDataUri(byte[] content) /*-{
+    return "data:image/png;base64," + new Uint8Array(new Int8Array(content).buffer).toBase64();
+  }-*/;
 }

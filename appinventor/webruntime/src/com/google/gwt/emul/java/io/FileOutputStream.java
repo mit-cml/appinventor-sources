@@ -1,30 +1,36 @@
 package java.io;
 
-public class FileOutputStream {
+import javax.annotation.Nonnull;
+import weblib.FileSystemSimulator;
+
+public class FileOutputStream extends OutputStream {
+  private final ByteArrayOutputStream buffer;
+  private final String path;
+
   public FileOutputStream(File file) {
-    // This is a placeholder implementation.
-    // In a real implementation, this would open a file output stream to the specified file.
+    this.path = file.getAbsolutePath();
+    this.buffer = new ByteArrayOutputStream();
   }
 
-  public int write(byte[] b, int off, int len) {
-    // This is a placeholder implementation.
-    // In a real implementation, this would write the bytes to a file.
-    return len; // Return the number of bytes written
+  @Override
+  public void write(@Nonnull byte[] b, int off, int len) {
+    buffer.write(b, off, len);
   }
 
-  public int write(byte[] b) {
-    // This is a placeholder implementation.
-    // In a real implementation, this would write the entire byte array to a file.
-    return write(b, 0, b.length);
+  @Override
+  public void write(int b) throws IOException {
+    buffer.write(b);
+  }
+
+  @Override
+  public void write(@Nonnull byte[] b) {
+    write(b, 0, b.length);
   }
 
   public void flush() {
-    // This is a placeholder implementation.
-    // In a real implementation, this would flush the output stream.
   }
 
   public void close() {
-    // This is a placeholder implementation.
-    // In a real implementation, this would close the output stream.
+    FileSystemSimulator.storeFile(path, buffer.toByteArray());
   }
 }
