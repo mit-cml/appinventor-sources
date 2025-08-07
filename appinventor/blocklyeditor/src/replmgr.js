@@ -1138,9 +1138,23 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             rs.state = Blockly.ReplMgr.rsState.CONNECTED;
             Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
             break;
+        case "startCache":
+            top.BlocklyPanel_startCache().then((success) => {
+                if (!success) {
+                    runtimeerr("Failed to cache project");
+                }})
+                .catch((error) => {
+                    runtimeerr("Encountered issue while caching project: " + error);
+                });
+            break;
         case "error":
             console.log("processRetVals: Error value = " + r.value);
             runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
+            break;
+        case "log":
+            top.ConsolePanel_addLog(r.level, r.item);
+            console.log("processRetVals: Log level = " + r.level);
+            console.log("processRetVals: Log content = " + r.item);
         }
     }
     var handler = Blockly.common.getMainWorkspace().getWarningHandler();
@@ -1503,6 +1517,10 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
+                if (!rs.android && json.extensions) {
+                    // Newer iOS versions will report the extensions that they support
+                    top.ALLOWED_IOS_EXTENSIONS = JSON.parse(json.extensions);
+                }
                 if (!(rs.android) && Blockly.ReplMgr.hasDisallowedIosExtensions()) {
                     rs.dialog.hide();
                     top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
@@ -1879,6 +1897,22 @@ Blockly.ReplMgr.getCookie = function() {
     }
     return cookie;
 };
+
+Blockly.ReplMgr.connectCache = function(projectId, projectName) {
+    if (top.ReplState === undefined)
+        return false;
+    if (top.ReplState.state != this.rsState.ASSET && top.ReplState.state != this.rsState.CONNECTED)
+        return false;
+
+    var uri = window.location.origin;
+    var cookie = this.getCookie();
+    console.log("connectCache uri = " + uri + " cookie = " + cookie);
+    var yail = "(AssetFetcher:fetchCachedProject \"" + cookie + "\" \"" + projectId + "\" \"" + uri + "\" \"" + projectName + "\")";
+    console.log("Yail for connectCache = " + yail);
+    this.putYail();
+    this.putYail.putAsset(yail)
+    return true;
+}
 
 Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, force) {
     if (top.ReplState === undefined)

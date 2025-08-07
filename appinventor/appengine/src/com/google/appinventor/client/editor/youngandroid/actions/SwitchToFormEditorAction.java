@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid.actions;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar.View;
 import com.google.gwt.user.client.Command;
 import java.util.logging.Logger;
 
@@ -22,13 +23,13 @@ public class SwitchToFormEditorAction implements Command {
           + "Ignoring SwitchToFormEditorAction.execute().");
       return;
     }
-    if (toolbar.currentView != DesignToolbar.View.FORM) {
+    if (toolbar.currentView != View.DESIGNER) {
       // We are leaving a blocks editor, so take a screenshot
       Ode.getInstance().screenShotMaybe(new Runnable() {
         @Override
         public void run() {
           long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
-          toolbar.switchToScreen(projectId, toolbar.getCurrentProject().currentScreen, DesignToolbar.View.FORM);
+          toolbar.switchToScreen(projectId, toolbar.getCurrentProject().currentScreen, View.DESIGNER);
           toolbar.toggleEditor(false);      // Gray out the Designer button and enable the blocks button
           Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
         }

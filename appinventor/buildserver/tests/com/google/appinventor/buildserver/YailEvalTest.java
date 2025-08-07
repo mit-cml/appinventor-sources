@@ -1458,6 +1458,9 @@ public class YailEvalTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         return null;
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     };
     scheme.define(sym, fakeComponent);
     String code = readTestCode("testComponentsAsDictKeys");

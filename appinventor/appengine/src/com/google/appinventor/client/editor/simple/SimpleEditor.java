@@ -10,9 +10,12 @@ import com.google.appinventor.client.editor.simple.components.i18n.ComponentTran
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
+
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 
@@ -20,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Abstract editor for files containing Simple components.
@@ -72,6 +74,8 @@ public abstract class SimpleEditor extends FileEditor {
    * Returns true if this editor is for Screen1.
    */
   public abstract boolean isScreen1();
+
+  public abstract ComponentDatabaseInterface getComponentDatabase();
 
   /**
    * Refresh the properties panel in the event the set of visible properties has changed.
@@ -131,14 +135,6 @@ public abstract class SimpleEditor extends FileEditor {
   }
 
   /**
-   * Gets the component database containing the simple components associated
-   * with the editor.
-   *
-   * @return The editor's component database.
-   */
-  public abstract SimpleComponentDatabase getComponentDatabase();
-
-  /**
    * Gets the drop target provider for the editor.
    *
    * @return The editor's drop target provider.
@@ -150,5 +146,5 @@ public abstract class SimpleEditor extends FileEditor {
    *
    * @return The editor's palette filter.
    */
-  public abstract YoungAndroidPalettePanel.Filter getPaletteFilter();
+  public abstract AbstractPalettePanel.Filter getPaletteFilter();
 }

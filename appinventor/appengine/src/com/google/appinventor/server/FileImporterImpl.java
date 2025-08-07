@@ -6,6 +6,8 @@
 
 package com.google.appinventor.server;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
@@ -18,6 +20,7 @@ import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
@@ -31,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,6 +84,7 @@ public final class FileImporterImpl implements FileImporter {
 
     ZipInputStream zin = new ZipInputStream(uploadedFileStream);
     boolean isProjectArchive = false;  // have we found at least one project properties file?
+    String lastOpened = "Screen1";
     try {
       // Extract files
       while (true) {
@@ -102,9 +107,13 @@ public final class FileImporterImpl implements FileImporter {
             // The content for the youngandroidproject/project.properties file must be regenerated
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
+            Properties props = new Properties();
+            props.load(zin);
+            lastOpened = props.getProperty("lastopened", "Screen1");
             String content = new YoungAndroidSettingsBuilder()
                 .setProjectName(projectName)
                 .setQualifiedFormName(qualifiedFormName)
+                .setDefaultLastOpened(lastOpened)
                 .toProperties();
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
@@ -124,7 +133,7 @@ public final class FileImporterImpl implements FileImporter {
 
           } else {
 
-            if (fileName.startsWith(YoungAndroidProjectService.SRC_FOLDER)) {
+            if (fileName.startsWith(SRC_FOLDER)) {
               // For files within the src folder, we need to update the directory that we put files
               // in. Adjust the fileName so that it corresponds to this project's package.
               fileName = srcDirectory + '/' + StorageUtil.basename(fileName);
@@ -152,7 +161,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = new YoungAndroidSettingsBuilder().build();
+    String settings = new YoungAndroidSettingsBuilder().setDefaultLastOpened(lastOpened).build();
     long projectId = storageIo.createProject(userId, project, settings);
     return storageIo.getUserProject(userId, projectId);
   }
