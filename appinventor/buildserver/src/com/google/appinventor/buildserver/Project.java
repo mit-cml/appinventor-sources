@@ -6,6 +6,8 @@
 
 package com.google.appinventor.buildserver;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -400,10 +402,10 @@ public final class Project {
       }
     } else {
       // Add Young Android source files to the source file list
-      if (file.getName().endsWith(YoungAndroidConstants.YAIL_EXTENSION)) {
+      if (file.getName().endsWith(YAIL_FILE_EXTENSION)) {
         String absName = file.getAbsolutePath();
         String name = absName.substring(root.length() + 1, absName.length() -
-            YoungAndroidConstants.YAIL_EXTENSION.length());
+            YAIL_FILE_EXTENSION.length());
         sources.add(new SourceDescriptor(name.replace(File.separatorChar, '.'), file));
       }
     }

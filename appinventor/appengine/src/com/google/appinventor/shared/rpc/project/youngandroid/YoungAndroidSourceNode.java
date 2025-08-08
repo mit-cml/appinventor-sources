@@ -6,10 +6,15 @@
 
 package com.google.appinventor.shared.rpc.project.youngandroid;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
+
 import com.google.common.base.Preconditions;
 import com.google.appinventor.shared.rpc.project.SourceNode;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 
 /**
  * Superclass for all Young Android source file nodes in the project tree.
@@ -17,7 +22,8 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
  */
 public abstract class YoungAndroidSourceNode extends SourceNode {
 
-  protected static final String SRC_PREFIX = YoungAndroidSourceAnalyzer.SRC_FOLDER + "/";
+  protected static final String SRC_PREFIX = SRC_FOLDER + "/";
+
   public static final String SCREEN1_FORM_NAME = "Screen1";
 
   /**
@@ -53,10 +59,10 @@ public abstract class YoungAndroidSourceNode extends SourceNode {
    */
   public static String getQualifiedName(String sourceFileId) {
     Preconditions.checkArgument(sourceFileId.startsWith(SRC_PREFIX) && (
-        sourceFileId.endsWith(YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION) ||
-        sourceFileId.endsWith(YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION) ||
-        sourceFileId.endsWith(YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION) ||
-        sourceFileId.endsWith(YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION)));
+        sourceFileId.endsWith(FORM_PROPERTIES_EXTENSION) ||
+        sourceFileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION) ||
+        sourceFileId.endsWith(BLOCKLY_SOURCE_EXTENSION) ||
+        sourceFileId.endsWith(YAIL_FILE_EXTENSION)));
 
     String name = sourceFileId.substring(SRC_PREFIX.length());
     name = StorageUtil.trimOffExtension(name);

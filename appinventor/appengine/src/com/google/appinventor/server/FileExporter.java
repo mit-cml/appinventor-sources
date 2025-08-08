@@ -56,8 +56,7 @@ public interface FileExporter {
     boolean includeAndroidKeystore, @Nullable String zipName,
     boolean includeYail,
     boolean includeScreenShots,
-    boolean fatalError, boolean forGallery) throws IOException;
-
+    boolean fatalError, boolean forGallery, boolean forAppStore, boolean locallyCachedApp) throws IOException;
   /**
    * Exports projects selected by the user as a zip of zips.
    *

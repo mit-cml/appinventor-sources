@@ -33,15 +33,6 @@ public interface UserInfoService extends RemoteService {
   String getUserBackpack();
 
   /**
-   * Retrieves information about the current user
-   *
-   * (Obsoleted by getSystemConfig())
-   *
-   * @return  user information
-   */
-  User getUserInformation(String sessionId);
-
-  /**
    * Retrieves the user's settings.
    *
    * @return  user's settings

@@ -120,6 +120,7 @@ goog.require('goog.Timer');
     clone.setAttribute("width", width);
     clone.setAttribute("height", height);
     clone.setAttribute("style", 'background-color: rgba(255, 255, 255, 0);');
+    clone.setAttribute("class", "geras2_renderer-renderer classic-theme");
     outer.appendChild(clone);
 
     var css = styles(el, options.selectorRemap);

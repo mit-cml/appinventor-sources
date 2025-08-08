@@ -5,8 +5,6 @@
 
 package com.google.appinventor.client.explorer.folder;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.UiStyleFactory;
@@ -34,11 +32,16 @@ import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 
 
 public class ProjectFolder extends Composite {
@@ -182,19 +185,27 @@ public class ProjectFolder extends Composite {
     cachedJson = null;
   }
 
-  public void refresh() {
+  public void refresh(Comparator<Project> projectComparator, Comparator<ProjectFolder> folderComparator,
+      boolean needToSort) {
     nameLabel.setText(name);
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
     childrenContainer.clear();
-    for (ProjectFolder f : folders.values()) {
+    List<ProjectFolder> sortedChildren = getChildFolders();
+    if (needToSort) {
+      sortedChildren.sort(folderComparator);
+    }
+    for (ProjectFolder f : sortedChildren) {
       if (changeHandler != null) {
         f.setSelectionChangeHandler(changeHandler);
       }
-      f.refresh();
+      f.refresh(projectComparator, folderComparator, needToSort);
       childrenContainer.add(f);
     }
     projectListItems.clear();
+    if (needToSort) {
+      projects.sort(projectComparator);
+    }
     for (Project p : projects) {
       ProjectListItem item =  createProjectListItem(p);
       if (changeHandler != null) {

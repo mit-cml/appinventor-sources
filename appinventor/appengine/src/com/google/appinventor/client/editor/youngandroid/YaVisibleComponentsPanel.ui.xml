@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+    <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+    <g:VerticalPanel styleName="ode-SimpleFormDesigner">
+        <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner">
+          <g:CheckBox ui:field="HiddenComponentsCheckbox" text="{messages.showHiddenComponentsCheckbox}" />
+            <g:ListBox ui:field="listboxPhoneTablet">
+                <g:item value="320, 505"><ui:text from="{messages.previewPhoneSize}" /> (320 x 505)</g:item>
+                <g:item value="480, 675"><ui:text from="{messages.previewTabletSize}" /> (480 x 675)</g:item>
+                <g:item value="768, 1024"><ui:text from="{messages.previewMonitorSize}" /> (768 x 1024)</g:item>
+            </g:ListBox>
+          <g:ListBox ui:field="listboxPhonePreview">
+            <g:item value="0"><ui:text from="{messages.previewAndroid5Devices}"/></g:item>
+            <g:item value="1"><ui:text from="{messages.previewAndroid4Devices}"/></g:item>
+            <g:item value="2"><ui:text from="{messages.previewIOS}"/></g:item>
+          </g:ListBox>
+        </g:VerticalPanel>
+    </g:VerticalPanel>
+</ui:UiBinder>
+

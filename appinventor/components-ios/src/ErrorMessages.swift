@@ -384,11 +384,11 @@ import Foundation
 
     // ChatBot Errors
     case .ERROR_CHATBOT_ERROR:
-      return "Error from the ChatBot code: %d %@"
+      return "Error from the ChatBot code: %d %s"
 
     // ImageBot Errors
     case .ERROR_IMAGEBOT_ERROR:
-      return "Error from the ImageBot code: %d %@"
+      return "Error from the ImageBot code: %d %s"
 
     // ListView Errors
     case .ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS:
