@@ -1443,7 +1443,6 @@ public class Ode implements EntryPoint {
       return true;
     }
     return Boolean.parseBoolean(value);
-    // return true;
   }
 
   /**
@@ -1463,10 +1462,13 @@ public class Ode implements EntryPoint {
             "" + value);
   }
 
-  public static boolean getShowUIPicker() {
-    return false;
-    // return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-    //         .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+  private boolean getShowUIPicker() {
+    if (oneProjectMode) {
+      return false;
+    } else {
+      return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+    }
   }
 
   public static void saveUserDesignSettings() {
