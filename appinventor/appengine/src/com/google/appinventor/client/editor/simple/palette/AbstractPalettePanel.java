@@ -36,12 +36,11 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -54,18 +53,22 @@ public abstract class AbstractPalettePanel<
     T extends ComponentDatabaseInterface,
     U extends DesignerEditor<?, ?, ?, T, ?>>
     extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
+  private static final Logger LOG = Logger.getLogger(AbstractPalettePanel.class.getName());
   // Component database: information about components (including their properties and events)
-  private final T componentDatabase;
+  private T componentDatabase;
 
   // Associated editor
-  protected final U editor;
+  protected U editor;
 
   protected final Map<ComponentCategory, PaletteHelper> paletteHelpers;
 
-  private final CollapsablePanel stackPalette;
+  protected final CollapsablePanel stackPalette;
 
   // store Component Type along with SimplePaleteItem to enable removal of components
   private final Map<String, SimplePaletteItem> simplePaletteItems;
+
+  // Currently active filter
+  protected Filter filter = IDENTITY;
 
   private final ComponentFactory factory;
 
@@ -85,6 +88,41 @@ public abstract class AbstractPalettePanel<
   private String lastSearch = "";
   private Map<String, SimplePaletteItem> searchSimplePaletteItems = new HashMap<String, SimplePaletteItem>();
   private Scheduler.ScheduledCommand rebuild = null;
+
+  /**
+   * The Filter interface is used by the palette panel to determine what components
+   * to show. By default, an identity filter is used (everything is shown). Other
+   * implementations may override the filter by calling {@link #setFilter(Filter, boolean)}.
+   *
+   * @author ewpatton@mit.edu (Evan W. Patton)
+   */
+  public interface Filter {
+    /**
+     * Tests whether the given component type should be shown in the palette.
+     * @param componentTypeName The component type to check.
+     * @return True if the component should be shown, otherwise false.
+     */
+    boolean shouldShowComponent(String componentTypeName);
+
+    /**
+     * Tests whether the extensions panel should be shown.
+     * @return True if extensions are allowed, otherwise false.
+     */
+    boolean shouldShowExtensions();
+  }
+
+  // Identity filter implementation
+  protected static final Filter IDENTITY = new Filter() {
+    @Override
+    public boolean shouldShowComponent(String componentTypeName) {
+      return true;
+    }
+
+    @Override
+    public boolean shouldShowExtensions() {
+      return true;
+    }
+  };
 
   protected AbstractPalettePanel(U editor, ComponentFactory componentFactory) {
     this(editor, componentFactory, ComponentCategory.values());
@@ -168,6 +206,33 @@ public abstract class AbstractPalettePanel<
       }
     }
     stackPalette.show(0);
+  }
+
+  /**
+   * Set the filter (if any) for filtering components in the palette. If null
+   * is provided for {@code filter}, all components will be shown (identity filter).
+   * @param filter A filter instance used for filtering.
+   * @param selectFirst If true, selects the first valid stack after applying the filter.
+   */
+  public void setFilter(Filter filter, boolean selectFirst) {
+    this.filter = filter == null ? IDENTITY : filter;
+    reloadComponents();
+    if (selectFirst) {
+      stackPalette.show(0);
+    }
+  }
+
+  /**
+   * Set the active editor that will receive palette items dragged from the panel.
+   * @param editor The active form editor.
+   */
+  public void setActiveEditor(U editor) {
+    if (this.editor.equals(editor)) {
+      return;  // already the current editor.
+    }
+    this.editor = editor;
+    componentDatabase = editor.getComponentDatabase();
+    reloadComponents();
   }
 
   /**
@@ -270,15 +335,7 @@ public abstract class AbstractPalettePanel<
    * @param dropTargetProvider provider of targets that palette items can be
    *                           dropped on
    */
-  @Override
-  public void loadComponents(DropTargetProvider dropTargetProvider) {
-    this.dropTargetProvider = dropTargetProvider;
-    for (String component : componentDatabase.getComponentNames()) {
-      addComponent(component);
-    }
-  }
-
-  private void loadComponents() {
+  public void loadComponents() {
     for (ComponentCategory category : ComponentCategory.values()) {
       if (showCategory(category)) {
         addComponentCategory(category);
@@ -330,8 +387,8 @@ public abstract class AbstractPalettePanel<
       SimplePaletteItem item = new SimplePaletteItem(
           new SimpleComponentDescriptor(componentTypeName, version, versionName, dateBuilt, license,
               helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external,
-              factory),
-            dropTargetProvider);
+              factory));
+      item.setActiveEditor(editor);
       simplePaletteItems.put(componentTypeName, item);
       addPaletteItem(item, category);
 
@@ -339,8 +396,7 @@ public abstract class AbstractPalettePanel<
       item = new SimplePaletteItem(
           new SimpleComponentDescriptor(componentTypeName, version, versionName, dateBuilt, license,
               helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external,
-              factory),
-          dropTargetProvider);
+              factory));
       // Handle extensions
       if (external) {
         translationMap.put(componentTypeName.toLowerCase(), componentTypeName);
@@ -456,9 +512,6 @@ public abstract class AbstractPalettePanel<
   public Widget getWidget() {
     return this;
   }
-
-  @Override
-  public abstract SimplePalettePanel copy();
 
   @Override
   public MockComponent createMockComponent(String name, String type) {

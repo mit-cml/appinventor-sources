@@ -25,6 +25,8 @@ import com.google.appinventor.client.editor.simple.components.MockDesignerRoot;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -32,6 +34,7 @@ import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
@@ -111,7 +114,24 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   private final PropertiesPanel designProperties;
 
   private EditableProperties selectedProperties = null;
+  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>();
+  private DropTargetProvider dropTargetProvider = new DropTargetProvider() {
+    @Override
+    public DropTarget[] getDropTargets() {
+      // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
+      // getDropTargets() doesn't get called for each component.
+      // NOTE: These targets must be specified in depth-first order.
+      List<DropTarget> dropTargets = root.getDropTargetsWithin();
+      dropTargets.add(visibleComponentsPanel);
+      dropTargets.add(nonVisibleComponentsPanel);
+      return dropTargets.toArray(new DropTarget[0]);
+    }
+  };
 
+  @Override
+  public DropTargetProvider getDropTargetProvider() {
+    return dropTargetProvider;
+  }
   // Flag to indicate when loading the file is completed. This is needed because building the mock
   // form from the file properties fires events that need to be ignored, otherwise the file will be
   // marked as being modified.
@@ -121,6 +141,7 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
 
   // Panels that are used as the content of the palette and properties boxes.
   protected U palettePanel;
+  public AbstractPalettePanel.Filter paletteFilter = null;
 
   // UI elements
   protected final W visibleComponentsPanel;
@@ -364,11 +385,6 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   @Override
   public List<String> getComponentNames() {
     return new ArrayList<>(getComponents().keySet());
-  }
-
-  @Override
-  public SimplePalettePanel getComponentPalettePanel() {
-    return palettePanel;
   }
 
   @Override

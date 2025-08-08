@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
+
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -98,7 +100,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Returns the help string for the component.  For more detail, see
    * javadoc for
-   * {@link com.google.appinventor.client.editor.simple.ComponentDatabase#getHelpString(String)}.
+   * {@link ComponentDatabaseInterface#getHelpString(String)}.
    *
    * @return helpful message about the component
    */
@@ -108,7 +110,7 @@ public final class SimpleComponentDescriptor {
 
   /**
    * Returns the help URL for the component.  For more detail, see javadoc for
-   * {@link com.google.appinventor.client.editor.simple.ComponentDatabase#getHelpUrl(String)}.
+   * {@link ComponentDatabaseInterface#getHelpUrl(String)}.
    *
    * @return URL to external documentation provided for an extension
    */
@@ -117,16 +119,18 @@ public final class SimpleComponentDescriptor {
   }
 
   /**
-   * Returns the origin of the component
+   * Returns the origin of the component.
    * @return true if component is external
    */
   public boolean getExternal() {
     return external;
   }
+
   /**
-   * Returns the categoryDocUrl string for the component.  For more detail, see
-   * javadoc for
-   * {@link com.google.appinventor.client.editor.simple.ComponentDatabase#getCategoryDocUrlString(String)}.
+   * Returns the categoryDocUrl string for the component.
+   *
+   * <p>For more detail, see javadoc for
+   * {@link ComponentDatabaseInterface#getCategoryDocUrlString(String)}.
    *
    * @return helpful message about the component
    */
@@ -137,7 +141,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Returns whether this component should be shown on the palette.  For more
    * detail, see javadoc for
-   * {@link com.google.appinventor.client.editor.simple.ComponentDatabase#getHelpString(String)}.
+   * {@link ComponentDatabaseInterface#getHelpString(String)}.
    *
    * @return whether the component should be shown on the palette
    */
@@ -148,7 +152,7 @@ public final class SimpleComponentDescriptor {
   /**
    * Returns whether this component is visible in the app's UI.  For more
    * detail, see javadoc for
-   * {@link com.google.appinventor.client.editor.simple.ComponentDatabase#getHelpString(String)}.
+   * {@link com.google.appinventor.shared.simple.ComponentDatabaseInterface#getHelpString(String)}.
    *
    * @return whether the component is non-visible
    */

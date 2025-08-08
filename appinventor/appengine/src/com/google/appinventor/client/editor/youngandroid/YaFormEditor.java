@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,16 +14,14 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
-import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
-import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
-import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
@@ -34,9 +32,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNo
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.gwt.core.client.Callback;
-import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Command;
@@ -103,18 +98,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
 
     // Create palettePanel, which will be used as the content of the PaletteBox.
     palettePanel = new YoungAndroidPalettePanel(this);
-    palettePanel.loadComponents(new DropTargetProvider() {
-      @Override
-      public DropTarget[] getDropTargets() {
-        // TODO(markf): Figure out a good way to memorize the targets or refactor things so that
-        // getDropTargets() doesn't get called for each component.
-        // NOTE: These targets must be specified in depth-first order.
-        List<DropTarget> dropTargets = root.getDropTargetsWithin();
-        dropTargets.add(getVisibleComponentsPanel());
-        dropTargets.add(getNonVisibleComponentsPanel());
-        return dropTargets.toArray(new DropTarget[dropTargets.size()]);
-      }
-    });
+    palettePanel.loadComponents();
     palettePanel.setSize("100%", "100%");
     componentDatabaseChangeListeners.add(palettePanel);
   }
@@ -125,7 +109,6 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   }
 
   // FileEditor methods
-
   public DropTargetProvider getDropTargetProvider() {
     return new DropTargetProvider() {
       @Override
@@ -139,6 +122,11 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         return dropTargets.toArray(new DropTarget[dropTargets.size()]);
       }
     };
+  }
+
+  @Override
+  public AbstractPalettePanel.Filter getPaletteFilter() {
+    return paletteFilter;
   }
 
   @Override
@@ -358,13 +346,34 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         .getBlocksFileEditor(root.getName()));
   }
 
+  /**
+   * Reload the form's palette panel with a subset of all components.
+   *
+   * @param subsetjson JSON encoding the list of allowable components for the palette.
+   */
   public void reloadComponentPalette(String subsetjson) {
     Set<String> shownComponents = new HashSet<String>();
-    if (subsetjson.length() > 0) {
+    if (!subsetjson.isEmpty()) {
       try {
         String shownComponentsStr = getShownComponents(subsetjson);
-        if (shownComponentsStr.length() > 0) {
-          shownComponents = new HashSet<String>(Arrays.asList(shownComponentsStr.split(",")));
+        if (!shownComponentsStr.isEmpty()) {
+          shownComponents = new HashSet<String>(
+              Arrays.asList(shownComponentsStr.split(",")));
+          Set<String> finalShownComponents = shownComponents;
+          paletteFilter = new YoungAndroidPalettePanel.Filter() {
+            @Override
+            public boolean shouldShowComponent(String componentTypeName) {
+              return finalShownComponents.contains(componentTypeName)
+                  && !componentDatabase.getComponentExternal(componentTypeName);
+            }
+
+            // Toolkit does not currently support Extensions. The Extensions palette should be
+            // left alone.
+            @Override
+            public boolean shouldShowExtensions() {
+              return true;
+            }
+          };
         }
         palettePanel.reloadComponentsFromSet(shownComponents);
       } catch (Exception e) {
@@ -373,6 +382,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     } else {
       palettePanel.reloadComponents();
     }
+    palettePanel.setFilter(paletteFilter, true);
   }
 
   private native String getShownComponents(String subsetString)/*-{
@@ -412,6 +422,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     MockComponent selectedComponent = root.getLastSelectedComponent();
 
     // Set the palette box's content.
+    palettePanel.setActiveEditor(this);
     PaletteBox paletteBox = PaletteBox.getPaletteBox();
     paletteBox.setContent(palettePanel);
 

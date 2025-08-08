@@ -18,11 +18,8 @@ import com.google.gwt.user.client.ui.Widget;
 public interface SimplePalettePanel {
   /**
    * Loads all components to be shown on the palette.
-   *
-   * @param dropTargetProvider  provider of targets that palette items can be
-   *                            dropped on
    */
-  void loadComponents(DropTargetProvider dropTargetProvider);
+  void loadComponents();
 
   /**
    * Configure a mock component.
@@ -43,15 +40,6 @@ public interface SimplePalettePanel {
    * @return the UI widget fot the palette
    */
   Widget getWidget();
-
-  /**
-   * Create an empty copy of same panel class. This is a utility method to have multiple palettes
-   * between the designer and blocks editors without needing to know the concrete types of the
-   * palettes.
-   *
-   * @return a new palette of the same type as the target of the method call
-   */
-  SimplePalettePanel copy();
 
   MockComponent createMockComponent(String name, String type);
 
