@@ -806,6 +806,8 @@
 	"Blockly.Msg.LANG_SCREENS_TITLE": "Screen Name: ",
 	"Blockly.Msg.LANG_NO_ASSETS": "No available assets",
 	"Blockly.Msg.LANG_NO_PROVIDERMODEL": "No known models",
+	"Blockly.Msg.LANG_CHATBOTPROVIDER_TITLE": "ChatBot Provider",
+	"Blockly.Msg.LANG_CHATBOTMODEL_TITLE": "ChatBot Model",
 	"Blockly.Msg.SHOW_WARNINGS": "Show Warnings",
 	"Blockly.Msg.HIDE_WARNINGS": "Hide Warnings",
 	"Blockly.Msg.MISSING_SOCKETS_WARNINGS": "You should fill all of the sockets with blocks",

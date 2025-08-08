@@ -339,6 +339,7 @@ Blockly.Blocks['helpers_providermodel'] = {
 
     this.setOutput(true, utils.YailTypeToBlocklyType('text', utils.OUTPUT));
     this.appendDummyInput('INPUT')
+      .appendField(Blockly.Msg.LANG_CHATBOTMODEL_TITLE);
 
     this.addField();
   },
@@ -461,6 +462,7 @@ Blockly.Blocks['helpers_provider'] = {
 
     this.setOutput(true, utils.YailTypeToBlocklyType('text', utils.OUTPUT));
     this.appendDummyInput('INPUT')
+      .appendField(Blockly.Msg.LANG_CHATBOTPROVIDER_TITLE);
 
     this.addField();
   },
