@@ -313,6 +313,10 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
             pickr.destroyAndRemove();
         });
 
+//        pickr.on('delete', function(instance){
+//            console.log(instance);
+//        });
+
         pickr.on('save', function(instance){
           var color = pickr.getColor().toHEXA().toString();
           if (color.length === 7) {

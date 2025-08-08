@@ -133,7 +133,7 @@
   }
 }
 
-.pcr-active > button{
+.pcr-active > button {
   border: 1px solid black !important;
 }
 
@@ -141,8 +141,8 @@
   border: 1px solid #aaa;
   font-size: 1em;
   position: relative;
-  width: calc(1.75em - 5px);
-  height: calc(1.75em - 5px);
+  width: calc(2.25em - 5px);
+  height: calc(2.25em - 5px);
   border-radius: 50%;
   cursor: pointer;
   margin: 2.5px;
@@ -405,4 +405,31 @@
 
 .swatch-container {
   text-align: center;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 15px;
+  height: 15px;
+  background-color: #ff4444;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  z-index: 99;
+  font-weight: bold;
+  color: white;
+}
+
+.swatch-container.selected .delete-btn {
+  display: flex;
+}
+
+.swatch-wrapper {
+  position: relative;
+  display: inline-block;
 }
