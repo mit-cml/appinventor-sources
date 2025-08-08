@@ -104,6 +104,7 @@ public class RunBundletool implements AndroidTask {
         "sure its password is set to 'android', and the key is set to 'androidkey'.");
       return TaskResult.generateError("Could not sign bundle");
     }
+    context.getOutputFiles().add(context.getPaths().getDeployFile());
     return TaskResult.generateSuccess();
   }
 

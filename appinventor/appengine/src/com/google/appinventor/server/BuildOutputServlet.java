@@ -114,8 +114,8 @@ public class BuildOutputServlet extends OdeServlet {
           return;
         }
       } else {
-        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(),
-            nonce.getProjectId(), null, "apk");
+        // Looking for an Android build file
+        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(), nonce.getProjectId(), "Android");
       }
 
     } catch (FileNotFoundException e) {
