@@ -214,7 +214,7 @@ public class OdeAuthFilter implements Filter {
     user.setOneProjectId(oneProjectId);
     user.setFauxProjectName(projectName);
     LOG.severe("OdeAuthFilter: displayAccountName = " + displayAccountName);
-    if (!displayAccountName.isEmpty()) {
+    if (displayAccountName != null && !displayAccountName.isEmpty()) {
       user.setUserEmail(displayAccountName);
     }
     localUser.set(user);
