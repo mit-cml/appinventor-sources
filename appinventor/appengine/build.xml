@@ -322,6 +322,7 @@
     <!-- Add any additional server libs that need to be copied -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/redis-lettuce/lettuce-core-6.7.1.jar" />
   </target>
 
   <!-- =====================================================================
@@ -465,6 +466,7 @@
     <pathelement location="${appengine.sdk}/appengine-tools-sdk-2.0.19.jar" />
     <pathelement location="${appengine.sdk}/appengine-remote-api-2.0.19.jar" />
     <pathelement location="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
+    <pathelement location="${lib.dir}/redis-lettuce/lettuce-core-6.7.1.jar" />
     <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar" excludes="AiServerLib.jar"/>
   </path>
 

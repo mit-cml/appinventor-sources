@@ -15,15 +15,12 @@ import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.memcache.ErrorHandlers;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.memcache.Expiration;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
+import com.google.appinventor.server.cache.CacheService;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
@@ -129,7 +126,7 @@ public class ObjectifyStorageIo implements StorageIo {
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
 
-  private final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
+  private final CacheService memcache = CacheService.getCacheService();
 
   private final GcsService gcsService;
 
@@ -252,7 +249,6 @@ public class ObjectifyStorageIo implements StorageIo {
       LOG.log(Level.INFO, "RetryParams: getTotalRetryPeriodMillis() = " + retryParams.getTotalRetryPeriodMillis());
     }
     gcsService = GcsServiceFactory.createGcsService(retryParams);
-    memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
     initAllowedTutorialUrls();
   }
 
@@ -330,7 +326,7 @@ public class ObjectifyStorageIo implements StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-    memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
+    memcache.put(cachekey, user, 60); // Remember for one minute
     // The choice of one minute here is arbitrary. getUser() is called on every authenticated
     // RPC call to the system (out of OdeAuthFilter), so using memcache will save a significant
     // number of calls to the datastore. If someone is idle for more then a minute, it isn't

@@ -197,5 +197,9 @@
     <!-- https://example.com/something. -->
     <property name="ode.base" value="" />
 
+    <!-- Redis Cache Provider -->
+    <property name="cache.provider" value="" />
+    <property name="cache.redis.host" value="localhost:6379" />
+
   </system-properties>
 </appengine-web-app>
