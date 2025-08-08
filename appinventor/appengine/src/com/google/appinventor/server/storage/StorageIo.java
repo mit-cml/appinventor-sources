@@ -158,6 +158,14 @@ public interface StorageIo {
   List<Long> getProjects(String userId);
 
   /**
+   * Returns an array with the user's project's names
+   *
+   * @param userId  user ID
+   * @return  list of projects names
+   */
+  List<String> getProjectNames(String userId);
+
+  /**
    * Returns a string with the project settings.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId project ID
@@ -191,6 +199,13 @@ public interface StorageIo {
 
   UserProject getUserProject(String userId, long projectId);
 
+  /**
+   * Return the userId of the owner of a project
+   * @param projectId project id
+   * @return userId
+   */
+
+  String getProjectUserId(long projectId) throws StoredData.ProjectNotFoundException;
   /**
    * Bulk version of getUserProject.
    * @param userId a userId

@@ -104,6 +104,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.Date;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -494,7 +495,7 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public long createProject(final String userId, final Project project,
-      final String projectSettings) {
+    final String projectSettings) {
     final Result<Long> projectId = new Result<Long>();
     final List<FileData> addedFiles = new ArrayList<FileData>();
 
@@ -712,6 +713,13 @@ public class ObjectifyStorageIo implements StorageIo {
 
     return projects;
   }
+  @Override
+  public List<String> getProjectNames(final String userId) {
+    List<Long> projects = getProjects(userId);
+    List<UserProject> uprojects = getUserProjects(userId, projects);
+    List<String> projectNames = uprojects.stream().map(project -> project.getProjectName()).collect(Collectors.toList());
+    return projectNames;
+  }
 
   @Override
   public String loadProjectSettings(final String userId, final long projectId) {
@@ -789,6 +797,40 @@ public class ObjectifyStorageIo implements StorageIo {
 //    }
     // We only have one project type, no need to ask about it
     return YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE;
+  }
+
+  // Unfortunately the App Engine storage arrangement was not
+  // designed to be able to turn a projectId back into the user
+  // who owns it (!!). But files in the project are tageed with
+  // the user, so we fetch "project.properties" which every project
+  // has, and use its owner to learn the userId. This will fail for
+  // very old projects that do not have file owners set on their files.
+  
+  @Override
+  public String getProjectUserId(long projectId) {
+    final Result<FileData> fd = new Result<FileData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<FileData> fileKey = projectFileKey(projectKey(projectId), "youngandroidproject/project.properties");
+          fd.t = (FileData) memcache.get(fileKey.getString());
+          if (fd.t == null) {
+            fd.t = datastore.find(fileKey);
+          }
+        }
+      }, false);                // Transation not needed
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+        collectProjectErrorInfo(null, projectId, "project.properties"), e);
+    }
+    FileData fileData = fd.t;
+    if (fileData != null) {
+      return fileData.userId;
+    } else {
+      LOG.log(Level.SEVERE, "getProjectUserId: cannot determine project owner");
+      return null;
+    }
   }
 
   @Override

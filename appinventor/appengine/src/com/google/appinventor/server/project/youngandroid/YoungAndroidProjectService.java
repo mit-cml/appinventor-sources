@@ -278,7 +278,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
 
   @Override
-  public long copyProject(String userId, long oldProjectId, String newName) {
+  public long copyProject(String userId, long oldProjectId, String newName, String newuserId) {
+    // By default we assume that the project ownership doesn't change
+    if (newuserId == null) {
+      newuserId = userId;
+    }
     String oldName = storageIo.getProjectName(userId, oldProjectId);
     String oldProjectSettings = storageIo.loadProjectSettings(userId, oldProjectId);
     String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
@@ -288,6 +292,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
     newProject.setProjectHistory(oldProjectHistory);
+
+    String qualifiedFormName = StringUtils.getQualifiedFormName(
+      storageIo.getUser(newuserId).getUserEmail(), newName);
+    String newsrcDirectory = getSourceDirectory(qualifiedFormName);
 
     // Get the old project's source files and add them to new project, modifying where necessary.
     for (String oldSourceFileName : storageIo.getProjectSourceFiles(userId, oldProjectId)) {
@@ -300,16 +308,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         newSourceFileName = oldSourceFileName;
         // For the contents of the project properties file, generate the file with the new project
         // name and qualified name.
-        String qualifiedFormName = StringUtils.getQualifiedFormName(
-            storageIo.getUser(userId).getUserEmail(), newName);
         builder.setProjectName(newName).setQualifiedFormName(qualifiedFormName);
         newContents = builder.toProperties();
-      } else {
+      } else if (oldSourceFileName.startsWith(SRC_FOLDER)) {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
         // Replace the old name with the new name.
-        newSourceFileName = StringUtils.replaceLastOccurrence(oldSourceFileName,
-            "/" + oldName + "/", "/" + newName + "/");
+        newSourceFileName = newsrcDirectory + "/" + StorageUtil.basename(oldSourceFileName);
+      } else {
+        newSourceFileName = oldSourceFileName;
       }
 
       if (newContents != null) {
@@ -326,7 +333,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Create the new project and return the new project's id.
-    return storageIo.createProject(userId, newProject, builder.build());
+    return storageIo.createProject(newuserId, newProject, builder.build());
   }
 
   @Override
