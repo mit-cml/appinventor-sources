@@ -34,6 +34,17 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     _field.delegate = self
     setupView()
     
+    // Add a visible border for better visual clarity
+    _field.layer.borderColor = UIColor.systemGray.cgColor
+    _field.layer.borderWidth = 1.0
+    _field.layer.cornerRadius = 5.0
+    _field.backgroundColor = UIColor.systemGray6
+
+    _view.layer.borderColor = UIColor.systemGray.cgColor
+    _view.layer.borderWidth = 1.0
+    _view.layer.cornerRadius = 5.0
+    _view.backgroundColor = UIColor.systemGray6
+    
     // We are single line by default
     makeSingleLine()
     textColor = UIColor.black
@@ -43,7 +54,6 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
   }
   
   private func setupView() {
-    // Set up the minimum size constraint for the UITextView
     let heightConstraint = _view.heightAnchor.constraint(greaterThanOrEqualToConstant: 20)
     heightConstraint.priority = UILayoutPriority.defaultHigh
     _view.addConstraint(heightConstraint)
@@ -164,7 +174,7 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     }
     set(multiLine) {
       if _multiLine == multiLine {
-        return  // nothing to do
+        return
       }
       if multiLine {
         makeMultiLine()
