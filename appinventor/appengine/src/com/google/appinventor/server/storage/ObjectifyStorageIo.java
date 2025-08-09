@@ -11,12 +11,12 @@ import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_V
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.cache.CacheService;
+import com.google.appinventor.server.database.DatabaseService;
 import com.google.appinventor.server.filesystem.FilesystemService;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
@@ -26,7 +26,6 @@ import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
-import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.server.storage.StoredData.PWData;
@@ -113,6 +112,7 @@ public class ObjectifyStorageIo implements StorageIo {
   private static final int MAX_JOB_RETRIES = 10;
 
   private final CacheService cacheService = CacheService.getCacheService();
+  private final DatabaseService databaseService = DatabaseService.getDatabaseService();
   private final FilesystemService filesystemService = FilesystemService.getFilesystemService();
 
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
@@ -176,7 +176,6 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(UserProjectData.class);
     ObjectifyService.register(FileData.class);
     ObjectifyService.register(UserFileData.class);
-    ObjectifyService.register(MotdData.class);
     ObjectifyService.register(RendezvousData.class);
     ObjectifyService.register(WhiteListData.class);
     ObjectifyService.register(FeedbackData.class);
@@ -226,10 +225,7 @@ public class ObjectifyStorageIo implements StorageIo {
             LOG.info("Did not find userId " + userId);
             if (email != null) {
               qDatastore = ObjectifyService.begin(); // Need an instance not in this transaction
-              userData = qDatastore.query(UserData.class).filter("email", email).get();
-              if (userData == null) { // Still null!
-                userData = qDatastore.query(UserData.class).filter("emaillower", email.toLowerCase()).get();
-              }
+              userData = databaseService.findUserDataByEmail(email);
               // Need to fix userId...
               if (userData != null) {
                 LOG.info("Found based on email, userData.id = " + userData.id);
@@ -1553,7 +1549,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void recordCorruption(String userId, long projectId, String fileId, String message) {
-    Objectify datastore = ObjectifyService.begin();
     final CorruptionRecord data = new CorruptionRecord();
     data.timestamp = new Date();
     data.id = null;
@@ -1639,7 +1634,6 @@ public class ObjectifyStorageIo implements StorageIo {
           result.t = getBlobstoreBytes(fileData.blobKey);
           // Time to consider upgrading this file if we are moving to GCS
           // Note: We only run if we have at least 5 seconds of runtime left in the request
-          long timeRemaining = ApiProxy.getCurrentEnvironment().getRemainingMillis();
         } catch (BlobReadException e) {
           throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -2640,15 +2634,6 @@ public class ObjectifyStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
     return result.t;
-  }
-
-  /*
-   * Determine which GCS Bucket to use based on filename. In particular
-   * APK files go in a bucket with a short TTL, because they are really
-   * temporary files.
-   */
-  private static final String getGcsBucketToUse(StoredDataRoleEnum role) {
-    return "";
   }
 
 }

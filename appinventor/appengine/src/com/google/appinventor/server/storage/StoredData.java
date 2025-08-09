@@ -55,29 +55,21 @@ public class StoredData {
 
     public String name;
     public String link;
-    public int emailFrequency;
     public int type;
     String sessionid;           // uuid of active session
     String password;            // Hashed (PBKDF2 hashing) password
-
-    // Path to template project passed as GET parameter
-    String templatePath;
-    boolean upgradedGCS;
   }
 
   // Project properties
   // The ProjectData class is an entity root, and the parent of FileData
   @Cached
   @Unindexed
-  static final class ProjectData {
+  public static final class ProjectData {
     // Auto-generated unique project id
     @Id Long id;
 
     // Verbose project name
     String name;
-
-    //introduction link
-    String link;
 
     // Project type. Currently Simple and YoungAndroid
     // TODO(user): convert to enum
@@ -106,7 +98,7 @@ public class StoredData {
 
   // Project properties specific to the user
   @Unindexed
-  static final class UserProjectData {
+  public static final class UserProjectData {
     enum StateEnum {
       CLOSED,
       OPEN,
@@ -130,7 +122,7 @@ public class StoredData {
 
   // Non-project-specific files (tied to user)
   @Unindexed
-  static final class UserFileData {
+  public static final class UserFileData {
     // The file name
     @Id String fileName;
 
@@ -140,10 +132,6 @@ public class StoredData {
     // File content, these are raw bytes. Note that Objectify automatically
     // converts byte[] to Blob.
     byte[] content;
-
-    // File settings
-    // TODO(user): is this ever used?
-    String settings;
   }
 
   // Project files
@@ -151,7 +139,7 @@ public class StoredData {
   //       memcache.
   @Cached
   @Unindexed
-  static final class FileData implements Serializable {
+  public static final class FileData implements Serializable {
     // The file name
     @Id String fileName;
 
@@ -184,9 +172,6 @@ public class StoredData {
     // The GCS filename, sans bucket name
     String gcsName;
 
-    // File settings
-    String settings;
-
     // DateTime of last backup only used if GCS is enabled
     long lastBackup;
 
@@ -195,22 +180,9 @@ public class StoredData {
                                 // it yet
   }
 
-  // MOTD data.
-  @Unindexed
-  static final class MotdData {
-    // Unique Id - for now we expect there to be only 1 MotdData object.
-    @Id Long id;
-
-    // Caption for the MOTD
-    String caption;
-
-    // More MOTD detail, if any
-    String content;
-  }
-
   // Rendezvous Data -- Only used when memcache is unavailable
   @Unindexed
-  static final class RendezvousData {
+  public static final class RendezvousData {
     @Id Long id;
 
     // Six character key entered by user (or scanned).
@@ -224,13 +196,13 @@ public class StoredData {
   }
 
   @Unindexed
-  static final class WhiteListData {
+  public static final class WhiteListData {
     @Id Long id;
     @Indexed public String emailLower;
   }
 
   @Unindexed
-  static final class FeedbackData {
+  public static final class FeedbackData {
     @Id Long id;
     public String notes;
     public String foundIn;
@@ -247,7 +219,7 @@ public class StoredData {
   // both to provide a way to clean them up and to expire the APK downloads.
 
   @Unindexed
-  static final class NonceData {
+  public static final class NonceData {
     @Id Long id;
     @Indexed public String nonce;
     public String userId;
@@ -257,7 +229,7 @@ public class StoredData {
   }
 
   @Unindexed
-  static final class CorruptionRecord {
+  public static final class CorruptionRecord {
     @Id Long id;
     @Indexed public Date timestamp;
     public String userId;
@@ -268,7 +240,7 @@ public class StoredData {
 
   @Cached(expirationSeconds=60)
   @Unindexed
-  static final class SplashData {
+  public static final class SplashData {
     @Id Long id;
     public int version;
     public String content;
@@ -300,7 +272,7 @@ public class StoredData {
 
   @Cached(expirationSeconds=120)
   @Unindexed
-  static final class AllowedTutorialUrls {
+  public static final class AllowedTutorialUrls {
     // Unique Id - for now we expect there to be only 1 MotdData object.
     @Id Long id;
 
