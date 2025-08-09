@@ -173,6 +173,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
     sortColors();
 
+    storeProjectColors();
+  }
+
+  private void storeProjectColors() {
     com.google.gwt.json.client.JSONObject obj = new com.google.gwt.json.client.JSONObject();
     for (String colorItem : projectColors) {
       obj.put(colorItem, new JSONNumber(colorFrequency.getOrDefault(colorItem, 0)));
@@ -180,6 +184,15 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
     changeProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS,
             YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, obj.toString());
+  }
+
+  public void removeColor(String color) {
+    if (colorFrequency.containsKey(color)) {
+      colorFrequency.remove(color);
+      sortColors();
+
+      storeProjectColors();
+    }
   }
 
   private void sortColors() {

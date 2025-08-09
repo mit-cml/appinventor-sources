@@ -313,9 +313,9 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
             pickr.destroyAndRemove();
         });
 
-//        pickr.on('delete', function(instance){
-//            console.log(instance);
-//        });
+        $wnd.projectColorDeleted = function(color) {
+          that.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::projectColorDeleted(Ljava/lang/String;)(color);
+        };
 
         pickr.on('save', function(instance){
           var color = pickr.getColor().toHEXA().toString();
@@ -329,6 +329,13 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
         pickr.show();
   }-*/;
+
+    private void projectColorDeleted(String color) {
+        YaProjectEditor projectEditor = (YaProjectEditor) Ode.getCurrentProjectEditor();
+        if (projectEditor != null) {
+            projectEditor.removeColor(color.substring(1));
+        }
+    }
 
     private native void showAdvancedPicker(Element element, String defaultColor, String defaultColors)/*-{
     var prefix = this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::hexPrefix;

@@ -141,8 +141,8 @@
   border: 1px solid #aaa;
   font-size: 1em;
   position: relative;
-  width: calc(2.25em - 5px);
-  height: calc(2.25em - 5px);
+  width: calc(2.15em - 5px);
+  height: calc(2.15em - 5px);
   border-radius: 50%;
   cursor: pointer;
   margin: 2.5px;
