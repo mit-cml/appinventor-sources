@@ -55,14 +55,9 @@ public class StoredData {
 
     public String name;
     public String link;
-    public int emailFrequency;
     public int type;
     String sessionid;           // uuid of active session
     String password;            // Hashed (PBKDF2 hashing) password
-
-    // Path to template project passed as GET parameter
-    String templatePath;
-    boolean upgradedGCS;
   }
 
   // Project properties
@@ -75,9 +70,6 @@ public class StoredData {
 
     // Verbose project name
     String name;
-
-    //introduction link
-    String link;
 
     // Project type. Currently Simple and YoungAndroid
     // TODO(user): convert to enum
@@ -140,10 +132,6 @@ public class StoredData {
     // File content, these are raw bytes. Note that Objectify automatically
     // converts byte[] to Blob.
     byte[] content;
-
-    // File settings
-    // TODO(user): is this ever used?
-    String settings;
   }
 
   // Project files
@@ -191,43 +179,12 @@ public class StoredData {
     // The GCS filename, sans bucket name
     String gcsName;
 
-    // File settings
-    String settings;
-
     // DateTime of last backup only used if GCS is enabled
     long lastBackup;
 
     String userId;              // The userId which owns this file
                                 // if null or the empty string, we haven't initialized
                                 // it yet
-  }
-
-  // MOTD data.
-  @Unindexed
-  static final class MotdData {
-    // Unique Id - for now we expect there to be only 1 MotdData object.
-    @Id Long id;
-
-    // Caption for the MOTD
-    String caption;
-
-    // More MOTD detail, if any
-    String content;
-  }
-
-  // Rendezvous Data -- Only used when memcache is unavailable
-  @Unindexed
-  static final class RendezvousData {
-    @Id Long id;
-
-    // Six character key entered by user (or scanned).
-    @Indexed public String key;
-
-    // Ip Address of phone
-    public String ipAddress;
-
-    public Date used;           // Used during (manual) cleanup to determine if this entry can be pruned
-
   }
 
   @Unindexed

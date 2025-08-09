@@ -67,16 +67,10 @@ public interface StorageIo {
    * doesn't already exist in the storage, it should be created. email
    * is the email address currently associated with this user.
    *
-   * @param user email address
+   * @param email user email address
    * @return user data
    */
   User getUserFromEmail(String email);
-
-  /**
-   * Sets the stored email address for user with id userId
-   *
-   */
-  void setUserEmail(String userId, String email);
 
   /**
    * Sets that the user has accepted the terms of service.
@@ -98,7 +92,7 @@ public interface StorageIo {
    * Sets the user's hashed password.
    *
    * @param userId user id
-   * @param hashed password
+   * @param password hashed password
    */
   void setUserPassword(String userId, String password);
 
@@ -147,7 +141,7 @@ public interface StorageIo {
    *
    * @param userId user ID
    * @param projectId project ID
-   * @param flag
+   * @param flag value on whether project is in trash
    */
   void setMoveToTrashFlag(final String userId, final long projectId, boolean flag);
 
@@ -221,19 +215,10 @@ public interface StorageIo {
   long getProjectDateModified(String userId, long projectId);
 
   /**
-   * Returns the date the project was last exported.
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project id
-   *
-   * @return long milliseconds
-   */
-  long getProjectDateBuilt(String userId, long projectId);
-
-  /**
    * Sets the date the project was last exported.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project id
-   * @long  builtDate the date to set
+   * @param builtDate the date to set
    *
    * @return long milliseconds
    */
@@ -257,13 +242,6 @@ public interface StorageIo {
    * @return long milliseconds
    */
   long getProjectDateCreated(String userId, long projectId);
- /**
-   * Returns the gallery id or -1 if not published.
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project id
-   *
-   * @return long milliseconds
-   */
 
   // Non-project-specific file management
 
@@ -497,9 +475,9 @@ public interface StorageIo {
    * Verifies it is a temp file by making sure the filename
    * begins with __TEMP__
    *
-   * @param fileName
+   * @param fileName file name to open
    *
-   * @return inputstream
+   * @return input stream
    */
 
   InputStream openTempFile(String fileName) throws IOException;
@@ -509,7 +487,7 @@ public interface StorageIo {
    * Verify that it is a temporary file by making sure its filename
    * starts with __TEMP__
    *
-   * @param fileName
+   * @param fileName file name to delete
    */
 
   void deleteTempFile(String fileName) throws IOException;
@@ -545,30 +523,6 @@ public interface StorageIo {
    *    email address
    */
   String findUserByEmail(String email) throws NoSuchElementException;
-
-  /**
-   * Find a phone's IP address given the six character key. Used by the
-   * RendezvousServlet. This is used only when memcache is unavailable.
-   *
-   * @param key the six character key
-   * @return Ip Address as string or null if not found
-   *
-   */
-  String findIpAddressByKey(String key);
-
-  /**
-   * Store a phone's IP address indexed by six character key. Used by the
-   * RendezvousServlet. This is used only when memcache is unavailable.
-   *
-   * Note: Nothing currently cleans up these entries, but we have a
-   * timestamp field which we update so a later process can recognize
-   * and remove stale entries.
-   *
-   * @param key the six character key
-   * @param ipAddress the IP Address of the phone
-   *
-   */
-  void storeIpAddressByKey(String key, String ipAddress);
 
   boolean checkWhiteList(String email);
 
@@ -608,7 +562,7 @@ public interface StorageIo {
    * @return the contents of the backpack as an XML encoded string
    */
 
-  public String downloadBackpack(String backPackId);
+  String downloadBackpack(String backPackId);
 
   /**
    * Used to upload a shared backpack Note: This code will over-write
@@ -616,10 +570,10 @@ public interface StorageIo {
    * the responsibility of our caller to merge contents if desired.
    *
    * @param backPackId The uuid of the shared backpack to store
-   * @param String content the new contents of the backpack
+   * @param content the new contents of the backpack
    */
 
-  public void uploadBackpack(String backPackId, String content);
+  void uploadBackpack(String backPackId, String content);
 
   /**
    * Store the status of a pending build. We used to poll the buildserver
@@ -639,9 +593,9 @@ public interface StorageIo {
    *
    */
 
-  public void storeBuildStatus(String userId, long projectId, int progress);
+  void storeBuildStatus(String userId, long projectId, int progress);
 
-  public int getBuildStatus(String userId, long projectId);
+  int getBuildStatus(String userId, long projectId);
 
   /**
    * Checks that the user identified by {@code userId} has a reference to the project identified
