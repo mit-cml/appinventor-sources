@@ -35,7 +35,9 @@ public interface StorageIo {
   /**
    * Constant for an invalid project ID.
    */
-  public static final long INVALID_PROJECTID = 0;
+  long INVALID_PROJECTID = 0;
+
+  String TEMP_PREFIX = "__TEMP__";
 
   // User management
 

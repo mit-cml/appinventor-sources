@@ -2397,18 +2397,18 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public String uploadTempFile(byte[] content) throws IOException {
     String uuid = UUID.randomUUID().toString();
-    String fileName = "__TEMP__/" + uuid;
+    String fileName = TEMP_PREFIX + "/" + uuid;
     setGcsFileContent(fileName, content);
     return fileName;
   }
 
   @Override
   public InputStream openTempFile(String fileName) throws IOException {
-    if (!fileName.startsWith("__TEMP__")) {
+    if (!fileName.startsWith(TEMP_PREFIX)) {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
     // Use FileData.RoleEnum.TARGET because these temp files never live very long
-    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName);
+    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TEMPORARY), fileName);
     int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
     ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
     GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
@@ -2425,10 +2425,10 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void deleteTempFile(String fileName) throws IOException {
-    if (!fileName.startsWith("__TEMP__")) {
+    if (!fileName.startsWith(TEMP_PREFIX)) {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
-    gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName));
+    gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TEMPORARY), fileName));
   }
 
   // ********* METHODS BELOW ARE ONLY FOR TESTING *********
