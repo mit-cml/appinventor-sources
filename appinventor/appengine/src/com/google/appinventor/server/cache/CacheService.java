@@ -2,6 +2,7 @@ package com.google.appinventor.server.cache;
 
 import com.google.appinventor.server.flags.Flag;
 
+
 public abstract class CacheService {
   private static final Flag<String> PROVIDER = Flag.createFlag("cache.provider", "gae");
 
@@ -17,9 +18,9 @@ public abstract class CacheService {
     final String provider = PROVIDER.get();
 
     if ("redis".equals(provider)) {
-      return new RedisProvider();
-    } else if ("gae".equals(provider)) {
-      return new MemcacheAppEngineProvider();
+      return new ProviderRedis();
+    } else if ("gae".equals(provider) || (provider == null || provider.isEmpty())) {
+      return new ProviderMemcacheAppEngine();
     }
 
     throw new UnsupportedOperationException("Unknown cache provider: " + provider);

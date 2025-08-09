@@ -152,13 +152,6 @@ public class StoredData {
   @Cached
   @Unindexed
   static final class FileData implements Serializable {
-    // The role that file play: source code, build target or temporary file
-    enum RoleEnum {
-      SOURCE,
-      TARGET,
-      TEMPORARY
-    }
-
     // The file name
     @Id String fileName;
 
@@ -166,7 +159,7 @@ public class StoredData {
     @Parent Key<ProjectData> projectKey;
 
     // File role
-    RoleEnum role;
+    StoredDataRoleEnum role;
 
     // File content, these are raw bytes. Note that Objectify automatically
     // converts byte[] to an App Engine Datastore Blob (which is not the same thing as a Blobstore

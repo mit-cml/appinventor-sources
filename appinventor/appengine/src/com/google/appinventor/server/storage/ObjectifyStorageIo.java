@@ -7,11 +7,7 @@
 package com.google.appinventor.server.storage;
 
 import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
-import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
 
-import com.google.appengine.api.appidentity.AppIdentityService;
-import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
-import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
@@ -21,6 +17,7 @@ import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.cache.CacheService;
+import com.google.appinventor.server.filesystem.FilesystemService;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
@@ -55,7 +52,6 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
-import com.google.appinventor.shared.settings.Settings;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -71,21 +67,11 @@ import com.googlecode.objectify.Query;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-// GCS imports
-import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsInputChannel;
-import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-import com.google.appengine.tools.cloudstorage.RetryParams;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -126,17 +112,12 @@ public class ObjectifyStorageIo implements StorageIo {
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
 
-  private final CacheService memcache = CacheService.getCacheService();
-
-  private final GcsService gcsService;
-
-  private static final String GCS_BUCKET_NAME;
-  private static final String APK_BUCKET_NAME;
-
-  private static final String BUILD_STATUS_CACHE_KEY_PREFIX = "40bae275-070f-478b-9a5f-d50361809b99";
-  private static final String PROJECT_OWNER_CACHE_KEY_PREFIX = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
+  private final CacheService cacheService = CacheService.getCacheService();
+  private final FilesystemService filesystemService = FilesystemService.getFilesystemService();
 
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
+
+  private static final String TEMP_PREFIX = "__TEMP__";
 
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
@@ -206,49 +187,9 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(Backpack.class);
     ObjectifyService.register(AllowedTutorialUrls.class);
     ObjectifyService.register(AllowedIosExtensions.class);
-
-    // Learn GCS Bucket from App Configuration or App Engine Default
-    // gcsBucket is where project storage goes
-    // apkBucket is only for storing APK files and perhaps other
-    // temporary files. It should be configured in GCS to have a
-    // limited lifetime set for objects in the bucket. We recommend
-    // one day (which we believe is the minimum as of this writing).
-    String gcsBucket = Flag.createFlag("gcs.bucket", "").get();
-
-    if (gcsBucket.equals("")) { // Attempt to get default bucket
-                                // from AppIdentity Service
-      AppIdentityService appIdentity = AppIdentityServiceFactory.getAppIdentityService();
-      try {
-        gcsBucket = appIdentity.getDefaultGcsBucketName();
-      } catch (AppIdentityServiceFailureException e) {
-        // We get this exception when we are running on an App Engine instance
-        // created before App Engine version 1.9.0 and we have neither configured
-        // the GCS bucket in appengine-web.xml or used the App Engine console to
-        // create the default bucket. The Default Bucket is a better approach for
-        // personal instances because they have a default free quota of 5 Gb (as
-        // of 5/29/2015 when this code was written).
-        gcsBucket = ""; // This will cause a RunTimeException in the RPC code later
-                        // which will log a better message
-      }
-      LOG.log(Level.INFO, "Default GCS Bucket Configured from App Identity: " + gcsBucket);
-    }
-    GCS_BUCKET_NAME = gcsBucket;
-    APK_BUCKET_NAME = Flag.createFlag("gcs.apkbucket", gcsBucket).get();
   }
 
   ObjectifyStorageIo() {
-    RetryParams retryParams = new RetryParams.Builder().initialRetryDelayMillis(100)
-      .retryMaxAttempts(10)
-      .totalRetryPeriodMillis(10000).build();
-    if (DEBUG) {
-      LOG.log(Level.INFO, "RetryParams: getInitialRetryDelayMillis() = " + retryParams.getInitialRetryDelayMillis());
-      LOG.log(Level.INFO, "RetryParams: getRequestTimeoutMillis() = " + retryParams.getRequestTimeoutMillis());
-      LOG.log(Level.INFO, "RetryParams: getRetryDelayBackoffFactor() = " + retryParams.getRetryDelayBackoffFactor());
-      LOG.log(Level.INFO, "RetryParams: getRetryMaxAttempts() = " + retryParams.getRetryMaxAttempts());
-      LOG.log(Level.INFO, "RetryParams: getRetryMinAttempts() = " + retryParams.getRetryMinAttempts());
-      LOG.log(Level.INFO, "RetryParams: getTotalRetryPeriodMillis() = " + retryParams.getTotalRetryPeriodMillis());
-    }
-    gcsService = GcsServiceFactory.createGcsService(retryParams);
     initAllowedTutorialUrls();
   }
 
@@ -266,7 +207,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public User getUser(final String userId, final String email) {
     String cachekey = User.usercachekey + "|" + userId;
-    User tuser = (User) memcache.get(cachekey);
+    User tuser = (User) cacheService.get(cachekey);
     if (tuser != null && tuser.getUserTosAccepted() && ((email == null) || (tuser.getUserEmail().equals(email)))) {
       return tuser;
     } else {                    // If not in memcache, or tos
@@ -326,7 +267,7 @@ public class ObjectifyStorageIo implements StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-    memcache.put(cachekey, user, 60); // Remember for one minute
+    cacheService.put(cachekey, user, 60); // Remember for one minute
     // The choice of one minute here is arbitrary. getUser() is called on every authenticated
     // RPC call to the system (out of OdeAuthFilter), so using memcache will save a significant
     // number of calls to the datastore. If someone is idle for more then a minute, it isn't
@@ -419,7 +360,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           String cachekey = User.usercachekey + "|" + userId;
-          memcache.delete(cachekey);  // Flush cached copy prior to update
+          cacheService.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.sessionid = sessionId;
@@ -439,7 +380,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           String cachekey = User.usercachekey + "|" + userId;
-          memcache.delete(cachekey);  // Flush cached copy prior to update
+          cacheService.delete(cachekey);  // Flush cached copy prior to update
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.password = password;
@@ -527,7 +468,7 @@ public class ObjectifyStorageIo implements StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId.t);
           for (TextFile file : project.getSourceFiles()) {
             try {
-              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId,
+              addedFiles.add(createRawFile(projectKey, StoredDataRoleEnum.SOURCE, userId,
                   file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
             } catch (IOException e) { // GCS throws this
               throw CrashReport.createAndLogError(LOG, null,
@@ -536,7 +477,7 @@ public class ObjectifyStorageIo implements StorageIo {
           }
           for (RawFile file : project.getRawSourceFiles()) {
             try {
-              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId, file.getFileName(),
+              addedFiles.add(createRawFile(projectKey, StoredDataRoleEnum.SOURCE, userId, file.getFileName(),
                   file.getContent()));
             } catch (IOException e) {
               throw CrashReport.createAndLogError(LOG, null,
@@ -577,7 +518,7 @@ public class ObjectifyStorageIo implements StorageIo {
         if (isTrue(addedFile.isGCS)) {  // Do something
           if (addedFile.gcsName != null) {
             try {
-              gcsService.delete(new GcsFilename(getGcsBucketToUse(addedFile.role), addedFile.gcsName));
+              filesystemService.delete(addedFile.role, addedFile.gcsName);
             } catch (IOException ee) {
               LOG.log(Level.WARNING, "Unable to delete " + addedFile.gcsName +
                 " from GCS while aborting project creation.", ee);
@@ -598,9 +539,8 @@ public class ObjectifyStorageIo implements StorageIo {
    *  Does not check for the existence of the object and does not update
    *  the database.
    */
-  private FileData createRawFile(Key<ProjectData> projectKey, FileData.RoleEnum role,
+  private FileData createRawFile(Key<ProjectData> projectKey, StoredDataRoleEnum role,
     String userId, String fileName, byte[] content) throws ObjectifyException, IOException {
-    validateGCS();
     FileData file = new FileData();
     file.fileName = fileName;
     file.projectKey = projectKey;
@@ -609,10 +549,7 @@ public class ObjectifyStorageIo implements StorageIo {
     if (useGCSforFile(fileName, content.length)) {
       file.isGCS = true;
       file.gcsName = makeGCSfileName(fileName, projectKey.getId());
-      GcsOutputChannel outputChannel =
-        gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(file.role), file.gcsName), GcsFileOptions.getDefaultInstance());
-      outputChannel.write(ByteBuffer.wrap(content));
-      outputChannel.close();
+      filesystemService.save(file.role, file.gcsName, content);
     } else {
       file.content = content;
     }
@@ -621,7 +558,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void deleteProject(final String userId, final long projectId) {
-    validateGCS();
     // blobs associated with the project
     final List<String> blobKeys = new ArrayList<String>();
     final List<String> gcsPaths = new ArrayList<String>();
@@ -662,7 +598,7 @@ public class ObjectifyStorageIo implements StorageIo {
       // Now delete the gcs files
       for (String gcsName: gcsPaths) {
         try {
-          gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsName));
+          filesystemService.delete(StoredDataRoleEnum.SOURCE, gcsName);
         } catch (IOException e) {
           // Note: this warning will happen if we attempt to remove an APK file, because we may be looking
           // in the wrong bucket. But that's OK. Things in the apk bucket will go away on their own.
@@ -1194,7 +1130,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          addFilesToProject(datastore, projectId, FileData.RoleEnum.SOURCE, changeModDate, userId, fileNames);
+          addFilesToProject(datastore, projectId, StoredDataRoleEnum.SOURCE, changeModDate, userId, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1210,7 +1146,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          addFilesToProject(datastore, projectId, FileData.RoleEnum.TARGET, false, userId, fileNames);
+          addFilesToProject(datastore, projectId, StoredDataRoleEnum.TARGET, false, userId, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1219,7 +1155,7 @@ public class ObjectifyStorageIo implements StorageIo {
     }
   }
 
-  private void addFilesToProject(Objectify datastore, long projectId, FileData.RoleEnum role,
+  private void addFilesToProject(Objectify datastore, long projectId, StoredDataRoleEnum role,
     boolean changeModDate, String userId, String... fileNames) {
     List<FileData> addedFiles = new ArrayList<FileData>();
     Key<ProjectData> projectKey = projectKey(projectId);
@@ -1237,7 +1173,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   private FileData createProjectFile(Objectify datastore, Key<ProjectData> projectKey,
-      FileData.RoleEnum role, String fileName) {
+      StoredDataRoleEnum role, String fileName) {
     FileData fd = datastore.find(projectFileKey(projectKey, fileName));
     if (fd == null) {
       fd = new FileData();
@@ -1260,7 +1196,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          removeFilesFromProject(datastore, projectId, FileData.RoleEnum.SOURCE, changeModDate, fileNames);
+          removeFilesFromProject(datastore, projectId, StoredDataRoleEnum.SOURCE, changeModDate, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1276,7 +1212,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          removeFilesFromProject(datastore, projectId, FileData.RoleEnum.TARGET, false, fileNames);
+          removeFilesFromProject(datastore, projectId, StoredDataRoleEnum.TARGET, false, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1286,12 +1222,12 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   private void removeFilesFromProject(Objectify datastore, long projectId,
-      FileData.RoleEnum role, boolean changeModDate, String... fileNames) {
+      StoredDataRoleEnum role, boolean changeModDate, String... fileNames) {
     Key<ProjectData> projectKey = projectKey(projectId);
     List<Key<FileData>> filesToRemove = new ArrayList<Key<FileData>>();
     for (String fileName : fileNames) {
       Key<FileData> key = projectFileKey(projectKey, fileName);
-      memcache.delete(key.getString()); // Remove it from memcache (if it is there)
+      cacheService.delete(key.getString()); // Remove it from memcache (if it is there)
       FileData fd = datastore.find(key);
       if (fd != null) {
         if (fd.role.equals(role)) {
@@ -1316,7 +1252,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          result.t = getProjectFiles(datastore, projectId, FileData.RoleEnum.SOURCE);
+          result.t = getProjectFiles(datastore, projectId, StoredDataRoleEnum.SOURCE);
         }
       }, false);
     } catch (ObjectifyException e) {
@@ -1333,7 +1269,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          result.t = getProjectFiles(datastore, projectId, FileData.RoleEnum.TARGET);
+          result.t = getProjectFiles(datastore, projectId, StoredDataRoleEnum.TARGET);
         }
       }, false);
     } catch (ObjectifyException e) {
@@ -1344,7 +1280,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   private List<String> getProjectFiles(Objectify datastore, long projectId,
-                                       FileData.RoleEnum role) {
+                                       StoredDataRoleEnum role) {
     Key<ProjectData> projectKey = projectKey(projectId);
     List<String> fileList = new ArrayList<String>();
     for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
@@ -1411,7 +1347,6 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public long uploadRawFile(final long projectId, final String fileName, final String userId,
       final boolean force, final byte[] content) throws BlocksTruncatedException {
-    validateGCS();
     final Result<Long> modTime = new Result<Long>();
     final boolean useGCS = useGCSforFile(fileName, content.length);
 
@@ -1425,7 +1360,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) throws ObjectifyException {
           Key<FileData> key = projectFileKey(projectKey(projectId), fileName);
-          fd = (FileData) memcache.get(key.getString());
+          fd = (FileData) cacheService.get(key.getString());
           if (fd == null) {
             fd = datastore.find(projectFileKey(projectKey(projectId), fileName));
           } else {
@@ -1437,7 +1372,7 @@ public class ObjectifyStorageIo implements StorageIo {
           // <Screen>.yail files are missing when user converts AI1 project to AI2
           // instead of blowing up, just create a <Screen>.yail file
           if (fd == null && (fileName.endsWith(".yail") || (fileName.endsWith(".png")))){
-            fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
+            fd = createProjectFile(datastore, projectKey(projectId), StoredDataRoleEnum.SOURCE, fileName);
             fd.userId = userId;
           }
 
@@ -1461,10 +1396,7 @@ public class ObjectifyStorageIo implements StorageIo {
             fd.isGCS = true;
             fd.gcsName = makeGCSfileName(fileName, projectId);
             try {
-              GcsOutputChannel outputChannel =
-                  gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName), GcsFileOptions.getDefaultInstance());
-              outputChannel.write(ByteBuffer.wrap(content));
-              outputChannel.close();
+              filesystemService.save(fd.role, fd.gcsName, content);
             } catch (IOException e) {
               throw CrashReport.createAndLogError(LOG, null,
                 collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -1476,7 +1408,7 @@ public class ObjectifyStorageIo implements StorageIo {
           } else {
             if (isTrue(fd.isGCS)) {     // Was a GCS file, must have gotten smaller
               try {             // and is now stored in the data store
-                gcsService.delete(new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName));
+                filesystemService.delete(fd.role, fd.gcsName);
               } catch (IOException e) {
                 throw CrashReport.createAndLogError(LOG, null,
                   collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -1496,10 +1428,7 @@ public class ObjectifyStorageIo implements StorageIo {
             if ((fd.lastBackup + TWENTYFOURHOURS) < System.currentTimeMillis()) {
               try {
                 String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
-                GcsOutputChannel outputChannel =
-                    gcsService.createOrReplace((new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), gcsName)), GcsFileOptions.getDefaultInstance());
-                outputChannel.write(ByteBuffer.wrap(content));
-                outputChannel.close();
+                filesystemService.save(StoredDataRoleEnum.SOURCE, gcsName, content);
                 fd.lastBackup = System.currentTimeMillis();
               } catch (IOException e) {
                 throw CrashReport.createAndLogError(LOG, null,
@@ -1512,7 +1441,7 @@ public class ObjectifyStorageIo implements StorageIo {
             fd.userId = userId;
           }
           datastore.put(fd);
-          memcache.put(key.getString(), fd); // Store the updated data in memcache
+          cacheService.put(key.getString(), fd); // Store the updated data in memcache
           modTime.t = updateProjectModDate(datastore, projectId);
         }
       }, false); // Use transaction for blobstore, otherwise we don't need one
@@ -1545,7 +1474,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @VisibleForTesting
   boolean useGCSforFile(String fileName, int length) {
     boolean shouldUse =  fileName.contains("assets/")
-      || fileName.endsWith(".apk") || fileName.endsWith(".aab") || fileName.endsWith(".ipa");
+      || fileName.endsWith(".apk") || fileName.endsWith(".aab");
     if (shouldUse)
       return true;              // Use GCS for package output and assets
     boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
@@ -1562,7 +1491,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public long deleteFile(final String userId, final long projectId, final String fileName) {
-    validateGCS();
     final Result<Long> modTime = new Result<Long>();
     final Result<String> oldBlobKeyString = new Result<String>();
     final Result<String> oldgcsName = new Result<String>();
@@ -1571,7 +1499,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
-          memcache.delete(fileKey.getString());
+          cacheService.delete(fileKey.getString());
           FileData fileData = datastore.find(fileKey);
           if (fileData != null) {
             if (fileData.userId != null && !fileData.userId.equals("")) {
@@ -1599,7 +1527,7 @@ public class ObjectifyStorageIo implements StorageIo {
     }
     if (oldgcsName.t != null) {
       try {
-        gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.SOURCE), oldgcsName.t));
+        filesystemService.delete(StoredDataRoleEnum.SOURCE, oldgcsName.t);
       } catch (IOException e) {
         // This may get logged if we attempt to delete an APK file. But we can ignore
         // this case because APK files will be deleted on their own
@@ -1647,7 +1575,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
-    validateGCS();
     final Result<byte[]> result = new Result<byte[]>();
     final Result<FileData> fd = new Result<FileData>();
     try {
@@ -1655,7 +1582,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
-          fd.t = (FileData) memcache.get(fileKey.getString());
+          fd.t = (FileData) cacheService.get(fileKey.getString());
           if (fd.t == null) {
             fd.t = datastore.find(fileKey);
           }
@@ -1681,39 +1608,13 @@ public class ObjectifyStorageIo implements StorageIo {
           boolean npfHappened = false;
           boolean recovered = false;
           for (count = 0; count < 5; count++) {
-            GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fileData.role), fileData.gcsName);
-            int bytesRead = 0;
-            int fileSize = 0;
-            ByteBuffer resultBuffer;
-            try {
-              fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-              resultBuffer = ByteBuffer.allocate(fileSize);
-              GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
-              try {
-                while (bytesRead < fileSize) {
-                  bytesRead += readChannel.read(resultBuffer);
-                  if (bytesRead < fileSize) {
-                    if (DEBUG) {
-                      LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
-                    }
-                  }
-                }
-                recovered = true;
-                result.t = resultBuffer.array();
-                break;          // We got the data, break out of the loop!
-              } finally {
-                readChannel.close();
-              }
-            } catch (NullPointerException e) {
-              // This happens if the object in GCS is non-existent, which would happen
-              // when people uploaded a zero length object. As of this change, we now
-              // store zero length objects into GCS, but there are plenty of older objects
-              // that are missing in GCS.
-              LOG.log(Level.WARNING, "downloadrawfile: NPF recorded for " + fileData.gcsName);
-              npfHappened = true;
-              resultBuffer = ByteBuffer.allocate(0);
-              result.t = resultBuffer.array();
+            result.t = filesystemService.read(fileData.role, fileData.gcsName);
+            if (result.t.length > 0) {
+              recovered = true;
+              break;
             }
+
+            npfHappened = true;
           }
 
           // report out on how things went above
@@ -1775,19 +1676,17 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   /**
-   * Exports project files as a zip archive
-   *
-   * @param userId                 a user Id (the request is made on behalf of this user)
-   * @param projectId              project ID
+   *  Exports project files as a zip archive
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project ID
    * @param includeProjectHistory  whether or not to include the project history
-   * @param includeAndroidKeystore whether or not to include the Android keystore
-   * @param zipName                the name of the zip file, if a specific one is desired
-   * @param includeYail            include any yail files in the project
-   * @param includeScreenShots     include any screen shots stored with the project
-   * @param forGallery             flag to indicate we are exporting for the gallery
-   * @param fatalError             Signal a fatal error if a file is not found
-   * @param forAppStore            true if the export is for an App Store build
-   * @return project with the content as requested by params.
+   * @param includeAndroidKeystore  whether or not to include the Android keystore
+   * @param zipName  the name of the zip file, if a specific one is desired
+   * @param includeYail include any yail files in the project
+   * @param includeScreenShots include any screen shots stored with the project
+   * @param fatalError Signal a fatal error if a file is not found
+   * @param forGallery flag to indicate we are exporting for the gallery
+   * @return  project with the content as requested by params.
    */
   @Override
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
@@ -1801,7 +1700,6 @@ public class ObjectifyStorageIo implements StorageIo {
       final boolean forAppStore,
       final boolean locallyCachedApp) throws IOException {
     final boolean forBuildserver = includeAndroidKeystore && includeYail;
-    validateGCS();
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
     final Result<String> projectHistory = new Result<String>();
@@ -1841,7 +1739,7 @@ public class ObjectifyStorageIo implements StorageIo {
             if (fileName.startsWith("assets/external_comps") && forGallery) {
               throw new GalleryExtensionException();
             }
-            if (!fd.role.equals(FileData.RoleEnum.SOURCE)) {
+            if (!fd.role.equals(StoredDataRoleEnum.SOURCE)) {
               it.remove();
             } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
                       (fileName.startsWith("screenshots") && !includeScreenShots) ||
@@ -1908,39 +1806,13 @@ public class ObjectifyStorageIo implements StorageIo {
             boolean npfHappened = false;
             boolean recovered = false;
             for (count = 0; count < 5; count++) {
-              GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName);
-              int bytesRead = 0;
-              int fileSize = 0;
-              ByteBuffer resultBuffer;
-              try {
-                fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-                resultBuffer = ByteBuffer.allocate(fileSize);
-                GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
-                try {
-                  while (bytesRead < fileSize) {
-                    bytesRead += readChannel.read(resultBuffer);
-                    if (bytesRead < fileSize) {
-                      if (DEBUG) {
-                        LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
-                      }
-                    }
-                  }
-                  recovered = true;
-                  data = resultBuffer.array();
-                  break;        // We got the data, break out of the loop!
-                } finally {
-                  readChannel.close();
-                }
-              } catch (NullPointerException e) {
-                // This happens if the object in GCS is non-existent, which would happen
-                // when people uploaded a zero length object. As of this change, we now
-                // store zero length objects into GCS, but there are plenty of older objects
-                // that are missing in GCS.
-                LOG.log(Level.WARNING, "exportProjectFile: NPF recorded for " + fd.gcsName);
-                npfHappened = true;
-                resultBuffer = ByteBuffer.allocate(0);
-                data = resultBuffer.array();
+              data = filesystemService.read(fd.role, fd.gcsName);
+              if (data.length > 0) {
+                recovered = true;
+                break;
               }
+
+              npfHappened = true;
             }
 
             // report out on how things went above
@@ -2017,12 +1889,6 @@ public class ObjectifyStorageIo implements StorageIo {
                   if (ufd.fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME) &&
                       (ufd.content.length > 0)) {
                     out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
-                    out.write(ufd.content, 0, ufd.content.length);
-                    out.closeEntry();
-                    fileCount.t++;
-                  } else if (forAppStore && ufd.fileName.equals(APPSTORE_CREDENTIALS_FILENAME)
-                      && ufd.content.length > 0) {
-                    out.putNextEntry(new ZipEntry(APPSTORE_CREDENTIALS_FILENAME));;
                     out.write(ufd.content, 0, ufd.content.length);
                     out.closeEntry();
                     fileCount.t++;
@@ -2405,38 +2271,26 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public String uploadTempFile(byte[] content) throws IOException {
     String uuid = UUID.randomUUID().toString();
-    String fileName = "__TEMP__/" + uuid;
+    String fileName = TEMP_PREFIX + uuid;
     setGcsFileContent(fileName, content);
     return fileName;
   }
 
   @Override
   public InputStream openTempFile(String fileName) throws IOException {
-    if (!fileName.startsWith("__TEMP__")) {
+    if (!fileName.startsWith(TEMP_PREFIX)) {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
-    // Use FileData.RoleEnum.TARGET because these temp files never live very long
-    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName);
-    int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-    ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
-    GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
-    int bytesRead = 0;
-    try {
-      while (bytesRead < fileSize) {
-        bytesRead += readChannel.read(resultBuffer);
-      }
-    } finally {
-      readChannel.close();
-    }
-    return new ByteArrayInputStream(resultBuffer.array());
+    byte[] result = filesystemService.read(StoredDataRoleEnum.TEMPORARY, fileName);
+    return new ByteArrayInputStream(result);
   }
 
   @Override
   public void deleteTempFile(String fileName) throws IOException {
-    if (!fileName.startsWith("__TEMP__")) {
+    if (!fileName.startsWith(TEMP_PREFIX)) {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
-    gcsService.delete(new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), fileName));
+    filesystemService.delete(StoredDataRoleEnum.TEMPORARY, fileName);
   }
 
   // ********* METHODS BELOW ARE ONLY FOR TESTING *********
@@ -2456,7 +2310,7 @@ public class ObjectifyStorageIo implements StorageIo {
     Objectify datastore = ObjectifyService.begin();
     Key<FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
     FileData fd;
-    fd = (FileData) memcache.get(fileKey.getString());
+    fd = (FileData) cacheService.get(fileKey.getString());
     if (fd == null) {
       fd = datastore.find(fileKey);
     }
@@ -2474,11 +2328,7 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @VisibleForTesting
   void setGcsFileContent(String gcsPath, byte[] content) throws IOException {
-    GcsOutputChannel outputChannel = gcsService.createOrReplace(
-      new GcsFilename(getGcsBucketToUse(FileData.RoleEnum.TARGET), gcsPath),
-        GcsFileOptions.getDefaultInstance());
-    outputChannel.write(ByteBuffer.wrap(content));
-    outputChannel.close();
+    filesystemService.save(StoredDataRoleEnum.TARGET, gcsPath, content);
   }
 
   // Return time in ISO_8660 format
@@ -2497,27 +2347,6 @@ public class ObjectifyStorageIo implements StorageIo {
       throw new ObjectifyException("BlocksTruncated"); // Hack
     // I'm avoiding having to modify every use of runJobWithRetries to handle a new
     // exception, so we use this dodge.
-  }
-
-  // Make sure we throw an exception if the GCS bucket isn't defined. This hopefully
-  // will prompt the person deploying App Inventor to check the server logs and see
-  // the message below.
-  //
-  // This only happens when deploying code that uses GCS but doesn't specify a bucket
-  // name in appengine-web.xml *AND* the instance was created before App Engine version
-  // 1.9.0. Apps created after 1.9.0 automatically have a default bucket created for
-  // them. Older Apps can configure a default bucket. The App Engine documentation
-  // explains how.
-
-  private void validateGCS() {
-    if (GCS_BUCKET_NAME.equals("")) {
-      try {
-        throw new RuntimeException("You need to configure the default GCS Bucket for your App. " +
-          "Follow instructions in the App Engine Developer's Documentation");
-      } catch (RuntimeException e) {
-        throw CrashReport.createAndLogError(LOG, null, null, e);
-      }
-    }
   }
 
   public SplashConfig getSplashConfig() {
@@ -2683,14 +2512,16 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void storeBuildStatus(String userId, long projectId, int progress) {
-    final String cacheKey = BUILD_STATUS_CACHE_KEY_PREFIX + userId + projectId;
-    memcache.put(cacheKey, progress);
+    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
+    String cacheKey = prelim + userId + projectId;
+    cacheService.put(cacheKey, progress);
   }
 
   @Override
   public int getBuildStatus(String userId, long projectId) {
-    final String cacheKey = BUILD_STATUS_CACHE_KEY_PREFIX + userId + projectId;
-    Integer ival = (Integer) memcache.get(cacheKey);
+    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
+    String cacheKey = prelim + userId + projectId;
+    Integer ival = (Integer) cacheService.get(cacheKey);
     if (ival == null) {         // not in memcache (or memcache service down)
       return 50;
     } else {
@@ -2700,20 +2531,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void assertUserHasProject(final String userId, final long projectId) {
-    final String cacheKey = PROJECT_OWNER_CACHE_KEY_PREFIX + "|" + projectId;
-    final String ownerUserId = (String) memcache.get(cacheKey);
-
-    if (ownerUserId != null) {
-      if (ownerUserId.equals(userId)) {
-        // The user in the cache owns the project, hence we don't need to throw anything
-        return;
-      }
-      // Whoops, it seems like someone is being sneaky :)
-      throw new SecurityException("Unauthorized access");
-    }
-
-    // Now, if the cache does not contain the project, we will fallback to datastore as
-    //   source of truth...
     try {
       runJobWithRetries(new JobRetryHelper() {
         @SuppressWarnings("RedundantThrows")
@@ -2726,9 +2543,6 @@ public class ObjectifyStorageIo implements StorageIo {
             throw new SecurityException("Unauthorized access");
           }
           // User has data for project, so everything checks out.
-          // We just store it now in the cache for future access, as we know the user requesting
-          //   this project owns it.
-          memcache.put(cacheKey, userId);
         }
       }, false);
     } catch(ObjectifyException e) {
@@ -2793,7 +2607,7 @@ public class ObjectifyStorageIo implements StorageIo {
             datastore.delete(userKey(userId));
             // And remove it from memcache
             String cachekey = User.usercachekey + "|" + userId;
-            memcache.delete(cachekey);
+            cacheService.delete(cachekey);
           }
         }, true);
       return true;
@@ -2833,12 +2647,8 @@ public class ObjectifyStorageIo implements StorageIo {
    * APK files go in a bucket with a short TTL, because they are really
    * temporary files.
    */
-  private static final String getGcsBucketToUse(FileData.RoleEnum role) {
-    if (role == FileData.RoleEnum.TARGET) {
-      return APK_BUCKET_NAME;
-    } else {
-      return GCS_BUCKET_NAME;
-    }
+  private static final String getGcsBucketToUse(StoredDataRoleEnum role) {
+    return "";
   }
 
 }
