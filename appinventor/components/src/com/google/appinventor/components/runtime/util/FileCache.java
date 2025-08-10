@@ -28,7 +28,7 @@ public class FileCache {
    * Registers a file for download from the specified URL to the cache. If the file doesn't exist in
    * the cache, it will be downloaded asynchronously.
    * 
-   * @param path the relative path within the cache directory where the file should be stored
+   * @param path the relative path within the cache directory where the file formshould be stored
    * @param url the URL from which to download the file
    * @return a CompletableFuture that completes when the download is finished, or immediately if the
    *         file already exists
