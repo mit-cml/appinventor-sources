@@ -15,9 +15,12 @@ import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public final class RemoteStorageProviderS3 extends RemoteStorage {
+  private static final Flag<String> PROTOCOL = Flag.createFlag("remotestorage.s3.protocol", null);
   private static final Flag<String> ENDPOINT = Flag.createFlag("remotestorage.s3.endpoint", null);
+  private static final Flag<Boolean> PATH_LIKE = Flag.createFlag("remotestorage.s3.pathlike", false);
   private static final Flag<String> BUCKET_NAME = Flag.createFlag("remotestorage.s3.bucketname", null);
   private static final Flag<String> BUCKET_REGION = Flag.createFlag("remotestorage.s3.bucketregion", null);
   private static final Flag<String> ACCESS_KEY_ID = Flag.createFlag("remotestorage.s3.accesskeyid", null);
@@ -34,14 +37,18 @@ public final class RemoteStorageProviderS3 extends RemoteStorage {
 
   private static RemoteStorageProviderS3 INSTANCE = null;
 
+  private final String protocol;
   private final String endpoint;
+  private final Boolean pathLike;
   private final String bucketName;
   private final String bucketRegion;
   private final String accessKeyId;
   private final String secretAccessKey;
 
   private RemoteStorageProviderS3() {
+    this.protocol = validateOptionalParameter(PROTOCOL.get());
     this.endpoint = validateOptionalParameter(ENDPOINT.get());
+    this.pathLike = Objects.requireNonNullElse(PATH_LIKE.get(), false);
     this.bucketName = validateRequiredParameter(BUCKET_NAME.get(), "bucketName");
     this.bucketRegion = validateRequiredParameter(BUCKET_REGION.get(), "bucketRegion");
     this.accessKeyId = validateRequiredParameter(ACCESS_KEY_ID.get(), "accesskeyid");
@@ -92,8 +99,8 @@ public final class RemoteStorageProviderS3 extends RemoteStorage {
     String endpoint = getEndpoint();
     String credentialsScope = accessKeyId + "/" + date + "/" + bucketRegion + "/" + SERVICE + "/" + REQUEST_TYPE;
 
-    // Canonical request
-    String canonicalUri = "/" + objectKey;
+    // Canonical request - URI differs based on path-like vs virtual-hosted style
+    String canonicalUri = getCanonicalUri(objectKey);
     String canonicalQueryString = "X-Amz-Algorithm=" + ALGORITHM +
         "&X-Amz-Credential=" + urlEncode(credentialsScope) +
         "&X-Amz-Date=" + timestamp +
@@ -125,10 +132,8 @@ public final class RemoteStorageProviderS3 extends RemoteStorage {
     // Signature
     String signature = toHex(hmacSha256(kSigning, stringToSign));
 
-    // Construct URL
-    return "https://" + endpoint + "/" + objectKey +
-        "?" + canonicalQueryString +
-        "&X-Amz-Signature=" + signature;
+    // Construct URL - format differs based on path-like vs virtual-hosted style
+    return constructFinalUrl(objectKey, canonicalQueryString, signature);
   }
 
   private String getEndpoint() {
@@ -136,7 +141,33 @@ public final class RemoteStorageProviderS3 extends RemoteStorage {
       return endpoint;
     }
 
-    return bucketName + ".s3." + bucketRegion + ".amazonaws.com";
+    if (pathLike) {
+      // Path-style: s3.region.amazonaws.com
+      return "s3." + bucketRegion + ".amazonaws.com";
+    } else {
+      // Virtual-hosted style: bucket.s3.region.amazonaws.com
+      return bucketName + ".s3." + bucketRegion + ".amazonaws.com";
+    }
+  }
+
+  private String getCanonicalUri(final String objectKey) {
+    if (pathLike) {
+      // Path-style: /bucket/object
+      return "/" + bucketName + "/" + objectKey;
+    } else {
+      // Virtual-hosted style: /object
+      return "/" + objectKey;
+    }
+  }
+
+  private String constructFinalUrl(final String objectKey, final String canonicalQueryString, final String signature) {
+    final String protocol = this.protocol != null ? this.protocol : "https";
+    final String hostEndpoint = getEndpoint();
+    final String path = getCanonicalUri(objectKey);
+
+    return protocol + "://" + hostEndpoint + path +
+        "?" + canonicalQueryString +
+        "&X-Amz-Signature=" + signature;
   }
 
   // Utility methods for hashing and URL encoding
