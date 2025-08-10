@@ -9,6 +9,7 @@
              xmlns:ex="urn:import:com.google.appinventor.client.explorer.youngandroid"
              xmlns:ode="urn:import:com.google.appinventor.client"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             xmlns:mob="urn:import:com.google.appinventor.client.style.mobile"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -41,5 +42,8 @@
       </g:DeckPanel>
     </g:FlowPanel>
     <ode:StatusPanel ui:field="statusPanel" />
+    <mob:MobileSidebar ui:field="paletteSidebar" styleName="ode-PaletteSidebar" visible="false">
+    </mob:MobileSidebar>
+    <mob:MobileBottomButton ui:field="mobileBottomButton" visible="false"/>
   </g:FlowPanel>
 </ui:UiBinder>

@@ -40,6 +40,8 @@ import com.google.appinventor.client.local.LocalProjectService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.mobile.ImagesMobile;
+import com.google.appinventor.client.style.mobile.MobileBottomButton;
+import com.google.appinventor.client.style.mobile.MobileSidebar;
 import com.google.appinventor.client.style.mobile.UiFactoryMobile;
 import com.google.appinventor.client.style.neo.ImagesNeo;
 import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
@@ -86,12 +88,8 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.MouseWheelEvent;
-import com.google.gwt.event.dom.client.MouseWheelHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
@@ -235,6 +233,8 @@ public class Ode implements EntryPoint {
   @UiField protected TopPanel topPanel;
   @UiField protected StatusPanel statusPanel;
   @UiField protected FlowPanel workColumns;
+  @UiField protected MobileSidebar paletteSidebar;
+  @UiField protected MobileBottomButton mobileBottomButton;
   @UiField protected FlowPanel structureAndAssets;
   @UiField protected ProjectToolbar projectToolbar;
   @UiField (provided = true) protected ProjectListBox projectListbox;
@@ -1060,6 +1060,27 @@ public class Ode implements EntryPoint {
     style.ensureInjected();
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
+    mobileBottomButton.setSidebar(paletteSidebar);
+
+    mobileBottomButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        Element target = Element.as(event.getNativeEvent().getEventTarget());
+        if (target.getTagName().equalsIgnoreCase("button")) {
+          return;
+        }
+
+        if (paletteSidebar.isOpen()) {
+          paletteSidebar.close();
+        } else {
+          mobileBottomButton.setOpen(!mobileBottomButton.isOpen());
+        }
+      }
+    });
+
+    paletteSidebar.setSyncCallback(() -> {
+      mobileBottomButton.setOpen(false);
+    });
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {

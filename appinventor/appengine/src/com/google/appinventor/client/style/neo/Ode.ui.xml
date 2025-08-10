@@ -8,6 +8,7 @@
              xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
              xmlns:neo="urn:import:com.google.appinventor.client.style.neo"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             xmlns:mob="urn:import:com.google.appinventor.client.style.mobile"
              xmlns:widgets="urn:import:com.google.appinventor.client.widgets"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
@@ -45,5 +46,8 @@
       </g:DeckPanel>
     </g:FlowPanel>
     <neo:StatusPanelNeo ui:field="statusPanel" />
+    <mob:MobileSidebar ui:field="paletteSidebar" visible="false">
+    </mob:MobileSidebar>
+    <mob:MobileBottomButton ui:field="mobileBottomButton" visible="false"/>
   </g:FlowPanel>
 </ui:UiBinder>

@@ -18,17 +18,22 @@
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
                 <g:FlowPanel width="100%" >
                     <box:ProjectListBox width="100%" ui:field="projectListbox" />
+                    <mob:ProjectToolbarMob ui:field="projectToolbar" styleName="ode-BottomNavBar" />
                 </g:FlowPanel>
                 <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
                     <mob:DesignToolbarMob ui:field="designToolbar" />
-                    <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns" visible="false">
-                        <box:PaletteBox width="240px" ui:field="paletteBox"/>
-                        <box:ViewerBox ui:field="viewerBox" />
-                        <g:FlowPanel ui:field="structureAndAssets">
-                            <box:SourceStructureBox ui:field="sourceStructureBox" />
+                    <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
+                        <box:PaletteBox width="100%" ui:field="paletteBox" visible="false" addStyleNames="ode-Hidden"/>
+                        <g:FlowPanel ui:field="structureAndAssets" addStyleNames="ode-Hidden">
+                            <box:SourceStructureBox ui:field="sourceStructureBox"/>
                             <box:BlockSelectorBox />
                         </g:FlowPanel>
-                        <box:PropertiesBox ui:field="propertiesBox" width="222px" />
+                        <box:ViewerBox ui:field="viewerBox"/>
+                        <mob:MobileSidebar ui:field="paletteSidebar">
+<!--                            content will be added here dynamically-->
+                        </mob:MobileSidebar>
+                        <box:PropertiesBox ui:field="propertiesBox" width="222px" addStyleNames="ode-Hidden"/>
+                        <mob:MobileBottomButton ui:field="mobileBottomButton" />
                     </g:FlowPanel>
                 </g:FlowPanel>
                 <g:FlowPanel width="100%" visible="false">
@@ -37,6 +42,5 @@
             </g:DeckPanel>
         </g:FlowPanel>
         <ode:StatusPanel ui:field="statusPanel" visible="false" />
-        <mob:ProjectToolbarMob ui:field="projectToolbar" styleName="ode-BottomNavBar" />
     </g:FlowPanel>
 </ui:UiBinder>
