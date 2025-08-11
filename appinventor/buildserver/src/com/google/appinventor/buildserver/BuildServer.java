@@ -624,10 +624,10 @@ public class BuildServer {
             try {
               LOG.info("START NEW BUILD " + count);
               checkMemory();
-              buildAndCreateZip(userName, inputZipFile, ext, new ProgressReporter(callbackUrl));
+              final boolean success = buildAndCreateZip(userName, inputZipFile, ext, new ProgressReporter(callbackUrl));
 
               // Upload APK directly
-              if (uploadUrlStr != null && !uploadUrlStr.isBlank()) {
+              if (success && uploadUrlStr != null && !uploadUrlStr.isEmpty()) {
                 LOG.info("Uploading output to remote...");
                 uploadToRemoteAndTruncateOutput(uploadUrlStr, ext);
               }
@@ -694,6 +694,11 @@ public class BuildServer {
   }
 
   private void uploadToRemoteAndTruncateOutput(final String uploadUrlStr, final String ext) throws IOException {
+    if (outputApk == null) {
+      LOG.warning("Output file is null, this is not expected, skipping upload to remote!");
+      return;
+    }
+
     HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrlStr).openConnection();
     connection.setDoOutput(true);
     connection.setRequestMethod("PUT");
@@ -830,10 +835,10 @@ public class BuildServer {
     }
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile, String ext,
+  private boolean buildAndCreateZip(String userName, File inputZipFile, String ext,
       ProgressReporter reporter) throws IOException, JSONException {
     Result buildResult = build(userName, inputZipFile, ext, reporter);
-    boolean buildSucceeded = buildResult.succeeded();
+    final boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
     outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
     ZipOutputStream zipOutputStream =
@@ -857,6 +862,7 @@ public class BuildServer {
     zipPrintStream.flush();
     zipOutputStream.flush();
     zipOutputStream.close();
+    return buildSucceeded;
   }
 
   private String genBuildOutput(Result buildResult) throws JSONException {
