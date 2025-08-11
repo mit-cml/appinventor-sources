@@ -165,7 +165,7 @@ open class Sidebar: ViewComponent, AbstractMethodsForViewComponent {
         guard let splitVC = splitViewController() else { return }
         
         removeGestures()
-        
+       
         if dismissOnSwipe {
             let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
             swipeGesture.direction = swipeDirection
@@ -201,7 +201,7 @@ open class Sidebar: ViewComponent, AbstractMethodsForViewComponent {
         guard _visible else { return }
         
         let location = gesture.location(in: gesture.view)
-        
+       
         if let splitVC = splitViewController(),
            let primaryView = splitVC.viewController(for: .primary)?.view,
            !primaryView.frame.contains(location) {
@@ -227,17 +227,17 @@ open class Sidebar: ViewComponent, AbstractMethodsForViewComponent {
     
     private func hideNativeSplitViewButton(_ splitVC: UISplitViewController) {
         splitVC.presentsWithGesture = false
-        
+       
         if let secondaryNavController = splitVC.viewController(for: .secondary) as? UINavigationController {
             secondaryNavController.topViewController?.navigationItem.leftBarButtonItem = nil
             secondaryNavController.topViewController?.navigationItem.leftItemsSupplementBackButton = false
         }
-        
+      
         if let secondaryVC = splitVC.viewController(for: .secondary) {
             secondaryVC.navigationItem.leftBarButtonItem = nil
             secondaryVC.navigationItem.leftItemsSupplementBackButton = false
         }
-        
+       
         if #available(iOS 14.0, *) {
             splitVC.showsSecondaryOnlyButton = false
         }
@@ -266,7 +266,7 @@ open class Sidebar: ViewComponent, AbstractMethodsForViewComponent {
             splitVC.preferredPrimaryColumnWidthFraction = 0.4
             splitVC.maximumPrimaryColumnWidth = 320
         }
-        
+       
         DispatchQueue.main.async {
             self.hideNativeSplitViewButton(splitVC)
         }
@@ -291,7 +291,7 @@ open class Sidebar: ViewComponent, AbstractMethodsForViewComponent {
             
             // Configure split view appearance
             splitVC.primaryBackgroundStyle = .sidebar
-            
+           
             if #available(iOS 14.0, *) {
                 splitVC.preferredSplitBehavior = .tile
                 splitVC.preferredDisplayMode = .oneBesideSecondary
@@ -327,7 +327,7 @@ open class Sidebar: ViewComponent, AbstractMethodsForViewComponent {
             print("  displayMode:", splitVC.displayMode.rawValue)
             print("  traitCollection:", splitVC.traitCollection)
             print("  iPhone detected:", UIDevice.current.userInterfaceIdiom == .phone)
-            
+           
             // Show primary
             splitVC.show(.primary)
             
@@ -385,7 +385,7 @@ extension Sidebar: UIGestureRecognizerDelegate {
             let location = touch.location(in: splitVC.view)
             return !primaryView.frame.contains(location)
         }
-        
+       
         return true
     }
     

@@ -20,12 +20,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let splitVC = UISplitViewController(style: .doubleColumn)
     splitVC.preferredDisplayMode = .secondaryOnly
 
-    // The navigation stack for connect screen and forms
+
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let navController = storyboard.instantiateInitialViewController() as! ViewController
     splitVC.setViewController(navController, for: .secondary)
 
-    // Sidebar/menu as primary (empty at launch, solid white background with placeholder)
+
     let emptySidebar = UIViewController()
     emptySidebar.view.backgroundColor = .white
     let headerLabel = UILabel()
