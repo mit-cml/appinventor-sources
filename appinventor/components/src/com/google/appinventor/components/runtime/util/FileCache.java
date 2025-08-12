@@ -1,14 +1,20 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileCache {
-  public File cacheDir;
-  private final HashMap<String, CompletableFuture<Void>> fileMap = new HashMap<>();
+  private final File cacheDir;
+  private final HashMap<String, FutureTask<Void>> fileMap = new HashMap<>();
   private static final Logger LOG = Logger.getLogger(FileCache.class.getName());
 
   /**
@@ -25,6 +31,15 @@ public class FileCache {
   }
 
   /**
+   * Returns the cache directory.
+   * 
+   * @return The cache directory
+   */
+  public File getCacheDir() {
+    return cacheDir;
+  }
+
+  /**
    * Registers a file for download from the specified URL to the cache. If the file doesn't exist in
    * the cache, it will be downloaded asynchronously.
    * 
@@ -33,24 +48,35 @@ public class FileCache {
    * @return a CompletableFuture that completes when the download is finished, or immediately if the
    *         file already exists
    */
-  public CompletableFuture<Void> registerFile(final String path, final String url) {
+  public Future<Void> registerFile(final String path, final String url) {
     final File file = new File(cacheDir, path);
-    if (!file.exists()) {
-      CompletableFuture<Void> future = CompletableFuture.runAsync(new Runnable() {
+    synchronized (fileMap) {
+      if (file.exists()) {
+        return new FutureTask<>(() -> null);
+      }
+
+      if (fileMap.containsKey(path)) {
+        return fileMap.get(path);
+      }
+
+      FutureTask<Void> task = new FutureTask<>(new Runnable() {
         @Override
         public void run() {
           try {
             FileUtil.downloadUrlToFile(url, file.getAbsolutePath());
-            fileMap.remove(path);
           } catch (Exception error) {
             LOG.log(Level.SEVERE, "Exception downloading file to cache", error);
+          } finally {
+            synchronized (fileMap) {
+              fileMap.remove(path);
+            }
           }
         }
-      });
-      fileMap.put(path, future);
-      return future;
+      }, null);
+      fileMap.put(path, task);
+      new Thread(task).start();
+      return task;
     }
-    return CompletableFuture.completedFuture(null);
   }
 
   /**
@@ -61,35 +87,29 @@ public class FileCache {
    * @return a CompletableFuture containing the File if it exists and is ready, or a failed future
    *         with an exception if the file doesn't exist or download failed
    */
-  public CompletableFuture<File> getFile(String path) {
+  public Future<File> getFile(String path) {
     File file = new File(cacheDir, path);
-    if (!file.exists()) {
-      return CompletableFuture.failedFuture(new Exception("File does not exist: " + path));
-    } else if (fileMap.containsKey(path)) {
-      try {
-        fileMap.get(path).get();
-      } catch (Exception e) {
-        return CompletableFuture.failedFuture(e);
-      }
-      return CompletableFuture.completedFuture(file);
-    } else {
-      return CompletableFuture.completedFuture(file);
-    }
-  }
-
-  /**
-   * Recursively deletes a folder and all its contents. This is a helper method used by
-   * resetCache().
-   * 
-   * @param folder the folder to delete
-   */
-  private void deleteFolder(File folder) {
-    if (folder.isDirectory()) {
-      for (File file : folder.listFiles()) {
-        deleteFolder(file);
+    synchronized (fileMap) {
+      if (!file.exists()) {
+        return new FutureTask<>(() -> {
+          throw new Exception("File does not exist: " + path);
+        });
+      } else if (fileMap.containsKey(path)) {
+        FutureTask<Void> task = fileMap.get(path);
+        FutureTask<File> fileTask = new FutureTask<>(() -> {
+          try {
+            task.get();
+            return new File(cacheDir, path);
+          } catch (Exception e) {
+            throw e;
+          }
+        });
+        new Thread(fileTask).start();
+        return fileTask;
+      } else {
+        return new FutureTask<>(() -> file);
       }
     }
-    folder.delete();
   }
 
   /**
@@ -98,8 +118,15 @@ public class FileCache {
    */
   public void resetCache() {
     if (cacheDir.exists()) {
-      deleteFolder(cacheDir);
+      try {
+        FileUtil.removeDirectory(cacheDir, true);
+      } catch (Exception e) {
+        LOG.log(Level.SEVERE, "Error resetting cache", e);
+      }
     }
-    fileMap.clear();
+    cacheDir.mkdirs();
+    synchronized (fileMap) {
+      fileMap.clear();
+    }
   }
 }
