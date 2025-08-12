@@ -197,11 +197,17 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("🎾 Sphere reset to default behavior")
   }
   
-  @available(iOS 15.0, *)
-  @objc open func ObjectCollidedWithObject(otherNode: ARNodeBase) {
-    var collidedMaterial = SimpleMaterial()
 
-    collidedMaterial.color = .init(tint: .green.withAlphaComponent(0.7))  // Green for default
+  @objc open override func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
+    var collidedMaterial = SimpleMaterial()
+    if OriginalMaterial == nil {
+        OriginalMaterial = _modelEntity.model?.materials.first
+    }
+    if #available(iOS 15.0, *) {
+      collidedMaterial.color = .init(tint: .green.withAlphaComponent(0.7))
+    } else {
+      // Fallback on earlier versions
+    }  // Green for default
     restoreColorAfterCollision()
     
   }
@@ -210,7 +216,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       // Cancel any existing restore timer
       // (You might want to add a property to track this if you need to cancel)
       
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { // 200ms flash
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { // 200ms flash
           guard !self.isBeingDragged else {
               // Don't restore if currently being dragged (drag has its own color)
               return
@@ -339,24 +345,98 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("🎾 Drag started - physics disabled")
   }
   
-  override open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
-     
-    let baseSensitivity: Float = 0.001  // Fine-tuned for natural feel
-    let userSensitivity = DragSensitivity  // This is what users can tweak
-    let behaviorSensitivity = getBehaviorDragSensitivity()
-    let finalSensitivity = baseSensitivity * userSensitivity * behaviorSensitivity
+  // Add these methods to SphereNode to fix scaling issues
 
-    
-    
-    let movement = worldDirection * finalSensitivity
+  override open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
+      let userSensitivity = DragSensitivity
+      let behaviorSensitivity = getBehaviorDragSensitivity()
+      let finalSensitivity = userSensitivity * behaviorSensitivity
       
+      let movement = worldDirection * finalSensitivity
       let currentPos = _modelEntity.transform.translation
       let newPos = currentPos + movement
-      _modelEntity.transform.translation = newPos
+      
+      // ✅ Constrain position to prevent going below ground
+      let validPos = constrainToValidPosition(newPos)
+      _modelEntity.transform.translation = validPos
       
       applyDragBehaviors(movement: movement)
       
-      print("Dragged \(getBehaviorNames().joined(separator: "+")) sphere to: \(newPos)")
+      if newPos.y != validPos.y {
+          print("🚫 Sphere \(Name) constrained above ground level")
+      }
+  }
+
+  // Override ScaleBy to handle sphere-specific scaling
+  override open func ScaleBy(_ scalar: Float) {
+      print("🔄 Scaling sphere \(Name) by \(scalar)")
+      
+      // Temporarily disable physics during scaling to prevent phantom collisions
+      let hadPhysics = _modelEntity.physicsBody != nil
+      let physicsSettings = _modelEntity.physicsBody
+      
+      if hadPhysics {
+          print("⚠️ Temporarily disabling physics for scaling")
+          _modelEntity.physicsBody = nil
+          _modelEntity.collision = nil
+      }
+      
+      // Update visual scale
+      let oldScale = Scale
+      let newScale = oldScale * abs(scalar)
+      _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
+      
+      // Update sphere radius to match new scale
+      _radius = _radius * abs(scalar)
+      
+      // Constrain position after scaling
+      let currentPos = _modelEntity.transform.translation
+      let validPos = constrainToValidPosition(currentPos)
+      _modelEntity.transform.translation = validPos
+      
+      // Re-enable physics with updated collision shape
+      if hadPhysics {
+          print("✅ Re-enabling physics after scaling")
+          
+          // Small delay to ensure visual scaling is complete
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+              self.EnablePhysics(true)
+              
+              // Ensure position is still valid after physics re-enable
+              let finalPos = self.constrainToValidPosition(self._modelEntity.transform.translation)
+              self._modelEntity.transform.translation = finalPos
+              
+              print("🎾 Physics restored after scaling to \(newScale)")
+          }
+      }
+  }
+
+  // Add position constraining method to SphereNode
+  private func constrainToValidPosition(_ position: SIMD3<Float>) -> SIMD3<Float> {
+      let groundLevel: Float = Float(GROUND_LEVEL)
+      let ballRadius = _radius * Scale  // Use sphere's actual radius
+      
+      // Ball center must be at least one radius above ground
+      let minY = groundLevel + ballRadius
+      
+      return SIMD3<Float>(
+          position.x,
+          max(position.y, minY),
+          position.z
+      )
+  }
+
+  // Update sphere mesh to match new radius after scaling
+  private func updateSphereMeshAfterScale() {
+      // Generate new sphere mesh with current radius
+      let mesh = MeshResource.generateSphere(radius: _radius)
+      
+      // Preserve existing materials when updating mesh
+      let existingMaterials = _modelEntity.model?.materials ?? []
+      _modelEntity.model = ModelComponent(
+          mesh: mesh,
+          materials: existingMaterials.isEmpty ? [SimpleMaterial()] : existingMaterials
+      )
   }
   
   /* built in drag sensitivity for certain behaviors */
@@ -718,11 +798,11 @@ open class SphereNode: ARNodeBase, ARSphere {
       var dragMaterial = SimpleMaterial()
       
       // Color based on behavior
-      if _behaviorFlags.contains(.wet) {
+      if _behaviorFlags.contains(.heavy) {
           dragMaterial.color = .init(tint: .blue.withAlphaComponent(0.7))  // Blue for wet
-      } else if _behaviorFlags.contains(.sticky) {
+      } else if _behaviorFlags.contains(.light) {
           dragMaterial.color = .init(tint: .orange.withAlphaComponent(0.7))  // Orange for sticky
-      } else if _behaviorFlags.contains(.slippery) {
+      } else if _behaviorFlags.contains(.bouncy) {
           dragMaterial.color = .init(tint: .white.withAlphaComponent(0.8))  // White for slippery
       } else if _behaviorFlags.contains(.floating) {
           dragMaterial.color = .init(tint: .cyan.withAlphaComponent(0.6))  // Cyan for floating
@@ -731,6 +811,8 @@ open class SphereNode: ARNodeBase, ARSphere {
       }
       
       _modelEntity.model?.materials = [dragMaterial]
+    
+      restoreMaterial()
   }
     
   private func restoreMaterial() {

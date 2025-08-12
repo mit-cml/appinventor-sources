@@ -85,6 +85,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   var currentState: State = .none
   
+  struct CollisionGroups {
+      static let arObjects: CollisionGroup = CollisionGroup(rawValue: 1 << 0)
+      static let environment: CollisionGroup = CollisionGroup(rawValue: 1 << 1)
+  }
+  
   
   // Cache for 3D text geometries representing the classification values
   private var modelsForClassification: [ARMeshClassification: ModelEntity] = [:]
@@ -111,6 +116,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
     _arView.environment.sceneUnderstanding.options = .occlusion
+    _arView.environment.sceneUnderstanding.options.insert(.collision)
+    _arView.environment.sceneUnderstanding.options.insert(.physics)
     _arView.environment.sceneUnderstanding.options.insert(.occlusion)
     
     _arView.translatesAutoresizingMaskIntoConstraints = false
@@ -347,10 +354,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     // Enable lighting estimation
     _configuration.isLightEstimationEnabled = _lightingEstimationEnabled
     
-    // Configure scene understanding options
-    setupSceneUnderstanding()
     
-    // Setup collision detection
     setupCollisionDetection()
     
     if _sessionRunning {
@@ -358,31 +362,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
-  private func setupSceneUnderstanding() {
-    // Configure scene understanding based on tracking type
-    _arView.environment.sceneUnderstanding.options = []
-    
-    if _trackingType == .worldTracking { // TODO expose these options to user
-      // Full scene understanding available with world tracking
-      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
-      _arView.environment.sceneUnderstanding.options.insert(.physics)
-      _arView.environment.sceneUnderstanding.options.insert(.collision)
-      print("Scene understanding enabled: occlusion, physics, collision")
+  // Add this method to ARView3D class
+  private func setupCollisionGroups(for node: ARNodeBase) {
+      guard let shapes = node._modelEntity.collision?.shapes else {
+          print("⚠️ No collision shapes found for \(node.Name) - enable physics first")
+          return
+      }
       
+      node._modelEntity.collision = CollisionComponent(
+          shapes: shapes,
+          filter: CollisionFilter(
+              group: CollisionGroups.arObjects,
+              mask: [CollisionGroups.environment, CollisionGroups.arObjects]
+          )
+      )
       
-      _arView.debugOptions.insert(.showSceneUnderstanding)
-    } else if _trackingType == .geoTracking {
-      // Limited scene understanding with geo tracking
-      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
-      // Note: physics and collision may be limited without sceneReconstruction
-      
-      print("Scene understanding enabled: occlusion only (geo tracking)")
-    } else {
-      print("Scene understanding disabled for tracking type: \(_trackingType)")
-    }
+      print("✅ Collision groups set up for \(node.Name)")
   }
-
-      
+  
+     
   @objc func createInvisibleFloor(at height: Float = 0.0) {
     print("🏠 Creating invisible floor at height: \(height)m")
 
@@ -421,6 +419,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         ),
         mode: .static  // Never moves
     )
+    
+    _invisibleFloor?.collision = CollisionComponent(
+        shapes: [floorShape],
+        filter: CollisionFilter(
+          group: CollisionGroups.environment,
+          mask: CollisionGroups.arObjects  // ✅ Interact with ALL AR objects
+        )
+    )
+    
       
     // ✅ Create anchor and add to scene
     _floorAnchor = AnchorEntity(world: SIMD3<Float>(0, height, 0))
@@ -429,7 +436,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     print("🏠 Invisible floor created successfully")
   }
-      
+  
+ 
   @objc func removeInvisibleFloor() {
       if let floorAnchor = _floorAnchor {
           _arView.scene.removeAnchor(floorAnchor)
@@ -484,94 +492,68 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   private func setupCollisionDetection() {
-    // Cancel existing observer
-    collisionBeganObserver?.cancel()
-    
-    // Create new observer - fix the syntax
-    collisionBeganObserver = _arView.scene.subscribe(
-      to: CollisionEvents.Began.self,
-      on: nil  // Use nil instead of self for global subscription
-    ) { event in
-      print("🔥 COLLISION DETECTED!")
-      print("Entity A: \(event.entityA.name)")
-      print("Entity B: \(event.entityB.name)")
+      // Cancel existing observer
+      collisionBeganObserver?.cancel()
       
-      self.forwardCollisionToNodes(event)
+      // Simple collision observer - only gets AR object collisions due to collision groups
+      collisionBeganObserver = _arView.scene.subscribe(
+        to: CollisionEvents.Began.self,
+        on: nil
+      ) { [weak self] event in
+        guard let self = self else { return }
+        
+        let entityA = event.entityA
+        let entityB = event.entityB
+        
+        print("🔥 AR Object collision: \(entityA.name) ↔ \(entityB.name)")
+        
+        // Find the nodes and notify them of the collision
+        if let nodeA = self.findNodeForEntity(entityA as? ModelEntity),
+           let nodeB = self.findNodeForEntity(entityB as? ModelEntity) {
+          
+          // Both nodes handle the collision (color flash, behavior-specific effects, etc.)
+          nodeA.ObjectCollidedWithObject(nodeB)
+          nodeB.ObjectCollidedWithObject(nodeA)
+          
+          print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
+        }
+      }
+      
+      print("✅ Simplified collision observer set up")
+      debugCollisionSetup()
     }
     
-    print("Collision observer set up successfully")
-    
-    debugCollisionSetup()
-  }
-  
-  private func debugCollisionSetup() {
-    print("=== Collision Debug Info ===")
-    print("Scene understanding options: \(_arView.environment.sceneUnderstanding.options)")
-    print("Collision observer exists: \(collisionBeganObserver != nil)")
-    print("Number of nodes with physics: \(_nodeToAnchorDict.keys.filter { $0._modelEntity.physicsBody != nil }.count)")
-    print("Total nodes: \(_nodeToAnchorDict.count)")
-  }
-  
-
-  private func CollisionDetectedBegin(_ event: CollisionEvents.Began){
-    let entityA = event.entityA
-    let entityB = event.entityB
-    
-    print("Collision detected between: \(entityA.name) and \(entityB.name)")
-    
-    // Check if collision involves scene understanding mesh
-    if String(describing: type(of: entityA)).contains("RKSceneUnderstanding") ||
-        String(describing: type(of: entityB)).contains("RKSceneUnderstanding") {
-      print("Collision with scene understanding mesh")
-      
-      // Determine which entity is your AR object
-      let arEntity = String(describing: type(of: entityA)).contains("RKSceneUnderstanding") ? entityB : entityA
-      
-      // Handle collision with real world
-      ObjectCollidedWithScene(arEntity)
-    } else {
-      // Collision between two AR objects
-      ObjectCollidedWithObject(entityA, entityB)
+    private func debugCollisionSetup() {
+      print("=== Collision Debug Info ===")
+      print("Scene understanding options: \(_arView.environment.sceneUnderstanding.options)")
+      print("Collision observer exists: \(collisionBeganObserver != nil)")
+      print("Number of nodes with physics: \(_nodeToAnchorDict.keys.filter { $0._modelEntity.physicsBody != nil }.count)")
+      print("Total nodes: \(_nodeToAnchorDict.count)")
     }
-  }
-  
-  
-  
-  @objc open func ObjectCollidedWithScene(_ entity: AnyObject) {
-    let arEntity = entity as! ModelEntity
-    print("AR object \(arEntity.name) collided with real world")
     
-    // Find the corresponding ARNode
-    if let modelEntity = arEntity as? ModelEntity,
-       let node = findNodeForEntity(modelEntity) {
-      // Dispatch collision event
-      EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: node as AnyObject)
+    // ✅ KEEP - Essential for connecting entities to nodes
+    private func findNodeForEntity(_ entity: ModelEntity?) -> ARNodeBase? {
+      guard let entity = entity else { return nil }
+      
+      for (node, anchor) in _nodeToAnchorDict {
+        if node._modelEntity == entity || anchor.children.contains(entity) {
+          return node
+        }
+      }
+      return nil
     }
-  }
-  
-  @objc open func ObjectCollidedWithObject(_ entity1: AnyObject, _ entity2: AnyObject) {
-    let entityA = entity1 as! ModelEntity
-    let entityB = entity2 as! ModelEntity
-    print("Collision between AR objects: \(entityA.name) and \(entityB.name)")
     
-    // Handle AR object to AR object collision
-    if let nodeA = findNodeForEntity(entityA as? ModelEntity),
-       let nodeB = findNodeForEntity(entityB as? ModelEntity) {
-      EventDispatcher.dispatchEvent(of: self, called: "ObjectsCollided",
+    // ✅ OPTIONAL: Keep these if you want to dispatch events to your app level
+    @objc open func NodesCollided(_ nodeA: ARNodeBase, _ nodeB: ARNodeBase) {
+      EventDispatcher.dispatchEvent(of: self, called: "NodesCollided",
                                     arguments: nodeA as AnyObject, nodeB as AnyObject)
     }
+  // ✅ Add cleanup
+  deinit {
+      collisionBeganObserver?.cancel()
   }
-  
-  private func findNodeForEntity(_ entity: ModelEntity?) -> ARNodeBase? {
-    guard let entity = entity else { return nil }
-    
-    for (node, anchor) in _nodeToAnchorDict {
-      if node._modelEntity == entity || anchor.children.contains(entity) {
-        return node
-      }
-    }
-    return nil
-  }
+
+
   
   private func getReferenceImages() -> Set<ARReferenceImage> {
     return Set(_imageMarkers.values.compactMap{ $0._referenceImage })
@@ -1555,199 +1537,6 @@ extension ARView3D: UIGestureRecognizerDelegate {
     return position.y > -1.5
   }
 
-  private func forwardCollisionToNodes(_ event: CollisionEvents.Began) {
-      let entityA = event.entityA
-      let entityB = event.entityB
-      
-      print("🔥 Collision between: \(entityA.name) and \(entityB.name)")
-      
-      // Evaluate each entity to determine what it is
-      let entityAInfo = evaluateEntity(entityA)
-      let entityBInfo = evaluateEntity(entityB)
-      
-      print("🔥 EntityA: \(entityAInfo.description)")
-      print("🔥 EntityB: \(entityBInfo.description)")
-      
-      // Handle collision based on what each entity is
-      handleCollisionBetween(entityAInfo, and: entityBInfo, event: event)
-  }
-  
-  private func evaluateEntity(_ entity: Entity) -> EntityInfo {
-      // First, check if it's one of our AR nodes
-      if let node = findNodeForEntity(entity as? ModelEntity) {
-          return EntityInfo(type: .arNode, entity: entity, node: node)
-      }
-      
-      // If not an AR node, classify as scene element
-      let sceneType = classifySceneEntity(entity)
-      return EntityInfo(type: .sceneElement, entity: entity, sceneType: sceneType)
-  }
-      
-    private func classifySceneEntity(_ entity: Entity) -> SceneEntityType {
-        let entityType = String(describing: type(of: entity))
-        let entityName = entity.name
-        let position = entity.transform.translation
-        
-        print("🔍 Classifying entity: \(entityName), type: \(entityType), position: \(position)")
-        
-        // Check for RealityKit scene understanding
-        if entityType.contains("RKSceneUnderstanding") {
-            print("rkscene collision")
-            return classifySceneUnderstandingEntity(entity, position: position)
-        }
-        
-        // Check for your invisible floor
-        if entityName == "InvisibleFloor" {
-          print("invisible floor collision")
-            return .floor
-        }
-        
-        // Check for detected planes
-        if entityName.contains("DetectedPlane") {
-          print("detected plane collision")
-            return classifyDetectedPlane(entity)
-        }
-        
-        // Check for mesh entities
-        if entityType.contains("MeshEntity") {
-            print("mesh entity collision")
-            return classifyMeshEntity(entity, position: position)
-        }
-        
-        // Fallback classification based on position and bounds
-        return classifyByPosition(entity, position: position)
-    }
-      
-    private func classifySceneUnderstandingEntity(_ entity: Entity, position: SIMD3<Float>) -> SceneEntityType {
-        // For RealityKit scene understanding, we can often get more info
-      if position.y < -0.5 {
-            return .floor
-        } else if position.y > 2.0 {
-            return .ceiling
-        } else {
-            // Could be wall or furniture - check bounds if available
-            return .wall
-        }
-    }
-      
-    private func classifyDetectedPlane(_ entity: Entity) -> SceneEntityType {
-        // Most detected planes are floors, but we could check orientation
-        // if we had access to the ARPlaneAnchor
-        return .floor
-    }
-      
-    private func classifyMeshEntity(_ entity: Entity, position: SIMD3<Float>) -> SceneEntityType {
-        // Check bounds and position for mesh entities
-        if position.y < -0.5 {
-            return .floor
-        } else if position.y > 2.0 {
-            return .ceiling
-        } else {
-            // Could be wall or furniture
-            return .wall
-        }
-    }
-      
-    private func classifyByPosition(_ entity: Entity, position: SIMD3<Float>) -> SceneEntityType {
-        if position.y < -0.5 {
-            return .floor
-        } else if position.y > 2.5 {
-            return .ceiling
-        } else {
-            return .wall
-        }
-    }
-      
-    private func handleCollisionBetween(_ entityAInfo: EntityInfo, and entityBInfo: EntityInfo, event: CollisionEvents.Began) {
-        
-        switch (entityAInfo.type, entityBInfo.type) {
-        case (.arNode, .arNode):
-            // Node-to-Node collision
-            handleNodeToNodeCollision(
-                nodeA: entityAInfo.node!,
-                nodeB: entityBInfo.node!,
-                event: event
-            )
-            
-        case (.arNode, .sceneElement):
-            // Node hit scene element
-            handleNodeToSceneCollision(
-                node: entityAInfo.node!,
-                sceneEntity: entityBInfo.entity,
-                sceneType: entityBInfo.sceneType!,
-                event: event
-            )
-            
-        case (.sceneElement, .arNode):
-            // Scene element hit node (same as node hit scene element)
-            handleNodeToSceneCollision(
-                node: entityBInfo.node!,
-                sceneEntity: entityAInfo.entity,
-                sceneType: entityAInfo.sceneType!,
-                event: event
-            )
-            
-        case (.sceneElement, .sceneElement):
-            // Scene-only collision (no AR nodes involved)
-            print("🔥 Scene-only collision: \(entityAInfo.sceneType!) vs \(entityBInfo.sceneType!)")
-        }
-    }
-      
-      private func handleNodeToNodeCollision(nodeA: ARNodeBase, nodeB: ARNodeBase, event: CollisionEvents.Began) {
-          print("🔥 Node-to-Node collision: \(nodeA.Name) <-> \(nodeB.Name)")
-          
-          // Both nodes handle the collision
-          nodeA.handleNodeCollision(with: nodeB, event: event)
-          nodeB.handleNodeCollision(with: nodeA, event: event)
-      }
-      
-      private func handleNodeToSceneCollision(node: ARNodeBase, sceneEntity: Entity, sceneType: SceneEntityType, event: CollisionEvents.Began) {
-          print("🔥 Node-to-Scene collision: \(node.Name) hit \(sceneType)")
-          
-          // Only the node handles the collision
-        node.handleSceneCollision(sceneEntity: sceneEntity, sceneType: sceneType, event: event)
-      }
-      
-      // MARK: - Supporting Types
-      
-      struct EntityInfo {
-          let type: EntityType
-          let entity: Entity
-          let node: ARNodeBase?
-          let sceneType: SceneEntityType?
-          
-          init(type: EntityType, entity: Entity, node: ARNodeBase? = nil, sceneType: SceneEntityType? = nil) {
-              self.type = type
-              self.entity = entity
-              self.node = node
-              self.sceneType = sceneType
-          }
-          
-          var description: String {
-              switch type {
-              case .arNode:
-                  return "ARNode(\(node?.Name ?? "unknown"))"
-              case .sceneElement:
-                  return "SceneElement(\(sceneType?.rawValue ?? "unknown"))"
-              }
-          }
-      }
-      
-      enum EntityType {
-          case arNode
-          case sceneElement
-      }
-      
-      enum SceneEntityType: String {
-          case floor = "floor"
-          case wall = "wall"
-          case ceiling = "ceiling"
-          case furniture = "furniture"
-          case unknown = "unknown"
-      }
-  
-
-  
   
     func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
       let cameraTransform = _arView.cameraTransform

@@ -5,19 +5,32 @@ import Foundation
 import RealityKit
 import ARKit
 import GLKit
-
 import os.log
 
+// MARK: - Supporting Types and Enums
 
-// MARK: - Extensions (properly placed outside the class)
+enum SceneEntityType: String {
+    case floor = "floor"
+    case wall = "wall"
+    case ceiling = "ceiling"
+    case furniture = "furniture"
+    case unknown = "unknown"
+}
 
+enum CollisionType {
+    case floor
+    case wall
+    case object
+    case none
+}
 
-// Remove any forward declaration and extend the class properly
+// MARK: - ARNodeBase Class
+
 @available(iOS 14.0, *)
 open class ARNodeBase: NSObject, ARNode {
 
-  weak var _container: ARNodeContainer?
 
+  weak var _container: ARNodeContainer?
   public var _modelEntity: ModelEntity
   
   private var _color: Int32 = Int32(bitPattern: AIComponentKit.Color.red.rawValue)
@@ -30,14 +43,13 @@ open class ARNodeBase: NSObject, ARNode {
   private var _panToMove: Bool = false
   private var _rotateWithGesture: Bool = false
   
-
   private var _isBeingDragged = false
   private var _dragStartLocation: CGPoint = .zero
   private var _lastDragLocation: CGPoint = .zero
   private var _originalMaterial: Material?
   
   private var _gravityScale = Float(0.5)
-  private var _dragSensitivity = Float(0.5)
+  private var _dragSensitivity = Float(2.0)  // Better default for responsiveness
   private var _releaseForceMultiplier = Float(0.0)
   
   private var _currentVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
@@ -45,7 +57,6 @@ open class ARNodeBase: NSObject, ARNode {
   private var _isCurrentlyColliding = false
   private var _collisionEffectTask: Task<Void, Never>?
   
-
   private var _linearDamping  = Float(0.0)
   private var _angularDamping  = Float(0.0)
   private var _rollingForce = Float(0.0)
@@ -64,14 +75,13 @@ open class ARNodeBase: NSObject, ARNode {
   public var _geoAnchor: ARGeoAnchor?
   public var _worldOffset: SIMD3<Float>?
   public var _creatorSessionStart: CLLocation?
-  /**
-   * CHANGED: Now takes optional MeshResource instead of SCNNode
-   */
+
+  // MARK: - Initialization
+  
   init(container: ARNodeContainer, mesh: MeshResource? = nil) {
     _container = container
     _modelEntity = ModelEntity()
     
-
     super.init()
     setupInitialMaterial()
     XPosition = 0
@@ -81,24 +91,19 @@ open class ARNodeBase: NSObject, ARNode {
     if let mesh = mesh {
       _modelEntity.model = ModelComponent(mesh: mesh, materials: [])
     }
-    
   }
   
   @objc open func Initialize() {
     self._container?.addNode(self)
   }
   
-  /// This is necessary for creating nodes via the blocks
   open func syncInitialize() {
     self._container?.addNode(self)
   }
   
-  /**
-   * CHANGED: Simplified init for ModelNodes
-   */
   @objc init(modelNodeContainer: ARNodeContainer) {
     _container = modelNodeContainer
-    _modelEntity = ModelEntity() // Will be replaced when model loads
+    _modelEntity = ModelEntity()
     super.init()
   }
   
@@ -106,27 +111,25 @@ open class ARNodeBase: NSObject, ARNode {
     fatalError("init(coder:) has not been implemented")
   }
   
+  
+  
   // MARK: - Anchor Management
   
-  // Override the protocol extension to provide actual storage
   open var Anchor: AnchorEntity? {
     get {
       if let anchor = _anchorEntity {
         return anchor
       }
-      
       _anchorEntity = createAnchor()
       return _anchorEntity
     }
     set(a) {
       _anchorEntity = a
-      
     }
   }
   
-
   func setGeoAnchor(_ geoAnchor: ARGeoAnchor) {
-      _geoAnchor = geoAnchor  // Much simpler!
+      _geoAnchor = geoAnchor
   }
 
   func getGeoAnchor() -> ARGeoAnchor? {
@@ -137,7 +140,6 @@ open class ARNodeBase: NSObject, ARNode {
       return getGeoAnchor() != nil
   }
   
-  // Get GPS coordinates if geo anchored
   @objc open var GeoCoordinates: [Double] {
       guard let geoAnchor = getGeoAnchor() else {
           return []
@@ -145,69 +147,37 @@ open class ARNodeBase: NSObject, ARNode {
     return [geoAnchor.coordinate.latitude, geoAnchor.coordinate.longitude, Double(geoAnchor.altitude!)]
   }
   
+  // MARK: - Properties
   
   @objc open var Name: String {
-    get {
-      return _modelEntity.name
-    }
-    set(name) {
-      _modelEntity.name = name
-    }
+    get { return _modelEntity.name }
+    set(name) { _modelEntity.name = name }
   }
   
   @objc open var NodeType: String {
-    get {
-      return String(describing: type(of: self))
-    }
+    get { return String(describing: type(of: self)) }
   }
   
   @objc open var Model: String {
-    get {
-      return _objectModel
-    }
-    set(modelStr) {
-      _objectModel = modelStr
-    }
+    get { return _objectModel }
+    set(modelStr) { _objectModel = modelStr }
   }
   
-  /*open var Model: ModelEntity {
-    get {
-      return _modelEntity
-    }
-    set(model) {
-      _modelEntity = model
-    }
-  }*/
-  
-  // CHANGED: All position properties now work with _modelEntity.transform.translation
   @objc open var XPosition: Float {
-    get {
-      return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.x)
-    }
-    set(x) {
-      _modelEntity.transform.translation.x = UnitHelper.centimetersToMeters(x)
-    }
+    get { return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.x) }
+    set(x) { _modelEntity.transform.translation.x = UnitHelper.centimetersToMeters(x) }
   }
   
   @objc open var YPosition: Float {
-    get {
-      return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.y)
-    }
-    set(y) {
-      _modelEntity.transform.translation.y = UnitHelper.centimetersToMeters(y)
-    }
+    get { return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.y) }
+    set(y) { _modelEntity.transform.translation.y = UnitHelper.centimetersToMeters(y) }
   }
   
   @objc open var ZPosition: Float {
-    get {
-      return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.z)
-    }
-    set(z) {
-      _modelEntity.transform.translation.z = UnitHelper.centimetersToMeters(z)
-    }
+    get { return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.z) }
+    set(z) { _modelEntity.transform.translation.z = UnitHelper.centimetersToMeters(z) }
   }
   
-  // CHANGED: Rotation properties need manual quaternion/Euler conversion
   @objc open var XRotation: Float {
     get {
       let euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
@@ -245,18 +215,12 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   @objc open var ModelUrl: String {
-    get {
-      return _objectModel
-    }
-    set(model) {
-      _objectModel = model
-    }
+    get { return _objectModel }
+    set(model) { _objectModel = model }
   }
   
   @objc open var Scale: Float {
-    get {
-      return _modelEntity.transform.scale.x
-    }
+    get { return _modelEntity.transform.scale.x }
     set(scalar) {
       let scale = abs(scalar)
       _modelEntity.transform.scale = SIMD3<Float>(scale, scale, scale)
@@ -264,89 +228,12 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   @objc open var PoseFromPropertyPosition: String {
-    get {
-      return _fromPropertyPosition
-    }
-    set(pose) {
-      _fromPropertyPosition = pose
-    }
+    get { return _fromPropertyPosition }
+    set(pose) { _fromPropertyPosition = pose }
   }
   
-  @objc open func ARNodeToYail() -> YailDictionary {
-      os_log("going to try to export ARNode as yail", log: .default, type: .info)
-         
-      var yailDict: YailDictionary = [:]
-      var transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
-      //var coordDict: YailDictionary = CoordinatesToYailDictionary() ?? [:]
-        do {
-          yailDict["model"] = self.ModelUrl // dont  need this unless it's a custom model
-          //yailDict["creatorSessionStart"] = coordDict // dont' need, in transformDict
-          yailDict["texture"] = self.Texture
-          yailDict["scale"] = self.Scale
-          yailDict["pose"] = transformDict
-          yailDict["type"] = self.Name // this enables us to create the model mesh
-         
-        
-          print("exporting ARNode as Yail convert toYail ")
-          return yailDict
-         }
-         
-     }
-     
-  //csb not currently using but may
-  open func CoordinatesToYailDictionary() -> YailDictionary? {
-    
-    let yailDictSave: YailDictionary = [:]
-    yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
-    yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
-    yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
-    
-    print("creator coordinates are \(yailDictSave)")
-    return yailDictSave
-  }
-  
-  
-  @objc open func PoseToYailDictionary() -> YailDictionary? {
-        os_log("anchor pose as YailDict", log: .default, type: .info)
-        
-    guard let p = self._modelEntity.transform as? Transform else {
-            os_log("pose is nil", log: .default, type: .info)
-            return nil
-        }
-        
-      print("pose is \(p)")
-        
-      let translationDict: YailDictionary = [:]
-      let rotationDict: YailDictionary = [:]
-      let yailDictSave: YailDictionary = [:]
-        
-        // Translation components
-        translationDict["x"] = p.translation.x
-        translationDict["y"] = p.translation.y
-        translationDict["z"] = p.translation.z
-        yailDictSave["t"] = translationDict
-        
-        // Rotation components (quaternion)
-        rotationDict["x"] = p.rotation.vector.x
-        rotationDict["y"] = p.rotation.vector.y
-        rotationDict["z"] = p.rotation.vector.z
-        rotationDict["w"] = p.rotation.vector.w
-        yailDictSave["q"] = rotationDict
-    
-        yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
-        yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
-        yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
-        
-        os_log("exporting pose as YailDict with %@", log: .default, type: .info, String(describing: yailDictSave))
-        return yailDictSave
-    }
-  
-
-  // CHANGED: FillColor now uses RealityKit SimpleMaterial
   @objc open var FillColor: Int32 {
-    get {
-      return _color
-    }
+    get { return _color }
     set(color) {
       _color = color
       updateMaterial()
@@ -355,27 +242,17 @@ open class ARNodeBase: NSObject, ARNode {
   
   @objc @available(iOS 14.0, *)
   open var FillColorOpacity: Int32 {
-    get {
-      if let material = _modelEntity.model?.materials.first as? SimpleMaterial {
-        // CSB HOLD return Int32(_modelEntity.fill * 100)
-      }
-      return 100
-    }
+    get { return 100 }
     set(opacity) {
       let alpha = Float(min(max(0, opacity), 100)) / 100.0
       if #available(iOS 15.0, *) {
         updateMaterialOpacity(alpha)
-      } else {
-        // Fallback on earlier versions
       }
     }
   }
   
-  // CHANGED: Texture now uses RealityKit TextureResource
   @objc open var Texture: String {
-    get {
-      return _texture
-    }
+    get { return _texture }
     set(path) {
       if let image = AssetManager.shared.imageFromPath(path: path) {
         _texture = path
@@ -397,143 +274,124 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   @objc open var TextureOpacity: Int32 {
-    get {
-      return FillColorOpacity
-    }
-    set(opacity) {
-      FillColorOpacity = opacity
-    }
+    get { return FillColorOpacity }
+    set(opacity) { FillColorOpacity = opacity }
   }
   
   @objc open var Visible: Bool {
-    get {
-      return _modelEntity.isEnabled
-    }
-    set(visible) {
-      _modelEntity.isEnabled = visible
-    }
+    get { return _modelEntity.isEnabled }
+    set(visible) { _modelEntity.isEnabled = visible }
   }
+  
   @objc open var ShowShadow: Bool {
-    get {
-      return false
-    }
-    set(showShadow) {
-     // _node.castsShadow = showShadow
-    }
+    get { return false }
+    set(showShadow) { }
   }
-  // CHANGED: ShowShadow now uses GroundingShadowComponent
- /* @objc open var ShowShadow: Bool {
-    get {
-      return _modelEntity.components.shadow.map(\.castsShadow) ?? false
-    }
-    set(showShadow) {
-      if showShadow {
-        _modelEntity.components.set(GroundingShadowComponent(castsShadow: true))
-      } else {
-        _modelEntity.components.remove(GroundingShadowComponent.self)
-      }
-    }
-  }*/
   
   @objc open var Opacity: Int32 {
-    get {
-      return FillColorOpacity
-    }
-    set(opacity) {
-      FillColorOpacity = opacity
-    }
+    get { return FillColorOpacity }
+    set(opacity) { FillColorOpacity = opacity }
   }
+  
+  // MARK: - Physics Properties
   
   @objc open var EnablePhysics: Bool {
-    get {
-      return _enablePhysics
-    }
-    set(enablePhysics){
-      EnablePhysics(enablePhysics)
-    }
+    get { return _enablePhysics }
+    set(enablePhysics) { EnablePhysics(enablePhysics) }
   }
-  
-  @objc open var PinchToScale: Bool {
-    get {
-      return _pinchToScale
-    }
-    set(pinchToScale) {
-      _pinchToScale = pinchToScale
-    }
-  }
-  
-  @objc open var PanToMove: Bool {
-    get {
-      return _panToMove
-    }
-    set(panToMove) {
-      _panToMove = panToMove
-    }
-  }
-  
-  @objc open var RotateWithGesture: Bool {
-    get {
-      return _rotateWithGesture
-    }
-    set(rotate) {
-      _rotateWithGesture = rotate
-    }
-  }
-  
-  @objc open var CollisionShape: String = "sphere" {
-    didSet { updateCollisionShape()}
-  }
-  
   
   @objc open var StaticFriction: Float = 0.6 {
       didSet { updatePhysicsMaterial() }
   }
+  
   @objc open var DynamicFriction: Float = 0.6 {
       didSet { updatePhysicsMaterial() }
   }
+  
   @objc open var Restitution: Float = 0.3 {
       didSet { updatePhysicsMaterial() }
   }
+  
   @objc open var Mass: Float = 1.0 {
       didSet { updateMassProperties() }
   }
   
+  @objc open var GravityScale: Float {
+      get { return _gravityScale }
+      set { _gravityScale = newValue }
+  }
+  
+  @objc open var DragSensitivity: Float {
+      get { return _dragSensitivity }
+      set { _dragSensitivity = newValue }
+  }
+  
+  @objc open var ReleaseForceMultiplier: Float {
+      get { return _releaseForceMultiplier }
+      set { _releaseForceMultiplier = newValue }
+  }
+  
+  // MARK: - Gesture Properties
+  
+  @objc open var PinchToScale: Bool {
+    get { return _pinchToScale }
+    set(pinchToScale) { _pinchToScale = pinchToScale }
+  }
+  
+  @objc open var PanToMove: Bool {
+    get { return _panToMove }
+    set(panToMove) { _panToMove = panToMove }
+  }
+  
+  @objc open var RotateWithGesture: Bool {
+    get { return _rotateWithGesture }
+    set(rotate) { _rotateWithGesture = rotate }
+  }
+  
+  @objc open var CollisionShape: String = "sphere" {
+    didSet { updateCollisionShape() }
+  }
   
   @objc open var IsFollowingImageMarker: Bool {
-    get {
-      return _followingMarker != nil
-    }
+    get { return _followingMarker != nil }
+  }
+  
+  // MARK: - Drag Properties
+  
+  @objc open var isBeingDragged: Bool {
+      get { return _isBeingDragged }
+      set(newValue) { _isBeingDragged = newValue }
+  }
+  
+  public var OriginalMaterial: Material? {
+      get { return _originalMaterial }
+      set(newValue) { _originalMaterial = newValue }
   }
   
   // MARK: - Component Protocol Implementation
+  
   @objc open var Width: Int32 {
-    get {
-      return 0
-    }
-    set {}
+    get { return 0 }
+    set { }
   }
   
   @objc open var Height: Int32 {
-    get {
-      return 0
-    }
-    set {}
+    get { return 0 }
+    set { }
   }
   
   @objc open var dispatchDelegate: HandlesEventDispatching? {
-    get {
-      return _container?.form?.dispatchDelegate
-    }
+    get { return _container?.form?.dispatchDelegate }
   }
   
   public func copy(with zone: NSZone? = nil) -> Any {
-    return self // Return self for NSCopying protocol
+    return self
   }
   
   public func setWidthPercent(_ toPercent: Int32) {}
   public func setHeightPercent(_ toPercent: Int32) {}
   
-  // MARK: Methods - CHANGED to work with RealityKit transforms
+  // MARK: - Movement Methods
   
   @objc open func RotateXBy(_ degrees: Float) {
     let radians = GLKMathDegreesToRadians(degrees)
@@ -575,6 +433,8 @@ open class ARNodeBase: NSObject, ARNode {
     _modelEntity.transform.translation = SIMD3<Float>(xMeters, yMeters, zMeters)
   }
   
+  // MARK: - Distance Methods
+  
   @objc open func DistanceToNode(_ node: ARNode) -> Float {
     let myPos = _modelEntity.transform.translation
     let otherPos = node.getPosition()
@@ -599,7 +459,8 @@ open class ARNodeBase: NSObject, ARNode {
     return UnitHelper.metersToCentimeters(simd_distance(myPos, planePos))
   }
   
-  // CHANGED: Return SIMD3<Float> for pure RealityKit
+  // MARK: - Position Methods
+  
   open func getPosition() -> SIMD3<Float> {
     return _modelEntity.transform.translation
   }
@@ -607,6 +468,8 @@ open class ARNodeBase: NSObject, ARNode {
   open func setPosition(x: Float, y: Float, z: Float) {
     _modelEntity.transform.translation = SIMD3<Float>(x, y, z)
   }
+  
+  // MARK: - Gesture Response Methods
   
   open func scaleByPinch(scalar: Float) {
     if PinchToScale {
@@ -628,7 +491,69 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
-  // CHANGED: RealityKit material management
+  // MARK: - Serialization Methods
+  
+  @objc open func ARNodeToYail() -> YailDictionary {
+      os_log("going to try to export ARNode as yail", log: .default, type: .info)
+         
+      var yailDict: YailDictionary = [:]
+      var transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
+      
+      yailDict["model"] = self.ModelUrl
+      yailDict["texture"] = self.Texture
+      yailDict["scale"] = self.Scale
+      yailDict["pose"] = transformDict
+      yailDict["type"] = self.Name
+         
+      print("exporting ARNode as Yail convert toYail ")
+      return yailDict
+  }
+     
+  open func CoordinatesToYailDictionary() -> YailDictionary? {
+    let yailDictSave: YailDictionary = [:]
+    yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
+    yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
+    yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
+    
+    print("creator coordinates are \(yailDictSave)")
+    return yailDictSave
+  }
+  
+  @objc open func PoseToYailDictionary() -> YailDictionary? {
+    os_log("anchor pose as YailDict", log: .default, type: .info)
+    
+    guard let p = self._modelEntity.transform as? Transform else {
+        os_log("pose is nil", log: .default, type: .info)
+        return nil
+    }
+    
+    print("pose is \(p)")
+    
+    let translationDict: YailDictionary = [:]
+    let rotationDict: YailDictionary = [:]
+    let yailDictSave: YailDictionary = [:]
+    
+    translationDict["x"] = p.translation.x
+    translationDict["y"] = p.translation.y
+    translationDict["z"] = p.translation.z
+    yailDictSave["t"] = translationDict
+    
+    rotationDict["x"] = p.rotation.vector.x
+    rotationDict["y"] = p.rotation.vector.y
+    rotationDict["z"] = p.rotation.vector.z
+    rotationDict["w"] = p.rotation.vector.w
+    yailDictSave["q"] = rotationDict
+
+    yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
+    yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
+    yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
+    
+    os_log("exporting pose as YailDict with %@", log: .default, type: .info, String(describing: yailDictSave))
+    return yailDictSave
+  }
+  
+  // MARK: - Material Management
+  
   private func setupInitialMaterial() {
     updateMaterial()
   }
@@ -687,19 +612,16 @@ open class ARNodeBase: NSObject, ARNode {
     return UIColor(red: red, green: green, blue: blue, alpha: alpha)
   }
   
-  // MARK: - RealityKit Anchor Management
+  // MARK: - Anchor Management
   
   func createAnchor() -> AnchorEntity {
-    
     if let geoAnchor = getGeoAnchor() {
         if let existingAnchor = _anchorEntity {
             return existingAnchor
         }
         
-        //create a placeholder if we don't have it, will update it after we start tracking
         let placeholderAnchor = AnchorEntity(world: SIMD3<Float>(0, 0, 0))
         _anchorEntity = placeholderAnchor
-
         return placeholderAnchor
     }
     
@@ -707,13 +629,11 @@ open class ARNodeBase: NSObject, ARNode {
       return existingAnchor
     }
     
-
     let anchor: AnchorEntity
     
     if let followingMarker = _followingMarker {
       anchor = AnchorEntity(.image(group: "ARResources", name: followingMarker.Name))
     } else {
-      // Default world anchor
       let worldTransform = _modelEntity.transformMatrix(relativeTo: nil)
       anchor = AnchorEntity(world: worldTransform)
     }
@@ -730,16 +650,7 @@ open class ARNodeBase: NSObject, ARNode {
       return existingAnchor
     }
     
-    let anchor: AnchorEntity
-    
-    //if pose != nil{
-      anchor = AnchorEntity(components: pose)
-    /*} else {
-      // Default world anchor
-      let worldTransform = _modelEntity.transformMatrix(relativeTo: nil)
-      anchor = AnchorEntity(world: worldTransform)
-    }*/
-    
+    let anchor = AnchorEntity(components: pose)
     _anchorEntity = anchor
     if _anchorEntity != nil {
       anchor.addChild(_modelEntity)
@@ -752,7 +663,7 @@ open class ARNodeBase: NSObject, ARNode {
     _anchorEntity = nil
   }
   
-  // MARK: - Quaternion/Euler Conversion (NEW - RealityKit needs this)
+  // MARK: - Quaternion/Euler Conversion
   
   func quaternionToEulerAngles(_ q: simd_quatf) -> SIMD3<Float> {
     let w = q.vector.w
@@ -795,6 +706,8 @@ open class ARNodeBase: NSObject, ARNode {
     return simd_quatf(ix: x, iy: y, iz: z, r: w)
   }
   
+  // MARK: - Event Methods
+  
   @objc open func Click() {
     EventDispatcher.dispatchEvent(of: self, called: "Click")
   }
@@ -803,6 +716,7 @@ open class ARNodeBase: NSObject, ARNode {
     EventDispatcher.dispatchEvent(of: self, called: "LongClick")
   }
   
+  // MARK: - Image Marker Following
   
   @objc open func Follow(_ imageMarker: ARImageMarker) {
     guard _followingMarker == nil else {
@@ -851,6 +765,8 @@ open class ARNodeBase: NSObject, ARNode {
     EventDispatcher.dispatchEvent(of: self, called: "StoppedFollowingMarker")
   }
 
+  // MARK: - Lifecycle Methods
+  
   @objc open func onResume() { }
   
   @objc open func onPause() { }
@@ -867,14 +783,14 @@ open class ARNodeBase: NSObject, ARNode {
     _container = nil
   }
 
-
-
+  // MARK: - Physics Methods
+  
   @objc open func EnablePhysics(_ isDynamic: Bool = true) {
-    
     if (!isDynamic){
       _enablePhysics = false
       return
     }
+    
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let size = bounds.max - bounds.min
     
@@ -894,27 +810,24 @@ open class ARNodeBase: NSObject, ARNode {
     } else {
         shape = ShapeResource.generateBox(size: safeSize)
     }
+    
     _enablePhysics = isDynamic
     _modelEntity.collision = CollisionComponent(shapes: [shape])
     
     // Create mass properties separately
     let massProperties = PhysicsMassProperties(mass: Mass)
-
-  
     
     // Create a custom physics material for gentle collisions
     let gentleMaterial = PhysicsMaterialResource.generate(
-      staticFriction: StaticFriction,    // Higher friction prevents sliding
-      dynamicFriction: DynamicFriction,   // Friction when moving
-      restitution: Restitution       // Low restitution = less bouncy (0.0 to 1.0)
+      staticFriction: StaticFriction,
+      dynamicFriction: DynamicFriction,
+      restitution: Restitution
     )
     
-    _enablePhysics = isDynamic
-    _modelEntity.collision = CollisionComponent(shapes: [shape])
     _modelEntity.physicsBody = PhysicsBodyComponent(
       massProperties: massProperties,
-        material: gentleMaterial,
-        mode: isDynamic ? .dynamic : .static
+      material: gentleMaterial,
+      mode: isDynamic ? .dynamic : .static
     )
   }
 
@@ -923,91 +836,153 @@ open class ARNodeBase: NSObject, ARNode {
       _modelEntity.physicsBody = nil
   }
   
+  // MARK: - Collision Handling Methods
+  
   @objc open func CollisionDetected() {}
   @objc open func ObjectCollidedWithScene(_ node: ARNodeBase) {
     EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: node)
   }
-  @objc open func ObjectCollidedWithObject(_ node: ARNodeBase, _ node2: ARNodeBase) {
-    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: node, node2)
+
+  @objc open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
+    // Default collision behavior for all AR objects
+    print("🔥 \(Name) collided with \(otherNode.Name)")
+    
+    // Show collision effect if available
+    if #available(iOS 15.0, *) {
+        showCollisionEffect(type: .object)
+    }
+    
+    // Dispatch event to app level
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: otherNode as AnyObject)
+  }
+
+  
+  // Handle collision with another AR node (we know it's a node)
+  @objc open func handleNodeCollision(with otherNode: ARNodeBase, event: Any) {
+      print("🔥 \(Name) collision with AR node: \(otherNode.Name)")
+      
+      // Call the main collision method that subclasses can override
+      ObjectCollidedWithObject(otherNode)
   }
   
+  // Handle collision with scene element (we know what type of scene element)
+  @objc open func handleSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
+      guard let sceneTypeEnum = sceneType as? SceneEntityType else { return }
+      
+      print("🏠 \(Name) collided with scene: \(sceneTypeEnum.rawValue)")
+      
+      // Show different collision effect based on scene type
+      if #available(iOS 15.0, *) {
+          let collisionType: CollisionType = sceneTypeEnum == .floor ? .floor : .wall
+          showCollisionEffect(type: collisionType)
+      }
+      
+      // Dispatch scene collision event
+      EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: sceneTypeEnum.rawValue as AnyObject)
+  }
 
+  // Override this in subclasses for custom scene collision behavior
+  @objc open func respondToSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
+      print("🔥 \(Name) base scene collision response with \(sceneType) - override in subclass")
+      
+      guard let sceneTypeEnum = sceneType as? SceneEntityType else { return }
+      
+      let collisionType: CollisionType
+      switch sceneTypeEnum {
+      case .floor:
+          collisionType = .floor
+      case .wall, .ceiling, .furniture:
+          collisionType = .wall
+      case .unknown:
+          collisionType = .wall
+      }
+      
+      if #available(iOS 15.0, *) {
+          showCollisionEffect(type: collisionType)
+      }
+  }
 
+  // Enhanced collision effect method
+  @available(iOS 15.0, *)
+  private func showCollisionEffect(type: CollisionType) {
 
-} // end ARNodeBase base class
+      if OriginalMaterial == nil {
+          OriginalMaterial = _modelEntity.model?.materials.first
+      }
+      
+      var collidedMaterial = SimpleMaterial()
+      
+      // Different colors for different collision types
+      switch type {
+      case .object:
+          collidedMaterial.color = .init(tint: .red.withAlphaComponent(0.8))
+      case .floor:
+          collidedMaterial.color = .init(tint: .blue.withAlphaComponent(0.6))
+      case .wall:
+          collidedMaterial.color = .init(tint: .orange.withAlphaComponent(0.7))
+      case .none:
+          collidedMaterial.color = .init(tint: .white.withAlphaComponent(0.5))
+      }
+      
+      // Apply collision color
+      _modelEntity.model?.materials = [collidedMaterial]
+    
+    //EventDispatcher.dispatchEvent(of: self, called: "RestoreColor", arguments: node)
+     
+  }
+  
+  
+  
+  // MARK: - Drag Methods
+  
+  @objc open func startDrag() {
+      isBeingDragged = true
+      _originalMaterial = _modelEntity.model?.materials.first
+      print("🎯 \(Name) started being dragged")
+  }
+  
+  @objc open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
+      // Override in subclasses
+      print("🎯 \(Name) drag update - override in subclass")
+  }
+  
+  @objc open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+      isBeingDragged = false
+      if let original = _originalMaterial {
+          _modelEntity.model?.materials = [original]
+          _originalMaterial = nil
+      }
+      print("🎯 \(Name) drag ended - override in subclass")
+  }
+
+} // end ARNodeBase class
+
+// MARK: - ARNodeBase Extension
 
 @available(iOS 14.0, *)
 extension ARNodeBase {
   
-      private func updatePhysicsMaterial() {
-          guard var physicsBody = _modelEntity.physicsBody else { return }
-          
-          let newMaterial = PhysicsMaterialResource.generate(
-              staticFriction: StaticFriction,
-              dynamicFriction: DynamicFriction,
-              restitution: Restitution
-          )
-          
-          physicsBody.material = newMaterial
-          print("🎾 Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
-      }
+  private func updatePhysicsMaterial() {
+      guard var physicsBody = _modelEntity.physicsBody else { return }
       
-      private func updateMassProperties() {
-          guard var physicsBody = _modelEntity.physicsBody else { return }
-          
-          physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
-          print("🎾 Updated mass to: \(Mass)")
-      }
+      let newMaterial = PhysicsMaterialResource.generate(
+          staticFriction: StaticFriction,
+          dynamicFriction: DynamicFriction,
+          restitution: Restitution
+      )
       
-      private func updateDamping() {
-          // Note: RealityKit might not expose damping directly in iOS 16
-          // This is a placeholder for when it's available
-          print("🎾 Damping updated: linear(\(_linearDamping)), angular(\(_angularDamping))")
-          
-          // For iOS 16, you might need to simulate damping manually
-        if _linearDamping > 0 || _angularDamping > 0 {
-              startDampingSimulation()
-          }
-      }
-
-      private func startDampingSimulation() {
-          _dampingTask.cancel()
-          
-          guard _linearDamping > 0 || _angularDamping > 0 else { return }
-          
-          _dampingTask = Task {
-              while !Task.isCancelled {
-                  await applyCustomDamping()
-                  try? await Task.sleep(nanoseconds: 33_000_000) // ~30fps
-              }
-          }
-      }
-      
-      private func applyCustomDamping() async {
-          await MainActor.run {
-              guard var physicsBody = _modelEntity.physicsBody else { return }
-              
-              // Since we can't directly access velocity in iOS 16,
-              // we simulate damping by slightly adjusting physics properties
-              
-              // This is a simplified approach - real damping would need velocity access
-           /* if !physicsBody.is {
-                  // Gradually increase friction to simulate damping
-                  let currentMaterial = physicsBody.material
-                  
-                  // This is a conceptual approach - actual implementation would depend
-                  // on available RealityKit APIs in iOS 16
-                  print("🎾 Applying custom damping...")
-              }*/
-          }
-      }
-      
-      @objc func stopDamping() {
-          _dampingTask.cancel()
-        _dampingTask = Task{}
-      }
+      physicsBody.material = newMaterial
+      print("🎾 Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
+  }
   
-    private func updateCollisionShape() {
+  private func updateMassProperties() {
+      guard var physicsBody = _modelEntity.physicsBody else { return }
+      
+      physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
+      print("🎾 Updated mass to: \(Mass)")
+  }
+  
+  private func updateCollisionShape() {
       let shape: ShapeResource
       let bounds = _modelEntity.visualBounds(relativeTo: nil)
       let autoSize = bounds.max - bounds.min
@@ -1018,30 +993,29 @@ extension ARNodeBase {
       )
       shape = generateCollisionShape(size: safeSize)
       _modelEntity.collision = CollisionComponent(shapes: [shape])
-    
-    
-    // ✅ Update physics body
+      
+      // Update physics body if it exists
       if _modelEntity.physicsBody != nil {
-             // ✅ Update mass based on new volume (realistic)
-             let volumeScale = Scale
-             let newMass = Mass * volumeScale
-             
-             let material = PhysicsMaterialResource.generate(
-                 staticFriction: StaticFriction,
-                 dynamicFriction: DynamicFriction,
-                 restitution: Restitution
-             )
-             
-             _modelEntity.physicsBody = PhysicsBodyComponent(
-                 massProperties: PhysicsMassProperties(mass: newMass),
-                 material: material,
-                 mode: .dynamic
-             )
-             
-             print("🎾  collision updated: width=\(Width), mass=\(newMass)")
-         }
-    }
-  
+          // Update mass based on new volume (realistic)
+          let volumeScale = Scale
+          let newMass = Mass * volumeScale
+          
+          let material = PhysicsMaterialResource.generate(
+              staticFriction: StaticFriction,
+              dynamicFriction: DynamicFriction,
+              restitution: Restitution
+          )
+          
+          _modelEntity.physicsBody = PhysicsBodyComponent(
+              massProperties: PhysicsMassProperties(mass: newMass),
+              material: material,
+              mode: .dynamic
+          )
+          
+          print("🎾 Collision updated: mass=\(newMass)")
+      }
+  }
+
   private func generateCollisionShape(size: SIMD3<Float>) -> ShapeResource {
       // Determine best collision shape based on object type and proportions
       let avgSize = (size.x + size.y + size.z) / 3.0
@@ -1052,178 +1026,10 @@ extension ARNodeBase {
           return ShapeResource.generateSphere(radius: radius)
       } else if abs(size.x - size.z) < 0.02 && size.y > size.x * 1.5 {
           let radius = min(size.x, size.z) / 2.0
-        return ShapeResource.generateCapsule(height: size.y, radius: radius)
+          return ShapeResource.generateCapsule(height: size.y, radius: radius)
       } else {
           // Use box for everything else
           return ShapeResource.generateBox(size: size)
       }
   }
-  
-  
- 
-// Rolling/Movement Properties
-    @objc open var RollingForce: Float {
-        get { return _rollingForce }
-        set { _rollingForce = newValue }
-    }
-    
-    @objc open var ImpulseScale: Float {
-        get { return _impulseScale }
-        set { _impulseScale = newValue }
-    }
-
-      
-      // Customizable physics parameters
-      @objc open var GravityScale: Float {
-          get { return _gravityScale }
-          set { _gravityScale = newValue }
-      }
-      
-      @objc open var DragSensitivity: Float {
-          get { return _dragSensitivity }
-          set { _dragSensitivity = newValue }
-      }
-      
-      @objc open var ReleaseForceMultiplier: Float {
-          get { return _releaseForceMultiplier }
-          set { _releaseForceMultiplier = newValue }
-      }
-      
- 
-      
-      // Track drag state at the node level
-      @objc open var isBeingDragged: Bool {
-          get { return _isBeingDragged }
-          set (newValue) { _isBeingDragged = newValue }
-      }
-      
-      private var LastDragLocation: CGPoint {
-          get { return _lastDragLocation}
-          set (newValue){ _lastDragLocation = newValue}
-      }
-      
-      public var OriginalMaterial: Material? {
-          get { return _originalMaterial }
-          set(newValue) { _originalMaterial = newValue}
-      }
-      
-
-      
-      // Base drag methods with state management
-      @objc open func startDrag() {
-          isBeingDragged = true
-          _originalMaterial = _modelEntity.model?.materials.first
-          print("🎯 \(Name) started being dragged")
-      }
-      
-      @objc open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
-          // Override in subclasses
-          print("🎯 \(Name) drag update - override in subclass")
-      }
-      
-      @objc open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
-          isBeingDragged = false
-          if let original = _originalMaterial {
-              _modelEntity.model?.materials = [original]
-              _originalMaterial = nil
-          }
-          print("🎯 \(Name) drag ended - override in subclass")
-      }
- 
-      // Handle collision with another AR node (we know it's a node)
-      @objc open func handleNodeCollision(with otherNode: ARNodeBase, event: Any) {
-          print("🔥 \(Name) collision with AR node: \(otherNode.Name)")
-          
-          // Dispatch existing event for backward compatibility
-          EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: self as AnyObject, otherNode as AnyObject)
-          
-          // Call overrideable method for custom node collision behavior
-        respondToNodeCollision(with: otherNode, event: event as! CollisionEvents.Began)
-      }
-      
-      // Handle collision with scene element (we know what type of scene element)
-      @objc open func handleSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
-        print("🔥 \(Name) collision with \(sceneType): \(sceneEntity as! Entity) (\(String(describing: (sceneEntity as! Entity).name)).name)")
-          
-          // Dispatch existing event for backward compatibility
-          EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: self as AnyObject)
-          
-          // Call overrideable method for custom scene collision behavior
-        respondToSceneCollision(sceneEntity: sceneEntity as! Entity, sceneType: sceneType as! ARView3D.SceneEntityType, event: event)
-      }
-      
-      // MARK: - Overrideable Methods for Subclasses
-      
-      // Override this in subclasses for custom node collision behavior
-      @objc open func respondToNodeCollision(with otherNode: ARNodeBase, event: Any) {
-          print("🔥 \(Name) base node collision response with \(otherNode.Name) - override in subclass")
-        if #available(iOS 15.0, *) {
-          showCollisionEffect(type: .object)
-        } else {
-          // Fallback on earlier versions
-        }
-      }
-      
-      // Override this in subclasses for custom scene collision behavior
-      @objc open func respondToSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
-          print("🔥 \(Name) base scene collision response with \(sceneType) - override in subclass")
-          
-          let collisionType: CollisionType
-        switch sceneType as! ARView3D.SceneEntityType {
-          case .floor:
-              collisionType = .floor
-          case .wall, .ceiling, .furniture:
-              collisionType = .wall
-          case .unknown:
-              collisionType = .wall
-          }
-          
-        if #available(iOS 15.0, *) {
-          showCollisionEffect(type: collisionType)
-        } else {
-          // Fallback on earlier versions
-        }
-      }
-      
-      enum CollisionType {
-          case floor
-          case wall
-          case object
-          case none
-      }
-      
-  @available(iOS 15.0, *)
-  private func showCollisionEffect(type: CollisionType) {
-          Task {
-              await MainActor.run {
-                  let originalMaterial = _modelEntity.model?.materials.first
-                  /*
-                  var collisionMaterial = SimpleMaterial()
-                  switch type {
-                  case .floor:
-                      //collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))
-                  case .wall:
-                      collisionMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
-                  case .object:
-                      collisionMaterial.color = .init(tint: .orange.withAlphaComponent(0.5))
-                  case .none:
-                      return
-                  default:
-                    return
-                  }
-                  
-                  _modelEntity.model?.materials = [collisionMaterial]
-                  
-                  Task { // this never changed back b/c always colliding somehow?
-                      try? await Task.sleep(nanoseconds: 200_000_000)
-                      await MainActor.run {
-                          if let original = originalMaterial {
-                              _modelEntity.model?.materials = [original]
-                          }
-                      }
-                  }*/
-              }
-          }
-    }
-  
 }

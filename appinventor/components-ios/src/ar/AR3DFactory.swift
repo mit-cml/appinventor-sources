@@ -43,7 +43,7 @@ import RealityKit
   func EnablePhysics(_ isDynamic: Bool)
   func CollisionDetected()
   func ObjectCollidedWithScene(_ node: ARNodeBase)
-  func ObjectCollidedWithObject(_ node: ARNodeBase, _ node2: ARNodeBase)
+  func ObjectCollidedWithObject(_ node: ARNodeBase)
   
   func ARNodeToYail() -> YailDictionary
   // RotateAboutBlankAxis https://gamedev.stackexchange.com/questions/116676/why-is-scnnode-rotation-property-a-four-dimensional-vector
