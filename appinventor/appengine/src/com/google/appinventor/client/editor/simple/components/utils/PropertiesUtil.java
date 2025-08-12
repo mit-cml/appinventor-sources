@@ -19,6 +19,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARFalloffTypePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARPlaneDetectionTypePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARTrackingTypePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARBehaviorTypePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBestFitModelPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBooleanPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
@@ -223,6 +224,8 @@ public class PropertiesUtil {
       return new YoungAndroidAssetSelectorPropertyEditor(editor);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AR_TRACKING_TYPE)) {
       return new YoungAndroidARTrackingTypePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AR_BEHAVIOR_TYPE)) {
+      return new YoungAndroidARBehaviorTypePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AR_FALLOFF_TYPE)) {
       return new YoungAndroidARFalloffTypePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AR_PLANE_DETECTION_TYPE)) {

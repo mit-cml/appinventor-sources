@@ -38,14 +38,12 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected String name = "";
 
   protected String collisionShape = "sphere";
-  protected float staticFriction = 0.5f;
-  protected float dynamicFriction = 0.5f;
-  protected float restitution = 0.5f;
-  protected float mass = 0.5f;
-  protected float force = 0.5f;
-  protected float impulseScale = 0.5f;
-  protected float gravityScale = 0.5f;
-  protected float dragSensitivity = 0.5f;
+  protected float staticFriction = 0.1f;
+  protected float dynamicFriction = 0.1f;
+  protected float restitution = 0.1f;
+  protected float mass = 0.1f;
+  protected float force = 0.1f;
+  protected float dragSensitivity = 0.1f;
 
   protected boolean rotateWithGesture = false;
 
@@ -333,15 +331,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
 //////////////////  physics
   @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
-      defaultValue = "0.6")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void StaticFriction(float friction) { staticFriction = friction; }
   public float StaticFriction() { return staticFriction; }
 
   @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
-      defaultValue = "0.4")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT)
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void DynamicFriction(float friction) { dynamicFriction = friction; }
   public float DynamicFriction() { return dynamicFriction; }
@@ -367,19 +363,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void RollingForce(float f) { force = f;}
   public float RollingForce() { return force;}
 
-  @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
-      defaultValue = "0.5")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public void ImpulseScale(float s) { impulseScale = s; }
-  public float ImpulseScale() { return impulseScale; }
-
-  @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
-      defaultValue = "0.5")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public void GravityScale(float s) { gravityScale = s; }
-  public float GravityScale() { return gravityScale; }
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
@@ -479,8 +462,12 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
   public void ObjectCollidedWithObject() {}
 
-
   @Override
+  @SimpleFunction(description = "Allow user to additionally add behavoir to the end of the drag/pan movement")
+  public void endDrag(String dragVelocity, String worldDirection) {}
+
+
+    @Override
   @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
   public void RotateXBy(float degrees) {}
 

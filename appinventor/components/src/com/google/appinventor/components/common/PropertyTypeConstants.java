@@ -466,5 +466,15 @@ public class PropertyTypeConstants {
    *
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
    */
+
+
+  /**
+   * AR Tracking types supported by the ARView3D component.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidARBehaviorPropertyEditor
+   */
+   public static final String PROPERTY_TYPE_AR_BEHAVIOR_TYPE = "ARBehaviorType";
+
+
   public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
 }

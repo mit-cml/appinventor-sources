@@ -5839,6 +5839,39 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Geo tracking type")
   String arTrackingTypeGeoTracking();
 
+  @DefaultMessage("Heavy")
+  @Description("AR Object behavior heavy")
+  String arBehaviorTypeHeavy();
+
+  @DefaultMessage("Light")
+  @Description("AR Object behavior light")
+  String arBehaviorTypeLight();
+
+  @DefaultMessage("Bouncy")
+  @Description("AR Object behavior bouncy")
+  String arBehaviorTypeBouncy();
+
+  @DefaultMessage("Wet")
+  @Description("AR Object behavior wet")
+  String arBehaviorTypeWet();
+
+  @DefaultMessage("Sticky")
+  @Description("AR Object behavior sticky")
+  String arBehaviorTypeSticky();
+
+  @DefaultMessage("Slippery")
+  @Description("AR Object behavior slippery")
+  String arBehaviorTypeSlippery();
+
+  @DefaultMessage("Floating")
+  @Description("AR Object behavior floating")
+  String arBehaviorTypeFloating();
+
+  @DefaultMessage("None")
+  @Description("AR Object behavior none")
+  String arBehaviorTypeNone();
+
+
   @DefaultMessage("None")
   @Description("No plane detection")
   String arPlaneDetectionTypeNone();

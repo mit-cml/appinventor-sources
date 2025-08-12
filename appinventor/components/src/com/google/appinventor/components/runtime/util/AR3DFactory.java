@@ -115,15 +115,8 @@ public final class AR3DFactory {
     float Mass();
     void Mass(float mass);
 
-    float ImpulseScale();
-    void ImpulseScale(float scale);
-
-    float GravityScale();
-    void GravityScale(float scale);
-
     float DragSensitivity();
     void DragSensitivity(float mass);
-
 
     String CollisionShape();
     void CollisionShape(String collisionShape);
@@ -176,7 +169,10 @@ public final class AR3DFactory {
     void CollisionDetection();
     void ObjectCollidedWithScene();
     void ObjectCollidedWithObject();
-   }
+
+    void endDrag(String dragVelocity, String worldDirection);
+
+  }
 
    public interface FollowsMarker {
      boolean IsFollowingImageMarker();
@@ -526,6 +522,7 @@ public final class AR3DFactory {
      void NodeLongClick(ARNode node);
      void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint);
      void LongPressAtPoint(float x, float y, float z, boolean isANodeAtPoint);
+
    }
 
    public interface ARImageMarkerContainer extends ComponentContainer {

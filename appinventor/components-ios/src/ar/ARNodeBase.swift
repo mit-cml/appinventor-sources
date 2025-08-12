@@ -497,7 +497,6 @@ open class ARNodeBase: NSObject, ARNode {
   @objc open var Mass: Float = 1.0 {
       didSet { updateMassProperties() }
   }
-    
   
   
   @objc open var IsFollowingImageMarker: Bool {
@@ -1117,7 +1116,7 @@ extension ARNodeBase {
           print("🎯 \(Name) started being dragged")
       }
       
-  @objc open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
+      @objc open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
           // Override in subclasses
           print("🎯 \(Name) drag update - override in subclass")
       }
@@ -1226,38 +1225,5 @@ extension ARNodeBase {
               }
           }
     }
-  
-      
-  @available(iOS 15.0, *)
-  private func showCollisionEffect(type: ARView3D.SceneEntityType) {
-          Task {
-              await MainActor.run {
-                  let originalMaterial = _modelEntity.model?.materials.first
-                  
-                  var collisionMaterial = SimpleMaterial()
-                  switch type {
-                  case .floor:
-                      collisionMaterial.color = .init(tint: .brown.withAlphaComponent(0.6))
-                  case .wall:
-                      collisionMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
-                  case .furniture, .unknown:
-                      collisionMaterial.color = .init(tint: .orange.withAlphaComponent(0.5))
-                  default:
-                      return
-                  }
-                  
-                  _modelEntity.model?.materials = [collisionMaterial]
-                  
-                  Task {
-                      try? await Task.sleep(nanoseconds: 200_000_000)
-                      await MainActor.run {
-                          if let original = originalMaterial {
-                              _modelEntity.model?.materials = [original]
-                          }
-                      }
-                  }
-              }
-          }
-      }
   
 }

@@ -7,7 +7,9 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.appinventor.components.common.ARComponentConstants;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.ARComponentConstants.*;
 
 public class MockSphereNode extends MockARNodeBase {
   public static final String TYPE = "SphereNode";
@@ -34,6 +36,24 @@ public class MockSphereNode extends MockARNodeBase {
 
     panel.setWidget(svgpanel);
   }
+
+  @Override
+  public void changeProperty(String propertyName, String newValue) {
+    // Call the parent to handle the normal property change
+    super.changeProperty(propertyName, newValue);
+
+    // Handle Behavior → Mass dependency
+    if ("DefaultBehavior".equals(propertyName)) {
+      PhysicsSettingsObject physicsSettingsObject = ARComponentConstants.getSphereDefaultSettings(newValue);
+      // This should update both the component state AND the property panel
+      super.changeProperty("Mass",String.valueOf(physicsSettingsObject.mass));
+      super.changeProperty("StaticFriction",String.valueOf(physicsSettingsObject.staticFriction));
+      super.changeProperty("DynamicFriction",String.valueOf(physicsSettingsObject.dynamicFriction));
+      super.changeProperty("DragSensitivity",String.valueOf(physicsSettingsObject.dragSensitivity));
+      super.changeProperty("Restitution",String.valueOf(physicsSettingsObject.restitution));
+    }
+  }
+
 
   @Override
   public int getPreferredWidth() {

@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.ar;
 
 import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.common.ARComponentConstants;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
@@ -34,16 +35,20 @@ import android.util.Log;
 
     private String objectModel = Form.ASSETS_PREFIX + "sphere.obj";
     private String texture = Form.ASSETS_PREFIX + "Palette.png";
+    private String behaviorName = "nothing";
+    private ARNodeContainer _container;
 
     public SphereNode(final ARNodeContainer container) {
       super(container);
       Model( objectModel);
       Texture(texture);
       container.addNode(this); // hooks in session
+      _container = container;
     }
 
     @Override
     public void Session(Session s){ this.session = s;};
+
 
 
     @Override
@@ -80,6 +85,26 @@ import android.util.Log;
       }
     }
 
+  //@Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AR_BEHAVIOR_TYPE, defaultValue = "1")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description =  "Default behavior of object: heavy, light, bouncy, wet, sticky, slippery, floating. Use these settings to set Mass, StaticFriction, DynamicFriction, Restitution, and DragSensitivity appropriate to description OR tweak them below")
+  //@SimpleFunction(description = "Default behavior of object: heavy, light, bouncy, wet, sticky. Use these settings as is or tweak them below")
+  public void DefaultBehavior(String behavior) {
+
+    ARComponentConstants.PhysicsSettingsObject settings = ARComponentConstants.getSphereDefaultSettings(behavior);
+
+    Log.i("sphere","changed settings " + Mass() + " with friction "+ StaticFriction());
+
+    super.Mass(settings.mass);
+    super.StaticFriction(settings.staticFriction);
+    super.DynamicFriction(settings.dynamicFriction);
+    //Restitution(Restitution);
+   // GravityScale(gravityScale);
+    super.DragSensitivity(settings.dragSensitivity);
+    Log.i("sphere","changed settings " + Mass() + " with friction "+ StaticFriction());
+  }
+
+  public void RemoveBehavior(String behavior) {}
 
     @Override
     @SimpleFunction(description = "Changes the node's position by (x,y,z).")
