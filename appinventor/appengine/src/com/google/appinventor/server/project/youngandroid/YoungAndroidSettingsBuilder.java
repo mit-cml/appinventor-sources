@@ -16,6 +16,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BUILDNUMBER;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE;
@@ -59,6 +60,7 @@ public class YoungAndroidSettingsBuilder {
   private String accentColor = "0";
   private String defaultFileScope = "App";
   private String aiVersioning = "";
+  private String lastOpened = "Screen1";
   private String buildNumber = "1";
   private String nsBluetoothAlwaysUsage = "";
   private String nsBluetoothPeripheralUsage = "";
@@ -109,6 +111,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
     aiVersioning = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_AIVERSIONING));
+    lastOpened = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_LAST_OPENED));
     buildNumber = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_BUILDNUMBER));
     nsBluetoothAlwaysUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -154,6 +158,7 @@ public class YoungAndroidSettingsBuilder {
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
     aiVersioning = properties.getProperty("aiversioning", "");
+    lastOpened = properties.getProperty("lastopened", "");
     buildNumber = properties.getProperty("buildnumber", "1");
     nsBluetoothAlwaysUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, "");
     nsBluetoothPeripheralUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, "");
@@ -254,6 +259,11 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setDefaultLastOpened(String lastOpened) {
+    this.lastOpened = lastOpened;
+    return this;
+  }
+
   public YoungAndroidSettingsBuilder setBuildNumber(String buildNumber) {
     this.buildNumber = buildNumber;
     return this;
@@ -282,6 +292,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
     object.put(YOUNG_ANDROID_SETTINGS_AIVERSIONING, aiVersioning);
+    object.put(YOUNG_ANDROID_SETTINGS_LAST_OPENED, lastOpened);
     object.put(YOUNG_ANDROID_SETTINGS_BUILDNUMBER, buildNumber);
     object.put(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
@@ -323,6 +334,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "color.accent", accentColor);
     addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
     addPropertyIfSet(result, "aiversioning", aiVersioning);
+    addPropertyIfSet(result, "lastopened", lastOpened);
     addPropertyIfSet(result, "buildnumber", buildNumber);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
@@ -376,6 +388,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.accentColor.equals(accentColor);
       result &= other.defaultFileScope.equals(defaultFileScope);
       result &= other.aiVersioning.equals(aiVersioning);
+      result &= other.lastOpened.equals(lastOpened);
       result &= other.buildNumber.equals(buildNumber);
       result &= other.nsBluetoothAlwaysUsage.equals(nsBluetoothAlwaysUsage);
       result &= other.nsBluetoothPeripheralUsage.equals(nsBluetoothPeripheralUsage);

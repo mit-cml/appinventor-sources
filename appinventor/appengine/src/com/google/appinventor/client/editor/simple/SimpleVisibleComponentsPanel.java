@@ -1,35 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple;
 
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.HiddenComponentsManager;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-
-import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
-import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.widgets.dnd.DragSource;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
-import com.google.appinventor.shared.settings.SettingsConstants;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.CheckBox;
+import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.ListBox;
-
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -38,23 +21,16 @@ import java.util.logging.Logger;
  * Panel in the Simple design editor holding visible Simple components.
  *
  */
-public class SimpleVisibleComponentsPanel extends Composite implements DropTarget, ComponentDatabaseChangeListener {
-  // UI elements
+public abstract class SimpleVisibleComponentsPanel<T extends DesignerRootComponent>
+    extends Composite implements DropTarget, ComponentDatabaseChangeListener {
   private static final Logger LOG = Logger.getLogger(SimpleVisibleComponentsPanel.class.getName());
-  interface SimpleVisibleComponentsPanelUiBinder extends UiBinder<VerticalPanel, SimpleVisibleComponentsPanel> {}
-  @UiField protected VerticalPanel phoneScreen;
-  @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
-  @UiField(provided = true) protected ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
-  private final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
-  @UiField protected CheckBox HiddenComponentsCheckbox;
 
   // Corresponding panel for non-visible components (because we allow users to drop
-  // non-visible components onto the form, but we show them in the non-visible
+  // non-visible components onto the root, but we show them in the non-visible
   // components panel)
-  private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
-  protected final ProjectEditor projectEditor;
+  private final SimpleNonVisibleComponentsPanel<T> nonVisibleComponentsPanel;
 
-  protected MockForm form;
+  protected T root;
 
   /**
    * Creates new component design panel for visible components.
@@ -62,191 +38,17 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
    * @param nonVisibleComponentsPanel  corresponding panel for non-visible
    *                                   components
    */
-  public SimpleVisibleComponentsPanel(final SimpleEditor editor,
-      SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel) {
+  public SimpleVisibleComponentsPanel(SimpleNonVisibleComponentsPanel<T> nonVisibleComponentsPanel) {
     this.nonVisibleComponentsPanel = nonVisibleComponentsPanel;
-    projectEditor = editor.getProjectEditor();
-
-    initializeListboxes();
-
-    bindUI();
-
-    listboxPhoneTablet.addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        String[] selectedValue = listboxPhoneTablet.getSelectedValue().split(",");
-        int idx = listboxPhoneTablet.getSelectedIndex();
-
-        int width = Integer.parseInt(selectedValue[0].trim());
-        int height = Integer.parseInt(selectedValue[1].trim());
-        String val = Integer.toString(idx) + "," + Integer.toString(width) + "," + Integer.toString(height);
-        // here, we can change settings by putting val into it
-        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET, val);
-        changeFormPreviewSize(idx, width, height);
-      }
-    });
-    listboxPhonePreview.addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        int idx = Integer.parseInt(listboxPhonePreview.getSelectedValue());
-        String val = drop_lst_phone_preview[idx];
-        // here, we can change settings by putting chosenStyle value into it
-        projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
-        changeFormPhonePreview(idx, val);
-      }
-    });
-    HiddenComponentsCheckbox.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        HiddenComponentsManager.getInstance().toggle();
-      }
-    });
-    initWidget(phoneScreen);
   }
 
-  protected void initializeListboxes() {
-    // Initialize UI
-    listboxPhoneTablet = new ListBox() {
-      @Override
-      protected void onLoad() {
-        // onLoad is called immediately after a widget becomes attached to the browser's document.
-        String sizing = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
-        boolean fixed = (sizing.equals("Fixed"));
-        listboxPhoneTablet.setVisible(!fixed);
-        if (fixed) {
-          changeFormPreviewSize(0, 320, 505);
-        } else {
-          getUserSettingChangeSize();
-        }
-      }
-    };
-
-    listboxPhonePreview = new ListBox() {
-      @Override
-      protected void onLoad() {
-        // onLoad is called immediately after a widget becomes attached to the browser's document.
-        String previewStyle = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
-        boolean classic = (previewStyle.equals("Classic"));
-        listboxPhonePreview.setVisible(!classic);
-        if (classic) {
-          changeFormPhonePreview(-1, "Classic");
-        } else {
-          getUserSettingChangePreview();
-        }
-      }
-    };
+  public SimpleNonVisibleComponentsPanel<T> getNonVisibleComponentsPanel() {
+    return nonVisibleComponentsPanel;
   }
 
-  protected void bindUI() {
-    SimpleVisibleComponentsPanelUiBinder uibinder = GWT.create(SimpleVisibleComponentsPanelUiBinder.class);
-    uibinder.createAndBindUi(this);
-  }
+  public abstract void setRoot(T root);
 
-  // get width and height stored in user settings, and change the preview size.
-  protected void getUserSettingChangeSize() {
-    String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_TABLET);
-    int idx = 0;
-    int width = 320;
-    int height = 505;
-
-    // Note: Initialization values above should not be changed without good reason. The settings property PHONE_TABLET
-    // is a legacy setting indicating tablet (true) or phone (false).
-    if (val.equals("True")) {
-      idx = 1;
-    } else {
-      String[] parts = val.split(",");
-      if (parts.length == 3) {
-        idx = Integer.parseInt(parts[0]);
-      }
-    }
-
-    if (listboxPhoneTablet.getItemCount() >= idx) {
-      String[] selectedValue = listboxPhoneTablet.getValue(idx).split(",");
-      width = Integer.parseInt(selectedValue[0].trim());
-      height = Integer.parseInt(selectedValue[1].trim());
-    }
-
-    listboxPhoneTablet.setItemSelected(idx, true);
-    changeFormPreviewSize(idx, width, height);
-  }
-
-  // get Phone Preview stored in user settings, and change the preview style.
-  protected void getUserSettingChangePreview() {
-    String val = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
-    int idx = 0;
-
-    if (val.equals("Classic")) {
-      val = "Android Material";
-    }
-
-    if (val.equals("Android Holo")) {
-      idx = 1;
-    } else if (val.equals("iOS")) {
-      idx = 2;
-    }
-    listboxPhonePreview.setItemSelected(idx, true);
-    changeFormPhonePreview(idx, val);
-  }
-
-  protected void changeFormPreviewSize(int idx, int width, int height) {
-
-    if (form == null)
-      return;
-
-    form.changePreviewSize(width, height, idx);
-  }
-
-  protected void changeFormPhonePreview(int idx, String chosenVal) {
-
-    if (form == null)
-      return;
-
-    form.changePhonePreview(idx, chosenVal);
-  }
-
-  public void enableTabletPreviewCheckBox(boolean enable){
-    if (form != null){
-      if (!enable){
-        changeFormPreviewSize(0, 320, 505);
-      } else {
-        getUserSettingChangeSize();
-      }
-      listboxPhoneTablet.setVisible(enable);
-    }
-    listboxPhoneTablet.setEnabled(enable);
-  }
-
-  public void enablePhonePreviewCheckBox(boolean enable){
-    if (form != null){
-      if (!enable){
-        changeFormPhonePreview(-1,"Classic");
-      } else {
-        getUserSettingChangePreview();
-      }
-      listboxPhonePreview.setVisible(enable);
-    }
-    listboxPhonePreview.setEnabled(enable);
-  }
-
-  public void focusCheckbox() {
-    HiddenComponentsCheckbox.setFocus(true);
-  }
-
-  /**
-   * Associates a Simple form component with this panel.
-   *
-   * @param form  backing mocked form component
-   */
-  public void setForm(MockForm form) {
-    this.form = form;
-    phoneScreen.add(form);
-  }
+  protected abstract void bindUI();
 
   // DropTarget implementation
 
@@ -299,31 +101,5 @@ public class SimpleVisibleComponentsPanel extends Composite implements DropTarge
   @Override
   public void onResetDatabase() {
 
-  }
-
-  public void show(MockForm form) {
-    this.form = form;
-    HiddenComponentsManager manager = HiddenComponentsManager.getInstance();
-    manager.setCurrentForm(form);
-    Boolean state = Ode.getCurrentProjectEditor().getScreenCheckboxState(form.getTitle());
-    boolean effectiveState = (state != null) ? state : false;
-    LOG.info("Setting checkbox state for " + form.getTitle() + " to " + effectiveState);
-    HiddenComponentsCheckbox.setValue(effectiveState);
-  }
-
-  public void showHiddenComponentsCheckbox() {
-    if (HiddenComponentsCheckbox != null) {
-      HiddenComponentsCheckbox.setVisible(true);
-    } else {
-      LOG.severe("HiddenComponentsCheckbox is null in showHiddenComponentsCheckbox");
-    }
-  }
-
-  public void hideHiddenComponentsCheckbox() {
-    if (HiddenComponentsCheckbox != null) {
-      HiddenComponentsCheckbox.setVisible(false);
-    } else {
-      LOG.severe("HiddenComponentsCheckbox is null in hideHiddenComponentsCheckbox");
-    }
   }
 }
