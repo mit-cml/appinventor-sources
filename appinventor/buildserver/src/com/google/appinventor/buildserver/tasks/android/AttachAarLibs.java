@@ -91,10 +91,8 @@ public class AttachAarLibs implements AndroidTask {
                 AARLibrary aarLib = new AARLibrary(aarFile);
                 aarLib.unpackToDirectory(explodedBaseDir);
                 context.getComponentInfo().getExplodedAarLibs().add(aarLib);
-                // Attach assets if available
-                copyAarAssets(aarFile, mergedAssetDir);
-                // Attach jni libraries if available
-                copyAarJni(aarFile, libsDir);
+                // Attach assets files & jni libraries if available
+                copyAssetsAndJni(aarFile, mergedAssetDir, libsDir);
                 processedLibs.add(libname);
                 attachedAARs.add(packageName);
               } else {
@@ -112,43 +110,23 @@ public class AttachAarLibs implements AndroidTask {
     return TaskResult.generateSuccess();
   }
 
-  private void copyAarAssets(File aarFile, File mergedAssetDir) throws IOException {
+  private void copyAssetsAndJni(File aarFile, File mergedAssetDir, File libsDir) throws IOException {
     try (ZipFile zip = new ZipFile(aarFile)) {
       Enumeration<? extends ZipEntry> entries = zip.entries();
       while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
-        if (entry.getName().startsWith("assets/")) {
-          if (entry.isDirectory()) {
-            ExecutorUtils.createDir(mergedAssetDir, entry.getName().substring("assets/".length()));
-          } else {
-            final String entryName = entry.getName().substring("assets/".length());
-            File targetFile = new File(mergedAssetDir, entryName);
+        File targetFile = null;
+        final String entryName = entry.getName();
+
+        if (entryName.startsWith("assets/")) {
+          final String entryPath = entryName.substring("assets/".length());
+          if (!entry.isDirectory()) {
+            targetFile = new File(mergedAssetDir, entryPath);
             if (!targetFile.getParentFile().exists()) {
               targetFile.getParentFile().mkdirs();
             }
-
-            // Copy file contents from ZIP entry
-            try (InputStream is = zip.getInputStream(entry);
-                 OutputStream os = new FileOutputStream(targetFile)) {
-              byte[] buffer = new byte[8192];
-              int bytesRead;
-              while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-              }
-            }
           }
-        }
-      }
-    }
-  }
-
-  private void copyAarJni(File aarFile, File libsDir) throws IOException {
-    try (ZipFile zip = new ZipFile(aarFile)) {
-      Enumeration<? extends ZipEntry> entries = zip.entries();
-      while (entries.hasMoreElements()) {
-        ZipEntry entry = entries.nextElement();
-        final String entryName = entry.getName();
-        if (entryName.startsWith("jni/") && entryName.endsWith(".so")) {
+        } else if (entryName.startsWith("jni/") && entryName.endsWith(".so")) {
           final String[] array = entryName.split("/", 3);
           final String abi = array[1];
           final String libName = array[2];
@@ -157,15 +135,17 @@ public class AttachAarLibs implements AndroidTask {
             if (!parentFile.exists()) {
               parentFile.mkdir();
             }
-            File targetFile = new File(parentFile, libName);
-            // Copy file contents from ZIP entry
-            try (InputStream is = zip.getInputStream(entry);
-                 OutputStream os = new FileOutputStream(targetFile)) {
-              byte[] buffer = new byte[8192];
-              int bytesRead;
-              while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-              }
+            targetFile = new File(parentFile, libName);
+          }
+        }
+        if (targetFile != null) {
+          // Copy file contents from ZIP entry
+          try (InputStream is = zip.getInputStream(entry);
+               OutputStream os = new FileOutputStream(targetFile)) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+              os.write(buffer, 0, bytesRead);
             }
           }
         }
