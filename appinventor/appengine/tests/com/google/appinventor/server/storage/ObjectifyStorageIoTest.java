@@ -7,9 +7,15 @@
 package com.google.appinventor.server.storage;
 
 import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appinventor.server.LocalDatastoreTestCase;
-import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalGcsServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appinventor.server.storage.StoredData.*;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyService;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.appinventor.shared.rpc.component.Component;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -24,23 +30,37 @@ import com.google.common.base.Charsets;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
-
+import java.util.UUID;
 import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ObjectifyStorageIo}.
  *
  * @author sharon@google.com (Sharon Perl)
  */
-public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
+public class ObjectifyStorageIoTest {
+
+  // Not extending LocalDatastoreTestCase anymore to manage LocalServiceTestHelper locally for GCS
+  // private final LocalServiceTestHelper helper = new LocalServiceTestHelper(
+  //    new LocalDatastoreServiceTestConfig(),
+  //    new LocalMemcacheServiceTestConfig() // Add other services if needed by ObjectifyStorageIo
+  // );
+  // Switching to direct helper management for GCS config
+  private LocalServiceTestHelper helper;
+
 
   private static final String SETTINGS = "{settings: \"none\"}";
   private static final String FAKE_PROJECT_TYPE = "FakeProjectType";
@@ -79,13 +99,43 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   private static final String YAIL_FILE_NAME2 = "src/File2.yail";
 
   private ObjectifyStorageIo storage;
-  private Project project;
+  private Project project; // Keep if other tests use it, or remove if only new tests are added
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void setUp() throws Exception {
+    // Initialize the helper with Datastore and GCS configurations
+    helper = new LocalServiceTestHelper(
+        new LocalDatastoreServiceTestConfig().setDefaultHighRepJobPolicyUnappliedJobPercentage(0.01f), // Example policy
+        new LocalGcsServiceTestConfig(),
+        new LocalMemcacheServiceTestConfig()
+    );
+    helper.setUp();
+    ObjectifyService.init(); // Initialize Objectify
+    // Register entities. This might be done globally in a TestRunner or AppEngineRule,
+    // but if not, register them here. Copied from ObjectifyStorageIo static block.
+    ObjectifyService.register(UserData.class);
+    ObjectifyService.register(ProjectData.class);
+    ObjectifyService.register(UserProjectData.class);
+    ObjectifyService.register(FileData.class);
+    ObjectifyService.register(UserFileData.class);
+    ObjectifyService.register(MotdData.class);
+    ObjectifyService.register(RendezvousData.class);
+    ObjectifyService.register(WhiteListData.class);
+    ObjectifyService.register(FeedbackData.class);
+    ObjectifyService.register(NonceData.class);
+    ObjectifyService.register(CorruptionRecord.class);
+    ObjectifyService.register(PWData.class);
+    ObjectifyService.register(SplashData.class);
+    ObjectifyService.register(Backpack.class);
+    ObjectifyService.register(AllowedTutorialUrls.class);
+    ObjectifyService.register(AllowedIosExtensions.class);
+    ObjectifyService.register(UserGlobalAssetData.class); // Changed
+    ObjectifyService.register(LibraryFileData.class); // Keep deprecated one for compatibility
+
+
     storage = new ObjectifyStorageIo();
 
+    // Keep project initialization if other tests depend on it
     project = new Project(PROJECT_NAME);
     project.setProjectType(FAKE_PROJECT_TYPE);
     project.addTextFile(new TextFile(FILE_NAME1, FILE_CONTENT1));
@@ -93,6 +143,13 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     project.addRawFile(new RawFile(RAW_FILE_NAME1, RAW_FILE_CONTENT1));
     project.addRawFile(new RawFile(RAW_FILE_NAME2, RAW_FILE_CONTENT2));
   }
+
+  @After
+  public void tearDown() throws Exception {
+    ObjectifyService.reset(); // Clears registered entities if using ObjectifyService.init() per test
+    helper.tearDown();
+  }
+
 
   private void createUserFiles(String userId, String userEmail, ObjectifyStorageIo storage)
     throws UnsupportedEncodingException {
@@ -345,20 +402,20 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     storage.addFilesToUser(USER_ID, FILE_NAME_OUTPUT);
     storage.uploadRawUserFile(USER_ID, FILE_NAME_OUTPUT, FILE_CONTENT_OUTPUT);
 
-    assertTrue(storage.getUserFiles(USER_ID).contains(FILE_NAME1));
-    assertTrue(storage.getUserFiles(USER_ID).contains(FILE_NAME_OUTPUT));
+    assertTrue(storage.getUserFiles(USER_ID, null).contains(FILE_NAME1));
+    assertTrue(storage.getUserFiles(USER_ID, null).contains(FILE_NAME_OUTPUT));
     assertEquals(FILE_CONTENT1, storage.downloadUserFile(USER_ID, FILE_NAME1,
         StorageUtil.DEFAULT_CHARSET));
     assertEquals(new String(FILE_CONTENT_OUTPUT),
         new String(storage.downloadRawUserFile(USER_ID, FILE_NAME_OUTPUT)));
 
     storage.deleteUserFile(USER_ID, FILE_NAME1);
-    assertFalse(storage.getUserFiles(USER_ID).contains(FILE_NAME1));
-    assertTrue(storage.getUserFiles(USER_ID).contains(FILE_NAME_OUTPUT));
+    assertFalse(storage.getUserFiles(USER_ID, null).contains(FILE_NAME1));
+    assertTrue(storage.getUserFiles(USER_ID, null).contains(FILE_NAME_OUTPUT));
 
     storage.deleteUserFile(USER_ID, FILE_NAME_OUTPUT);
-    assertFalse(storage.getUserFiles(USER_ID).contains(FILE_NAME1));
-    assertFalse(storage.getUserFiles(USER_ID).contains(FILE_NAME_OUTPUT));
+    assertFalse(storage.getUserFiles(USER_ID, null).contains(FILE_NAME1));
+    assertFalse(storage.getUserFiles(USER_ID, null).contains(FILE_NAME_OUTPUT));
   }
 
   public void testUnsupportedEncoding() throws BlocksTruncatedException {
@@ -624,4 +681,85 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     project.addTextFile(new TextFile(fileName, ""));
     return storageIo.createProject(userId, project, SETTINGS);
   }
+
+  @Test
+  public void testUploadGlobalAsset_success() throws IOException {
+    final String userId = "testUser123";
+    final String assetName = "myCoolAsset.png";
+    final String assetType = "image/png"; // Example MIME type
+    final String assetFolder = "myAssets";
+    final byte[] contentBytes = "This is a test asset file content.".getBytes(Charsets.UTF_8);
+    InputStream contentStream = new ByteArrayInputStream(contentBytes);
+
+    // Ensure user exists for parent key
+    ofy().save().entity(new UserData(){{ id = userId; email = "test@example.com"; } }).now();
+
+    UserGlobalAssetData globalAssetData = storage.uploadGlobalAsset(userId, assetName, assetType, assetFolder, contentStream);
+
+    assertNotNull("Returned UserGlobalAssetData should not be null", globalAssetData);
+    assertNotNull("ID should be generated for UserGlobalAssetData", globalAssetData.id);
+    assertEquals("User ID in userKey does not match", userId, globalAssetData.userKey.getName());
+    assertEquals("Asset name does not match", assetName, globalAssetData.name);
+    assertEquals("Asset type does not match", assetType, globalAssetData.type);
+    assertEquals("Asset folder does not match", assetFolder, globalAssetData.folder);
+    assertTrue("Upload date should be positive", globalAssetData.uploadDate > 0);
+    assertNotNull("GCS path should not be null", globalAssetData.gcsPath);
+    assertTrue("GCS path should contain user ID and new path structure", globalAssetData.gcsPath.startsWith(userId + "/globalassets/"));
+    assertTrue("GCS path should contain asset name", globalAssetData.gcsPath.endsWith("_" + assetName));
+
+    // Verify from Datastore
+    Key<UserData> userKey = Key.create(UserData.class, userId);
+    UserGlobalAssetData retrieved = ofy().load().key(Key.create(userKey, UserGlobalAssetData.class, globalAssetData.id)).now();
+
+    assertNotNull("Retrieved UserGlobalAssetData should not be null from Datastore", retrieved);
+    assertEquals("Retrieved name does not match", assetName, retrieved.name);
+    assertEquals("Retrieved type does not match", assetType, retrieved.type);
+    assertEquals("Retrieved folder does not match", assetFolder, retrieved.folder);
+    assertEquals("Retrieved uploadDate does not match", globalAssetData.uploadDate, retrieved.uploadDate);
+    assertEquals("Retrieved gcsPath does not match", globalAssetData.gcsPath, retrieved.gcsPath);
+    assertEquals("Retrieved userKey does not match", userKey, retrieved.userKey);
+
+    // Optionally, verify GCS content if LocalGcsServiceTestConfig allows easy checks (may be complex)
+    // For now, confirming gcsPath pattern and datastore persistence is the primary goal.
+  }
+
+  @Test
+  public void testUploadGlobalAsset_nullFolder() throws IOException {
+    final String userId = "testUser456";
+    final String assetName = "anotherAsset.dat";
+    final String assetType = "application/octet-stream";
+    final String assetFolder = null; // Test with null folder
+    final byte[] contentBytes = "Another asset content.".getBytes(Charsets.UTF_8);
+    InputStream contentStream = new ByteArrayInputStream(contentBytes);
+
+    // Ensure user exists for parent key
+    ofy().save().entity(new UserData(){{ id = userId; email = "test456@example.com"; } }).now();
+
+    UserGlobalAssetData globalAssetData = storage.uploadGlobalAsset(userId, assetName, assetType, assetFolder, contentStream);
+
+    assertNotNull("Returned UserGlobalAssetData should not be null", globalAssetData);
+    assertNotNull("ID should be generated for UserGlobalAssetData", globalAssetData.id);
+    assertEquals("User ID in userKey does not match", userId, globalAssetData.userKey.getName());
+    assertEquals("Asset name does not match", assetName, globalAssetData.name);
+    assertEquals("Asset type does not match", assetType, globalAssetData.type);
+    assertNull("Asset folder should be null", globalAssetData.folder); // Key assertion for this test
+    assertTrue("Upload date should be positive", globalAssetData.uploadDate > 0);
+    assertNotNull("GCS path should not be null", globalAssetData.gcsPath);
+    assertTrue("GCS path should contain user ID and new path structure", globalAssetData.gcsPath.startsWith(userId + "/globalassets/"));
+    assertTrue("GCS path should contain asset name", globalAssetData.gcsPath.endsWith("_" + assetName));
+
+
+    // Verify from Datastore
+    Key<UserData> userKey = Key.create(UserData.class, userId);
+    UserGlobalAssetData retrieved = ofy().load().key(Key.create(userKey, UserGlobalAssetData.class, globalAssetData.id)).now();
+
+    assertNotNull("Retrieved UserGlobalAssetData should not be null from Datastore", retrieved);
+    assertEquals("Retrieved name does not match", assetName, retrieved.name);
+    assertEquals("Retrieved type does not match", assetType, retrieved.type);
+    assertNull("Retrieved folder should be null", retrieved.folder);
+    assertEquals("Retrieved uploadDate does not match", globalAssetData.uploadDate, retrieved.uploadDate);
+    assertEquals("Retrieved gcsPath does not match", globalAssetData.gcsPath, retrieved.gcsPath);
+    assertEquals("Retrieved userKey does not match", userKey, retrieved.userKey);
+  }
+
 }

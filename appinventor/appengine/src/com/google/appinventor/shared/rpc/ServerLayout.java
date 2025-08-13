@@ -129,6 +129,12 @@ public class ServerLayout {
   public static final String DOWNLOAD_USERFILE = "userfile";
 
   /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading a global asset
+   */
+  public static final String DOWNLOAD_GLOBAL_ASSET = "globalasset";
+
+  /**
    * Relative path of the {@link com.google.appinventor.server.UploadServlet}
    * within the ODE GWT module.
    */
@@ -159,6 +165,20 @@ public class ServerLayout {
   public static final String UPLOAD_USERFILE = "userfile";
 
   /**
+<<<<<<< HEAD
+=======
+   * URI path element for global asset uploads.
+   */
+  public static final String UPLOAD_GLOBAL_ASSET = "globalasset";
+
+  /**
+   * Relative path of the {@link com.google.appinventor.server.GetMotdServiceImpl}
+   * within the ODE GWT module.
+   */
+  public static final String GET_MOTD_SERVICE = "getmotd";
+
+  /**
+>>>>>>> asset-library
    * Relative path of the {@link com.google.appinventor.server.components.FirebaseAuthServiceImpl}
    * within the ODE GWT module.
    */
@@ -195,6 +215,11 @@ public class ServerLayout {
    * Name of the form element to upload user files.
    */
   public static final String UPLOAD_USERFILE_FORM_ELEMENT = "uploadUserFile";
+
+  /**
+   * Form element name used for global asset file uploads.
+   */
+  public static final String UPLOAD_GLOBAL_ASSET_FORM_ELEMENT = "globalAssetFile";
 
   /**
    * Relative path of the

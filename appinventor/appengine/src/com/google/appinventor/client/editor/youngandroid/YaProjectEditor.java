@@ -63,6 +63,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.gwt.uibinder.client.UiField;
+import com.google.appinventor.client.editor.youngandroid.AssetManagerPanel;
+
 /**
  * Project editor for Young Android projects. Each instance corresponds to
  * one project that has been opened in this App Inventor session.
@@ -83,6 +86,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   @UiTemplate("YaProjectEditorCombined.ui.xml")
   interface CombinedUi extends UiBinder<FlowPanel, YaProjectEditor> {}
+
+  @UiField
+  AssetManagerPanel assetManagerPanel;
 
   // FileEditors in a YA project come in sets. Every form in the project has
   // a YaFormEditor for editing the UI, and a YaBlocksEditor for editing the
@@ -139,12 +145,20 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     super(projectRootNode, styleFactory);
     project.addProjectChangeListener(this);
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
+<<<<<<< HEAD
     Ode.getInstance().getTokenAuthService().getCloudDBToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String result) {
         defaultCloudDBToken = result;
       }
     });
+=======
+    
+    // Initialize asset manager panel
+    if (assetManagerPanel != null) {
+      assetManagerPanel.setVisible(true);
+    }
+>>>>>>> asset-library
   }
 
   public String getDefaultCloudDBToken() {

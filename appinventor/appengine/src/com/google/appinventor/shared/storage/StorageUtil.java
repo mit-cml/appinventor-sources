@@ -36,6 +36,9 @@ public class StorageUtil {
    * @return path, with any leading directory elements removed
    */
   public static String basename(String path) {
+    if (path == null) {
+      return "";
+    }
     if (path.length() == 0) {
       return path;
     }

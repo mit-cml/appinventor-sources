@@ -10,6 +10,7 @@ import com.google.appinventor.client.Ode;
 import com.google.gwt.resources.client.ImageResource;
 
 public interface ImagesNeo extends Images {
+  ImagesNeo INSTANCE = com.google.gwt.core.client.GWT.create(ImagesNeo.class);
    /*
    * These are from Google's Material Icon set https://fonts.google.com/icons
    * */
@@ -643,4 +644,11 @@ public interface ImagesNeo extends Images {
    */
   @Source("images/trendline.png")
   ImageResource trendline();
+
+  /**
+   * Sync icon for updated global assets.
+   * Material icon: sync
+   */
+  @Source("images/syncIcon.png")
+  ImageResource syncIcon();
 }

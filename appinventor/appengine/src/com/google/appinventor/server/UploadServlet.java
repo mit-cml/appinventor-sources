@@ -16,6 +16,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -158,6 +159,23 @@ public class UploadServlet extends OdeServlet {
 
         uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, 0,
           fileImporter.importTempFile(uploadedStream));
+      } else if (uploadKind.equals(ServerLayout.UPLOAD_GLOBAL_ASSET)) {
+        uriComponents = uri.split("/", SPLIT_LIMIT_USERFILE);
+        if (USERFILE_PATH_INDEX >= uriComponents.length) {
+          throw CrashReport.createAndLogError(LOG, req, null,
+              new IllegalArgumentException("Missing global asset file path."));
+        }
+        String fileName = uriComponents[USERFILE_PATH_INDEX];
+        InputStream uploadedStream;
+        try {
+          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_GLOBAL_ASSET_FORM_ELEMENT);
+        } catch (Exception e) {
+          throw CrashReport.createAndLogError(LOG, req, null, e);
+        }
+
+        fileImporter.importGlobalAsset(userInfoProvider.getUserId(), fileName, uploadedStream);
+        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
+
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,
             new IllegalArgumentException("Unknown upload kind: " + uploadKind));

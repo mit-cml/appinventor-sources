@@ -29,6 +29,9 @@
       <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="{hasWriteAccess}">
         <actions:ImportTemplateAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="AssetLibrary" caption="{messages.assetLibraryMenuItem}" visible="{hasWriteAccess}" ui:field="assetLibraryDropDown">
+        <actions:SwitchToAssetLibraryAction/>
+      </ai:DropDownItem>
       <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}">
         <actions:DeleteAction/>
       </ai:DropDownItem>

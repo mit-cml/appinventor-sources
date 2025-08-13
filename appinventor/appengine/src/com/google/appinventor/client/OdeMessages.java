@@ -119,9 +119,44 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text on Toggle Warning Button")
   String hideWarnings();
 
-  @DefaultMessage("Upload File ...")
-  @Description("Text on \"Add...\" button")
-  String addButton();
+  @DefaultMessage("Upload File ...")  @Description("Text on \"Add...\" button")  String addButton();  @DefaultMessage("Preview")  @Description("Text on \"Preview\" button")  String previewButton();  @DefaultMessage("Download")  @Description("Text on \"Download\" button")  String downloadButton();  @DefaultMessage("Link to Project")
+  @Description("Text for button to link a global asset to the current project")
+  String linkToProjectButton();
+
+  @DefaultMessage("Error linking global asset to project.")
+  @Description("Error message when linking global asset to project fails")
+  String linkGlobalAssetError();
+
+  @DefaultMessage("Global asset ''{0}'' linked successfully to project.")
+  @Description("Success message when a global asset is linked to a project")
+  String globalAssetLinked(String assetName);
+
+  @DefaultMessage("No project is currently open. Please open a project to link global assets.")
+  @Description("Warning message when trying to link a global asset without an open project")
+  String noProjectOpenForLinking();
+
+  @DefaultMessage("Global Asset Update")
+  @Description("Title for the global asset update dialog")
+  String globalAssetUpdateDialogTitle();
+
+  @DefaultMessage("The global asset \"{0}\" has been updated.\n\n" +
+      "Current version timestamp: {1}\n" +
+      "New version timestamp: {2}\n\n" +
+      "Do you want to update this asset in your project?")
+  @Description("Message for the global asset update dialog")
+  String globalAssetUpdateMessage(String fileName, String oldTimestamp, String newTimestamp);
+
+  @DefaultMessage("Error updating global asset in project.")
+  @Description("Error message when updating global asset in project fails")
+  String globalAssetUpdateError();
+
+  @DefaultMessage("Global asset \"{0}\" updated successfully.")
+  @Description("Success message when a global asset is updated in the project")
+  String globalAssetUpdatedSuccessfully(String fileName);
+
+  @DefaultMessage("Error checking for global asset updates.")
+  @Description("Error message when checking for global asset updates fails")
+  String errorCheckingGlobalAssetUpdate();
 
   @DefaultMessage("Name")
   @Description("Header for name column of project table")
@@ -538,6 +573,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Import project (.aia) from a repository ...")
   @Description("Name of Import Template menuitem")
   String importTemplateButton();
+
+  @DefaultMessage("Asset Library")
+  @Description("Name of Asset Library menuitem")
+  String assetLibraryMenuItem();
 
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
@@ -5779,4 +5818,120 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
   @Description("Message shown in the info popup when the user first opens the Neo UI.")
   String neoWelcomeMessage();
+
+  @DefaultMessage("Asset Manager")
+  @Description("Title for the Asset Manager panel")
+  String assetManagerTitle();
+
+  @DefaultMessage("Upload Asset")
+  @Description("Text for the upload asset button")
+  String uploadAssetButton();
+
+  @DefaultMessage("Search Assets")
+  @Description("Placeholder text for asset search box")
+  String searchAssetsPlaceholder();
+
+  @DefaultMessage("Folders")
+  @Description("Title for the folders section")
+  String foldersSectionTitle();
+
+  @DefaultMessage("Tags")
+  @Description("Title for the tags section")
+  String tagsSectionTitle();
+
+  @DefaultMessage("Recent")
+  @Description("Title for the recent assets section")
+  String recentAssetsTitle();
+
+  @DefaultMessage("Drag and drop files here")
+  @Description("Text shown in the upload drop zone")
+  String dragDropText();
+
+  @DefaultMessage("or click to browse")
+  @Description("Text shown next to drag and drop message")
+  String clickToBrowseText();
+
+  @DefaultMessage("Preview")
+  @Description("Title for the asset preview panel")
+  String previewTitle();
+
+  @DefaultMessage("Properties")
+  @Description("Title for the asset properties panel")
+  String propertiesTitle();
+
+  @DefaultMessage("Name")
+  @Description("Label for asset name property")
+  String assetNameLabel();
+
+  @DefaultMessage("Type")
+  @Description("Label for asset type property")
+  String assetTypeLabel();
+
+  @DefaultMessage("Size")
+  @Description("Label for asset size property")
+  String assetSizeLabel();
+
+  @DefaultMessage("Date Added")
+  @Description("Label for asset date added property")
+  String assetDateAddedLabel();
+
+  @DefaultMessage("Tags")
+  @Description("Label for asset tags property")
+  String assetTagsLabel();
+
+  @DefaultMessage("Add to Project")
+  @Description("Text for the add to project button")
+  String addToProjectButton();
+
+  @DefaultMessage("Delete")
+  @Description("Text for the delete asset button")
+  String deleteAssetButton();
+
+  @DefaultMessage("Edit")
+  @Description("Text for the edit asset button")
+  String editAssetButton();
+
+  @DefaultMessage("Create Folder")
+  @Description("Text for the create folder button")
+  String createFolderButton();
+
+  @DefaultMessage("Add Tag")
+  @Description("Text for the add tag button")
+  String addTagButton();
+
+  @DefaultMessage("Filter by Type")
+  @Description("Label for the asset type filter")
+  String filterByTypeLabel();
+
+  @DefaultMessage("All Types")
+  @Description("Text for the all types filter option")
+  String allTypesFilter();
+
+  @DefaultMessage("Images")
+  @Description("Text for the images filter option")
+  String imagesFilter();
+
+  @DefaultMessage("Audio")
+  @Description("Text for the audio filter option")
+  String audioFilter();
+
+  @DefaultMessage("Video")
+  @Description("Text for the video filter option")
+  String videoFilter();
+
+  @DefaultMessage("Other")
+  @Description("Text for the other files filter option")
+  String otherFilter();
+
+  @DefaultMessage("Upload as Global Asset")
+  @Description("Label for the checkbox to upload as a global asset")
+  String uploadAsGlobalAssetCheckbox();
+
+  @DefaultMessage("Global Folder (optional)")
+  @Description("Placeholder for the global folder text box in asset upload")
+  String globalFolderPlaceholder();
+
+  @DefaultMessage("Error fetching global assets.")
+  @Description("Error message when fetching global assets fails")
+  String errorFetchingGlobalAssets();
 }

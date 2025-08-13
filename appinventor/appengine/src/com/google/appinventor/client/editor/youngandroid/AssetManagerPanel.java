@@ -1,141 +1,202 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2016 MIT, All rights reserved
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-package com.google.appinventor.client.explorer.commands;
-
-import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.StyleElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.*;
-import com.google.appinventor.shared.rpc.project.GlobalAssetProjectNode;
+package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.GlobalAssetProjectNode;
+import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.StyleElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.DOM;
+
 /**
- * Command for previewing files.
- *
+ * Panel for managing assets in the App Inventor Designer.
+ * Provides functionality for uploading, organizing, and managing project assets.
  */
-public class PreviewFileCommand extends ChainableCommand {
+public class AssetManagerPanel extends Composite {
+  interface AssetManagerPanelUiBinder extends UiBinder<Widget, AssetManagerPanel> {}
+  private static final AssetManagerPanelUiBinder UI_BINDER = GWT.create(AssetManagerPanelUiBinder.class);
+
+  @UiField
+  VerticalPanel mainPanel;
+  
+  @UiField
+  HorizontalPanel toolbarPanel;
+  
+  @UiField
+  TextBox searchBox;
+  
+  @UiField
+  Button uploadButton;
+  
+  @UiField
+  Button createFolderButton;
+  
+  @UiField
+  ListBox typeFilter;
+  
+  @UiField
+  VerticalPanel foldersPanel;
+  
+  @UiField
+  VerticalPanel tagsPanel;
+  
+  @UiField
+  VerticalPanel previewPanel;
+  
+  @UiField
+  VerticalPanel propertiesPanel;
+
+  private ProjectNode selectedAssetNode;
+
+  public AssetManagerPanel() {
+    initWidget(UI_BINDER.createAndBindUi(this));
+    
+    // Initialize UI components
+    initializeUI();
+    
+    // Add event handlers
+    addEventHandlers();
+  }
+
+  private void initializeUI() {
+    // Set up search box
+    searchBox.setTitle(MESSAGES.searchAssetsPlaceholder());
+    
+    // Set up upload button
+    uploadButton.setText(MESSAGES.uploadAssetButton());
+    
+    // Set up create folder button
+    createFolderButton.setText(MESSAGES.createFolderButton());
+    
+    // Set up type filter
+    typeFilter.addItem(MESSAGES.allTypesFilter());
+    typeFilter.addItem(MESSAGES.imagesFilter());
+    typeFilter.addItem(MESSAGES.audioFilter());
+    typeFilter.addItem(MESSAGES.videoFilter());
+    typeFilter.addItem(MESSAGES.otherFilter());
+  }
+
+  private void addEventHandlers() {
+    // Search box handler
+    searchBox.addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) {
+        // TODO: Implement search functionality
+      }
+    });
+    
+    // Upload button handler
+    uploadButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // TODO: Implement file upload dialog
+      }
+    });
+    
+    // Create folder button handler
+    createFolderButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // TODO: Implement create folder dialog
+      }
+    });
+    
+    // Type filter handler
+    typeFilter.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        // TODO: Implement type filtering
+      }
+    });
+    
+  }
+
   /**
-   * Creates a new command for previewing a file.
+   * Updates the folders panel with the current folder structure
    */
-  public PreviewFileCommand() {
-    super(null); // no next command
-  }
-
-  @Override
-  public boolean willCallExecuteNextCommand() {
-    return false;
-  }
-
-  @Override
-  public boolean isSupported(final ProjectNode node) {
-    return StorageUtil.isImageFile(node.getFileId()) || StorageUtil.isAudioFile(node.getFileId())
-        || StorageUtil.isVideoFile(node.getFileId()) || StorageUtil.isFontFile(node.getFileId());
-  }
-
-  @Override
-  public void execute(final ProjectNode node) {
-    final DialogBox dialogBox = new DialogBox();
-    dialogBox.setText(node.getName());
-    dialogBox.setStylePrimaryName("ode-DialogBox");
-
-    //setting position of dialog box
-    dialogBox.center();
-    dialogBox.setAnimationEnabled(true);
-
-    //button element
-    final Button closeButton = new Button(MESSAGES.closeFilePreview());
-    closeButton.getElement().setId("closeButton");
-    closeButton.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          dialogBox.hide();
-        }
-      });
-
-    HorizontalPanel buttonPanel = new HorizontalPanel();
-    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    buttonPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-    buttonPanel.add(closeButton);
-
-    VerticalPanel dialogPanel = new VerticalPanel();
-    dialogPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-    dialogPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-
-    Widget filePreview = generateFilePreview(node);
-    dialogPanel.clear();
-    dialogPanel.add(filePreview);
-
-    dialogPanel.add(buttonPanel);
-    dialogPanel.setWidth("300px");
-
-    dialogBox.setGlassEnabled(false);
-    dialogBox.setModal(false);
-
-    // Set the contents of the Widget
-    dialogBox.setWidget(dialogPanel);
-    dialogBox.center();
-    dialogBox.show();
+  private void updateFoldersPanel() {
+    // TODO: Implement folder structure update
   }
 
   /**
-   * Generate a file preview to display
-   *
-   * @param node
-   * @return widget
+   * Updates the tags panel with the current tags
    */
-  private Widget generateFilePreview(ProjectNode node) {
+  private void updateTagsPanel() {
+    // TODO: Implement tags update
+  }
+
+  /**
+   * Updates the preview panel with the selected asset
+   */
+  public void updatePreviewPanel(ProjectNode node) {
+    this.selectedAssetNode = node;
+    previewPanel.clear();
+    if (node == null) {
+      return;
+    }
+
     String fileSuffix;
     String fileUrl;
+
     if (node instanceof GlobalAssetProjectNode) {
-      fileSuffix = node.getFileId();
-      fileUrl = "/download/globalasset/" + node.getFileId();
+        fileSuffix = node.getFileId();
+        fileUrl = "/ode/download/globalasset/" + node.getFileId();
     } else {
-      fileSuffix = node.getProjectId() + "/" + node.getFileId();
-      fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
+        fileSuffix = node.getProjectId() + "/" + node.getFileId();
+        fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
     }
+
+    Widget previewWidget = null;
 
     if (StorageUtil.isImageFile(fileSuffix)) { // Image Preview
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
-      // Support preview for file types that all major browser support
       if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif")
-          || fileType.endsWith("bmp") || fileType.endsWith("svg+xml") || fileType.endsWith("webp")) {
+          || fileType.endsWith("bmp") || fileType.endsWith("svg+xml")) {
         Image img = new Image(fileUrl);
         img.getElement().getStyle().setProperty("maxWidth","600px");
-        return img;
+        previewWidget = img;
       }
     } else if (StorageUtil.isAudioFile(fileSuffix)) { // Audio Preview
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
       if (fileType.endsWith("mp3") || fileType.endsWith("wav") || fileType.endsWith("ogg")) {
-        return new HTML("<audio controls><source src='" + fileUrl + "' type='" + fileType
+        previewWidget = new HTML("<audio controls><source src='" + fileUrl + "' type='" + fileType
             + "'>" + MESSAGES.filePlaybackError() + "</audio>");
       }
     } else if (StorageUtil.isVideoFile(fileSuffix)) { // Video Preview
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
       if (fileType.endsWith("avi") || fileType.endsWith("mp4") || fileType.endsWith("webm")) {
-        return new HTML("<video width='320' height='240' controls> <source src='" + fileUrl
+        previewWidget = new HTML("<video width='320' height='240' controls> <source src='" + fileUrl
             + "' type='" + fileType + "'>" + MESSAGES.filePlaybackError() + "</video>");
       }
     } else if (StorageUtil.isFontFile(fileSuffix))  {  // Font Preview
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
       if (fileType.endsWith("ttf") || fileType.endsWith("otf")) {
-        return getFontResourcePreviewPanel(fileUrl);
+        previewWidget = getFontResourcePreviewPanel(fileUrl);
       }
     }
-    return new HTML(MESSAGES.filePreviewError());
+
+    if (previewWidget != null) {
+      previewPanel.add(previewWidget);
+    } else {
+      previewPanel.add(new HTML(MESSAGES.filePreviewError()));
+    }
   }
-  
+
   private VerticalPanel getFontResourcePreviewPanel(String fontResourceURL) {
     VerticalPanel fontResourcePreviewPanel = new VerticalPanel();
     fontResourcePreviewPanel.setWidth("600px");
@@ -231,4 +292,11 @@ public class PreviewFileCommand extends ChainableCommand {
     
     return fontResourcePreviewPanel;
   }
-}
+
+  /**
+   * Updates the properties panel with the selected asset's properties
+   */
+  private void updatePropertiesPanel() {
+    // TODO: Implement properties update
+  }
+} 

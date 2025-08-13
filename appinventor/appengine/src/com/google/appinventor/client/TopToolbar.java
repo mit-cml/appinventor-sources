@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.youngandroid.DesignToolbar.DesignPro
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.Screen;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.core.client.GWT;
@@ -64,6 +65,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_ABOUT = "About";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
+  private static final String WIDGET_NAME_ASSETLIBRARY = "AssetLibrary";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
   private static final String WIDGET_NAME_PROJECTPROPERTIES = "ProjectProperties";
 
@@ -83,6 +85,7 @@ public class TopToolbar extends Composite {
   @UiField protected DropDownButton buildDropDown;
   @UiField protected DropDownButton settingsDropDown;
   @UiField protected DropDownButton adminDropDown;
+  @UiField protected DropDownItem assetLibraryDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
 
   protected boolean readOnly;
@@ -299,10 +302,7 @@ public class TopToolbar extends Composite {
     // TODO: This code will work only so long as these menu items stay located in the file/build
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
-    if (view == 0) {  // We are in the Projects view
-      if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
-        fileDropDown.setVisible(false);
-      }
+    if (view == Ode.PROJECTS) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
@@ -312,6 +312,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), false);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_ASSETLIBRARY, true);
       buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), false);
       buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), false);
       if (Ode.getInstance().hasSecondBuildserver()) {
@@ -319,9 +320,6 @@ public class TopToolbar extends Composite {
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
       }
     } else { // We have to be in the Designer/Blocks view
-      if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
-        fileDropDown.setVisible(true);
-      }
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
       fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
@@ -331,6 +329,7 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), true);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_ASSETLIBRARY, false);
       buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), true);
       buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), true);
       if (Ode.getInstance().hasSecondBuildserver()) {

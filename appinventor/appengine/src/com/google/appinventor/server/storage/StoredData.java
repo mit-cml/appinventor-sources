@@ -15,6 +15,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Id;
 
@@ -146,6 +147,65 @@ public class StoredData {
     String settings;
   }
 
+  // Global assets (tied to user)
+  @Unindexed
+  @Cached
+  public static final class GlobalAssetData {
+    // The file name
+    @Id public String fileName;
+
+    // The user (parent's) key
+    @Parent Key<UserData> userKey;
+
+    // The folder name
+    @Indexed public String folder;
+
+    // Timestamp of last modification
+    public long timestamp;
+
+    // File content, these are raw bytes.
+    public byte[] content;
+
+    // MIME type of the asset
+    public String mimeType;
+    public List<Long> referencedBy; // List of project IDs that reference this global asset
+  }
+
+  // Project-Global Asset relationship tracking
+  @Unindexed
+  @Cached
+  public static final class ProjectGlobalAssetData {
+    // Auto-generated ID
+    @Id Long id;
+    
+    // Project key (parent)
+    @Parent Key<ProjectData> projectKey;
+    
+    // Global asset reference
+    @Indexed public String globalAssetFileName;
+    @Indexed public String globalAssetUserId;
+    
+    // Tracking metadata per project
+    @Indexed public boolean trackUsage;        // Track vs Copy option
+    public long syncedTimestamp;               // When last synced from global
+    public String localAssetPath;              // Path in project assets (e.g., "assets/_global_/folder/file.png")
+    public long addedTimestamp;                // When added to project
+    
+    // Default constructor for Objectify
+    public ProjectGlobalAssetData() {}
+    
+    public ProjectGlobalAssetData(Key<ProjectData> projectKey, String globalAssetFileName, 
+                                  String globalAssetUserId, boolean trackUsage, String localAssetPath) {
+      this.projectKey = projectKey;
+      this.globalAssetFileName = globalAssetFileName;
+      this.globalAssetUserId = globalAssetUserId;
+      this.trackUsage = trackUsage;
+      this.localAssetPath = localAssetPath;
+      this.addedTimestamp = System.currentTimeMillis();
+      this.syncedTimestamp = System.currentTimeMillis();
+    }
+  }
+
   // Project files
   // Note: FileData has to be Serializable so we can put it into
   //       memcache.
@@ -200,6 +260,19 @@ public class StoredData {
     String userId;              // The userId which owns this file
                                 // if null or the empty string, we haven't initialized
                                 // it yet
+  }
+
+  // Project-specific global asset references
+  @Unindexed
+  public static final class ProjectGlobalAsset {
+    // The global asset file name
+    @Id public String globalAssetFileName;
+
+    // Key of the project (parent) to which this global asset is linked
+    @Parent Key<ProjectData> projectKey;
+
+    // Timestamp of when this global asset was linked to the project
+    public long timestamp;
   }
 
   // MOTD data.

@@ -14,6 +14,8 @@ import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectSer
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData;
+import com.google.appinventor.server.storage.ObjectifyException;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -43,6 +45,10 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 import javax.annotation.Nullable;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Implementation of {@link FileImporter} based on {@link StorageIo}
@@ -163,6 +169,25 @@ public final class FileImporterImpl implements FileImporter {
     }
     String settings = new YoungAndroidSettingsBuilder().setDefaultLastOpened(lastOpened).build();
     long projectId = storageIo.createProject(userId, project, settings);
+
+    // Handle global asset references from metadata
+    if (projectHistory != null && projectHistory.startsWith("{\"globalAssets\":")) { // Assuming JSON format
+      try {
+        JSONObject metadataJson = new JSONObject(projectHistory);
+        if (metadataJson.has("globalAssets")) {
+          JSONArray globalAssetsJson = metadataJson.getJSONArray("globalAssets");
+          for (int i = 0; i < globalAssetsJson.length(); i++) {
+            JSONObject assetJson = globalAssetsJson.getJSONObject(i);
+            String globalAssetFileName = assetJson.getString("fileName");
+            long timestamp = assetJson.getLong("timestamp");
+            storageIo.addProjectGlobalAsset(userId, projectId, globalAssetFileName, timestamp);
+          }
+        }
+      } catch (JSONException e) {
+        LOG.log(Level.WARNING, "Failed to parse global asset metadata during import for project " + projectId, e);
+      }
+    }
+
     return storageIo.getUserProject(userId, projectId);
   }
 
@@ -216,6 +241,28 @@ public final class FileImporterImpl implements FileImporter {
       storageIo.addFilesToUser(userId, fileName);
     }
     storageIo.uploadRawUserFile(userId, fileName, content);
+  }
+
+  @Override
+  public void importGlobalAsset(String userId, String fileName, InputStream uploadedFileStream)
+      throws IOException {
+    byte[] content = ByteStreams.toByteArray(uploadedFileStream);
+
+    // The fileName for global assets will be in the format "_global_/folder/asset.png"
+    // or "_global_/asset.png". We need to extract the folder and the actual file name.
+    String[] parts = fileName.split("/", 3);
+    String folder = "";
+    String assetName;
+    if (parts.length == 3) {
+      folder = parts[1];
+      assetName = parts[2];
+    } else if (parts.length == 2) {
+      assetName = parts[1];
+    } else {
+      throw new IllegalArgumentException("Invalid global asset file name: " + fileName);
+    }
+
+    storageIo.uploadGlobalAsset(userId, folder, assetName, content);
   }
 
   @Override

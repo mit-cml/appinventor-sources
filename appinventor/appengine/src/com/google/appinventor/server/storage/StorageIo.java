@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
@@ -246,6 +247,15 @@ public interface StorageIo {
    */
   String getProjectHistory(String userId, long projectId);
 
+  /**
+   * Returns a list of all global assets linked to a project.
+   *
+   * @param userId a user Id
+   * @param projectId project ID
+   * @return list of ProjectGlobalAsset objects
+   */
+  List<StoredData.ProjectGlobalAsset> getProjectGlobalAssets(String userId, long projectId);
+
   // JIS XXX
   /**
    * Returns the date the project was created.
@@ -274,12 +284,22 @@ public interface StorageIo {
   void addFilesToUser(String userId, String... fileIds);
 
   /**
+   * Returns a list of all non-project-specific files for a user.
+   *
+   * @param userId a user Id
+   * @return list of all user file names (full paths)
+   */
+  List<String> getUserFiles(String userId);
+
+  /**
    * Returns a list of non-project-specific files for a user.
    *
    * @param userId a user Id
-   * @return list of source file ID
+   * @param pathPrefixFilter if not null or empty, only returns files whose names
+   *                         start with this prefix. If null or empty, returns all user files.
+   * @return list of user file names (full paths)
    */
-  List<String> getUserFiles(String userId);
+  List<String> getUserFiles(String userId, @Nullable String pathPrefixFilter);
 
   /**
    * Uploads a non-project-specific file.
@@ -299,6 +319,16 @@ public interface StorageIo {
    * @param fileName file name
    */
   void uploadRawUserFile(String userId, String fileName, byte[] content);
+
+  /**
+   * Uploads a global asset.
+   *
+   * @param userId user ID
+   * @param folder folder name for the asset
+   * @param assetName asset name
+   * @param content asset content
+   */
+  void uploadGlobalAsset(String userId, String folder, String assetName, byte[] content);
 
   /**
    * Downloads text user file data.
@@ -322,13 +352,123 @@ public interface StorageIo {
   byte[] downloadRawUserFile(String userId, String fileName);
 
   /**
+   * Downloads raw global asset file data.
+   *
+   * @param fileName file name
+   *
+   * @return file content
+   */
+  byte[] downloadRawGlobalAsset(String fileName);
+
+  /**
    * Deletes a user file.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param fileId  file ID
    */
   void deleteUserFile(String userId, String fileId);
 
-  // File management
+  /**
+   * Returns a list of all global assets for a user.
+   *
+   * @param userId a user Id
+   * @return list of all global assets
+   */
+  List<StoredData.GlobalAssetData> getGlobalAssets(String userId);
+
+  /**
+   * Deletes a global asset.
+   *
+   * @param userId user ID
+   * @param fileName the file name of the global asset to delete
+   */
+  void deleteGlobalAsset(String userId, String fileName);
+
+  /**
+   * Updates the folder of a global asset.
+   *
+   * @param userId user ID
+   * @param assetId the file name of the global asset
+   * @param folder the new folder for the asset
+   */
+  void updateGlobalAssetFolder(String userId, String assetId, String folder);
+
+  /**
+   * Updates the referencedBy list of a global asset.
+   *
+   * @param userId user ID
+   * @param assetId the file name of the global asset
+   * @param referencedBy the updated list of project IDs that reference this global asset
+   */
+  void updateGlobalAssetReferencedBy(String userId, String assetId, List<Long> referencedBy);
+
+  /**
+   * Returns a global asset by its file name.
+   *
+   * @param userId user ID
+   * @param fileName the file name of the global asset
+   * @return the global asset data
+   */
+  StoredData.GlobalAssetData getGlobalAsset(String userId, String fileName);
+
+  /**
+   * Returns a global asset by its file name.
+   *
+   * @param userId user ID
+   * @param fileName the file name of the global asset
+   * @return the global asset data
+   */
+  StoredData.GlobalAssetData getGlobalAssetByFileName(String userId, String fileName);
+
+  /**
+   * Adds a global asset reference to a project.
+   *
+   * @param userId user ID
+   * @param projectId project ID
+   * @param globalAssetFileName the file name of the global asset
+   * @param timestamp the timestamp of the global asset at the time of linking
+   */
+  void addProjectGlobalAsset(String userId, long projectId, String globalAssetFileName, long timestamp);
+
+  /**
+   * Deletes a global asset reference from a project.
+   *
+   * @param userId user ID
+   * @param projectId project ID
+   * @param globalAssetFileName the file name of the global asset to delete
+   */
+  void deleteProjectGlobalAsset(String userId, long projectId, String globalAssetFileName);
+
+  // New efficient relationship-based methods for ProjectGlobalAssetData
+  /**
+   * Creates a project-global asset relationship
+   */
+  void addProjectGlobalAssetRelation(long projectId, String globalAssetFileName, String globalAssetUserId, 
+                                   boolean trackUsage, String localAssetPath);
+
+  /**
+   * Removes a project-global asset relationship
+   */
+  void removeProjectGlobalAssetRelation(long projectId, String globalAssetFileName, String globalAssetUserId);
+
+  /**
+   * Gets a specific project-global asset relationship
+   */
+  StoredData.ProjectGlobalAssetData getProjectGlobalAssetRelation(long projectId, String globalAssetFileName, String globalAssetUserId);
+
+  /**
+   * Gets all project-global asset relationships for a project
+   */
+  List<StoredData.ProjectGlobalAssetData> getProjectGlobalAssetRelations(long projectId);
+
+  /**
+   * Gets all projects that use a specific global asset
+   */
+  List<Long> getProjectsUsingGlobalAsset(String globalAssetFileName, String globalAssetUserId);
+
+  /**
+   * Updates sync timestamp for a project-global asset relationship
+   */
+  void updateProjectGlobalAssetSyncTimestamp(long projectId, String globalAssetFileName, String globalAssetUserId, long syncTimestamp);
 
   /**
    * Returns the maximum allowed job size in bytes.

@@ -29,6 +29,7 @@ import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.client.editor.youngandroid.AssetManagerPanel;
 import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
@@ -96,6 +97,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -227,6 +229,7 @@ public class Ode implements EntryPoint {
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
+  private int assetLibraryTabIndex;
   private int userAdminTabIndex;
   @UiField protected TopPanel topPanel;
   @UiField protected StatusPanel statusPanel;
@@ -238,6 +241,21 @@ public class Ode implements EntryPoint {
   @UiField (provided = true) protected PaletteBox paletteBox = PaletteBox.getPaletteBox();
   @UiField (provided = true) protected ViewerBox viewerBox = ViewerBox.getViewerBox();
   @UiField (provided = true) protected AssetListBox assetListBox = AssetListBox.getAssetListBox();
+  // @UiField protected AssetManagerPanel assetManagerPanel;
+
+  // public AssetManagerPanel getAssetManagerPanel() {
+  //   return assetManagerPanel;
+  // }
+
+  @UiFactory
+  public com.google.appinventor.client.assetlibrary.AssetLibraryWidget createAssetLibraryWidget() {
+    return new com.google.appinventor.client.assetlibrary.AssetLibraryWidget(this);
+  }
+
+  @UiFactory
+  public com.google.appinventor.client.assetlibrary.AssetLibraryWidgetClassic createAssetLibraryWidgetClassic() {
+    return new com.google.appinventor.client.assetlibrary.AssetLibraryWidgetClassic(this);
+  }
   @UiField (provided = true) protected SourceStructureBox sourceStructureBox;
   @UiField (provided = true) protected PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
 
@@ -522,6 +540,15 @@ public class Ode implements EntryPoint {
     // NOTE(lizlooney) - Calling resizeWorkArea for debuggingTab prevents the
     // boxes from overlapping each other.
     resizeWorkArea((WorkAreaPanel) deckPanel.getWidget(debuggingTabIndex));
+  }
+
+  /**
+   * Switch to the Asset Library tab
+   */
+  public void switchToAssetLibraryView() {
+    hideChaff();
+    hideTutorials();
+    deckPanel.showWidget(assetLibraryTabIndex);
   }
 
   /**
@@ -1042,6 +1069,9 @@ public class Ode implements EntryPoint {
 
     // Debugging Panel
     debuggingTabIndex = 3;
+
+    // Asset Library Panel
+    assetLibraryTabIndex = 4;
 
     RootPanel.get().add(mainPanel);
 

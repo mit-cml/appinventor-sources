@@ -252,6 +252,7 @@ public class DownloadServlet extends OdeServlet {
         } else {
           throw new IllegalArgumentException("Missing user file path.");
         }
+<<<<<<< HEAD
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_CACHED)) {
         // Download project source files as a zip.
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
@@ -267,6 +268,16 @@ public class DownloadServlet extends OdeServlet {
           projectId, false, false, zipName, includeYail,
           false, false, false, false, true);
         downloadableFile = zipFile.getRawFile();
+=======
+
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_GLOBAL_ASSET)) {
+        uriComponents = uri.split("/");
+        String fileName = uriComponents.length > 0 ? uriComponents[uriComponents.length - 1] : null;
+        if (fileName == null || fileName.trim().isEmpty() || fileName.equals("globalasset")) {
+          throw new IllegalArgumentException("Missing global asset file name.");
+        }
+        downloadableFile = fileExporter.exportGlobalAsset(fileName);
+>>>>>>> asset-library
       } else {
         throw new IllegalArgumentException("Unknown download kind: " + downloadKind);
       }
