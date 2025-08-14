@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -48,6 +49,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
@@ -84,9 +86,9 @@ public class BuildServer {
     // of the build. The reporting is done by calling the callback URL
     // and putting the status inside a "build.status" file. This isn't
     // particularly efficient, but this is the version 0.9 implementation
-    String callbackUrlStr;
-    ProgressReporter(String callbackUrlStr) {
-      this.callbackUrlStr = callbackUrlStr;
+    URL callbackUrl;
+    ProgressReporter(URL callbackUrl) {
+      this.callbackUrl = callbackUrl;
     }
 
     public void report(int progress) {
@@ -100,7 +102,6 @@ public class BuildServer {
         zipoutput.flush();
         zipoutput.close();
         ByteArrayInputStream zipinput = new ByteArrayInputStream(output.toByteArray());
-        URL callbackUrl = new URL(callbackUrlStr);
         HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
@@ -560,12 +561,14 @@ public class BuildServer {
     @QueryParam("callback") final String callbackUrlStr,
     @QueryParam("gitBuildVersion") final String gitBuildVersion,
     @QueryParam("ext") final String ext,
+    @QueryParam("uploadUrl") final String uploadUrlStr,
     final File inputZipFile) throws IOException {
     // Set the inputZip field so we can delete the input zip file later in
     // cleanUp.
     inputZip = inputZipFile;
     inputZip.deleteOnExit(); // In case build server is killed before cleanUp executes.
-    String requesting_host = (new URL(callbackUrlStr)).getHost();
+    final URL callbackUrl = new URL(callbackUrlStr);
+    String requesting_host = callbackUrl.getHost();
 
     //for the request for update part, the file should be empty
     if (inputZip.length() == 0L) {
@@ -621,10 +624,16 @@ public class BuildServer {
             try {
               LOG.info("START NEW BUILD " + count);
               checkMemory();
-              buildAndCreateZip(userName, inputZipFile, ext, new ProgressReporter(callbackUrlStr));
+              final boolean success = buildAndCreateZip(userName, inputZipFile, ext, new ProgressReporter(callbackUrl));
+
+              // Upload APK directly
+              if (success && uploadUrlStr != null && !uploadUrlStr.isEmpty()) {
+                LOG.info("Uploading output to remote...");
+                uploadToRemoteAndTruncateOutput(uploadUrlStr, ext);
+              }
+
               // Send zip back to the callbackUrl
               LOG.info("CallbackURL: " + callbackUrlStr);
-              URL callbackUrl = new URL(callbackUrlStr);
               HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
               connection.setDoOutput(true);
               connection.setRequestMethod("POST");
@@ -647,7 +656,8 @@ public class BuildServer {
               } finally {
                 bufferedOutputStream.close();
               }
-              if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {LOG.severe("Bad Response Code!: "+ connection.getResponseCode());
+              if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                LOG.severe("Bad Response Code!: "+ connection.getResponseCode());
                 // TODO(user) Maybe do some retries
               }
             } catch (Exception e) {
@@ -683,10 +693,152 @@ public class BuildServer {
       .entity("" + 0).build();
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile, String ext,
+  private void uploadToRemoteAndTruncateOutput(final String uploadUrlStr, final String ext) throws IOException {
+    if (outputApk == null) {
+      LOG.warning("Output file is null, this is not expected, skipping upload to remote!");
+      return;
+    }
+
+    HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrlStr).openConnection();
+    connection.setDoOutput(true);
+    connection.setRequestMethod("PUT");
+
+    if ("apk".equals(ext)) {
+      connection.addRequestProperty("Content-Type","application/vnd.android.package-archive");
+    } else if ("aab".equals(ext)) {
+      connection.addRequestProperty("Content-Type","application/vnd.android.bundle");
+    } else {
+      connection.addRequestProperty("Content-Type","application/zip");
+    }
+
+    connection.setConnectTimeout(60000);
+    connection.setReadTimeout(60000);
+    try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream())) {
+      try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(outputApk))) {
+        ByteStreams.copy(bufferedInputStream, bufferedOutputStream);
+        checkMemory();
+        bufferedOutputStream.flush();
+      }
+    }
+
+    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+      LOG.severe("Failed to upload output: "+ connection.getResponseCode());
+      // If we fail to upload the output, use send it back to GAE as a fallback
+      return;
+    }
+
+    // Now we truncate the apk or aab inside
+    LOG.info("Truncating " + outputApk.getName());
+    truncateZipEntry(outputZip, outputApk.getName(), 0);
+  }
+
+  /**
+   * Truncates a specific entry within a ZIP file and updates the ZIP file in place.
+   *
+   * @param outputZip The path to the original ZIP file.
+   * @param entryToTruncateName The name of the entry within the ZIP file to truncate (e.g., "myApp.apk").
+   * @param maxSize The maximum size in bytes for the truncated entry.
+   * @throws IOException If an I/O error occurs during the process.
+   */
+  public static void truncateZipEntry(File outputZip, String entryToTruncateName, int maxSize) throws IOException {
+    LOG.info("Starting truncation process for entry: " + entryToTruncateName + " in ZIP: " + outputZip.getName());
+
+    // Create a temporary file for the new ZIP archive
+    File tempZipFile = File.createTempFile(outputZip.getName() + "_temp", ".zip");
+    LOG.info("Created temporary ZIP file: " + tempZipFile.getAbsolutePath());
+
+    ZipFile originalZipFile = null;
+    ZipOutputStream newZipOutputStream = null;
+
+    try {
+      originalZipFile = new ZipFile(outputZip);
+      newZipOutputStream = new ZipOutputStream(new FileOutputStream(tempZipFile));
+
+      Enumeration<? extends ZipEntry> entries = originalZipFile.entries();
+      boolean entryFoundAndProcessed = false;
+
+      // Iterate through all entries in the original ZIP file
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = entries.nextElement();
+        String entryName = entry.getName();
+
+        // Check if this is the entry we need to truncate
+        if (entryName.equals(entryToTruncateName)) {
+          LOG.info("Found entry to truncate: " + entryName);
+          entryFoundAndProcessed = true;
+
+          // Create a new ZipEntry for the truncated content
+          // It's important to create a new ZipEntry as the original might have size/CRC info
+          ZipEntry newEntry = new ZipEntry(entryName);
+          newZipOutputStream.putNextEntry(newEntry);
+
+          try (InputStream is = originalZipFile.getInputStream(entry)) {
+            byte[] buffer = new byte[4096]; // Use a larger buffer for better performance
+            int totalRead = 0;
+            int bytesRead;
+
+            // Read from the input stream and write to the new ZIP entry, truncating as needed
+            while ((bytesRead = is.read(buffer)) != -1 && totalRead < maxSize) {
+              int toWrite = Math.min(bytesRead, maxSize - totalRead);
+              newZipOutputStream.write(buffer, 0, toWrite);
+              totalRead += toWrite;
+            }
+            LOG.info("Truncated '" + entryName + "' to " + totalRead + " bytes (max " + maxSize + " bytes).");
+          }
+          newZipOutputStream.closeEntry(); // Close the current entry in the new ZIP
+        } else {
+          // For all other entries, copy them directly to the new ZIP file
+          LOG.info("Copying entry: " + entryName);
+          newZipOutputStream.putNextEntry(new ZipEntry(entryName));
+          try (InputStream is = originalZipFile.getInputStream(entry)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+              newZipOutputStream.write(buffer, 0, bytesRead);
+            }
+          }
+          newZipOutputStream.closeEntry(); // Close the current entry in the new ZIP
+        }
+      }
+
+      if (!entryFoundAndProcessed) {
+        LOG.info("Warning: Entry '" + entryToTruncateName + "' was not found in the original ZIP file.");
+      }
+
+    } finally {
+      // Ensure all streams and zip files are closed
+      if (newZipOutputStream != null) {
+        try {
+          newZipOutputStream.close();
+        } catch (IOException e) {
+          LOG.severe("Error closing new ZipOutputStream: " + e.getMessage());
+        }
+      }
+      if (originalZipFile != null) {
+        try {
+          originalZipFile.close();
+        } catch (IOException e) {
+          LOG.severe("Error closing original ZipFile: " + e.getMessage());
+        }
+      }
+    }
+
+    // Replace the original ZIP file with the temporary one
+    LOG.info("Replacing original ZIP file with the truncated version.");
+    if (outputZip.delete()) {
+      if (!tempZipFile.renameTo(outputZip)) {
+        throw new IOException("Failed to rename temporary ZIP file to original name: " + outputZip.getAbsolutePath());
+      }
+      LOG.info("Successfully updated ZIP file: " + outputZip.getName());
+    } else {
+      throw new IOException("Failed to delete original ZIP file: " + outputZip.getAbsolutePath());
+    }
+  }
+
+  private boolean buildAndCreateZip(String userName, File inputZipFile, String ext,
       ProgressReporter reporter) throws IOException, JSONException {
     Result buildResult = build(userName, inputZipFile, ext, reporter);
-    boolean buildSucceeded = buildResult.succeeded();
+    final boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
     outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
     ZipOutputStream zipOutputStream =
@@ -710,6 +862,7 @@ public class BuildServer {
     zipPrintStream.flush();
     zipOutputStream.flush();
     zipOutputStream.close();
+    return buildSucceeded;
   }
 
   private String genBuildOutput(Result buildResult) throws JSONException {

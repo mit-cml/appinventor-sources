@@ -192,5 +192,21 @@
     <!-- https://example.com/something. -->
     <property name="ode.base" value="" />
 
+    <!-- Remote Storage Provider -->
+    <property name="remotestorage.build" value="" />
+    <property name="remotestorage.export" value="" />
+
+    <!-- GCP Remote Storage Configuration -->
+    <property name="remotestorage.gcp.bucketname" value="" />
+
+    <!-- S3 Compatible Remote Storage Configuration -->
+    <property name="remotestorage.s3.protocol" value="https" />
+    <property name="remotestorage.s3.endpoint" value="" />
+    <property name="remotestorage.s3.pathlike" value="false" />
+    <property name="remotestorage.s3.bucketname" value="" />
+    <property name="remotestorage.s3.bucketregion" value="" />
+    <property name="remotestorage.s3.accesskeyid" value="" />
+    <property name="remotestorage.s3.secretaccesskey" value="" />
+
   </system-properties>
 </appengine-web-app>

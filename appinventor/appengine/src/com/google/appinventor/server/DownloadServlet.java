@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,6 +11,8 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 
+import com.google.appinventor.server.storage.remote.RemoteStorage;
+import com.google.appinventor.server.storage.remote.RemoteStorageInstanceHolder;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 
@@ -19,13 +21,15 @@ import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.common.io.ByteStreams;
 
-import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -33,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -94,6 +99,21 @@ public class DownloadServlet extends OdeServlet {
   private static final int USERFILE_PATH_INDEX = 4;
   private static final int SPLIT_LIMIT_USERFILE = 5;
 
+  // If any file we try to export exceeds 20MB, then use the remote storage solution if
+  //   configured.
+  // If unconfigured, still use GAE, but it may fail for large files due to response
+  //   payload limit.
+  private static final int DIRECT_DOWNLOAD_MAX_FILE_SIZE = 20_000_000;
+
+  // Only use remote downloads for specific kind of downloads (and avoid using for other
+  //   files like assets, even if "larger", although impossible).
+  private static final Set<String> REMOTE_DOWNLOAD_KINDS = Set.of(
+      ServerLayout.DOWNLOAD_PROJECT_OUTPUT,
+      ServerLayout.DOWNLOAD_PROJECT_SOURCE,
+      ServerLayout.DOWNLOAD_USER_PROJECT_SOURCE,
+      ServerLayout.DOWNLOAD_SELECTED_PROJECTS_SOURCE,
+      ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE
+  );
 
   // Logging support
   private static final Logger LOG = Logger.getLogger(DownloadServlet.class.getName());
@@ -111,8 +131,9 @@ public class DownloadServlet extends OdeServlet {
     // Set a default http header to avoid security vulnerabilities.
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
+    final boolean isInline = req.getParameter("inline") != null;
 
-    RawFile downloadableFile = null;
+    RawFile downloadableFile;
 
     String userId = null;
 
@@ -270,6 +291,15 @@ public class DownloadServlet extends OdeServlet {
       } else {
         throw new IllegalArgumentException("Unknown download kind: " + downloadKind);
       }
+
+      if (!isInline) {
+        final String downloadObjectUrl = shouldUseRemoteStorageDownload(downloadKind, userId, downloadableFile);
+        if (downloadObjectUrl != null) {
+          LOG.info("File sent to Remote Storage: " + downloadableFile.getFileName());
+          resp.sendRedirect(downloadObjectUrl);
+          return;
+        }
+      }
     } catch (IllegalArgumentException e) {
       throw CrashReport.createAndLogError(LOG, req, "user=" + userId, e);
     } catch (SecurityException e) {
@@ -294,9 +324,13 @@ public class DownloadServlet extends OdeServlet {
       String fileName = downloadableFile.getFileName();
       byte[] content = downloadableFile.getContent();
       // Set http response information
-      resp.setHeader(
-        "content-disposition",
-        req.getParameter("inline") != null ? "inline" : "attachment" + "; filename=\"" + fileName + "\"");
+      final String contentDispositionHeaderValue;
+      if (isInline) {
+        contentDispositionHeaderValue = "inline";
+      } else {
+        contentDispositionHeaderValue = "attachment; filename=\"" + fileName + "\"";
+      }
+      resp.setHeader("content-disposition", contentDispositionHeaderValue);
       resp.setContentType(StorageUtil.getContentTypeForFilePath(fileName));
       resp.setContentLength(content.length);
 
@@ -310,6 +344,56 @@ public class DownloadServlet extends OdeServlet {
       ServletOutputStream out = resp.getOutputStream();
       out.close();
     }
+  }
+
+  private String shouldUseRemoteStorageDownload(final String downloadKind, final String userId, final RawFile file)
+      throws IOException {
+    if (!REMOTE_DOWNLOAD_KINDS.contains(downloadKind)) {
+      // Skip non-project related downloads
+      return null;
+    }
+
+    if (!RemoteStorageInstanceHolder.isRemoteConfigured(RemoteStorageInstanceHolder.Usage.EXPORT)) {
+      // Skip any further checks if unconfigured
+      return null;
+    }
+
+    if (file.getContent().length <= DIRECT_DOWNLOAD_MAX_FILE_SIZE) {
+      // File is within the GAE limits, hence no need to use the remote option
+      return null;
+    }
+
+    final String fileName = file.getFileName();
+    LOG.info("Sending file to Remote Storage: " + fileName);
+
+    final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance(RemoteStorageInstanceHolder.Usage.EXPORT);
+    final String objectKey = remoteStorage.getProjectExportObjectKey(downloadKind, userId, fileName);
+
+    final String uploadUrlStr = remoteStorage.generateUploadUrl(objectKey);
+
+    HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrlStr).openConnection();
+    connection.setDoOutput(true);
+    connection.setRequestMethod("PUT");
+    connection.addRequestProperty("Content-Type", StorageUtil.getContentTypeForFilePath(fileName));
+    // Ensure that, when downloading the file from remote, it preserves the same name
+    // If this is not set, and Content-Type is set to ZIP for AIA, browsers will rewrite .aia to .zip
+    connection.addRequestProperty("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+    connection.setConnectTimeout(60000);
+    connection.setReadTimeout(60000);
+    try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream())) {
+      try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(file.getContent()))) {
+        ByteStreams.copy(bufferedInputStream, bufferedOutputStream);
+        bufferedOutputStream.flush();
+      }
+    }
+
+    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+      LOG.severe("Failed to upload output: "+ connection.getResponseCode());
+      // If we fail to upload the output, return null so we try to fallback to GAE
+      return null;
+    }
+
+    return remoteStorage.generateRetrieveUrl(objectKey);
   }
 
   private static String byteArray2Hex(final byte[] hash) {

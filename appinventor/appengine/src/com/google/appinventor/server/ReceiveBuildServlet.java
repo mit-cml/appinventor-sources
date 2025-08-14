@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -58,6 +58,8 @@ public class ReceiveBuildServlet extends OdeServlet {
       throw CrashReport.createAndLogError(LOG, req, null, e);
     }
 
+    boolean isFinalStatusReport = false;
+
     // Set the user in the OdeFilter, which is used everywhere as the UserInfoProvider.
     odeFilter.setUserFromUserId(userId, false, false);
     try {
@@ -82,9 +84,17 @@ public class ReceiveBuildServlet extends OdeServlet {
           String filePath = buildFileDirPath + "/" + fileName;
           LOG.info("Saving build output files: " + filePath);
           storageIo.addOutputFilesToProject(userId, projectId, filePath);
-          storageIo.uploadRawFileForce(projectId, filePath, userId, fileBytes);
-          storageIo.storeBuildStatus(userId, projectId, 0); // Reset for the next build
+          isFinalStatusReport = true;
+          if (fileBytes.length > 0) {
+            // We only "upload" the file if it actually has something. This is because in the remote build,
+            //   we will issue an empty file back to GAE for the APK/AAB files.
+            storageIo.uploadRawFileForce(projectId, filePath, userId, fileBytes);
+          }
         }
+      }
+
+      if (isFinalStatusReport) {
+        storageIo.storeBuildStatus(userId, projectId, 0); // Reset for the next build
       }
     } finally {
       odeFilter.removeUser();

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -33,6 +33,8 @@ import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.utils.Security;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.remote.RemoteStorage;
+import com.google.appinventor.server.storage.remote.RemoteStorageInstanceHolder;
 import com.google.appinventor.server.util.UriBuilder;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONUtil;
@@ -516,9 +518,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     ProjectSourceZip zipFile = null;
     try {
       buildServerUrl = new URL(getBuildServerUrlStr(
+          target,
           user.getUserEmail(),
           userId,
           projectId,
+          projectName,
           secondBuildserver,
           outputFileDir,
           isAab));
@@ -770,9 +774,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // Note that this is a function rather than just a constant because we assume it will get
   // a little more complicated when we want to get the URL from an App Engine config file or
   // command line argument.
-  private String getBuildServerUrlStr(String userName, String userId,
-    long projectId, boolean secondBuildserver, String fileName, boolean isAab)
+  private String getBuildServerUrlStr(String target, String userName, String userId,
+    long projectId, String projectName, boolean secondBuildserver, String fileName, boolean isAab)
       throws EncryptionException {
+    final String extName = isAab ? "aab" : "apk";
     UriBuilder uriBuilder = new UriBuilder(
         "http://"
             + (secondBuildserver ? buildServerHost2.get() : buildServerHost.get())
@@ -782,10 +787,21 @@ public final class YoungAndroidProjectService extends CommonProjectService {
             ServerLayout.RECEIVE_BUILD_SERVLET + "/" +
             Security.encryptUserAndProjectId(userId, projectId) + "/" +
             fileName)
-        .add("ext", isAab ? "aab" : "apk");
+        .add("ext", extName);
     if (sendGitVersion.get()) {
       uriBuilder.add("gitBuildVersion", GitBuildId.getVersion());
     }
+
+    if (RemoteStorageInstanceHolder.isRemoteConfigured(RemoteStorageInstanceHolder.Usage.BUILD)) {
+      final RemoteStorage remoteStorage = RemoteStorageInstanceHolder.getInstance(RemoteStorageInstanceHolder.Usage.BUILD);
+      final String objectKey = remoteStorage.getBuildOutputObjectKey(target, userId, projectId, projectName, extName);
+      final String uploadUrl = remoteStorage.generateUploadUrl(objectKey);
+
+      // We use this parameter to indicate the buildserver to send the APK/AAB to this remote
+      //   location and not send it back here
+      uriBuilder.add("uploadUrl", uploadUrl);
+    }
+
     return uriBuilder.build();
   }
 
