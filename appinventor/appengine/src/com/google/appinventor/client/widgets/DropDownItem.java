@@ -19,6 +19,7 @@ public class DropDownItem {
   String dependentStyleName = null;
   boolean visible = true;
   Image icon = null;
+  boolean beta = false;
 
   @SuppressWarnings("unused")  // invoked by GWT
   public DropDownItem() {
@@ -94,4 +95,13 @@ public class DropDownItem {
   public Image getIcon() {
     return this.icon;
   }
+
+  public void setBeta(boolean beta) {
+    this.beta = beta;
+  }
+
+  public boolean isBeta() {
+    return beta;
+  }
+
 }

@@ -111,6 +111,7 @@ public final class Project {
   private static final String COLOR_PRIMARY_DARKTAG = "color.primary.dark";
   private static final String COLOR_ACCENTTAG = "color.accent";
   private static final String DEFAULT_FILE_SCOPE = "defaultfilescope";
+  private static final String BUILD_NUMBER = "buildnumber";
 
   // Do not leave it empty because even though it compiles
   // alright but Android OS can't install it!
@@ -122,6 +123,7 @@ public final class Project {
   private static final String DEFAULT_COLOR_PRIMARY_DARK = "#41521C";
   private static final String DEFAULT_COLOR_ACCENT = "#00728A";
   private static final String DEFAULT_COLOR_THEME = "Classic";
+  private static final String DEFAULT_BUILD_NUMBER = "1";
 
   // Table containing project properties
   private Properties properties;
@@ -220,7 +222,7 @@ public final class Project {
    * @return  icon name
    */
   public String getIcon() {
-    return properties.getProperty(ICONTAG);
+    return properties.getProperty(ICONTAG, "");
   }
 
   /**
@@ -361,6 +363,10 @@ public final class Project {
     return properties.getProperty(DEFAULT_FILE_SCOPE);
   }
 
+  public String getBuildNumber() {
+    return properties.getProperty(BUILD_NUMBER, DEFAULT_BUILD_NUMBER);
+  }
+
   /**
    * Returns the project directory. This directory contains the project.properties file.
    *
@@ -428,6 +434,10 @@ public final class Project {
       }
     }
     return sources;
+  }
+
+  public String getProperty(String name, String defaultValue) {
+    return properties.getProperty(name, defaultValue);
   }
 
   @Override

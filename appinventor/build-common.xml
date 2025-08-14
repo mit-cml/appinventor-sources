@@ -363,4 +363,9 @@
          target="CommonConstants"/>
   </target>
 
+  <target name="ios_PlayerApp">
+    <ant inheritall="false" usenativebasedir="true" dir="${appinventor.dir}" antfile="ios-build.xml"
+         target="PlayerApp" />
+  </target>
+
 </project>

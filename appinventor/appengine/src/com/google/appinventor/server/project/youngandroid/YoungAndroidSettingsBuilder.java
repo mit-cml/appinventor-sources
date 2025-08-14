@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2021 MIT, All rights reserved
+// Copyright © 2021-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,9 +13,17 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BUILDNUMBER;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON;
@@ -53,6 +61,14 @@ public class YoungAndroidSettingsBuilder {
   private String defaultFileScope = "App";
   private String aiVersioning = "";
   private String lastOpened = "Screen1";
+  private String buildNumber = "1";
+  private String nsBluetoothAlwaysUsage = "";
+  private String nsBluetoothPeripheralUsage = "";
+  private String nsContactsUsage = "";
+  private String nsMicrophoneUsage = "";
+  private String nsCameraUsage = "";
+  private String nsSpeechRecognitionUsage = "";
+  private String nsLocationUsage = "";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -97,6 +113,25 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_AIVERSIONING));
     lastOpened = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_LAST_OPENED));
+    buildNumber = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_BUILDNUMBER));
+    nsBluetoothAlwaysUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE));
+    nsBluetoothPeripheralUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE));
+    nsContactsUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE));
+    nsMicrophoneUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE));
+    nsCameraUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE));
+    nsSpeechRecognitionUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE));
+    nsLocationUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE));
+    if (buildNumber.isEmpty()) {
+      buildNumber = "1";
+    }
   }
 
   /**
@@ -124,6 +159,14 @@ public class YoungAndroidSettingsBuilder {
     defaultFileScope = properties.getProperty("defaultfilescope", "");
     aiVersioning = properties.getProperty("aiversioning", "");
     lastOpened = properties.getProperty("lastopened", "");
+    buildNumber = properties.getProperty("buildnumber", "1");
+    nsBluetoothAlwaysUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, "");
+    nsBluetoothPeripheralUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, "");
+    nsContactsUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, "");
+    nsMicrophoneUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE, "");
+    nsCameraUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, "");
+    nsSpeechRecognitionUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, "");
+    nsLocationUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -221,6 +264,11 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setBuildNumber(String buildNumber) {
+    this.buildNumber = buildNumber;
+    return this;
+  }
+
   /**
    * Convert the internal settings into a JSON structure.
    *
@@ -245,6 +293,14 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
     object.put(YOUNG_ANDROID_SETTINGS_AIVERSIONING, aiVersioning);
     object.put(YOUNG_ANDROID_SETTINGS_LAST_OPENED, lastOpened);
+    object.put(YOUNG_ANDROID_SETTINGS_BUILDNUMBER, buildNumber);
+    object.put(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, nsContactsUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE, nsMicrophoneUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -279,6 +335,14 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
     addPropertyIfSet(result, "aiversioning", aiVersioning);
     addPropertyIfSet(result, "lastopened", lastOpened);
+    addPropertyIfSet(result, "buildnumber", buildNumber);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, nsContactsUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE, nsMicrophoneUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
@@ -325,6 +389,14 @@ public class YoungAndroidSettingsBuilder {
       result &= other.defaultFileScope.equals(defaultFileScope);
       result &= other.aiVersioning.equals(aiVersioning);
       result &= other.lastOpened.equals(lastOpened);
+      result &= other.buildNumber.equals(buildNumber);
+      result &= other.nsBluetoothAlwaysUsage.equals(nsBluetoothAlwaysUsage);
+      result &= other.nsBluetoothPeripheralUsage.equals(nsBluetoothPeripheralUsage);
+      result &= other.nsContactsUsage.equals(nsContactsUsage);
+      result &= other.nsMicrophoneUsage.equals(nsMicrophoneUsage);
+      result &= other.nsCameraUsage.equals(nsCameraUsage);
+      result &= other.nsSpeechRecognitionUsage.equals(nsSpeechRecognitionUsage);
+      result &= other.nsLocationUsage.equals(nsLocationUsage);
       return result;
     }
     return false;

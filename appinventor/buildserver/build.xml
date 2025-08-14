@@ -8,10 +8,19 @@
      App Inventor build server
      ====================================================================== -->
 
-<project name="buildserver" default="all">
+<project name="buildserver" default="all" xmlns:if="ant:if">
   <description>
     App Inventor build server
   </description>
+  <property name="skip.ios" value="false" />
+  <condition property="ios.build.run">
+    <and>
+      <os family="mac" />
+      <not>
+        <equals arg1="${skip.ios}" arg2="true" />
+      </not>
+    </and>
+  </condition>
 
   <condition property="ecj.version" value="4.5.1" else="3.23.0">
     <matches pattern="1.\d+" string="${java.specification.version}" />
@@ -52,7 +61,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,components_AndroidRuntime">
+          depends="init,CopyToRunLibDir,components_AndroidRuntime,ios_PlayerApp">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -67,6 +76,7 @@
     <property name="classes.files.dir" location="${BuildServer-class.dir}/files" />
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
+      <fileset dir="${src.dir}/${buildserver.pkg}/resources/ios" includes="*"/>
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,simple_components.txt,simple_components_build_info.json,simple_components.json"/>
       <!-- Map assets for build server -->
@@ -75,6 +85,7 @@
       <!-- Component/extension assets (for testing) -->
       <fileset dir="${appinventor.dir}/components/src" includes="**/assets/*"/>
     </copy>
+    <copy file="${appinventor.dir}/PlayerApp/Base.lproj/LaunchScreen.storyboard" tofile="${classes.files.dir}/LaunchScreenTemplate.storyboard"/>
     <!-- Component library dependencies -->
     <copy todir="${classes.files.dir}">
       <fileset dir="${build.dir}/components/deps" />
@@ -95,6 +106,11 @@
       <fileset dir="${lib.dir}/android/tools" includes="*/zipalign" />
     </copy>
     <chmod dir="${classes.tools.dir}" includes="*/zipalign" perm="ugo+rx"/>
+
+    <!-- PlayerApp for iOS -->
+    <copy todir="${classes.files.dir}"
+          failonerror="${ios.build.run}"
+          file="${build.dir}/components-ios/PlayerApp-unsigned.ipa" />
 
     <!-- jar up the classes and resource files -->
     <jar destfile="${run.lib.dir}/BuildServer.jar" filesonly="true">
@@ -127,6 +143,8 @@
       <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
       <fileset dir="${lib.dir}" includes="json/json.jar" />
+      <fileset dir="${lib.dir}" includes="dd-plist/dd-plist.jar"/>
+      <fileset dir="res" if:true="${ios.build.run}" />
     </copy>
   </target>
 
@@ -324,16 +342,18 @@
        ===================================================================== -->
   <target name="RunLocalBuildServer"
           depends="BuildServer">
-    <java classname="com.google.appinventor.buildserver.BuildServer" fork="true" failonerror="true">
+    <java classname="com.google.appinventor.buildserver.BuildServer" fork="true" failonerror="true" dir="${run.lib.dir}">
       <classpath>
         <fileset dir="${run.lib.dir}" includes="*.jar" />
       </classpath>
       <sysproperty key="file.encoding" value="UTF-8" />
+      <jvmarg value="-Dkeystore.pkcs12.legacy=true" />
       <jvmarg value="-Djava.awt.headless=true" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
       <arg value="--shutdownToken" />
       <arg value="token" />
+      <arg value="--ios" if:true="${ios.build.run}" />
     </java>
   </target>
 
