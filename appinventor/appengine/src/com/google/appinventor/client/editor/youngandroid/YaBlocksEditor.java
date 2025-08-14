@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2021 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2025 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,6 +20,9 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.events.EventHelper;
+import com.google.appinventor.client.explorer.SourceStructureExplorer;
+import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
+import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -100,6 +103,7 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
     super.onClose();
     project.removeProjectChangeListener(this);
   }
+
 
   @Override
   public String getEntityName() {

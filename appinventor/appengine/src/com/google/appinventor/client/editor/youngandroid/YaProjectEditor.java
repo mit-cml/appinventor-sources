@@ -35,7 +35,6 @@ import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.SourceNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
@@ -159,7 +158,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
     final BlocksEditor<?, DesignerEditor<?, ?, ?, ?, ?>> newBlocksEditor =
         (BlocksEditor) editorMap.get(formName).blocksEditor;
-    newBlocksEditor.setDesigner(editorMap.get(formName).formEditor);
     newBlocksEditor.loadFile(new Command() {
         @Override
         public void execute() {
@@ -532,7 +530,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private void addBlocksEditor(String entityName, final BlocksEditor<?, ?> newBlocksEditor) {
     if (editorMap.containsKey(entityName)) {
       // This happens if the form editor was already added.
-      editorMap.get(entityName).blocksEditor = newBlocksEditor;
+      EditorSet pair = editorMap.get(entityName);
+      pair.blocksEditor = newBlocksEditor;
     } else {
       EditorSet editors = new EditorSet();
       editors.blocksEditor = newBlocksEditor;
