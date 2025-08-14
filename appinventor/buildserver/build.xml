@@ -342,6 +342,7 @@
        ===================================================================== -->
   <target name="RunLocalBuildServer"
           depends="BuildServer">
+    <property name="buildserverPassword" value="" />
     <java classname="com.google.appinventor.buildserver.BuildServer" fork="true" failonerror="true" dir="${run.lib.dir}">
       <classpath>
         <fileset dir="${run.lib.dir}" includes="*.jar" />
@@ -351,6 +352,8 @@
       <jvmarg value="-Djava.awt.headless=true" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
+      <arg value="--buildserverPassword" />
+      <arg value="${buildserverPassword}" />
       <arg value="--shutdownToken" />
       <arg value="token" />
       <arg value="--ios" if:true="${ios.build.run}" />
