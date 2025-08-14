@@ -94,12 +94,51 @@ open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_res
     }
   }
 
+  @objc open func CreateImage(_ prompt: String) {
+    do {
+      try doRequest(configuration: {
+        $0.uuid = _uuid
+        $0.question = prompt
+        $0.doimage = true
+        if _uuid.isEmpty && !System.isEmpty {
+          $0.system = System
+        }
+        $0.provider = Provider
+        if !Model.isEmpty {
+          $0.model = Model
+        }
+      }) {
+        if let error = $2 {
+          self.ErrorOccurred($0, (error as? ProxyError)?.message ?? error.localizedDescription)
+        } else if let response = $1 {
+          self._uuid = response.uuid
+          let imagePath: String
+          if response.hasOutputimage {
+            imagePath = (try? saveImage(response.outputimage)) ?? ""
+          } else {
+            imagePath = ""
+          }
+          self.GotResponseWithImage(response.answer, imagePath)
+        }
+      }
+    } catch {
+      self.ErrorOccurred(kRequestError, "\(error)")
+    }
+  }
+
   // MARK: Events
 
   @objc open func GotResponse(_ responseText: String) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "GotResponse",
                                     arguments: responseText as NSString)
+    }
+  }
+
+  @objc open func GotResponseWithImage(_ responseText: String, _ responseImage: String) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "GotResponseWithImage",
+                                    arguments: responseText as NSString, responseImage as NSString)
     }
   }
 

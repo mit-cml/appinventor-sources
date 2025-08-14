@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2023-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,6 +13,9 @@ package com.google.appinventor.components.runtime;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+
+import android.net.Uri;
+
 import android.util.Log;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
@@ -34,18 +37,23 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.chatbot.ChatBotToken;
+
 import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.Base58Util;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+
 import com.google.protobuf.ByteString;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -55,6 +63,8 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -252,12 +262,25 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     AsynchUtil.runAsynchronously(new Runnable() {
       @Override
       public void run() {
-        performRequest(uuid, question, null);
+        performRequest(uuid, question, null, false);
       }
-      });
+    });
   }
 
-  private void performRequest(String uuid, String question, Bitmap image) {
+  @SimpleFunction(description = "Create an Image. Note: Only Gemini is currently supported. " +
+    "Do not specify a model in order to get the most up-to-date " +
+    "model to use.")
+  public void CreateImage(final String description) {
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        performRequest(uuid, description, null, true);
+      }
+    });
+  }
+
+  private void performRequest(String uuid, String question, Bitmap image, boolean doImage) {
     // languageToTransateTo is provided either as a two letter code, or two
     // two letter codes separated by a dash. If only one two letter code is
     // provided, it is the target language and we set the source language to auto
@@ -287,6 +310,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       ChatBotToken.request.Builder builder = ChatBotToken.request.newBuilder()
         .setToken(token)
         .setUuid(uuid)
+        .setDoimage(doImage)
         .setProvider(provider)
         .setQuestion(question);
       if (!system.equals("") && uuid.equals("")) {
@@ -313,13 +337,11 @@ public final class ChatBot extends AndroidNonvisibleComponent {
           request.writeTo(connection.getOutputStream());
           responseCode = connection.getResponseCode();
           ChatBotToken.response response = ChatBotToken.response.parseFrom(connection.getInputStream());
-          String returnText;
           if (responseCode == 200) {
-            returnText = response.getAnswer();
             this.uuid = response.getUuid();
-            GotResponse(returnText);
+            parseResponse(response, doImage);
           } else {
-            returnText = getResponseContent(connection, true);
+            String returnText = getResponseContent(connection, true);
             ErrorOccurred(responseCode, returnText);
           }
         } finally {
@@ -337,7 +359,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         }
         ErrorOccurred(responseCode, returnText);
       } else {
-        ErrorOccurred(responseCode, "Error talking to ChatBot proxy");
+        ErrorOccurred(responseCode, "Error talking to ChatBot proxy: " + e.toString());
       }
     }
   }
@@ -352,7 +374,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         AsynchUtil.runAsynchronously(new Runnable() {
           @Override
           public void run() {
-            performRequest(uuid, question, bitmap);
+            performRequest(uuid, question, bitmap, false);
           }
         });
       } else {
@@ -382,6 +404,23 @@ public final class ChatBot extends AndroidNonvisibleComponent {
           EventDispatcher.dispatchEvent(ChatBot.this, "GotResponse", responseText);
         }
       });
+  }
+
+  /**
+   * Event indicating that we have received a response from the chatbot proxy which
+   * includes an Image and possibly text to go with it.
+   *
+   * @param ResonseText Textural Response from model
+   * @param ResponseImage Uri of Image Response
+   */
+  @SimpleEvent(description = "Event fired when the Chat Bot answers a question, with an image.")
+  public void GotResponseWithImage(final String responseText, final String fileName) {
+    form.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(ChatBot.this, "GotResponseWithImage", responseText, fileName);
+      }
+    });
   }
 
   /**
@@ -635,6 +674,46 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   }
 
   /*
+   * Parse response from the Chatbot. Extract the image data from the
+   * returned protocol buffer, if provided. Call either GotResponse,
+   * or GotResponseWithImage depending on whether or not an image was
+   * returned.
+   *
+   * @param parsed protocol buffer returned from proxy
+   * @returns Void
+   */
+  private void parseResponse(ChatBotToken.response response, boolean doImage) {
+    String responseText = response.getAnswer();
+    byte[] responseImage = response.getOutputimage().toByteArray();
+    if (DEBUG) {
+      Log.d(LOG_TAG, "parseResponse: responseImage = " + responseImage);
+    }
+    if (responseImage != null && responseImage.length > 0) { // doImage == true implied here
+      try {
+        File outFile = FileUtil.getOutputFile("ChatBotImage");
+        FileOutputStream out = new FileOutputStream(outFile);
+        try {
+          out.write(responseImage);
+          out.flush();
+        } finally {
+          out.close();
+        }
+        String responseImageUri = Uri.fromFile(outFile).toString();
+        GotResponseWithImage(responseText, responseImageUri);
+        return;
+      } catch (IOException e) {
+        ErrorOccurred(ErrorMessages.ERROR_CANNOT_CREATE_FILE, "IO Error Writing Image File");
+        return;
+      }
+    } else if (doImage) { // If we asked for an image, but didn't get one, still
+      // trigger "GotResponseWithImage, but provide an empty string for the image
+      GotResponseWithImage(responseText, "");
+    } else {
+      GotResponse(responseText);
+    }
+  }
+
+  /*
    * Get the list of root CA's trusted by this device
    *
    */
@@ -650,5 +729,6 @@ public final class ChatBot extends AndroidNonvisibleComponent {
       return new X509Certificate[0];
     }
   }
+
 }
 
