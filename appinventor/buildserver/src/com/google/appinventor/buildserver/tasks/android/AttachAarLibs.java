@@ -15,10 +15,19 @@ import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
 
-import java.io.*;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -78,14 +87,13 @@ public class AttachAarLibs implements AndroidTask {
                 return TaskResult.generateError("Error while attaching AAR libraries");
               }
 
-              // Resolve possible conflicts
               File aarFile = new File(sourcePath);
+              // Resolve possible conflicts
               final String packageName = getAarPackageName(aarFile);
               if (packageName == null || packageName.trim().isEmpty()) {
                 context.getReporter().error("Unable to read packageName from: " + aarFile.getName(), true);
                 return TaskResult.generateError("Unable to read packageName from: " + aarFile.getName());
               }
-
               if (!attachedAARs.contains(packageName)) {
                 // explode libraries into ${buildDir}/exploded-aars/<package>/
                 AARLibrary aarLib = new AARLibrary(aarFile);
@@ -113,32 +121,47 @@ public class AttachAarLibs implements AndroidTask {
   private void copyAssetsAndJni(File aarFile, File mergedAssetDir, File libsDir) throws IOException {
     try (ZipFile zip = new ZipFile(aarFile)) {
       Enumeration<? extends ZipEntry> entries = zip.entries();
+
+      final Set<String> supportedABIs = new HashSet<>();
+      supportedABIs.add("arm64-v8a");
+      supportedABIs.add("armeabi-v7a");
+      supportedABIs.add("x86");
+      supportedABIs.add("x86_64");
+
       while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
         File targetFile = null;
         final String entryName = entry.getName();
 
         if (entryName.startsWith("assets/")) {
-          final String entryPath = entryName.substring("assets/".length());
           if (!entry.isDirectory()) {
-            targetFile = new File(mergedAssetDir, entryPath);
+            targetFile = new File(mergedAssetDir, entryName.substring("assets/".length()));
             if (!targetFile.getParentFile().exists()) {
+              // The target file may contain subfolders.
               targetFile.getParentFile().mkdirs();
             }
           }
         } else if (entryName.startsWith("jni/") && entryName.endsWith(".so")) {
           final String[] array = entryName.split("/", 3);
+          if (array.length < 3) {
+            continue;
+          }
           final String abi = array[1];
+          if (!supportedABIs.contains(abi)) {
+            System.out.println("Skip merging not supported ABI: " + abi);
+            continue;
+          }
           final String libName = array[2];
           if (!entry.isDirectory()) {
             File parentFile = new File(libsDir, abi);
             if (!parentFile.exists()) {
+              // Create the parent ABI directory if absent
               parentFile.mkdir();
             }
             targetFile = new File(parentFile, libName);
           }
         }
-        if (targetFile != null) {
+        if (targetFile != null && !targetFile.exists()) {
           // Copy file contents from ZIP entry
           try (InputStream is = zip.getInputStream(entry);
                OutputStream os = new FileOutputStream(targetFile)) {
