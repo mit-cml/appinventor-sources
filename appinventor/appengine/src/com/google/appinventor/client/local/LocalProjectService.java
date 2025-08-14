@@ -358,7 +358,7 @@ public class LocalProjectService implements ProjectServiceAsync {
         child.changePropertyValue(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE,
             properties.getOrDefault("defaultfilescope", ""));
         child.changePropertyValue(YOUNG_ANDROID_SETTINGS_PROJECT_COLORS,
-                properties.getOrDefault("projectcolors", "{}"));
+            properties.getOrDefault("projectcolors", "{}"));
         callback.onSuccess(settings.encodeSettings());
       } catch (Exception e) {
         callback.onFailure(e);
