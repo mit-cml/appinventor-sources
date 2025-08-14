@@ -909,13 +909,14 @@ open class ARNodeBase: NSObject, ARNode {
       if OriginalMaterial == nil {
           OriginalMaterial = _modelEntity.model?.materials.first
       }
+    _isCurrentlyColliding = true
       
       var collidedMaterial = SimpleMaterial()
       
       // Different colors for different collision types
       switch type {
       case .object:
-          collidedMaterial.color = .init(tint: .red.withAlphaComponent(0.8))
+          collidedMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
       case .floor:
           collidedMaterial.color = .init(tint: .blue.withAlphaComponent(0.6))
       case .wall:
@@ -927,11 +928,16 @@ open class ARNodeBase: NSObject, ARNode {
       // Apply collision color
       _modelEntity.model?.materials = [collidedMaterial]
     
-    //EventDispatcher.dispatchEvent(of: self, called: "RestoreColor", arguments: node)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+        if let original = self?.OriginalMaterial {
+            self?._modelEntity.model?.materials = [original]
+            print("🎨 Collision effect restored")
+        }
+    }
      
   }
   
-  
+
   
   // MARK: - Drag Methods
   
@@ -975,6 +981,25 @@ extension ARNodeBase {
       print("🎾 Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
   }
   
+  private func ensureAboveFloor(_ position: SIMD3<Float>, for node: ARNodeBase) -> SIMD3<Float> {
+      let groundLevel: Float = ARView3D.SHARED_GROUND_LEVEL
+      
+      // Get object bounds to calculate its radius/height
+      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+      let objectRadius = max((bounds.max.y - bounds.min.y) / 2.0, 0.025) // Minimum 2.5cm radius
+      
+      // Calculate minimum Y position (object bottom should be at ground level)
+      let minY = groundLevel + objectRadius + 0.05  // Extra 5cm buffer for safety
+      
+      let safeY = max(position.y, minY)
+      
+      if position.y != safeY {
+          print("🏠 Adjusted object placement from Y=\(position.y) to Y=\(safeY) to stay above floor")
+      }
+      
+      return SIMD3<Float>(position.x, safeY, position.z)
+  }
+  
   private func updateMassProperties() {
       guard var physicsBody = _modelEntity.physicsBody else { return }
       
@@ -991,7 +1016,9 @@ extension ARNodeBase {
           max(autoSize.y, 0.05) * 1.1,
           max(autoSize.z, 0.05) * 1.1
       )
-      shape = generateCollisionShape(size: safeSize)
+    
+    let exactRadius = (bounds.max.x - bounds.min.x) / 2.0 * Scale
+    shape = ShapeResource.generateSphere(radius: exactRadius)
       _modelEntity.collision = CollisionComponent(shapes: [shape])
       
       // Update physics body if it exists
@@ -1032,4 +1059,13 @@ extension ARNodeBase {
           return ShapeResource.generateBox(size: size)
       }
   }
+  
+  
+  @objc open func handleAdvancedGestureUpdate(
+      fingerLocation: CGPoint,
+      fingerVelocity: CGPoint,
+      groundProjection: Any?,
+      camera3DProjection: Any?, // Optional 3D projection for pickup
+      gesturePhase: UIGestureRecognizer.State
+  ) {}
 }

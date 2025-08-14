@@ -41,12 +41,12 @@ public class ARComponentConstants {
       // ✅ Apply behavior-specific defaults (last behavior wins if multiple)
       switch(behavior) {
         case "1":
-          settings.mass = 0.8f; // Heavy default
-          settings.dragSensitivity = 0.5f;  // Harder to drag
+          settings.mass = 1.0f; // Heavy default
+          settings.dragSensitivity = 0.2f;  // Harder to drag
           break;
         case "2":  //light) {
           settings.mass = 0.04f;  // Light default
-          settings.dragSensitivity = 1.6f;  // Easier to drag
+          settings.dragSensitivity = .8f;  // Easier to drag
           break;
         case "3": //bouncy) {
           settings.restitution = 0.9f;  // Very bouncy default
@@ -73,7 +73,7 @@ public class ARComponentConstants {
           settings.staticFriction = 0.05f;
           settings.dynamicFriction = 0.02f;
           settings.restitution = 0.8f;  // Bounces well
-          settings.dragSensitivity = 1.4f; // Easy to drag
+          settings.dragSensitivity = .8f; // Easy to drag
           break;
 
         case "7": //floating
@@ -81,7 +81,7 @@ public class ARComponentConstants {
           settings.mass = 0.02f; // Very light
           settings.staticFriction = 0.1f;  // Low friction for floating
           settings. dynamicFriction = 0.06f;
-          settings.dragSensitivity = 1.8f; // Very easy to move
+          settings.dragSensitivity = .8f; // Very easy to move
           break;
         default:
           break;

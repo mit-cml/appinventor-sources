@@ -11,7 +11,13 @@ import Combine
 @available(iOS 14.0, *)
 open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
   
-  public var GROUND_LEVEL = -0.8
+  public static var SHARED_GROUND_LEVEL: Float = -1.2
+   
+   // Update your existing GROUND_LEVEL to use the shared value
+   public var GROUND_LEVEL: Float {
+       get { return ARView3D.SHARED_GROUND_LEVEL }
+       set { ARView3D.SHARED_GROUND_LEVEL = newValue }
+   }
   
   public func getView() -> ARView3D {
     return self
@@ -43,6 +49,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   private var _invisibleFloor: ModelEntity?
   private var _floorAnchor: AnchorEntity?
+  private var _hasSetGroundLevel: Bool = false
   
   private var _trackingType: ARTrackingType = .worldTracking
   private var _configuration: ARConfiguration = ARWorldTrackingConfiguration()
@@ -85,6 +92,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   var currentState: State = .none
   
+  private var _currentDraggedObject: ARNodeBase? = nil
+  
   struct CollisionGroups {
       static let arObjects: CollisionGroup = CollisionGroup(rawValue: 1 << 0)
       static let environment: CollisionGroup = CollisionGroup(rawValue: 1 << 1)
@@ -115,10 +124,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
-    _arView.environment.sceneUnderstanding.options = .occlusion
-    _arView.environment.sceneUnderstanding.options.insert(.collision)
+    _arView.environment.sceneUnderstanding.options = [.occlusion]
     _arView.environment.sceneUnderstanding.options.insert(.physics)
-    _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+    _arView.environment.sceneUnderstanding.options.insert(.collision)
+    _arView.environment.sceneUnderstanding.options.remove(.occlusion)
     
     _arView.translatesAutoresizingMaskIntoConstraints = false
     
@@ -138,35 +147,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     ensureFloorExists()
   }
   
-
-  private func initializeGestureRecognizers() {
-    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-    _arView.addGestureRecognizer(tapGesture)
-    
-    if #available(iOS 16.0, *) {
-      let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
-      panGesture.maximumNumberOfTouches = 1
-      _arView.addGestureRecognizer(panGesture)
-    } else {
-      let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanSimple))
-      panGesture.maximumNumberOfTouches = 1
-      _arView.addGestureRecognizer(panGesture)
-    }
-    
-    let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
-    longPressGesture.minimumPressDuration = 0.75
-    _arView.addGestureRecognizer(longPressGesture)
-    
-    tapGesture.require(toFail: longPressGesture)
-    
-    let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch))
-    _arView.addGestureRecognizer(pinchGesture)
-    pinchGesture.delegate = self
-    
-    let rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotation))
-    _arView.addGestureRecognizer(rotationGesture)
-    rotationGesture.delegate = self
-  }
   
   // MARK: Properties
   
@@ -373,72 +353,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           shapes: shapes,
           filter: CollisionFilter(
               group: CollisionGroups.arObjects,
-              mask: [CollisionGroups.environment, CollisionGroups.arObjects]
+              mask: [CollisionGroups.arObjects, CollisionGroups.environment]
           )
       )
       
       print("✅ Collision groups set up for \(node.Name)")
   }
   
-     
-  @objc func createInvisibleFloor(at height: Float = 0.0) {
-    print("🏠 Creating invisible floor at height: \(height)m")
-
-    // ✅ Remove existing floor if any
-    removeInvisibleFloor()
-    
-    // ✅ Create large invisible plane
-    let floorSize: Float = 20.0  // 20m x 20m floor
-    let floorMesh = MeshResource.generatePlane(width: floorSize, depth: floorSize)
-    
-    // ✅ Create invisible material
-    var invisibleMaterial = SimpleMaterial()
-    if #available(iOS 15.0, *) {
-      invisibleMaterial.color = .init(tint: .clear)
-    } else {
-      // Fallback on earlier versions
-    }  // Completely transparent
-      
-    // ✅ Create floor entity
-    _invisibleFloor = ModelEntity(mesh: floorMesh, materials: [invisibleMaterial])
-    _invisibleFloor?.name = "InvisibleFloor"
-          
-    var defaultHeight = height < 0 ? Double(height) : GROUND_LEVEL
-    
-    _invisibleFloor?.transform.translation = SIMD3<Float>(0, Float(defaultHeight), 0)
-          
-    let floorShape = ShapeResource.generateBox(width: floorSize, height: 0.01, depth: floorSize)
-    _invisibleFloor?.collision = CollisionComponent(shapes: [floorShape])
-    
-    _invisibleFloor?.physicsBody = PhysicsBodyComponent(
-        massProperties: PhysicsMassProperties(mass: 1000.0),  // Very heavy
-        material: PhysicsMaterialResource.generate(
-            staticFriction: 0.6,
-            dynamicFriction: 0.4,
-            restitution: 0.3  // Some bounce
-        ),
-        mode: .static  // Never moves
-    )
-    
-    _invisibleFloor?.collision = CollisionComponent(
-        shapes: [floorShape],
-        filter: CollisionFilter(
-          group: CollisionGroups.environment,
-          mask: CollisionGroups.arObjects  // ✅ Interact with ALL AR objects
-        )
-    )
-    
-      
-    // ✅ Create anchor and add to scene
-    _floorAnchor = AnchorEntity(world: SIMD3<Float>(0, height, 0))
-    _floorAnchor?.addChild(_invisibleFloor!)
-    _arView.scene.addAnchor(_floorAnchor!)
-    
-    print("🏠 Invisible floor created successfully")
-  }
   
- 
-  @objc func removeInvisibleFloor() {
+   @objc func removeInvisibleFloor() {
       if let floorAnchor = _floorAnchor {
           _arView.scene.removeAnchor(floorAnchor)
           _floorAnchor = nil
@@ -463,33 +386,31 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   @objc func ensureFloorExists() {
-      // ✅ Check if scene understanding found a floor
-      let hasDetectedFloor = checkForDetectedFloor()
-      
-      if !hasDetectedFloor && !hasInvisibleFloor {
-          print("🏠 No floor detected - creating invisible floor")
+      if !hasInvisibleFloor {
           createInvisibleFloor()
-      } else if hasDetectedFloor && hasInvisibleFloor {
-          print("🏠 Real floor detected - removing invisible floor")
-          removeInvisibleFloor()
       }
   }
+  
+  private func validateAllObjectPositions() {
+      let groundLevel: Float = Float(GROUND_LEVEL)
       
-  private func checkForDetectedFloor() -> Bool {
-      // ✅ Check if RealityKit scene understanding found any horizontal planes
-      for anchor in _arView.scene.anchors {
-          for child in anchor.children {
-              if child.name.contains("Mesh Entity") {
-                  // Check if it's a floor-like entity
-                  let position = child.transform.translation
-                  if position.y < -0.3 {  // Below camera level = likely floor
-                      return true
-                  }
-              }
+      for (node, _) in _nodeToAnchorDict {
+          let currentPos = node._modelEntity.transform.translation
+          
+          // Simple calculation: object bottom should be above ground
+          let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+          let objectBottom = currentPos.y - (bounds.max.y - bounds.min.y) / 2.0 * node.Scale
+          
+          if objectBottom < groundLevel {
+              // Move object up so its bottom is at ground level
+              let correction = groundLevel - objectBottom + 0.01  // 2cm buffer
+              let newPos = SIMD3<Float>(currentPos.x, currentPos.y + correction, currentPos.z)
+              node._modelEntity.transform.translation = newPos
+              print("🏠 Moved \(node.Name) above floor")
           }
       }
-      return false
   }
+
   
   private func setupCollisionDetection() {
       // Cancel existing observer
@@ -516,7 +437,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           nodeB.ObjectCollidedWithObject(nodeA)
           
           print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
-        }
+        } else {
+          print("⚠️ Could not find nodes for collision entities")
+      }
       }
       
       print("✅ Simplified collision observer set up")
@@ -569,6 +492,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _arView.session.run(_configuration, options: options)
     _sessionRunning = true
     startOptions = []
+    
+    ensureFloorExists()
     
     if _requiresAddNodes {
       for (node, anchorEntity) in _nodeToAnchorDict {
@@ -799,48 +724,62 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   // MARK: ARSession Delegate Methods
-  
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-    
-    for anchor in anchors {
-      
-      if let planeAnchor = anchor as? ARPlaneAnchor {
-        let detectedPlane = DetectedPlane(anchor: planeAnchor, container: self)
-        _detectedPlanesDict[anchor] = detectedPlane
-        PlaneDetected(detectedPlane)
-      } else if let imageAnchor = anchor as? ARImageAnchor {
-        guard let name = imageAnchor.referenceImage.name else { return }
-        let imageMarker = _imageMarkers[name]
-        //imageMarker?.FirstDetected(anchor)
-      } else if let geoAnchor = anchor as? ARGeoAnchor {
-        // Handle geo anchor being tracked
-        handleGeoAnchorAdded(geoAnchor)
+      for anchor in anchors {
+          if let planeAnchor = anchor as? ARPlaneAnchor {
+              let detectedPlane = DetectedPlane(anchor: planeAnchor, container: self)
+              _detectedPlanesDict[anchor] = detectedPlane
+              PlaneDetected(detectedPlane)
+
+              if !_hasSetGroundLevel &&
+               planeAnchor.alignment == .horizontal &&
+               planeAnchor.transform.translation.y < 0.1 {
+                let detectedRealFloorLevel = planeAnchor.transform.translation.y
+               if #available(iOS 16.0, *) {
+                    let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+                    
+                    // Only use large, confident planes (at least 1 square meter)
+                    if planeSize > 1.0 {
+                      print("🏠 FIRST TIME: Setting ground level to detected floor: \(detectedRealFloorLevel)m")
+                      let invisibleFloorLevel = detectedRealFloorLevel + 0.3
+                      // ✅ Update ground level reference
+                      ARView3D.SHARED_GROUND_LEVEL = invisibleFloorLevel
+                      
+                      // ✅ RECREATE invisible floor at correct position
+                      createInvisibleFloor(at: invisibleFloorLevel)
+                    }
+                }
+            }
+          } else if let imageAnchor = anchor as? ARImageAnchor {
+              guard let name = imageAnchor.referenceImage.name else { return }
+              let imageMarker = _imageMarkers[name]
+          } else if let geoAnchor = anchor as? ARGeoAnchor {
+              handleGeoAnchorAdded(geoAnchor)
+          }
       }
-    }
   }
-  
+
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-    
-    for anchor in anchors {
-      
-      if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
-        updatedPlane.updateFor(anchor: planeAnchor)
-        DetectedPlaneUpdated(updatedPlane)
-      } else if let imageAnchor = anchor as? ARImageAnchor {
-        guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
-        if !imageAnchor.isTracked {
-          imageMarker.NoLongerInView()
-        } else if !imageMarker._isTracking {
-          imageMarker.AppearedInView()
-        }
-        let position = SIMD3<Float>(imageAnchor.transform.columns.3.x, imageAnchor.transform.columns.3.y, imageAnchor.transform.columns.3.z)
-        let rotation = imageAnchor.transform.eulerAngles
-        imageMarker.pushUpdate(position, rotation)
-      }else if let geoAnchor = anchor as? ARGeoAnchor {
-        // Handle geo anchor being tracked
-        handleGeoAnchorAdded(geoAnchor)
+      for anchor in anchors {
+          if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
+              updatedPlane.updateFor(anchor: planeAnchor)
+              DetectedPlaneUpdated(updatedPlane)
+              
+              
+          } else if let imageAnchor = anchor as? ARImageAnchor {
+              guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
+              if !imageAnchor.isTracked {
+                  imageMarker.NoLongerInView()
+              } else if !imageMarker._isTracking {
+                  imageMarker.AppearedInView()
+              }
+              let position = SIMD3<Float>(imageAnchor.transform.columns.3.x, imageAnchor.transform.columns.3.y, imageAnchor.transform.columns.3.z)
+              let rotation = imageAnchor.transform.eulerAngles
+              imageMarker.pushUpdate(position, rotation)
+          } else if let geoAnchor = anchor as? ARGeoAnchor {
+              handleGeoAnchorAdded(geoAnchor)
+          }
       }
-    }
   }
   
   public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
@@ -993,6 +932,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let xMeters: Float = UnitHelper.centimetersToMeters(x)
       let yMeters: Float = UnitHelper.centimetersToMeters(y)
       let zMeters: Float = UnitHelper.centimetersToMeters(z)
+      
       node.setPosition(x: xMeters, y: yMeters, z: zMeters)
       return node
     }
@@ -1050,49 +990,69 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double,node: ARNodeBase, hasGeoCoordinates: Bool) {
-      
-      
-      
-      
-      // Create geo anchor if we can
-      if hasGeoCoordinates {
-        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        if CLLocationCoordinate2DIsValid(coordinate) {
-          let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
-          node.setGeoAnchor(geoAnchor)
-          print("setup node's geoanchor \(String(describing: geoAnchor))")
-          
-
-          // Check distance from session start
-          if let sessionStart = sessionStartLocation {
-            let anchorLocation = CLLocation(latitude: latitude, longitude: longitude)
-            let distance = sessionStart.distance(from: anchorLocation)
-            
-            if distance < 10.0 {
-              // Close anchor: Store world coordinates as precision backup
-              let xMeters: Float = UnitHelper.centimetersToMeters(x)
-              let yMeters: Float = UnitHelper.centimetersToMeters(y)
-              let zMeters: Float = UnitHelper.centimetersToMeters(z)
-              node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-              node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
-              node._creatorSessionStart = anchorLocation
-              print("saved world coords for offset \(String(describing: node._worldOffset))\(String(describing: node._creatorSessionStart))")
-            }
-            // Far anchors: GPS only (precision less critical)
-            return
-          }
-        }else {
-          print("setting up location error: Invalid Coordinates", ErrorMessage.ERROR_INVALID_COORDINATES.code)
+    private func ensureAboveFloor(_ position: SIMD3<Float>, for node: ARNodeBase) -> SIMD3<Float> {
+        let groundLevel: Float = Float(GROUND_LEVEL)
+        
+        // Get object bounds to calculate its radius/height
+        let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+        let objectRadius = max((bounds.max.y - bounds.min.y) / 2.0, 0.025) // Minimum 2.5cm radius
+        
+        // Calculate minimum Y position (object bottom should be at ground level)
+        let minY = groundLevel + objectRadius + 0.05  // Extra 5cm buffer for safety
+        
+        let safeY = max(position.y, minY)
+        
+        if position.y != safeY {
+            print("🏠 Adjusted object placement from Y=\(position.y) to Y=\(safeY) to stay above floor")
         }
         
-      }
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-      print("set up anchor and setting position \(xMeters) \(yMeters) \(zMeters)")
-      
+        return SIMD3<Float>(position.x, safeY, position.z)
+    }
+    
+    private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double, node: ARNodeBase, hasGeoCoordinates: Bool) {
+        
+        // Create geo anchor if we can
+        if hasGeoCoordinates {
+            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            if CLLocationCoordinate2DIsValid(coordinate) {
+                let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
+                node.setGeoAnchor(geoAnchor)
+                print("setup node's geoanchor \(String(describing: geoAnchor))")
+                
+                // Check distance from session start
+                if let sessionStart = sessionStartLocation {
+                    let anchorLocation = CLLocation(latitude: latitude, longitude: longitude)
+                    let distance = sessionStart.distance(from: anchorLocation)
+                    
+                    if distance < 10.0 {
+                        // Close anchor: Use the EXACT tap position - let physics drop it
+                        let xMeters: Float = UnitHelper.centimetersToMeters(x)
+                        let yMeters: Float = UnitHelper.centimetersToMeters(y)
+                        let zMeters: Float = UnitHelper.centimetersToMeters(z)
+                        
+             
+                        let groundLevel = Float(GROUND_LEVEL)
+                        let safeY = max(yMeters, groundLevel + 0.15) // At least 1cm above ground
+     
+                        node.setPosition(x: xMeters, y: safeY, z: zMeters)
+                        
+                        node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
+                        node._creatorSessionStart = anchorLocation
+                        print("saved world coords for offset \(String(describing: node._worldOffset))")
+                    }
+                    return
+                }
+            } else {
+                print("setting up location error: Invalid Coordinates", ErrorMessage.ERROR_INVALID_COORDINATES.code)
+            }
+        }
+        
+        // For non-geo coordinates, use exact position and let physics handle floor collision
+        let xMeters: Float = UnitHelper.centimetersToMeters(x)
+        let yMeters: Float = UnitHelper.centimetersToMeters(y)
+        let zMeters: Float = UnitHelper.centimetersToMeters(z)
+        node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+        print("set up anchor and setting position \(xMeters) \(yMeters) \(zMeters)")
     }
     
     @objc open func CreateCapsuleNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> CapsuleNode? {
@@ -1105,14 +1065,17 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Name = "GeoCapsuleNode"
       
       
+      optimizeFloorSetup()
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
       
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       
-      print("✅ Created node: \(node.Name)")
-      print("🔍 IsGeoAnchored: \(node.IsGeoAnchored)")
-      print("🌍 Has geo anchor: \(node.getGeoAnchor() != nil)")
+      //which collisions to pay attention to
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+          self.setupCollisionGroups(for: node)
+      }
+      
       if let geoAnchor = node.getGeoAnchor() {
         print("📍 Geo anchor coordinates: \(geoAnchor.coordinate)")
       }
@@ -1424,8 +1387,9 @@ extension ARView3D: UIGestureRecognizerDelegate {
             pow(tapLocation.y - nodeScreenPos!.y, 2)
           )
           
+        var SCREEN_THRESHOLD: CGFloat = 30.0
           // Skip if too far in screen space
-          if screenDistance > 100.0 { continue }  // 100 pixel max
+          if screenDistance > SCREEN_THRESHOLD { continue }  // 100 pixel max
           
           // World space check (more accurate for close objects)
           var worldDistance: Float = Float.greatestFiniteMagnitude
@@ -1438,8 +1402,20 @@ extension ARView3D: UIGestureRecognizerDelegate {
           let screenWeight: Float = 0.3
           let worldWeight: Float = 0.7
           
-          let normalizedScreenDistance = screenDistance / 100.0  // Normalize to 0-1
-          let normalizedWorldDistance = min(worldDistance / 0.5, 1.0)  // Normalize to 0-1
+        let normalizedScreenDistance = screenDistance / 100.0  // Normalize to 0-1
+        
+        
+        var worldThreshold: Float = 0.1  // Default 10cm
+
+        // Use actual sphere radius if it's a sphere
+        if let sphereNode = node as? SphereNode {
+          let sphereRadiusInCM = sphereNode.RadiusInCentimeters
+          let sphereRadiusInMeters = sphereRadiusInCM / 100.0  // Simple conversion
+        
+            worldThreshold = sphereRadiusInMeters * 1.5  // 50% buffer around actual sphere
+        }
+
+        let normalizedWorldDistance = min(worldDistance / worldThreshold, 1.0)  // Normalize to 0-1
           
         let combinedScore = (screenWeight * Float(normalizedScreenDistance)) +
                              (worldWeight * normalizedWorldDistance)
@@ -1575,69 +1551,9 @@ extension ARView3D: UIGestureRecognizerDelegate {
       
 
   }
-    // Simple, clean drag handler
-    @objc fileprivate func handlePan(_ gesture: UIPanGestureRecognizer) {
-        guard _sessionRunning else { return }
-        
-        let location = gesture.location(in: _arView)
-        
-        switch gesture.state {
-        case .began:
-            // Find node and let it handle drag start
-            if let draggedNode = findClosestNode(tapLocation: location) {
-                draggedNode.startDrag()
-            }
-            
-        case .changed:
-            // Let the dragged node handle the update
-            if let draggedNode = findDraggedNode(at: location) {
-              let worldDirection = screenDragToWorldDirection(calculateDragVector(gesture))
-              print("🌍 World: \(worldDirection)")
-              print ("updating drag change")
-              draggedNode.updateDrag(dragVector: calculateDragVector(gesture), velocity: gesture.velocity(in: _arView), worldDirection: worldDirection)
-            }
-            
-        case .ended, .cancelled, .failed:
-            // Let the dragged node handle the release
-            if let draggedNode = findDraggedNode(at: location) {
-              let worldDirection = screenDragToWorldDirection(calculateDragVector(gesture))
-              draggedNode.endDrag(releaseVelocity: gesture.velocity(in: _arView), worldDirection: worldDirection)
-              
-              //allow user to override flinging?
-              EventDispatcher.dispatchEvent(of: self, called: "EndDrag", arguments: gesture.velocity as AnyObject, worldDirection as AnyObject)
-            }
-            
-        default:
-            break
-        }
-    }
-    
-    private func findDraggedNode(at location: CGPoint) -> ARNodeBase? {
-        // Find the node currently being dragged
-        for (node, _) in _nodeToAnchorDict {
-            if node.isBeingDragged {
-                return node
-            }
-        }
-        return nil
-    }
-    
-    private func calculateDragVector(_ gesture: UIPanGestureRecognizer) -> CGPoint {
-        let currentLocation = gesture.location(in: _arView)
-        let translation = gesture.translation(in: _arView)
-        return CGPoint(x: translation.x, y: translation.y)
-    }
-  
+     
 
-  
-  @available(iOS 14.0, *)
-  private func isNodeAtLocation(_ location: CGPoint, in arView: ARView) -> Bool {
-      // Use your proven findClosestNode approach
-    if let closestNode = findClosestNode(tapLocation: location) {
-      return true
-    }
-    return false
-  }
+
 
   @objc fileprivate func handleLongPress(sender: UILongPressGestureRecognizer) {
     guard _sessionRunning else { return }
@@ -1969,6 +1885,8 @@ extension ARView3D: LifecycleDelegate {
     _lights = [:]
     _detectedPlanesDict = [:]
     _imageMarkers = [:]
+    
+    createInvisibleFloor()
   }
 }
 
@@ -2001,3 +1919,392 @@ extension matrix_float4x4 {
     return SIMD3<Float>(x, y, z)
   }
 }
+
+
+@available(iOS 14.0, *)
+extension ARView3D {
+    
+    // STEP 1: Replace your initializeGestureRecognizers method with this
+    private func initializeGestureRecognizers() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        _arView.addGestureRecognizer(tapGesture)
+        
+        // ✅ NEW: Enhanced pan gesture with camera-aware finger following + rolling + flicking
+        if #available(iOS 16.0, *) {
+            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanComplete))
+            panGesture.maximumNumberOfTouches = 1
+            _arView.addGestureRecognizer(panGesture)
+        } else {
+            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanComplete))
+            panGesture.maximumNumberOfTouches = 1
+            _arView.addGestureRecognizer(panGesture)
+        }
+        
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        longPressGesture.minimumPressDuration = 0.75
+        _arView.addGestureRecognizer(longPressGesture)
+        
+        tapGesture.require(toFail: longPressGesture)
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch))
+        _arView.addGestureRecognizer(pinchGesture)
+        pinchGesture.delegate = self
+        
+        let rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotation))
+        _arView.addGestureRecognizer(rotationGesture)
+        rotationGesture.delegate = self
+    }
+    
+  @objc private func handlePanComplete(_ gesture: UIPanGestureRecognizer) {
+    guard let node = _currentDraggedObject ?? findClosestNode(tapLocation: gesture.location(in: _arView)) else { return }
+      
+      if gesture.state == .began {
+          _currentDraggedObject = node
+      }
+      
+      let fingerLocation = gesture.location(in: _arView)
+      let fingerVelocity = gesture.velocity(in: _arView)
+      let groundProjection = projectFingerToGround(fingerLocation: fingerLocation)
+      let camera3DProjection = projectFingerWithCameraTransform(fingerLocation: fingerLocation, currentBall: node)
+      
+      node.handleAdvancedGestureUpdate(
+          fingerLocation: fingerLocation,
+          fingerVelocity: fingerVelocity,
+          groundProjection: groundProjection,
+          camera3DProjection: camera3DProjection,
+          gesturePhase: gesture.state
+      )
+      
+      if gesture.state == .ended || gesture.state == .cancelled {
+        _currentDraggedObject = nil
+      }
+  }
+    // STEP 3: Camera-aware positioning methods
+    private func positionBallUnderFinger(fingerLocation: CGPoint, currentBall: ARNodeBase) -> SIMD3<Float>? {
+        
+      // Method 1: Try ARKit raycast first (most accurate)
+      if let raycastResult = performCameraAwareRaycast(from: fingerLocation) {
+          return constrainPositionForBall(raycastResult, ball: currentBall)
+      }
+      
+      // Method 2: Fallback to camera-space projection
+      return projectFingerWithCameraTransform(fingerLocation: fingerLocation, currentBall: currentBall)
+    }
+  
+  private func constrainPositionForBall(_ position: SIMD3<Float>, ball: ARNodeBase) -> SIMD3<Float> {
+    let groundLevel: Float = Float(GROUND_LEVEL)
+    let ballRadius = (ball as? SphereNode)?.RadiusInCentimeters ?? 0.05
+    let scaledRadius = ballRadius * ball.Scale
+    let minY = groundLevel + scaledRadius + 0.02
+    let maxPickupHeight = groundLevel + 3.0
+      
+    return SIMD3<Float>(
+        position.x,
+        max(minY, min(position.y, maxPickupHeight)),
+        position.z
+    )
+  }
+    
+    private func performCameraAwareRaycast(from fingerLocation: CGPoint) -> SIMD3<Float>? {
+      let raycastTargets: [ARRaycastQuery.Target] = [
+          .existingPlaneGeometry,
+          .existingPlaneInfinite,
+          .estimatedPlane
+      ]
+      
+      for target in raycastTargets {
+          let results = _arView.raycast(from: fingerLocation, allowing: target, alignment: .any)
+          if let result = results.first {
+              let hitPoint = SIMD3<Float>(
+                  result.worldTransform.columns.3.x,
+                  result.worldTransform.columns.3.y,
+                  result.worldTransform.columns.3.z
+              )
+              return hitPoint
+          }
+      }
+      return nil
+    }
+    
+    public func projectFingerWithCameraTransform(fingerLocation: CGPoint, currentBall: ARNodeBase) -> SIMD3<Float>? {
+        let cameraTransform = _arView.cameraTransform
+        let cameraPosition = SIMD3<Float>(cameraTransform.translation)
+        let currentBallPosition = currentBall._modelEntity.transform.translation
+        
+        let ballDistance = simd_distance(cameraPosition, currentBallPosition)
+        let targetDistance = max(ballDistance, 0.5)
+        
+        let normalizedX = (fingerLocation.x / _arView.bounds.width) * 2.0 - 1.0
+        let normalizedY = -((fingerLocation.y / _arView.bounds.height) * 2.0 - 1.0)
+        
+        let fov = Float.pi / 3.0
+        let aspectRatio = Float(_arView.bounds.width / _arView.bounds.height)
+        
+        let rayDirectionCamera = SIMD3<Float>(
+            Float(normalizedX) * tan(fov / 2.0) * aspectRatio,
+            Float(normalizedY) * tan(fov / 2.0),
+            -1.0
+        )
+        
+        let rayDirectionWorld = simd_normalize(cameraTransform.rotation.act(rayDirectionCamera))
+        let worldPosition = cameraPosition + rayDirectionWorld * targetDistance
+        
+        return worldPosition
+    }
+    
+    public func projectFingerToGround(fingerLocation: CGPoint) -> SIMD3<Float>? {
+        let cameraTransform = _arView.cameraTransform
+        let cameraPosition = SIMD3<Float>(cameraTransform.translation)
+        
+        let normalizedX = (fingerLocation.x / _arView.bounds.width) * 2.0 - 1.0
+        let normalizedY = -((fingerLocation.y / _arView.bounds.height) * 2.0 - 1.0)
+        
+        let fov = Float.pi / 3.0
+        let aspectRatio = Float(_arView.bounds.width / _arView.bounds.height)
+        
+        let rayDirectionCamera = SIMD3<Float>(
+            Float(normalizedX) * tan(fov / 2.0) * aspectRatio,
+            Float(normalizedY) * tan(fov / 2.0),
+            -1.0
+        )
+        
+        let rayDirectionWorld = cameraTransform.rotation.act(rayDirectionCamera)
+        let groundLevel: Float = Float(GROUND_LEVEL)
+        let rayToGround = groundLevel - cameraPosition.y
+        
+        guard abs(rayDirectionWorld.y) > 0.001 else { return nil }
+        
+        let t = rayToGround / rayDirectionWorld.y
+        guard t > 0 else { return nil }
+        
+        let groundIntersection = cameraPosition + rayDirectionWorld * t
+        return groundIntersection
+    }
+    
+
+
+
+}
+
+
+// MARK: - Enhanced Floor Management System for ARView3D
+// Replace your existing floor methods with these enhanced versions
+
+@available(iOS 14.0, *)
+extension ARView3D {
+    
+  private func optimizeFloorSetup() {
+      if let realFloorLevel = findMostAccurateFloorLevel() {
+          let oldLevel = Float(GROUND_LEVEL)
+          
+          // Update references
+          ARView3D.SHARED_GROUND_LEVEL = realFloorLevel
+          
+          // Move invisible floor
+          _invisibleFloor?.transform.translation.y = realFloorLevel
+          _floorAnchor?.transform.translation.y = realFloorLevel
+          
+          print("🏠 Floor reference updated: \(oldLevel) → \(realFloorLevel)")
+          print("🏠 Objects will settle via physics")
+          
+          // NO automatic object repositioning
+      }
+  }
+    
+    // STEP 2: Find the most accurate floor level from multiple sources
+    private func findMostAccurateFloorLevel() -> Float? {
+        var floorCandidates: [(Float, String, Float)] = []  // (Y level, source, confidence)
+        
+        // Check detected planes (high confidence)
+        for (anchor, _) in _detectedPlanesDict {
+            if let planeAnchor = anchor as? ARPlaneAnchor,
+               planeAnchor.alignment == .horizontal {
+                let planeY = planeAnchor.transform.translation.y
+              
+              if #available(iOS 16.0, *) {
+                let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+                let confidence = min(planeSize * 10.0, 100.0)  // Larger planes = higher confidence
+                
+                if planeY < 0.1 { // Below camera level = likely floor
+                    floorCandidates.append((planeY, "DetectedPlane", confidence))
+                    print("📏 Detected plane floor candidate: Y=\(planeY), confidence=\(confidence)")
+                }
+              } else {
+                // Fallback on earlier versions
+              }
+                
+            }
+        }
+        
+        // Check scene understanding meshes (medium confidence)
+        for anchor in _arView.scene.anchors {
+            for child in anchor.children {
+                let entityType = String(describing: type(of: child))
+                if entityType.contains("RKSceneUnderstanding") || entityType.contains("MeshEntity") {
+                    let meshY = child.transform.translation.y
+                    
+                    if meshY < 0.1 { // Below camera = likely floor
+                        floorCandidates.append((meshY, "SceneUnderstanding", 50.0))
+                        print("📏 Scene understanding floor candidate: Y=\(meshY)")
+                    }
+                }
+            }
+        }
+        
+        // Return the most confident floor level
+        if let bestCandidate = floorCandidates.max(by: { $0.2 < $1.2 }) {
+            print("✅ Best floor candidate: Y=\(bestCandidate.0) from \(bestCandidate.1) (confidence: \(bestCandidate.2))")
+            return bestCandidate.0
+        }
+        
+        return nil
+    }
+  
+  private func moveInvisibleFloorToRealFloor(realFloorLevel: Float) {
+      let currentLevel = Float(GROUND_LEVEL)
+      
+      // ✅ ONLY CHANGE: Stop if floor hasn't moved
+      if abs(realFloorLevel - currentLevel) < 0.05 { return }
+      
+      // Keep ALL your existing code exactly as it was
+      guard let invisibleFloor = _invisibleFloor else {
+          print("❌ No invisible floor to move")
+          return
+      }
+      
+      let oldLevel = invisibleFloor.transform.translation.y
+      let newLevel = realFloorLevel
+      
+      ARView3D.SHARED_GROUND_LEVEL = newLevel
+      invisibleFloor.transform.translation.y = newLevel
+      _floorAnchor?.transform.translation.y = newLevel
+      
+      print("🔄 Moved invisible floor: \(oldLevel)m → \(newLevel)m")
+      
+      // Keep your original adjustAllObjectsToNewFloorLevel code
+      adjustAllObjectsToNewFloorLevel(oldLevel: oldLevel, newLevel: newLevel)
+  }
+  
+
+    private func adjustAllObjectsToNewFloorLevel(oldLevel: Float, newLevel: Float) {
+        let levelChange = newLevel - oldLevel
+        
+        for (node, _) in _nodeToAnchorDict {
+            let currentPos = node._modelEntity.transform.translation
+            
+            // Only adjust objects that were sitting on the old floor
+            let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+            let objectBottom = currentPos.y - (bounds.max.y - bounds.min.y) / 2.0 * node.Scale
+            
+            // If object was sitting on old floor (within 10cm), move it to new floor
+            if abs(objectBottom - oldLevel) < 0.1 {
+                let newY = currentPos.y + levelChange
+                node._modelEntity.transform.translation.y = newY
+                print("📦 Adjusted \(node.Name): Y=\(currentPos.y) → Y=\(newY)")
+            }
+        }
+    }
+    
+  @objc func createInvisibleFloor(at height: Float = SHARED_GROUND_LEVEL) {
+      print("🏠 Creating simple invisible floor at: \(height)m")
+      
+      // Remove existing floor
+      removeInvisibleFloor()
+      
+      // Create large invisible floor
+      let floorSize: Float = 200.0  // 200m x 200m
+      let floorMesh = MeshResource.generatePlane(width: floorSize, depth: floorSize)
+      
+      // Invisible material
+      var invisibleMaterial = SimpleMaterial()
+      if #available(iOS 15.0, *) {
+          invisibleMaterial.color = .init(tint: .clear)
+      }
+      
+      // Create floor entity
+      _invisibleFloor = ModelEntity(mesh: floorMesh, materials: [invisibleMaterial])
+      _invisibleFloor?.name = "InvisibleFloor"
+      
+      // Position at specified height
+      _invisibleFloor?.transform.translation = SIMD3<Float>(0, height, 0)
+      let floorThickness: Float = 0.1  // 10cm
+      let floorShape = ShapeResource.generateBox(
+          width: floorSize,
+          height: floorThickness,  // Thicker
+          depth: floorSize
+      )
+      
+      // Position collision box so TOP surface is at the floor height
+    let collisionY = height - (floorThickness/2) + 0.5
+    print("Collision Y: \(collisionY)m")
+    _invisibleFloor?.collision = CollisionComponent(
+        shapes: [floorShape],
+        filter: CollisionFilter(
+          group: CollisionGroups.environment,  // ✅ "I am environment"
+          mask: [CollisionGroups.arObjects]    // ✅ "I can hit AR objects"
+        )
+    )
+      _invisibleFloor?.position.y = collisionY  // Lower the collision box
+      
+      // Static physics body
+      _invisibleFloor?.physicsBody = PhysicsBodyComponent(
+          massProperties: PhysicsMassProperties(mass: 1000.0),
+          material: PhysicsMaterialResource.generate(
+              staticFriction: 0.6,
+              dynamicFriction: 0.4,
+              restitution: 0.3
+          ),
+          mode: .static
+      )
+      
+      // Create anchor and add to scene
+      _floorAnchor = AnchorEntity(world: SIMD3<Float>(0, height, 0))
+      _floorAnchor?.addChild(_invisibleFloor!)
+      _arView.scene.addAnchor(_floorAnchor!)
+      
+    print("✅ Simple invisible floor created at: \(collisionY)m")
+  }
+    
+    @objc func debugFloorSystem() {
+        print("=== ENHANCED FLOOR SYSTEM DEBUG ===")
+        print("Current GROUND_LEVEL: \(GROUND_LEVEL)")
+        print("Has invisible floor: \(hasInvisibleFloor)")
+        
+        if let floor = _invisibleFloor {
+            print("Invisible floor position: \(floor.transform.translation)")
+            print("Invisible floor collision: \(floor.collision != nil)")
+            print("Invisible floor physics: \(floor.physicsBody != nil)")
+        }
+        
+        print("Detected planes: \(_detectedPlanesDict.count)")
+        for (anchor, _) in _detectedPlanesDict {
+            if let planeAnchor = anchor as? ARPlaneAnchor,
+               planeAnchor.alignment == .horizontal {
+                let planeY = planeAnchor.transform.translation.y
+              if #available(iOS 16.0, *) {
+                let size = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+                print("  Floor plane: Y=\(planeY), size=\(size)m²")
+              }
+                
+            }
+        }
+        
+        print("Object positions:")
+        for (node, _) in _nodeToAnchorDict {
+            if let sphere = node as? SphereNode {
+                let pos = sphere._modelEntity.transform.translation
+                let radius = sphere.RadiusInCentimeters * sphere.Scale
+                let bottom = pos.y - radius
+                print("  \(sphere.Name): center=Y\(pos.y), bottom=Y\(bottom)")
+                
+                if bottom < Float(GROUND_LEVEL) - 0.05 {
+                    print("    ⚠️ This sphere might be below floor!")
+                }
+            }
+        }
+        print("================================")
+    }
+}
+
+
+   
