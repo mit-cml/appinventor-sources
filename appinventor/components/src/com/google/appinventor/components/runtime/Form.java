@@ -292,9 +292,11 @@ public class Form extends AppInventorCompatActivity
   // FragmentActivity is added in future.
   public static final int MAX_PERMISSION_NONCE = 100000;
 
-  public FileCache fileCache;
+  private FileCache fileCache;
 
-
+  public FileCache getFileCache() {
+    return fileCache;
+  }
 
   public static class PercentStorageRecord {
     public enum Dim {
@@ -335,7 +337,7 @@ public class Form extends AppInventorCompatActivity
     super.onCreate(icicle);
 
     if (fileCache == null) {
-      this.fileCache = new FileCache(new java.io.File(this.getCacheDir(), "file_cache"));
+      this.fileCache = new FileCache(this);
     }
 
     // This version is for production apps. See {@link ReplForm#onCreate} for the REPL version,

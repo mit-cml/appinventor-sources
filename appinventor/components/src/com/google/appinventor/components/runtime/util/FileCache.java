@@ -5,15 +5,26 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.util.HashDbInitialize.HashTable;
+import android.database.sqlite.SQLiteDatabase;
 
 public class FileCache {
   private final File cacheDir;
+  private final HashDatabase hashDatabase;
   private final HashMap<String, FutureTask<Void>> fileMap = new HashMap<>();
   private static final Logger LOG = Logger.getLogger(FileCache.class.getName());
 
@@ -23,11 +34,12 @@ public class FileCache {
    *
    * @param cacheDir the directory to use for caching files
    */
-  public FileCache(File cacheDir) {
-    this.cacheDir = cacheDir;
+  public FileCache(Form form) {
+    this.cacheDir = new File(form.getCacheDir(), "file_cache");
     if (!cacheDir.exists()) {
       cacheDir.mkdirs();
     }
+    this.hashDatabase = new HashDatabase(form);
   }
 
   /**
@@ -49,12 +61,8 @@ public class FileCache {
    *         file already exists
    */
   public Future<Void> registerFile(final String path, final String url) {
-    final File file = new File(cacheDir, path);
     synchronized (fileMap) {
-      if (file.exists()) {
-        return new FutureTask<>(() -> null);
-      }
-
+      // If currently downloading, send that back
       if (fileMap.containsKey(path)) {
         return fileMap.get(path);
       }
@@ -62,12 +70,63 @@ public class FileCache {
       FutureTask<Void> task = new FutureTask<>(new Runnable() {
         @Override
         public void run() {
+          final File file = new File(cacheDir, path);
+          HttpURLConnection connection = null;
           try {
-            FileUtil.downloadUrlToFile(url, file.getAbsolutePath());
+            HashFile hashFile = hashDatabase.getHashFile(path);
+
+            // If there is no hash file, but the file still exists, there probably just wasn't an
+            // ETAG, so we should just use the cache.
+            if (hashFile != null || !file.exists()) {
+              connection = (HttpURLConnection) new URL(url).openConnection();
+
+              if (hashFile != null && file.exists()) {
+                connection.addRequestProperty("If-None-Match", hashFile.getHash());
+              }
+              connection.setRequestMethod("GET");
+
+              int responseCode = connection.getResponseCode();
+              String fileHash = connection.getHeaderField("ETag");
+
+              if (responseCode == 200) {
+                BufferedInputStream in =
+                    new BufferedInputStream(connection.getInputStream(), 0x1000);
+                BufferedOutputStream out =
+                    new BufferedOutputStream(new FileOutputStream(file), 0x1000);
+
+                try {
+                  while (true) {
+                    int b = in.read();
+                    if (b == -1) {
+                      break;
+                    }
+                    out.write(b);
+                  }
+                  out.flush();
+                } catch (IOException e) {
+                  throw new IOException("Error downloading file: " + url, e);
+                } finally {
+                  out.close();
+                }
+
+                if (fileHash != null) {
+                  Date timeStamp = new Date();
+                  HashFile newHashFile = new HashFile(path, fileHash, timeStamp);
+                  if (hashFile == null) {
+                    hashDatabase.insertHashFile(newHashFile);
+                  } else {
+                    hashDatabase.updateHashFile(newHashFile);
+                  }
+                }
+              }
+            }
           } catch (Exception error) {
             LOG.log(Level.SEVERE, "Exception downloading file to cache", error);
           } finally {
             synchronized (fileMap) {
+              if (connection != null) {
+                connection.disconnect();
+              }
               fileMap.remove(path);
             }
           }
@@ -120,6 +179,9 @@ public class FileCache {
     if (cacheDir.exists()) {
       try {
         FileUtil.removeDirectory(cacheDir, true);
+
+        SQLiteDatabase db = hashDatabase.getWritableDatabase();
+        db.delete(HashTable.TABLE_NAME, null, null);
       } catch (Exception e) {
         LOG.log(Level.SEVERE, "Error resetting cache", e);
       }
