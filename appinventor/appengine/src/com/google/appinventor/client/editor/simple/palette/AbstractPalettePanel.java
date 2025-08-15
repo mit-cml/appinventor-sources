@@ -397,6 +397,7 @@ public abstract class AbstractPalettePanel<
           new SimpleComponentDescriptor(componentTypeName, version, versionName, dateBuilt, license,
               helpString, helpUrl, categoryDocUrlString, showOnPalette, nonVisible, external,
               factory));
+      item.setActiveEditor(editor);
       // Handle extensions
       if (external) {
         translationMap.put(componentTypeName.toLowerCase(), componentTypeName);

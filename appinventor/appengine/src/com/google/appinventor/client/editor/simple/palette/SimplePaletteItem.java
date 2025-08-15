@@ -41,9 +41,6 @@ public class SimplePaletteItem extends DragSourcePanel {
   // The editor that will receive instances of the component represented by this item.
   private SimpleEditor activeEditor;
 
-  // Queried to determine the set of UI elements that accept drops of palette items
-  private DropTargetProvider dropTargetProvider;
-
   // Component descriptor (needed for mock component instantiation)
   private SimpleComponentDescriptor scd;
 
@@ -144,7 +141,7 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   private void addComponent() {
     MockComponent component = createMockComponent();
-    MockVisibleComponent mockVisibleComponent = (MockVisibleComponent) dropTargetProvider.getDropTargets()[0];
+    MockVisibleComponent mockVisibleComponent = (MockVisibleComponent) activeEditor.getDropTargetProvider().getDropTargets()[0];
     MockForm form = mockVisibleComponent.getForm();
     MockComponent selectedComponent = form.getLastSelectedComponent();
     if (selectedComponent instanceof MockContainer && ((MockContainer) selectedComponent).willAcceptComponentType(component.getType()) && component.isVisibleComponent()) {
@@ -210,7 +207,7 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   @Override
   public DropTarget[] getDropTargets() {
-    return dropTargetProvider.getDropTargets();
+    return activeEditor.getDropTargetProvider().getDropTargets();
   }
 
   @Override
@@ -226,6 +223,5 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   public void setActiveEditor(SimpleEditor editor) {
     this.activeEditor = editor;
-    this.dropTargetProvider = editor.getDropTargetProvider();
   }
 }
