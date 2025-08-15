@@ -345,6 +345,7 @@ h1 { color: white; }
 .documentation span.control, .documentation span.event, .documentation code.control, .documentation code.event { background-color: #B18E35; }
 .documentation span.logic, .documentation code.logic { background-color: #77AB41; }
 .documentation span.math, .documentation code.math { background-color: #3F71B5; }
+.documentation span.matrix, .documentation code.matrix { background-color: #008B8B; }
 .documentation span.text, .documentation code.text { background-color: #B32D5E; }
 .documentation span.list, .documentation code.list { background-color: #49A6D4; }
 .documentation span.dictionary, .documentation code.dictionary { background-color: #2D1799; }
@@ -426,6 +427,12 @@ dt span.list i:after,
 .methods dt em.list:before,
 .events dt em.list:before
 { background-color: #70b3d8; content: "list"; }
+dt.matrix i:after,
+dt span.matrix i:after,
+.properties dt.matrix em:after,
+.methods dt em.matrix:before,
+.events dt em.matrix:before
+{ background-color: #008B8B; content: "matrix"; }
 dt.dictionary i:after,
 dt span.dictionary i:after,
 .properties dt.dictionary em:after,

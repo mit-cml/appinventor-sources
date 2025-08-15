@@ -63,6 +63,7 @@
     './src/blocks/lexical-variables.js',
     './src/blocks/components.js',
     './src/blocks/dictionaries.js',
+    './src/blocks/matrices.js',
     './src/blocks/helpers.js',
     './src/mixins/dynamic_connections.js',
     './src/mixins/mixins.js',
@@ -79,6 +80,7 @@
     "./src/generators/yail/variables.js",
     "./src/generators/yail/procedures.js",
     "./src/generators/yail/dictionaries.js",
+    './src/generators/yail/matrices.js',
     './src/generators/yail/helpers.js',
     './src/generators/swift.js',
 

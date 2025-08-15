@@ -2400,7 +2400,9 @@ Blockly.Versioning.AllUpgradeMaps =
     36: [Blockly.Versioning.renameBlockType('lists_minimum_number', 'lists_minimum_value'),
          Blockly.Versioning.renameBlockType('lists_maximum_number', 'lists_maximum_value')],
 
-    37: "noUpgrade"
+    37: "noUpgrade",
+
+    38: "noUpgrade"
 
   }, // End Language upgraders
 
