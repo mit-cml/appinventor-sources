@@ -616,13 +616,13 @@ Blockly.Blocks['controls_run_in_background'] = {
     this.appendDummyInput('HEADER')
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE);
     this.appendValueInput('PROCEDURE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('CALLBACK')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP);
@@ -638,13 +638,13 @@ Blockly.Blocks['controls_run_after_period'] = {
     this.appendDummyInput('HEADER')
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TITLE);
     this.appendValueInput('MILLIS')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_MILLIS)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('PROCEDURE')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("procedure", Blockly.Blocks.Utilities.INPUT))
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TOOLTIP);

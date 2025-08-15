@@ -193,7 +193,7 @@ AI.Yail['controls_do_then_return'] = function() {
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
-Blockly.Yail['controls_run_in_background'] = function() {
+AI.Yail['controls_run_in_background'] = function() {
   var procedure = Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
   var callback = Blockly.Yail.valueToCode(this, 'CALLBACK', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
   var code = Blockly.Yail.YailCallYialPrimitive(
@@ -201,7 +201,7 @@ Blockly.Yail['controls_run_in_background'] = function() {
   return code;
 };
 
-Blockly.Yail['controls_run_after_period'] = function() {
+AI.Yail['controls_run_after_period'] = function() {
   var millis = Blockly.Yail.valueToCode(this, 'MILLIS', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
   var procedure = Blockly.Yail.valueToCode(this, 'PROCEDURE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_NULL;
   var code = Blockly.Yail.YailCallYialPrimitive(
