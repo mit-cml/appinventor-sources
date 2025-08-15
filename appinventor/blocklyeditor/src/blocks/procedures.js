@@ -1133,181 +1133,192 @@ Blockly.Blocks['procedures_callreturn'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME}]
 };
 
-//Blockly.Blocks['procedures_callanonnoreturn'] = {
-//  category: 'Procedures',
-//  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-//    this.appendValueInput('PROCEDURE')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
-//    this.setPreviousStatement(true);
-//    this.setNextStatement(true);
-//    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
-//    this.setMutator(new Blockly.icons.MutatorIcon(['anon_proc_arg']));
-//    this.itemCount_ = 0;
-//    this.emptyInputName = null;
-//    this.repeatingInputName = 'ARG';
-//  },
-//  mutationToDom: Blockly.mutationToDom,
-//  domToMutation: Blockly.domToMutation,
-//  decompose: function(workspace){
-//    return Blockly.decompose(workspace, 'anon_proc_arg', this);
-//  },
-//  compose: Blockly.compose,
-//  saveConnections: Blockly.saveConnections,
-//  addEmptyInput: function(){},
-//  addInput: function(inputNum) {
-//    return this.appendValueInput(this.repeatingInputName + inputNum)
-//               .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT + " " + (inputNum + 1))
-//               .setAlign(Blockly.inputs.Align.RIGHT);
-//  },
-//  updateContainerBlock: function(containerBlock) {
-//    containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE, "CONTAINER_TEXT");
-//  },
-//  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON}]
-//};
-//
-//Blockly.Blocks['procedures_callanonreturn'] = {
-//  category: 'Procedures',
-//  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-//    this.appendValueInput('PROCEDURE')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
-//    this.setOutput(true, null);
-//    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_TOOLTIP);
-//    this.setMutator(new Blockly.icons.MutatorIcon(['anon_proc_arg']));
-//    this.itemCount_ = 0;
-//    this.emptyInputName = null;
-//    this.repeatingInputName = 'ARG';
-//  },
-//  mutationToDom: Blockly.Blocks.procedures_callanonnoreturn.mutationToDom,
-//  domToMutation: Blockly.Blocks.procedures_callanonnoreturn.domToMutation,
-//  decompose: Blockly.Blocks.procedures_callanonnoreturn.decompose,
-//  compose: Blockly.Blocks.procedures_callanonnoreturn.compose,
-//  saveConnections: Blockly.Blocks.procedures_callanonnoreturn.saveConnections,
-//  addEmptyInput: Blockly.Blocks.procedures_callanonnoreturn.addEmptyInput,
-//  addInput: Blockly.Blocks.procedures_callanonnoreturn.addInput,
-//  updateContainerBlock: Blockly.Blocks.procedures_callanonnoreturn.updateContainerBlock,
-//  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON + "2"}]
-//};
+Blockly.Blocks['procedures_callanonnoreturn'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    var procDb = this.getTopWorkspace().getProcedureDatabase();
+        this.procNamesFxn = function() {
+          var items = procDb.getMenuItems(false);
+          return items.length > 0 ? items : [' ',' '];
+        };
 
-//Blockly.Blocks['anon_proc_arg'] = {
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-//    this.appendDummyInput()
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE);
-//    this.setPreviousStatement(true);
-//    this.setNextStatement(true);
-//    this.contextMenu = false;
-//  }
-//};
-//
-//Blockly.Blocks['procedures_callanonnoreturn_inputlist'] = {
-//  category: 'Procedures',
-//  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+        this.procDropDown = new AI.Blockly.ProcedureNameDropdown(this.procNamesFxn, AI.Blockly.FieldProcedure.onChange);
+        this.procDropDown.block = this;
+        this.appendDummyInput()
+            .appendField(Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL)
+            .appendField(this.procDropDown,"PROCNAME");
 //    this.appendValueInput('PROCEDURE')
 //        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
 //        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
-//    this.appendValueInput('INPUTLIST')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType('list', AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST)
-//        .setAlign(Blockly.inputs.Align.RIGHT);
-//    this.setPreviousStatement(true);
-//    this.setNextStatement(true);
-//    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUTLIST_TOOLTIP);
-//  },
-//  typeblock: [{
-//    translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
-//            + " " + Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST
-//  }]
-//};
-//
-//Blockly.Blocks['procedures_callanonreturn_inputlist'] = {
-//  category: 'Procedures',
-//  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-//    this.appendValueInput('PROCEDURE')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
-//    this.appendValueInput('INPUTLIST')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType('list', AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST)
-//        .setAlign(Blockly.inputs.Align.RIGHT);
-//    this.setOutput(true, null);
-//    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_INPUTLIST_TOOLTIP);
-//  },
-//  typeblock: [{
-//    translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
-//            + " " + Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST + "2"
-//  }]
-//};
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
+    this.setMutator(new Blockly.icons.MutatorIcon(['anon_proc_arg'], this));
+    this.itemCount_ = 0;
+    this.emptyInputName = null;
+    this.repeatingInputName = 'ARG';
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace, 'anon_proc_arg', this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){},
+  addInput: function(inputNum) {
+    return this.appendValueInput(this.repeatingInputName + inputNum)
+               .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT + " " + (inputNum + 1))
+               .setAlign(Blockly.inputs.Align.RIGHT);
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.setFieldValue(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE, "CONTAINER_TEXT");
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON}]
+};
 
-//Blockly.Blocks['procedures_numArgs'] = {
-//  category: 'Procedures',
-//  helpUrl: Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL,
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-//    this.appendValueInput('PROCEDURE')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET)
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC);
-//    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP);
-//    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.OUTPUT));
-//  },
-//  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET}]
-//};
-//
-//Blockly.Blocks['procedures_getWithName'] = {
-//  category: 'Procedures',
-//  helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_HELPURL,
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-//    this.appendValueInput('PROCEDURENAME')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET)
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_NAME);
-//    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_TOOLTIP);
-//    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.OUTPUT));
-//  },
-//  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET }]
-//};
-//
-//Blockly.Blocks['procedures_getWithDropdown'] = {
-//  category: 'Procedures',
-//  helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_HELPURL,
-//  init: function() {
-//    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-//    var procDb = this.getTopWorkspace().getProcedureDatabase();
-//    this.procNamesFxn = function() {
-//      var items = procDb.getMenuItems('all');
-//      return items.length > 0 ? items : [' ',' '];
-//    };
-//    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn, Blockly.FieldProcedure.onChange);
-//    this.procDropDown.block = this;
-//    this.appendDummyInput()
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET)
-//        .appendField(this.procDropDown, "PROCNAME");
-//    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP);
-//    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.OUTPUT));
-//    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-//    // ensure errors are checked
-//    this.setFieldValue(this.getFieldValue('PROCNAME'), 'PROCNAME');
-//  },
-//  removeProcedureValue: function() {
-//    this.setFieldValue("none", 'PROCNAME');
-//  },
-//  renameProcedure: function(oldName, newName) {
-//    if (Blockly.Names.equals(oldName, this.getFieldValue('PROCNAME'))) {
-//      this.setFieldValue(newName, 'PROCNAME');
-//      AI.BlockUtils.renameCollapsed(this, 0);
-//    }
-//  },
-//  setProcedureParameters: function() {}, // dont need to display parameter this here
-//  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET }]
-//};
+Blockly.Blocks['procedures_callanonreturn'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
+    this.setOutput(true, null);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_TOOLTIP);
+    this.setMutator(new Blockly.icons.MutatorIcon(['anon_proc_arg'], this));
+    this.itemCount_ = 0;
+    this.emptyInputName = null;
+    this.repeatingInputName = 'ARG';
+  },
+  mutationToDom: Blockly.Blocks.procedures_callanonnoreturn.mutationToDom,
+  domToMutation: Blockly.Blocks.procedures_callanonnoreturn.domToMutation,
+  decompose: Blockly.Blocks.procedures_callanonnoreturn.decompose,
+  compose: Blockly.Blocks.procedures_callanonnoreturn.compose,
+  saveConnections: Blockly.Blocks.procedures_callanonnoreturn.saveConnections,
+  addEmptyInput: Blockly.Blocks.procedures_callanonnoreturn.addEmptyInput,
+  addInput: Blockly.Blocks.procedures_callanonnoreturn.addInput,
+  updateContainerBlock: Blockly.Blocks.procedures_callanonnoreturn.updateContainerBlock,
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON + "2"}]
+};
+
+Blockly.Blocks['anon_proc_arg'] = {
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TITLE);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.contextMenu = false;
+  }
+};
+
+Blockly.Blocks['procedures_callanonnoreturn_inputlist'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
+    this.appendValueInput('INPUTLIST')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType('list', AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST)
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUTLIST_TOOLTIP);
+  },
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
+            + " " + Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST
+  }]
+};
+
+Blockly.Blocks['procedures_callanonreturn_inputlist'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
+    this.appendValueInput('INPUTLIST')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType('list', AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST)
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    this.setOutput(true, null);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONRETURN_INPUTLIST_TOOLTIP);
+  },
+  typeblock: [{
+    translatedName: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON
+            + " " + Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_INPUT_LIST + "2"
+  }]
+};
+
+Blockly.Blocks['procedures_numArgs'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET)
+        .appendField(Blockly.Msg.LANG_PROCEDURES_NUMARGS_ANONPROC);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_NUMARGS_TOOLTIP);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.OUTPUT));
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_NUMARGS_GET}]
+};
+
+Blockly.Blocks['procedures_getWithName'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendValueInput('PROCEDURENAME')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET)
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_NAME);
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_TOOLTIP);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.OUTPUT));
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_GET }]
+};
+
+Blockly.Blocks['procedures_getWithDropdown'] = {
+  category: 'Procedures',
+  helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_HELPURL,
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    var procDb = this.getTopWorkspace().getProcedureDatabase();
+    this.procNamesFxn = function() {
+      var items = procDb.getMenuItems('all');
+      return items.length > 0 ? items : [' ',' '];
+    };
+    this.procDropDown = new AI.Blockly.ProcedureNameDropdown(this.procNamesFxn, AI.Blockly.FieldProcedure.onChange);
+    this.procDropDown.block = this;
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET)
+        .appendField(this.procDropDown, "PROCNAME");
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.OUTPUT));
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
+    // ensure errors are checked
+    this.setFieldValue(this.getFieldValue('PROCNAME'), 'PROCNAME');
+  },
+  removeProcedureValue: function() {
+    this.setFieldValue("none", 'PROCNAME');
+  },
+  renameProcedure: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue('PROCNAME'))) {
+      this.setFieldValue(newName, 'PROCNAME');
+      AI.BlockUtils.renameCollapsed(this, 0);
+    }
+  },
+  setProcedureParameters: function() {}, // dont need to display parameter this here
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_GET }]
+};
