@@ -125,22 +125,12 @@
                 description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library"
                 depends="init,CheckBlocklyCompile"
                 unless="BlocklyCompile.uptodate">
-		<java failonerror="true" fork="true" jar="${lib.dir}/closure-compiler/closure-compiler-v20211201.jar">
+		<java failonerror="true" fork="true" jar="${lib.dir}/closure-compiler/closure-compiler-v20211201.jar" dir="${appinventor.dir}">
 			<arg line="--compilation_level ${compilation_level}"/>
 			<arg line="--language_in ECMASCRIPT_NEXT"/>
 			<arg line="--language_out ECMASCRIPT_NEXT"/>
-			<arg line="--js_output_file ${public.build.dir}/blockly-all.js"/>
-			<arg line="${blockly.src.dir}/blockly_compressed.js"/>
-			<arg line="${blockly.plugin.dir}/block-lexical-variables-core-3.0.2.min.js"/>
-			<arg line="src/blocks/utilities.js"/>
-			<arg line="src/mixins/dynamic_connections.js"/>
-			<arg line="src/mixins/mixins.js"/>
-			<arg line="src/**.js"/>
-			<arg line="${lib.dir}/closure-library/closure/goog/**.js"/>
-			<arg line="!${lib.dir}/closure-library/closure/goog/**_test.js"/>
-			<arg line="!${lib.dir}/closure-library/closure/goog/testing/**.js"/>
-			<arg line="!${lib.dir}/closure-library/closure/goog/**tests.js"/>
-			<arg line="!${lib.dir}/closure-library/closure/goog/**_perf.js"/>
+			<arg line="--js_output_file"/>
+			<arg file="${public.build.dir}/blockly-all.js"/>
 			<arg line="--entry_point=goog:AI.Blockly.BlocklyEditor"/>
 			<arg line="--charset UTF-8"/>
 			<arg line="--create_source_map"/>
@@ -150,6 +140,14 @@
 			<arg value="${blockly.src.dir}/blockly_compressed.js|${blockly.src.dir}/blockly_compressed.js.map"/>
 			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
+			<arg value="--js='${blockly.src.dir}/blockly_compressed.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-3.0.2.min.js'"/>
+			<arg value="--js='blocklyeditor/src/**.js'"/>
+			<arg value="--js='${lib.dir}/closure-library/closure/goog/**.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_test.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/testing/**.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**tests.js'"/>
+			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_perf.js'"/>
 		</java>
 	</target>
 
