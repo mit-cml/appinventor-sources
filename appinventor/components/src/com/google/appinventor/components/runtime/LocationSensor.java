@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,6 +17,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.content.Context;
@@ -27,6 +28,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -39,8 +41,21 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Sensor that can provide information on longitude, latitude, and altitude.
+ * Non-visible component providing location information, including {@link #Latitude()},
+ * {@link #Longitude()}, {@link #Altitude()} (if supported by the device), speed (if supported by
+ * the device), and address. This can also perform "geocoding", converting a given address (not
+ * necessarily the current one) to a latitude (with the {@link #LatitudeFromAddress(String)}
+ * method) and a longitude (with the {@link #LongitudeFromAddress(String)} method).
  *
+ * In order to function, the component must have its {@link #Enabled(boolean)} property set to
+ * `true`{:.logic.block}, and the device must have location sensing enabled through wireless
+ * networks or GPS satellites (if outdoors).
+ *
+ * Location information might not be immediately available when an app starts. You'll have to wait
+ * a short time for a location provider to be found and used, or wait for the
+ * {@link #LocationChanged(double, double, double, float)} event.
+ *
+ * The emulator does not emulate sensors on all devices. Code should be tested on a physical device.
  */
 @DesignerComponent(version = YaVersion.LOCATIONSENSOR_COMPONENT_VERSION,
     description = "Non-visible component providing location information, " +
@@ -55,7 +70,7 @@ import java.util.Set;
     "location sensing enabled through wireless networks or GPS " +
     "satellites (if outdoors).</p>\n" +
     "Location information might not be immediately available when an app starts.  You'll have to wait a short time for " +
-    "a location provider to be found and used, or wait for the OnLocationChanged event",
+    "a location provider to be found and used, or wait for the LocationChanged event",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/locationSensor.png")
@@ -66,7 +81,11 @@ import java.util.Set;
                  "android.permission.ACCESS_MOCK_LOCATION," +
                  "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS")
 public class LocationSensor extends AndroidNonvisibleComponent
-    implements Component, OnStopListener, OnResumeListener, Deleteable {
+    implements Component, OnStopListener, OnResumeListener, Deleteable,
+    RealTimeDataSource<String, Float> {
+
+  // Set of observers
+  private Set<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   public interface LocationSensorListener extends LocationListener {
     void onTimeIntervalChanged(int time);
@@ -264,10 +283,16 @@ public class LocationSensor extends AndroidNonvisibleComponent
   // Events
 
   /**
-   * Indicates that a new location has been detected.
+   * Indicates that a new location has been detected. Speed is reported in meters/second
+   * Other values match their properties.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Indicates that a new location has been detected.")
   public void LocationChanged(double latitude, double longitude, double altitude, float speed) {
+    notifyDataObservers("latitude", latitude);
+    notifyDataObservers("longitude", longitude);
+    notifyDataObservers("altitude", altitude);
+    notifyDataObservers("speed", speed);
+
     EventDispatcher.dispatchEvent(this, "LocationChanged", latitude, longitude, altitude, speed);
   }
 
@@ -298,6 +323,9 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
+   * The current service provider. The provider will most likely be either GPS or network.
+   *
+   * @internaldoc
    * Change the location provider.
    * If the blocks program changes the name, try to change the provider.
    * Whatever happens now, the provider and the reported name may be switched to
@@ -319,6 +347,14 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
+   * The device will not change the service provider.
+   *
+   *   It is possible for a device to switch service providers when the current provider is unable
+   * to provide adequate location information. `ProviderLocked` is a Boolean value: true/false.
+   * Set to `true`{:.logic.block} to prevent providers from changing. Set to `false`{:.logic.block}
+   * to allow for automatic switching when necessary.
+   *
+   * @internaldoc
    * Indicates whether the sensor should allow the developer to
    * manually change the provider (GPS, GSM, Wifi, etc.)
    * from which location updates are received.
@@ -350,6 +386,16 @@ public class LocationSensor extends AndroidNonvisibleComponent
       }
   }
 
+  /**
+   * Determines the minimum time interval, in milliseconds, that the sensor will try to use for
+   * sending out location updates. However, location updates will only be received when the
+   * location of the phone actually changes, and use of the specified time interval is not
+   * guaranteed. For example, if 30000 is used as the time interval, location updates will never
+   * be fired sooner than 30000ms, but they may be fired anytime after.
+   *
+   *   Values smaller than 30000ms (30 seconds) are not practical for most devices. Small values
+   * may drain battery and overwork the GPS.
+   */
   @SimpleProperty(
       description = "Determines the minimum time interval, in milliseconds, that the sensor will try " +
           "to use for sending out location updates. However, location updates will only be received " +
@@ -383,6 +429,16 @@ public class LocationSensor extends AndroidNonvisibleComponent
       }
   }
 
+  /**
+   * Determines the minimum distance interval, in meters, that the sensor will try to use for
+   * sending out location updates. For example, if this is set to 50, then the sensor will fire a
+   * {@link #LocationChanged(double, double, double, float)} event only after 50 meters have been
+   * traversed. However, the sensor does not guarantee that an update will be received at exactly
+   * the distance interval. It may take more than 5 meters to fire an event, for instance.
+   *
+   *   It is also useful to check against {@link #Accuracy()} when using this property. When your
+   * device is moving, the accuracy of the detected location is constantly changing.
+   */
   @SimpleProperty(
       description = "Determines the minimum distance interval, in meters, that the sensor will try " +
       "to use for sending out location updates. For example, if this is set to 5, then the sensor will " +
@@ -395,8 +451,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates whether longitude and latitude information is available.  (It is
-   * always the case that either both or neither are.)
+   * If `true`{:.logic.block}, the device can report longitude and latitude.  It is
+   * always the case that either both or neither are.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public boolean HasLongitudeLatitude() {
@@ -404,7 +460,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates whether altitude information is available.
+   * If `true`{:.logic.block}, the device can report its altitude.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public boolean HasAltitude() {
@@ -412,7 +468,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates whether information about location accuracy is available.
+   * If `true`{:.logic.block}, the device can report its accuracy level.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public boolean HasAccuracy() {
@@ -420,8 +476,9 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * The most recent available longitude value.  If no value is available,
-   * 0 will be returned.
+   * The most recent available longitude value in degrees reported to 5 decimal places.
+   * If no value is available, 0 will be returned.
+   * Longitude is a value between 180 (east) and -180 (west), where 0 marks the Prime Meridian.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public double Longitude() {
@@ -429,8 +486,9 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * The most recently available latitude value.  If no value is available,
-   * 0 will be returned.
+   * The most recently available latitude value in degrees reported to 5 decimal places.
+   * If no value is available, 0 will be returned.
+   * Latitude is a value between 90 (north) and -90 (south), where 0 marks the Equator.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public double Latitude() {
@@ -438,19 +496,35 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * The most recently available altitude value, in meters.  If no value is
-   * available, 0 will be returned.
+   * Altitude of the device measured in meters, if available.
+   *
+   *   Altitude is measured from the
+   * [World Geodetic System 84 reference ellipsoid](https://gisgeography.com/wgs84-world-geodetic-system/),
+   * not sea level.
+   *
+   *   Note that it is difficult for devices to accurately sense altitude. Altitude reported on a
+   * phone/tablet can easily be off by 30 meters or more.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The most recently available altitude value, in meters.  If no value is "
+          + "available, 0 will be returned.")
   public double Altitude() {
     return altitude;
   }
 
   /**
-   * The most recent measure of accuracy, in meters.  If no value is available,
-   * 0 will be returned.
+   * The `LocationSensor` will be able to locate the device with a varying degree of confidence,
+   * based on the quality of satellite, cell towers, and other data used to estimate location.
+   * The `Accuracy` value is the radius in meters around the sensor's detected location. The device
+   * has a 68% chance to be located within this radius. More precise location detection will result
+   * in a smaller accuracy number, which allows the app to have more confidence where the device
+   * is actually located.
+   *
+   *   If the accuracy is not known, the return value is 0.0
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The most recent measure of accuracy, in meters.  If no value is available, "
+          + "0 will be returned.")
   public double Accuracy() {
     if (lastLocation != null && lastLocation.hasAccuracy()) {
       return lastLocation.getAccuracy();
@@ -471,8 +545,10 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates whether the sensor should listen for location chagnes
-   * and raise the corresponding events.
+   * If `true`{:.logic.block}, the `LocationSensor` will attempt to read location information from
+   * GPS, WiFi location, or other means available on the device. This setting does not control
+   * whether location information is actually available. Device location must be enabled or
+   * disabled in the device settings.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
@@ -490,28 +566,23 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Provides a textual representation of the current address or
-   * "No address available".
+   * Physical street address of the device from Google's map database.
+   *
+   *   The address might not always be available from the provider, and the address reported may not
+   * always be of the building where the device is located.
+   *
+   *   If Google has no address information available for a particular location, this will return
+   * `No address available`.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Provides a textual representation of the current address or \"No address "
+          + "available\".")
   public String CurrentAddress() {
     if (hasLocationData &&
         latitude <= 90 && latitude >= -90 &&
         longitude <= 180 || longitude >= -180) {
       try {
-        List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-        if (addresses != null && addresses.size() == 1) {
-          Address address = addresses.get(0);
-          if (address != null) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-              sb.append(address.getAddressLine(i));
-              sb.append("\n");
-            }
-            return sb.toString();
-          }
-        }
-
+        return addressFromLatLong(latitude, longitude);
       } catch (Exception e) {
         // getFromLocation can throw an IOException or an IllegalArgumentException
         // a bad result can give an indexOutOfBoundsException
@@ -531,7 +602,47 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Derives Latitude from Address
+   * Derives address from the given `latitutde` and `longitude`.
+   *
+   * @param latitude (double): given latitude
+   * @param longitude (double): given longitude
+   *
+   * @return Address (String): return the Address, if found
+   */
+  public String addressFromLatLong(double latitude, double longitude) throws IOException {
+    List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+    if (addresses != null && addresses.size() == 1) {
+      Address address = addresses.get(0);
+      if (address != null) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+          sb.append(address.getAddressLine(i));
+          sb.append("\n");
+        }
+        return sb.toString();
+      }
+    }
+    return "Address with latitude " + Double.toString(latitude) + " and longitutde " + Double.toString(longitude) + " not found";
+  }
+
+  /**
+   * Derives an address from the given `locationName`.
+   *
+   * @param locationName  human-readable address
+   *
+   * @return first Address object that is found
+   */
+  public Address getAddress(String locationName) throws IOException {
+    List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
+    Log.i(LOG_TAG, "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
+    if ( (addressObjs == null) || (addressObjs.size() == 0) ){
+      throw new IOException("");
+    }
+    return addressObjs.get(0);
+  }
+
+  /**
+   * Derives latitude from the given `locationName`.
    *
    * @param locationName  human-readable address
    *
@@ -540,12 +651,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @SimpleFunction(description = "Derives latitude of given address")
   public double LatitudeFromAddress(String locationName) {
     try {
-      List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i(LOG_TAG, "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
-      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
-        throw new IOException("");
-      }
-      return addressObjs.get(0).getLatitude();
+      Address address = getAddress(locationName);
+      return address.getLatitude();
     } catch (IOException e) {
       form.dispatchErrorOccurredEvent(this, "LatitudeFromAddress",
           ErrorMessages.ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND, locationName);
@@ -554,7 +661,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Derives Longitude from Address
+   * Derives longitude from the given `locationName`.
+   *
    * @param locationName  human-readable address
    *
    * @return longitude in degrees, 0 if not found.
@@ -562,12 +670,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   @SimpleFunction(description = "Derives longitude of given address")
   public double LongitudeFromAddress(String locationName) {
     try {
-      List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      Log.i(LOG_TAG, "longitude addressObjs size is " + addressObjs.size() + " for " + locationName);
-      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
-        throw new IOException("");
-      }
-      return addressObjs.get(0).getLongitude();
+      Address address = getAddress(locationName);
+      return address.getLongitude();
     } catch (IOException e) {
       form.dispatchErrorOccurredEvent(this, "LongitudeFromAddress",
           ErrorMessages.ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND, locationName);
@@ -575,6 +679,56 @@ public class LocationSensor extends AndroidNonvisibleComponent
     }
   }
 
+  /**
+   * @param address human-readable address
+   * 
+   * @return void
+   */
+  @SimpleFunction(description = "Converts an address into a latitude and longitude through the "
+      + "GotLocationFromAddress event.")
+  public void Geocode(final String address) {
+    final double latitude = LatitudeFromAddress(address);
+    final double longitude = LongitudeFromAddress(address);
+    form.runOnUiThread(new Runnable() {
+      public void run(){
+        GotLocationFromAddress(address, latitude, longitude);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Reports the latitude and longitude in response to a Geocode request.")
+  public void GotLocationFromAddress(String address, double latitude, double longitude) {
+    EventDispatcher.dispatchEvent(this, "GotLocationFromAddress", address, latitude, longitude);
+  }
+
+  /**
+   * @param latitude given latitude
+   * @param longitude given longitude
+   * 
+   * @return void
+   */
+  @SimpleFunction(description = "Determines the address associated with the given latitude and "
+      + " and reports it through the GotAddress event.")
+  public void ReverseGeocode(double latitude, double longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    final String address = CurrentAddress();
+    form.runOnUiThread(new Runnable() {
+      public void run(){
+        GotAddress(address);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Reports the address in response to a ReverseGeocode request.")
+  public void GotAddress(String address) {
+    EventDispatcher.dispatchEvent(this, "GotAddress", address);
+  }
+
+  /**
+   * List of available service providers, such as gps or network. This information is provided
+   * as a list and in text form.
+   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public List<String> AvailableProviders () {
     return allProviders;
@@ -599,24 +753,18 @@ public class LocationSensor extends AndroidNonvisibleComponent
       androidUIHandler.post(new Runnable() {
           @Override
           public void run() {
-            me.form.askPermission(Manifest.permission.ACCESS_FINE_LOCATION,
-              new PermissionResultHandler() {
+            me.form.askPermission(new BulkPermissionRequest(me, "RefreshProvider", Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION) {
                 @Override
-                public void HandlePermissionResponse(String permission, boolean granted) {
-                  if (granted) {
-                    me.havePermission = true;
-                    me.RefreshProvider(caller);
-                    Log.d(LOG_TAG, "Permission Granted");
-                  } else {
-                    me.havePermission = false;
-                    me.enabled = false;
-                    me.form.dispatchPermissionDeniedEvent(me, caller, Manifest.permission.ACCESS_FINE_LOCATION);
-                  }
+                public void onGranted() {
+                  me.havePermission = true;
+                  me.RefreshProvider(caller);
+                  Log.d(LOG_TAG, "Permission Granted");
                 }
               });
           }
         });
     }
+
     if (providerLocked && !empty(providerName)) {
       listening = startProvider(providerName);
       return;
@@ -707,5 +855,55 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
   private boolean empty(String s) {
     return s == null || s.length() == 0;
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value for a given key. Possible keys include:
+   * <ul>
+   *   <li>latitude  - latitude value</li>
+   *   <li>longitude - longitude value</li>
+   *   <li>altitude  - altitude value</li>
+   *   <li>speed     - speed value</li>
+   * </ul>
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "latitude":
+        return (float) latitude;
+
+      case "longitude":
+        return (float )longitude;
+
+      case "altitude":
+        return (float) altitude;
+
+      case "speed":
+        return speed;
+
+      default:
+        return 0f;
+    }
   }
 }

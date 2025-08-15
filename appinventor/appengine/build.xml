@@ -16,7 +16,7 @@
      App Inventor appengine app
      ====================================================================== -->
 
-<project name="appengine" default="all">
+<project name="appengine" default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <description>
     Appengine server and client code
   </description>
@@ -25,19 +25,21 @@
        Definition for generating a Unique ID.
        ===================================================================== -->
 
-  <scriptdef name="generateguid" language="javascript">
-    <attribute name="property" />
-    <![CDATA[
-             try {
-               load("nashorn:mozilla_compat.js");
-             }
-             catch (exception) {
-               // Ignore the exception as the compat mode is only needed for Java 8
-             }
-             importClass( java.util.UUID );
-             project.setProperty( attributes.get( "property" ), UUID.randomUUID() );
-    ]]>
-  </scriptdef>
+  <property name="release" value="false"/>
+  <property name="sourceMaps" value="false"/>
+  <property name="local.services" value="false"/>
+
+  <condition property="client.module"
+             value="com.google.appinventor.YaClient"
+             else="com.google.appinventor.YaClient-dev">
+    <equals arg1="${release}" arg2="true" />
+  </condition>
+
+  <condition property="client.flags"
+             value="-optimize 9 -localWorkers 8"
+             else="-style pretty">
+    <equals arg1="${release}" arg2="true" />
+  </condition>
 
   <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
     <os family="mac"/>
@@ -47,7 +49,7 @@
   </condition>
 
   <target name="all"
-          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs,InstallAuthKey">
+          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,CopyToBuildWarPost,Keystore,WarLibs,InstallAuthKey">
   </target>
 
   <target name="tests"
@@ -61,52 +63,173 @@
   <import file="../build-common.xml" />
 
   <property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
-  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.9.46" />
+  <property name="appengine.sdk" location="${lib.dir}/appengine" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
   <property name="build.extra.dir" location="${local.build.dir}/extra" />
+  <property name="build.static.dir" location="${build.war.dir}/static" />
+
+  <!-- =====================================================================
+       Check whether or not the documentation needs to be (re-)compiled
+       ===================================================================== -->
+  <target name="CheckDocs">
+    <uptodate property="Docs.uptodate">
+      <srcfiles dir="${appinventor.dir}/docs/markdown">
+        <include name="reference/**/*" />
+      </srcfiles>
+      <firstmatchmapper>
+        <globmapper from="*.md" to="${appinventor.dir}/docs/html/*.html" />
+        <globmapper from="*" to="${appinventor.dir}/docs/html/*" />
+      </firstmatchmapper>
+    </uptodate>
+  </target>
+
+  <!-- =====================================================================
+       Builds the documentation from the corresponding Markdown files.
+       ===================================================================== -->
+  <target name="BuildDocs" depends="components_AndroidRuntime,CheckDocs"
+          unless="Docs.uptodate">
+    <!-- Jenkins will pass -Dforce.builddocs=true to ensure docs build correctly -->
+    <property name="force.builddocs" value="false" />
+    <!-- We set failifexecutionfails to false so the whole build doesn't fail
+         if the developer doesn't have Jekyll set up -->
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
+          dir="${docs.dir}/markdown" >
+      <arg value="install" />
+      <arg value="--path" />
+      <arg value="vendor/bundle" />
+    </exec>
+    <exec executable="bundle" failonerror="${force.builddocs}"
+          failifexecutionfails="${force.builddocs}"
+          dir="${docs.dir}/markdown" >
+      <arg value="exec" />
+      <arg value="jekyll" />
+      <arg value="build" />
+      <arg value="-d" />
+      <arg value="${docs.dir}/html" />
+    </exec>
+  </target>
 
   <!-- =====================================================================
        Copy static files to <build>/war, from war and elsewhere
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init,blocklyeditor_BlocklyCompile">
+          depends="init,blocklyeditor_BlocklyTranslationGenerator,BuildDocs">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
       <fileset dir="war">
-        <exclude name="blocklyframe.html"/>
+        <exclude name="index.jsp" />
       </fileset>
-      <fileset dir="src/${appinventor.pkg}">
-        <!-- canvas is a special case (see MockCanvas.java) -->
-        <include name="images/canvas.png" />
+      <fileset dir="${docs.dir}">
+        <include name="companions/*"/>
       </fileset>
-      <fileset dir="${docs.dir}"/>
+      <fileset dir="${docs.dir}/html">
+        <include name="index.html"/>
+        <include name="reference/**/*"/>
+        <exclude name="static/*"/>
+        <exclude name="assets/*"/>
+        <exclude name="images/*"/>
+        <exclude name="js/*"/>
+        <exclude name="css/*"/>
+        <!-- Jekyll generates this even if we don't include the plugin -->
+        <exclude name="feed.xml"/>
+      </fileset>
     </copy>
-    <mkdir dir="${build.war.dir}/assets/" />
-    <copy todir="${build.war.dir}/assets/" flatten="true">
+    <copy todir="${build.static.dir}/css" flatten="true">
+      <fileset dir="${lib.dir}/blockly">
+        <include name="**/*.css"/>
+      </fileset>
+      <fileset dir="${appinventor.dir}/blocklyeditor">
+        <include name="media/*.css"/>
+      </fileset>
+      <fileset dir="${docs.dir}/html/static/css">
+        <include name="*"/>
+      </fileset>
+    </copy>
+    <mkdir dir="${build.static.dir}/media"/>
+    <copy todir="${build.static.dir}/media" flatten="true">
       <fileset dir="${lib.dir}/blockly">
         <include name="media/*"/>
-        <include name="**/*.css"/>
+        <exclude name="media/*.css"/>
         <exclude name="demo/**"/>
       </fileset>
       <fileset dir="${appinventor.dir}/blocklyeditor">
         <include name="media/*"/>
+        <exclude name="media/*.css"/>
       </fileset>
     </copy>
-    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/blockly.js" />
-    <copy todir="${build.war.dir}/">
+
+    <copy todir="${build.static.dir}">
+      <fileset dir="src/${appinventor.pkg}">
+        <!-- canvas is a special case (see MockCanvas.java) -->
+        <include name="images/canvas.png" />
+      </fileset>
       <fileset dir="${lib.dir}">
-        <include name="closure-library/**/*"/>
+        <include name="closure-library/closure/goog/base.js"/>
+        <include name="closure-library/closure/goog/css/dialog.css"/>
+        <include name="closure-library/closure/goog/css/hsvapalette.css"/>
+        <include name="closure-library/closure/goog/deps.js"/>
+      </fileset>
+      <fileset dir="${docs.dir}/html/static">
+        <include name="js/*"/>
+      </fileset>
+      <fileset dir="src/${appinventor.pkg}">
+        <include name="images/help.png"/>
       </fileset>
     </copy>
     <!-- Resources for Maps designer view -->
-    <copy todir="${build.war.dir}/">
+    <copy todir="${build.static.dir}/">
       <fileset dir="${lib.dir}">
         <include name="leaflet/**/*"/>
         <include name="font-awesome/**/*"/>
       </fileset>
     </copy>
+  </target>
+
+  <target name="CopyToBuildWarPost">
+    <mkdir dir="${build.war.dir}/ode" />
+    <checksum property="blocklyeditor_BlocklyChecksum" algorithm="SHA-256" if:true="${release}">
+      <fileset dir="${build.dir}">
+        <include name="blocklyeditor/blockly-all.js"/>
+      </fileset>
+    </checksum>
+    <property name="blocklyeditor_BlocklyChecksum" value="0"/>
+    <condition property="blocklyeditor_postfix" value="cache" else="nocache">
+      <equals arg1="${release}" arg2="true" />
+    </condition>
+    <copy file="${build.dir}/blocklyeditor/blockly-all.js" tofile="${build.war.dir}/ode/aiblockly-${blocklyeditor_BlocklyChecksum}.${blocklyeditor_postfix}.js" />
+    <copy todir="${build.war.dir}/ode">
+      <fileset dir="${build.dir}/blocklyeditor">
+        <include name="*.js.map"/>
+      </fileset>
+    </copy>
+    <filter token="blocklyeditor_BlocklyChecksum" value="${blocklyeditor_BlocklyChecksum}.${blocklyeditor_postfix}" />
+    <filter token="blocklyeditor_isRelease" value="${release}" />
+    <copy todir="${build.war.dir}" filtering="true" overwrite="true">
+      <fileset dir="war">
+        <include name="index.jsp"/>
+      </fileset>
+    </copy>
+
+    <!-- Move Blockly translations into place -->
+    <mkdir dir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n"/>
+    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor/client/editor/youngandroid/i18n">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.json"/>
+      </fileset>
+    </copy>
+    <copy todir="${build.war.dir}/ode/">
+      <fileset dir="${build.dir}/blocklyeditor/msg">
+        <include name="*.js"/>
+      </fileset>
+    </copy>
+
+    <!-- Compile the Blockly translations map -->
+    <javac destdir="${build.war.dir}/WEB-INF/classes" srcdir="${public.build.dir}/../blocklyeditor" source="1.8" target="1.8">
+      <include name="msg/i18n.java"/>
+    </javac>
   </target>
 
   <!-- =====================================================================
@@ -117,7 +240,7 @@
   <target name="CheckKeystore">
     <!-- If build/war/keystore/1 exists, set keystore.present to true.
          Otherwise, set keystore.present to false -->
-    <available file="${build.war.dir}/keystore/1" property="keystore.present"/>
+    <available file="${build.war.dir}/WEB-INF/keystore/1" property="keystore.present"/>
   </target>
 
   <target name="Keystore"
@@ -125,15 +248,18 @@
           depends="CheckKeystore,CopyToBuildWar"
           unless="keystore.present">
     <echo message="Using KeyczarTool to generate keystore"/>
-    <mkdir dir="${build.war.dir}/keystore"/>
+    <mkdir dir="${build.war.dir}/WEB-INF/keystore"/>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="create --location=${build.war.dir}/keystore --purpose=crypt"/>
+      <arg line="create --purpose=crypt"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="addkey --location=${build.war.dir}/keystore"/>
+      <arg line="addkey"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
     <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
-      <arg line="promote --location=${build.war.dir}/keystore --version=1"/>
+      <arg line="promote --version=1"/>
+      <arg value="--location=${build.war.dir}/WEB-INF/keystore"/>
     </java>
   </target>
 
@@ -148,8 +274,7 @@
   </target>
   <target name="WarLibs"
           description="Copy libs to build/war/WEB-INF/lib"
-          depends="init,MakeWarLibsDir,common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants">
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/BlocksEditorHttpConstants.jar"/>
+          depends="init,MakeWarLibsDir,common_CommonUtils,common_CommonVersion,components_CommonConstants">
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/CommonUtils.jar"/>
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/CommonVersion.jar"/>
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/components/CommonConstants.jar"/>
@@ -164,10 +289,12 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-lang3/commons-lang3-3.10.jar" />
     <!-- GCS Libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-1.22.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-jackson2-1.20.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-api-client-appengine-1.22.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-1.22.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/google-http-client-appengine-1.22.0.jar" />
@@ -180,13 +307,12 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
     <!-- Protocol Buffers -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-2.6.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/protobuf/protobuf-java-4.28.1.jar" />
     <!-- OWASP -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/owasp/owasp-java-html-sanitizer-20160628.1.jar" />
     <!-- Add any additional server libs that need to be copied -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" flatten="true">
-      <fileset dir="${appengine.sdk}/lib/user" includes="**/*.jar"/>
-    </copy>
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
   </target>
 
   <!-- =====================================================================
@@ -206,8 +332,7 @@
     <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server">
       <fileset dir="src/${appinventor.pkg}/server/" includes="*.properties" />
     </copy>
-    <ai.javac destdir="${AiServerLib-class.dir}"
-              source="1.7" target="1.7">
+    <ai.javac destdir="${AiServerLib-class.dir}">
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -259,16 +384,29 @@
     <delete file="${tmp.dir}/authkey/meta"/>
     <delete file="${tmp.dir}/authkey/1"/>
   </target>
-
+  <!-- =====================================================================
+       Check to see if the war/WEB-INF directory already has an
+       authkey, which would mean it was copied over in WarLibs from
+       the source tree. In the master branch this will *not* be the
+       case, but it may be in a branding branch.
+       ===================================================================== -->
+  <target name="CheckBuildAuthKey"
+          depends="init,WarLibs">
+    <available file="${build.war.dir}/WEB-INF/authkey/meta"
+               property="authkey.inbuild" />
+  </target>
   <!-- =====================================================================
        Install the Authkey into the correct location
+       but only if we don't already have one copied over
+       from war/WEB-INF.
        ===================================================================== -->
   <target name="InstallAuthKey"
-          depends="init,CheckAuthKey,WarLibs">
+          depends="init,CheckAuthKey,WarLibs,CheckBuildAuthKey"
+          unless="${authkey.inbuild}">
     <fail message="You Must Create an Auth Key see misc/docs/authkey.md"
           unless="${authkey.exists}" />
     <unzip dest="${build.war.dir}/WEB-INF"
-      src="${user.home}/.appinventor/authkey.zip"/>
+           src="${user.home}/.appinventor/authkey.zip" />
   </target>
 
   <!-- =====================================================================
@@ -286,25 +424,36 @@
     <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
     <pathelement location="${lib.dir}/keyczar/KeyczarTool.jar" />
     <pathelement location="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
-    <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
-    <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
-    <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
-    <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
-    <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
+
+    <!-- Powermock and dependencies -->
+    <fileset dir="${lib.dir}/powermock" includes="*.jar" />
+
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
-    <pathelement location="${lib.dir}/protobuf/protobuf-2.6.1.jar" />
+    <pathelement location="${lib.dir}/gcs/jackson-core-2.1.3.jar" />
+    <pathelement location="${lib.dir}/gcs/google-api-client-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-api-client-appengine-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-appengine-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-jackson-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-http-client-jackson2-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/google-api-services-storage-v1-rev91-1.22.0.jar" />
+    <pathelement location="${lib.dir}/gcs/httpclient-4.0.1.jar" />
+    <pathelement location="${lib.dir}/gcs/joda-time-2.6.jar" />
+    <pathelement location="${lib.dir}/protobuf/protobuf-java-4.28.1.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
-    <pathelement location="${appengine.sdk}/lib/impl/appengine-api.jar"/>
-    <pathelement location="${appengine.sdk}/lib/impl/appengine-api-labs.jar"/>
-    <pathelement location="${appengine.sdk}/lib/impl/appengine-api-stubs.jar"/>
-    <pathelement location="${appengine.sdk}/lib/testing/appengine-testing.jar" />
-    <pathelement location="${appengine.sdk}/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar" />
+    <pathelement location="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-testing-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-api-stubs-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-tools-sdk-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/appengine-remote-api-2.0.19.jar" />
+    <pathelement location="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
+    <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar" excludes="AiServerLib.jar"/>
   </path>
 
   <path id="AiServerLibTests.path">
@@ -330,8 +479,7 @@
     <property name="AiSharedLib-class.dir" location="${class.dir}/AiSharedLib" />
     <mkdir dir="${AiSharedLib-class.dir}" />
 
-    <ai.javac destdir="${AiSharedLib-class.dir}"
-              source="1.7" target="1.7">
+    <ai.javac destdir="${AiSharedLib-class.dir}">
       <include name="${appinventor.pkg}/shared/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
@@ -358,7 +506,7 @@
     <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
   </path>
@@ -386,8 +534,7 @@
     <property name="AiRebindLib-class.dir" location="${class.dir}/AiRebindLib" />
     <mkdir dir="${AiRebindLib-class.dir}" />
 
-    <ai.javac destdir="${AiRebindLib-class.dir}"
-              source="1.7" target="1.7">
+    <ai.javac destdir="${AiRebindLib-class.dir}">
       <include name="${appinventor.pkg}/rebind/**/*.java" />
       <classpath>
         <!-- gwt libs -->
@@ -405,35 +552,40 @@
 
   </target>
 
+
   <!-- =====================================================================
        AiClient library
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription,components_ComponentTranslation">
+          depends="components_AndroidRuntime">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
               srcdir="${src.dir};${build.dir}/components/ComponentTranslation/src"
-              source="1.7" target="1.7" nowarn="true"
+              nowarn="true"
               debug="true" debuglevel="lines,vars,source">
       <include name="${appinventor.pkg}/client/**/*.java" />
       <include name="${appinventor.pkg}/shared/**/*.java" />
       <classpath>
-        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants.jar" />
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
+        <pathelement location="${lib.dir}/charba/charba-2.5-sources.jar" />
         <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
         <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
         <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+        <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
         <!-- gwt libs -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+        <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+        <pathelement location="${lib.dir}/json/json.jar" />
       </classpath>
     </ai.javac>
     <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor"
@@ -448,58 +600,96 @@
        CheckYaClientApp - checks whether it is already up-to-date.
        ===================================================================== -->
   <target name="CheckYaClientApp"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CopyToBuildWar">
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CopyToBuildWar">
     <!-- If ode.nocache.js is up-to-date, set YaClientApp.uptodate to true.
          Otherwise, set YaClientApp.uptodate to false -->
     <uptodate property="YaClientApp.uptodate"
               targetfile="${build.war.dir}/ode/ode.nocache.js">
-      <srcfiles dir="${build.war.dir}/WEB-INF/classes"/>
+      <srcfiles dir="${build.war.dir}/WEB-INF/classes">
+        <!-- This is compiled after YaClientApp in CopyToBuildWarPost -->
+        <exclude name="msg/i18n.class"/>
+      </srcfiles>
       <srcfiles file="${local.build.dir}/AiRebindLib.jar" />
-      <srcfiles file="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
       <srcfiles file="${build.dir}/common/CommonUtils-gwt.jar" />
       <srcfiles file="${build.dir}/common/CommonVersion-gwt.jar" />
       <srcfiles file="${build.dir}/components/CommonConstants-gwt.jar" />
     </uptodate>
   </target>
 
+  <path id="YaClientApp.classpath">
+    <pathelement location="src"/>
+    <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
+    <pathelement location="${build.war.dir}/WEB-INF/classes"/>
+    <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+    <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
+    <!-- external libs -->
+    <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
+    <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
+    <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
+    <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+    <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+    <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+    <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
+    <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
+    <!-- gwt libs -->
+    <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+  </path>
+
   <target name="YaClientApp"
           description="GWT compile to JavaScript"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
           unless="YaClientApp.uptodate">
     <mkdir dir="${build.extra.dir}" />
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
-        <pathelement location="src"/>
-        <pathelement location="${build.dir}/components/ComponentTranslation/src"/>
-        <pathelement location="${build.war.dir}/WEB-INF/classes"/>
-        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
-        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
-        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
-        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
-        <!-- external libs -->
-        <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
-        <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
-        <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
-        <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
-        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
-        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
-        <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
-        <!-- gwt libs -->
-        <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
-        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
-        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+        <path refid="YaClientApp.classpath" />
       </classpath>
       <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
-      <jvmarg value="-Xmx1G"/>
+      <jvmarg value="-Xmx4G"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <jvmarg value="-Dfile.encoding=UTF-8" />
-      <arg line="-war"/>
+      <arg value="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-logLevel INFO -extra ${build.extra.dir} -style pretty"/>
-      <arg value="com.google.appinventor.YaClient"/>
+      <arg line="-logLevel INFO"/>
+      <arg value="-extra"/>
+      <arg value="${build.extra.dir}"/>
+      <arg line="-setProperty local.services=${local.services}"/>
+      <arg line="-setProperty locale=${locale}" if:set="locale"/>
+      <arg line="${client.flags} ${client.module}"/>
+    </java>
+    <copy todir="${build.war.dir}/ode"
+          file="${appinventor.dir}/appengine/extra/cdnok.js" />
+    <copy todir="${build.war.dir}/ode" if:true="${sourceMaps}">
+      <fileset dir="${build.war.dir}/WEB-INF/deploy/ode/symbolMaps">
+        <include name="*.json"/>
+      </fileset>
+      <fileset dir="${src.dir}/">
+        <include name="${appinventor.pkg}/client/**/*.java"/>
+        <include name="${appinventor.pkg}/shared/**/*.java"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="devmode"
+          depends="common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp"
+          description="Run development mode">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.codeserver.CodeServer">
+      <classpath>
+        <path refid="YaClientApp.classpath" />
+        <pathelement location="${gwt.sdk}/gwt-codeserver.jar" />
+      </classpath>
+      <jvmarg value="-Xmx3G" />
+      <arg line="-style PRETTY -logLevel INFO" />
+      <arg value="com.google.appinventor.YaClient-dev" />
+      <arg value="-bindAddress"/>
+      <arg value="0.0.0.0"/>
     </java>
   </target>
 
@@ -511,19 +701,38 @@
   <path id="libsForAiClientLibTests.path">
     <pathelement location="${build.war.dir}/WEB-INF/classes"/>
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
+    <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+    <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
+    <pathelement location="${build.dir}/components/CommonConstants-gwt.jar"/>
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+    <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
     <pathelement location="${lib.dir}/guava/guava-20.0.jar" />
     <pathelement location="${lib.dir}/guava/error_prone_annotations-2.0.12.jar" />
     <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
+    <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
+    <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+    <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+    <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
+    <pathelement location="${lib.dir}/guava/guava-gwt-20.0.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
+    <pathelement location="${lib.dir}/charba/charba-2.5.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar"/>
+    <!-- Paths to sources (needed by GWTTestCase) -->
+    <pathelement location="${build.dir}/components/ComponentTranslation/src" />
+    <pathelement location="src"/>
+    <pathelement location="tests"/>
   </path>
 
   <path id="AiClientLibTests.path">
     <path refid="libsForAiClientLibTests.path"/>
+    <path refid="libsForAiServerLibTests.path"/>
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiClientLibTests.jar" />
   </path>
@@ -532,6 +741,7 @@
           depends="AiClientLib,AiServerLib,common_CommonTestUtils,components_CommonConstants,common_CommonUtils"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AiClientLibTests"
+                aij-prod="true"
                 aij-dir="${appinventor.pkg}/client" >
     </ai.dojunit>
   </target>

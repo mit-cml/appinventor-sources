@@ -34,35 +34,8 @@ public class MockPolygon extends MockPolygonBase {
   static MockPolygon fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
     MockPolygon polygon = new MockPolygon(parent.editor);
     polygon.feature = layer;
-    String name = null;
-    boolean hadFillColor = false, hadStrokeColor = false, hadStrokeWidth = false;
-    for (String key : properties.keySet()) {
-      if (key.equalsIgnoreCase(PROPERTY_NAME_STROKEWIDTH) || key.equalsIgnoreCase(CSS_PROPERTY_STROKEWIDTH)) {
-        polygon.setStrokeWidthProperty(properties.get(key).isString().stringValue());
-        hadStrokeWidth = true;
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_STROKECOLOR) || key.equalsIgnoreCase(CSS_PROPERTY_STROKE)) {
-        polygon.setStrokeColorProperty(properties.get(key).isString().stringValue());
-        hadStrokeColor = true;
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_FILLCOLOR) || key.equalsIgnoreCase(CSS_PROPERTY_FILL)) {
-        polygon.getProperties().changePropertyValue(PROPERTY_NAME_FILLCOLOR, properties.get(key).isString().stringValue());
-        hadFillColor = true;
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_NAME)) {
-        name = properties.get(key).isString().stringValue();
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_VISIBLE)) {
-        polygon.setVisibleProperty(properties.get(key).isString().stringValue());
-      }
-    }
-    if (!hadFillColor) {
-      polygon.getProperties().changePropertyValue(PROPERTY_NAME_FILLCOLOR, "&HFF448800");
-    }
-    if (!hadStrokeColor) {
-      polygon.getProperties().changePropertyValue(PROPERTY_NAME_STROKECOLOR, "&HFF000000");
-    }
-    if (!hadStrokeWidth) {
-      polygon.getProperties().changePropertyValue(PROPERTY_NAME_STROKEWIDTH, "1");
-    }
-    processFeatureName(polygon, parent, name);
     polygon.preserveLayerData();
+    polygon.processFromGeoJSON(parent, properties);
     return polygon;
   }
 
@@ -195,7 +168,7 @@ public class MockPolygon extends MockPolygonBase {
     if (!polygon.clickHandler) {
       while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
       polygon.clickHandler = function(e) {
-        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select()();
+        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select(*)(e);
         if (e.originalEvent) {
           if ((e.originalEvent.metaKey || e.originalEvent.ctrlKey) && polygon.editEnabled()) {
             polygon.editor.newHole(e.latlng);
@@ -242,6 +215,10 @@ public class MockPolygon extends MockPolygonBase {
     this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::setNativeTooltip(*)(
       this.@com.google.appinventor.client.editor.simple.components.MockPolygon::getTooltip()()
     );
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if (!isVisible) {
+      map.removeLayer(polygon);
+    }
   }-*/;
 
   private native void preserveLayerData()/*-{
@@ -256,8 +233,8 @@ public class MockPolygon extends MockPolygonBase {
         }
         for (var i = 1; i < latlngs.length; i++) {
           var hole = [];
-          for (var j = 0; j < latlngs[i].length; i++) {
-            holesJson.push([latlngs[i][j].lat, latlngs[i][j].lng]);
+          for (var j = 0; j < latlngs[i].length; j++) {
+            hole.push([latlngs[i][j].lat, latlngs[i][j].lng]);
           }
           holesJson.push(hole);
         }

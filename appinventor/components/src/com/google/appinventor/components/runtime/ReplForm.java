@@ -1,13 +1,17 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import android.content.Context;
 import android.content.Intent;
 
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -15,11 +19,12 @@ import android.os.Looper;
 import android.util.Log;
 
 import android.view.Menu;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import com.google.appinventor.common.version.AppInventorFeatures;
 
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -27,8 +32,11 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 
 import com.google.appinventor.components.common.ComponentConstants;
 
+import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.QUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
@@ -36,10 +44,12 @@ import dalvik.system.DexClassLoader;
 
 import gnu.expr.Language;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,7 +64,7 @@ import kawa.standard.Scheme;
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
  * via the Repl
  *
- * @author markf@google.com (Your Name Here)
+ * @author markf@google.com (Mark Friedman)
  */
 
 public class ReplForm extends Form {
@@ -62,16 +72,17 @@ public class ReplForm extends Form {
   private static final String LOG_TAG = ReplForm.class.getSimpleName();
   private AppInvHTTPD httpdServer = null;
   public static ReplForm topform;
-  public static final String REPL_ASSET_DIR =
-    Environment.getExternalStorageDirectory().getAbsolutePath() +
-    "/AppInventor/assets/";
-  private static final String REPL_COMP_DIR = REPL_ASSET_DIR + "external_comps/";
+  private String replAssetDir;
+  private String replCompDir;
   private boolean IsUSBRepl = false;
   private boolean assetsLoaded = false;
   private boolean isDirect = false; // True for USB and emulator (AI2)
   private Object replResult = null; // Return result when closing screen in Repl
   private String replResultFormName = null;
-  private List<String> loadedExternalDexs; // keep a track of loaded dexs to prevent reloading and causing crash in older APIs
+  /**
+   * Keeps track of loaded dexs to prevent reloading and causing crash in older API levels.
+   */
+  private List<String> loadedExternalDexs;
   private String currentTheme = ComponentConstants.DEFAULT_THEME;
   private WebRTCNativeMgr webRTCNativeMgr;
 
@@ -120,17 +131,41 @@ public class ReplForm extends Form {
 
   @Override
   public void onCreate(Bundle icicle) {
-    super.onCreate(icicle);
     Log.d(LOG_TAG, "onCreate");
+    replAssetDir = QUtil.getReplAssetPath(this, true);
+    replCompDir = replAssetDir + "external_comps/";
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      // With Android 14, executable files (e.g., extensions) must be read-only.
+      // But on some devices external storage is mounted with sdcardfs, which does not support
+      // setting read-only permissions. So we need to use the internal storage for extensions.
+      replCompDir = getCacheDir().getAbsolutePath() + "/external_comps/";
+    }
+    super.onCreate(icicle);
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+        Log.e(LOG_TAG, "Uncaught exception", e);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream temp = new PrintStream(baos);
+        e.printStackTrace(temp);
+        temp.flush();
+        RetValManager.sendError(baos.toString());
+        temp.close();
+      }
+    });
     loadedExternalDexs = new ArrayList<String>();
     Intent intent = getIntent();
-    processExtras(intent, false);
+    processExtrasAndData(intent, false);
     themeHelper.setActionBarAnimation(false);
   }
 
   @Override
   void onCreateFinish() {
     super.onCreateFinish();
+    Log.d(LOG_TAG, "onCreateFinish() Called in Repl");
+
+    checkAssetDir();
+    checkComponentDir();
 
     if (!isEmulator() && AppInventorFeatures.doCompanionSplashScreen())
       {                    // Only show REPL splash if not in emulator and enabled
@@ -138,6 +173,33 @@ public class ReplForm extends Form {
         webviewIntent.setClassName(activeForm.$context(), SPLASH_ACTIVITY_CLASS);
         activeForm.$context().startActivity(webviewIntent);
       }
+    Intent intent = getIntent();
+    Log.d(LOG_TAG, "Intent = " + intent);
+    final String data = intent.getDataString();
+    if (data != null) {
+      Log.d(LOG_TAG, "Got data = " + data);
+    } else {
+      Log.d(LOG_TAG, "Did not receive any data");
+    }
+
+    if (data != null && (data.startsWith("aicompanion"))) {
+      registerForOnInitialize(new OnInitializeListener() {
+          @Override
+          public void onInitialize() {
+            startChromebook(data);
+          }
+        });
+    }
+  }
+
+  @Override
+  protected void defaultPropertyValues() {
+    super.defaultPropertyValues();
+    // Previously this was set in the {@link Form#defaultPropertyValues()}. However, in compiled
+    // apps we do not want to reset the theme since it is provided in the AndroidManifest.xml.
+    // In the companion though we do want to reset the theme in case we are switching from a project
+    // with a different theme than the default one to one that uses the default.
+    Theme(ComponentConstants.DEFAULT_THEME);
   }
 
   @Override
@@ -243,7 +305,11 @@ public class ReplForm extends Form {
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Log.d(LOG_TAG, "onNewIntent Called");
-    processExtras(intent, true);
+    processExtrasAndData(intent, true);
+    String data = intent.getDataString();
+    if (data != null && (data.startsWith("aicompanion"))) {
+      startChromebook(data);
+    }
   }
 
   void HandleReturnValues() {
@@ -255,7 +321,7 @@ public class ReplForm extends Form {
     }
   }
 
-  protected void processExtras(Intent intent, boolean restart) {
+  private void processExtrasAndData(Intent intent, boolean restart) {
     Bundle extras = intent.getExtras();
     if (extras != null) {
       Log.d(LOG_TAG, "extras: " + extras);
@@ -264,8 +330,13 @@ public class ReplForm extends Form {
         Log.d(LOG_TAG, "Extra Key: " + keys.next());
       }
     }
+    String data = intent.getDataString();
+    if (data != null && (data.startsWith("aicompanion"))) {
+      isDirect = true;
+      assetsLoaded = true;
+    }
     if ((extras != null) && extras.getBoolean("rundirect")) {
-      Log.d(LOG_TAG, "processExtras rundirect is true and restart is " + restart);
+      Log.d(LOG_TAG, "processExtrasAndData rundirect is true and restart is " + restart);
       isDirect = true;
       assetsLoaded = true;
       if (restart) {
@@ -280,6 +351,39 @@ public class ReplForm extends Form {
     }
   }
 
+  /**
+   *
+   * Chromebook Support:
+   *
+   * The code below parses the data provided in the intent to get the
+   * code to use to talk to the rendezvous server.
+   *
+   * The rendezvous server location is hardcoded in this version.  a
+   * future version will let you customize the location of the
+   * rendezvous server.
+   *
+   * @param data -- The data from the intent
+   *
+   */
+
+  private void startChromebook(String data) {
+    String code = data.substring(data.indexOf("//comp/") + 7);
+    PhoneStatus status = new PhoneStatus(this);
+    status.WebRTC(true);
+    code = status.setHmacSeedReturnCode(code, "rendezvous.appinventor.mit.edu");
+    String ipAddress = PhoneStatus.GetWifiIpAddress();
+    int api = status.SdkLevel();
+    String version = status.GetVersionName();
+    String aid = status.InstallationId();
+    Log.d(LOG_TAG, "InstallationId = " + aid);
+    Web web = new Web(this);
+    web.Url("http://rendezvous.appinventor.mit.edu/rendezvous/");
+    web.PostText("ipaddr=" + ipAddress + "&port=9987&webrtc=true" +
+      "&version=" + version + "&api=" + api + "&aid=" +
+      aid + "&installer=" + status.GetInstaller() + "&r2=true&key=" + code);
+    status.startWebRTC("rendezvous.appinventor.mit.edu", "OK");
+  }
+
   public boolean isDirect() {
     return isDirect;
   }
@@ -291,11 +395,12 @@ public class ReplForm extends Form {
   // Called from the Phone Status Block to start the Repl HTTPD
   public void startHTTPD(boolean secure) {
     try {
-        if (httpdServer == null) {
-            checkAssetDir();
-            httpdServer = new AppInvHTTPD(8001, new File(REPL_ASSET_DIR), secure, this); // Probably should make the port variable
-            Log.i(LOG_TAG, "started AppInvHTTPD");
-        }
+      if (httpdServer == null) {
+        checkAssetDir();
+        // Probably should make the port variable
+        httpdServer = new AppInvHTTPD(8001, new File(replAssetDir), secure, this);
+        Log.i(LOG_TAG, "started AppInvHTTPD");
+      }
     } catch (IOException ex) {
       Log.e(LOG_TAG, "Setting up NanoHTTPD: " + ex.toString());
     }
@@ -303,15 +408,17 @@ public class ReplForm extends Form {
 
   // Make sure that the REPL asset directory exists.
   private void checkAssetDir() {
-    File f = new File(REPL_ASSET_DIR);
-    if (!f.exists())
-        f.mkdirs();             // Create the directory and all parents
+    File f = new File(replAssetDir);
+    if (!f.exists()) {
+      f.mkdirs();             // Create the directory and all parents
+    }
   }
 
   private boolean checkComponentDir() {
-    File f = new File(REPL_COMP_DIR);
-    if (!f.exists())
+    File f = new File(replCompDir);
+    if (!f.exists()) {
       return f.mkdirs();
+    }
     return true;
   }
 
@@ -334,36 +441,54 @@ public class ReplForm extends Form {
    * classloaders. For multiple dex files, we just cascade the classloaders in the hierarchy
    */
   public void loadComponents(List<String> extensionNames) {
-    Set<String> extensions = new HashSet<String>(extensionNames);
-    // Store the loaded dex files in the private storage of the App for stable optimization
-    File dexOutput = activeForm.$context().getDir("componentDexs", Context.MODE_PRIVATE);
-    File componentFolder = new File(REPL_COMP_DIR );
-    if (!checkComponentDir()) {
-      Log.d(LOG_TAG, "Unable to create components directory");
-      dispatchErrorOccurredEventDialog(this, "loadComponents", ErrorMessages.ERROR_EXTENSION_ERROR,
-          1, "App Inventor", "Unable to create component directory.");
-      return;
+    if (extensionNames.isEmpty()) {
+      return;  // In theory, the client should only send a list with items
     }
-    // Current Thread Class Loader
-    ClassLoader parentClassLoader = ReplForm.class.getClassLoader();
+
     StringBuilder sb = new StringBuilder();
-    loadedExternalDexs.clear();
-    for (File compFolder : componentFolder.listFiles()) {
-      if (compFolder.isDirectory()) {
-        if (!extensions.contains(compFolder.getName())) continue;  // Skip extensions on the phone but not required by the project
-        File component = new File(compFolder.getPath() + File.separator + "classes.jar");
-        File loadComponent = new File(compFolder.getPath() + File.separator + compFolder.getName() + ".jar");
-        component.renameTo(loadComponent);
-        if (loadComponent.exists() && !loadedExternalDexs.contains(loadComponent.getName())) {
-          Log.d(LOG_TAG, "Loading component dex " + loadComponent.getAbsolutePath());
-          loadedExternalDexs.add(loadComponent.getName());
-          sb.append(File.pathSeparatorChar);
-          sb.append(loadComponent.getAbsolutePath());
-        }
+    String separator = "";
+    for (String extension : extensionNames) {  // e.g., "edu.mit.appinventor.ble"
+      // Check that the extension's JAR file exists
+      File loadComponent = new File(replCompDir + extension,
+          VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE ? extension + ".jar" : "classes.jar");
+      Log.d(LOG_TAG, "Loading component dex " + loadComponent.getAbsolutePath());
+      if (!loadComponent.exists()) {
+        Log.d(LOG_TAG, "Extension " + extension + " does not exist");
+        throw new YailRuntimeError("Extension " + extension + " does not exist",
+            "Extension Error");
       }
+
+      // Have we already loaded the dex file into Dalvik? If so, skip it.
+      if (loadedExternalDexs.contains(loadComponent.getPath())) {
+        Log.d(LOG_TAG, "Skipping already loaded " + loadComponent.getAbsolutePath());
+        // Note that this is only an issue if the user has upgraded an extension. Generally, we
+        // advise people upgrading extensions to restart the companion anyway so in theory any
+        // discrepancies should be resolved via that route.
+        continue;
+      }
+
+      // For Android 14+ we need to have the file be read only, but for now we'll just do it
+      // for every Android version.
+      if (loadComponent.canWrite() && !loadComponent.setReadOnly()) {
+        throw new YailRuntimeError("Unable to set " + loadComponent.getName() + " to read only",
+            "Permission Error");
+      }
+
+      Log.d(LOG_TAG, "Queueing component dex " + loadComponent.getAbsolutePath());
+      loadedExternalDexs.add(loadComponent.getPath());
+      sb.append(separator);
+      sb.append(loadComponent.getAbsolutePath());
+      separator = File.pathSeparator;
     }
-    DexClassLoader dexCloader = new DexClassLoader(sb.substring(1), dexOutput.getAbsolutePath(),
-        null, parentClassLoader);
+
+    // Store the loaded dex files in the private storage of the App for stable optimization
+    File dexOutput = new File(activeForm.$context().getCacheDir(), "componentDexs");
+    if (!dexOutput.exists() && !dexOutput.mkdirs()) {
+      throw new YailRuntimeError("Unable to create componentDexs directory",
+          "Permission Error");
+    }
+    DexClassLoader dexCloader = new DexClassLoader(sb.toString(), dexOutput.getAbsolutePath(),
+        null, ReplForm.class.getClassLoader());
     Thread.currentThread().setContextClassLoader(dexCloader);
     Log.d(LOG_TAG, Thread.currentThread().toString());
     Log.d(LOG_TAG, Looper.getMainLooper().getThread().toString());
@@ -402,11 +527,27 @@ public class ReplForm extends Form {
 
   @Override
   public String getAssetPath(String asset) {
-    return "file://" + REPL_ASSET_DIR + asset;
+    return "file://" + replAssetDir + asset;
   }
 
   @Override
-  public String getAssetPathForExtension(Component component, String asset) throws FileNotFoundException {
+  public String getCachePath(String cache) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+      return "file://" + Environment.getExternalStorageDirectory().getAbsolutePath()
+          + "/AppInventor/cache/" + cache;
+    } else {
+      return "file://" + new java.io.File(getExternalCacheDir(), cache).getAbsolutePath();
+    }
+  }
+
+  @Override
+  public String getPrivatePath(String fileName) {
+    return "file://" + new java.io.File(QUtil.getReplDataPath(this), fileName).getAbsolutePath();
+  }
+
+  @Override
+  public String getAssetPathForExtension(Component component, String asset)
+      throws FileNotFoundException {
     // For testing extensions, we allow external = false, but still compile the assets into the
     // companion for testing. When external = true, we are assuming this is an extension loaded
     // into the production companion.
@@ -419,7 +560,7 @@ public class ReplForm extends Form {
     String pkgPath = null;
 
     while (extensionId.contains(".")) {
-      File dir = new File(REPL_COMP_DIR + extensionId + "/assets");
+      File dir = new File(replCompDir + extensionId + "/assets");
       if (dir.exists() && dir.isDirectory()) {
         // found the extension directory
         pkgPath = dir.getAbsolutePath();
@@ -440,7 +581,7 @@ public class ReplForm extends Form {
   }
 
   @Override
-  protected boolean isRepl() {
+  public boolean isRepl() {
     return true;
   }
 

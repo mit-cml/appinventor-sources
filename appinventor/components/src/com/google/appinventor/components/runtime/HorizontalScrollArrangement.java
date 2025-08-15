@@ -12,7 +12,12 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 /**
- * A horizontal arrangement of components
+ * A formatting element in which to place components that should be displayed from left to right.
+ * If you wish to have components displayed one over another, use {@link VerticalScrollArrangement}
+ * instead.
+ *
+ * This version is scrollable.
+ *
  * @author sharon@google.com (Sharon Perl)
  * @author jis@mit.edu (Jeffrey I. Schiller)
  *
@@ -23,7 +28,8 @@ import com.google.appinventor.components.common.YaVersion;
     "components displayed one over another, use " +
     "<code>VerticalArrangement</code> instead.</p><p>This version is " +
     "scrollable.",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/horizontal.png")
 @SimpleObject
 public class HorizontalScrollArrangement extends HVArrangement {
   public HorizontalScrollArrangement(ComponentContainer container) {

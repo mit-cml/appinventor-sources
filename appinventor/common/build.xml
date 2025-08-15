@@ -13,7 +13,7 @@
   </description>
 
   <target name="all"
-          depends="CommonUtils,CommonVersion,BlocksEditorHttpConstants,CommonTestUtils">
+          depends="CommonUtils,CommonVersion">
   </target>
 
   <target name="tests"
@@ -42,7 +42,7 @@
     <ai.javac destdir="${CommonUtils-class.dir}">
       <include name="${common.pkg}/utils/*.java" />
       <classpath>
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-27.1-android.jar" />
       </classpath>
     </ai.javac>
 
@@ -61,31 +61,13 @@
   </target>
 
   <!-- =====================================================================
-       CommonTranslations: library containing translation classes.
-       ===================================================================== -->
-  <target name="CommonTranslations"
-          description="Generate library containing translation classes"
-          depends="init">
-    <property name="CommonTranslations-class.dir" location="${class.dir}/CommonTranslations" />
-    <mkdir dir="${CommonTranslations-class.dir}" />
-
-    <ai.javac destdir="${CommonTranslations-class.dir}">
-      <include name="${common.pkg}/translations/*.java" />
-    </ai.javac>
-
-    <jar destfile="${public.build.dir}/CommonTranslations.jar">
-      <fileset dir="${CommonTranslations-class.dir}"/>
-    </jar>
-  </target>
-  
-  <!-- =====================================================================
        CommonUtilsTests: build and run the CommonUtils tests and generate the output results
        ===================================================================== -->
 
   <path id="libsForCommonUtilsTests.path">
     <pathelement location="${public.build.dir}/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/guava/guava-27.1-android.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.13.2.jar" />
   </path>
 
   <path id="CommonUtilsTests.path">
@@ -151,36 +133,6 @@
         <include name="${common.pkg}/version/*.java"/>
       </fileset>
   </jar>
-
-  </target>
-
-  <!-- =====================================================================
-       BlocksEditorHttpConstants: library of constants for blocks editor
-           http server.
-       ===================================================================== -->
-  <target name="BlocksEditorHttpConstants"
-          description="Generate library of constants for blocks editor http server"
-          depends="init">
-    <property name="BlocksEditorHttpConstants-class.dir" location="${class.dir}/BlocksEditorHttpConstants" />
-    <mkdir dir="${BlocksEditorHttpConstants-class.dir}" />
-
-    <ai.javac destdir="${BlocksEditorHttpConstants-class.dir}">
-      <include name="${common.pkg}/jsonp/JsonpConstants.java" />
-      <include name="${common.pkg}/youngandroid/YaHttpServerConstants.java" />
-    </ai.javac>
-
-    <jar destfile="${public.build.dir}/BlocksEditorHttpConstants.jar">
-      <fileset dir="${BlocksEditorHttpConstants-class.dir}"/>
-    </jar>
-
-    <jar destfile="${public.build.dir}/BlocksEditorHttpConstants-gwt.jar">
-      <fileset dir="${BlocksEditorHttpConstants-class.dir}"/>
-      <fileset dir="${src.dir}">
-        <include name="${common.pkg}/jsonp/JsonpConstants.java"/>
-        <include name="${common.pkg}/youngandroid/YaHttpServerConstants.java"/>
-        <include name="${common.pkg}/BlocksEditorHttpConstants.gwt.xml" />
-      </fileset>
-    </jar>
 
   </target>
 

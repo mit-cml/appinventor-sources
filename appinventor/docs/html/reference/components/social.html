@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Social</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Social</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="social">Social</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#ContactPicker">ContactPicker</a></li>
+  <li><a href="#EmailPicker">EmailPicker</a></li>
+  <li><a href="#PhoneCall">PhoneCall</a></li>
+  <li><a href="#PhoneNumberPicker">PhoneNumberPicker</a></li>
+  <li><a href="#Sharing">Sharing</a></li>
+  <li><a href="#Texting">Texting</a></li>
+</ul>
+
+<h2 id="ContactPicker">ContactPicker</h2>
+
+<p>A button that, when clicked on, displays a list of the contacts to choose among. After the user
+ has made a selection, the following properties will be set to information about the chosen
+ contact:</p>
+
+<ul>
+  <li><a href="#ContactPicker.ContactName"><code class="highlighter-rouge">ContactName</code></a>: the contact’s name</li>
+  <li><a href="#ContactPicker.EmailAddress"><code class="highlighter-rouge">EmailAddress</code></a>: the contact’s primary email address</li>
+  <li><a href="#ContactPicker.EmailAddressList"><code class="highlighter-rouge">EmailAddressList</code></a>: a list of the contact’s email addresses</li>
+  <li><a href="#ContactPicker.ContactUri"><code class="highlighter-rouge">ContactUri</code></a>: the contact’s URI on the device</li>
+  <li><a href="#ContactPicker.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a>: the contact’s primary phone number (on Later Android Verisons)</li>
+  <li><a href="#ContactPicker.PhoneNumberList"><code class="highlighter-rouge">PhoneNumberList</code></a>: a list of the contact’s phone numbers (on Later Android Versions)</li>
+  <li><a href="#ContactPicker.Picture"><code class="highlighter-rouge">Picture</code></a>: the name of the file containing the contact’s image, which can be used as a Picture property value for the Image or ImageSprite component.</li>
+</ul>
+
+<p>Other properties affect the appearance of the button (<a href="#ContactPicker.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a>,
+ <a href="#ContactPicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a>, etc.) and whether it can be clicked on (<a href="#ContactPicker.Enabled"><code class="highlighter-rouge">Enabled</code></a>).</p>
+
+<p>The <code class="highlighter-rouge">ContactPicker</code> component might not work on all phones. For example, on Android systems
+ before system 3.0, it cannot pick phone numbers, and the list of email addresses will contain
+ only one email.</p>
+
+<h3 id="ContactPicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ContactPicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ContactPicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#ContactPicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#ContactPicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="ContactPicker.ContactName" class="text ro bo"><em>ContactName</em></dt>
+  <dd>Returns the full name of the selected contact, or the empty string if a name is unavailable.</dd>
+  <dt id="ContactPicker.ContactUri" class="text ro bo"><em>ContactUri</em></dt>
+  <dd>Returns a URI that specifies the location of the contact on the device.</dd>
+  <dt id="ContactPicker.EmailAddress" class="text ro bo"><em>EmailAddress</em></dt>
+  <dd>Returns the primary email address of the selected contact, or the empty string if an email
+ address is unavailable.</dd>
+  <dt id="ContactPicker.EmailAddressList" class="list ro bo"><em>EmailAddressList</em></dt>
+  <dd>Returns a list of email addresses associated with the selected contact.</dd>
+  <dt id="ContactPicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">ContactPicker</code> should be active and clickable.</dd>
+  <dt id="ContactPicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ContactPicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="ContactPicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ContactPicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="ContactPicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">ContactPicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="ContactPicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">ContactPicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="ContactPicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ContactPicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="ContactPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ContactPicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ContactPicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">ContactPicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#ContactPicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="ContactPicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ContactPicker.PhoneNumber" class="text ro bo"><em>PhoneNumber</em></dt>
+  <dd>Returns the primary phone number associated with the selected contact, or the empty string if
+ no phone number is associated with the contact.</dd>
+  <dt id="ContactPicker.PhoneNumberList" class="list ro bo"><em>PhoneNumberList</em></dt>
+  <dd>Returns a list of phone numbers associated with the selected contact.</dd>
+  <dt id="ContactPicker.Picture" class="text ro bo"><em>Picture</em></dt>
+  <dd>Returns a picture URI for the selected contact, which can be
+ used to retrieve the contact’s photo and other fields.</dd>
+  <dt id="ContactPicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">ContactPicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#ContactPicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="ContactPicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">ContactPicker</code> with an assigned
+ <a href="#ContactPicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="ContactPicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">ContactPicker</code>.</dd>
+  <dt id="ContactPicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">ContactPicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="ContactPicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">ContactPicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="ContactPicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ContactPicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">ContactPicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">ContactPicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="ContactPicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ContactPicker</code>, measured in pixels.</dd>
+  <dt id="ContactPicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ContactPicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="ContactPicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ContactPicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the <code class="highlighter-rouge">ContactPicker</code> activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="ContactPicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the <code class="highlighter-rouge">ContactPicker</code> is clicked or the picker is shown
+ using the <a href="#ContactPicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.</dd>
+  <dt id="ContactPicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">ContactPicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="ContactPicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">ContactPicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="ContactPicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">ContactPicker</code> was pressed down.</dd>
+  <dt id="ContactPicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">ContactPicker</code> has been released.</dd>
+</dl>
+
+<h3 id="ContactPicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ContactPicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the <code class="highlighter-rouge">ContactPicker</code>, as though the user clicked on it.</dd>
+  <dt id="ContactPicker.ViewContact" class="method"><i></i> ViewContact(<em class="text">uri</em>)</dt>
+  <dd>Opens the selected contact’s entry in the device’s default Contacts app.</dd>
+</dl>
+
+<h2 id="EmailPicker">EmailPicker</h2>
+
+<p>An <code class="highlighter-rouge">EmailPicker</code> is a kind of text box. If the user begins entering the name or email address of
+ a contact, the phone will show a dropdown menu of choices that complete the entry. If there are
+ many contacts, the dropdown can take several seconds to appear, and can show intermediate
+ results while the matches are being computed.</p>
+
+<p>The initial contents of the text box and the contents&lt; after user entry is in the <a href="#EmailPicker.Text"><code class="highlighter-rouge">Text</code></a>
+ property. If the <a href="#EmailPicker.Text"><code class="highlighter-rouge">Text</code></a> property is initially empty, the contents of the <a href="#EmailPicker.Hint"><code class="highlighter-rouge">Hint</code></a>
+ property will be faintly shown in the text box as a hint to the user.</p>
+
+<p>Other properties affect the appearance of the text box (<a href="#EmailPicker.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a>,
+ <a href="#EmailPicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a>, etc.) and whether it can be used (<a href="#EmailPicker.Enabled"><code class="highlighter-rouge">Enabled</code></a>).</p>
+
+<p>Text boxes like this are usually used with <a href="userinterface.html#Button"><code class="highlighter-rouge">Button</code></a> components, with
+ the user clicking on the button when text entry is complete.</p>
+
+<h3 id="EmailPicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="EmailPicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>The background color of the <code class="highlighter-rouge">EmailPicker</code>`. You can choose a color by name in the Designer or in
+ the Blocks Editor. The default background color is ‘default’ (shaded 3-D look).</dd>
+  <dt id="EmailPicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If set, user can enter text into the <code class="highlighter-rouge">EmailPicker</code>.</dd>
+  <dt id="EmailPicker.FontBold" class="boolean do"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">EmailPicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="EmailPicker.FontItalic" class="boolean do"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">EmailPicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="EmailPicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">EmailPicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="EmailPicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>The text font face of the <code class="highlighter-rouge">EmailPicker</code>. Valid values are <code class="highlighter-rouge">0</code> (default), <code class="highlighter-rouge">1</code> (serif), <code class="highlighter-rouge">2</code> (sans
+ serif), or <code class="highlighter-rouge">3</code> (monospace).</dd>
+  <dt id="EmailPicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">EmailPicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="EmailPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">EmailPicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="EmailPicker.Hint" class="text"><em>Hint</em></dt>
+  <dd><code class="highlighter-rouge">EmailPicker</code> hint for the user.</dd>
+  <dt id="EmailPicker.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint of the EmailPicker.</dd>
+  <dt id="EmailPicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="EmailPicker.Text" class="text"><em>Text</em></dt>
+  <dd>The text in the <code class="highlighter-rouge">EmailPicker</code>, which can be set by the programmer in the Designer or Blocks Editor,
+ or it can be entered by the user (unless the <a href="#EmailPicker.Enabled"><code class="highlighter-rouge">Enabled</code></a> property is false).</dd>
+  <dt id="EmailPicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">EmailPicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="EmailPicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">EmailPicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="EmailPicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="EmailPicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">EmailPicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">EmailPicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="EmailPicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">EmailPicker</code>, measured in pixels.</dd>
+  <dt id="EmailPicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">EmailPicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="EmailPicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="EmailPicker.GotFocus">GotFocus()</dt>
+  <dd>Event raised when the <code class="highlighter-rouge">EmailPicker</code> is selected for input, such as by
+ the user touching it.</dd>
+  <dt id="EmailPicker.LostFocus">LostFocus()</dt>
+  <dd>Event raised when the <code class="highlighter-rouge">EmailPicker</code> is no longer selected for input, such
+ as if the user touches a different text box.</dd>
+  <dt id="EmailPicker.TextChanged">TextChanged()</dt>
+  <dd>Event raised when the text of the EmailPicker is changed, either by the user or the program.</dd>
+</dl>
+
+<h3 id="EmailPicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="EmailPicker.MoveCursorTo" class="method"><i></i> MoveCursorTo(<em class="number">position</em>)</dt>
+  <dd>Repositions the cursor of the EmailPicker before the character at the given 1-indexed position. If the given position is larger than the length of the EmailPicker, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.</dd>
+  <dt id="EmailPicker.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the EmailPicker’s text.</dd>
+  <dt id="EmailPicker.MoveCursorToStart" class="method"><i></i> MoveCursorToStart()</dt>
+  <dd>Repositions the cursor to the start of the EmailPicker’s text.</dd>
+  <dt id="EmailPicker.RequestFocus" class="method"><i></i> RequestFocus()</dt>
+  <dd>Request focus to current <code class="highlighter-rouge">EmailPicker</code>.</dd>
+</dl>
+
+<h2 id="PhoneCall">PhoneCall</h2>
+
+<p><img src="images/phonecall.png" alt="PhoneCall component icon" /></p>
+
+<p>A non-visible component that makes a phone call to the number specified in the
+ <a href="#PhoneCall.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a> property, which can be set either in the Designer or Blocks Editor.
+ The component has a <a href="#PhoneCall.MakePhoneCall"><code class="highlighter-rouge">MakePhoneCall</code></a> method, enabling the program to launch a phone call.
+ You may also use <a href="#PhoneCall.MakePhoneCallDirect"><code class="highlighter-rouge">MakePhoneCallDirect</code></a> to directly initiate a phone call without user
+ interaction. However, apps using this block may require further review by Google if submitted
+ to the Play Store so it is advised to use <a href="#PhoneCall.MakePhoneCall"><code class="highlighter-rouge">MakePhoneCall</code></a> instead.</p>
+
+<p>Often, this component is used with the <a href="#ContactPicker"><code class="highlighter-rouge">ContactPicker</code></a> component, which lets the user
+ select a contact from the ones stored on the phone and sets the
+ <a href="#PhoneCall.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a> property to <a href="#ContactPicker.PhoneNumber"><code class="highlighter-rouge">ContactPicker</code>’s <code class="highlighter-rouge">PhoneNumber</code></a> property.</p>
+
+<p>To directly specify the phone number (e.g., 650-555-1212), set the <a href="#PhoneCall.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a>
+ property to a Text with the specified digits (e.g., “6505551212”). Dashes, dots, and parentheses
+ may be included (e.g., “(650)-555-1212”) but will be ignored; spaces may not be included.</p>
+
+<h3 id="PhoneCall-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="PhoneCall.PhoneNumber" class="text"><em>PhoneNumber</em></dt>
+  <dd>Specifies the phone number to call.</dd>
+</dl>
+
+<h3 id="PhoneCall-Events">Events</h3>
+
+<dl class="events">
+  <dt id="PhoneCall.IncomingCallAnswered">IncomingCallAnswered(<em class="text">phoneNumber</em>)</dt>
+  <dd>Event indicating that an incoming phone call is answered. <code class="variable block highlighter-rouge">phoneNumber</code> is
+ the incoming call phone number.</dd>
+  <dt id="PhoneCall.PhoneCallEnded">PhoneCallEnded(<em class="number">status</em>,<em class="text">phoneNumber</em>)</dt>
+  <dd>Event indicating that a phone call has ended. The <code class="variable block highlighter-rouge">status</code> can be any of:
+
+    <ul>
+      <li><code class="highlighter-rouge">1</code>: Incoming call was missed or rejected</li>
+      <li><code class="highlighter-rouge">2</code>: Incoming call was answered and hung up</li>
+      <li><code class="highlighter-rouge">3</code>: Outgoing call was hung up.</li>
+    </ul>
+  </dd>
+  <dt id="PhoneCall.PhoneCallStarted">PhoneCallStarted(<em class="number">status</em>,<em class="text">phoneNumber</em>)</dt>
+  <dd>Event indicating that a phone call has started. The <code class="variable block highlighter-rouge">status</code> can be any of:
+
+    <ul>
+      <li><code class="highlighter-rouge">1</code>: Incoming call is ringing</li>
+      <li><code class="highlighter-rouge">2</code>: Outgoing call is dialled</li>
+    </ul>
+  </dd>
+</dl>
+
+<h3 id="PhoneCall-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="PhoneCall.MakePhoneCall" class="method"><i></i> MakePhoneCall()</dt>
+  <dd>Launches the default dialer app set to start a phone call using the number in the
+ <a href="#PhoneCall.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a> property.</dd>
+  <dt id="PhoneCall.MakePhoneCallDirect" class="method"><i></i> MakePhoneCallDirect()</dt>
+  <dd>Directly initiates a phone call using the number in the <a href="#PhoneCall.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a> property,
+ bypassing user interaction to start the call. <strong>Most apps should use
+ <a href="#PhoneCall.MakePhoneCall"><code class="highlighter-rouge">MakePhoneCall</code></a> instead, which requires no permissions.</strong></dd>
+</dl>
+
+<h2 id="PhoneNumberPicker">PhoneNumberPicker</h2>
+
+<p>A button that, when clicked on, displays a list of the contacts’ phone numbers to choose among.
+ After the user has made a selection, the following properties will be set to information about
+ the chosen contact:</p>
+
+<ul>
+  <li><a href="#PhoneNumberPicker.ContactName"><code class="highlighter-rouge">ContactName</code></a>: the contact’s name</li>
+  <li><a href="#PhoneNumberPicker.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a>: the contact’s phone number</li>
+  <li><a href="#PhoneNumberPicker.EmailAddress"><code class="highlighter-rouge">EmailAddress</code></a>: the contact’s email address</li>
+  <li><a href="#PhoneNumberPicker.Picture"><code class="highlighter-rouge">Picture</code></a>: the name of the file containing the contact’s image, which can be used as a Picture property value for the Image or ImageSprite component.</li>
+</ul>
+
+<p>Other properties affect the appearance of the button (<a href="#PhoneNumberPicker.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a>,
+ <a href="#PhoneNumberPicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a>, etc.) and whether it can be clicked on (<a href="#PhoneNumberPicker.Enabled"><code class="highlighter-rouge">Enabled</code></a>).</p>
+
+<p>The <code class="highlighter-rouge">PhoneNumberPicker</code> component may not work on all Android devices. For example, on Android
+ systems before system 3.0, the returned lists of phone numbers and email addresses will be empty.</p>
+
+<h3 id="PhoneNumberPicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="PhoneNumberPicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">PhoneNumberPicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#PhoneNumberPicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#PhoneNumberPicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="PhoneNumberPicker.ContactName" class="text ro bo"><em>ContactName</em></dt>
+  <dd>Returns the full name of the selected contact, or the empty string if a name is unavailable.</dd>
+  <dt id="PhoneNumberPicker.ContactUri" class="text ro bo"><em>ContactUri</em></dt>
+  <dd>Returns a URI that specifies the location of the contact on the device.</dd>
+  <dt id="PhoneNumberPicker.EmailAddress" class="text ro bo"><em>EmailAddress</em></dt>
+  <dd>Returns the primary email address of the selected contact, or the empty string if an email
+ address is unavailable.</dd>
+  <dt id="PhoneNumberPicker.EmailAddressList" class="list ro bo"><em>EmailAddressList</em></dt>
+  <dd>Returns a list of email addresses associated with the selected contact.</dd>
+  <dt id="PhoneNumberPicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">PhoneNumberPicker</code> should be active and clickable.</dd>
+  <dt id="PhoneNumberPicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">PhoneNumberPicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="PhoneNumberPicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">PhoneNumberPicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="PhoneNumberPicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">PhoneNumberPicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="PhoneNumberPicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">PhoneNumberPicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="PhoneNumberPicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">PhoneNumberPicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="PhoneNumberPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">PhoneNumberPicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="PhoneNumberPicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">PhoneNumberPicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#PhoneNumberPicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="PhoneNumberPicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="PhoneNumberPicker.PhoneNumber" class="text ro bo"><em>PhoneNumber</em></dt>
+  <dd>Returns the primary phone number associated with the selected contact, or the empty string if
+ no phone number is associated with the contact.</dd>
+  <dt id="PhoneNumberPicker.PhoneNumberList" class="list ro bo"><em>PhoneNumberList</em></dt>
+  <dd>Returns a list of phone numbers associated with the selected contact.</dd>
+  <dt id="PhoneNumberPicker.Picture" class="text ro bo"><em>Picture</em></dt>
+  <dd>Returns a picture URI for the selected contact, which can be
+ used to retrieve the contact’s photo and other fields.</dd>
+  <dt id="PhoneNumberPicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">PhoneNumberPicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#PhoneNumberPicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="PhoneNumberPicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">PhoneNumberPicker</code> with an assigned
+ <a href="#PhoneNumberPicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="PhoneNumberPicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">PhoneNumberPicker</code>.</dd>
+  <dt id="PhoneNumberPicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">PhoneNumberPicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="PhoneNumberPicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">PhoneNumberPicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="PhoneNumberPicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="PhoneNumberPicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">PhoneNumberPicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">PhoneNumberPicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="PhoneNumberPicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">PhoneNumberPicker</code>, measured in pixels.</dd>
+  <dt id="PhoneNumberPicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">PhoneNumberPicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="PhoneNumberPicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="PhoneNumberPicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the <code class="highlighter-rouge">PhoneNumberPicker</code> activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="PhoneNumberPicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the <code class="highlighter-rouge">PhoneNumberPicker</code> is clicked or the picker is shown
+ using the <a href="#PhoneNumberPicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.</dd>
+  <dt id="PhoneNumberPicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">PhoneNumberPicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="PhoneNumberPicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">PhoneNumberPicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="PhoneNumberPicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">PhoneNumberPicker</code> was pressed down.</dd>
+  <dt id="PhoneNumberPicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">PhoneNumberPicker</code> has been released.</dd>
+</dl>
+
+<h3 id="PhoneNumberPicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="PhoneNumberPicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the <code class="highlighter-rouge">PhoneNumberPicker</code>, as though the user clicked on it.</dd>
+  <dt id="PhoneNumberPicker.ViewContact" class="method"><i></i> ViewContact(<em class="text">uri</em>)</dt>
+  <dd>Opens the selected contact’s entry in the device’s default Contacts app.</dd>
+</dl>
+
+<h2 id="Sharing">Sharing</h2>
+
+<p>Sharing is a non-visible component that enables sharing files and/or messages between your app
+ and other apps installed on a device. The component will display a list of the installed apps
+ that can handle the information provided, and will allow the user to choose one to share the
+ content with, for instance a mail app, a social network app, a texting app, and so on.</p>
+
+<p>The file path can be taken directly from other components such as the
+ <a href="media.html#Camera"><code class="highlighter-rouge">Camera</code></a> or the <a href="media.html#ImagePicker"><code class="highlighter-rouge">ImagePicker</code></a>, but can also be
+ specified directly to read from storage. The default behaviour is to share files from the private
+ data directory associated with your app. If the file path starts with a slash (<code class="highlighter-rouge">/</code>), then the file
+ relative to <code class="highlighter-rouge">/</code> is shared.</p>
+
+<p>Be aware that different devices treat storage differently, so a few things to try if, for
+ instance, you have a file called <code class="highlighter-rouge">arrow.gif</code> in the folder <code class="highlighter-rouge">Appinventor/assets</code>, would be:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">"file:///sdcard/Appinventor/assets/arrow.gif"</code>; or</li>
+  <li><code class="highlighter-rouge">"/storage/Appinventor/assets/arrow.gif"</code></li>
+</ul>
+
+<h3 id="Sharing-Properties">Properties</h3>
+
+<p class="properties">None</p>
+
+<h3 id="Sharing-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Sharing-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Sharing.ShareFile" class="method"><i></i> ShareFile(<em class="text">file</em>)</dt>
+  <dd>Shares a file through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the file inserted on it.</dd>
+  <dt id="Sharing.ShareFileWithMessage" class="method"><i></i> ShareFileWithMessage(<em class="text">file</em>,<em class="text">message</em>)</dt>
+  <dd>Shares both a file and a message through any capable application installed on the phone by displaying a list of available apps and allowing the user to  choose one from the list. The selected app will open with the file and message inserted on it.</dd>
+  <dt id="Sharing.ShareMessage" class="method"><i></i> ShareMessage(<em class="text">message</em>)</dt>
+  <dd>Shares a message through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the message inserted on it.</dd>
+</dl>
+
+<h2 id="Texting">Texting</h2>
+
+<p><img src="images/texting.png" alt="Texting component icon" /></p>
+
+<p>A component that will, when the <a href="#Texting.SendMessage"><code class="highlighter-rouge">SendMessage</code></a> method is called, launch the device’s
+ preferred texting app to send the text message specified in the <a href="#Texting.SendMessage"><code class="highlighter-rouge">SendMessage</code></a> property
+ to the phone number specified in the <a href="#Texting.PhoneNumber"><code class="highlighter-rouge">PhoneNumber</code></a> property. You may also send text
+ messages without user interaction by calling <a href="#Texting.SendMessageDirect"><code class="highlighter-rouge">SendMessageDirect</code></a> instead, but this
+ adds dangerous permissions to your final app.</p>
+
+<p>If the <a href="#Texting.ReceivingEnabled"><code class="highlighter-rouge">ReceivingEnabled</code></a> property is set to 1 messages will not be received. If
+ <a href="#Texting.ReceivingEnabled"><code class="highlighter-rouge">ReceivingEnabled</code></a> is set to 2 messages will be received only when the application is
+ running. Finally if <a href="#Texting.ReceivingEnabled"><code class="highlighter-rouge">ReceivingEnabled</code></a> is set to 3, messages will be received when the
+ application is running and when the application is not running they will be queued and a
+ notification displayed to the user.</p>
+
+<p>When a message arrives, the <a href="#Texting.MessageReceived"><code class="highlighter-rouge">MessageReceived</code></a> event is raised and
+ provides the sending number and message.</p>
+
+<p>An app that includes this component will receive messages even when it is in the background
+ (i.e. when it’s not visible on the screen) and, moreso, even if the app is not running, so long
+ as it’s installed on the phone. If the phone receives a text message when the app is not in the
+ foreground, the phone will show a notification in the notification bar. Selecting the
+ notification will bring up the app. As an app developer, you’ll probably want to give your users
+ the ability to control ReceivingEnabled so that they can make the phone ignore text messages.</p>
+
+<p>If the <a href="#Texting.GoogleVoiceEnabled"><code class="highlighter-rouge">GoogleVoiceEnabled</code></a> property is true, messages can be sent over Wifi using
+ Google Voice. This option requires that the user have a Google Voice account and that the mobile
+ Voice app is installed on the phone. The Google Voice option works only on phones that support
+ Android 2.0 (Eclair) or higher. <strong>Unfortunately, receiving no longer works in Google Voice due to
+ changes introduced in Google Voice App.</strong></p>
+
+<p>To specify the phone number (e.g., 650-555-1212), set the PhoneNumber property to a Text string
+ with the specified digits (e.g., 6505551212). Dashes, dots, and parentheses may be included
+ (e.g., (650)-555-1212) but will be ignored; spaces may not be included.</p>
+
+<p>Another way for an app to specify a phone number would be to include a <a href="#PhoneNumberPicker"><code class="highlighter-rouge">PhoneNumberPicker</code></a>
+ component, which lets the users select a phone numbers from the ones stored in the the phone’s
+ contacts.</p>
+
+<h3 id="Texting-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Texting.GoogleVoiceEnabled" class="boolean"><em>GoogleVoiceEnabled</em></dt>
+  <dd>If this property is true, then SendMessage will attempt to send messages over
+ WiFi, using Google voice.</dd>
+  <dt id="Texting.Message" class="text"><em>Message</em></dt>
+  <dd>The message that will be sent when the <a href="#Texting.SendMessage"><code class="highlighter-rouge">SendMessage</code></a> method is called.
+ The maximum length of a standard SMS message is usually 170. It may be less for languages
+ using diacritical marks.</dd>
+  <dt id="Texting.PhoneNumber" class="text"><em>PhoneNumber</em></dt>
+  <dd>The number that the message will be sent to when the SendMessage method is called.  The 
+ number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, 
+ and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces
+ should not be included.</dd>
+  <dt id="Texting.ReceivingEnabled" class="number"><em>ReceivingEnabled</em></dt>
+  <dd>If set to 1 (OFF) no messages will be received. If set to 2 (FOREGROUND) or 3 (ALWAYS) the
+ component will respond to messages if it is running. In the case of 2 (FOREGROUND), messages
+ received while the app is not running are discarded. In the case of 3 (ALWAYS), messages
+ receive while the app is not running will show a notification. Selecting the notification
+ will bring up the app and signal the <a href="#Texting.MessageReceived"><code class="highlighter-rouge">MessageReceived</code></a> event. Messages
+ received when the app is dormant will be queued, and so several
+ <a href="#Texting.MessageReceived"><code class="highlighter-rouge">MessageReceived</code></a> events might appear when the app awakens. As an app
+ developer, it would be a good idea to give your users control over this property, so they can
+ make their phones ignore text messages when your app is installed.</dd>
+</dl>
+
+<h3 id="Texting-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Texting.MessageReceived">MessageReceived(<em class="text">number</em>,<em class="text">messageText</em>)</dt>
+  <dd>Event that’s raised when a text message is received by the phone. <strong>Using this block will add
+ <a href="//developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous permissions</a>
+ that will require additional approval if your app is submitted to the Google Play Store.</strong></dd>
+</dl>
+
+<h3 id="Texting-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Texting.SendMessage" class="method"><i></i> SendMessage()</dt>
+  <dd>Launch the phone’s default text messaging app with the message and phone number prepopulated.</dd>
+  <dt id="Texting.SendMessageDirect" class="method"><i></i> SendMessageDirect()</dt>
+  <dd>Send a text message. <strong>Using this block will add
+ <a href="https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions">dangerous permissions</a>
+ that will require additional approval if your app is submitted to the Google Play Store.</strong></dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

@@ -1,11 +1,26 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.MediaController;
+import android.widget.VideoView;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -23,20 +38,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.widget.MediaController;
-import android.widget.VideoView;
-
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import java.io.IOException;
 
 /**
@@ -69,7 +71,25 @@ import java.io.IOException;
  */
 
 /**
- * Implementation of VideoPlayer, using {@link android.widget.VideoView}.
+ * A multimedia component capable of playing videos. When the application is run, the `VideoPlayer`
+ * will be displayed as a rectangle on-screen. If the user touches the rectangle, controls will
+ * appear to play/pause, skip ahead, and skip backward within the video. The application can also
+ * control behavior by calling the {@link #Start()}, {@link #Pause()}, and {@link #SeekTo(int)}
+ * methods.
+ *
+ * Video files should be in 3GPP (.3gp) or MPEG-4 (.mp4) formats. For more details about legal
+ * formats, see
+ * [Android Supported Media Formats](//developer.android.com/guide/appendix/media-formats.html).
+ *
+ * App Inventor only permits video files under 1 MB and limits the total size of an application to
+ * 5 MB, not all of which is available for media (video, audio, and sound) files. If your media
+ * files are too large, you may get errors when packaging or installing your application, in which
+ * case you should reduce the number of media files or their sizes. Most video editing software,
+ * such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by
+ * shortening them or re-encoding the video into a more compact format.
+ *
+ * You can also set the media source to a URL that points to a streaming video, but the URL must
+ * point to the video file itself, not to a program that plays the video.
  *
  * @author halabelson@google.com (Hal Abelson)
  */
@@ -97,7 +117,8 @@ import java.io.IOException;
         + "by shortening them or re-encoding the video into a more compact format.</p>"
         + "<p>You can also set the media source to a URL that points to a streaming video, "
         + "but the URL must point to the video file itself, not to a program that plays the video.",
-    category = ComponentCategory.MEDIA)
+    category = ComponentCategory.MEDIA,
+    iconName = "images/videoPlayer.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class VideoPlayer extends AndroidViewComponent implements
@@ -159,9 +180,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
   }
 
   /**
-   * Sets the video source.
+   * Sets the "path" to the video. Usually, this will be the name of the video file, which should be
+   * added in the Designer.
    *
-   * <p/>
+   * @internaldoc
    * See {@link MediaUtil#determineMediaSource} for information about what a
    * path can be.
    *
@@ -174,7 +196,24 @@ public final class VideoPlayer extends AndroidViewComponent implements
       description = "The \"path\" to the video.  Usually, this will be the "
           + "name of the video file, which should be added in the Designer.",
       category = PropertyCategory.BEHAVIOR)
-  public void Source(String path) {
+  @UsesPermissions(READ_EXTERNAL_STORAGE)
+  public void Source(@Asset String path) {
+    final String tempPath = (path == null) ? "" : path;
+    if (TiramisuUtil.requestVideoPermissions(container.$form(), path,
+        new PermissionResultHandler() {
+          @Override
+          public void HandlePermissionResponse(String permission, boolean granted) {
+            if (granted) {
+              VideoPlayer.this.Source(tempPath);
+            } else {
+              container.$form().dispatchPermissionDeniedEvent(VideoPlayer.this, "Source",
+                  permission);
+            }
+          }
+        })) {
+      return;
+    }
+
     if (inFullScreen) {
       container.$form().fullScreenVideoAction(
           FullScreenVideoUtil.FULLSCREEN_VIDEO_ACTION_SOURCE, this, path);
@@ -214,9 +253,11 @@ public final class VideoPlayer extends AndroidViewComponent implements
   }
 
   /**
-   * Plays the media specified by the source. These won't normally be used in
-   * the most elementary applications, because videoView brings up its own
-   * player controls when the video is touched.
+   * Plays the media specified by the {@link #Source(String)}.
+   *
+   * @internaldoc
+   * These won't normally be used in the most elementary applications, because
+   * videoView brings up its own player controls when the video is touched.
    */
   @SimpleFunction(description = "Starts playback of the video.")
   public void Start() {
@@ -238,7 +279,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
 
   /**
-   * Sets the volume property to a number between 0 and 100.
+   * Sets the volume property to a number between 0 and 100. Values less than 0
+   * will be treated as 0, and values greater than 100 will be treated as 100.
    *
    * @param vol  the desired volume level
    */
@@ -248,7 +290,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100. " +
       "Values less than 0 will be treated as 0, and values greater than 100 " +
-      "will be treated as 100.")
+      "will be treated as 100.",
+      category = PropertyCategory.BEHAVIOR)
   public void Volume(int vol) {
     // clip volume to range [0, 100]
     vol = Math.max(vol, 0);
@@ -268,6 +311,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
     Start();
   }
 
+  /**
+   * Pauses playback of the video.  Playback can be resumed at the same location by calling the
+   * {@link #Start()} method.
+   */
   @SimpleFunction(
       description = "Pauses playback of the video.  Playback can be resumed "
       + "at the same location by calling the <code>Start</code> method.")

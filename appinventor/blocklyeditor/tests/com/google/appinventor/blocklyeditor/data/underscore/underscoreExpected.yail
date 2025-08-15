@@ -8,7 +8,10 @@ $Source $Yail
 (def (p$procedure )  (call-component-method 'listpicker_one 'Open (*list-for-runtime*) '()))
 ;;; Screen1
 
-(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+ (set-and-coerce-property! 'Screen1 'ScreenOrientation "unspecified" 'text)
+ (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
 )
 
 ;;; button_one

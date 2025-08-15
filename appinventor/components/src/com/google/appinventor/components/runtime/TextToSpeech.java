@@ -35,22 +35,32 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 /**
- * Component for converting text to speech using either the built-in TTS library or the
- * TextToSpeech Extended library (which must be pre-installed for Android versions earlier
- * than Donut).
+ * The `TextToSpeech` component speaks a given text aloud. You can set the pitch
+ * and the rate of speech.
+ *
+ * You can also set a language by supplying a language code. This changes the pronunciation of
+ * words, not the actual language spoken. For example, setting the {@link #Language()} to French
+ * and speaking English text will sound like someone speaking English (en) with a French accent.
+ *
+ * You can also specify a country by supplying a {@link #Country()} code. This can affect the
+ * pronunciation. For example, British English (GBR) will sound different from US English (USA).
+ * Not every country code will affect every language.
+ *
+ * The languages and countries available depend on the particular device, and can be listed with
+ * the {@link #AvailableLanguages()} and {@link #AvailableCountries()} properties.
  *
  * @author markf@google.com (Mark Friedman)
  */
 // TODO(hal): This language and country code method using strings as abbreviations was
 // deprecated in API level 21.
 @DesignerComponent(version = YaVersion.TEXTTOSPEECH_COMPONENT_VERSION,
-description = "The TestToSpeech component speaks a given text aloud.  You can set " +
+description = "The TextToSpeech component speaks a given text aloud.  You can set " +
     "the pitch and the rate of speech. " +
-    "<p>You can also set a language by supplying a language code.  This changes the pronounciation " +
+    "<p>You can also set a language by supplying a language code.  This changes the pronunciation " +
     "of words, not the actual language spoken.  For example, setting the language to French " +
     "and speaking English text will sound like someone speaking English (en) with a French accent.</p> " +
     "<p>You can also specify a country by supplying a country code. This can affect the " +
-    "pronounciation.  For example, British English (GBR) will sound different from US English " +
+    "pronunciation.  For example, British English (GBR) will sound different from US English " +
     "(USA).  Not every country code will affect every language.</p> " +
     "<p>The languages and countries available depend on the particular device, and can be listed " +
     "with the AvailableLanguages and AvailableCountries properties.</p>",
@@ -59,7 +69,7 @@ description = "The TestToSpeech component speaks a given text aloud.  You can se
     iconName = "images/textToSpeech.png")
 @SimpleObject
 public class TextToSpeech extends AndroidNonvisibleComponent
-implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, ActivityResultListener  */{
+    implements Component, OnStopListener, OnResumeListener, OnDestroyListener, OnClearListener {
 
   private static final Map<String, Locale> iso3LanguageToLocaleMap = Maps.newHashMap();
   private static final Map<String, Locale> iso3CountryToLocaleMap = Maps.newHashMap();
@@ -158,7 +168,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   }
 
   /**
-   * Result property getter method.
+   * Returns `true`{:.logic.block} if the text was successfully converted to
+   * speech, otherwise `false`{:.logic.block}.
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -167,7 +178,9 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   }
 
   /**
-   * Sets the language for this TextToSpeech component.
+   * Sets the language for TextToSpeech. This changes the way that words are pronounced, not the
+   * actual language that is spoken. For example, setting the language to French and speaking
+   * English text will sound like someone speaking English with a French accent.
    *
    * @param language is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) language code to set this
    * TextToSpeech component to.
@@ -177,7 +190,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
   description = "Sets the language for TextToSpeech. This changes the way that words are " +
       "pronounced, not the actual language that is spoken.  For example setting the language to " +
-      "and speaking English text with sound like someone speaking English with a Frernch accent.")
+      "and speaking English text with sound like someone speaking English with a French accent.")
   public void Language(String language) {
     Locale locale;
     switch (language.length()) {
@@ -207,11 +220,15 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   }
 
   /**
-     * Sets the speech pitch for the TextToSpeech. 1.0 is the normal pitch, lower values lower the tone of
-     * the synthesized voice, greater values increase it.
-     *
-     * @param pitch a pitch level between 0 and 2
-     */
+   * Sets the speech pitch for the TextToSpeech.
+   *
+   *   The values should be between 0 and 2 where lower values lower the tone of synthesized voice
+   * and greater values raise it.
+   *
+   *   The default value is 1.0 for normal pitch.
+   *
+   * @param pitch a pitch level between 0 and 2
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1.0")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the Pitch for " +
       "TextToSpeech The values should " +
@@ -232,7 +249,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     }
 
     /**
-     * Reports the current value of speech pitch
+     * Reports the current value of speech pitch.
+     * @suppressdoc
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns current value of Pitch")
     public float Pitch() {
@@ -240,7 +258,12 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     }
 
     /**
-     * Sets the speech rate
+     * Sets the SpeechRate for TextToSpeech.
+     *
+     *   The values should be between 0 and 2 where lower values slow down the pitch and greater
+     * values accelerate it.
+     *
+     *   The default value is 1.0 for normal speech rate.
      *
      * @param speechRate Speech rate 1.0 is the normal speech rate, lower values slow down the
      *                   speech (0.5 is half the normal speech rate), greater values
@@ -265,7 +288,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     }
 
     /**
-     * Reports the current value of speechRate
+     * Reports the current value of speechRate.
+     * @suppressdoc
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns current value of SpeechRate")
     public float SpeechRate() {
@@ -276,6 +300,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * Gets the language for this TextToSpeech component.  This will be either an ISO2 (i.e. 2 letter)
    * or ISO3 (i.e. 3 letter) code depending on which kind of code the property was set with.
    *
+   * @suppressdoc
    * @return the language code for this TextToSpeech component.
    */
   @SimpleProperty
@@ -284,7 +309,9 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   }
 
   /**
-   * Sets the country for this TextToSpeech component.
+   * Country code to use for speech generation. This can affect the pronunciation. For example,
+   * British English (GBR) will sound different from US English (USA). Not every country code will
+   * affect every language.
    *
    * @param country is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) country code to set this
    * TextToSpeech component to.
@@ -327,6 +354,7 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
    * Gets the country for this TextToSpeech component.  This will be either an ISO2 (i.e. 2 letter)
    * or ISO3 (i.e. 3 letter) code depending on which kind of code the property was set with.
    *
+   * @suppressdoc
    * @return country code for this TextToSpeech component.
    */
   @SimpleProperty
@@ -413,6 +441,14 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.speak(message, loc);
   }
 
+  /**
+   * Stops any current speech.
+   */
+  @SimpleFunction
+  public void Stop() {
+    tts.stop();
+    AfterSpeaking(false);
+  }
 
   /**
    * Event to raise when Speak is invoked, before the message is spoken.
@@ -423,11 +459,14 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
   }
 
   /**
-   * Event to raise after the message is spoken.
+   * Event to raise after the message is spoken. The `result`{:.variable.block} will be
+   * `true`{:.logic.block} if the message is spoken successfully, otherwise it will be
+   * `false`{:.logic.block}.
    *
    * @param result whether the message was successfully spoken
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Event to raise after the message is spoken. The result will be true "
+      + "if the message is spoken successfully, otherwise it will be false.")
   public void AfterSpeaking(boolean result) {
     EventDispatcher.dispatchEvent(this, "AfterSpeaking", result);
   }
@@ -448,4 +487,8 @@ implements Component, OnStopListener, OnResumeListener, OnDestroyListener /*, Ac
     tts.onDestroy();
   }
 
+  @Override
+  public void onClear() {
+    tts.onDestroy();
+  }
 }

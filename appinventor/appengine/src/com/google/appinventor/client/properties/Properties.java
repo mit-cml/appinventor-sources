@@ -6,9 +6,6 @@
 
 package com.google.appinventor.client.properties;
 
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.widgets.properties.EditableProperty;
-import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
 
@@ -16,12 +13,15 @@ import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Collection of properties.
  *
  */
 public class Properties<T extends Property> implements Iterable<T> {
+
+  private static final Logger LOG = Logger.getLogger(Properties.class.getName());
 
   // We define our own special comparator here. It turns out that
   // properties are displayed in the properties panel based on the order
@@ -202,7 +202,7 @@ public class Properties<T extends Property> implements Iterable<T> {
       getExistingProperty(name).setValue(value);
       return true;
     } catch (IllegalStateException e) {
-      OdeLog.wlog(e.toString());
+      LOG.warning(e.toString());
       return false;
     }
   }

@@ -1,5 +1,5 @@
 ;;; Copyright 2009-2011 Google, All Rights reserved
-;;; Copyright 2011-2018 MIT, All rights reserved
+;;; Copyright 2011-2021 MIT, All rights reserved
 ;;; Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 ;;; These are the functions that define the YAIL (Young Android Intermediate Language) runtime They
@@ -103,6 +103,7 @@
          (SimplePropertyUtil:copyComponentProperties existing-component component-to-add))))))
 
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
+(define-alias TypeUtil <com.google.appinventor.components.runtime.util.TypeUtil>)
 
 (define (call-Initialize-of-components . component-names)
   ;; Do any inherent/implied initializations
@@ -134,6 +135,13 @@
   (syntax-rules ()
     ((_ component-name)
      (lookup-in-current-form-environment 'component-name))))
+
+;;; (get-all-components comptype)
+;;; ==> (filter-type-in-current-form-environment 'comptype)
+(define-syntax get-all-components
+  (syntax-rules ()
+    ((_ component-type)
+     (filter-type-in-current-form-environment 'component-type))))
 
 ;; We'd like to do something like the following which could re-use existing components
 ;; and thereore avoid overriding property changes that the user might have made via
@@ -198,7 +206,7 @@
 ;;; (get-property 'Label1 'Text)
 (define (get-property component prop-name)
   (let ((component (coerce-to-component-and-verify component)))
-    (sanitize-component-data (invoke component prop-name))))
+    (sanitize-return-value component prop-name (invoke component prop-name))))
 
 (define (coerce-to-component-and-verify possible-component)
   (let ((component (coerce-to-component possible-component)))
@@ -217,7 +225,7 @@
                  component-type
                  (*:getSimpleName (*:getClass possible-component)))
          "Problem with application")
-        (sanitize-component-data (invoke component prop-name)))))
+        (sanitize-return-value component prop-name (invoke component prop-name)))))
 
 (define (set-and-coerce-property-and-check! possible-component comp-type prop-sym property-value property-type)
   (let ((component (coerce-to-component-of-type possible-component comp-type)))
@@ -306,6 +314,9 @@
        (module-name class-name)
        (module-static form-name)
        (require <com.google.youngandroid.runtime>)
+
+       (define (get-simple-name object)
+         (*:getSimpleName (*:getClass object)))
 
        (define (onCreate icicle :: android.os.Bundle) :: void
          ;(android.util.Log:i "AppInventorCompatActivity" "in YAIL oncreate")
@@ -401,17 +412,18 @@
          ;; The call below is a no-op unless we are in the wireless repl
 ;; Commented out -- we only send reports from the setting menu choice
 ;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
-         (if isrepl
-             (when ((this):toastAllowed)
-                   (let ((message (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))))
-                     (send-error message)
-                     ((android.widget.Toast:makeText (this) message 5):show)))
 
-             (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
-              (this)
-              (ex:getMessage)
-              (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
-              "End Application")))
+            ;; only take action if we are non-REPL (compiled app) or
+            ;; when toastAllowed (and REPL)
+         (if (or (not isrepl) ((this):toastAllowed))
+             ((com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
+               (this)                                        ;; context
+               ;; dialog is shown for compiled apps
+               ;; or toast if condition (REPL and toastAllowed)
+               (and isrepl (this):toastAllowed)              ;; toast
+               (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))     ;; message
+               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")   ;; title
+               "End Application"))))    ;; buttonText
 
 
        ;; For the HandlesEventDispatching interface
@@ -438,6 +450,8 @@
                                  (begin
                                    (apply handler (gnu.lists.LList:makeList args 0))
                                    #t)
+                                 (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
+                                   (throw exception))
                                  ;; PermissionException should be caught by a permissions-aware component and
                                  ;; handled correctly at the point it is caught. However, older extensions
                                  ;; might not be updated yet for SDK 23's dangerous permissions model, so if
@@ -474,6 +488,50 @@
                          registeredComponentName eventName)
                        #f))))
 
+       (define (dispatchGenericEvent componentObject :: com.google.appinventor.components.runtime.Component
+                                     eventName :: java.lang.String
+                                     notAlreadyHandled :: boolean
+                                     args :: java.lang.Object[]) :: void
+         ; My first attempt was to use the gen-generic-event-name
+         ; here, but unfortunately the version of Kawa that we use
+         ; does not correctly import functions from the runtime module
+         ; into the form. The macro expands, but the symbol-append
+         ; function is not found. Below is an "optimization" that
+         ; concatenates the strings first and then calls
+         ; string->symbol, which is effectively the same thing. Most
+         ; of the logic then follows that of dispatchEvent above.
+         (let* ((handler-symbol (string->symbol (string-append "any$" (get-simple-name componentObject) "$" eventName)))
+                (handler (lookup-in-form-environment handler-symbol)))
+           (if handler
+               (try-catch
+                (begin
+                  (apply handler (cons componentObject (cons notAlreadyHandled (gnu.lists.LList:makeList args 0))))
+                  #t)
+                (exception com.google.appinventor.components.runtime.errors.StopBlocksExecution
+                  #f)
+                (exception com.google.appinventor.components.runtime.errors.PermissionException
+                 (begin
+                   (exception:printStackTrace)
+                   ;; Test to see if the event we are handling is the
+                   ;; PermissionDenied of the current form. If so, then we will
+                   ;; need to avoid re-invoking PermissionDenied.
+                   (if (and (eq? (this) componentObject)
+                            (equal? eventName "PermissionNeeded"))
+                       ;; Error is occurring in the PermissionDenied handler, so we
+                       ;; use the more general exception handler to prevent going
+                       ;; into an infinite loop.
+                       (process-exception exception)
+                       ((this):PermissionDenied componentObject eventName
+                        (exception:getPermissionNeeded)))
+                   #f))
+                (exception java.lang.Throwable
+                 (begin
+                   (android-log-form (exception:getMessage))
+;;; Comment out the line below to inhibit a stack trace on a RunTimeError
+                   (exception:printStackTrace)
+                   (process-exception exception)
+                   #f))))))
+
        (define (lookup-handler componentName eventName)
          (lookup-in-form-environment
           (string->symbol
@@ -506,7 +564,7 @@
                      var-val-pairs))
 
          ;; Create each component and set its corresponding field
-         (define (init-components component-descriptors)
+         (define (create-components component-descriptors)
            (for-each (lambda (component-info)
                        (let ((component-name (caddr component-info))
                              (init-thunk (cadddr component-info))
@@ -521,14 +579,10 @@
                            ;; Add the mapping from component name -> component object to the
                            ;; form-environment
                            (add-to-form-environment component-name component-object))))
-                     component-descriptors)
-           ;; Now that all the components are constructed we can call
-           ;; their init-thunk and their Initialize methods.  We need
-           ;; to do this after all the construction steps because the
-           ;; init-thunk (i.e. design-time initializations) and
-           ;; Initialize methods may contain references to other
-           ;; components.
-           ;;
+                     component-descriptors))
+
+         ;; Initialize all of the components
+         (define (init-components component-descriptors)
            ;; First all the init-thunks
            (for-each (lambda (component-info)
                        (let ((component-name (caddr component-info))
@@ -573,20 +627,30 @@
          (register-events events-to-register)
 
          (try-catch
-          (begin
+          (let ((components (reverse components-to-create)))
             ;; We need this binding because the block parser sends this symbol
             ;; to represent an uninitialized value
             ;; We have to explicity write #!null here, rather than
             ;; *the-null-value* because that external defintion hasn't happened yet
             (add-to-global-vars '*the-null-value* (lambda () #!null))
+            ;; The Form has been created (we're in its code), so we should run
+            ;; do-after-form-creation thunks now. This is important because we
+            ;; need the theme set before creating components.
+            (for-each force (reverse form-do-after-creation))
+            (create-components components)
             ;; These next three clauses need to be in this order:
             ;; Properties can't be set until after the global variables are
             ;; assigned.   And some properties can't be set after the components are
             ;; created: For example, the form's layout can't be changed after the
             ;; components have been installed.  (This gives an error.)
             (init-global-variables (reverse global-vars-to-create))
-            (for-each force (reverse form-do-after-creation))
-            (init-components (reverse components-to-create)))
+            ;; Now that all the components are constructed we can call
+            ;; their init-thunk and their Initialize methods.  We need
+            ;; to do this after all the construction steps because the
+            ;; init-thunk (i.e. design-time initializations) and
+            ;; Initialize methods may contain references to other
+            ;; components.
+            (init-components components))
           (exception com.google.appinventor.components.runtime.errors.YailRuntimeError
                      ;;(android-log-form "Caught exception in define-form ")
                      (process-exception exception))))))))
@@ -607,6 +671,14 @@
     (syntax-case stx ()
       ((_ component-name event-name)
        (datum->syntax-object stx #'(symbol-append component-name '$ event-name))))))
+
+;;; (gen-generic-event-name Button Click)
+;;; ==> any$Button$Click
+(define-syntax gen-generic-event-name
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ component-type event-name)
+       (datum->syntax-object stx #'(symbol-append 'any$ component-type '$ event-name))))))
 
 ;;; define-event-helper looks suspiciously like define, but we need it because
 ;;; if we use define directly in the define-event definition below, the call
@@ -676,6 +748,14 @@
                ;; If it's not the REPL the form's $define() method will do the registration
                (add-to-events 'component-name 'event-name)))))))
 
+(define-syntax define-generic-event
+  (lambda (stx)
+    (syntax-case stx ()
+      ((_ component-type event-name args . body)
+       #`(begin
+           (define-event-helper ,(gen-generic-event-name #`component-type #`event-name) args body))))))
+
+
 ;;;; def
 
 ;;; Def here is putting things (1) in the form environment; (2) in a
@@ -742,6 +822,14 @@
     (if (gnu.mapping.Environment:isBound env name)
         (gnu.mapping.Environment:get env name)
         default-value)))
+
+(define (filter-type-in-current-form-environment type :: gnu.mapping.Symbol)
+  (define-alias ComponentUtil <com.google.appinventor.components.runtime.util.ComponentUtil>)
+  (let ((env (if (not (eq? *this-form* #!null))
+                 (*:.form-environment *this-form*)
+                 ;; The following is just for testing. In normal situations *this-form* should be non-null
+                 *test-environment*)))
+  (sanitize-component-data (ComponentUtil:filterComponentsOfType env type))))
 
 (define (delete-from-current-form-environment name :: gnu.mapping.Symbol)
   (if (not (eq? *this-form* #!null))
@@ -871,6 +959,42 @@
   ;;      )
   ;;  '(100 200 17 300))
 
+(define-syntax map_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-map (lambda (lambda-arg-name) body-form) list))))
+
+
+(define-syntax filter_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+     (yail-list-filter (lambda (lambda-arg-name) body-form) list))))
+
+(define-syntax reduceovereach
+  (syntax-rules ()
+    ((_ initialAnswer lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-reduce initialAnswer (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax sortcomparator_nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-sort-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax mincomparator-nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-min-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax maxcomparator-nondest
+  (syntax-rules ()
+    ((_ lambda-arg1-name lambda-arg2-name body-form list)
+      (yail-list-max-comparator (lambda (lambda-arg1-name lambda-arg2-name) body-form) list))))
+
+(define-syntax sortkey_nondest
+  (syntax-rules ()
+    ((_ lambda-arg-name body-form list)
+      (yail-list-sort-key (lambda (lambda-arg-name) body-form) list))))
+
 (define-syntax forrange-with-break
   (syntax-rules ()
     ((_ escapename lambda-arg-name body-form start end step)
@@ -899,7 +1023,6 @@
 (module-name com.google.youngandroid.runtime)
 (module-static #t)
 
-(define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias Double <java.lang.Double>)
 (define-alias Float <java.lang.Float>)
 (define-alias Integer <java.lang.Integer>)
@@ -910,14 +1033,20 @@
 (define-alias Pattern <java.util.regex.Pattern>)
 (define-alias YailProcedure <com.google.appinventor.components.runtime.util.YailProcedure>)
 (define-alias MultiThreadUtil <com.google.appinventor.components.runtime.util.MultiThreadUtil>)
-(define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
-(define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
-(define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+(define-alias Matcher <java.util.regex.Matcher>)
+(define-alias ContinuationUtil <com.google.appinventor.components.runtime.util.ContinuationUtil>)
+(define-alias CsvUtil <com.google.appinventor.components.runtime.util.CsvUtil>)
 (define-alias PermissionException <com.google.appinventor.components.runtime.errors.PermissionException>)
-(define-alias JavaJoinListOfStrings <com.google.appinventor.components.runtime.util.JavaJoinListOfStrings>)
+(define-alias StopBlocksExecution <com.google.appinventor.components.runtime.errors.StopBlocksExecution>)
+(define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+(define-alias JavaStringUtils <com.google.appinventor.components.runtime.util.JavaStringUtils>)
+(define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
+(define-alias YailDictionary <com.google.appinventor.components.runtime.util.YailDictionary>)
+(define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
+(define-alias JavaMap <java.util.Map>)
 
 ;;; This is what CodeBlocks sends to Yail to represent the value of an uninitialized variable
 ;;; Perhaps we should arrange things so that codeblocks never sends this.
@@ -977,21 +1106,56 @@
 ;;; Be sure to check any components whose methods are type 'any' to make sure they can handle the
 ;;; values they will receive.
 
-
 (define (call-component-method component-name method-name arglist typelist)
-  (let ((coerced-args (coerce-args method-name arglist typelist)))
+  (let ((coerced-args (coerce-args method-name arglist typelist))
+        (component (lookup-in-current-form-environment component-name)))
     (let ((result
            (if (all-coercible? coerced-args)
                (try-catch
                 (apply invoke
-                       `(,(lookup-in-current-form-environment component-name)
+                       `(,component
                          ,method-name
                          ,@coerced-args))
                 (exception PermissionException
-                           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) (lookup-in-current-form-environment component-name) method-name exception)))
+                           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
                (generate-runtime-type-error method-name arglist))))
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
-      (sanitize-component-data result))))
+      (sanitize-return-value component method-name result))))
+
+
+
+;;; CALL-COMPONENT-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-method-with-continuation component-name method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist typelist))
+         (component (lookup-in-current-form-environment component-name))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke
+                `(,component
+                  ,method-name
+                  ,@coerced-args
+                  ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-method-with-blocking-continuation component-name method-name arglist typelist)
+  (let ((result #f))
+    (call-component-method-with-continuation component-name method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+
+
 
 ;;; CALL-COMPONENT-TYPE-METHOD
 ;;; Call the component method for the given component object with the given list of args,
@@ -1019,7 +1183,37 @@
                             ,@coerced-args))
                    (generate-runtime-type-error method-name arglist))))
           ;; TODO(markf): this should probably be generalized but for now this is OK, I think
-          (sanitize-component-data result)))))
+          (sanitize-return-value component-value method-name result)))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-continuation component-type method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist (cdr typelist)))
+         (component-value (coerce-to-component-of-type possible-component component-type))
+         (continuation (ContinuationUtil:wrap
+                        (lambda (v) (k (sanitize-return-value component-value method-name v)))
+                        Object:class)))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke `(,component-value ,method-name ,@coerced-args ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+
+
+;;; CALL-COMPONENT-TYPE-METHOD-WITH-BLOCKING-CONTINUATION
+;;;
+
+(define (call-component-type-method-with-blocking-continuation component-type method-name arglist typelist)
+  (let ((result #f))
+    (call-component-type-method-with-continuation component-type method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
+
 
 
 ;;; CALL-USER-PROCEDURE
@@ -1100,6 +1294,12 @@
    ;; we need to check for strings first because gnu.lists.FString is a
    ;; subtype of JavaCollection
    ((string? data) data)
+   ;; WARNING: Component writers can construct Yail dictionaries directly, and
+   ;; these pass through sanitization unchallenged.  So any component writer
+   ;; who constructs a Yail dictionary must ensure that list elements are themselves
+   ;; legitimate Yail data types that do not require sanitization.
+   ((yail-dictionary? data) data)
+   ((instance? data JavaMap) (java-map->yail-dictionary data))
    ;; WARNING: Component writers can construct Yail lists directly, and
    ;; these pass through sanitization unchallenged.  So any component writer
    ;; who constructs a Yail list must ensure that list elements are themselves
@@ -1110,6 +1310,15 @@
    ((list? data) (kawa-list->yail-list data))
    ((instance? data JavaCollection) (java-collection->yail-list data))
    (#t (sanitize-atomic data))))
+
+(define (sanitize-return-value component func-name value)
+  (define-alias OptionHelper com.google.appinventor.components.runtime.OptionHelper)
+  (if (enum? value)
+    value
+    (let ((value (OptionHelper:optionListFromValue component func-name value)))
+      (if (enum? value)
+        value
+        (sanitize-component-data value)))))
 
 ;;; If we are handed a collection that contains a yail list as an item,
 ;;; then the result of converting it to a kawa list will be a kawa list that
@@ -1132,6 +1341,26 @@
           (looper (cons (sanitize-component-data (iterator:next))
                         result))))
     (reverse! (looper '()))))
+
+;;; The initial version of this function iterated over entries rather than
+;;; keys, which has getKey and getValue methods. Unfortunately, Kawa tries
+;;; to do the Java Bean thing and look up the fields directly rather than
+;;; calling the methods. This fails because the fields don't have the right
+;;; access modifiers for what Kawa wants to do. Now we use this less
+;;; efficient process by iterating over the keys and looking up the
+;;; corresponding value.
+(define (java-map->yail-dictionary jMap :: JavaMap)
+  (let ((iterator :: JavaIterator ((jMap:keySet):iterator))
+        (dict :: YailDictionary (YailDictionary)))
+    (define (convert)
+      (if (not (iterator:hasNext))
+          dict
+          (let ((key (iterator:next)))
+            (*:put dict
+                   key
+                   (sanitize-component-data (jMap:get key)))
+            (convert))))
+    (convert)))
 
 (define (sanitize-atomic arg)
   (cond
@@ -1256,10 +1485,45 @@
      ((equal? type 'text) (coerce-to-text arg))
      ((equal? type 'boolean) (coerce-to-boolean arg))
      ((equal? type 'list) (coerce-to-yail-list arg))
+     ((equal? type 'list-of-number) (coerce-to-number-list arg))
      ((equal? type 'InstantInTime) (coerce-to-instant arg))
      ((equal? type 'component) (coerce-to-component arg))
+     ((equal? type 'pair) (coerce-to-pair arg))
+     ((equal? type 'key) (coerce-to-key arg))
+     ((equal? type 'dictionary) (coerce-to-dictionary arg))
      ((equal? type 'any) arg)
+     ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
+
+
+(define (coerce-to-number-list l)  ; is this a yail-list? ; do we want to return yail-list
+  (cond
+    ((yail-list? l)
+      (let ((coerced (map coerce-to-number (yail-list-contents l))))
+        (if (all-coercible? coerced)
+          (apply make-yail-list coerced)
+          non-coercible-value)))
+    (else *non-coercible-value*)))
+
+(define (enum-type? type)
+  (string-contains (symbol->string type) "Enum"))
+
+(define (enum? arg)
+  (instance? arg com.google.appinventor.components.common.OptionList))
+
+(define (coerce-to-enum arg type)
+  (android-log "coerce-to-enum")
+  (if (and (enum? arg)
+        ;; We have to trick the Kawa compiler into not open-coding "instance?"
+        ;; or else we get a ClassCastException here.
+        ;; This check is necessary to make sure we treat each enum type separately.
+        ;; Eg a HorizontalAlignment is different from a VerticalAlignment.
+        (apply instance? (list arg (string->symbol (string-replace-all (symbol->string type) "Enum" "")))))
+      arg
+      (let ((coerced (TypeUtil:castToEnum arg type)))
+        (if (eq? coerced #!null)
+            *non-coercible-value*
+            coerced))))
 
 ;;; We can coerce *the-null-value* to a string for printing in error messages
 ;;; but we don't consider it to be a Yail text for use in
@@ -1272,7 +1536,11 @@
 (define (coerce-to-instant arg)
   (cond
    ((instance? arg java.util.Calendar) arg)
-   (else *non-coercible-value*)))
+   (else
+     (let ((as-millis (coerce-to-number arg)))
+       (if (number? as-millis)
+           (com.google.appinventor.components.runtime.Clock:MakeInstantFromMillis as-millis)
+         *non-coercible-value*)))))
 
 (define (coerce-to-component arg)
   (cond
@@ -1307,6 +1575,22 @@
    ((number? arg) arg)
    ((string? arg)
     (or (padded-string->number arg) *non-coercible-value*))
+   ((enum? arg)
+    (let ((val (arg:toUnderlyingValue)))
+      (if (number? val)
+        val
+        *non-coercible-value*)))
+   (else *non-coercible-value*)))
+
+(define (coerce-to-key arg)
+  (cond
+   ;;; TODO: Beka and Lyn don't understand why these values have to be coerced.
+   ;;;   Eg if (number? arg) is true we just pass the arg to a procedure that returns
+   ;;;   arg if (number? arg) is true. So why don't we just return arg here?
+   ((number? arg) (coerce-to-number arg))
+   ((string? arg) (coerce-to-string arg))
+   ((enum? arg) arg)
+   ((instance? arg com.google.appinventor.components.runtime.Component) arg)
    (else *non-coercible-value*)))
 
 (define-syntax use-json-format
@@ -1327,6 +1611,11 @@
                (string-append "[" (join-strings pieces ", ") "]"))
              (let ((pieces (map coerce-to-string arg)))
                (call-with-output-string (lambda (port) (display pieces port))))))
+        ((enum? arg)
+          (let ((val (arg:toUnderlyingValue)))
+            (if (string? val)
+              val
+              *non-coercible-value*)))
         (else (call-with-output-string (lambda (port) (display arg port))))))
 
 ;;; This is very similar to coerce-to-string, but is intended for places where we
@@ -1428,8 +1717,8 @@
 (define (join-strings list-of-strings separator)
   ;; NOTE: The elements in list-of-strings should be Kawa strings
   ;; but they might not be Java strings, since some (all?) Kawa strings
-  ;; are FStrings.  See JavaJoinListOfStrings in components/runtime/utils
-  (JavaJoinListOfStrings:joinStrings list-of-strings separator))
+  ;; are FStrings.  See JavaStringUtils in components/runtime/utils
+  (JavaStringUtils:joinStrings list-of-strings separator))
 
 ;;; end of join-strings
 
@@ -1445,8 +1734,21 @@
 (define (coerce-to-yail-list arg)
   (cond
    ((yail-list? arg) arg)
+   ((yail-dictionary? arg) (yail-dictionary-dict-to-alist arg))
    (else *non-coercible-value*)))
 
+(define (coerce-to-pair arg)
+  (coerce-to-yail-list arg))
+
+(define (coerce-to-dictionary arg)
+  (cond
+    ((yail-dictionary? arg) arg)
+    ((yail-list? arg) (yail-dictionary-alist-to-dict arg))
+    ((string? arg) (com.google.appinventor.components.runtime.util.JsonUtil:getObjectFromJson arg #t))
+    (else (try-catch
+            (arg:toYailDictionary)
+            (exception java.lang.Exception
+              (*non-coercible-value*))))))
 
 (define (coerce-to-boolean arg)
   (cond
@@ -1537,6 +1839,9 @@
    ;; Uncomment these two lines to use string=? on strings
    ;; ((and (string? x1) (string? x2))
    ;;  (equal? x1 x2))
+
+   ((and (enum? x1) (not (enum? x2))) (equal? (x1:toUnderlyingValue) x2))
+   ((and (not (enum? x1)) (enum? x2)) (equal? x1 (x2:toUnderlyingValue)))
 
    ;; If the x1 and x2 are not equal?, try comparing coverting x1 and x2 to numbers
    ;; and comparing them numerically
@@ -1725,13 +2030,31 @@
           360))
 
 (define (sin-degrees degrees)
-  (sin (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 0)
+      0
+      (if (= (modulo (/ (- degrees 90) 180) 2) 0)
+        1
+        -1))
+    (sin (degrees->radians-internal degrees))))
 
 (define (cos-degrees degrees)
-  (cos (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 90) 0)
+    (if (= (modulo (/ degrees 90) 2) 1)
+      0
+      (if (= (modulo (/ degrees 180) 2) 1)
+        -1
+        1))
+    (cos (degrees->radians-internal degrees))))
 
 (define (tan-degrees degrees)
-  (tan (degrees->radians-internal degrees)))
+  (if (= (modulo degrees 180) 0)
+    0
+    (if (= (modulo (- degrees 45) 90)  0)
+      (if (= (modulo (/ (- degrees 45) 90) 2) 0)
+        1
+        -1)
+      (tan (degrees->radians-internal degrees)))))
 
 ;; Result should be in the range [-90, +90].
 (define (asin-degrees y)
@@ -1754,6 +2077,21 @@
 
 (define (string-to-lower-case s)
   (String:toLowerCase (s:toString)))
+
+(define (unicode-string->list str :: <string>) :: <list>
+  (let loop ((result :: <list> '()) (i :: <int> (string-length str)))
+    (set! i (- i 1))
+    (if (< i 0) result
+        (if (and (>= i 1)
+              (let ((c (string-ref str i))
+                    (c1 (string-ref str (- i 1))))
+                (and (char>=? c #\xD800) (char<=? c #\xDFFF)
+                     (char>=? c1 #\xD800) (char<=? c1 #\xDFFF))))
+            (loop (make <pair> (string-ref str i) (make <pair> (string-ref str (- i 1)) result)) (- i 1))
+          (loop (make <pair> (string-ref str i) result) i)))))
+
+(define (string-reverse s)
+  (list->string (reverse (unicode-string->list s))))
 
 ;;; returns a string that is the number formatted with a
 ;;; specified number of decimal places
@@ -1869,6 +2207,122 @@
             (string-append (internal-binary-convert (quotient x 2))
                            (internal-binary-convert (remainder x 2))))))
 
+
+;;; MATH OPERATIONS ON LIST ;;;;
+
+;;; Calculate the average of the list
+(define (avg l)
+  (let ((l-content (yail-list-contents l)))
+    (if (null? l-content )
+      0
+    (yail-divide (apply + l-content) (length l-content)))))
+
+;;; Multiplies all of the number inside a list
+(define (yail-mul yail-list-contents)
+  (if (null? yail-list-contents)
+    0
+  (apply * yail-list-contents)))
+
+;;; Calculate the Geometric mean of the list
+(define (gm l)
+  (let ((l-content (yail-list-contents l)))
+    (if (null? l-content)
+      0
+    (expt (yail-mul l-content) (yail-divide 1 (length l-content))))))
+
+;;; Find the mode of the list
+(define (mode l)
+  (let ((l-content (yail-list-contents l)))
+    (let count-all-elements ((l-content l-content) (counters '()))
+      (if (null? l-content)
+          (let find-max-count ((counters counters) (best -1) (modes '() ))
+            (if (null? counters)
+                modes
+                (find-max-count
+                  (cdr counters)
+                  (let* ((counter (car counters)) (count (cdr counter)))
+                     (if (and (> count 0)  (or (= best -1) (> count best)))
+                         count
+                         best))
+                  (let* ((counter (car counters)) (count (cdr counter)) (element (car counter)))
+                     (cond  ((= count best)
+                              (append modes (list element)))
+                            ((> count best)
+                              (list element))
+                            (else modes))))))
+          (count-all-elements
+           (cdr l-content)
+           (let* ((x (car l-content))
+                  (counter (assoc x counters)))
+             (if (not counter)
+                 (cons (cons x 1) counters)
+                 (begin (set-cdr! counter (+ (cdr counter) 1))
+                        counters))))))))
+
+;;; Getting the largest element in a list
+(define (maxl l)
+  (let ((l-content (yail-list-contents l)))
+  (if (null? l-content) ; edge case: empty list
+      -1/0             ; default is negative infinity
+      (apply max l-content))))
+
+
+;; Finding the minimum value of a list
+(define (minl l)
+  (let ((l-content (yail-list-contents l)))
+  (if (null? l-content) ; edge case: empty list
+      1/0             ; default is positive infinity   
+      (apply min l-content))))
+
+(define (mean l-content)
+    (yail-divide (apply + l-content) (length l-content))
+)
+
+(define (sum-mean-square-diff lst av)
+  (if (null? lst)
+      0
+      (+  (* (- (car lst) av)
+             (- (car lst) av))
+          (sum-mean-square-diff (cdr lst) av)))
+)
+
+;;; Calculate the standard deviation
+(define (std-dev l)
+  (let ((lst (yail-list-contents l)))
+   (if (<= (length lst) 1)
+      (signal-runtime-error
+       (format #f "Select list item: Attempt to get item number ~A, of the list ~A.  The minimum valid item number is 2."
+               (get-display-representation lst))
+       "List smaller than 2")
+      (sqrt
+          (yail-divide  
+            (sum-mean-square-diff lst (mean lst))
+            (length lst)))))
+)
+
+;;; Calculate the sample standard deviation
+(define (sample-std-dev lst)
+    (sqrt
+        (yail-divide
+            (sum-mean-square-diff lst (mean lst))
+            (- (length lst) 1)))
+)
+
+;;; Calculate standard error
+(define (std-err l)
+  (let ((lst (yail-list-contents l)))
+   (if (<= (length lst) 1)
+      (signal-runtime-error
+       (format #f "Select list item: Attempt to get item number ~A, of the list ~A.  The minimum valid item number is 2."
+               (get-display-representation lst))
+       "List smaller than 2")
+
+      (yail-divide  
+          (sample-std-dev lst)
+          (sqrt (length lst)))))
+)
+
+;;; END of MATH OPERATIONS ON LIST ;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Math implementation
@@ -2235,6 +2689,334 @@ list, use the make-yail-list constructor with no arguments.
           (for-each proc (yail-list-contents verified-list))
           *the-null-value*))))
 
+(define (yail-list-map proc yail-list)
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to map is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to map")
+         (kawa-list->yail-list (map proc (yail-list-contents verified-list))))))
+
+;; Throws "unbound location filter", hence defined own filter_ function
+(define (yail-list-filter pred yail-list)
+  (define filter_
+    (lambda (pred lst)
+      (cond ((null? lst) '())
+        ((pred (car lst)) (cons (car lst) (filter_ pred (cdr lst))))
+        (else (filter_ pred (cdr lst))))))
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to filter is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to filter")
+        (kawa-list->yail-list (filter_ pred (yail-list-contents verified-list))))))
+
+(define (yail-list-reduce ans binop yail-list)
+  (define (reduce accum func lst)
+    (cond ((null? lst) accum)
+      (else (reduce (func accum (car lst)) func (cdr lst)))))
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+      (signal-runtime-error
+        (format #f
+          "The second argument to reduce is not a list.  The second argument is: ~A"
+          (get-display-representation yail-list))
+        "Bad list argument to reduce")
+      (kawa-list->yail-list (reduce ans binop (yail-list-contents verified-list))))))
+
+;;Implements a generic sorting procedure that works on lists of any type.
+
+(define typeordering '(boolean number text list component))
+
+(define (typeof val)
+  (cond ((boolean? val) 'boolean)
+    ((number? val) 'number)
+    ((string? val) 'text)
+    ((yail-list? val) 'list)
+    ((instance? val com.google.appinventor.components.runtime.Component) 'component)
+    (else (signal-runtime-error
+            (format #f
+              "typeof called with unexpected value: ~A"
+              (get-display-representation val))
+            "Bad arguement to typeof"))))
+
+(define (indexof element lst)
+  (yail-list-index element lst))
+
+(define (type-lt? type1 type2)
+  (< (indexof type1 typeordering)
+    (indexof type2 typeordering)))
+
+(define (is-lt? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (or (type-lt? type1 type2)
+      (and (eq? type1 type2)
+        (cond ((eq? type1 'boolean) (boolean-lt? val1 val2))
+          ((eq? type1 'number) (< val1 val2))
+          ((eq? type1 'text) (string<? val1 val2))
+          ((eq? type1 'list) (list-lt? val1 val2))
+          ((eq? type1 'component) (component-lt? val1 val2))
+          (else (signal-runtime-error
+                  (format #f
+                    "(islt? ~A ~A)"
+                    (get-display-representation val1)
+                    (get-display-representation val2))
+                  "Shouldn't happen")))))))
+
+(define (is-eq? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (and (eq? type1 type2)
+      (cond ((eq? type1 'boolean) (boolean-eq? val1 val2))
+        ((eq? type1 'number) (= val1 val2))
+        ((eq? type1 'text) (string=? val1 val2))
+        ((eq? type1 'list) (list-eq? val1 val2))
+        ((eq? type1 'component) (component-eq? val1 val2))
+        (else (signal-runtime-error
+                (format #f
+                  "(islt? ~A ~A)"
+                  (get-display-representation val1)
+                  (get-display-representation val2))
+                "Shouldn't happen"))))))
+
+(define (is-leq? val1 val2)
+  (let ((type1 (typeof val1))
+         (type2 (typeof val2)))
+    (or (type-lt? type1 type2)
+      (and (eq? type1 type2)
+        (cond ((eq? type1 'boolean) (boolean-leq? val1 val2))
+          ((eq? type1 'number) (<= val1 val2))
+          ((eq? type1 'text) (string<=? val1 val2))
+          ((eq? type1 'list) (list-leq? val1 val2))
+          ((eq? type1 'component) (component-leq? val1 val2))
+          (else (signal-runtime-error
+                  (format #f
+                    "(isleq? ~A ~A)"
+                    (get-display-representation val1)
+                    (get-display-representation val2))
+                  "Shouldn't happen")))))))
+
+;;false is less than true
+(define (boolean-lt? val1 val2)
+  (and (not val1) val2))
+
+(define (boolean-eq? val1 val2)
+  (or (and val1 val2)
+    (and (not val1) (not val2))))
+
+(define (boolean-leq? val1 val2)
+  (not (and val1 (not val2))))
+
+(define (list-lt? y1 y2)
+  (define (helper-list-lt? lst1 lst2)
+    (cond ((null? lst1) (not (null? lst2)))
+      ((null? lst2) #f)
+      ((is-lt? (car lst1) (car lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-lt? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-lt? (yail-list-contents y1) (yail-list-contents y2)))
+
+(define (list-eq? y1 y2)
+  (define (helper-list-eq? lst1 lst2)
+    (cond ((and (null? lst1) (null? lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-eq? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-eq? (yail-list-contents y1) (yail-list-contents y2)))
+
+;;throw exception is not yail-list
+(define (yail-list-necessary y1)
+  (cond ((yail-list? y1) (yail-list-contents y1))
+    (else y1)))
+
+(define (list-leq? y1 y2)
+  (define (helper-list-leq? lst1 lst2)
+    (cond ((and (null? lst1) (null? lst2)) #t)
+      ((null? lst1) #t)
+      ((null? lst2) #f)
+      ((is-lt? (car lst1) (car lst2)) #t)
+      ((is-eq? (car lst1) (car lst2)) (helper-list-leq? (cdr lst1) (cdr lst2)))
+      (else #f)))
+  (helper-list-leq? (yail-list-necessary y1) (yail-list-necessary y2)))
+
+;;Component are first compared using their class names. If they are instances of the same class,
+;;then they are compared using their hashcodes.
+(define (component-lt? comp1 comp2)
+  (or (string<? (*:getSimpleName (*:getClass comp1))
+        (*:getSimpleName (*:getClass comp2)))
+    (and (string=? (*:getSimpleName (*:getClass comp1))
+           (*:getSimpleName (*:getClass comp2)))
+      (< (*:hashCode comp1)
+        (*:hashCode comp2)))))
+
+(define (component-eq? comp1 comp2)
+  (and (string=? (*:getSimpleName (*:getClass comp1))
+         (*:getSimpleName (*:getClass comp2)))
+    (= (*:hashCode comp1)
+      (*:hashCode comp2))))
+
+(define (component-leq? comp1 comp2)
+  (or (string<? (*:getSimpleName (*:getClass comp1))
+        (*:getSimpleName (*:getClass comp2)))
+    (and (string=? (*:getSimpleName (*:getClass comp1))
+           (*:getSimpleName (*:getClass comp2)))
+      (<= (*:hashCode comp1)
+        (*:hashCode comp2)))))
+
+;; take function returns a list containing the first 'n' number of elements from the list 'xs'
+;; Need to check if n is a proper list and xs is a postive integer
+(define (take n xs)
+  (let loop ((n n) (xs xs) (zs '()))
+    (if (or (= n 0) (null? xs))
+      (reverse zs)
+      (loop (- n 1) (cdr xs)
+        (cons (car xs) zs)))))
+
+;; drop function returns a list drops the first 'n' number of elements from the list 'xs'
+;; Need to check if n is a proper list and xs is a postive integer
+(define (drop n xs)
+  (if (or (= n 0) (null? xs))
+    xs
+    (drop (- n 1) (cdr xs))))
+
+;; Merge sort
+(define (merge lessthan? lst1 lst2)
+  (cond ((null? lst1) lst2)
+    ((null? lst2) lst1)
+    ((lessthan? (car lst1) (car lst2)) (cons (car lst1) (merge lessthan? (cdr lst1) lst2)))
+    (else (cons (car lst2) (merge lessthan? lst1 (cdr lst2))))))
+
+(define (mergesort lessthan? lst)
+  (cond ((null? lst) lst)
+    ((null? (cdr lst)) lst)
+    (else (merge lessthan? (mergesort lessthan? (take (quotient (length lst) 2) lst))
+            (mergesort lessthan? (drop (quotient (length lst) 2) lst))))))
+
+(define (yail-list-sort y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort is-leq? (yail-list-contents y1))))))
+
+(define (yail-list-sort-comparator lessthan? y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1))))))
+
+(define (merge-key lessthan? key lst1 lst2)
+  (cond ((null? lst1) lst2)
+    ((null? lst2) lst1)
+    ((lessthan? (key (car lst1)) (key (car lst2))) (cons (car lst1) (merge-key lessthan? key (cdr lst1) lst2)))
+    (else (cons (car lst2) (merge-key lessthan? key lst1 (cdr lst2))))))
+
+(define (mergesort-key lessthan? key lst)
+  (cond ((null? lst) lst)
+    ((null? (cdr lst)) lst)
+    (else (merge-key lessthan? key (mergesort-key lessthan? key (take (quotient (length lst) 2) lst))
+            (mergesort-key lessthan? key (drop (quotient (length lst) 2) lst))))))
+
+(define (yail-list-sort-key key y1)
+  (cond ((yail-list-empty? y1) (make YailList))
+    ((not (pair? y1)) y1)
+    (else (kawa-list->yail-list (mergesort-key is-leq? key (yail-list-contents y1))))))
+
+(define (list-number-only lst)
+  (cond ((null? lst) '())
+    ((number? (car lst)) (cons (car lst) (list-number-only (cdr lst))))
+    (else (list-number-only (cdr lst)))))
+
+(define (list-min lessthan? min lst)
+  (if (null? lst)
+      min
+      (list-min lessthan?
+                (if (lessthan? min (car lst))
+                    min (car lst))
+                    (cdr lst))))
+
+(define (yail-list-min-comparator lessthan? y1)
+  (cond ((not (pair? y1)) y1)
+        ((yail-list-empty? y1) (make-yail-list))
+        (else (list-min lessthan?
+                        (car (yail-list-contents y1))
+                        (cdr (yail-list-contents y1))))))
+
+(define (list-max lessthan? max lst)
+  (if (null? lst)
+      max
+      (list-max lessthan?
+                (if (lessthan? max (car lst))
+                    (car lst) max)
+                    (cdr lst))))
+
+(define (yail-list-max-comparator lessthan? y1)
+  (cond ((not (pair? y1)) y1)
+        ((yail-list-empty? y1) (make-yail-list))
+        (else (list-max lessthan?
+                        (car (yail-list-contents y1))
+                        (cdr (yail-list-contents y1))))))
+
+(define (yail-list-but-first yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (cond ((null? contents) (signal-runtime-error
+                              (format #f
+                                "The list cannot be empty")
+                              "Bad list argument to but-first"))
+      ((null? (cdr contents)) (make-yail-list))
+      (else (kawa-list->yail-list (cdr contents))))))
+
+(define (but-last lst)
+  (cond ((null? lst) '())
+    ((null? (cdr lst)) '())
+    (else (cons (car lst) (but-last (cdr lst))))))
+
+(define (yail-list-but-last yail-list)
+  (let ((contents (yail-list-contents yail-list)))
+    (cond ((null? contents) (signal-runtime-error
+                              (format #f
+                                "The list cannot be empty")
+                              "Bad list argument to but-last"))
+      (else  (kawa-list->yail-list (but-last (yail-list-contents yail-list)))))))
+
+(define (front lst n)
+  (cond ((= n 1) lst)
+    (else (front (cdr lst) (- n 1)))))
+
+(define (back lst n1 n2)
+  (cond ((= n1 (- n2 1)) '())
+    (else (cons (car lst) (back (cdr lst) (+ n1 1) n2)))))
+
+(define (yail-list-slice yail-list index1 index2)
+  (let ((verified-index1 (coerce-to-number index1))
+         (verified-index2 (coerce-to-number index2)))
+    (if (eq? verified-index1 *non-coercible-value*)
+      (signal-runtime-error
+        (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index1))
+        "Bad list verified-index1"))
+    (if (eq? verified-index2 *non-coercible-value*)
+      (signal-runtime-error
+        (format #f "Insert list item: index (~A) is not a number" (get-display-representation verified-index2))
+        "Bad list verified-index2"))
+    (if (< verified-index1 1)
+      (signal-runtime-error
+        (format #f
+          "Slice list: Attempt to slice list ~A at index ~A. The minimum valid index number is 1."
+          (get-display-representation yail-list)
+          verified-index2)
+        "List index smaller than 1"))
+    (let ((len+1 (+ (yail-list-length yail-list) 1)))
+      (if (> verified-index2 len+1)
+        (signal-runtime-error
+          (format #f
+            "Slice list: Attempt to slice list ~A at index ~A.  The maximum valid index number is ~A."
+            (get-display-representation yail-list)
+            verified-index2
+            len+1)
+          "List index too large"))
+      (kawa-list->yail-list (take (- verified-index2 verified-index1) (drop (- verified-index1 1) (yail-list-contents yail-list)))))))
+
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this
 (define (yail-for-range proc start end step)
@@ -2328,8 +3110,6 @@ list, use the make-yail-list constructor with no arguments.
            (cadr (yail-list-contents (car pairs-to-check))))
           (else (loop (cdr pairs-to-check))))))
 
-
-
 (define (pair-ok? candidate-pair)
   (and (yail-list? candidate-pair)
        (= (length (yail-list-contents candidate-pair)) 2)))
@@ -2340,10 +3120,113 @@ list, use the make-yail-list constructor with no arguments.
 (define (yail-list-join-with-separator yail-list separator)
   (join-strings (yail-list-contents yail-list) separator))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of List implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#|
+Dictionary implementation.
+
+- make dictionary           (make-yail-dictionary . pairs)
+- make pair                 (make-dictionary-pair key value)
+- set pair                  (yail-dictionary-set-pair yail-dictionary pair)
+- delete pair               (yail-dictionary-delete-pair yail-dictionary key)
+- dictionary lookup         (yail-dictionary-lookup key yail-dictionary default)
+- dict recursive lookup     (yail-dictionary-recursive-lookup keys yail-dictionary default)
+- dict recursive set        (yail-dictionary-recursive-set keys yail-dictionary value)
+- get keys                  (yail-dictionary-get-keys yail-dictionary)
+- get values                (yail-dictionary-get-values yail-dictionary)
+- is key in dict            (yail-dictionary-is-key-in key yail-dictionary)
+- get length of dict        (yail-dictionary-length yail-dictionary)
+- get copy of dict          (yail-dictionary-copy yail-dictionary)
+- combine two dicts         (yail-dictionary-combine-dicts first-dictionary second-dictionary)
+- turn alist to dict        (yail-dictionary-alist-to-dict alist)
+- turn dict to alist        (yail-dictionary-dict-to-alist dict)
+
+- is YailDictionary?        (yail-dictionary? x)
+
+|#
+
+(define (make-yail-dictionary . pairs)
+  (YailDictionary:makeDictionary pairs))
+
+(define (make-dictionary-pair key value)
+  (make-yail-list key value))
+
+(define (yail-dictionary-set-pair key yail-dictionary value)
+  (*:put (as YailDictionary yail-dictionary) key value))
+
+(define (yail-dictionary-delete-pair yail-dictionary key)
+  (*:remove (as YailDictionary yail-dictionary) key))
+
+(define (yail-dictionary-lookup key yail-dictionary default)
+  (let ((result
+    (cond ((instance? yail-dictionary YailList)
+            (yail-alist-lookup key yail-dictionary default))
+          ((instance? yail-dictionary YailDictionary)
+            (*:get (as YailDictionary yail-dictionary) key))
+          (#t default))))
+    (if (eq? result #!null)
+      ;; if we don't find anything associated with the abstract type, try the underlying type.
+      (if (enum? key)
+        (yail-dictionary-lookup (sanitize-component-data (key:toUnderlyingValue)) yail-dictionary default)
+        default)
+      result)))
+
+(define (yail-dictionary-recursive-lookup keys yail-dictionary default)
+  (let ((result (*:getObjectAtKeyPath (as YailDictionary yail-dictionary) (yail-list-contents keys))))
+    (if (eq? result #!null)
+      default
+      result)))
+
+(define (yail-dictionary-walk path dict)
+  (YailList:makeList (YailDictionary:walkKeyPath dict (yail-list-contents path))))
+
+(define (yail-dictionary-recursive-set keys yail-dictionary value)
+  (yail-dictionary:setValueForKeyPath (yail-list-contents keys) value))
+
+(define (yail-dictionary-get-keys yail-dictionary)
+  (YailList:makeList (*:keySet (as YailDictionary yail-dictionary))))
+
+(define (yail-dictionary-get-values yail-dictionary)
+  (YailList:makeList (*:values (as YailDictionary yail-dictionary))))
+
+(define (yail-dictionary-is-key-in key yail-dictionary)
+  (*:containsKey (as YailDictionary yail-dictionary) key))
+
+(define (yail-dictionary-length yail-dictionary)
+  (*:size (as YailDictionary yail-dictionary)))
+
+(define (yail-dictionary-alist-to-dict alist)
+  (let loop ((pairs-to-check (yail-list-contents alist)))
+    (cond ((null? pairs-to-check) "The list of pairs has a null pair")
+          ((not (pair-ok? (car pairs-to-check)))
+           (signal-runtime-error
+            (format #f "List of pairs to dict: the list ~A is not a well-formed list of pairs"
+                    (get-display-representation alist))
+            "Invalid list of pairs"))
+          (else (loop (cdr pairs-to-check)))))
+  (YailDictionary:alistToDict alist))
+
+(define (yail-dictionary-dict-to-alist dict)
+  (YailDictionary:dictToAlist dict))
+
+(define (yail-dictionary-copy yail-dictionary)
+  (*:clone (as YailDictionary yail-dictionary)))
+
+(define (yail-dictionary-combine-dicts first-dictionary second-dictionary)
+  (*:putAll (as YailDictionary first-dictionary) second-dictionary))
+
+(define (yail-dictionary? x)
+  (instance? x YailDictionary))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Dictionary implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Yail Procedure & Multi-thread implementation
@@ -2394,6 +3277,22 @@ list, use the make-yail-list constructor with no arguments.
       #f
       #t))
 
+(define (string-contains-any text piece-list)
+  (define (string-contains-any-rec piece-list)
+    (if (null? piece-list)
+        #f
+        (or (string-contains text (car piece-list))
+          (string-contains-any-rec (cdr piece-list)))))
+  (string-contains-any-rec (yail-list-contents piece-list)))
+
+(define (string-contains-all text piece-list)
+  (define (string-contains-all-rec piece-list)
+    (if (null? piece-list)
+        #t
+        (and (string-contains text (car piece-list))
+            (string-contains-all-rec (cdr piece-list)))))
+  (string-contains-all-rec (yail-list-contents piece-list)))
+
 (define (string-split-at-first text at)
   (array->list
    ((text:toString):split (Pattern:quote at) 2)))
@@ -2406,9 +3305,8 @@ list, use the make-yail-list constructor with no arguments.
       (array->list
        ((text:toString):split (make-disjunct (yail-list-contents at)) 2))))
 
-(define (string-split text at)
-  (array->list
-   ((text:toString):split (Pattern:quote at))))
+(define (string-split text at) 
+  (JavaStringUtils:split text (Pattern:quote at))) 
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))
@@ -2444,7 +3342,7 @@ list, use the make-yail-list constructor with no arguments.
 ;;; It seems simpler for users to not use regexp patterns here, even though
 ;;; some people might want that feature.
 (define (string-replace-all text substring replacement)
-  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (replacement:toString)))
+  ((text:toString):replaceAll (Pattern:quote (substring:toString)) (Matcher:quoteReplacement (replacement:toString))))
 
 (define (string-empty? text)
   (= 0 (string-length text)))
@@ -2463,6 +3361,19 @@ list, use the make-yail-list constructor with no arguments.
              (b3 (bitwise-and (bitwise-ior (bitwise-arithmetic-shift-left b2 8) b) 255))
              (b4 (bitwise-and (bitwise-xor b3 (char->integer (string-ref lc i))) 255)))
         (set! acc (cons b4 acc))))))
+
+;; NOTE: The keys & values in the YailDictionary should be <String, String>.
+;; However, this might not necessarily be the case, so we pass in an <Object, Object>
+;; map instead to the Java call.
+;; See JavaStringUtils in components/runtime/utils
+(define (string-replace-mappings-dictionary text mappings)
+  (JavaStringUtils:replaceAllMappingsDictionaryOrder text mappings))
+
+(define (string-replace-mappings-longest-string text mappings)
+  (JavaStringUtils:replaceAllMappingsLongestStringOrder text mappings))
+
+(define (string-replace-mappings-earliest-occurrence text mappings)
+  (JavaStringUtils:replaceAllMappingsEarliestOccurrenceOrder text mappings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation
@@ -2691,6 +3602,8 @@ list, use the make-yail-list constructor with no arguments.
                  (try-catch
                   (list "OK"
                         (get-display-representation (force promise)))
+                  (exception StopBlocksExecution
+                             (list "OK" #f))
                   (exception PermissionException
                              (exception:printStackTrace)
                              (list "NOK"

@@ -27,6 +27,15 @@ import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
+/**
+ * A `Spinner` component that displays a dialog with a list of elements. These elements can be set
+ * in the Designer or Blocks Editor by setting the {@link #ElementsFromString(String)} property to
+ * a comma-separated list of values (for example, `choice 1, choice 2, choice 3`) or by setting the
+ * {@link #Elements(YailList)} property to a List in the Blocks editor. Spinners are created with
+ * the first item already selected, so selecting it does not generate an
+ * {@link #AfterSelecting(String)} event. Consequently it's useful to make the first `Spinner` item
+ * be a non-choice like "Select from below...".
+ */
 @DesignerComponent(version = YaVersion.SPINNER_COMPONENT_VERSION,
     description = "<p>A spinner component that displays a pop-up with a list of elements." +
         " These elements can be set in the Designer or Blocks Editor by setting the" +
@@ -87,7 +96,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   /**
-   * Selection property setter method.
+   * Specifies the current selected item in the `Spinner`.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(description = "Set the selected item in the spinner",
@@ -106,8 +115,10 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   /**
-   * Selection index property setter method, not a designer property to prevent
-   * inconsistencies if selection is invalid
+   * Set the `Spinner` selection to the element at the given index.
+   * If an attempt is made to set this to a number less than `1` or greater than the number of
+   * items in the `Spinner`, `SelectionIndex` will be set to `0`, and {@link #Selection(String)}
+   * will be set to the empty text.
    */
   @SimpleProperty(description = "Set the spinner selection to the element at the given index." +
       "If an attempt is made to set this to a number less than 1 or greater than the number of " +
@@ -128,9 +139,9 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   /**
-   * Elements property setter method
+   * Specifies the list of choices to display.
    */
-  @SimpleProperty(description = "adds the passed text element to the Spinner list",
+  @SimpleProperty(description = "Adds the passed text element to the Spinner list",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
     // The following conditional handles special cases for the fact that
@@ -145,10 +156,11 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   /**
-   * ElementsFromString property setter method
+   * Set the list of choices from a string of comma-separated values.
+   * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "sets the Spinner list to the elements passed in the " +
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA, defaultValue = "")
+  @SimpleProperty(description = "Sets the Spinner list to the elements passed in the " +
       "comma-separated string", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring){
     Elements(ElementsUtil.elementsFromString(itemstring));
@@ -172,26 +184,23 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   /**
-   * Prompt property setter method
+   * Specifies the text used for the title of the Spinner window.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "sets the Spinner window prompt to the given tittle",
+  @SimpleProperty(description = "Sets the Spinner window prompt to the given title",
       category = PropertyCategory.APPEARANCE)
   public void Prompt(String str){
     view.setPrompt(str);
   }
 
-  /**
-   * To display the dropdown list without the user having to click it
-   */
-  @SimpleFunction(description = "displays the dropdown list for selection, " +
+  @SimpleFunction(description = "Displays the dropdown list for selection, " +
       "same action as when the user clicks on the spinner.")
   public void DisplayDropdown(){
     view.performClick();
   }
 
   /**
-   * Indicates a user has selected an item
+   * Event called after the user selects an item from the dropdown list.
    */
   @SimpleEvent(description = "Event called after the user selects an item from the dropdown list.")
   public void AfterSelecting(String selection){

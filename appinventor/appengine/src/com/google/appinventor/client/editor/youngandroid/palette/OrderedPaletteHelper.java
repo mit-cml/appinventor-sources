@@ -44,4 +44,9 @@ abstract class OrderedPaletteHelper implements PaletteHelper {
     componentsAddedSoFar.add(insertionPos, component);
     panel.insert(component, insertionPos);
   }
+
+  public void clear() {
+    componentsAddedSoFar.clear();
+  }
+
 }

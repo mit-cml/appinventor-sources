@@ -12,6 +12,7 @@ import com.google.appinventor.client.explorer.commands.ProjectNodeCommand;
 import com.google.appinventor.client.widgets.ContextMenu;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public final class ProjectNodeContextMenu {
    * @param node  node for which to show the context menu
    * @param host  widget to anchor context menu to
    */
-  public static void show(final ProjectNode node, Widget host) {
+  public static void show(final ProjectNode node, Widget host, int clientX, int clientY) {
 
     List<CommandRegistry.Entry> entries = Ode.getCommandRegistry().get(node);
     if (entries.isEmpty()) {
@@ -40,19 +41,20 @@ public final class ProjectNodeContextMenu {
 
     final ContextMenu menu = new ContextMenu();
     // Position the context menu to the East of the host widget.
-    menu.setPopupPosition(host.getAbsoluteLeft() + host.getOffsetWidth(),
-        host.getAbsoluteTop());
+    menu.setPopupPosition(Window.getScrollLeft() + clientX,
+        Window.getScrollTop() + clientY);
     for (final CommandRegistry.Entry entry : entries) {
       final ProjectNodeCommand cmd = entry.getCommand();
-
-      // Create the menu item.
-      menu.addItem(cmd.getLabel(), new Command() {
-        @Override
-        public void execute() {
-          menu.hide();
-          cmd.execute(node);
-        }
-      });
+      if (cmd.isSupported(node)) {
+        // Create the menu item.
+        menu.addItem(cmd.getLabel(), new Command() {
+          @Override
+          public void execute() {
+            menu.hide();
+            cmd.execute(node);
+          }
+        });
+      }
     }
 
     menu.show();

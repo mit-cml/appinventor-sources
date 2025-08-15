@@ -5,19 +5,16 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.LocationSensor.LocationSensorListener;
-import com.google.appinventor.components.runtime.util.AsynchUtil;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.GeoJSONUtil;
-import com.google.appinventor.components.runtime.util.GeometryUtil;
-import com.google.appinventor.components.runtime.util.MapFactory;
-import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
-import com.google.appinventor.components.runtime.util.YailList;
-import org.osmdroid.util.BoundingBox;
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
+import android.util.Log;
+
+import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -26,36 +23,54 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.MapType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.common.YaVersion;
+
+import com.google.appinventor.components.runtime.LocationSensor.LocationSensorListener;
+
+import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.FileWriteOperation;
+import com.google.appinventor.components.runtime.util.GeoJSONUtil;
+import com.google.appinventor.components.runtime.util.GeometryUtil;
+import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapController;
 import com.google.appinventor.components.runtime.util.MapFactory.MapEventListener;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
+import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
-
-import android.util.Log;
-import android.view.View;
+import com.google.appinventor.components.runtime.util.ScopedFile;
+import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.IOException;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.osmdroid.util.BoundingBox;
+
 /**
- * <p>A two-dimensional container that renders map tiles in the background and allows for multiple
- * Marker elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- * contributors and the the United States Geological Survey.</p>
- * <p>The Map component provides three utilities for manipulating its boundaries with App Inventor.
+ * A two-dimensional container that renders map tiles in the background and allows for multiple
+ * {@link Marker} elements to identify points on the map. Map tiles are supplied by OpenStreetMap
+ * contributors and the the United States Geological Survey, or a custom basemap URL can be provided.
+ *
+ * The `Map` component provides three utilities for manipulating its boundaries with App Inventor.
  * First, a locking mechanism is provided to allow the map to be moved relative to other components
- * on the Screen. Second, when unlocked, the user can pan the Map to any location. At this new
- * location, the &quot;Set Initial Boundary&quot; button can be pressed to save the current Map
- * coordinates to its properties. Lastly, if the Map is moved to a different location, for example
- * to add Markers off-screen, then the &quot;Reset Map to Initial Bounds&quot; button can be used
- * to re-center the Map at the starting location.</p>
+ * on the Screen. Second, when unlocked, the user can pan the `Map` to any location. At this new
+ * location, the &quot;Set Initial Boundary&quot; button can be pressed to save the current `Map`
+ * coordinates to its properties. Lastly, if the `Map` is moved to a different location, for example
+ * to add {@link Marker}s off-screen, then the &quot;Reset Map to Initial Bounds&quot; button can
+ * be used to re-center the `Map` at the starting location.
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
@@ -65,20 +80,18 @@ import java.util.List;
   androidMinSdk = 8,
   description = "<p>A two-dimensional container that renders map tiles in the background and " +
     "allows for multiple Marker elements to identify points on the map. Map tiles are supplied " +
-    "by OpenStreetMap contributors and the United States Geological Survey.</p>" +
+    "by OpenStreetMap contributors and the United States Geological Survey, or a custom basemap URL can be provided.</p>" +
     "<p>The Map component provides three utilities for manipulating its boundaries within App " +
     "Inventor. First, a locking mechanism is provided to allow the map to be moved relative to " +
     "other components on the Screen. Second, when unlocked, the user can pan the Map to any " +
     "location. At this new location, the &quot;Set Initial Boundary&quot; button can be pressed " +
     "to save the current Map coordinates to its properties. Lastly, if the Map is moved to a " +
     "different location, for example to add Markers off-screen, then the &quot;Reset Map to " +
-    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>")
+    "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>",
+    iconName = "images/map.png")
 @SimpleObject
-@UsesAssets(fileNames = "location.png")
-@UsesPermissions(permissionNames = "android.permission.INTERNET, " + "android.permission.ACCESS_FINE_LOCATION, "
-  + "android.permission.ACCESS_COARSE_LOCATION, " + "android.permission.ACCESS_WIFI_STATE, "
-  + "android.permission.ACCESS_NETWORK_STATE, " + "android.permission.WRITE_EXTERNAL_STORAGE, "
-  + "android.permission.READ_EXTERNAL_STORAGE")
+@UsesAssets(fileNames = "location.png, marker.svg")
+@UsesPermissions({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
 @UsesLibraries(libraries = "osmdroid.aar, osmdroid.jar, androidsvg.jar, jts.jar")
 public class Map extends MapFeatureContainerBase implements MapEventListener {
   private static final String TAG = Map.class.getSimpleName();
@@ -109,7 +122,8 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     ZoomLevel(13);
     EnableZoom(true);
     EnablePan(true);
-    MapType(1);
+    MapTypeAbstract(MapType.Road);
+    CustomUrl("https://tile.openstreetmap.org/{z}/{x}/{y}.png");
     ShowCompass(false);
     LocationSensor(new LocationSensor(container.$form(), false));
     ShowUser(false);
@@ -128,12 +142,13 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Set the initial center coordinate of the map. The value is specified as a
+   * Set the initial center coordinate of the map. The value is specified as a
    * comma-separated pair of decimal latitude and longitude coordinates, for example,
-   * <code>42.359144, -71.093612</code>.</p>
-   * <p>In blocks code, it is recommended for performance reasons to use SetCenter with numerical
-   * latitude and longitude rather than convert to the string representation for use with this
-   * property.</p>
+   * `42.359144, -71.093612`.
+   *
+   *   In blocks code, it is recommended for performance reasons to use
+   * {@link #PanTo(double, double, int)} with numerical latitude and longitude rather than convert
+   * to the string representation for use with this property.
    *
    * @param center A comma-separated string containing the latitude and longitude of the map center.
    */
@@ -180,7 +195,8 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>The latitude of the center of the map.</p>
+   * Gets the latitude of the center of the Map. To change the latitude, use the
+   * {@link #PanTo(double, double, int)} method.
    *
    * @return Returns the latitude of the center of the map
    */
@@ -192,7 +208,8 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>The longitude of the center of the map.</p>
+   * Gets the longitude of the center of the Map. To change the longitude, use the
+   * {@link #PanTo(double, double, int)} method.
    *
    * @return Returns the longitude of the center of the map
    */
@@ -204,12 +221,12 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Set the zoom level of the map.</p>
-   * <p>Valid values of ZoomLevel are dependent on the tile provider and the latitude and
+   * Specifies the zoom level of the map.
+   * Valid values of ZoomLevel are dependent on the tile provider and the latitude and
    * longitude of the map. For example, zoom levels are more constrained over oceans than dense
    * city centers to conserve space for storing tiles, so valid values may be 1-7 over ocean and
-   * 1-18 over cities. Tile providers may send warning or error tiles if the zoom level is too
-   * great for the server to support.</p>
+   * 1-20 over cities. Tile providers may send warning or error tiles if the zoom level is too
+   * great for the server to support.
    *
    * @param zoom New zoom level.
    */
@@ -221,8 +238,9 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Get the zoom level of the map.</p>
+   * Get the zoom level of the map.
    *
+   * @suppressdoc
    * @return Returns the current zoom level of the map.
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
@@ -237,8 +255,9 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Set whether the user can zoom the map using touch gestures. This value does not affect
-   * whether the user can zoom using the zoom controls from {@link #ShowZoom}.</p>
+   * Set whether the user can zoom the map using touch gestures. This value does not affect
+   * whether the user can zoom using the zoom controls provided by
+   * <a href="#Map.ShowZoom">ShowZoom</a>.
    *
    * @param zoom If true, then the user can use pinch/expand gestures to change the map zoom level.
    */
@@ -250,7 +269,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * <p>Get whether the user can zoom the map using touch gestures.</p>
+   * Enables or disables the two-finger pinch gesture to zoom the Map.
    *
    * @return Returns whether multitouch zoom gestures are enabled for the map.
    */
@@ -268,44 +287,94 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     mapController.setRotation(rotation);
   }
 
+  /**
+   * Specifies the rotation of the map in decimal degrees, if any.
+   */
   @SimpleProperty (category = PropertyCategory.APPEARANCE, description = "Sets or gets the rotation of the map in decimal degrees if any")
   public float Rotation() {
     return mapController.getRotation();
   }
 
   /**
-   * <p>Set the type of map tile used for the base tile layer. Valid values are:</p>
-   * <ol>
-   * <li>Roads</li>
-   * <li>Aerial</li>
-   * <li>Terrain</li>
-   * </ol>
+   * Set the type of map tile used for the base tile layer.
+   * Valid values are:
+   *
+   *   1. Roads
+   *   2. Aerial
+   *   3. Terrain
+   *   4. Custom
    *
    * @param type Integer identifying the tile set to use for the map's base layer.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_TYPE,
       defaultValue = "1")
   @SimpleProperty
-  public void MapType(int type) {
-    MapFactory.MapType newType = MapFactory.MapType.values()[type];
-    mapController.setMapType(newType);
+  public void MapType(@Options(MapType.class) int type) {
+    MapType mapType = MapType.fromUnderlyingValue(type);
+    if (mapType != null) {
+      MapTypeAbstract(mapType);
+    }
   }
 
   /**
-   * <p>Get the type of the base tile layer used by the map. Valid values are:</p>
-   * <ol>
-   * <li>Roads</li>
-   * <li>Aerial</li>
-   * <li>Terrain</li>
-   * </ol>
+   * Sets or gets the tile layer used to draw the Map background. Defaults to Roads. Valid values
+   * are:
+   *
+   *   1. Roads
+   *   2. Aerial
+   *   3. Terrain
+   *   4. Custom
+   *
+   *   **Note:** Road layers are provided by OpenStreetMap and aerial and terrain layers are
+   * provided by the U.S. Geological Survey.
    *
    * @return Returns an integer identifying the base tile layer in use by the map.
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The type of tile layer to use as the base of the map. Valid values " +
-          "are: 1 (Roads), 2 (Aerial), 3 (Terrain)")
-  public int MapType() {
-    return mapController.getMapType().ordinal();
+          "are: 1 (Roads), 2 (Aerial), 3 (Terrain), 4 (Custom)")
+  public @Options(MapType.class) int MapType() {
+    return MapTypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Sets the tile layer used to draw the Map background.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public MapType MapTypeAbstract() {
+    return mapController.getMapTypeAbstract();
+  }
+
+  /**
+   * Returns the current tile layer used to draw the Map background.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void MapTypeAbstract(MapType type) {
+    mapController.setMapTypeAbstract(type);
+  }
+
+  /**
+   * @return Returns the custom URL of the base tile layer in use by the map.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_CUSTOMURL,
+      defaultValue = "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
+  @SimpleProperty(category = PropertyCategory.ADVANCED,
+      description = "The URL of the custom tile layer to use as the base of the map. Valid URLs " +
+          "should include &#123;z}, &#123;x} and &#123;y} placeholders and any authentication required. </p></p>" + 
+          "e.g. https://tile.openstreetmap.org/&#123;z}/&#123;x}/&#123;y}.png </p>" +
+          "or https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername&#64;EPSG:3857&#64;jpeg/&#123;z}/&#123;x}/&#123;y}.jpeg&#63;flipY=true&authkey=123")
+  public String CustomUrl() {
+    return mapController.getCustomUrl();
+  }
+
+  /**
+   * Update the custom URL of the base tile layer in use by the map.
+   * e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+   * e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername@EPSG:3857@jpeg/{z}/{x}/{y}.jpeg?flipY=true&authkey=123
+   */
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
+  public void CustomUrl(String url) {
+    mapController.setCustomUrl(url);
   }
 
   /**
@@ -322,7 +391,8 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * Get whether the compass overlay is enabled on the map.
+   * Specifies whether to a compass overlay on the Map. The compass will be rotated based on the
+   * device's orientation if a digital compass is present in hardware.
    *
    * @return True if the compass is enabled, otherwise false.
    */
@@ -333,7 +403,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * Show the zoom controls on the map.
+   * Specifies whether to show zoom controls or not.
    *
    * @param zoom True if the controls should be shown, otherwise false.
    */
@@ -347,6 +417,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   /**
    * Get whether the zoom controls are displayed on the map.
    *
+   * @suppressdoc
    * @return True if the controls should be shown, otherwise false.
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
@@ -356,7 +427,9 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * Show the user's location on the map.
+   * Shows or hides an icon indicating the user's current location on the {@link Map}. The
+   * availability and accuracy of this feature will depend on whether the user has location
+   * services enabled and which location providers are available.
    *
    * @param user True if the user's location should be shown, otherwise false.
    */
@@ -370,6 +443,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   /**
    * Get whether the user's location is shown on the map.
    *
+   * @suppressdoc
    * @return True if the user's location is being shown on the map, otherwise false.
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
@@ -391,7 +465,7 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   /**
-   * Get whether the map is rotating based on the user orientation.
+   * Enables or disables the two-finger rotation gesture to rotate the Map.
    *
    * @return True if the map is drawn based on orientation, otherwise false.
    */
@@ -408,6 +482,9 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     mapController.setPanEnabled(pan);
   }
 
+  /**
+   * Enables or disables the ability of the user to move the Map.
+   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Enable two-finger panning of the Map")
   public boolean EnablePan() {
@@ -423,6 +500,11 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     mapController.setBoundingBox(new BoundingBox(latNorth, longEast, latSouth, longWest));
   }
 
+  /**
+   * Sets or gets the current boundary for the map's drawn view. The value is a list of lists
+   * containing the northwest and southeast coordinates of the current view in the form
+   * ``((North West) (South East))``.
+   */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Bounding box for the map stored as [[North, West], [South, East]].")
   public YailList BoundingBox() {
@@ -432,6 +514,16 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     return YailList.makeList(new YailList[] { northwest, southeast });
   }
 
+  @Override
+  @SimpleProperty
+  public YailList Features() {
+    return super.Features();
+  }
+
+  /**
+   * Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
+   * rather than the built-in location provider.
+   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description = "Uses the provided LocationSensor for user location data rather than the " +
           "built-in location provider.")
@@ -451,6 +543,10 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     return sensor;
   }
 
+  /**
+   * Shows or hides a scale overlay on the {@link Map}. The scale will change with the zoom level
+   * and its units can be controlled by the {@link #ScaleUnits(int)} property.
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty
   public void ShowScale(boolean show) {
@@ -463,28 +559,43 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     return mapController.isScaleVisible();
   }
 
+  /**
+   * Specifies the units used for the scale overlay. 1 (the default) will give metric units
+   * (km, m) whereas 2 will give imperial units (mi, ft).
+   */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MAP_UNIT_SYSTEM,
       defaultValue = "1")
-  @SimpleProperty
-  public void ScaleUnits(int units) {
-    if (1 <= units && units < MapScaleUnits.values().length) {
-      mapController.setScaleUnits(MapScaleUnits.values()[units]);
-    } else {
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ScaleUnits(@Options(ScaleUnits.class) int units) {
+    // Make sure units is a valid ScaleUnits.
+    ScaleUnits scaleUnits = ScaleUnits.fromUnderlyingValue(units);
+    if (scaleUnits == null) {
       $form().dispatchErrorOccurredEvent(this, "ScaleUnits",
           ErrorMessages.ERROR_INVALID_UNIT_SYSTEM, units);
+      return;
     }
+    ScaleUnitsAbstract(scaleUnits);
   }
 
   @SimpleProperty
-  public int ScaleUnits() {
-    switch (mapController.getScaleUnits()) {
-      case METRIC:
-        return 1;
-      case IMPERIAL:
-        return 2;
-      default:
-        return 0;
-    }
+  public @Options(ScaleUnits.class) int ScaleUnits() {
+    return ScaleUnitsAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Returns the system of measurement used by the map.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public ScaleUnits ScaleUnitsAbstract() {
+    return mapController.getScaleUnitsAbstract();
+  }
+
+  /**
+   * Sets the system of measurement used by the map.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void ScaleUnitsAbstract(ScaleUnits units) {
+    mapController.setScaleUnitsAbstract(units);
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
@@ -499,12 +610,19 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     return sensor == null ? -999 : sensor.Longitude();
   }
 
-  @SimpleFunction(description = "Pan the map center to the given latitude and longitude and " +
+  @SimpleFunction(description = "Pans the map center to the given latitude and longitude and " +
       "adjust the zoom level to the specified zoom.")
   public void PanTo(double latitude, double longitude, int zoom) {
     mapController.panTo(latitude, longitude, zoom, 1);
   }
 
+  /**
+   * Creates a new {@link Marker} on the `Map` at the specified `latitude` and `longitude`.
+   *
+   * @param latitude Latitude of the new Marker
+   * @param longitude Longitude of the new Marker
+   * @return a freshly created Marker instance
+   */
   @SimpleFunction(description = "Create a new marker with default properties at the specified " +
       "latitude and longitude.")
   public Marker CreateMarker(double latitude, double longitude) {
@@ -513,55 +631,104 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     return marker;
   }
 
+  /**
+   * Saves the features on the `Map` as a GeoJSON file at the specified path.
+   */
   @SimpleFunction(description = "Save the contents of the Map to the specified path.")
   public void Save(final String path) {
     final List<MapFeature> featuresToSave = new ArrayList<MapFeature>(features);
-    AsynchUtil.runAsynchronously(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          GeoJSONUtil.writeFeaturesAsGeoJSON(featuresToSave, path);
-        } catch(final IOException e) {
-          final Form form = $form();
-          form.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              form.dispatchErrorOccurredEvent(Map.this, "Save",
-                  ErrorMessages.ERROR_EXCEPTION_DURING_MAP_SAVE, e.getMessage());
-            }
-          });
+    // Needed for backward compatibility prior to nb188
+    if (path.startsWith("/") || path.startsWith("file:/")) {
+      final java.io.File target = path.startsWith("file:") ? new java.io.File(URI.create(path))
+          : new java.io.File(path);
+      AsynchUtil.runAsynchronously(new Runnable() {
+        @Override
+        public void run() {
+          doSave(featuresToSave, target);
         }
-      }
-    });
+      });
+    } else {
+      new FileWriteOperation($form(), this, "Save", path, $form().DefaultFileScope(), false, true) {
+        @Override
+        protected void processFile(ScopedFile file) {
+          String uri = FileUtil.resolveFileName(form, file);
+          java.io.File target = new java.io.File(URI.create(uri));
+          doSave(featuresToSave, target);
+        }
+      }.run();
+    }
   }
 
+  private void doSave(List<MapFeature> featuresToSave, java.io.File target) {
+    try {
+      GeoJSONUtil.writeFeaturesAsGeoJSON(featuresToSave, target.getAbsolutePath());
+    } catch (final IOException e) {
+      $form().runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          $form().dispatchErrorOccurredEvent(Map.this, "Save",
+              ErrorMessages.ERROR_EXCEPTION_DURING_MAP_SAVE, e.getMessage());
+        }
+      });
+    }
+  }
+
+  /**
+   * The `Ready` event runs once the `Map` has been initialized and is ready for user interaction.
+   */
   @SuppressWarnings({"WeakerAccess", "squid:S00100"})
   @SimpleEvent(description = "Map has been initialized and is ready for user interaction.")
   public void Ready() {
     EventDispatcher.dispatchEvent(this, "Ready");
   }
 
+  /**
+   * The `BoundsChange` event runs when the user changes the map bounds, either by zooming, panning,
+   * or rotating the view.
+   */
   @SimpleEvent(description = "User has changed the map bounds by panning or zooming the map.")
   public void BoundsChange() {
     EventDispatcher.dispatchEvent(this, "BoundsChange");
   }
 
+  /**
+   * The `ZoomChange` event runs when the user has changed the zoom level of the map, such as by
+   * pinching or double-tapping to zoom.
+   */
   @SimpleEvent(description = "User has changed the zoom level of the map.")
   public void ZoomChange() {
     EventDispatcher.dispatchEvent(this, "ZoomChange");
   }
 
+  /**
+   * The `InvalidPoint` event runs when the program encounters an invalid point while processing
+   * geographical data. Points are considered invalid when the latitude or longitude for the point
+   * is outside the acceptable range (`[-90, 90]` and `[-180, 180]`, respectively). The `message`
+   * parameter will contain an explanation for the error.
+   *
+   * @param message
+   */
   @SimpleEvent(description = "An invalid coordinate was supplied during a maps operation. The " +
       "message parameter will have more details about the issue.")
   public void InvalidPoint(String message) {
     EventDispatcher.dispatchEvent(this, "InvalidPoint", message);
   }
 
+  /**
+   * The `TapAtPoint` runs when the user taps at a point on the map. The tapped location will be
+   * reported in map coordinates via the `latitude`{:.variable.block} and
+   * `longitude`{:.variable.block} parameters.
+   */
   @SimpleEvent(description = "The user tapped at a point on the map.")
   public void TapAtPoint(double latitude, double longitude) {
     EventDispatcher.dispatchEvent(this, "TapAtPoint", latitude, longitude);
   }
 
+  /**
+   * The `DoubleTapAtPoint` runs when the user double taps at a point on the map. The tapped
+   * location will be reported in map coordinates via the `latitude`{:.variable.block} and
+   * `longitude`{:.variable.block} parameters.
+   */
   @SimpleEvent(description = "The user double-tapped at a point on the map. This event will be " +
       "followed by a ZoomChanged event if zooming gestures are enabled and the map is not at " +
       "the highest possible zoom level.")
@@ -569,6 +736,12 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     EventDispatcher.dispatchEvent(this, "DoubleTapAtPoint", latitude, longitude);
   }
 
+  /**
+   * The `LongPressAtPoint` runs when the user long-presses at a point on the map without moving
+   * their finger (which would trigger a drag). The location of the long-press will be reported in
+   * map coordinates via the `latitude`{:.variable.block} and `longitude`{:.variable.block}
+   * parameters.
+   */
   @SimpleEvent(description = "The user long-pressed at a point on the map.")
   public void LongPressAtPoint(double latitude, double longitude) {
     EventDispatcher.dispatchEvent(this, "LongPressAtPoint", latitude, longitude);

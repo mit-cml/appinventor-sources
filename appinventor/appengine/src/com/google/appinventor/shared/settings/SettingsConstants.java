@@ -26,6 +26,13 @@ public class SettingsConstants {
   // disable someone's account. The URL can be user specific in order to deliver
   // a particular message to a particular user.
   public static final String DISABLED_USER_URL = "DisabledUserUrl";
+  public static final String USER_LAST_LOCALE = "LastLocale";
+  public static final String USER_DYSLEXIC_FONT = "DyslexicFont";
+  public static final String USER_AUTOLOAD_PROJECT = "AutoloadLastProject";
+  public static final String USER_NEW_LAYOUT = "NewLayout";
+  public static final String DARK_THEME_ENABLED = "DarkThemeEnabled";
+  public static final String FOLDERS = "Folders";
+  public static final String SHOW_UIPICKER = "ShowUIPicker";
 
   public static final String SPLASH_SETTINGS = "SplashSettings";
 
@@ -43,6 +50,7 @@ public class SettingsConstants {
   // Project settings
   public static final String YOUNG_ANDROID_SETTINGS_ICON = "Icon";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS = "ShowHiddenComponents";
+  public static final String YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP = "ScreenCheckboxStateMap";
   public static final String YOUNG_ANDROID_SETTINGS_PHONE_TABLET = "PhoneTablet";
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_CODE = "VersionCode";
   public static final String YOUNG_ANDROID_SETTINGS_VERSION_NAME = "VersionName";
@@ -51,11 +59,14 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_APP_NAME = "AppName";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   public static final String YOUNG_ANDROID_SETTINGS_TUTORIAL_URL = "TutorialURL";
+  public static final String YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET = "BlocksToolkit";
   public static final String YOUNG_ANDROID_SETTINGS_ACTIONBAR = "ActionBar";
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR = "PrimaryColor";
   public static final String YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   public static final String YOUNG_ANDROID_SETTINGS_ACCENT_COLOR = "AccentColor";
   public static final String YOUNG_ANDROID_SETTINGS_THEME = "Theme";
+  public static final String YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW = "PhonePreview";
+  public static final String YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE = "DefaultFileScope";
 
   /**
    * Settings for the Blocks editor.

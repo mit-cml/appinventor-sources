@@ -11,6 +11,9 @@ $Source $Yail
 
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
  (set-and-coerce-property! 'Screen1 'BackgroundColor #xFF000000 'number)
+ (set-and-coerce-property! 'Screen1 'ScreenOrientation "unspecified" 'text)
+ (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+ (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
  (set-and-coerce-property! 'Screen1 'Title "PictureCycle" 'text)
 )
 

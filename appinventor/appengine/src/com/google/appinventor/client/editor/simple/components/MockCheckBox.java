@@ -1,31 +1,38 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
- * Mock CheckBox component.
+ * Mock CheckBox component, inherited from MockToggleBase
  *
- * @author lizlooney@google.com (Liz Looney)
+ * @author lizlooney@google.com (Liz Looney), srlane@mit.edu (Susan Rati Lane)
  */
-public final class MockCheckBox extends MockWrapper {
+public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
+
 
   /**
    * Component type name.
    */
   public static final String TYPE = "CheckBox";
 
-  // GWT checkbox widget used to mock a Simple CheckBox
-  private CheckBox checkboxWidget;
+  //Widgets for MockCheckBox
+  protected final HorizontalPanel panel;
+  public Boolean checked = false;  // the "on" property of the switch is equivalent to "checked"
+
+  public InlineHTML checkBoxLabel;
+  public SVGPanel checkBoxGraphic;
+  public Boolean isInitialized;
 
   /**
    * Creates a new MockCheckbox component.
@@ -35,154 +42,128 @@ public final class MockCheckBox extends MockWrapper {
   public MockCheckBox(SimpleEditor editor) {
     super(editor, TYPE, images.checkbox());
 
-    // Initialize mock checkbox UI
-    checkboxWidget = new CheckBox();
-    initWrapper(checkboxWidget);
+    panel = new HorizontalPanel();
+    checkBoxLabel = new InlineHTML();
+    toggleWidget = panel;
+    isInitialized = false;
+    initWrapper(toggleWidget);
   }
 
   /**
-   * Class that extends CheckBox so we can use a protected constructor.
+   * Draw the SVG graphic of the toggle switch. It can be drawn in either checked or
+   * unchecked positions, each with their own colors.
    *
-   * <p/>The purpose of this class is to create a clone of the CheckBox
-   * passed to the constructor. It will be used to determine the preferred size
-   * of the CheckBox, without having the size constrained by its parent,
-   * since the cloned CheckBox won't have a parent.
    */
-  static class ClonedCheckBox extends CheckBox {
-    ClonedCheckBox(CheckBox ptb) {
-      // Get the Element from the CheckBox.
-      // Call DOM.clone to make a deep clone of that element.
-      // Pass that cloned element to the super constructor.
-      super(DOM.clone(ptb.getElement(), true));
-    }
-  }
-
-  @Override
-  protected Widget createClonedWidget() {
-    return new ClonedCheckBox(checkboxWidget);
-  }
-
-  @Override
-  public void onCreateFromPalette() {
-    // Change checkbox caption to component name
-    changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
-  }
-
-  /*
-   * Sets the checkbox's BackgroundColor property to a new value.
-   */
-  private void setBackgroundColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
-    }
-    MockComponentsUtil.setWidgetBackgroundColor(checkboxWidget, text);
-  }
-
-  /*
-   * Sets the checkbox's Enabled property to a new value.
-   */
-  private void setEnabledProperty(String text) {
-    MockComponentsUtil.setEnabled(this, text);
-  }
-
-  /*
-   * Sets the checkbox's FontBold property to a new value.
-   */
-  private void setFontBoldProperty(String text) {
-    MockComponentsUtil.setWidgetFontBold(checkboxWidget, text);
-    updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's FontItalic property to a new value.
-   */
-  private void setFontItalicProperty(String text) {
-    MockComponentsUtil.setWidgetFontItalic(checkboxWidget, text);
-    updatePreferredSize();
-  }
-
-  @Override
-  int getHeightHint() {
-    int hint = super.getHeightHint();
-    if (hint == MockVisibleComponent.LENGTH_PREFERRED) {
-      float height = Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE));
-      return Math.round(height);
+  private void paintCheckBox(boolean checked) {
+    if (isInitialized) {
+      panel.remove(checkBoxGraphic);
     } else {
-      return hint;
+      isInitialized = true;
     }
+    checkBoxGraphic = new SVGPanel();
+    int checkBoxHeight = 20;
+
+    int checkBoxWidth = 20;
+
+    if (checked) {
+      if (phonePreview.equals("Classic")) {
+        classicCheckBox();
+      } else if (phonePreview.equals("Android Material")) {
+        materialCheckBox();
+      } else if (phonePreview.equals("Android Holo")) {
+        holoCheckBox();
+      } else {
+        iosCheckBox();
+      }
+    } else {
+      unchecked();
+    }
+    checkBoxGraphic.setWidth(checkBoxWidth + "px");
+    checkBoxGraphic.setHeight(checkBoxHeight + "px");
+
+    panel.add(checkBoxGraphic);
+    panel.setCellWidth(checkBoxGraphic, checkBoxWidth + "px");
+    panel.setCellHorizontalAlignment(checkBoxGraphic, HasHorizontalAlignment.ALIGN_LEFT);
+    panel.add(checkBoxLabel);
+    toggleWidget = panel;
+    refreshForm();
   }
 
-  /*
-   * Sets the checkbox's FontSize property to a new value.
-   */
-  private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(checkboxWidget, text);
-    updatePreferredSize();
+  private void classicCheckBox() {
+    checkBoxGraphic.setInnerSVG("<g transform=\"translate(35.5 27.5)\">\n"
+        + "<path d=\"M6.838,12.553l-1.366-1.53L4.355,12.094l2.407,2.665L12.8,8.5l-1-1.012Z\""
+        + " transform=\"translate(-35.466 -29.759)\" fill=\"#179213\" opacity=\"0.54\"/>\n"
+        + "<rect width=\"16\" height=\"16\" rx=\"2\" transform=\"translate(-35 -27)\""
+        + " fill=\"none\" stroke=\"#707070\" stroke-linejoin=\"round\" stroke-width=\"1\"/>\n"
+        + "</g>");
   }
 
-  /*
-   * Sets the checkbox's FontTypeface property to a new value.
-   */
-  private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(checkboxWidget, text);
-    updatePreferredSize();
+  private void materialCheckBox() {
+    String checkBoxColor = MockComponentsUtil.getColor(colorAccent).toString();
+    checkBoxGraphic.setInnerSVG("<path d=\"M17.222,3H4.778A1.783,1.783,0,0,0,3,4.778V17.222A1.783,1.783,0,0,0,4.778,19H17.222A1.783,1.783,0,0,0,19,17.222V4.778A1.783,1.783,0,0,0,17.222,3Zm-8,12.444L4.778,11.178l1.244-1.156,3.2,3.111,6.756-6.578,1.244,1.156-8,7.733Z\" transform=\"translate(-3 -3)\" fill=\"" + checkBoxColor + "\"/>");
+  }
+
+  private void holoCheckBox() {
+    checkBoxGraphic.setInnerSVG("<path d=\"M17.222,3H4.778A1.783,1.783,0,0,0,3,4.778V17.222A1.783,1.783,0,0,0,4.778,19H17.222A1.783,1.783,0,0,0,19,17.222V4.778A1.783,1.783,0,0,0,17.222,3Zm-8,12.444L4.778,11.178l1.244-1.156,3.2,3.111,6.756-6.578,1.244,1.156-8,7.733Z\" transform=\"translate(-3 -3)\"/>");
+  }
+
+  private void iosCheckBox() {
+    checkBoxGraphic.setInnerSVG("<g transform=\"translate(-574 -295)\">\n"
+        + "<rect width=\"16\" height=\"16\" rx=\"2\" transform=\"translate(574 295)\""
+        + " fill=\"#4c9c94\"/>\n"
+        + "<path d=\"M1.5,4.5,0,6l4,4,9-8.5L11.5,0,4,7Z\" transform=\"translate(575.5 298.5)\""
+        + " fill=\"#fff\"/>\n"
+        + "</g>");
+  }
+
+  private void unchecked() {
+    checkBoxGraphic.setInnerSVG("<g fill=\"#fff\" stroke=\"#707070\" stroke-width=\"1\">\n"
+        + "<rect width=\"16\" height=\"16\" rx=\"2\" stroke=\"none\"/>\n"
+        + "<rect x=\"0.5\" y=\"0.5\" width=\"15\" height=\"15\" rx=\"1.5\" fill=\"none\"/>\n"
+        + "</g>");
   }
 
   /*
    * Sets the checkbox's Text property to a new value.
    */
-  private void setTextProperty(String text) {
-    checkboxWidget.setText(text);
+  protected void setTextProperty(String text) {
+    panel.remove(checkBoxLabel);
+    checkBoxLabel.setText(text);
+    panel.insert(checkBoxLabel, 1);
+    toggleWidget = panel;
     updatePreferredSize();
-  }
-
-  /*
-   * Sets the checkbox's TextColor property to a new value.
-   */
-  private void setTextColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFF000000";  // black
-    }
-    MockComponentsUtil.setWidgetTextColor(checkboxWidget, text);
   }
 
   /*
    * Sets the checkbox's Checked property to a new value.
    */
   private void setCheckedProperty(String text) {
-    checkboxWidget.setChecked(Boolean.parseBoolean(text));
+    checked = Boolean.parseBoolean(text);
+    paintCheckBox(checked);
   }
 
-  // PropertyChangeListener implementation
+  @Override
+  protected void setFontSizeProperty(String text) {
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (Float.parseFloat(text) == FONT_DEFAULT_SIZE
+          && form != null
+          && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(1), "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(1), text);
+    }
+
+    updatePreferredSize();
+  }
 
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
     // Apply changed properties to the mock component
-    if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
-      setBackgroundColorProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_ENABLED)) {
-      setEnabledProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {
-      setFontBoldProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTITALIC)) {
-      setFontItalicProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
-      setFontSizeProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
-      setFontTypefaceProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXT)) {
-      setTextProperty(newValue);
-      refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
-      setTextColorProperty(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
+    if (propertyName.equals(PROPERTY_NAME_CHECKED)) {
       setCheckedProperty(newValue);
+      refreshForm();
     }
   }
 }

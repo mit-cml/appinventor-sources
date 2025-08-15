@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Any Component Blocks</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Any Component Blocks</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p>A common concept when writing apps is “Don’t Repeat Yourself” (or DRY). Rather than making lots of repetitive code, by copy and paste for example, you can instead use special blocks called “Any Component” blocks.</p>
+
+<p>What exactly is an “any component” block? Every component block, such as <span class="setter block">set Button1.Text to</span>, has three parts: (1) the component that is being changed (<span class="component block">Button1</span>), the part of the component being manipulated (<span class="setter block">set ….Text to</span>) and (3) the inputs (if any). The blocks you would typically pull out of block drawer name a single component when you code your app. But what if you want to perform an action on many different components of the <strong><em>same type</em></strong>? One option would be to copy and paste each block as many times as needed, but as your app expands this becomes difficult to edit. Instead it might make sense to be able to substitute different components in place of a single component. That is what “any component” blocks allow you to do. Rather than fix the block to a specific component, they allow you to make your code more general by providing any component of the same type as an input. This allows you, for example, to create a list of buttons and update all of their properties at once using a <span class="control block">for-each</span> loop, for example:</p>
+
+<p class="figure"><img src="loop-example.png" alt="Hide all of the blocks in the list of buttons" /></p>
+
+<p class="caption"><strong>Figure 1.</strong> An example of a for loop that hides all of the buttons in a list.</p>
+
+<p>Each of the three major component block types, i.e., events, methods, and properties, have corresponding “any component” blocks.</p>
+
+<h2 id="properties">Properties</h2>
+
+<p>The “any component” blocks for properties are the simplest versions of any component blocks. Property getters, like the one shown below, take a single component and return the value of the named property for that component. Property setters take an additional argument, which is the new value of the property.</p>
+
+<p class="figure"><img src="getter.png" alt="Getter block to get the Text property of a button called ExampleButton" />
+<br />
+<img src="setter.png" alt="Setter block to set the Enabled property of a button called ExampleButton to false" /></p>
+
+<p class="caption"><strong>Figure 2.</strong> Example blocks for the any property getters and setters.</p>
+
+<h2 id="methods">Methods</h2>
+
+<p>Any component method blocks function similar to the property getters and setters. For any given method on a component, the corresponding any component block will take a component and all of the parameters needed by the method. The block will have the same output as the specific method block (if any). For example, below is a method block to compute the distance from a Marker to the user’s current location on a Map.</p>
+
+<p class="figure"><img src="method.png" alt="Computes the distance from the user's current location to a marker provided in the variable called feature" /></p>
+
+<p class="caption"><strong>Figure 3.</strong> Example use of a method block that takes any marker and computes the distance to it from the user’s current location.</p>
+
+<h2 id="events">Events</h2>
+
+<p>Any component events are the most complex form of an any component block. For any given event, the corresponding any component event adds two more parameters, <span class="variable block">component</span> and <span class="variable block">notAlreadyHandled</span>, to the existing list of event parameters, if any. The <span class="variable block">component</span> parameter will be the component that triggered the event, such as <span class="component block">Button</span>. The <span class="variable block">notAlreadyHandled</span> parameter is <span class="logic block">true</span> if no other event block specifically handles the event for <span class="variable block">component</span>.</p>
+
+<p>Consider the following pseudocode for event handling to see how this works:</p>
+
+<ol>
+  <li>An event occurs, such as the user clicks a button called Button1.</li>
+  <li><span class="variable block">component</span> is initialized to <span class="getter block">Button1</span>.</li>
+  <li><span class="variable block">notAlreadyHandled</span> is initialized to <span class="logic block">true</span>.</li>
+  <li>App Inventor checks to see if <span class="event block">when Button1.Click</span> exists.</li>
+  <li>If the event block is found:
+    <ol>
+      <li>The event block code is run.</li>
+      <li><span class="variable block">notAlreadyHandled</span> is set to <span class="logic block">false</span>.</li>
+    </ol>
+  </li>
+  <li>App Inventor checks to see if <span class="event block">when any Button.Click</span> exists.</li>
+  <li>If the any event block is found, the event block code is run with <span class="variable block">component</span> and <span class="variable block">notAlreadyHandled</span> passed to it.</li>
+</ol>
+
+<h2 id="tips--tricks">Tips &amp; Tricks</h2>
+
+<p>There are a number of things you can do with any component blocks. Here are some tips and tricks to get the most out of any component blocks.</p>
+
+<h3 id="lists-of-components">Lists of Components</h3>
+
+<p>You can <span class="list block">make a list</span> of components using global variables. This makes it easy to reference large sets of components through a single list and apply changes using the <span class="control block">for-each</span> block.</p>
+
+<p class="figure"><img src="list-of-components.png" alt="Creates a variable called listOfButtons with Button1 through Button5 added" /></p>
+
+<p class="caption"><strong>Figure 4.</strong> The global variable <span class="variable block">listOfButtons</span> is set to a list of button components.</p>
+
+<h3 id="swap-blocks">Swap Blocks</h3>
+
+<p>You can swap between a block for a specific component and the equivalent any component block through the “Make Generic” and “Make Specific” menu items in a block’s right click (context) menu. “Make Generic” will convert a block for a specific component, e.g., <span class="setter block">set Button1.Enabled to</span>, into a any component block, e.g., <span class="setter block">set Button.Enabled of component</span> with the corresponding component block, e.g., <span class="component block">Button1</span>. In order to use the “Make Specific” menu item, the “of component” slot must be filled with a specific component, e.g., <span class="component block">Button1</span>, and not another type of block. This feature is available for property setters, property getters, and methods.</p>
+
+<p class="figure"><img src="specific-block.png" alt="Right-click on a block to get the context menu, and select Make Generic to turn it into the equivalent any component blocks." /> <img src="setter.png" alt="The any component form of the previous block." /></p>
+
+<p class="caption"><strong>Figure 5.</strong> A demonstration of how blocks can be transformed from a specific to generic versions using the right click (context) menu.</p>
+
+<h3 id="any-component-events">Any Component Events</h3>
+
+<p>Unlike the operation to turn properties and methods into their any component versions, turning a component event handler into an any component event using “Make Generic” is a one-way operation (it can be undone using the Undo option, however). When using this feature, all references to the component will be replaced with any component versions.</p>
+
+<p class="figure"><img src="any-event-example-a.png" alt="An event handler for Button1.Click that changes a number of properties of Button1" /><br />
+<img src="any-event-example-b.png" alt="A generic event handler for any Button.Click that performs the same operations as above, but to any Button not just Button1" /></p>
+
+<p class="caption"><strong>Figure 6.</strong> Top: A <span class="event block">when Button1.Click</span> event that changes a number of Button1’s properties. Bottom: After using the “Make Generic” menu option (bottom), the <span class="event block">when Button1.Click</span> event is replaced with a <span class="event block">when any Button.Click</span> event, and all blocks that reference Button1 are replaced with <span class="variable block">component</span>.</p>
+
+<h2 id="examples">Examples</h2>
+
+<h3 id="snow-globe">Snow Globe</h3>
+
+<p>In a snow globe app, you might use many Ball sprites on a Canvas to represent snowflakes in the snow globe. You may want them to disappear when they reach the edge of the screen. Previously, you would have to create a <span class="event block">when Ball_XX_.EdgeReached</span> for each snowflake to make this happen. With the <span class="event block">when any Ball.EdgeReached</span> event, you only need to write the code once:</p>
+
+<p><img src="snowglobe-specific.png" alt="Old code with many event handlers all doing the same thing" class="figure" width="750px" /><br />
+<img src="snowglobe-generic.png" alt="New code with a single any ball edge reached handler replacing the repetitive code above" class="figure" /><br /></p>
+
+<p class="caption"><strong>Figure 7.</strong> Top: Repetitive event handlers before the use of the generic event handler. Bottom: All of the code reduces to a single event handler, saving space and time coding.</p>
+
+<h3 id="random-button-colors">Random Button Colors</h3>
+
+<p>This event block demonstrates any component events and property setters.</p>
+
+<p class="figure"><img src="random-colors.png" alt="An event handler to change any button's background color when it is clicked" /></p>
+
+<p class="caption"><strong>Figure 8.</strong> An event handler to change any button’s background color when it is clicked.</p>
+
+<h3 id="distance-to-nearest-feature">Distance to Nearest Feature</h3>
+
+<p>Given a Map with a number of Markers, find the distance to the Marker nearest the user with the <span class="procedure block">call Marker.DistanceToPoint</span> block:</p>
+
+<p class="figure"><img src="method-example.png" alt="Example code to determine the distance to the nearest Marker on a Map given the user's current location" /></p>
+
+<p class="caption"><strong>Figure 9.</strong> An example of how to find the closest Marker on a Map to the user’s current location.</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

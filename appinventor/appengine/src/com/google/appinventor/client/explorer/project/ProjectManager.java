@@ -6,10 +6,12 @@
 
 package com.google.appinventor.client.explorer.project;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.OdeAsyncCallback;
+import static com.google.appinventor.client.utils.Promise.resolve;
+
+import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ public final class ProjectManager {
   // List of listeners for any project manager events.
   private final List<ProjectManagerEventListener> projectManagerEventListeners;
 
+  private Promise<List<Project>> loadProjectPromise = null;
+
   /**
    * Flag indicating whether the project infos have all loaded.
    */
@@ -38,19 +42,31 @@ public final class ProjectManager {
    * Creates a new projects manager.
    */
   public ProjectManager() {
-    projectsMap = new HashMap<Long, Project>();
-    projectManagerEventListeners = new ArrayList<ProjectManagerEventListener>();
-    Ode.getInstance().getProjectService().getProjectInfos(
-        new OdeAsyncCallback<List<UserProject>>(
-        MESSAGES.projectInformationRetrievalError()) {
-      @Override
-      public void onSuccess(List<UserProject> projectInfos) {
-        for (UserProject projectInfo : projectInfos) {
-          addProject(projectInfo);
-        }
-        fireProjectsLoaded();
-      }
-    });
+    projectsMap = new HashMap<>();
+    projectManagerEventListeners = new ArrayList<>();
+  }
+
+  /**
+   * Load the user's projects.
+   *
+   * <p>The returned Promise is a singleton representing the result of loading the initial
+   * project list at the start of the session.</p>
+   *
+   * @return a Promise to load the user's projects
+   */
+  public Promise<List<Project>> ensureProjectsLoadedFromServer(ProjectServiceAsync projectService) {
+    if (loadProjectPromise == null) {
+      loadProjectPromise = Promise.call(MESSAGES.projectInformationRetrievalError(),
+              projectService::getProjectInfos)
+          .then(projectInfos -> {
+            for (UserProject projectInfo : projectInfos) {
+              addProject(projectInfo);
+            }
+            projectsLoaded = true;
+            return resolve(new ArrayList<>(projectsMap.values()));
+          });
+    }
+    return loadProjectPromise;
   }
 
   /**
@@ -59,13 +75,7 @@ public final class ProjectManager {
    * @return  a list of projects
    */
   public List<Project> getProjects() {
-    List<Project> projects = new ArrayList<Project>();
-
-    for (Project project : projectsMap.values()) {
-      projects.add(project);
-    }
-
-    return projects;
+    return new ArrayList<>(projectsMap.values());
   }
 
   /**
@@ -75,14 +85,23 @@ public final class ProjectManager {
    * @return  a list of projects
    */
   public List<Project> getProjects(String prefix) {
-    List<Project> projects = new ArrayList<Project>();
+    List<Project> projects = new ArrayList<>();
 
     for (Project project : projectsMap.values()) {
       if (project.getProjectName().startsWith(prefix)) {
         projects.add(project);
       }
     }
+    return projects;
+  }
 
+  public List<Project> getProjectsWithoutFolder() {
+    List<Project> projects = new ArrayList<Project>();
+    for (Project project : projectsMap.values()) {
+      if (project.getHomeFolder() == null) {
+        projects.add(project);
+      }
+    }
     return projects;
   }
 
@@ -139,38 +158,13 @@ public final class ProjectManager {
   }
 
   /**
-   * Removes the given project.
+   * Removes the project from trash permanently.
    *
    * @param projectId project ID
    */
-  public void removeProject(long projectId) {
-    Project project = projectsMap.remove(projectId);
-    fireProjectRemoved(project);
-  }
 
-  /**
-   * Handles situation when a project has been published
-   *
-   * @param projectId project ID
-   * @param galleryId gallery ID
-   */
-  public void publishProject (long projectId, long galleryId){
-    Project project = getProject(projectId);
-    project.setGalleryId(galleryId);
-    projectsMap.put(projectId, project);
-    fireProjectPublishedOrUnpublished();
-  }
-    /**
-   * Handles situation when a project has been published
-   *
-   * @param projectId project ID
-   * @param galleryId gallery ID
-   */
-  public void UnpublishProject (long projectId) {
-    Project project = getProject(projectId);
-    project.setGalleryId(UserProject.NOTPUBLISHED);
-    projectsMap.put(projectId, project);
-    fireProjectPublishedOrUnpublished();
+  public void removeDeletedProject(long projectId) {
+    projectsMap.remove(projectId);
   }
 
   /**
@@ -195,12 +189,8 @@ public final class ProjectManager {
     projectManagerEventListeners.remove(listener);
   }
 
-  public int projectCount() {
-    return projectsMap.size();
-  }
-
   private List<ProjectManagerEventListener> copyProjectManagerEventListeners() {
-    return new ArrayList<ProjectManagerEventListener>(projectManagerEventListeners);
+    return new ArrayList<>(projectManagerEventListeners);
   }
 
   /*
@@ -212,28 +202,8 @@ public final class ProjectManager {
     }
   }
 
-  /*
-   * Triggers a 'project removed' event to be sent to the listener on the listener list.
-   */
-  private void fireProjectRemoved(Project project) {
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onProjectRemoved(project);
-    }
-  }
-
-  /*
-   * Triggers a 'projects loaded' event to be sent to the listener on the listener list.
-   */
-  private void fireProjectsLoaded() {
-    projectsLoaded = true;
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onProjectsLoaded();
-    }
-  }
-
-  private void fireProjectPublishedOrUnpublished() {
-    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
-      listener.onProjectPublishedOrUnpublished();
-    }
+  public boolean isProjectInTrash(long projectId) {
+    Project project = projectsMap.get(projectId);
+    return project != null && project.isInTrash();
   }
 }

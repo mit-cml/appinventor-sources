@@ -252,10 +252,10 @@ public final class StringUtils {
     String normalized = VALID_FILENAME_CHARS.retainFrom(str);
     if (!normalized.isEmpty()) {
       while (normalized.length() > 2 &&
-             !CharMatcher.JAVA_LETTER.matches(normalized.charAt(0))) {
+             !CharMatcher.javaLetter().matches(normalized.charAt(0))) {
         normalized = normalized.substring(1);
       }
-      if (CharMatcher.JAVA_LETTER.matches(normalized.charAt(0))) {
+      if (CharMatcher.javaLetter().matches(normalized.charAt(0))) {
         return normalized;
       }
     }
@@ -328,5 +328,22 @@ public final class StringUtils {
       initpos = str.indexOf(sub, initpos) + 1;
     }
     return count;
+  }
+
+  /* <p>Checks if text is null or empty ("")</p>
+   *
+   * <pre>
+   * StringUtils.isNullOrEmpty(null)      = true
+   * StringUtils.isNullOrEmpty("")        = true
+   * StringUtils.isNullOrEmpty(" ")       = false
+   * StringUtils.isNullOrEmpty("bob")     = false
+   * StringUtils.isNullOrEmpty("  bob  ") = false
+   * </pre>
+   *
+   * @param text  the String to check, may be null
+   * @return {@code true} if the text is empty or null
+   */
+  public static boolean isNullOrEmpty(final String text) {
+     return text == null || text.isEmpty();
   }
 }

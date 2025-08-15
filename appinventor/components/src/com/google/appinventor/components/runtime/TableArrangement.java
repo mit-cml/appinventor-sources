@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -18,15 +19,39 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 import android.app.Activity;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
- * A container for components that arranges them in tabular form.
+ * Use a table arrangement component to display a group of components in a tabular fashion.
+ *
+ * This component is a formatting element in which you place components that should be displayed
+ * in tabular form.
+ *
+ * In a `TableArrangement`, components are arranged in a grid of rows and columns, with not more
+ * than one component visible in each cell. **If multiple components occupy the same cell, only the
+ * last one will be visible.**
+ *
+ * Within each row, components are vertically center-aligned.
+ *
+ * The width of a column is determined by the widest component in that column. When calculating
+ * column width, the automatic width is used for components whose {@link #Width()} property is set
+ * to `Fill Parent`. **However, each component will always fill the full width of the column that it
+ * occupies.**
+ *
+ * The height of a row is determined by the tallest component in that row whose {@link #Height()}
+ * property is not set to `Fill Parent`. If a row contains only components whose {@link #Height()}
+ * properties are set to `Fill Parent`, the height of the row is calculated using the automatic
+ * heights of the components.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 @DesignerComponent(version = YaVersion.TABLEARRANGEMENT_COMPONENT_VERSION,
     description = "<p>A formatting element in which to place components " +
     "that should be displayed in tabular form.</p>",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/table.png")
 @SimpleObject
 public class TableArrangement extends AndroidViewComponent
     implements Component, ComponentContainer {
@@ -34,6 +59,8 @@ public class TableArrangement extends AndroidViewComponent
 
   // Layout
   private final TableLayout viewLayout;
+
+  private List<Component> allChildren = new ArrayList<>();
 
   /**
    * Creates a new TableArrangement component.
@@ -60,13 +87,13 @@ public class TableArrangement extends AndroidViewComponent
   }
 
   /**
-   * Columns property setter method.
+   * Determines the number of columns in the table.
    *
    * @param numColumns  number of columns in this layout
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void Columns(int numColumns) {
     viewLayout.setNumColumns(numColumns);
   }
@@ -82,13 +109,13 @@ public class TableArrangement extends AndroidViewComponent
   }
 
   /**
-   * Rows property setter method.
+   * Determines the number of rows in the table.
    *
    * @param numRows  number of rows in this layout
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.APPEARANCE)
   public void Rows(int numRows) {
     viewLayout.setNumRows(numRows);
   }
@@ -108,6 +135,12 @@ public class TableArrangement extends AndroidViewComponent
   @Override
   public void $add(AndroidViewComponent component) {
     viewLayout.add(component);
+    allChildren.add(component);
+  }
+
+  @Override
+  public List<? extends Component> getChildren(){
+    return allChildren;
   }
 
   @Override
@@ -149,6 +182,11 @@ public class TableArrangement extends AndroidViewComponent
 
     ViewUtil.setChildHeightForTableLayout(component.getView(), height);
 
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for table layouts
   }
 
   // AndroidViewComponent implementation

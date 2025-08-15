@@ -30,9 +30,9 @@ public class UserProject implements IsSerializable {
   private String projectType;
 
   /**
-   * The attribution ID.
+   * The moved to Trash flag.
    */
-  private long attributionId;
+  private boolean projectMovedToTrashFlag;
 
   /**
    * The date the project was created expressed in milliseconds since
@@ -46,12 +46,13 @@ public class UserProject implements IsSerializable {
    */
   private long modificationDate;
 
-  private long galleryId;
+  /**
+   * The last date the project was exported expressed in milliseconds since
+   * January 1, 1970 UTC
+   */
+  private long buildDate;
 
   private static final String DELIM = "#DELIM#";
-
-  public static final long NOTPUBLISHED = 0;
-  public static final long FROMSCRATCH = 0;
 
   /**
    * Default constructor. This constructor is required by GWT.
@@ -66,17 +67,10 @@ public class UserProject implements IsSerializable {
    * @param projectId the project id
    * @param projectName the project name
    * @param projectType the project type
-   * @param creationDate the creation date
-   * @param long galleryId the gallery id
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId, long attributionId) {
-    this.projectId = projectId;
-    this.projectName = projectName;
-    this.projectType = projectType;
-    this.creationDate = creationDate;
-    this.modificationDate = creationDate;
-    this.galleryId = galleryId;
-    this.attributionId = attributionId;
+  public UserProject(long projectId, String projectName, String projectType, long creationDate, boolean projectMovedToTrashFlag) {
+    this(projectId, projectName, projectType, creationDate, creationDate, 0,
+        projectMovedToTrashFlag);
   }
 
   /**
@@ -85,33 +79,29 @@ public class UserProject implements IsSerializable {
    * @param projectId the project id
    * @param projectName the project name
    * @param projectType the project type
-   * @param creationData creation date
-   * @param modificationData modification data
-   * @param galleryId gallery id
-   * @param attributionId attribution id
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, long galleryId, long attributionId) {
+      long modificationDate, boolean projectMovedToTrashFlag) {
+    this(projectId, projectName, projectType, creationDate, modificationDate, 0,
+        projectMovedToTrashFlag);
+  }
+
+  /**
+   * Creates a new project info object.
+   *
+   * @param projectId the project id
+   * @param projectName the project name
+   * @param projectType the project type
+   */
+  public UserProject(long projectId, String projectName, String projectType, long creationDate,
+      long modificationDate, long buildDate, boolean projectMovedToTrashFlag) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = modificationDate;
-    this.galleryId = galleryId;
-    this.attributionId = attributionId;
-  }
-
-  /**
-   * Returns the attribution ID.
-   *
-   * @return the attributionId
-   */
-  public long getAttributionId() {
-    return attributionId;
-  }
-
-  public void setAttributionId(long attributionId) {
-    this.attributionId = attributionId;
+    this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this.buildDate = buildDate;
   }
 
   /**
@@ -148,16 +138,33 @@ public class UserProject implements IsSerializable {
   public long getDateModified() {
     return modificationDate;
   }
-  public long getGalleryId() {
-    return galleryId;
-  }
+
   public void setDateModified(long modificationDate) {
     if (modificationDate != 0) {
       this.modificationDate = modificationDate;
     }
   }
-  public void setGalleryId(long galleryId) {
-    this.galleryId = galleryId;
+
+  public long getDateBuilt() {
+    return buildDate;
+  }
+
+  public void setDateBuilt(long buildDate) {
+    if (buildDate != 0) {
+      this.buildDate = buildDate;
+    }
+  }
+
+  public void moveToTrash() {
+    this.projectMovedToTrashFlag = true;
+  }
+
+  public void restoreFromTrash() {
+    this.projectMovedToTrashFlag = false;
+  }
+
+  public boolean isInTrash() {
+    return projectMovedToTrashFlag;
   }
 
   @Override
@@ -173,7 +180,8 @@ public class UserProject implements IsSerializable {
         projectName.equals(otherUserProject.projectName) &&
         projectType.equals(otherUserProject.projectType) &&
         creationDate == otherUserProject.creationDate &&
-        modificationDate == otherUserProject.modificationDate;
+        modificationDate == otherUserProject.modificationDate &&
+        buildDate == otherUserProject.buildDate;
   }
 
   @Override
@@ -184,12 +192,12 @@ public class UserProject implements IsSerializable {
   @Override
   public String toString() {
     return projectId + DELIM + projectName + DELIM + projectType + DELIM + creationDate +
-        DELIM + modificationDate;
+        DELIM + modificationDate + DELIM + buildDate;
   }
 
   public static UserProject valueOf(String text) {
     String[] parts = text.split(DELIM);
-    if (parts.length != 5) {
+    if (parts.length < 5) {
       throw new IllegalArgumentException();
     }
     UserProject userProject = new UserProject();
@@ -198,7 +206,7 @@ public class UserProject implements IsSerializable {
     userProject.projectType = parts[2];
     userProject.creationDate = Long.parseLong(parts[3]);
     userProject.modificationDate = Long.parseLong(parts[4]);
-    userProject.galleryId= UserProject.NOTPUBLISHED;
+    userProject.buildDate = Long.parseLong(parts[5]);
     return userProject;
   }
 }

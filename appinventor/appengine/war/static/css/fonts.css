@@ -1,0 +1,52 @@
+@font-face {
+  font-family: Roboto;
+  src: local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-weight: bold;
+  font-family: Roboto;
+  src: local('Roboto-Bold'), url('../fonts/Roboto-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-weight: 400;
+  font-family: Poppins;
+  src: local('Poppins'), url('../fonts/Poppins-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-weight: 500;
+  font-family: Poppins;
+  src: local('Poppins-Medium'), url('../fonts/Poppins-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/MaterialSymbolsSharp[FILL,GRAD,opsz,wght].ttf') format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+  font-style: normal;
+  font-size: 21px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+  padding-right: 3px;
+}

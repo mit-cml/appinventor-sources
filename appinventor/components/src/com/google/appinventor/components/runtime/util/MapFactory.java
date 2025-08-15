@@ -5,20 +5,20 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import java.util.List;
-
+import android.os.Build;
+import android.view.View;
+import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.LocationSensor;
 import com.google.appinventor.components.runtime.Map;
+import java.util.Iterator;
+import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.api.IGeoPoint;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.util.BoundingBox;
-
-import android.os.Build;
-import android.view.View;
+import org.osmdroid.util.GeoPoint;
 
 /**
  * Utilities used by the Map component to provide backward compatibility
@@ -182,14 +182,38 @@ public final class MapFactory {
      *
      * @return the type of the map's active tile layer
      */
-    MapType getMapType();
+    MapFactory.MapType getMapType();
 
     /**
      * Set the type of the map being used.
      *
      * @param type the new map type for the map
      */
-    void setMapType(MapType type);
+    void setMapType(MapFactory.MapType type);
+
+    /**
+     * Get the type of map being used.
+     */
+    com.google.appinventor.components.common.MapType getMapTypeAbstract();
+
+    /**
+     * Set the type of map being used.
+     */
+    void setMapTypeAbstract(com.google.appinventor.components.common.MapType type);
+
+    /**
+     * Get the customUrl of the map being used.
+     *
+     * @return the customUrl of the map's active tile layer
+     */
+    String getCustomUrl();
+
+    /**
+     * Set the customUrl of the map being used.
+     *
+     * @param Set the new map customUrl for the map
+     */
+    void setCustomUrl(String url);
 
     /**
      * Set whether the compass is displayed on the map.
@@ -389,6 +413,23 @@ public final class MapFactory {
     boolean isFeatureVisible(MapFeature feature);
 
     /**
+     * Gets whether the feature collection is visible or not.
+     * @param collection the collection to check.
+     * @return  true if the collection is visible, otherwise false. This may not guarantee that the
+     *     children of the collection are visible within the viewport.
+     */
+    boolean isFeatureCollectionVisible(MapFeatureCollection collection);
+
+    /**
+     * Changes the visibility of the feature collection.
+     * @param collection the collection which will have its visibility changed
+     * @param visible true if the features in the feature collection should be visible, otherwise
+     *                false. Note that the feature has its own visibility flag. Both visible flags
+     *                must be true for the feature to be drawn.
+     */
+    void setFeatureCollectionVisible(MapFeatureCollection collection, boolean visible);
+
+    /**
      * Show the infobox attached to a map feature. The feature must have been
      * previously added via one of the addFeature calls and must be shown on the
      * map. The infobox will also be shown as part of the default click action
@@ -557,6 +598,16 @@ public final class MapFactory {
      * @return the units used for the scale overlay
      */
     MapScaleUnits getScaleUnits();
+
+    /**
+     * Sets the units for the scale.
+     */
+    void setScaleUnitsAbstract(ScaleUnits units);
+
+    /**
+     * Returns the units for the scale.
+     */
+    ScaleUnits getScaleUnitsAbstract();
   }
 
   /**
@@ -779,7 +830,7 @@ public final class MapFactory {
    *
    * @author ewpatton@mit.edu (Evan W. Patton)
    */
-  public interface MapFeatureContainer extends ComponentContainer {
+  public interface MapFeatureContainer extends ComponentContainer, Iterable<MapFeature> {
 
     // Properties
 
@@ -850,6 +901,12 @@ public final class MapFactory {
     void addFeature(MapFeature feature);
 
     /**
+     * Iterates over the features in the MapFeatureContainer.
+     * @return new iterator
+     */
+    Iterator<MapFeature> iterator();
+
+    /**
      * Removes a feature from the feature collection.
      * @param feature the feature to remove
      */
@@ -873,6 +930,18 @@ public final class MapFactory {
      * @return the fill paint color
      */
     int FillColor();
+
+    /**
+     * Sets the opacity of the interior of the feature
+     * @param opacity the fill opacity
+     */
+    void FillOpacity(float opacity);
+
+    /**
+     * Gets the opacity of the interior of the feature
+     * @return the fill opacity
+     */
+    float FillOpacity();
   }
 
   /**
@@ -892,6 +961,18 @@ public final class MapFactory {
      * @return the outline paint color
      */
     int StrokeColor();
+
+    /**
+     * Sets the opacity of the outline of the feature
+     * @param opacity the stroke opacity
+     */
+    void StrokeOpacity(float opacity);
+
+    /**
+     * Gets the opacity of the outline of the feature
+     * @return the stroke opacity
+     */
+    float StrokeOpacity();
 
     /**
      * Sets the width of the outline of the feature
@@ -1246,6 +1327,7 @@ public final class MapFactory {
      * prior to official release. Some apps developed using earlier versions of Maps on test servers
      * may reference this property, but it may be removed in a future version of App Inventor.
      */
+    @Deprecated
     @SuppressWarnings("squid:S00100")
     void ShowShadow(boolean show);
 
@@ -1254,6 +1336,7 @@ public final class MapFactory {
      * @return true if the marker should have a shadow, otherwise false.
      * @deprecated See the deprecation message for {@link #ShowShadow(boolean)}.
      */
+    @Deprecated
     @SuppressWarnings("squid:S00100")
     boolean ShowShadow();
 
@@ -1510,7 +1593,12 @@ public final class MapFactory {
     /**
      * Terrain tile layer.
      */
-    TERRAIN
+    TERRAIN,
+
+    /**
+     * Custom tile layer.
+     */
+    CUSTOM
   }
 
   /**

@@ -94,6 +94,11 @@ public class ExternalTextToSpeech implements ITextToSpeech, ActivityResultListen
     }
   }
 
+  @Override
+  public void stop() {
+    // Not supported on external
+  }
+
   // External TextToSpeech is obsolete, so we'll just report that no languages are available
   // In reality, we won't call this from TextToSpeech in pre-Gingerbread systems
   public int isLanguageAvailable(Locale loc) {

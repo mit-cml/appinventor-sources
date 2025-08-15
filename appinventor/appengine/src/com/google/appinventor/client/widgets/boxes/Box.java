@@ -391,6 +391,10 @@ public abstract class Box extends HandlerPanel {
     this(caption, height, minimizable, removable, false, true, false);
   }
 
+  public void setStyleName(String styleName) {
+    setStylePrimaryName(styleName);
+  }
+
   @Override
   public void clear() {
     body.clear();
@@ -435,6 +439,14 @@ public abstract class Box extends HandlerPanel {
    */
   Widget getHeader() {
     return header;
+  }
+
+  /**
+   * Returns the box header container.
+   * @return header container
+   */
+  public DockPanel getHeaderContainer() {
+    return headerContainer;
   }
 
   /**

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -29,9 +29,29 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Sensor that can measure absolute orientation in 3 dimensions.
+ * ![Example of the OrientationSensor icon](images/orientationsensor.png)
  *
+ * Use an orientation sensor component to determine the phone's spatial orientation.
+ *
+ * An orientation sensor is a non-visible component that reports the following three values, in
+ * degrees:
+ *
+ *  - **Roll** : 0 degree when the device is level, increasing to 90 degrees as the device is
+ *    tilted up onto its left side, and decreasing to −90 degrees when the device is tilted up onto
+ *    its right side.
+ *  - **Pitch** : 0 degree when the device is level, increasing to 90 degrees as the device is
+ *    tilted so its top is pointing down, then decreasing to 0 degree as it gets turned over.
+ *    Similarly, as the device is tilted so its bottom points down, pitch decreases to −90 degrees,
+ *    then increases to 0 degree as it gets turned all the way over.
+ *  - **Azimuth** : 0 degree when the top of the device is pointing north, 90 degrees when it is
+ *    pointing east, 180 degrees when it is pointing south, 270 degrees when it is pointing west,
+ *    etc.
+ *
+ * These measurements assume that the device itself is not moving.
  */
 @DesignerComponent(version = YaVersion.ORIENTATIONSENSOR_COMPONENT_VERSION,
     description = "<p>Non-visible component providing information about the " +
@@ -57,7 +77,8 @@ import android.view.WindowManager;
 
 @SimpleObject
 public class OrientationSensor extends AndroidNonvisibleComponent
-    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener {
+    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener,
+    RealTimeDataSource<String, Float> {
   // Constants
   private static final String LOG_TAG = "OrientationSensor";
   // offsets in array returned by SensorManager.getOrientation()
@@ -94,6 +115,9 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   private final float[] rotationMatrix = new float[DIMENSIONS * DIMENSIONS];
   private final float[] inclinationMatrix = new float[DIMENSIONS * DIMENSIONS];
   private final float[] values = new float[DIMENSIONS];
+
+  // Set of observers
+  private Set<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   /**
    * Creates a new OrientationSensor component.
@@ -141,6 +165,9 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   // Events
 
   /**
+   * The `OrientationChanged` event handler is run when the orientation has changed.
+   *
+   * @internaldoc
    * Default OrientationChanged event handler.
    *
    * <p>This event is signalled when the device's orientation has changed.  It
@@ -150,15 +177,20 @@ public class OrientationSensor extends AndroidNonvisibleComponent
    * is tilted from top to bottom, and roll indicates how much the device is tilted from
    * side to side.</p>
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Called when the orientation has changed.")
   public void OrientationChanged(float azimuth, float pitch, float roll) {
+    // Notify the Data Source observers with the updated values
+    notifyDataObservers("azimuth", azimuth);
+    notifyDataObservers("pitch", pitch);
+    notifyDataObservers("roll", roll);
+
     EventDispatcher.dispatchEvent(this, "OrientationChanged", azimuth, pitch, roll);
   }
 
   // Properties
 
   /**
-   * Available property getter method (read-only property).
+   * Indicates whether the orientation sensor is present on the device.
    *
    * @return {@code true} indicates that an orientation sensor is available,
    *         {@code false} that it isn't
@@ -170,7 +202,7 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Enabled property getter method.
+   * Specifies whether the orientation sensor is enabled.
    *
    * @return {@code true} indicates that the sensor generates events,
    *         {@code false} that it doesn't
@@ -185,6 +217,7 @@ public class OrientationSensor extends AndroidNonvisibleComponent
    *
    * @param enabled  {@code true} enables sensor event generation,
    *                 {@code false} disables it
+   * @suppressdoc
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
@@ -201,9 +234,8 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Pitch property getter method (read-only property).
-   *
-   * <p>To return meaningful values the sensor must be enabled.</p>
+   * Returns the pitch angle of the device.
+   * To return meaningful values the sensor must be enabled.
    *
    * @return  current pitch
    */
@@ -213,9 +245,8 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Roll property getter method (read-only property).
-   *
-   * <p>To return meaningful values the sensor must be enabled.</p>
+   * Returns the roll angle of the device.
+   * To return meaningful values the sensor must be enabled.
    *
    * @return  current roll
    */
@@ -225,9 +256,8 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Azimuth property getter method (read-only property).
-   *
-   * <p>To return meaningful values the sensor must be enabled.</p>
+   * Returns the azimuth angle of the device.
+   * To return meaningful values the sensor must be enabled.
    *
    * @return  current azimuth
    */
@@ -237,6 +267,10 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   }
 
   /**
+   * Returns an angle that tells the direction in which the device is tiled. That is, it tells the
+   * direction of the force that would be felt by a ball rolling on the surface of the device.
+   *
+   * @internaldoc
    * <p>Angle property getter method (read-only property).  Specifically, this
    * provides the angle in which the orientation sensor is tilted, treating
    * -{@link #Roll()} as the x-coordinate and {@link #Pitch()} as the
@@ -265,7 +299,7 @@ public class OrientationSensor extends AndroidNonvisibleComponent
    *             side; the maximum absolute value of roll is 90 degrees, after
    *             which it decreases back toward 0 (flat face-up or face-down).
    *
-   * @returns the corresonding angle in the range [-180, +180] degrees
+   * @returns the corresponding angle in the range [-180, +180] degrees
    */
   static float computeAngle(float pitch, float roll) {
     return (float) Math.toDegrees(Math.atan2(Math.toRadians(pitch),
@@ -274,10 +308,12 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Magnitude property getter method (read-only property).  Specifically, this
-   * returns a number between 0 and 1, indicating how much the device
-   * is tilted.  For the angle of tilt, use {@link #Angle()}.
+   * Returns a number between 0 and 1 indicating how much the device
+   * is tilted. It gives the magnitude of the force that would be felt
+   * by a ball rolling on the surface of the device. For the angle of
+   * tilt, use {@link #Angle()}.
    *
+   * @internaldoc
    * <p>To return meaningful values the sensor must be enabled.</p>
    *
    * @return the magnitude of the tilt, from 0 to 1
@@ -425,6 +461,52 @@ public class OrientationSensor extends AndroidNonvisibleComponent
   public void onResume() {
     if (enabled) {
       startListening();
+    }
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value corresponding the given key. Possible keys include:
+   * <ul>
+   * <li>azimuth - azimuth value</li>
+   * <li>pitch   - pitch value</li>
+   * <li>roll    - roll value</li>
+   * </ul>
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "azimuth":
+        return azimuth;
+
+      case "pitch":
+        return pitch;
+
+      case "roll":
+        return roll;
+
+      default:
+        return 0f;
     }
   }
 }

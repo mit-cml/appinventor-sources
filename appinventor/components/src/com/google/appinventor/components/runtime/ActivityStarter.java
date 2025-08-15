@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,8 +15,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import android.net.Uri;
-
-import android.support.v4.content.FileProvider;
 
 import android.text.TextUtils;
 
@@ -38,12 +36,40 @@ import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.NougatUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.io.File;
 
 /**
- * Implementation of a general Android Activity component.
+ * A component that can launch an activity using the StartActivity method.
+ *
+ * Activities that can be launched include:
+ *
+ * * Starting another App Inventor for Android app. To do so, first find out the class of the other
+ *   application by downloading the source code and using a file explorer or unzip utility to find
+ *   a file named "youngandroidproject/project.properties". The first line of the file will start
+ *   with "main=" and be followed by the class name; for example,
+ *   `main=com.gmail.Bitdiddle.Ben.HelloPurr.Screen1`. (The first components indicate that it was
+ *   created by Ben.Bitdiddle\@gmail.com.) To make your `ActivityStarter` launch this application,
+ *   set the following properties:
+ *   * `ActivityPackage` to the class name, dropping the last component (for example,
+ *     `com.gmail.Bitdiddle.Ben.HelloPurr`)
+ *   * `ActivityClass` to the entire class name (for example,
+ *     `com.gmail.Bitdiddle.Ben.HelloPurr.Screen1`)
+ * * Starting the camera application by setting the following properties:
+ *   * `Action`: `android.intent.action.MAIN`
+ *   * `ActivityPackage`: `com.android.camera`
+ *   * `ActivityClass`: `com.android.camera.Camera`
+ * * Performing web search. Assuming the term you want to search for is "vampire" (feel free to substitute your own choice), set the properties to:
+ *   * `Action`: `android.intent.action.WEB_SEARCH`
+ *   * `ExtraKey`: `query`
+ *   * `ExtraValue`: `vampire`
+ *   * `ActivityPackage`: `com.google.android.providers.enhancedgooglesearch`
+ *   * `ActivityClass`: `com.google.android.providers.enhancedgooglesearch.Launcher`
+ * * Opening a browser to a specified web page. Assuming the page you want to go to is "www.facebook.com" (feel free to substitute your own choice), set the properties to:
+ *   * `Action`: `android.intent.action.VIEW`
+ *   * `DataUri`: `http://www.facebook.com`
  *
  * @author markf@google.com (Mark Friedman)
  */
@@ -351,11 +377,18 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     this.activityClass = activityClass.trim();
   }
 
+  /**
+   * Event raised after this `ActivityStarter` returns.
+   * @param result The result returned by the activity
+   */
   @SimpleEvent(description = "Event raised after this ActivityStarter returns.")
   public void AfterActivity(String result) {
     EventDispatcher.dispatchEvent(this, "AfterActivity", result);
   }
 
+  /**
+   * Event raised if this `ActivityStarter returns because the activity was canceled.
+   */
   @SimpleEvent(description =
       "Event raised if this ActivityStarter returns because the activity was canceled.")
   public void ActivityCanceled() {
@@ -418,7 +451,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
 
   /**
-   * Returns the name of the activity that corresponds to this ActivityStarter,
+   * Returns the name of the activity that corresponds to this `ActivityStarter`,
    * or an empty string if no corresponding activity can be found.
    */
   @SimpleFunction(description = "Returns the name of the activity that corresponds to this " +
@@ -434,7 +467,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   }
 
   /**
-   * Start the activity.
+   * Start the activity corresponding to this `ActivityStarter`.
    */
   @SimpleFunction(description = "Start the activity corresponding to this ActivityStarter.")
   public void StartActivity() {
@@ -457,7 +490,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
     } else {
       try {
         container.$context().startActivityForResult(intent, requestCode);
-        String openAnim = container.$form().getOpenAnimType();
+        String openAnim = container.$form().OpenScreenAnimation();
         AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
       } catch (ActivityNotFoundException e) {
         form.dispatchErrorOccurredEvent(this, "StartActivity",
@@ -475,9 +508,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       File file = new File(uri.getPath());
       if (file.isFile()) {
         Log.d(LOG_TAG, "It's a file");
-
-        String packageName = form.$context().getPackageName();
-        uri = FileProvider.getUriForFile(form.$context(), packageName + ".provider", file);
+        uri = NougatUtil.getPackageUri(form, file);
         intent = new Intent(action);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Log.d(LOG_TAG, "added permissions"); // adb log shows this gets printed
@@ -510,16 +541,25 @@ public class ActivityStarter extends AndroidNonvisibleComponent
       intent.putExtra(extraKey, extraValue);
     }
 
+    // If the extra value is a string, put it to the intent. If the extra value is a list
+    // of strings, convert it to a java list and put that to the intent.
     for (Object extra : extras.toArray()) {
       YailList castExtra = (YailList) extra;
       String key = castExtra.getString(0);
-      String value = castExtra.getString(1);
-      if (key.length() != 0 && value.length() != 0) {
-        Log.i(LOG_TAG, "Adding extra (pairs), key = " + key + " value = " + value);
-        intent.putExtra(key, value);
-      }
-    }
-
+      Object value = castExtra.getObject(1);
+      Log.i(LOG_TAG, "Adding extra, key = " + key + " value = " + value);
+      if ((key.length() != 0)) {
+        if (value instanceof YailList) {
+          Log.i(LOG_TAG, "Adding extra list, key = " + key + " value = " + value);
+          intent.putExtra(key, ((YailList) value).toStringArray());
+        }
+        else {
+          String stringValue = castExtra.getString(1);
+          Log.i(LOG_TAG, "Adding extra string, key = " + key + " value = " + stringValue);
+          intent.putExtra(key, stringValue);
+        }
+      };
+    };
     return intent;
   }
 

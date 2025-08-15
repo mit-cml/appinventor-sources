@@ -31,6 +31,20 @@ public final class GeneralSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.DISABLED_USER_URL, "",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.USER_LAST_LOCALE, "en",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.USER_DYSLEXIC_FONT, "false",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.DARK_THEME_ENABLED, "false",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.USER_NEW_LAYOUT, "true",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.USER_AUTOLOAD_PROJECT, "true",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.FOLDERS, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.SHOW_UIPICKER,
+        "True", EditableProperty.TYPE_INVISIBLE));
   }
 
   @Override
@@ -40,8 +54,6 @@ public final class GeneralSettings extends Settings {
       // Account is disabled, show dialog box and stop further processing
       // i.e., do not open previous project.
       Ode.getInstance().disabledAccountDialog(disabledUrl);
-    } else {
-      Ode.getInstance().openPreviousProject();
     }
   }
 }

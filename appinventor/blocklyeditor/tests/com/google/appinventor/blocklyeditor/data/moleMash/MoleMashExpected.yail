@@ -10,7 +10,10 @@ $Source $Yail
 (def (p$UpdateScore )  (set-and-coerce-property! 'ScoreLabel 'Text (call-yail-primitive string-append (*list-for-runtime* "Score:" (get-var g$score) ) '(text text ) "join") 'text))
 ;;; Screen1
 
-(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+ (set-and-coerce-property! 'Screen1 'ScreenOrientation "unspecified" 'text)
+ (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
 )
 
 ;;; MyCanvas

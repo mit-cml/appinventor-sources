@@ -36,4 +36,15 @@ public abstract class DragSourcePanel extends FocusPanel implements DragSource {
     addTouchEndHandler(dragSourceSupport);
     addTouchCancelHandler(dragSourceSupport);
   }
+
+  /**
+   * Constraint the movement of the object to the region specified by the parameters.
+   * @param x leftmost x coordinate
+   * @param y topmost y coordinate
+   * @param width width of the region
+   * @param height  height of the region
+   */
+  public void constraintToBounds(int x, int y, int width, int height) {
+    dragSourceSupport.constraintToBounds(x, y, width, height);
+  }
 }

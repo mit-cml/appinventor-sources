@@ -1,0 +1,29 @@
+syntax = "proto2";
+
+package youngandroid;
+
+option java_package = "com.google.appinventor.server.project.youngandroid";
+option java_outer_classname = "GalleryProtobuf";
+
+// This file define the format of tokens used to communicate securely
+// with the new separate MIT App Inventor Gallery. This tokens are
+// serialized and then encrypted with KeyCzar using a shared key between
+// the gallery and a given instance of MIT App Inventor
+
+message token {
+  optional uint64 ts = 2;
+  optional string userid = 3;
+  optional uint64 projectid = 4;
+  optional string projectname = 5;
+}
+
+message content {
+  enum ContentType {
+    DIRECT = 0;
+    URL = 1;
+  }
+  optional string projectname = 1;
+  optional ContentType ctype = 2;
+  optional bytes content = 3;
+  optional string urlcontent = 4;
+}

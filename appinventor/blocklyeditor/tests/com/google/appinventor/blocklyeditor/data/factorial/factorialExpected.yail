@@ -8,7 +8,10 @@ $Source $Yail
 (def (p$factorial $x) (let ( ($acc 1)  ) (begin   (while (call-yail-primitive yail-not-equal? (*list-for-runtime* (lexical-value $x) 0) '(any any) "=") (begin   (set-lexical! $acc (call-yail-primitive * (*list-for-runtime* (lexical-value $acc) (lexical-value $x) ) '(number number ) "*"))(set-lexical! $x (call-yail-primitive - (*list-for-runtime* (lexical-value $x) 1) '(number number) "-")))) (lexical-value $acc)) ))
 ;;; Screen1
 
-(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+ (set-and-coerce-property! 'Screen1 'ScreenOrientation "unspecified" 'text)
+ (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
 )
 
 ;;; Button1

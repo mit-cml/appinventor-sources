@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,6 +15,8 @@ import com.google.appinventor.shared.properties.json.JSONParser;
  * @author lizlooney@google.com (Liz Looney)
  */
 public class YoungAndroidSourceAnalyzer {
+
+  public static final String ASSETS_FOLDER = "assets";
 
   // TODO(user) Source these from a common constants library.
   public static final String SRC_FOLDER = "src";
@@ -57,6 +59,7 @@ public class YoungAndroidSourceAnalyzer {
    * @return the properties as a JSONObject
    */
   public static JSONObject parseSourceFile(String source, JSONParser jsonParser) {
+    source = source.replaceAll("\r\n", "\n");
     // First, locate the beginning of the $JSON section.
     // Older files have a $Properties before the $JSON section and we need to make sure we skip
     // that.

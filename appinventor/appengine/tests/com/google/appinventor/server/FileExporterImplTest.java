@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -58,7 +58,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    storageIo = StorageIoInstanceHolder.INSTANCE;
+    storageIo = StorageIoInstanceHolder.getInstance();
     exporter = new FileExporterImpl();
     Project project = new Project(PROJECT_NAME);
     project.setProjectType(FAKE_PROJECT_TYPE);

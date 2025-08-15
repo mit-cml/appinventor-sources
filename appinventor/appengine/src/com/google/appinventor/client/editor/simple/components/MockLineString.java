@@ -5,7 +5,6 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -32,35 +31,8 @@ public class MockLineString extends MockMapFeatureBase {
   static MockLineString fromGeoJSON(MockFeatureCollection parent, JSONObject properties, JavaScriptObject layer) {
     MockLineString line = new MockLineString(parent.editor);
     line.feature = layer;
-    String name = null;
-    for (String key : properties.keySet()) {
-      String value;
-      if (key.equalsIgnoreCase(PROPERTY_NAME_STROKEWIDTH) || key.equalsIgnoreCase(CSS_PROPERTY_STROKEWIDTH)) {
-        value = properties.get(key).isString().stringValue();
-        line.changeProperty(PROPERTY_NAME_STROKEWIDTH, value);
-        line.onPropertyChange(PROPERTY_NAME_STROKEWIDTH, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_STROKECOLOR) || key.equalsIgnoreCase(CSS_PROPERTY_STROKE)) {
-        value = properties.get(key).isString().stringValue();
-        line.changeProperty(PROPERTY_NAME_STROKECOLOR, value);
-        line.onPropertyChange(PROPERTY_NAME_STROKECOLOR, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_TITLE)) {
-        value = properties.get(key).isString().stringValue();
-        line.changeProperty(PROPERTY_NAME_TITLE, value);
-        line.onPropertyChange(PROPERTY_NAME_TITLE, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_DESCRIPTION)) {
-        value = properties.get(key).isString().stringValue();
-        line.changeProperty(PROPERTY_NAME_DESCRIPTION, value);
-        line.onPropertyChange(PROPERTY_NAME_DESCRIPTION, value);
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_NAME)) {
-        name = properties.get(key).isString().stringValue();
-      } else if (key.equalsIgnoreCase(PROPERTY_NAME_VISIBLE)) {
-        value = properties.get(key).isString().stringValue();
-        line.changeProperty(PROPERTY_NAME_VISIBLE, value);
-        line.onPropertyChange(PROPERTY_NAME_VISIBLE, value);
-      }
-    }
-    processFeatureName(line, parent, name);
     line.preserveLayerData();
+    line.processFromGeoJSON(parent, properties);
     return line;
   }
 
@@ -145,7 +117,7 @@ public class MockLineString extends MockMapFeatureBase {
     if (!polyline.clickHandler) {
       while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
       polyline.clickHandler = function(e) {
-        this.@com.google.appinventor.client.editor.simple.components.MockLineString::select()();
+        this.@com.google.appinventor.client.editor.simple.components.MockLineString::select(*)(e);
         if (e.originalEvent) e.originalEvent.stopPropagation();
       };
       polyline.dragHandler = function() {
@@ -170,6 +142,10 @@ public class MockLineString extends MockMapFeatureBase {
     this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::setNativeTooltip(*)(
       this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getTooltip()()
     );
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if (!isVisible) {
+      map.removeLayer(polyline);
+    }
   }-*/;
 
   private native void preserveLayerData()/*-{

@@ -10,7 +10,7 @@ package com.google.appinventor.components.runtime;
  * Interface for components that need to do something when they are dynamically deleted (most
  * likely by the REPL)
  *
- * @author markf@google.com (Your Name Here)
+ * @author markf@google.com (Mark Friedman)
  */
 public interface Deleteable {
   void onDelete();

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Media</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Media</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="media">Media</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#Camcorder">Camcorder</a></li>
+  <li><a href="#Camera">Camera</a></li>
+  <li><a href="#FilePicker">FilePicker</a></li>
+  <li><a href="#ImagePicker">ImagePicker</a></li>
+  <li><a href="#Player">Player</a></li>
+  <li><a href="#Sound">Sound</a></li>
+  <li><a href="#SoundRecorder">SoundRecorder</a></li>
+  <li><a href="#SpeechRecognizer">SpeechRecognizer</a></li>
+  <li><a href="#TextToSpeech">TextToSpeech</a></li>
+  <li><a href="#Translator">Translator</a></li>
+  <li><a href="#VideoPlayer">VideoPlayer</a></li>
+</ul>
+
+<h2 id="Camcorder">Camcorder</h2>
+
+<p><img src="images/camcorder.png" alt="Camcorder icon" /></p>
+
+<p>A component to record a video using the device’s camcorder. After the video is recorded, the
+ name of the file on the phone containing the clip is available as an argument to the
+ <a href="#Camcorder.AfterRecording"><code class="highlighter-rouge">AfterRecording</code></a> event. The file name can be used, for example, to set the source
+ property of a <a href="#VideoPlayer"><code class="highlighter-rouge">VideoPlayer</code></a> component.</p>
+
+<h3 id="Camcorder-Properties">Properties</h3>
+
+<p class="properties">None</p>
+
+<h3 id="Camcorder-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Camcorder.AfterRecording">AfterRecording(<em class="text">clip</em>)</dt>
+  <dd>Indicates that a video was recorded with the camera and provides the path to
+ the stored video.</dd>
+</dl>
+
+<h3 id="Camcorder-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Camcorder.RecordVideo" class="method"><i></i> RecordVideo()</dt>
+  <dd>Records a video, then raises the <a href="#Camcorder.AfterRecording"><code class="highlighter-rouge">AfterRecording</code></a> event.</dd>
+</dl>
+
+<h2 id="Camera">Camera</h2>
+
+<p><img src="images/camera.png" alt="Camera icon" /></p>
+
+<p>Use a camera component to take a picture on the phone.</p>
+
+<p><code class="highlighter-rouge">Camera</code> is a non-visible component that takes a picture using the device’s camera. After the
+ picture is taken, the path to the file on the phone containing the picture is available as an
+ argument to the <a href="#Camera.AfterPicture"><code class="highlighter-rouge">AfterPicture</code></a> event. The path can be used, for example, as the
+ <a href="userinterface.html#Image.Picture"><code class="highlighter-rouge">Picture</code></a> property of an <a href="userinterface.html3Image"><code class="highlighter-rouge">Image</code></a>
+ component.</p>
+
+<h3 id="Camera-Properties">Properties</h3>
+
+<p class="properties">None</p>
+
+<h3 id="Camera-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Camera.AfterPicture">AfterPicture(<em class="text">image</em>)</dt>
+  <dd>Called after the picture is taken. The text argument <code class="highlighter-rouge">image</code> is the path that can be used to
+ locate the image on the phone.</dd>
+</dl>
+
+<h3 id="Camera-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Camera.TakePicture" class="method"><i></i> TakePicture()</dt>
+  <dd>Takes a picture, then raises the <a href="#Camera.AfterPicture"><code class="highlighter-rouge">AfterPicture</code></a> event.</dd>
+</dl>
+
+<h2 id="FilePicker">FilePicker</h2>
+
+<p>The <code>FilePicker</code> component is a button-like component that when clicked
+ by the user will prompt them to select a file from the system. The picker
+ can also be programmatically opened by calling its
+ <a href="/reference/components/media.html#FilePicker.Open" target="_blank">Open</a> method.
+ Using the FilePicker requires Android 4.4 or higher or iOS 11 or higher.</p>
+
+<h3 id="FilePicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="FilePicker.Action" class="com google appinventor components common FileActionEnum"><em>Action</em></dt>
+  <dd>Sets the desired action for the FilePicker. One of:
+
+    <ul>
+      <li>Pick Existing File: Open an existing file</li>
+      <li>Pick Directory: Open an existing directory</li>
+      <li>Pick New File: Create a new file for saving</li>
+    </ul>
+  </dd>
+  <dt id="FilePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="FilePicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">FilePicker</code> should be active and clickable.</dd>
+  <dt id="FilePicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">FilePicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="FilePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">FilePicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="FilePicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">FilePicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="FilePicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">FilePicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="FilePicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="FilePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="FilePicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">FilePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#FilePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="FilePicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="FilePicker.MimeType" class="text"><em>MimeType</em></dt>
+  <dd>Sets the desired MIME type for picking a file.</dd>
+  <dt id="FilePicker.Selection" class="text ro bo"><em>Selection</em></dt>
+  <dd>Returns the selected file, possibly as a content URI.</dd>
+  <dt id="FilePicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">FilePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="FilePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">FilePicker</code> with an assigned
+ <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="FilePicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">FilePicker</code>.</dd>
+  <dt id="FilePicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">FilePicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="FilePicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">FilePicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="FilePicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="FilePicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">FilePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">FilePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="FilePicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FilePicker</code>, measured in pixels.</dd>
+  <dt id="FilePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FilePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="FilePicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="FilePicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the <code class="highlighter-rouge">FilePicker</code> activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="FilePicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the <code class="highlighter-rouge">FilePicker</code> is clicked or the picker is shown
+ using the <a href="#FilePicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.</dd>
+  <dt id="FilePicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">FilePicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="FilePicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">FilePicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="FilePicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">FilePicker</code> was pressed down.</dd>
+  <dt id="FilePicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">FilePicker</code> has been released.</dd>
+</dl>
+
+<h3 id="FilePicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="FilePicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the <code class="highlighter-rouge">FilePicker</code>, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="ImagePicker">ImagePicker</h2>
+
+<p>A special-purpose button. When the user taps an <code class="highlighter-rouge">ImagePicker</code>, the device’s image gallery
+ appears, and the user can choose an image. After an image is picked, it is saved, and the
+ <a href="#ImagePicker.Selection"><code class="highlighter-rouge">Selection</code></a> property will be the name of the file where the image is stored. In order
+ to not fill up storage, a maximum of 10 images will be stored. Picking more images will delete
+ previous images, in order from oldest to newest.</p>
+
+<h3 id="ImagePicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ImagePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="ImagePicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">ImagePicker</code> should be active and clickable.</dd>
+  <dt id="ImagePicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ImagePicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="ImagePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ImagePicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="ImagePicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">ImagePicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="ImagePicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">ImagePicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="ImagePicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="ImagePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ImagePicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">ImagePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#ImagePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="ImagePicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ImagePicker.Selection" class="text ro bo"><em>Selection</em></dt>
+  <dd>Path to the file containing the image that was selected.</dd>
+  <dt id="ImagePicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">ImagePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="ImagePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">ImagePicker</code> with an assigned
+ <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="ImagePicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">ImagePicker</code>.</dd>
+  <dt id="ImagePicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">ImagePicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="ImagePicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">ImagePicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="ImagePicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ImagePicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">ImagePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">ImagePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="ImagePicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ImagePicker</code>, measured in pixels.</dd>
+  <dt id="ImagePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ImagePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="ImagePicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ImagePicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the <code class="highlighter-rouge">ImagePicker</code> activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="ImagePicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the <code class="highlighter-rouge">ImagePicker</code> is clicked or the picker is shown
+ using the <a href="#ImagePicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.</dd>
+  <dt id="ImagePicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">ImagePicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="ImagePicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">ImagePicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="ImagePicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">ImagePicker</code> was pressed down.</dd>
+  <dt id="ImagePicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">ImagePicker</code> has been released.</dd>
+</dl>
+
+<h3 id="ImagePicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ImagePicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the <code class="highlighter-rouge">ImagePicker</code>, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="Player">Player</h2>
+
+<p>Multimedia component that plays audio and controls phone vibration. The name of a multimedia
+ file is specified in the <a href="#Player.Source"><code class="highlighter-rouge">Source</code></a> property, which can be set in the Designer or
+ in the Blocks Editor. The length of time for a vibration is specified in the Blocks Editor in
+ milliseconds (thousandths of a second).</p>
+
+<p>For supported audio formats, see
+ <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
+
+<p>This component is best for long sound files, such as songs, while the <a href="#Sound"><code class="highlighter-rouge">Sound</code></a> component is
+ more efficient for short files, such as sound effects.</p>
+
+<h3 id="Player-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Player.IsPlaying" class="boolean ro bo"><em>IsPlaying</em></dt>
+  <dd>Reports whether the media is playing.</dd>
+  <dt id="Player.Loop" class="boolean"><em>Loop</em></dt>
+  <dd>If true, the <code class="highlighter-rouge">Player</code> will loop when it plays. Setting <code class="highlighter-rouge">Loop</code> while the player is playing will
+ affect the current playing.</dd>
+  <dt id="Player.PlayOnlyInForeground" class="boolean"><em>PlayOnlyInForeground</em></dt>
+  <dd>If true, the <code class="highlighter-rouge">Player</code> will pause playing when leaving the current screen; if false
+ (default option), the <code class="highlighter-rouge">Player</code> continues playing whenever the current screen is displaying or
+ not.</dd>
+  <dt id="Player.Source" class="text"><em>Source</em></dt>
+  <dd>Sets the audio source.</dd>
+  <dt id="Player.Volume" class="number wo"><em>Volume</em></dt>
+  <dd>Sets the volume property to a number between 0 and 100.</dd>
+</dl>
+
+<h3 id="Player-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Player.Completed">Completed()</dt>
+  <dd>Indicates that the media has reached the end</dd>
+  <dt id="Player.OtherPlayerStarted">OtherPlayerStarted()</dt>
+  <dd>This event is signaled when another player has started (and the current player is playing or
+ paused, but not stopped).</dd>
+</dl>
+
+<h3 id="Player-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Player.Pause" class="method"><i></i> Pause()</dt>
+  <dd>Suspends playing the media if it is playing.</dd>
+  <dt id="Player.Start" class="method"><i></i> Start()</dt>
+  <dd>Plays the media.  If it was previously paused, the playing is resumed.
+ If it was previously stopped, it starts from the beginning.</dd>
+  <dt id="Player.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Stops playing the media and seeks to the beginning of the song.</dd>
+  <dt id="Player.Vibrate" class="method"><i></i> Vibrate(<em class="number">milliseconds</em>)</dt>
+  <dd>Vibrates for specified number of milliseconds.</dd>
+</dl>
+
+<h2 id="Sound">Sound</h2>
+
+<p>A multimedia component that plays sound files and optionally vibrates for the number of
+ milliseconds (thousandths of a second) specified in the Blocks Editor. The name of the sound
+ file to play can be specified either in the Designer or in the Blocks Editor.</p>
+
+<p>For supported sound file formats, see
+ <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
+
+<p>This <code class="highlighter-rouge">Sound</code> component is best for short sound files, such as sound effects, while the
+ <a href="#Player"><code class="highlighter-rouge">Player</code></a> component is more efficient for longer sounds, such as songs.</p>
+
+<h3 id="Sound-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Sound.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
+  <dd>Specifies the minimum interval required between calls to <a href="#Sound.Play"><code class="highlighter-rouge">Play</code></a>, in
+ milliseconds.
+ Once the sound starts playing, all further <a href="#Sound.Play"><code class="highlighter-rouge">Play</code></a> calls will be ignored
+ until the interval has elapsed.</dd>
+  <dt id="Sound.Source" class="text"><em>Source</em></dt>
+  <dd>The name of the sound file. Only certain formats are supported.
+ See http://developer.android.com/guide/appendix/media-formats.html.</dd>
+</dl>
+
+<h3 id="Sound-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Sound-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Sound.Pause" class="method"><i></i> Pause()</dt>
+  <dd>Pauses playing the sound if it is being played.</dd>
+  <dt id="Sound.Play" class="method"><i></i> Play()</dt>
+  <dd>Plays the sound.</dd>
+  <dt id="Sound.Resume" class="method"><i></i> Resume()</dt>
+  <dd>Resumes playing the sound after a pause.</dd>
+  <dt id="Sound.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Stops playing the sound if it is being played.</dd>
+  <dt id="Sound.Vibrate" class="method"><i></i> Vibrate(<em class="number">millisecs</em>)</dt>
+  <dd>Vibrates for the specified number of milliseconds.</dd>
+</dl>
+
+<h2 id="SoundRecorder">SoundRecorder</h2>
+
+<p><img src="images/soundrecorder.png" alt="SoundRecorder icon" /></p>
+
+<p>Multimedia component that records audio.</p>
+
+<h3 id="SoundRecorder-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="SoundRecorder.SavedRecording" class="text"><em>SavedRecording</em></dt>
+  <dd>Specifies the path to the file where the recording should be stored. If this property is the
+ empty string, then starting a recording will create a file in an appropriate location. If the
+ property is not the empty string, it should specify a complete path to a file in an existing
+ directory, including a file name with the extension .3gp.</dd>
+</dl>
+
+<h3 id="SoundRecorder-Events">Events</h3>
+
+<dl class="events">
+  <dt id="SoundRecorder.AfterSoundRecorded">AfterSoundRecorded(<em class="text">sound</em>)</dt>
+  <dd>Provides the location of the newly created sound.</dd>
+  <dt id="SoundRecorder.StartedRecording">StartedRecording()</dt>
+  <dd>Indicates that the recorder has started, and can be stopped.</dd>
+  <dt id="SoundRecorder.StoppedRecording">StoppedRecording()</dt>
+  <dd>Indicates that the recorder has stopped, and can be started again.</dd>
+</dl>
+
+<h3 id="SoundRecorder-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="SoundRecorder.Start" class="method"><i></i> Start()</dt>
+  <dd>Starts recording.</dd>
+  <dt id="SoundRecorder.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Stops recording.</dd>
+</dl>
+
+<h2 id="SpeechRecognizer">SpeechRecognizer</h2>
+
+<p><img src="images/speechrecognizer.png" alt="SpeechRecognizer icon" /></p>
+
+<p>Use a <code class="highlighter-rouge">SpeechRecognizer</code> component to listen to the user speaking and convert the spoken sound
+ into text using the device’s speech recognition feature.</p>
+
+<h3 id="SpeechRecognizer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="SpeechRecognizer.Language" class="text bo"><em>Language</em></dt>
+  <dd>Suggests the language to use for recognizing speech. An empty string (the default) will
+ use the system’s default language.
+
+    <p>Language is specified using a <a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">language tag</a>
+   with an optional region suffix, such as en or es-MX. The set of supported languages will
+   vary by device.</p>
+  </dd>
+  <dt id="SpeechRecognizer.Result" class="text ro bo"><em>Result</em></dt>
+  <dd>Returns the last text produced by the recognizer.</dd>
+  <dt id="SpeechRecognizer.UseLegacy" class="boolean"><em>UseLegacy</em></dt>
+  <dd>If true, a separate dialog is used to recognize speech (the default). If false, speech is
+ recognized in the background and updates are received as it recognizes words.
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> may get several calls with <code class="highlighter-rouge">partial</code> set to <code class="logic block highlighter-rouge">true</code>.
+ Once sufficient time has elapsed since the last utterance, or <code class="highlighter-rouge">StopListening</code> is called,
+ the last string will be returned with <code class="highlighter-rouge">partial</code> set to <code class="logic block highlighter-rouge">false</code> to indicate that it is the
+ final recognized string and no more data will be provided until recognition is again started. See
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> for more details on partial speech recognition.</dd>
+</dl>
+
+<h3 id="SpeechRecognizer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="SpeechRecognizer.AfterGettingText">AfterGettingText(<em class="text">result</em>,<em class="boolean">partial</em>)</dt>
+  <dd>Simple event to raise after the SpeechRecognizer has recognized speech. If
+ <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> is <code class="logic block highlighter-rouge">true</code>, then this event will only happen once
+ at the very end of the recognition. If <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> is <code class="logic block highlighter-rouge">false</code>,
+ then this event will run multiple times as the <code class="highlighter-rouge">SpeechRecognizer</code> incrementally recognizes
+ speech. In this case, <code class="highlighter-rouge">partial</code> will be <code class="logic block highlighter-rouge">true</code> until the recognized speech
+ has been finalized (e.g., the user has stopped speaking), in which case <code class="highlighter-rouge">partial</code> will be
+ <code class="logic block highlighter-rouge">false</code>.</dd>
+  <dt id="SpeechRecognizer.BeforeGettingText">BeforeGettingText()</dt>
+  <dd>Simple event to raise when the <code class="highlighter-rouge">SpeechRecognizer</code> is invoked but before its
+ activity is started.</dd>
+</dl>
+
+<h3 id="SpeechRecognizer-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="SpeechRecognizer.GetText" class="method"><i></i> GetText()</dt>
+  <dd>Asks the user to speak, and converts the speech to text. Signals the
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> event when the result is available.</dd>
+  <dt id="SpeechRecognizer.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Function used to forcefully stop listening speech in cases where
+ SpeechRecognizer cannot stop automatically.
+ This function works only when the <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> property is
+ set to <code class="logic block highlighter-rouge">false</code>.</dd>
+</dl>
+
+<h2 id="TextToSpeech">TextToSpeech</h2>
+
+<p>The <code class="highlighter-rouge">TextToSpeech</code> component speaks a given text aloud. You can set the pitch
+ and the rate of speech.</p>
+
+<p>You can also set a language by supplying a language code. This changes the pronunciation of
+ words, not the actual language spoken. For example, setting the <a href="#TextToSpeech.Language"><code class="highlighter-rouge">Language</code></a> to French
+ and speaking English text will sound like someone speaking English (en) with a French accent.</p>
+
+<p>You can also specify a country by supplying a <a href="#TextToSpeech.Country"><code class="highlighter-rouge">Country</code></a> code. This can affect the
+ pronunciation. For example, British English (GBR) will sound different from US English (USA).
+ Not every country code will affect every language.</p>
+
+<p>The languages and countries available depend on the particular device, and can be listed with
+ the <a href="#TextToSpeech.AvailableLanguages"><code class="highlighter-rouge">AvailableLanguages</code></a> and <a href="#TextToSpeech.AvailableCountries"><code class="highlighter-rouge">AvailableCountries</code></a> properties.</p>
+
+<h3 id="TextToSpeech-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="TextToSpeech.AvailableCountries" class="list ro bo"><em>AvailableCountries</em></dt>
+  <dd>List of the country codes available on this device for use with TextToSpeech.  Check the Android developer documentation under supported languages to find the meanings of these abbreviations.</dd>
+  <dt id="TextToSpeech.AvailableLanguages" class="list ro bo"><em>AvailableLanguages</em></dt>
+  <dd>List of the languages available on this device for use with TextToSpeech.  Check the Android developer documentation under supported languages to find the meanings of these abbreviations.</dd>
+  <dt id="TextToSpeech.Country" class="text"><em>Country</em></dt>
+  <dd>Country code to use for speech generation. This can affect the pronunciation. For example,
+ British English (GBR) will sound different from US English (USA). Not every country code will
+ affect every language.</dd>
+  <dt id="TextToSpeech.Language" class="text"><em>Language</em></dt>
+  <dd>Sets the language for TextToSpeech. This changes the way that words are pronounced, not the
+ actual language that is spoken. For example, setting the language to French and speaking
+ English text will sound like someone speaking English with a French accent.</dd>
+  <dt id="TextToSpeech.Pitch" class="number"><em>Pitch</em></dt>
+  <dd>Sets the speech pitch for the TextToSpeech.
+
+    <p>The values should be between 0 and 2 where lower values lower the tone of synthesized voice
+ and greater values raise it.</p>
+
+    <p>The default value is 1.0 for normal pitch.</p>
+  </dd>
+  <dt id="TextToSpeech.Result" class="boolean ro bo"><em>Result</em></dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if the text was successfully converted to
+ speech, otherwise <code class="logic block highlighter-rouge">false</code>.</dd>
+  <dt id="TextToSpeech.SpeechRate" class="number"><em>SpeechRate</em></dt>
+  <dd>Sets the SpeechRate for TextToSpeech.
+
+    <p>The values should be between 0 and 2 where lower values slow down the pitch and greater
+ values accelerate it.</p>
+
+    <p>The default value is 1.0 for normal speech rate.</p>
+  </dd>
+</dl>
+
+<h3 id="TextToSpeech-Events">Events</h3>
+
+<dl class="events">
+  <dt id="TextToSpeech.AfterSpeaking">AfterSpeaking(<em class="boolean">result</em>)</dt>
+  <dd>Event to raise after the message is spoken. The <code class="variable block highlighter-rouge">result</code> will be
+ <code class="logic block highlighter-rouge">true</code> if the message is spoken successfully, otherwise it will be
+ <code class="logic block highlighter-rouge">false</code>.</dd>
+  <dt id="TextToSpeech.BeforeSpeaking">BeforeSpeaking()</dt>
+  <dd>Event to raise when Speak is invoked, before the message is spoken.</dd>
+</dl>
+
+<h3 id="TextToSpeech-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="TextToSpeech.Speak" class="method"><i></i> Speak(<em class="text">message</em>)</dt>
+  <dd>Speaks the given message.</dd>
+  <dt id="TextToSpeech.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Stops any current speech.</dd>
+</dl>
+
+<h2 id="Translator">Translator</h2>
+
+<p>Use this component to translate words and sentences between
+ different languages. This component needs Internet access, as it
+ will request translations from a server at MIT (which in turn will
+ request translations from a commercial translation service).
+ Specify the source and target language in the form source-target
+ using two letter language codes.  So “en-es” will translate from
+ English to Spanish while “es-ru” will translate from Spanish to
+ Russian. If you leave out the source language, the service will
+ attempt to detect the source language. So providing just “es” will
+ attempt to detect the source language and translate it to Spanish.</p>
+
+<p><strong>Note:</strong> Translation happens asynchronously in the background. When the translation is complete,
+ the <a href="#Translator.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> event is triggered.</p>
+
+<h3 id="Translator-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Translator.ApiKey" class="text wo"><em>ApiKey</em></dt>
+  <dd>The API Key to use. MIT App Inventor will automatically fill this
+ value in. You should not need to change it.</dd>
+</dl>
+
+<h3 id="Translator-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Translator.GotTranslation">GotTranslation(<em class="text">responseCode</em>,<em class="text">translation</em>)</dt>
+  <dd>Event indicating that a request has finished and has returned data (translation).</dd>
+</dl>
+
+<h3 id="Translator-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Translator.RequestTranslation" class="method"><i></i> RequestTranslation(<em class="text">languageToTranslateTo</em>,<em class="text">textToTranslate</em>)</dt>
+  <dd>By providing a target language to translate to (for instance, ‘es’ for Spanish, ‘en’ for
+ English, or ‘ru’ for Russian), and a word or sentence to translate, this method will request
+ a translation. Once the text is translated by the external
+ service, the event <a href="#Translator.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> will be executed.
+
+    <p><strong>Note:</strong> Translator will attempt to detect the source language. You can also specify
+ prepending it to the language translation, e.g., es-ru will specify Spanish to Russian
+ translation.</p>
+  </dd>
+</dl>
+
+<h2 id="VideoPlayer">VideoPlayer</h2>
+
+<p>A multimedia component capable of playing videos. When the application is run, the <code class="highlighter-rouge">VideoPlayer</code>
+ will be displayed as a rectangle on-screen. If the user touches the rectangle, controls will
+ appear to play/pause, skip ahead, and skip backward within the video. The application can also
+ control behavior by calling the <a href="#VideoPlayer.Start"><code class="highlighter-rouge">Start</code></a>, <a href="#VideoPlayer.Pause"><code class="highlighter-rouge">Pause</code></a>, and <a href="#VideoPlayer.SeekTo"><code class="highlighter-rouge">SeekTo</code></a>
+ methods.</p>
+
+<p>Video files should be in 3GPP (.3gp) or MPEG-4 (.mp4) formats. For more details about legal
+ formats, see
+ <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
+
+<p>App Inventor only permits video files under 1 MB and limits the total size of an application to
+ 5 MB, not all of which is available for media (video, audio, and sound) files. If your media
+ files are too large, you may get errors when packaging or installing your application, in which
+ case you should reduce the number of media files or their sizes. Most video editing software,
+ such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by
+ shortening them or re-encoding the video into a more compact format.</p>
+
+<p>You can also set the media source to a URL that points to a streaming video, but the URL must
+ point to the video file itself, not to a program that plays the video.</p>
+
+<h3 id="VideoPlayer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="VideoPlayer.FullScreen" class="boolean bo"><em>FullScreen</em></dt>
+  <dd>Sets whether the video should be shown in fullscreen or not.</dd>
+  <dt id="VideoPlayer.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the component’s vertical height, measured in pixels.</dd>
+  <dt id="VideoPlayer.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">VideoPlayer</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="VideoPlayer.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="VideoPlayer.Source" class="text wo"><em>Source</em></dt>
+  <dd>Sets the “path” to the video. Usually, this will be the name of the video file, which should be
+ added in the Designer.</dd>
+  <dt id="VideoPlayer.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="VideoPlayer.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">VideoPlayer</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">VideoPlayer</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="VideoPlayer.Volume" class="number wo"><em>Volume</em></dt>
+  <dd>Sets the volume property to a number between 0 and 100. Values less than 0
+ will be treated as 0, and values greater than 100 will be treated as 100.</dd>
+  <dt id="VideoPlayer.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the component’s horizontal width, measured in pixels.</dd>
+  <dt id="VideoPlayer.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">VideoPlayer</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="VideoPlayer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="VideoPlayer.Completed">Completed()</dt>
+  <dd>Indicates that the video has reached the end</dd>
+</dl>
+
+<h3 id="VideoPlayer-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="VideoPlayer.GetDuration" class="method returns number"><i></i> GetDuration()</dt>
+  <dd>Returns duration of the video in milliseconds.</dd>
+  <dt id="VideoPlayer.Pause" class="method"><i></i> Pause()</dt>
+  <dd>Pauses playback of the video.  Playback can be resumed at the same location by calling the
+ <a href="#VideoPlayer.Start"><code class="highlighter-rouge">Start</code></a> method.</dd>
+  <dt id="VideoPlayer.SeekTo" class="method"><i></i> SeekTo(<em class="number">ms</em>)</dt>
+  <dd>Seeks to the requested time (specified in milliseconds) in the video. If the video is paused, the frame shown will not be updated by the seek. The player can jump only to key frames in the video, so seeking to times that differ by short intervals may not actually move to different frames.</dd>
+  <dt id="VideoPlayer.Start" class="method"><i></i> Start()</dt>
+  <dd>Plays the media specified by the <a href="#VideoPlayer.Source"><code class="highlighter-rouge">Source</code></a>.</dd>
+  <dt id="VideoPlayer.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Resets to start of video and pauses it if video was playing.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+    {%- include head.html -%}
+
+    <body class="mit_app_inventor">
+
+        {%- include header.html -%}
+        <div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">{{ page.title }}</h1>
+            </div>
+            <div class="container-fluid">
+                {{ content }}
+            </div>
+            {% if page.node %}
+            <!-- node: {{ page.node }}
+                 Page Id: {{ page.id }} -->
+            {% endif %}
+
+            {%- include footer.html -%}
+        </div>
+    </body>
+</html>

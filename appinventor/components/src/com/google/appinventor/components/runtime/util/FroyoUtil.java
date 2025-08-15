@@ -9,15 +9,14 @@ package com.google.appinventor.components.runtime.util;
 import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
-import android.net.http.SslError;
 import android.view.Display;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Player;
+
+import java.io.IOException;
 
 /**
  * Helper methods for calling methods added in Froyo (2.2, API level 8).
@@ -124,24 +123,20 @@ public class FroyoUtil {
    * @param ignoreErrors set to true to ignore errors
    */
   public static WebViewClient getWebViewClient(final boolean ignoreErrors,
-    final boolean followLinks, final Form form, final Component component) {
-    return new WebViewClient() {
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        return !followLinks;
-      }
+      final boolean followLinks, final Form form, final Component component) {
+    return new FroyoWebViewClient(followLinks, ignoreErrors, form, component);
+  }
 
-      @Override
-      public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        if (ignoreErrors) {
-          handler.proceed();
-        } else {
-          handler.cancel();
-          form.dispatchErrorOccurredEvent(component, "WebView",
-            ErrorMessages.ERROR_WEBVIEW_SSL_ERROR);
-        }
-      }
-    };
+  /**
+   * Prior to SDK 9, java.io.IOException did not take a throwable as an argument.
+   * This function accepts a Throwable, calls toString and throws an IOException with
+   * just the string, which is supported.
+   *
+   * @param throwable the Throwable to re-throw (sort of)
+   */
+
+  public static void throwIOException(Throwable e) throws IOException {
+    throw new IOException(e.toString());
   }
 
 }

@@ -11,28 +11,6 @@
     <filter-class>com.google.appinventor.server.OdeAuthFilter</filter-class>
   </filter>
 
-  <!-- Filter for application statistics.  See:
-       http://code.google.com/appengine/docs/java/tools/appstats.html
-       Note that all requests are logged, including appstats ones.
-       The only way I see to not log the appstats ones is to
-       explicitly list all the ones we do want, which seems
-       error-prone.
-    -->
-  <!-- App Stats Disabled
-  <filter>
-    <filter-name>appstats</filter-name>
-    <filter-class>com.google.appengine.tools.appstats.AppstatsFilter</filter-class>
-    <init-param>
-      <param-name>logMessage</param-name>
-      <param-value>Appstats available: /appstats/details?time={ID}</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>appstats</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
--->
-
   <!-- Security constraints: require login for these urls -->
   <!-- This is how we implement Google Account login -->
 
@@ -51,39 +29,13 @@
       <url-pattern>/ode2/*</url-pattern>
       <url-pattern>/companions/*</url-pattern>
       <url-pattern>/reference/*</url-pattern>
-      <url-pattern>/learn/*</url-pattern>
       <url-pattern>/about/*</url-pattern>
-      <url-pattern>/forum/*</url-pattern>
       <url-pattern>/b/*</url-pattern>
-      <url-pattern>/rendezvous/*</url-pattern>
       <url-pattern>/remote_api/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
 
-  <!-- Security constraint: require admin access for the appstats url -->
-  <security-constraint>
-    <web-resource-collection>
-      <url-pattern>/appstats/*</url-pattern>
-      <url-pattern>/convert/</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>admin</role-name>
-    </auth-constraint>
-  </security-constraint>
-
   <!-- Servlets -->
-
-  <!-- Blob Conversion Servlet -->
-
-  <servlet>
-    <display-name>Blob Conversion Servlet</display-name>
-    <servlet-name>BlobUpgradeServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.BlobUpgradeServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>BlobUpgradeServlet</servlet-name>
-    <url-pattern>/convert</url-pattern>
-  </servlet-mapping>
 
   <!-- Generate Login Page for OpenID -->
 
@@ -108,17 +60,18 @@
     <url-pattern>/remote_api</url-pattern>
   </servlet-mapping>
 
-  <!-- rendezvious -->
+  <!-- REST interface Servlet -->
+
   <servlet>
-    <servlet-name>rendezvousServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.RendezvousServlet</servlet-class>
+    <servlet-name>RestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.RestServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>rendezvousServlet</servlet-name>
-    <url-pattern>/rendezvous/*</url-pattern>
+    <servlet-name>RestServlet</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
-
   <!-- Nonce based APK download -->
+
   <servlet>
     <servlet-name>buildOutputServlet</servlet-name>
     <servlet-class>com.google.appinventor.server.BuildOutputServlet</servlet-class>
@@ -156,16 +109,6 @@
     <servlet-name>getMotdService</servlet-name>
   </filter-mapping>
 
-  <!-- help -->
-  <servlet>
-    <servlet-name>helpService</servlet-name>
-    <servlet-class>com.google.appinventor.server.HelpServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>helpService</servlet-name>
-    <url-pattern>/ode/help</url-pattern>
-  </servlet-mapping>
-
   <!-- projects -->
   <servlet>
     <servlet-name>projectService</servlet-name>
@@ -178,34 +121,6 @@
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>projectService</servlet-name>
-  </filter-mapping>
-
-  <!-- gallery -->
-  <servlet>
-    <servlet-name>galleryService</servlet-name>
-    <servlet-class>com.google.appinventor.server.GalleryServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>galleryService</servlet-name>
-    <url-pattern>/ode/gallery</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>galleryService</servlet-name>
-  </filter-mapping>
-
-  <!-- gallery image upload servlet -->
-  <servlet>
-    <servlet-name>galleryServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.GalleryServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>galleryServlet</servlet-name>
-    <url-pattern>/ode/gallery_servlet/*</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>galleryServlet</servlet-name>
   </filter-mapping>
 
   <!-- upload -->
@@ -251,32 +166,18 @@
     <servlet-name>userInfoService</servlet-name>
   </filter-mapping>
 
-  <!-- cloudDBAuth -->
+  <!-- TokenAuth -->
   <servlet>
-    <servlet-name>cloudDBAuthService</servlet-name>
-    <servlet-class>com.google.appinventor.server.cloudDBAuth.CloudDBAuthServiceImpl</servlet-class>
+    <servlet-name>tokenAuthService</servlet-name>
+    <servlet-class>com.google.appinventor.server.tokenauth.TokenAuthServiceImpl</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>cloudDBAuthService</servlet-name>
-    <url-pattern>/ode/cloudDBAuth</url-pattern>
+    <servlet-name>tokenAuthService</servlet-name>
+    <url-pattern>/ode/tokenauth</url-pattern>
   </servlet-mapping>
   <filter-mapping>
     <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>cloudDBAuthService</servlet-name>
-  </filter-mapping>
-
-  <!-- android -->
-  <servlet>
-    <servlet-name>androidServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.AndroidServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>androidServlet</servlet-name>
-    <url-pattern>/android/*</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>androidServlet</servlet-name>
+    <servlet-name>tokenAuthService</servlet-name>
   </filter-mapping>
 
   <!-- accept tos -->
@@ -342,39 +243,7 @@
     <servlet-name>firebaseAuthService</servlet-name>
   </filter-mapping>
 
-  <!-- Not sure what needs to replace GwtResourceServlet
-  <servlet>
-    <servlet-name>odeUiServlet</servlet-name>
-    <servlet-class>com.google.gwt.gserver.GwtResourceServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>odeUiServlet</servlet-name>
-    <url-pattern>/ode/*</url-pattern>
-  </servlet-mapping>
-  -->
-
-  <!-- Not sure what to do about the redirect servlet
-  <servlet>
-    <servlet-name>odeRedirectServlet</servlet-name>
-    <servlet-class>com.google.appinventor.server.OdeRedirectServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>odeRedirectServlet</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-  -->
-
   <!-- TODO: Optionally add a <welcome-file-list> tag to display a welcome file. -->
-
-  <!-- appstats-->
-  <servlet>
-    <servlet-name>appstats</servlet-name>
-    <servlet-class>com.google.appengine.tools.appstats.AppstatsServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>appstats</servlet-name>
-    <url-pattern>/appstats/*</url-pattern>
-  </servlet-mapping>
 
   <!-- components -->
   <servlet>

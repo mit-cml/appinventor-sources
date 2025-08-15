@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>MIT App Inventor Text Blocks</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">MIT App Inventor Text Blocks</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<ul>
+  <li><a href="#string">string</a></li>
+  <li><a href="#join">join</a></li>
+  <li><a href="#length">length</a></li>
+  <li><a href="#isempty">is empty</a></li>
+  <li><a href="#compare">compare texts</a></li>
+  <li><a href="#trim">trim</a></li>
+  <li><a href="#upcase">upcase</a></li>
+  <li><a href="#downcase">downcase</a></li>
+  <li><a href="#startsat">starts at</a></li>
+  <li><a href="#contains">contains</a></li>
+  <li><a href="#containsany">contains any</a></li>
+  <li><a href="#containsall">contains all</a></li>
+  <li><a href="#splitatfirst">split at first</a></li>
+  <li><a href="#splitatfirstofany">split at first of any</a></li>
+  <li><a href="#split">split</a></li>
+  <li><a href="#splitatany">split at any</a></li>
+  <li><a href="#splitatspaces">split at spaces</a></li>
+  <li><a href="#segment">segment</a></li>
+  <li><a href="#replaceall">replace all</a></li>
+  <li><a href="#obfuscatetext">obfuscated text</a></li>
+  <li><a href="#isstring">is a string?</a></li>
+  <li><a href="#reverse">reverse</a></li>
+  <li><a href="#replaceallmappings">replace all mappings</a></li>
+</ul>
+
+<h3 id="string">” “ (string block)</h3>
+
+<p><img src="images/text/string.png" alt="" /></p>
+
+<p>Contains a text string.</p>
+
+<p>This string can contain any characters (letters, numbers, or other special characters). On App Inventor it will be considered a Text object.</p>
+
+<h3 id="join">join</h3>
+
+<p><img src="images/text/join.png" alt="" /></p>
+
+<p>Appends all of the inputs to make a single string. If no inputs, returns an empty string.</p>
+
+<h3 id="length">length</h3>
+
+<p><img src="images/text/length.png" alt="" /></p>
+
+<p>Returns the number of characters including spaces in the string. This is the length of the given text string.</p>
+
+<h3 id="isempty">is empty</h3>
+
+<p><img src="images/text/isempty.png" alt="" /></p>
+
+<p>Returns whether or not the string contains any characters (including spaces). When the string length is 0, returns true otherwise it returns false.</p>
+
+<h3 id="compare">compare texts &lt; &gt; = ≠</h3>
+
+<p><img src="images/text/compare.gif" alt="" /></p>
+
+<p>Returns whether or not the first string is lexicographically &lt;, &gt;, =, or ≠ the second string depending on which dropdown is selected.</p>
+
+<p>A string a considered lexicographically greater than another if it is alphabetically greater than the other string. Essentially, it would come after it in the dictionary. All uppercase letters are considered smaller or to occur before lowercase letters. cat would be &gt; Cat.</p>
+
+<h3 id="trim">trim</h3>
+
+<p><img src="images/text/trim.png" alt="" /></p>
+
+<p>Removes any spaces leading or trailing the input string and returns the result.</p>
+
+<h3 id="upcase">upcase</h3>
+
+<p><img src="images/text/upcase.png" alt="" /></p>
+
+<p>Returns a copy of its text string argument converted to all upper case.</p>
+
+<h3 id="downcase">downcase</h3>
+
+<p><img src="images/text/downcase.png" alt="" /></p>
+
+<p>Returns a copy of its text string argument converted to all lower case.</p>
+
+<h3 id="startsat">starts at</h3>
+
+<p><img src="images/text/startsat.png" alt="" /></p>
+
+<p>Returns the character position where the first character of <em>piece</em> first appears in text, or 0 if not present. For example, the location of <em>ana</em> in <em>havana banana</em> is 4.</p>
+
+<h3 id="contains">contains</h3>
+
+<p><img src="images/text/contains.png" alt="" /></p>
+
+<p>Returns true if <em>piece</em> appears in text; otherwise, returns false.</p>
+
+<h3 id="containsany">contains any</h3>
+
+<p><img src="images/text/containsany.png" alt="" /></p>
+
+<p>Returns true if any of the pieces in the piece list appear in text; otherwise, returns false.</p>
+
+<p>This block can be obtained by changing the dropdown on the contains block.</p>
+
+<h3 id="containsall">contains all</h3>
+
+<p><img src="images/text/containsall.png" alt="" /></p>
+
+<p>Returns true if all of the pieces in the piece list appear in text; otherwise, returns false.</p>
+
+<p>This block can be obtained by changing the dropdown on the contains block.</p>
+
+<h3 id="splitatfirst">split at first</h3>
+
+<p><img src="images/text/splitatfirst.png" alt="" /></p>
+
+<p>Divides the given text into two pieces using the location of the first occurrence of at as the dividing point, and returns a two-item list consisting of the piece before the dividing point and the piece after the dividing point. Splitting <em>apple,banana,cherry,dogfood</em> with a comma as the splitting point returns a list of two items: the first is the text <em>apple</em> and the second is the text <em>banana,cherry,dogfood</em>. Notice that the comma after apple doesn’t appear in the result, because that is the dividing point.</p>
+
+<h3 id="splitatfirstofany">split at first of any</h3>
+
+<p><img src="images/text/splitatfirstofany.png" alt="" /></p>
+
+<p>Divides the given text into a two-item list, using the first location of any item in the list at as the dividing point.</p>
+
+<p>Splitting <em>i love apples bananas apples grapes</em> by the list <em>[ba,ap]</em> would result in a list of two items the first being <em>i love</em> and the second <em>ples bananas apples grapes</em>.</p>
+
+<h3 id="split">split</h3>
+
+<p><img src="images/text/split.png" alt="" /></p>
+
+<p>Divides text into pieces using at as the dividing points and produces a list of the results. Splitting <em>one,two,three,four</em> at <em>,</em> (comma) returns the list <em>(one two three four)</em>. Splitting <em>one-potato,two-potato,three-potato,four</em> at <em>-potato,</em> returns the list <em>(one two three four)</em>.</p>
+
+<h3 id="splitatany">split at any</h3>
+
+<p><img src="images/text/splitatany.png" alt="" /></p>
+
+<p>Divides the given text into a list, using any of the items in at as the dividing point, and returns a list of the results.</p>
+
+<p>Splitting <em>appleberry,banana,cherry,dogfood</em> with at as the two-element list whose first item is a comma and whose second item is <em>rry</em> returns a list of four items: <em>(applebe banana che dogfood)</em>.</p>
+
+<h3 id="splitatspaces">split at spaces</h3>
+
+<p><img src="images/text/splitatspaces.png" alt="" /></p>
+
+<p>Divides the given text at any occurrence of a space, producing a list of the pieces.</p>
+
+<h3 id="segment">segment</h3>
+
+<p><img src="images/text/segment.png" alt="" /></p>
+
+<p>Extracts part of the text starting at start position and continuing for length characters.</p>
+
+<h3 id="replaceall">replace all</h3>
+
+<p><img src="images/text/replaceall.png" alt="" /></p>
+
+<p>Returns a new text string obtained by replacing all occurrences of the substring with the replacement.</p>
+
+<p>Replace all with <em>She loves eating. She loves writing. She loves coding</em> as the text, <em>She</em> as the segment, and <em>Hannah</em> as the replacement would result in <em>Hannah loves eating. Hannah loves writing. Hannah loves coding</em>.</p>
+
+<p>Note:
+Regular expressions (regex) are patterns used for matching character combinations in strings. When using the “replace all” block, it’s essential to be aware of special characters in regular expressions.Special characters like $, *, ., etc., have special meanings in regular expressions.
+If you want to use these characters as literal characters in your pattern, you need to escape them with a backslash (\).</p>
+
+<p>Example:
+replace all with <em>Price: $50.00</em> as the text,  <em>$</em> as the segment, <em>€</em> as the replacement
+this would result in <em>Price: €50.00</em></p>
+
+<h3 id="obfuscatetext">obfuscated text</h3>
+
+<p><img src="images/text/obfuscatetext.png" alt="" /></p>
+
+<p>Produces text, like a text block.  The difference is that th etext is not easily discoverable by examining the app’s contents.  Use this when creating apps to distribute that include confidential information, for example, API keys.</p>
+
+<p><em>Warning: This provides only very low security against expert adversaries.</em></p>
+
+<h3 id="isstring">is a string?</h3>
+
+<p><img src="images/text/isstring.png" alt="" /></p>
+
+<p>Returns true if <em>thing</em> is a text object, otherwise false.</p>
+
+<h3 id="reverse">reverse</h3>
+
+<p><img src="images/text/text_reverse.png" alt="" /></p>
+
+<p>Reverse the given text. For example, “reverse” would become “esrever”.</p>
+
+<h3 id="replaceallmappings">replace all mappings</h3>
+
+<p><img src="images/text/replaceallmappings.png" alt="" /></p>
+
+<p>Given a dictionary of mappings as input, replaces the key entries in the text with the corresponding values in the dictionary.
+Returns the text with the mappings applied.</p>
+
+<h4 id="replaceallmappingsdictionary">dictionary order</h4>
+
+<p>If the dictionary order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is based on the entry order in the dictionary (the earliest one gets replaced first).</p>
+
+<h4 id="replaceallmappingslongeststring">longest string first order</h4>
+
+<p>If the longest string order is specified, in the case of one key entry being a substring of another key entry, the first one to be replaced
+is the one which is longer.</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

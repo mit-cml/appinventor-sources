@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Using Web APIs with JSON</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Using Web APIs with JSON</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p>The JavaScript Object Notation (JSON) is widely used for interacting with application programming interfaces (APIs) on the web. JSON provides different types that are used to compose messages. App Inventor supports these values as well.</p>
+
+<ul>
+  <li>JSON values <code class="highlighter-rouge">true</code> and <code class="highlighter-rouge">false</code> become App Inventor <code class="logic block highlighter-rouge">true</code> and <code class="logic block highlighter-rouge">false</code></li>
+  <li>JSON numbers (both integers and decimal numbers) become App Inventor <code class="math block highlighter-rouge">number</code></li>
+  <li>JSON strings become App Inventor <code class="text block highlighter-rouge">text</code></li>
+  <li>JSON arrays become App Inventor <code class="list block highlighter-rouge">list</code></li>
+  <li>JSON objects become App Inventor <code class="dictionary block highlighter-rouge">dictionary</code></li>
+</ul>
+
+<p>An example message in JSON might look like:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tim Beaver"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"likes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"dams"</span><span class="p">,</span><span class="w"> </span><span class="s2">"engineering"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"hasTowel"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"widgets"</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This JSON declares an object (indicated by the <code class="highlighter-rouge">{</code> and <code class="highlighter-rouge">}</code>). The keys are the quoted strings (e.g., <code class="highlighter-rouge">"name"</code>) before the colons (<code class="highlighter-rouge">:</code>). We see that there are different values, including arrays (comma-separated values between square brackets <code class="highlighter-rouge">[...]</code>), numbers (e.g., <code class="highlighter-rouge">42</code>), and Booleans (e.g., <code class="highlighter-rouge">true</code>).</p>
+
+<p>For the remainder of this document, we will be using a service called <a href="https://jsonplaceholder.typicode.com">JSONPlaceholder</a>, which is intended for use in examples. It produces sample JSON responses in the style of Lorem Ipsum and does not actually store any data.</p>
+
+<h2 id="components-used-in-this-document">Components Used in this Document</h2>
+
+<p>The following examples make use of these components:</p>
+
+<ul>
+  <li><a href="../components/userinterface.html#Button">Button</a></li>
+  <li><a href="../components/userinterface.html#Label">Label</a></li>
+  <li><a href="../components/userinterface.html#ListView">ListView</a></li>
+  <li><a href="../components/connectivity.html#Web">Web</a></li>
+</ul>
+
+<h2 id="retrieving-data">Retrieving Data</h2>
+
+<p>The Web component provides a <code class="method block highlighter-rouge">Get</code>. When the request completes, the Web’s <code class="event block highlighter-rouge">GotText</code> event block will run. The event has two important parameters:</p>
+
+<ul>
+  <li><code class="variable block highlighter-rouge">responseCode</code>: The HTTP status code provided by the server. Usually this will be <code class="math block highlighter-rouge">200</code> (OK) or <code class="math block highlighter-rouge">201</code> (Created), but you may also get values such as <code class="math block highlighter-rouge">400</code> (Bad Request), <code class="math block highlighter-rouge">403</code> (Forbidden), and <code class="math block highlighter-rouge">404</code> (Not Found). Depending on the API you use in your app, you should check the status code to know whether your request was successful.</li>
+  <li><code class="variable block highlighter-rouge">responseContent</code>: The content of the response returned by the server as a <code class="text block highlighter-rouge">text</code>. Let’s look at how it can be processed as JSON:</li>
+</ul>
+
+<p>The Web component provides the method <a href="../components/connectivity.html#Web.JsonTextDecodeWithDictionaries"><code class="method block highlighter-rouge">JsonTextDecodeWithDictionaries</code></a> that takes <code class="text block highlighter-rouge">text</code>, such as the contents of the <code class="variable block highlighter-rouge">responseContent</code> parameter, and converts it into the appropriate App Inventor type. Depending on the returned content, the output of the <code class="method block highlighter-rouge">JsonTextDecodeWithDictionaries</code> may return different types, such as <code class="list block highlighter-rouge">list</code> or <code class="dictionary block highlighter-rouge">dictionary</code>. App Inventor provides blocks such as <code class="list block highlighter-rouge">is a list?</code> and <code class="dictionary block highlighter-rouge">is a dictionary?</code> that you can use to test the value if the API allows for more than one type of thing to be returned.</p>
+
+<h3 id="example---successful-get">Example - Successful Get</h3>
+
+<p>Request the first post by setting the <code class="setter block highlighter-rouge">Url</code> property accordingly and calling <code class="method block highlighter-rouge">Get</code></p>
+
+<p><img src="images/webapis-get-button.png" alt="" /></p>
+
+<p>On success, the <code class="event block highlighter-rouge">GotText</code> event will have a <code class="variable block highlighter-rouge">responseCode</code> of <code class="math block highlighter-rouge">200</code>. We can parse the contents of the <code class="variable block highlighter-rouge">responseText}</code> using the <code class="method block highlighter-rouge">JsonTextDecodeWithDictionaries</code> method. Once we have our dictionary with the result, we can access its <code class="text block highlighter-rouge">title</code> and <code class="text block highlighter-rouge">body</code> properties.</p>
+
+<p><strong>Sample JSON</strong></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sunt aut facere repellat provident occaecati excepturi optio reprehenderit"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"body"</span><span class="p">:</span><span class="w"> </span><span class="s2">"quia et suscipit</span><span class="se">\n</span><span class="s2">suscipit recusandae consequuntur expedita et cum</span><span class="se">\n</span><span class="s2">reprehenderit molestiae ut ut quas totam</span><span class="se">\n</span><span class="s2">nostrum rerum est autem sunt rem eveniet architecto"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p><strong>Blocks</strong></p>
+
+<p><img src="images/webapis-get-success.png" alt="" /></p>
+
+<p>After running the blocks above, Label1 will contain the title from the JSON (i.e., <code class="highlighter-rouge">"sunt aut facere..."</code>) and Label2 will contain the body from the JSON (i.e., <code class="highlighter-rouge">"quia et sucipit..."</code>).</p>
+
+<h3 id="example---failed-get">Example - Failed Get</h3>
+
+<p>If you request a resource that does not exist (post 101 in the example shown), then you will get an error instead.</p>
+
+<p><img src="images/webapis-get-button-fail.png" alt="" /></p>
+
+<p>HTTP uses the error code <code class="math block highlighter-rouge">404</code> to indicate that a resource cannot be found by the server. We test for this and report an error to the user.</p>
+
+<p><img src="images/webapis-get-failure.png" alt="" /></p>
+
+<h3 id="example---walking-a-response">Example - Walking a Response</h3>
+
+<p>If you call <code class="method block highlighter-rouge">Get</code> with <code class="setter block highlighter-rouge">Url</code> set to <code class="text block highlighter-rouge">https://jsonplaceholder.typicode.com/posts</code>, then you will get a list of 100 entries back.</p>
+
+<p><img src="images/webapis-get-all-posts.png" alt="" /></p>
+
+<p>If you wanted to display some information about these items in a ListView, one way to do it would be to use a <code class="control block highlighter-rouge">for each item</code> block to loop over the list.</p>
+
+<p><img src="images/webapis-get-foreach.png" alt="" /></p>
+
+<p>However, the <a href="../blocks/dictionaries.html#list-by-walking-key-path"><code class="dictionary block highlighter-rouge">list by walking key path</code></a> makes this easier. This block works by starting at the object it is given and following a sequence of steps provided to it in the form of a <code class="list block highlighter-rouge">list</code>. In the following example, we give it the key path of <code class="dictionary block highlighter-rouge">walk all at level</code> and <code class="text block highlighter-rouge">title</code> to get the title of every post in the list (in order of appearance). This code is functionally equivalent to the code above using the <code class="control block highlighter-rouge">for each</code> block but it is more concise.</p>
+
+<p><img src="images/webapis-get-walk.png" alt="" /></p>
+
+<h2 id="sending-data">Sending Data</h2>
+
+<p>Sending data to a web API for processing typically involves two things. First, you must construct the message you need to send to the API. API developers will usually provide thorough documentation on how to use their API. Second, depending on the whether the action is sensitive, such as changing or deleting data, you will need to provide some authentication token.</p>
+
+<p>To work with Web APIs that consume JSON, you will want to make use of App Inventor’s list and dictionary types. For example,</p>
+
+<h3 id="example">Example</h3>
+
+<p>We can use the Web component’s <a href="../components/connectivity.html#Web.PostText"><code class="method block highlighter-rouge">PostText</code></a> method to send content to a JSON-baed Web API. For JSONPlaceholder, posts should contain 3 keys: <code class="highlighter-rouge">"userId"</code>, <code class="highlighter-rouge">"title"</code>, and <code class="highlighter-rouge">"body"</code>.</p>
+
+<p><img src="images/webapis-post.png" alt="" /></p>
+
+<p>On success, the <code class="variable block highlighter-rouge">responseCode</code> in <code class="event block highlighter-rouge">GotText</code> will be <code class="math block highlighter-rouge">201</code>, which means “Created”.</p>
+
+<p><img src="images/webapis-post-success.png" alt="" /></p>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<p>To learn more about HTTP response codes, please see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">HTTP response status codes</a>.</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

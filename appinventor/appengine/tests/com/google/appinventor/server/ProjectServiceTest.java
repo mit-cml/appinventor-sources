@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,6 +13,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
@@ -44,9 +45,12 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -103,7 +107,7 @@ public class ProjectServiceTest {
   @Before
   public void setUp() throws Exception {
     helper.setUp();
-    storageIo = StorageIoInstanceHolder.INSTANCE;
+    storageIo = StorageIoInstanceHolder.getInstance();
 
     PowerMock.mockStatic(LocalUser.class);
     localUserMock = PowerMock.createMock(LocalUser.class);
@@ -111,7 +115,7 @@ public class ProjectServiceTest {
     localUserMock.setSessionId("test-session");
     expectLastCall().times(1);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", false, false, null));
     expectLastCall().anyTimes();
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
   }
@@ -124,7 +128,7 @@ public class ProjectServiceTest {
     projectServiceImpls = Maps.newHashMap();
     projectServiceImpls.put(USER_ID_ONE, projectServiceImpl);
     projectServiceImpls.put(USER_ID_TWO, projectServiceImpl2);
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", false, false, null));
     localUserMock.setSessionId("test-session");
   }
 
@@ -271,25 +275,23 @@ public class ProjectServiceTest {
     Map<String, String> expectedYaFiles = new HashMap<String, String>();
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.bky", "");
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.yail", "");
-    expectedYaFiles.put("youngandroidproject/project.properties",
-        "main=com.domain.noname.Project1.Screen1\n" +
-        "name=Project1\n" +
-        "assets=../assets\n" +
-        "source=../src\n" +
-        "build=../build\n");
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.scm",
         "#|\n$JSON\n" +
         "{\"authURL\":[]," +
         "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
-        "\"Title\":\"Screen1\","+"\"AppName\":\"noname\"}}\n|#");
-    assertEquals(expectedYaFiles, getTextFiles(USER_ID_ONE, yaProject));
+        "\"Title\":\"Screen1\","+"\"AppName\":\"noname\",\"Theme\":\"Classic\"}}\n|#");
+    assertEquals(expectedYaFiles, getTextFiles(USER_ID_ONE, yaProject, true));
+    assertEqualProperties(new YoungAndroidSettingsBuilder()
+        .setProjectName("Project1")
+        .setQualifiedFormName("com.domain.noname.Project1.Screen1")
+        .toProperties(), getProjectProperties(USER_ID_ONE, yaProject));
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject).isEmpty());
 
     checkUserProjects(projectServiceImpl.getProjectInfos(),
         new UserProject(yaProject, PROJECT1_NAME,
-            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), 0L, 0L));
+            YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis(), false));
     PowerMock.verifyAll();
   }
 
@@ -309,15 +311,13 @@ public class ProjectServiceTest {
     Map<String, String> expectedYaFiles1 = new HashMap<String, String>();
     expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.bky", "");
     expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.yail", "");
-    expectedYaFiles1.put("youngandroidproject/project.properties",
-        "main=com.domain.noname.Project1.Screen1\n" +
-        "name=Project1\n" +
-        "assets=../assets\n" +
-        "source=../src\n" +
-        "build=../build\n");
     expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
-    assertEquals(expectedYaFiles1, getTextFiles(USER_ID_ONE, yaProject1));
+    assertEquals(expectedYaFiles1, getTextFiles(USER_ID_ONE, yaProject1, true));
+    assertEqualProperties(new YoungAndroidSettingsBuilder()
+        .setProjectName("Project1")
+        .setQualifiedFormName("com.domain.noname.Project1.Screen1")
+        .toProperties(), getProjectProperties(USER_ID_ONE, yaProject1));
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject1).isEmpty());
     // No user files yet (e.g. the keystore)
     assertTrue(getUserFiles(USER_ID_ONE).isEmpty());
@@ -333,26 +333,13 @@ public class ProjectServiceTest {
     Map<String, String> expectedYaFiles2 = new HashMap<String, String>();
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.bky", "");
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.yail", "");
-    expectedYaFiles2.put("youngandroidproject/project.properties",
-        "main=appinventor.ai_noname1.Project2.Screen1\n" +
-        "name=Project2\n" +
-        "assets=../assets\n" +
-        "source=../src\n" +
-        "build=../build\n" +
-        "versioncode=1\n" +
-        "versionname=1.0\n" +
-        "useslocation=false\n" +
-        "aname=Project1\n" +
-        "sizing=Fixed\n" +
-        "showlistsasjson=false\n" +
-        "actionbar=false\n" +
-        "theme=AppTheme.Light.DarkActionBar\n" +
-        "color.primary=0\n" +
-        "color.primary.dark=0\n" +
-        "color.accent=0\n");
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
-    assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
+    assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2, true));
+    assertEqualProperties(new YoungAndroidSettingsBuilder()
+        .setProjectName("Project2")
+        .setQualifiedFormName("appinventor.ai_noname1.Project2.Screen1")
+        .toProperties(), getProjectProperties(USER_ID_ONE, yaProject2));
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject2).isEmpty());
     assertTrue(getUserFiles(USER_ID_ONE).isEmpty());
     UserProject uproject1 = storageIo.getUserProject(USER_ID_ONE, yaProject2);
@@ -489,21 +476,10 @@ public class ProjectServiceTest {
         YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, PROJECT1_NAME, params).getProjectId();
 
     String loadedSettings = projectServiceImpl.loadProjectSettings(projectId);
-    assertEquals(
-        "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":" +
-        "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE + "\":\"1\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME + "\":\"1.0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION + "\":\"false\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME + "\":\"Project1\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING + "\":\"Fixed\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON + "\":\"false\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL + "\":\"\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR + "\":\"false\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME + "\":\"AppTheme.Light.DarkActionBar\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR + "\":\"0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK + "\":\"0\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR + "\":\"0\"}}",
+    assertEquals(new YoungAndroidSettingsBuilder()
+            .setProjectName("Project1")
+            .setQualifiedFormName(PACKAGE_BASE + PROJECT1_NAME)
+            .build(),
         loadedSettings);
 
     String storedSettings =
@@ -515,9 +491,17 @@ public class ProjectServiceTest {
     PowerMock.verifyAll();
   }
 
-  private Map<String, String> getTextFiles(String userId, long projectId) {
+  private String getProjectProperties(String userId, long projectId) {
+    return storageIo.downloadFile(userId, projectId,
+        "youngandroidproject/project.properties", StorageUtil.DEFAULT_CHARSET);
+  }
+
+  private Map<String, String> getTextFiles(String userId, long projectId, boolean skipProperties) {
     Map<String, String> textFiles = new HashMap<String, String>();
     for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
+      if (skipProperties && "youngandroidproject/project.properties".equals(fileId)) {
+        continue;
+      }
       if (StorageUtil.isTextFile(fileId)) {
         // TODO(user): We should get rid of DEFAULT_CHARSET and use UTF-8 everywhere.
         textFiles.put(fileId,
@@ -619,5 +603,27 @@ public class ProjectServiceTest {
   private static String getUserProjectDesc(UserProject userProject) {
     return "UserProject(" + userProject.getProjectId() + ",\"" +
         userProject.getProjectName() + "\")";
+  }
+
+  /**
+   * Asserts that the contents of the properties file provided in {@code actual} are equal to the
+   * contents {@code expected}. This is a workaround for the fact that the {@link Properties} class
+   * serialization includes the date and time, and so tests can occasionally fail if the two
+   * objects are created straddling either side of a second. These files are still semantically
+   * equivalent but not byte-for-byte equivalent.
+   *
+   * @param expected the expected content
+   * @param actual the actual content
+   */
+  private static void assertEqualProperties(String expected, String actual) {
+    try {
+      Properties expectedProps = new Properties();
+      expectedProps.load(new StringReader(expected));
+      Properties actualProps = new Properties();
+      actualProps.load(new StringReader(actual));
+      assertEquals(expectedProps, actualProps);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -1,0 +1,6 @@
+framework module SwiftyBase64 {
+  umbrella header "SwiftyBase64-umbrella.h"
+
+  export *
+  module * { export * }
+}

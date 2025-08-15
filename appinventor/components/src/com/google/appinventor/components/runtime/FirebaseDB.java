@@ -52,6 +52,8 @@ import org.json.JSONException;
  * the tag. It also possesses a listener to fire events when stored
  * values are changed.
  *
+ * [Additional Information](../other/firebaseIntro.html)
+ *
  * @author kasmus@mit.edu (Kristin Asmus)
  * @author will2596@gmail.com (William Byrne) (default Firebase partitioning and user authentication)
  * @author jis@mit.edu (Jeffrey I. Schiller) (defaultURL setup at runtime, other cleanup)
@@ -291,17 +293,10 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   }
 
   /**
-   * Getter for the DeveloperBucket.
+   * Specifies the unique developer path of the Firebase.
    *
-   * @return the DeveloperBucket for this Firebase
-   */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public String DeveloperBucket() {
-    return developerBucket;
-  }
-
-  /**
-   * Specifies the unique developer path of the Firebase. This is set programmatically
+   * @internaldoc
+   * This is set programmatically
    * in {@link com.google.appinventor.client.editor.simple.components.MockFirebaseDB}
    * and consists of the current App Inventor user's email.
    *
@@ -315,14 +310,13 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   }
 
   /**
-   * Getter for the ProjectBucket.
+   * Getter for the DeveloperBucket.
    *
-   * @return the ProjectBucket for this Firebase
+   * @return the DeveloperBucket for this Firebase
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Gets the ProjectBucket for this FirebaseDB.")
-  public String ProjectBucket() {
-    return projectBucket;
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public String DeveloperBucket() {
+    return developerBucket;
   }
 
   /**
@@ -341,17 +335,18 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   }
 
   /**
-   * Getter for the FirebaseToken.
+   * Getter for the ProjectBucket.
    *
-   * @return the JWT used to authenticate users on the default Firebase
+   * @return the ProjectBucket for this Firebase
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
-  public String FirebaseToken() {
-    return firebaseToken;
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Gets the ProjectBucket for this FirebaseDB.")
+  public String ProjectBucket() {
+    return projectBucket;
   }
 
   /**
-   * Specifies the JWT for the default Firebase.
+   * Specifies the token for the default Firebase.
    *
    * @param JWT the JSON Web Token (JWT) used to authenticate on the
    *            default Firebase
@@ -361,6 +356,16 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   public void FirebaseToken(String JWT) {
     firebaseToken = JWT;
     resetListener();
+  }
+
+  /**
+   * Getter for the FirebaseToken.
+   *
+   * @return the JWT used to authenticate users on the default Firebase
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, userVisible = false)
+  public String FirebaseToken() {
+    return firebaseToken;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
@@ -376,7 +381,8 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
     "screen, it makes all Firebase components on all screens persistent. " +
     "This is a limitation of the low level Firebase library. Also be " +
     "aware that if you want to set persist to true, you should do so " +
-    "before connecting the Companion for incremental development.")
+    "before connecting the Companion for incremental development.",
+    category = PropertyCategory.BEHAVIOR)
   public void Persist(boolean value) {
     Log.i(LOG_TAG, "Persist Called: Value = " + value);
     if (persist != value) {     // We are making a change
@@ -528,7 +534,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   public void GotValue(String tag, Object value) {
     try {
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -549,7 +555,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   public void DataChanged(String tag, Object value) {
     try {
       if(value != null && value instanceof String) {
-        value = JsonUtil.getObjectFromJson((String) value);
+        value = JsonUtil.getObjectFromJson((String) value, true);
       }
     } catch(JSONException e) {
       throw new YailRuntimeError("Value failed to convert from JSON.", "JSON Retrieval Error.");
@@ -596,19 +602,19 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
   /**
    * Unauthenticate from Firebase.
    *
-   * Firebase keeps track of credentials in a cache in shared_prefs
+   *   Firebase keeps track of credentials in a cache in shared_prefs
    * It will re-use these credentials as long as they are valid. Given
    * That we retrieve a FirebaseToken with a version long life, this will
    * effectively be forever. Shared_prefs survive an application update
    * and depending on how backup is configured on a device, it might survive
    * an application removal and reinstallation.
    *
-   * Normally this is not a problem, however if we change the credentials
+   *   Normally this is not a problem, however if we change the credentials
    * used, for example the App author is switching from one Firebase account
    * to another, or invalided their firebase.secret, this cached credential
    * is invalid, but will continue to be used, which results in errors.
    *
-   * This function permits us to unauthenticate, which tosses the cached
+   *   This function permits us to unauthenticate, which tosses the cached
    * credentials. The next time authentication is needed we will use our
    * current FirebaseToken and get fresh credentials.
    */
@@ -660,7 +666,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
           }
           try {
             if (value instanceof String) {
-              value = JsonUtil.getObjectFromJson((String) value);
+              value = JsonUtil.getObjectFromJson((String) value, true);
             } else {
               result.err = "Invalid JSON object in database (shouldn't happen!)";
               return Transaction.abort();
@@ -753,7 +759,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
           }
           try {
             if (value instanceof String) {
-              value = JsonUtil.getObjectFromJson((String) value);
+              value = JsonUtil.getObjectFromJson((String) value, true);
             } else {
               result.err = "Invalid JSON object in database (shouldn't happen!)";
               return Transaction.abort();

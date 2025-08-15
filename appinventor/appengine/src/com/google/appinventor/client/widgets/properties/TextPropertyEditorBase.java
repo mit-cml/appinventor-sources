@@ -152,11 +152,13 @@ public class TextPropertyEditorBase extends PropertyEditor {
       validate(text);
       property.setValue(text);
     } catch (InvalidTextException e) {
-      String error = e.getMessage();
-      if (error == null || error.isEmpty()) {
-        error = MESSAGES.malformedInputError();
+      if (!inMultiselectMode()) {
+        String error = e.getMessage();
+        if (error == null || error.isEmpty()) {
+          error = MESSAGES.malformedInputError();
+        }
+        Window.alert(error);
       }
-      Window.alert(error);
       updateValue();  // Restore previous property value.
     }
   }

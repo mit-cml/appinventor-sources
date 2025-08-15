@@ -6,28 +6,41 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Images;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.logging.Logger;
 
 /**
  * The asset list shows all the project's assets, and lets the
@@ -36,6 +49,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 
 public class AssetList extends Composite implements ProjectChangeListener {
+  private static final Logger LOG = Logger.getLogger(AssetList.class.getName());
 
   // The asset "list" is represented as a tree and follows the same GWT conventions.
   private Tree assetList;
@@ -44,6 +58,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
   private long projectId;
   private Project project;
   private YoungAndroidAssetsFolder assetsFolder;
+  private int clientX;
+  private int clientY;
 
   /**
    * Creates a new AssetList
@@ -63,8 +79,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
       @Override
       public void onClick(ClickEvent event) {
         if (assetsFolder != null) {
-          FileUploadWizard uploader = new FileUploadWizard(assetsFolder);
-          uploader.show();
+          new FileUploadWizard(assetsFolder).show();
         }
       }
     });
@@ -78,6 +93,15 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
     initWidget(panel);
 
+    assetList.setScrollOnSelectEnabled(false);
+    assetList.sinkEvents(Event.ONMOUSEMOVE);
+    assetList.addMouseMoveHandler(new MouseMoveHandler() {
+      @Override
+      public void onMouseMove(MouseMoveEvent event) {
+        clientX = event.getClientX();
+        clientY = event.getClientY();
+      }
+    });
     assetList.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
       public void onSelection(SelectionEvent<TreeItem> event) {
@@ -85,15 +109,28 @@ public class AssetList extends Composite implements ProjectChangeListener {
         ProjectNode node = (ProjectNode) selected.getUserObject();
         // The actual menu is determined by what is registered for the filenode
         // type in CommandRegistry.java
-        ProjectNodeContextMenu.show(node, selected.getWidget());
+        ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
       }});
+    assetList.addFocusHandler(new FocusHandler() {
+      @Override
+      public void onFocus(FocusEvent event) {
+        assetList.addStyleName("gwt-Tree-focused");
+      }
+    });
+    assetList.addBlurHandler(new BlurHandler() {
+      @Override
+      public void onBlur(BlurEvent event) {
+        assetList.removeStyleName("gwt-Tree-focused");
+      }
+    });
   }
 
   /*
    * Populate the asset tree with files from the project's assets folder.
    */
   private void refreshAssetList() {
-    OdeLog.log("AssetList: refreshing for project " + projectId);
+    final Images images = Ode.getImageBundle();
+    LOG.info("AssetList: refreshing for project " + projectId);
     assetList.clear();
 
     if (assetsFolder != null) {
@@ -104,8 +141,18 @@ public class AssetList extends Composite implements ProjectChangeListener {
         if (nodeName.length() > 20)
           nodeName = nodeName.substring(0, 8) + "..." + nodeName.substring(nodeName.length() - 9,
               nodeName.length());
-        TreeItem treeItem = new TreeItem(
-            new HTML("<span>" + nodeName + "</span>"));
+
+        String fileSuffix = node.getProjectId() + "/" + node.getFileId();
+        String treeItemText = "<span style='cursor: pointer'>";
+        if (StorageUtil.isImageFile(fileSuffix)) {
+          treeItemText += new Image(images.mediaIconImg());
+        } else if (StorageUtil.isAudioFile(fileSuffix )) {
+          treeItemText += new Image(images.mediaIconAudio());
+        } else if (StorageUtil.isVideoFile(fileSuffix )) {
+          treeItemText += new Image(images.mediaIconVideo());
+        }
+        treeItemText += nodeName + "</span>";
+        TreeItem treeItem = new TreeItem(new HTML(treeItemText));
         // keep a pointer from the tree item back to the actual node
         treeItem.setUserObject(node);
         assetList.addItem(treeItem);
@@ -114,7 +161,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
   }
 
   public void refreshAssetList(long projectId) {
-    OdeLog.log("AssetList: switching projects from  " + this.projectId +
+    LOG.info("AssetList: switching projects from  " + this.projectId +
         " to " + projectId);
 
     if (project != null) {
@@ -137,14 +184,14 @@ public class AssetList extends Composite implements ProjectChangeListener {
   // ProjectChangeListener implementation
   @Override
   public void onProjectLoaded(Project project) {
-    OdeLog.log("AssetList: got onProjectLoaded for " + project.getProjectId() + 
+    LOG.info("AssetList: got onProjectLoaded for " + project.getProjectId() +
         ", current project is " + projectId);
     refreshAssetList();
   }
 
   @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
-    OdeLog.log("AssetList: got projectNodeAdded for node " + node.getFileId() 
+    LOG.info("AssetList: got projectNodeAdded for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();
@@ -153,10 +200,14 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
-    OdeLog.log("AssetLIst: got onProjectNodeRemoved for node " + node.getFileId() 
+    LOG.info("AssetList: got onProjectNodeRemoved for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();
     }
+  }
+
+  public Tree getTree() {
+    return assetList;
   }
 }

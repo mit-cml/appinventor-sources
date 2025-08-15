@@ -104,6 +104,8 @@ public final class ConnectProgressBar {
       $entry(@com.google.appinventor.client.ConnectProgressBar::start());
     $wnd.ConnectProgressBar_setProgress =
       $entry(@com.google.appinventor.client.ConnectProgressBar::setProgress(ILjava/lang/String;));
+    $wnd.ConnectProgressBar_hide =
+      $entry(@com.google.appinventor.client.ConnectProgressBar::hide());
   }-*/;
 
 }

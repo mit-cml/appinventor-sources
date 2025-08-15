@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.3.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.3.0/distro-source/core/src/gwt-module.dtd">
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.3.0//EN" "http://www.gwtproject.org/doctype/2.8.1/gwt-module.dtd">
 <module rename-to='ode'>
   <entry-point class="com.google.appinventor.client.Ode" />
 
@@ -20,6 +20,7 @@
   <!--inherits name="com.google.gwt.i18n.CldrLocales"/-->
   <inherits name="com.google.gwt.json.JSON" />
   <inherits name="com.google.gwt.libideas.ImmutableResources" />
+  <inherits name="com.google.gwt.logging.Logging"/>
   <inherits name="com.google.gwt.resources.Resources" />
   <inherits name="com.google.gwt.widgetideas.WidgetIdeas" />
   <inherits name="com.google.gwt.widgetideas.GWTCanvas" />
@@ -27,22 +28,24 @@
   <inherits name="com.google.common.base.Base" />
   <inherits name="com.google.common.collect.Collect" />
   <inherits name="com.google.appinventor.components.CommonConstants" />
-  <inherits name="com.google.appinventor.common.BlocksEditorHttpConstants" />
   <inherits name="com.google.appinventor.common.CommonUtils" />
   <inherits name="com.google.appinventor.common.CommonVersion" />
   <inherits name="com.google.common.annotations.Annotations" />
   <inherits name="com.google.gwt.query.Query" />
+  <inherits name="org.pepstock.charba.Charba"/>
+  <inherits name="com.google.gwt.xml.XML" />
+
+  <set-property name="gwt.logging.logLevel" value="INFO"/>
+  <set-property name="gwt.logging.enabled" value="TRUE"/>
+  <set-property name="gwt.logging.consoleHandler" value="ENABLED"/>
 
   <!-- servlets -->
   <servlet path="/components" class="com.google.appinventor.server.ComponentServiceImpl" />
   <servlet path="/download" class="com.google.appinventor.server.DownloadServlet" />
   <servlet path="/getmotd" class="com.google.appinventor.server.GetMotdServiceImpl" />
-  <servlet path="/help" class="com.google.appinventor.server.HelpServiceImpl" />
   <servlet path="/projects" class="com.google.appinventor.server.ProjectServiceImpl" />
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
-  <servlet path="/webstartfile" class="com.google.appinventor.server.WebStartFileServlet" />
-  <servlet path="/webstartjnlp" class="com.google.appinventor.server.WebStartJnlpServlet" />
 
   <!-- srcs -->
   <source path="" includes="simple_components.json" />
@@ -75,6 +78,8 @@
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
   <source path="client/editor/youngandroid/properties"/>
+  <source path="client/editor/youngandroid/i18n"/>
+  <source path="client/editor/youngandroid/i18n/msg"/>
   <source path="images"/>
   <source path="shared/jsonp"/>
   <source path="shared/rpc"/>
@@ -85,7 +90,6 @@
   <source path="shared/youngandroid"/>
   <source path="shared/properties/json"/>
   <source path="shared/rpc/component"/>
-  <source path="shared/rpc/help"/>
   <source path="shared/rpc/launch"/>
   <source path="shared/rpc/project"/>
   <source path="shared/rpc/user"/>
@@ -106,6 +110,16 @@
   <generate-with class="com.google.appinventor.rebind.ExtendedServiceProxyGenerator">
     <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
   </generate-with>
+
+  <replace-with class="com.google.appinventor.client.utils.FocusImplStandard">
+    <when-type-is class="com.google.gwt.user.client.ui.impl.FocusImpl"/>
+    <when-property-is name="user.agent" value="gecko1_8"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.utils.FocusImplSafari">
+    <when-type-is class="com.google.gwt.user.client.ui.impl.FocusImpl"/>
+    <when-property-is name="user.agent" value="safari"/>
+  </replace-with>
 
   <!-- English language, independent of country -->
   <extend-property name="locale" values="en"/>
@@ -129,10 +143,64 @@
   <extend-property name="locale" values="pt_BR"/>
   <!-- Portuguese (Portugal) -->
   <extend-property name="locale" values="pt"/>
+  <!-- Hungarian -->
+  <extend-property name="locale" values="hu"/>
   <!-- Dutch -->
   <extend-property name="locale" values="nl"/>
+  <!-- German -->
+  <extend-property name="locale" values="de"/>
+  <!-- Polish -->
+  <extend-property name="locale" values="pl"/>
+  <!-- Lithuanian -->
+  <extend-property name="locale" values="lt"/>
+  <!-- Turkish -->
+  <extend-property name="locale" values="tr"/>
+  <!-- Armenian -->
+  <extend-property name="locale" values="hy"/>
+  <!-- Catalan -->
+  <extend-property name="locale" values="ca"/>
+  <!-- Ukrainian -->
+  <extend-property name="locale" values="uk"/>
+  <!-- Japanese -->
+  <extend-property name="locale" values="ja"/>
 
   <set-property-fallback name="locale" value="en"/>
-  <collapse-all-properties/>
 
+  <set-configuration-property name="includeSourceMapUrl" value="/ode/__HASH___sourceMap__FRAGMENT__.json"/>
+  <set-property name="compiler.useSourceMaps" value="true"/>
+
+  <!-- Support for running App Inventor client side without a backend server -->
+
+  <define-property name="local.services" values="false,true"/>
+  <set-property name="local.services" value="false"/>
+
+  <replace-with class="com.google.appinventor.client.local.LocalProjectService">
+    <when-type-is class="com.google.appinventor.shared.rpc.project.ProjectService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalUserInfoService">
+    <when-type-is class="com.google.appinventor.shared.rpc.user.UserInfoService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalGetMotdService">
+    <when-type-is class="com.google.appinventor.shared.rpc.GetMotdService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalTokenAuthService">
+    <when-type-is class="com.google.appinventor.shared.rpc.user.TokenAuthService"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalDownloader">
+    <when-type-is class="com.google.appinventor.client.utils.Downloader"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
+
+  <replace-with class="com.google.appinventor.client.local.LocalUploader">
+    <when-type-is class="com.google.appinventor.client.utils.Uploader"/>
+    <when-property-is name="local.services" value="true"/>
+  </replace-with>
 </module>

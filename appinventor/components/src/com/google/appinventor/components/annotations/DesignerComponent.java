@@ -36,8 +36,7 @@ public @interface DesignerComponent {
    * Description to be shown on user request in the Designer.  If this field is
    * empty, the description() field should be used.  This may contain HTML.
    * Internal double-quotes will be converted to single-quotes when this field
-   * is displayed in the designer.  For now, this cannot contain an
-   * ampersand (%), which would corrupt ya_lang_def.xml.
+   * is displayed in the designer.
    */
   // TODO(user): Add more robust character escaping.
   String designerHelpDescription() default "";
@@ -103,4 +102,14 @@ public @interface DesignerComponent {
    * the component.
    */
   String dateBuilt() default "";
+
+  /**
+   * The file name of the LICENSE file that the component is attributed under.
+   * Meant primarily for use by external components which can have a license
+   * different from that of this codebase. This string can also be a URL pointing
+   * to an external LICENSE file.
+   *
+   * @return The name of the LICENSE file
+   */
+  String licenseName() default "";
 }

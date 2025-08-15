@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Maps</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Maps</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="maps">Maps</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#Circle">Circle</a></li>
+  <li><a href="#FeatureCollection">FeatureCollection</a></li>
+  <li><a href="#LineString">LineString</a></li>
+  <li><a href="#Map">Map</a></li>
+  <li><a href="#Marker">Marker</a></li>
+  <li><a href="#Navigation">Navigation</a></li>
+  <li><a href="#Polygon">Polygon</a></li>
+  <li><a href="#Rectangle">Rectangle</a></li>
+</ul>
+
+<h2 id="Circle">Circle</h2>
+
+<p>The <code class="highlighter-rouge">Circle</code> component visualizes a circle of a given <a href="#Circle.Radius"><code class="highlighter-rouge">Radius</code></a>, in meters,
+ centered at a <a href="#Circle.Latitude"><code class="highlighter-rouge">Latitude</code></a> and <a href="#Circle.Longitude"><code class="highlighter-rouge">Longitude</code></a>. The <code class="highlighter-rouge">Circle</code>’s appearance
+ cnn be customized using properties such as <a href="#Circle.FillColor"><code class="highlighter-rouge">FillColor</code></a>, <a href="#Circle.StrokeColor"><code class="highlighter-rouge">StrokeColor</code></a>,
+ and <a href="#Circle.StrokeWidth"><code class="highlighter-rouge">StrokeWidth</code></a>.</p>
+
+<p>The <code class="highlighter-rouge">Circle</code> component can also be used to implement features such as geofencing, a mechanism
+ where the user’s presence within an area is used to trigger other behaviors. Using the
+ <a href="#Circle.DistanceToPoint"><code class="highlighter-rouge">DistanceToPoint</code></a> method combined with the
+ <a href="sensors.html#LocationSensor"><code class="highlighter-rouge">LocationSensor</code></a>, you can determine whether a user’s location is
+ inside or outside of the <code class="highlighter-rouge">Circle</code>. You can use this feature to trigger additional actions.</p>
+
+<h3 id="Circle-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Circle.Description" class="text"><em>Description</em></dt>
+  <dd>Sets or gets the description displayed in the info window. The info window appears when the
+ user taps on the <code class="highlighter-rouge">Circle</code>.</dd>
+  <dt id="Circle.Draggable" class="boolean"><em>Draggable</em></dt>
+  <dd>Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+ long-pressing and then dragging the <code class="highlighter-rouge">Circle</code> to a new location.</dd>
+  <dt id="Circle.EnableInfobox" class="boolean"><em>EnableInfobox</em></dt>
+  <dd>Enables or disables the infobox window display when the user taps the <code class="highlighter-rouge">Circle</code>.</dd>
+  <dt id="Circle.FillColor" class="color"><em>FillColor</em></dt>
+  <dd>Sets or gets the color used to fill in the <code class="highlighter-rouge">Circle</code>.</dd>
+  <dt id="Circle.FillOpacity" class="number"><em>FillOpacity</em></dt>
+  <dd>Sets or gets the opacity of the color used to fill the <code class="highlighter-rouge">Circle</code>. A value of 0.0 will be
+ completely invisible and a value of 1.0 will be completely opaque.</dd>
+  <dt id="Circle.Latitude" class="number"><em>Latitude</em></dt>
+  <dd>Sets or gets the latitude of the center of the circle, in degrees. Positive values represent
+ north of the equator and negative values represent south of the equator. To update the
+ latitude and longitude simultaneously, use the <a href="#Circle.SetLocation"><code class="highlighter-rouge">SetLocation</code></a> method.</dd>
+  <dt id="Circle.Longitude" class="number"><em>Longitude</em></dt>
+  <dd>Sets or gets the longitude of the center of the circle, in degrees. Positive values represent
+ east of the prime meridian and negative values represent west of the prime meridian. To update
+ the latitude and longitude simultaneously, use the <a href="#Circle.SetLocation"><code class="highlighter-rouge">SetLocation</code></a> method.</dd>
+  <dt id="Circle.Radius" class="number"><em>Radius</em></dt>
+  <dd>Sets or gets the radius of the circle, in meters.</dd>
+  <dt id="Circle.StrokeColor" class="color"><em>StrokeColor</em></dt>
+  <dd>Sets or gets the color used to outline the <code class="highlighter-rouge">Circle</code>.</dd>
+  <dt id="Circle.StrokeOpacity" class="number"><em>StrokeOpacity</em></dt>
+  <dd>Sets or gets the opacity of the outline of the <code class="highlighter-rouge">Circle</code>. A value of 0.0 will be invisible and
+ a value of 1.0 will be opaque.</dd>
+  <dt id="Circle.StrokeWidth" class="number"><em>StrokeWidth</em></dt>
+  <dd>Sets or gets the width of the stroke used to outline the <code class="highlighter-rouge">Circle</code>.</dd>
+  <dt id="Circle.Title" class="text"><em>Title</em></dt>
+  <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
+ map feature.</dd>
+  <dt id="Circle.Type" class="text ro bo"><em>Type</em></dt>
+  <dd>Returns the type of the feature. For Circles, this returns MapFeature.Circle (“Circle”).</dd>
+  <dt id="Circle.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Circle</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Circle</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+</dl>
+
+<h3 id="Circle-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Circle.Click">Click()</dt>
+  <dd>The <code class="highlighter-rouge">Click</code> event runs when the user taps on the <code class="highlighter-rouge">Circle</code>.</dd>
+  <dt id="Circle.Drag">Drag()</dt>
+  <dd>The <code class="highlighter-rouge">Drag</code> event runs in response to position updates of the <code class="highlighter-rouge">Circle</code> as the user drags it.</dd>
+  <dt id="Circle.LongClick">LongClick()</dt>
+  <dd>The <code class="highlighter-rouge">LongClick</code> event runs when the user presses and holds the <code class="highlighter-rouge">Circle</code> and then releases it.
+ This event will only trigger if <a href="#Circle.Draggable"><code class="highlighter-rouge">Draggable</code></a> is <code class="logic block highlighter-rouge">false</code> because it
+ uses the same gesture as <a href="#Circle.StartDrag"><code class="highlighter-rouge">StartDrag</code></a>.</dd>
+  <dt id="Circle.StartDrag">StartDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StartDrag</code> event runs when the user presses and holds the <code class="highlighter-rouge">Circle</code> and then proceeds to
+ move their finger on the screen. It will be followed by the <a href="#Circle.Drag"><code class="highlighter-rouge">Drag</code></a> and
+ <a href="#Circle.StopDrag"><code class="highlighter-rouge">StopDrag</code></a> events.</dd>
+  <dt id="Circle.StopDrag">StopDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StopDrag</code> event runs when the user releases the <code class="highlighter-rouge">Circle</code> at the end of a drag.</dd>
+</dl>
+
+<h3 id="Circle-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Circle.DistanceToFeature" class="method returns number"><i></i> DistanceToFeature(<em class="component">mapFeature</em>,<em class="boolean">centroids</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">Circle</code> and the given <code class="highlighter-rouge">mapFeature</code>. If <code class="highlighter-rouge">centroids</code> is
+ <code class="logic block highlighter-rouge">true</code>, the computation is done between the centroids of the two features.
+ Otherwise, the distance will be computed between the two features based on the closest points.
+ Further, when <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>, this method will return 0 if the <code class="highlighter-rouge">Circle</code>
+ intersects or contains the <code class="highlighter-rouge">mapFeature</code>. If an error occurs, this method will return -1.</dd>
+  <dt id="Circle.DistanceToPoint" class="method returns number"><i></i> DistanceToPoint(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="boolean">centroid</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">Circle</code> and the given <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>. If
+ <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">true</code>, the distance is computed from the center of the <code class="highlighter-rouge">Circle</code>
+ to the given point. Otherwise, the distance is computed from the closest point on the <code class="highlighter-rouge">Circle</code>
+ to the given point. Further, this method will return 0 if <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>
+ and the point is in the <code class="highlighter-rouge">Circle</code>. If an error occurs, -1 will be returned.</dd>
+  <dt id="Circle.HideInfobox" class="method"><i></i> HideInfobox()</dt>
+  <dd>Hides the <code class="highlighter-rouge">Circle</code>’s info box if it is visible. Otherwise, no action is taken.</dd>
+  <dt id="Circle.SetLocation" class="method"><i></i> SetLocation(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Moves the center of the <code class="highlighter-rouge">Circle</code> to the given <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>. This method is more
+ efficient than setting <a href="#Circle.Latitude"><code class="highlighter-rouge">Latitude</code></a> and <a href="#Circle.Longitude"><code class="highlighter-rouge">Longitude</code></a> separately.</dd>
+  <dt id="Circle.ShowInfobox" class="method"><i></i> ShowInfobox()</dt>
+  <dd>Shows the info box for the <code class="highlighter-rouge">Circle</code> if it is not visible. Otherwise, this method has no effect.
+ This method can be used to show the info box even if <a href="#Circle.EnableInfobox"><code class="highlighter-rouge">EnableInfobox</code></a> is false.</dd>
+</dl>
+
+<h2 id="FeatureCollection">FeatureCollection</h2>
+
+<p>A <code class="highlighter-rouge">FeatureCollection</code> groups one or more map features together. Any events that occur on a
+ feature in the collection will also trigger the corresponding event in the collection component.
+ <code class="highlighter-rouge">FeatureCollection</code>s can be loaded from external resources to populate <a href="#Map"><code class="highlighter-rouge">Map</code></a>s with content.
+ GeoJSON is the only format supported at this time.</p>
+
+<h3 id="FeatureCollection-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="FeatureCollection.Features" class="list bo"><em>Features</em></dt>
+  <dd>Gets the list of features attached to the <code class="highlighter-rouge">FeatureCollection</code> (without regard to the value of the
+ feature’s <code class="getter block highlighter-rouge">Visible</code> property). This list also includes any features created on
+ the <code class="highlighter-rouge">FeatureCollection</code> by calls to <a href="#FeatureCollection.FeatureFromDescription"><code class="highlighter-rouge">FeatureFromDescription</code></a>.</dd>
+  <dt id="FeatureCollection.FeaturesFromGeoJSON" class="text wo"><em>FeaturesFromGeoJSON</em></dt>
+  <dd>Populates the feature collection from a string containing GeoJSON content. Given the size of
+ such strings, it is recommended to load the feature collection from assets or the web using
+ the <a href="#FeatureCollection.Source"><code class="highlighter-rouge">Source</code></a> property.</dd>
+  <dt id="FeatureCollection.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FeatureCollection</code>’s vertical height, measured in pixels.</dd>
+  <dt id="FeatureCollection.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">FeatureCollection</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="FeatureCollection.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="FeatureCollection.Source" class="text ro"><em>Source</em></dt>
+  <dd>Specifies the source URL used to populate the feature collection. If the feature collection was not loaded from a URL, this will be the empty string.</dd>
+  <dt id="FeatureCollection.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="FeatureCollection.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">FeatureCollection</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">FeatureCollection</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="FeatureCollection.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FeatureCollection</code>, measured in pixels.</dd>
+  <dt id="FeatureCollection.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FeatureCollection</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="FeatureCollection-Events">Events</h3>
+
+<dl class="events">
+  <dt id="FeatureCollection.FeatureClick">FeatureClick(<em class="component">feature</em>)</dt>
+  <dd>When a feature is clicked, the parent <code class="highlighter-rouge">FeatureCollection</code> will also receive a <code class="highlighter-rouge">FeatureClick</code> event.
+ The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was clicked. This event is run <em>after</em>
+ the <code class="highlighter-rouge">Click</code> event on the corresponding feature and after the <code class="highlighter-rouge">when any ... Click</code> event if one
+ is provided.</dd>
+  <dt id="FeatureCollection.FeatureDrag">FeatureDrag(<em class="component">feature</em>)</dt>
+  <dd>When the user drags a feature, the parent <code class="highlighter-rouge">FeatureCollection</code> will also receive a <code class="highlighter-rouge">FeatureDrag</code> event.
+ The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was dragged. This event is run <em>after</em>
+ the <code class="highlighter-rouge">Drag</code> event on the corresponding feature and after the <code class="highlighter-rouge">when any ... Drag</code> event if one is
+ provided.</dd>
+  <dt id="FeatureCollection.FeatureLongClick">FeatureLongClick(<em class="component">feature</em>)</dt>
+  <dd>When a feature is long-clicked, the parent <code class="highlighter-rouge">FeatureCollection</code> will also receive a <code class="highlighter-rouge">FeatureLongClick</code>
+ event. The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was long-clicked. This event is
+ run <em>after</em> the <code class="highlighter-rouge">LongClick</code> event on the corresponding feature and after the
+ <code class="highlighter-rouge">when any ... LongClick</code> event if one is provided.</dd>
+  <dt id="FeatureCollection.FeatureStartDrag">FeatureStartDrag(<em class="component">feature</em>)</dt>
+  <dd>When the user starts dragging a feature, the parent <code class="highlighter-rouge">FeatureCollection</code> will also receive a
+ <code class="highlighter-rouge">FeatureStartDrag</code> event. The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was dragged.
+ This event is run <em>after</em> the <code class="highlighter-rouge">StartDrag</code> event on the corresponding feature and after the
+ <code class="highlighter-rouge">when any ... StartDrag</code> event if one is provided.</dd>
+  <dt id="FeatureCollection.FeatureStopDrag">FeatureStopDrag(<em class="component">feature</em>)</dt>
+  <dd>When the user stops dragging a feature, the parent <code class="highlighter-rouge">FeatureCollection</code> will also receive a
+ <code class="highlighter-rouge">FeatureStopDrag</code> event. The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was dragged.
+ This event is run <em>after</em> the <code class="highlighter-rouge">StopDrag</code> event on the corresponding feature and after the
+ <code class="highlighter-rouge">when any ... StopDrag</code> event if one is provided.</dd>
+  <dt id="FeatureCollection.GotFeatures">GotFeatures(<em class="text">url</em>,<em class="list">features</em>)</dt>
+  <dd>The <code class="highlighter-rouge">GotFeatures</code> event is run when when a feature collection is successfully read from the
+ given <code class="variable block highlighter-rouge">url</code>. The <code class="variable block highlighter-rouge">features</code> parameter will be a list of
+ feature descriptions that can be converted into components using the
+ <a href="#FeatureCollection.FeatureFromDescription"><code class="highlighter-rouge">FeatureFromDescription</code></a> method.</dd>
+  <dt id="FeatureCollection.LoadError">LoadError(<em class="text">url</em>,<em class="number">responseCode</em>,<em class="text">errorMessage</em>)</dt>
+  <dd>The <code class="highlighter-rouge">LoadError</code> event is run when an error occurs while processing a feature collection
+ document at the given <code class="variable block highlighter-rouge">url</code>. The <code class="variable block highlighter-rouge">responseCode</code> parameter
+ will contain an HTTP status code and the <code class="variable block highlighter-rouge">errorMessage</code> parameter will
+ contain a detailed error message.</dd>
+</dl>
+
+<h3 id="FeatureCollection-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="FeatureCollection.FeatureFromDescription" class="method returns any"><i></i> FeatureFromDescription(<em class="list">description</em>)</dt>
+  <dd>Converts a feature description into an App Inventor map feature. Points are converted into
+ <a href="#Marker"><code class="highlighter-rouge">Marker</code></a> components, LineStrings are converted into <a href="#LineString"><code class="highlighter-rouge">LineString</code></a> components, and
+ Polygons (and MultiPolygons) are converted into <a href="#Polygon"><code class="highlighter-rouge">Polygon</code></a> components. If the feature has
+ properties, they will be mapped into App Inventor properties using the following mapping:
+
+    <ul>
+      <li>description becomes <code class="highlighter-rouge">Description</code></li>
+      <li>draggable becomes <code class="highlighter-rouge">Draggable</code></li>
+      <li>infobox becomes <code class="highlighter-rouge">EnableInfobox</code></li>
+      <li>fill becomes <code class="highlighter-rouge">FillColor</code></li>
+      <li>fill-opacity becomes <code class="highlighter-rouge">FillOpacity</code></li>
+      <li>image becomes <code class="highlighter-rouge">ImageAsset</code></li>
+      <li>stroke becomes <code class="highlighter-rouge">StrokeColor</code></li>
+      <li>stroke-opacity becomes <code class="highlighter-rouge">StrokeOpacity</code></li>
+      <li>stroke-width becomes <code class="highlighter-rouge">StrokeWidth</code></li>
+      <li>title becomes <code class="highlighter-rouge">Title</code></li>
+      <li>visible becomes <code class="highlighter-rouge">Visible</code></li>
+    </ul>
+  </dd>
+  <dt id="FeatureCollection.LoadFromURL" class="method"><i></i> LoadFromURL(<em class="text">url</em>)</dt>
+  <dd>Loads a feature collection in GeoJSON format from the given <code class="highlighter-rouge">url</code>. On success,
+ the event <a href="#FeatureCollection.GotFeatures"><code class="highlighter-rouge">GotFeatures</code></a> will be raised with the given <code class="highlighter-rouge">url</code>
+ and a list of <code class="highlighter-rouge">feature</code>s parsed from the GeoJSON as a list of (key, value) pairs. On failure,
+ the <a href="#FeatureCollection.LoadError"><code class="highlighter-rouge">LoadError</code></a> event will be raised with any applicable HTTP
+ response code and error message.</dd>
+</dl>
+
+<h2 id="LineString">LineString</h2>
+
+<p><code class="highlighter-rouge">LineString</code> is a component for drawing an open, continuous sequence of lines on a <code class="highlighter-rouge">Map</code>. To add
+ new points to a <code class="highlighter-rouge">LineString</code> in the designer, drag the midpoint of any segment away from the
+ line to introduce a new vertex. Move a vertex by clicking and dragging the vertex to a new
+ location. Clicking on a vertex will delete the vertex, unless only two remain.</p>
+
+<h3 id="LineString-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="LineString.Description" class="text"><em>Description</em></dt>
+  <dd>Sets or gets the description displayed in the info window. The info window appears when the
+ user taps on the <code class="highlighter-rouge">LineString</code>.</dd>
+  <dt id="LineString.Draggable" class="boolean"><em>Draggable</em></dt>
+  <dd>Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+ long-pressing and then dragging the <code class="highlighter-rouge">LineString</code> to a new location.</dd>
+  <dt id="LineString.EnableInfobox" class="boolean"><em>EnableInfobox</em></dt>
+  <dd>Enables or disables the infobox window display when the user taps the <code class="highlighter-rouge">LineString</code>.</dd>
+  <dt id="LineString.Points" class="list bo"><em>Points</em></dt>
+  <dd>The list of points, as pairs of latitudes and longitudes, in the <code class="highlighter-rouge">LineString</code>.</dd>
+  <dt id="LineString.PointsFromString" class="text wo"><em>PointsFromString</em></dt>
+  <dd>Set the points of the LineString from a specially-coded character string of the form:
+ [[latitude1, longitude1], [latitude2, longitude2], …]</dd>
+  <dt id="LineString.StrokeColor" class="color"><em>StrokeColor</em></dt>
+  <dd>Sets or gets the color used to outline the <code class="highlighter-rouge">LineString</code>.</dd>
+  <dt id="LineString.StrokeOpacity" class="number"><em>StrokeOpacity</em></dt>
+  <dd>Sets or gets the opacity of the outline of the <code class="highlighter-rouge">LineString</code>. A value of 0.0 will be invisible and
+ a value of 1.0 will be opaque.</dd>
+  <dt id="LineString.StrokeWidth" class="number"><em>StrokeWidth</em></dt>
+  <dd>Sets or gets the width of the stroke used to outline the <code class="highlighter-rouge">LineString</code>.</dd>
+  <dt id="LineString.Title" class="text"><em>Title</em></dt>
+  <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
+ map feature.</dd>
+  <dt id="LineString.Type" class="text ro bo"><em>Type</em></dt>
+  <dd>Returns the type of the map feature. For LineString, this returns MapFeature.LineString (“LineString”).</dd>
+  <dt id="LineString.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">LineString</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">LineString</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+</dl>
+
+<h3 id="LineString-Events">Events</h3>
+
+<dl class="events">
+  <dt id="LineString.Click">Click()</dt>
+  <dd>The <code class="highlighter-rouge">Click</code> event runs when the user taps on the <code class="highlighter-rouge">LineString</code>.</dd>
+  <dt id="LineString.Drag">Drag()</dt>
+  <dd>The <code class="highlighter-rouge">Drag</code> event runs in response to position updates of the <code class="highlighter-rouge">LineString</code> as the user drags it.</dd>
+  <dt id="LineString.LongClick">LongClick()</dt>
+  <dd>The <code class="highlighter-rouge">LongClick</code> event runs when the user presses and holds the <code class="highlighter-rouge">LineString</code> and then releases it.
+ This event will only trigger if <a href="#LineString.Draggable"><code class="highlighter-rouge">Draggable</code></a> is <code class="logic block highlighter-rouge">false</code> because it
+ uses the same gesture as <a href="#LineString.StartDrag"><code class="highlighter-rouge">StartDrag</code></a>.</dd>
+  <dt id="LineString.StartDrag">StartDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StartDrag</code> event runs when the user presses and holds the <code class="highlighter-rouge">LineString</code> and then proceeds to
+ move their finger on the screen. It will be followed by the <a href="#LineString.Drag"><code class="highlighter-rouge">Drag</code></a> and
+ <a href="#LineString.StopDrag"><code class="highlighter-rouge">StopDrag</code></a> events.</dd>
+  <dt id="LineString.StopDrag">StopDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StopDrag</code> event runs when the user releases the <code class="highlighter-rouge">LineString</code> at the end of a drag.</dd>
+</dl>
+
+<h3 id="LineString-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="LineString.DistanceToFeature" class="method returns number"><i></i> DistanceToFeature(<em class="component">mapFeature</em>,<em class="boolean">centroids</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">LineString</code> and the given <code class="highlighter-rouge">mapFeature</code>. If <code class="highlighter-rouge">centroids</code> is
+ <code class="logic block highlighter-rouge">true</code>, the computation is done between the centroids of the two features.
+ Otherwise, the distance will be computed between the two features based on the closest points.
+ Further, when <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>, this method will return 0 if the <code class="highlighter-rouge">LineString</code>
+ intersects or contains the <code class="highlighter-rouge">mapFeature</code>. If an error occurs, this method will return -1.</dd>
+  <dt id="LineString.DistanceToPoint" class="method returns number"><i></i> DistanceToPoint(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="boolean">centroid</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">LineString</code> and the given <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>. If
+ <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">true</code>, the distance is computed from the center of the <code class="highlighter-rouge">LineString</code>
+ to the given point. Otherwise, the distance is computed from the closest point on the <code class="highlighter-rouge">LineString</code>
+ to the given point. Further, this method will return 0 if <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>
+ and the point is in the <code class="highlighter-rouge">LineString</code>. If an error occurs, -1 will be returned.</dd>
+  <dt id="LineString.HideInfobox" class="method"><i></i> HideInfobox()</dt>
+  <dd>Hides the <code class="highlighter-rouge">LineString</code>’s info box if it is visible. Otherwise, no action is taken.</dd>
+  <dt id="LineString.ShowInfobox" class="method"><i></i> ShowInfobox()</dt>
+  <dd>Shows the info box for the <code class="highlighter-rouge">LineString</code> if it is not visible. Otherwise, this method has no effect.
+ This method can be used to show the info box even if <a href="#LineString.EnableInfobox"><code class="highlighter-rouge">EnableInfobox</code></a> is false.</dd>
+</dl>
+
+<h2 id="Map">Map</h2>
+
+<p>A two-dimensional container that renders map tiles in the background and allows for multiple
+ <a href="#Marker"><code class="highlighter-rouge">Marker</code></a> elements to identify points on the map. Map tiles are supplied by OpenStreetMap
+ contributors and the the United States Geological Survey, or a custom basemap URL can be provided.</p>
+
+<p>The <code class="highlighter-rouge">Map</code> component provides three utilities for manipulating its boundaries with App Inventor.
+ First, a locking mechanism is provided to allow the map to be moved relative to other components
+ on the Screen. Second, when unlocked, the user can pan the <code class="highlighter-rouge">Map</code> to any location. At this new
+ location, the "Set Initial Boundary" button can be pressed to save the current <code class="highlighter-rouge">Map</code>
+ coordinates to its properties. Lastly, if the <code class="highlighter-rouge">Map</code> is moved to a different location, for example
+ to add <a href="#Marker"><code class="highlighter-rouge">Marker</code></a>s off-screen, then the "Reset Map to Initial Bounds" button can
+ be used to re-center the <code class="highlighter-rouge">Map</code> at the starting location.</p>
+
+<h3 id="Map-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Map.BoundingBox" class="list bo"><em>BoundingBox</em></dt>
+  <dd>Sets or gets the current boundary for the map’s drawn view. The value is a list of lists
+ containing the northwest and southeast coordinates of the current view in the form
+ <code class="highlighter-rouge">((North West) (South East))</code>.</dd>
+  <dt id="Map.CenterFromString" class="text wo"><em>CenterFromString</em></dt>
+  <dd>Set the initial center coordinate of the map. The value is specified as a
+ comma-separated pair of decimal latitude and longitude coordinates, for example,
+ <code class="highlighter-rouge">42.359144, -71.093612</code>.
+
+    <p>In blocks code, it is recommended for performance reasons to use
+ <a href="#Map.PanTo"><code class="highlighter-rouge">PanTo</code></a> with numerical latitude and longitude rather than convert
+ to the string representation for use with this property.</p>
+  </dd>
+  <dt id="Map.CustomUrl" class="text"><em>CustomUrl</em></dt>
+  <dd>Update the custom URL of the base tile layer in use by the map.
+ e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+ e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername</dd>
+  <dt id="Map.EnablePan" class="boolean"><em>EnablePan</em></dt>
+  <dd>Enables or disables the ability of the user to move the Map.</dd>
+  <dt id="Map.EnableRotation" class="boolean"><em>EnableRotation</em></dt>
+  <dd>Enables or disables the two-finger rotation gesture to rotate the Map.</dd>
+  <dt id="Map.EnableZoom" class="boolean"><em>EnableZoom</em></dt>
+  <dd>Enables or disables the two-finger pinch gesture to zoom the Map.</dd>
+  <dt id="Map.Features" class="list bo"><em>Features</em></dt>
+  <dd>Gets the list of features attached to the <code class="highlighter-rouge">Map</code> (without regard to the value of the
+ feature’s <code class="getter block highlighter-rouge">Visible</code> property). This list also includes any features created on
+ the <code class="highlighter-rouge">Map</code> by calls to <a href="#Map.FeatureFromDescription"><code class="highlighter-rouge">FeatureFromDescription</code></a>.</dd>
+  <dt id="Map.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Map</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Map.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Map</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Map.Latitude" class="number ro bo"><em>Latitude</em></dt>
+  <dd>Gets the latitude of the center of the Map. To change the latitude, use the
+ <a href="#Map.PanTo"><code class="highlighter-rouge">PanTo</code></a> method.</dd>
+  <dt id="Map.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Map.LocationSensor" class="component wo"><em>LocationSensor</em></dt>
+  <dd>Uses the provided <a href="sensors.html#LocationSensor"><code class="highlighter-rouge">LocationSensor</code></a> for user location data
+ rather than the built-in location provider.</dd>
+  <dt id="Map.Longitude" class="number ro bo"><em>Longitude</em></dt>
+  <dd>Gets the longitude of the center of the Map. To change the longitude, use the
+ <a href="#Map.PanTo"><code class="highlighter-rouge">PanTo</code></a> method.</dd>
+  <dt id="Map.MapType" class="number"><em>MapType</em></dt>
+  <dd>Sets or gets the tile layer used to draw the Map background. Defaults to Roads. Valid values
+ are:
+
+    <ol>
+      <li>Roads</li>
+      <li>Aerial</li>
+      <li>Terrain</li>
+      <li>Custom</li>
+    </ol>
+
+    <p><strong>Note:</strong> Road layers are provided by OpenStreetMap and aerial and terrain layers are
+ provided by the U.S. Geological Survey.</p>
+  </dd>
+  <dt id="Map.Rotation" class="number"><em>Rotation</em></dt>
+  <dd>Specifies the rotation of the map in decimal degrees, if any.</dd>
+  <dt id="Map.ScaleUnits" class="number"><em>ScaleUnits</em></dt>
+  <dd>Specifies the units used for the scale overlay. 1 (the default) will give metric units
+ (km, m) whereas 2 will give imperial units (mi, ft).</dd>
+  <dt id="Map.ShowCompass" class="boolean"><em>ShowCompass</em></dt>
+  <dd>Specifies whether to a compass overlay on the Map. The compass will be rotated based on the
+ device’s orientation if a digital compass is present in hardware.</dd>
+  <dt id="Map.ShowScale" class="boolean"><em>ShowScale</em></dt>
+  <dd>Shows a scale reference on the map.</dd>
+  <dt id="Map.ShowUser" class="boolean"><em>ShowUser</em></dt>
+  <dd>Shows or hides an icon indicating the user’s current location on the <a href="#Map"><code class="highlighter-rouge">Map</code></a>. The
+ availability and accuracy of this feature will depend on whether the user has location
+ services enabled and which location providers are available.</dd>
+  <dt id="Map.ShowZoom" class="boolean"><em>ShowZoom</em></dt>
+  <dd>Specifies whether to show zoom controls or not.</dd>
+  <dt id="Map.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Map.UserLatitude" class="number ro bo"><em>UserLatitude</em></dt>
+  <dd>Returns the user’s latitude if ShowUser is enabled.</dd>
+  <dt id="Map.UserLongitude" class="number ro bo"><em>UserLongitude</em></dt>
+  <dd>Returns the user’s longitude if ShowUser is enabled.</dd>
+  <dt id="Map.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Map</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Map</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Map.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Map</code>, measured in pixels.</dd>
+  <dt id="Map.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Map</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dt id="Map.ZoomLevel" class="number"><em>ZoomLevel</em></dt>
+  <dd>Specifies the zoom level of the map.
+ Valid values of ZoomLevel are dependent on the tile provider and the latitude and
+ longitude of the map. For example, zoom levels are more constrained over oceans than dense
+ city centers to conserve space for storing tiles, so valid values may be 1-7 over ocean and
+ 1-20 over cities. Tile providers may send warning or error tiles if the zoom level is too
+ great for the server to support.</dd>
+</dl>
+
+<h3 id="Map-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Map.BoundsChange">BoundsChange()</dt>
+  <dd>The <code class="highlighter-rouge">BoundsChange</code> event runs when the user changes the map bounds, either by zooming, panning,
+ or rotating the view.</dd>
+  <dt id="Map.DoubleTapAtPoint">DoubleTapAtPoint(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>The <code class="highlighter-rouge">DoubleTapAtPoint</code> runs when the user double taps at a point on the map. The tapped
+ location will be reported in map coordinates via the <code class="variable block highlighter-rouge">latitude</code> and
+ <code class="variable block highlighter-rouge">longitude</code> parameters.</dd>
+  <dt id="Map.FeatureClick">FeatureClick(<em class="component">feature</em>)</dt>
+  <dd>When a feature is clicked, the parent <code class="highlighter-rouge">Map</code> will also receive a <code class="highlighter-rouge">FeatureClick</code> event.
+ The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was clicked. This event is run <em>after</em>
+ the <code class="highlighter-rouge">Click</code> event on the corresponding feature and after the <code class="highlighter-rouge">when any ... Click</code> event if one
+ is provided.</dd>
+  <dt id="Map.FeatureDrag">FeatureDrag(<em class="component">feature</em>)</dt>
+  <dd>When the user drags a feature, the parent <code class="highlighter-rouge">Map</code> will also receive a <code class="highlighter-rouge">FeatureDrag</code> event.
+ The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was dragged. This event is run <em>after</em>
+ the <code class="highlighter-rouge">Drag</code> event on the corresponding feature and after the <code class="highlighter-rouge">when any ... Drag</code> event if one is
+ provided.</dd>
+  <dt id="Map.FeatureLongClick">FeatureLongClick(<em class="component">feature</em>)</dt>
+  <dd>When a feature is long-clicked, the parent <code class="highlighter-rouge">Map</code> will also receive a <code class="highlighter-rouge">FeatureLongClick</code>
+ event. The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was long-clicked. This event is
+ run <em>after</em> the <code class="highlighter-rouge">LongClick</code> event on the corresponding feature and after the
+ <code class="highlighter-rouge">when any ... LongClick</code> event if one is provided.</dd>
+  <dt id="Map.FeatureStartDrag">FeatureStartDrag(<em class="component">feature</em>)</dt>
+  <dd>When the user starts dragging a feature, the parent <code class="highlighter-rouge">Map</code> will also receive a
+ <code class="highlighter-rouge">FeatureStartDrag</code> event. The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was dragged.
+ This event is run <em>after</em> the <code class="highlighter-rouge">StartDrag</code> event on the corresponding feature and after the
+ <code class="highlighter-rouge">when any ... StartDrag</code> event if one is provided.</dd>
+  <dt id="Map.FeatureStopDrag">FeatureStopDrag(<em class="component">feature</em>)</dt>
+  <dd>When the user stops dragging a feature, the parent <code class="highlighter-rouge">Map</code> will also receive a
+ <code class="highlighter-rouge">FeatureStopDrag</code> event. The <code class="highlighter-rouge">feature</code> parameter indicates which child feature was dragged.
+ This event is run <em>after</em> the <code class="highlighter-rouge">StopDrag</code> event on the corresponding feature and after the
+ <code class="highlighter-rouge">when any ... StopDrag</code> event if one is provided.</dd>
+  <dt id="Map.GotFeatures">GotFeatures(<em class="text">url</em>,<em class="list">features</em>)</dt>
+  <dd>The <code class="highlighter-rouge">GotFeatures</code> event is run when a feature collection is successfully read from the
+ given <code class="variable block highlighter-rouge">url</code>. The <code class="variable block highlighter-rouge">features</code> parameter will be a list of
+ feature descriptions that can be converted into components using the
+ <a href="#Map.FeatureFromDescription"><code class="highlighter-rouge">FeatureFromDescription</code></a> method.</dd>
+  <dt id="Map.InvalidPoint">InvalidPoint(<em class="text">message</em>)</dt>
+  <dd>The <code class="highlighter-rouge">InvalidPoint</code> event runs when the program encounters an invalid point while processing
+ geographical data. Points are considered invalid when the latitude or longitude for the point
+ is outside the acceptable range (<code class="highlighter-rouge">[-90, 90]</code> and <code class="highlighter-rouge">[-180, 180]</code>, respectively). The <code class="highlighter-rouge">message</code>
+ parameter will contain an explanation for the error.</dd>
+  <dt id="Map.LoadError">LoadError(<em class="text">url</em>,<em class="number">responseCode</em>,<em class="text">errorMessage</em>)</dt>
+  <dd>The <code class="highlighter-rouge">LoadError</code> event is run when an error occurs while processing a feature collection
+ document at the given <code class="variable block highlighter-rouge">url</code>. The <code class="variable block highlighter-rouge">responseCode</code> parameter
+ will contain an HTTP status code and the <code class="variable block highlighter-rouge">errorMessage</code> parameter will
+ contain a detailed error message.</dd>
+  <dt id="Map.LongPressAtPoint">LongPressAtPoint(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>The <code class="highlighter-rouge">LongPressAtPoint</code> runs when the user long-presses at a point on the map without moving
+ their finger (which would trigger a drag). The location of the long-press will be reported in
+ map coordinates via the <code class="variable block highlighter-rouge">latitude</code> and <code class="variable block highlighter-rouge">longitude</code>
+ parameters.</dd>
+  <dt id="Map.Ready">Ready()</dt>
+  <dd>The <code class="highlighter-rouge">Ready</code> event runs once the <code class="highlighter-rouge">Map</code> has been initialized and is ready for user interaction.</dd>
+  <dt id="Map.TapAtPoint">TapAtPoint(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>The <code class="highlighter-rouge">TapAtPoint</code> runs when the user taps at a point on the map. The tapped location will be
+ reported in map coordinates via the <code class="variable block highlighter-rouge">latitude</code> and
+ <code class="variable block highlighter-rouge">longitude</code> parameters.</dd>
+  <dt id="Map.ZoomChange">ZoomChange()</dt>
+  <dd>The <code class="highlighter-rouge">ZoomChange</code> event runs when the user has changed the zoom level of the map, such as by
+ pinching or double-tapping to zoom.</dd>
+</dl>
+
+<h3 id="Map-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Map.CreateMarker" class="method returns component"><i></i> CreateMarker(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Creates a new <a href="#Marker"><code class="highlighter-rouge">Marker</code></a> on the <code class="highlighter-rouge">Map</code> at the specified <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>.</dd>
+  <dt id="Map.FeatureFromDescription" class="method returns any"><i></i> FeatureFromDescription(<em class="list">description</em>)</dt>
+  <dd>Converts a feature description into an App Inventor map feature. Points are converted into
+ <a href="#Marker"><code class="highlighter-rouge">Marker</code></a> components, LineStrings are converted into <a href="#LineString"><code class="highlighter-rouge">LineString</code></a> components, and
+ Polygons (and MultiPolygons) are converted into <a href="#Polygon"><code class="highlighter-rouge">Polygon</code></a> components. If the feature has
+ properties, they will be mapped into App Inventor properties using the following mapping:
+
+    <ul>
+      <li>description becomes <code class="highlighter-rouge">Description</code></li>
+      <li>draggable becomes <code class="highlighter-rouge">Draggable</code></li>
+      <li>infobox becomes <code class="highlighter-rouge">EnableInfobox</code></li>
+      <li>fill becomes <code class="highlighter-rouge">FillColor</code></li>
+      <li>fill-opacity becomes <code class="highlighter-rouge">FillOpacity</code></li>
+      <li>image becomes <code class="highlighter-rouge">ImageAsset</code></li>
+      <li>stroke becomes <code class="highlighter-rouge">StrokeColor</code></li>
+      <li>stroke-opacity becomes <code class="highlighter-rouge">StrokeOpacity</code></li>
+      <li>stroke-width becomes <code class="highlighter-rouge">StrokeWidth</code></li>
+      <li>title becomes <code class="highlighter-rouge">Title</code></li>
+      <li>visible becomes <code class="highlighter-rouge">Visible</code></li>
+    </ul>
+  </dd>
+  <dt id="Map.LoadFromURL" class="method"><i></i> LoadFromURL(<em class="text">url</em>)</dt>
+  <dd>Loads a feature collection in GeoJSON format from the given <code class="highlighter-rouge">url</code>. On success,
+ the event <a href="#Map.GotFeatures"><code class="highlighter-rouge">GotFeatures</code></a> will be raised with the given <code class="highlighter-rouge">url</code>
+ and a list of <code class="highlighter-rouge">feature</code>s parsed from the GeoJSON as a list of (key, value) pairs. On failure,
+ the <a href="#Map.LoadError"><code class="highlighter-rouge">LoadError</code></a> event will be raised with any applicable HTTP
+ response code and error message.</dd>
+  <dt id="Map.PanTo" class="method"><i></i> PanTo(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="number">zoom</em>)</dt>
+  <dd>Pans the map center to the given latitude and longitude and adjust the zoom level to the specified zoom.</dd>
+  <dt id="Map.Save" class="method"><i></i> Save(<em class="text">path</em>)</dt>
+  <dd>Saves the features on the <code class="highlighter-rouge">Map</code> as a GeoJSON file at the specified path.</dd>
+</dl>
+
+<h2 id="Marker">Marker</h2>
+
+<p>The <code class="highlighter-rouge">Marker</code> component indicates points on a <a href="#Map"><code class="highlighter-rouge">Map</code></a>, such as buildings or other points of
+ interest. <code class="highlighter-rouge">Marker</code>s can be customized in many ways, such as using custom images from the app’s
+ assets or by changing the <code class="highlighter-rouge">Marker</code> <a href="#Marker.FillColor"><code class="highlighter-rouge">FillColor</code></a>. <code class="highlighter-rouge">Marker</code>s can also be created
+ dynamically by calling the <a href="#Map.CreateMarker"><code class="highlighter-rouge">Map</code>’s <code class="highlighter-rouge">CreateMarker</code></a> method and configured using
+ the <a href="../other/any-component-blocks.html">“Any Component”</a> blocks.</p>
+
+<h3 id="Marker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Marker.AnchorHorizontal" class="number"><em>AnchorHorizontal</em></dt>
+  <dd>Sets or gets the horizontal offset of the <code class="highlighter-rouge">Marker</code> center relative to its image. Valid values
+ are: <code class="highlighter-rouge">1</code> (Left), <code class="highlighter-rouge">2</code> (Right), or <code class="highlighter-rouge">3</code> (Center).</dd>
+  <dt id="Marker.AnchorVertical" class="number"><em>AnchorVertical</em></dt>
+  <dd>Sets or gets the vertical offset of the <code class="highlighter-rouge">Marker</code> center relative to its image. Valid values
+ are: <code class="highlighter-rouge">1</code> (Top), <code class="highlighter-rouge">2</code> (Center), or <code class="highlighter-rouge">3</code> (Bottom).</dd>
+  <dt id="Marker.Description" class="text"><em>Description</em></dt>
+  <dd>Sets or gets the description displayed in the info window. The info window appears when the
+ user taps on the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.Draggable" class="boolean"><em>Draggable</em></dt>
+  <dd>Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+ long-pressing and then dragging the <code class="highlighter-rouge">Marker</code> to a new location.</dd>
+  <dt id="Marker.EnableInfobox" class="boolean"><em>EnableInfobox</em></dt>
+  <dd>Enables or disables the infobox window display when the user taps the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.FillColor" class="color"><em>FillColor</em></dt>
+  <dd>Sets or gets the color used to fill in the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.FillOpacity" class="number"><em>FillOpacity</em></dt>
+  <dd>Sets or gets the opacity of the color used to fill the <code class="highlighter-rouge">Marker</code>. A value of 0.0 will be
+ completely invisible and a value of 1.0 will be completely opaque.</dd>
+  <dt id="Marker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Marker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Marker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Marker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Marker.ImageAsset" class="text"><em>ImageAsset</em></dt>
+  <dd>Specifies the image shown for the <code class="highlighter-rouge">Marker</code>. If set to the empty string “”, then the default
+ marker icon will be used.</dd>
+  <dt id="Marker.Latitude" class="number"><em>Latitude</em></dt>
+  <dd>Sets or gets the latitude of the <code class="highlighter-rouge">Marker</code>, in degrees, with positive values representing
+ north of the equator and negative values representing south of the equator. To update the
+ <code class="highlighter-rouge">Latitude</code> and <a href="#Marker.Longitude"><code class="highlighter-rouge">Longitude</code></a> simultaneously, use the
+ <a href="#Marker.SetLocation"><code class="highlighter-rouge">SetLocation</code></a> method.</dd>
+  <dt id="Marker.Longitude" class="number"><em>Longitude</em></dt>
+  <dd>Sets or gets the longitude of the <code class="highlighter-rouge">Marker</code>, in degrees, with positive values representing east
+ of the prime meridian and negative values representing west of the prime meridian. To update
+ the <a href="#Marker.Latitude"><code class="highlighter-rouge">Latitude</code></a> and <code class="highlighter-rouge">Longitude</code> simultaneously, use the
+ <a href="#Marker.SetLocation"><code class="highlighter-rouge">SetLocation</code></a> method.</dd>
+  <dt id="Marker.StrokeColor" class="color"><em>StrokeColor</em></dt>
+  <dd>Sets or gets the color used to outline the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.StrokeOpacity" class="number"><em>StrokeOpacity</em></dt>
+  <dd>Sets or gets the opacity of the outline of the <code class="highlighter-rouge">Marker</code>. A value of 0.0 will be invisible and
+ a value of 1.0 will be opaque.</dd>
+  <dt id="Marker.StrokeWidth" class="number"><em>StrokeWidth</em></dt>
+  <dd>Sets or gets the width of the stroke used to outline the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.Title" class="text"><em>Title</em></dt>
+  <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
+ map feature.</dd>
+  <dt id="Marker.Type" class="text ro bo"><em>Type</em></dt>
+  <dd>Return the type of the map feature. For Marker, this returns the text “Marker”.</dd>
+  <dt id="Marker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Marker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Marker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Marker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Marker</code>, measured in pixels.</dd>
+  <dt id="Marker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Marker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Marker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Marker.Click">Click()</dt>
+  <dd>The <code class="highlighter-rouge">Click</code> event runs when the user taps on the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.Drag">Drag()</dt>
+  <dd>The <code class="highlighter-rouge">Drag</code> event runs in response to position updates of the <code class="highlighter-rouge">Marker</code> as the user drags it.</dd>
+  <dt id="Marker.LongClick">LongClick()</dt>
+  <dd>The <code class="highlighter-rouge">LongClick</code> event runs when the user presses and holds the <code class="highlighter-rouge">Marker</code> and then releases it.
+ This event will only trigger if <a href="#Marker.Draggable"><code class="highlighter-rouge">Draggable</code></a> is <code class="logic block highlighter-rouge">false</code> because it
+ uses the same gesture as <a href="#Marker.StartDrag"><code class="highlighter-rouge">StartDrag</code></a>.</dd>
+  <dt id="Marker.StartDrag">StartDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StartDrag</code> event runs when the user presses and holds the <code class="highlighter-rouge">Marker</code> and then proceeds to
+ move their finger on the screen. It will be followed by the <a href="#Marker.Drag"><code class="highlighter-rouge">Drag</code></a> and
+ <a href="#Marker.StopDrag"><code class="highlighter-rouge">StopDrag</code></a> events.</dd>
+  <dt id="Marker.StopDrag">StopDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StopDrag</code> event runs when the user releases the <code class="highlighter-rouge">Marker</code> at the end of a drag.</dd>
+</dl>
+
+<h3 id="Marker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Marker.BearingToFeature" class="method returns number"><i></i> BearingToFeature(<em class="component">mapFeature</em>,<em class="boolean">centroids</em>)</dt>
+  <dd>Returns the bearing from the <code class="highlighter-rouge">Marker</code> to the given map feature, in degrees from due north.
+ If the <code class="highlighter-rouge">centroids</code> parameter is <code class="logic block highlighter-rouge">true</code>, the bearing will be to the center of
+ the map feature. Otherwise, the bearing will be computed to the point in the feature nearest
+ the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.BearingToPoint" class="method returns number"><i></i> BearingToPoint(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Returns the bearing from the <code class="highlighter-rouge">Marker</code> to the given <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>, in degrees
+ from due north.</dd>
+  <dt id="Marker.DistanceToFeature" class="method returns number"><i></i> DistanceToFeature(<em class="component">mapFeature</em>,<em class="boolean">centroids</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">Marker</code> and the given <code class="highlighter-rouge">mapFeature</code>. If <code class="highlighter-rouge">centroids</code> is
+ <code class="logic block highlighter-rouge">true</code>, the computation is done between the centroids of the two features.
+ Otherwise, the distance will be computed between the two features based on the closest points.
+ Further, when <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>, this method will return 0 if the <code class="highlighter-rouge">Marker</code>
+ intersects or contains the <code class="highlighter-rouge">mapFeature</code>. If an error occurs, this method will return -1.</dd>
+  <dt id="Marker.DistanceToPoint" class="method returns number"><i></i> DistanceToPoint(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Compute the distance, in meters, between a <code class="highlighter-rouge">Marker</code> and a <code class="highlighter-rouge">latitude</code>, <code class="highlighter-rouge">longitude</code> point.</dd>
+  <dt id="Marker.HideInfobox" class="method"><i></i> HideInfobox()</dt>
+  <dd>Hides the <code class="highlighter-rouge">Marker</code>’s info box if it is visible. Otherwise, no action is taken.</dd>
+  <dt id="Marker.SetLocation" class="method"><i></i> SetLocation(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Sets the location of the <code class="highlighter-rouge">Marker</code>.</dd>
+  <dt id="Marker.ShowInfobox" class="method"><i></i> ShowInfobox()</dt>
+  <dd>Shows the info box for the <code class="highlighter-rouge">Marker</code> if it is not visible. Otherwise, this method has no effect.
+ This method can be used to show the info box even if <a href="#Marker.EnableInfobox"><code class="highlighter-rouge">EnableInfobox</code></a> is false.</dd>
+</dl>
+
+<h2 id="Navigation">Navigation</h2>
+
+<p>The Navigation component generates directions between two locations using a service called
+ <a href="https://openrouteservice.org">OpenRouteService</a>. You must provide a valid API key from that
+ service in order for this component to work.</p>
+
+<h3 id="Navigation-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Navigation.ApiKey" class="text wo"><em>ApiKey</em></dt>
+  <dd>API Key for Open Route Service. Obtain an API key at
+ <a href="https://openrouteservice.org">https://openrouteservice.org</a>.</dd>
+  <dt id="Navigation.EndLatitude" class="number"><em>EndLatitude</em></dt>
+  <dd>The latitude of the end location.</dd>
+  <dt id="Navigation.EndLocation" class="component wo bo"><em>EndLocation</em></dt>
+  <dd>Set the end location.</dd>
+  <dt id="Navigation.EndLongitude" class="number"><em>EndLongitude</em></dt>
+  <dd>The longitude of the end location.</dd>
+  <dt id="Navigation.Language" class="text"><em>Language</em></dt>
+  <dd>The language to use for textual directions. Default is “en” for English.</dd>
+  <dt id="Navigation.ResponseContent" class="dictionary ro bo"><em>ResponseContent</em></dt>
+  <dd>The raw response from the server. This can be used to access more details beyond what the
+ <a href="#Navigation.GotDirections"><code class="highlighter-rouge">GotDirections</code></a> event provides.</dd>
+  <dt id="Navigation.StartLatitude" class="number"><em>StartLatitude</em></dt>
+  <dd>The latitude of the start location.</dd>
+  <dt id="Navigation.StartLocation" class="component wo bo"><em>StartLocation</em></dt>
+  <dd>Set the start location.</dd>
+  <dt id="Navigation.StartLongitude" class="number"><em>StartLongitude</em></dt>
+  <dd>The longitude of the start location.</dd>
+  <dt id="Navigation.TransportationMethod" class="text"><em>TransportationMethod</em></dt>
+  <dd>The transportation method used for determining the route. Valid options are:
+
+    <ul>
+      <li><code class="highlighter-rouge">foot-walking</code>: Route based on walking paths</li>
+      <li><code class="highlighter-rouge">driving-car</code>: Route based on vehicle paths</li>
+      <li><code class="highlighter-rouge">cycling-regular</code>: Route based on bicycle paths</li>
+      <li><code class="highlighter-rouge">wheelchair</code>: Route based on wheelchair accessible paths</li>
+    </ul>
+  </dd>
+</dl>
+
+<h3 id="Navigation-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Navigation.GotDirections">GotDirections(<em class="list">directions</em>,<em class="list">points</em>,<em class="number">distance</em>,<em class="number">duration</em>)</dt>
+  <dd>Event indicating that a request has finished and has returned data. The following parameters
+ are provided:
+
+    <ul>
+      <li><code class="highlighter-rouge">directions</code>: A list of text directions, such as “Turn left at Massachusetts Avenue”.</li>
+      <li><code class="highlighter-rouge">points</code>: A list of (latitude, longitude) points that represent the path to take. This can
+be passed to <a href="#LineString.Points"><code class="highlighter-rouge">LineString</code>’s <code class="highlighter-rouge">Points</code></a> to draw the line on a <a href="#Map"><code class="highlighter-rouge">Map</code></a>.</li>
+      <li><code class="highlighter-rouge">distance</code>: Estimated distance for the route, in meters.</li>
+      <li><code class="highlighter-rouge">duration</code>: Estimated duration for the route, in seconds.</li>
+    </ul>
+  </dd>
+</dl>
+
+<h3 id="Navigation-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Navigation.RequestDirections" class="method"><i></i> RequestDirections()</dt>
+  <dd>Request directions from the routing service using the values of <a href="#Navigation.StartLatitude"><code class="highlighter-rouge">StartLatitude</code></a>,
+ <a href="#Navigation.StartLongitude"><code class="highlighter-rouge">StartLongitude</code></a>, <a href="#Navigation.EndLatitude"><code class="highlighter-rouge">EndLatitude</code></a>, and <a href="#Navigation.EndLongitude"><code class="highlighter-rouge">EndLongitude</code></a>. On success,
+ the <a href="#Navigation.GotDirections"><code class="highlighter-rouge">GotDirections</code></a> event block will run. If an
+ error occurs, the error will be reported via the
+ <a href="userinterface.html#Screen.ErrorOccurred"><code class="highlighter-rouge">Screen's ErrorOccurred</code></a> event.</dd>
+</dl>
+
+<h2 id="Polygon">Polygon</h2>
+
+<p><code class="highlighter-rouge">Polygon</code> encloses an arbitrary 2-dimensional area on a <a href="#Map"><code class="highlighter-rouge">Map</code></a>. <code class="highlighter-rouge">Polygon</code>s can be used for
+ drawing a perimeter, such as a campus, city, or country. <code class="highlighter-rouge">Polygon</code>s begin as basic triangles.
+ New vertices can be created by dragging the midpoint of a polygon away from the edge. Clicking
+ on a vertex will remove the vertex, but a minimum of 3 vertices must exist at all times.</p>
+
+<h3 id="Polygon-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Polygon.Description" class="text"><em>Description</em></dt>
+  <dd>Sets or gets the description displayed in the info window. The info window appears when the
+ user taps on the <code class="highlighter-rouge">Polygon</code>.</dd>
+  <dt id="Polygon.Draggable" class="boolean"><em>Draggable</em></dt>
+  <dd>Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+ long-pressing and then dragging the <code class="highlighter-rouge">Polygon</code> to a new location.</dd>
+  <dt id="Polygon.EnableInfobox" class="boolean"><em>EnableInfobox</em></dt>
+  <dd>Enables or disables the infobox window display when the user taps the <code class="highlighter-rouge">Polygon</code>.</dd>
+  <dt id="Polygon.FillColor" class="color"><em>FillColor</em></dt>
+  <dd>Sets or gets the color used to fill in the <code class="highlighter-rouge">Polygon</code>.</dd>
+  <dt id="Polygon.FillOpacity" class="number"><em>FillOpacity</em></dt>
+  <dd>Sets or gets the opacity of the color used to fill the <code class="highlighter-rouge">Polygon</code>. A value of 0.0 will be
+ completely invisible and a value of 1.0 will be completely opaque.</dd>
+  <dt id="Polygon.HolePoints" class="list bo"><em>HolePoints</em></dt>
+  <dd>Specifies the points of any holes in the <code class="highlighter-rouge">Polygon</code>. The <code class="highlighter-rouge">HolePoints</code> property is a list of
+ lists, with each sublist containing <code class="highlighter-rouge">(latitude, longitude)</code> points representing a hole.</dd>
+  <dt id="Polygon.HolePointsFromString" class="text wo"><em>HolePointsFromString</em></dt>
+  <dd>Specifies holes in a <code class="highlighter-rouge">Polygon</code>from a GeoJSON string. In contrast to
+ <a href="#Polygon.HolePoints"><code class="highlighter-rouge">HolePoints</code></a>, the longitude of each point comes before the latitude as
+ stated in the GeoJSON specification.</dd>
+  <dt id="Polygon.Points" class="list bo"><em>Points</em></dt>
+  <dd>Specifies the Points used for drawing the <code class="highlighter-rouge">Polygon</code>. The Points are specified as a list of
+ lists containing latitude and longitude values, such as <code class="highlighter-rouge">[[lat1, long1], [lat2, long2], ...]</code>.</dd>
+  <dt id="Polygon.PointsFromString" class="text wo"><em>PointsFromString</em></dt>
+  <dd>Specifies the points for the <code class="highlighter-rouge">Polygon</code> from a GeoJSON string. Unlike <a href="#Polygon.Points"><code class="highlighter-rouge">Points</code></a>,
+ this property expects that the longitude comes first in the point rather than the latitude.</dd>
+  <dt id="Polygon.StrokeColor" class="color"><em>StrokeColor</em></dt>
+  <dd>Sets or gets the color used to outline the <code class="highlighter-rouge">Polygon</code>.</dd>
+  <dt id="Polygon.StrokeOpacity" class="number"><em>StrokeOpacity</em></dt>
+  <dd>Sets or gets the opacity of the outline of the <code class="highlighter-rouge">Polygon</code>. A value of 0.0 will be invisible and
+ a value of 1.0 will be opaque.</dd>
+  <dt id="Polygon.StrokeWidth" class="number"><em>StrokeWidth</em></dt>
+  <dd>Sets or gets the width of the stroke used to outline the <code class="highlighter-rouge">Polygon</code>.</dd>
+  <dt id="Polygon.Title" class="text"><em>Title</em></dt>
+  <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
+ map feature.</dd>
+  <dt id="Polygon.Type" class="text ro bo"><em>Type</em></dt>
+  <dd>Returns the type of the feature. For polygons, this returns MapFeature.Polygon (“Polygon”).</dd>
+  <dt id="Polygon.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Polygon</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Polygon</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+</dl>
+
+<h3 id="Polygon-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Polygon.Click">Click()</dt>
+  <dd>The <code class="highlighter-rouge">Click</code> event runs when the user taps on the <code class="highlighter-rouge">Polygon</code>.</dd>
+  <dt id="Polygon.Drag">Drag()</dt>
+  <dd>The <code class="highlighter-rouge">Drag</code> event runs in response to position updates of the <code class="highlighter-rouge">Polygon</code> as the user drags it.</dd>
+  <dt id="Polygon.LongClick">LongClick()</dt>
+  <dd>The <code class="highlighter-rouge">LongClick</code> event runs when the user presses and holds the <code class="highlighter-rouge">Polygon</code> and then releases it.
+ This event will only trigger if <a href="#Polygon.Draggable"><code class="highlighter-rouge">Draggable</code></a> is <code class="logic block highlighter-rouge">false</code> because it
+ uses the same gesture as <a href="#Polygon.StartDrag"><code class="highlighter-rouge">StartDrag</code></a>.</dd>
+  <dt id="Polygon.StartDrag">StartDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StartDrag</code> event runs when the user presses and holds the <code class="highlighter-rouge">Polygon</code> and then proceeds to
+ move their finger on the screen. It will be followed by the <a href="#Polygon.Drag"><code class="highlighter-rouge">Drag</code></a> and
+ <a href="#Polygon.StopDrag"><code class="highlighter-rouge">StopDrag</code></a> events.</dd>
+  <dt id="Polygon.StopDrag">StopDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StopDrag</code> event runs when the user releases the <code class="highlighter-rouge">Polygon</code> at the end of a drag.</dd>
+</dl>
+
+<h3 id="Polygon-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Polygon.Centroid" class="method returns list"><i></i> Centroid()</dt>
+  <dd>Gets the centroid of the <code class="highlighter-rouge">Polygon</code> as a <code class="highlighter-rouge">(latitude, longitude)</code> pair.</dd>
+  <dt id="Polygon.DistanceToFeature" class="method returns number"><i></i> DistanceToFeature(<em class="component">mapFeature</em>,<em class="boolean">centroids</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">Polygon</code> and the given <code class="highlighter-rouge">mapFeature</code>. If <code class="highlighter-rouge">centroids</code> is
+ <code class="logic block highlighter-rouge">true</code>, the computation is done between the centroids of the two features.
+ Otherwise, the distance will be computed between the two features based on the closest points.
+ Further, when <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>, this method will return 0 if the <code class="highlighter-rouge">Polygon</code>
+ intersects or contains the <code class="highlighter-rouge">mapFeature</code>. If an error occurs, this method will return -1.</dd>
+  <dt id="Polygon.DistanceToPoint" class="method returns number"><i></i> DistanceToPoint(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="boolean">centroid</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">Polygon</code> and the given <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>. If
+ <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">true</code>, the distance is computed from the center of the <code class="highlighter-rouge">Polygon</code>
+ to the given point. Otherwise, the distance is computed from the closest point on the <code class="highlighter-rouge">Polygon</code>
+ to the given point. Further, this method will return 0 if <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>
+ and the point is in the <code class="highlighter-rouge">Polygon</code>. If an error occurs, -1 will be returned.</dd>
+  <dt id="Polygon.HideInfobox" class="method"><i></i> HideInfobox()</dt>
+  <dd>Hides the <code class="highlighter-rouge">Polygon</code>’s info box if it is visible. Otherwise, no action is taken.</dd>
+  <dt id="Polygon.ShowInfobox" class="method"><i></i> ShowInfobox()</dt>
+  <dd>Shows the info box for the <code class="highlighter-rouge">Polygon</code> if it is not visible. Otherwise, this method has no effect.
+ This method can be used to show the info box even if <a href="#Polygon.EnableInfobox"><code class="highlighter-rouge">EnableInfobox</code></a> is false.</dd>
+</dl>
+
+<h2 id="Rectangle">Rectangle</h2>
+
+<p><code class="highlighter-rouge">Rectangle</code>s are polygons with fixed latitudes and longitudes for the north, south, east, and
+ west boundaries. Moving a vertex of the <code class="highlighter-rouge">Rectangle</code> updates the appropriate edges accordingly.</p>
+
+<h3 id="Rectangle-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Rectangle.Description" class="text"><em>Description</em></dt>
+  <dd>Sets or gets the description displayed in the info window. The info window appears when the
+ user taps on the <code class="highlighter-rouge">Rectangle</code>.</dd>
+  <dt id="Rectangle.Draggable" class="boolean"><em>Draggable</em></dt>
+  <dd>Sets or gets whether or not the user can drag a map feature. This feature is accessed by
+ long-pressing and then dragging the <code class="highlighter-rouge">Rectangle</code> to a new location.</dd>
+  <dt id="Rectangle.EastLongitude" class="number"><em>EastLongitude</em></dt>
+  <dd>Specifies the east-most edge of the <code class="highlighter-rouge">Rectangle</code>, in decimal degrees east of the prime meridian.</dd>
+  <dt id="Rectangle.EnableInfobox" class="boolean"><em>EnableInfobox</em></dt>
+  <dd>Enables or disables the infobox window display when the user taps the <code class="highlighter-rouge">Rectangle</code>.</dd>
+  <dt id="Rectangle.FillColor" class="color"><em>FillColor</em></dt>
+  <dd>Sets or gets the color used to fill in the <code class="highlighter-rouge">Rectangle</code>.</dd>
+  <dt id="Rectangle.FillOpacity" class="number"><em>FillOpacity</em></dt>
+  <dd>Sets or gets the opacity of the color used to fill the <code class="highlighter-rouge">Rectangle</code>. A value of 0.0 will be
+ completely invisible and a value of 1.0 will be completely opaque.</dd>
+  <dt id="Rectangle.NorthLatitude" class="number"><em>NorthLatitude</em></dt>
+  <dd>Specifies the north-most edge of the <code class="highlighter-rouge">Rectangle</code>, in decimal degrees north of the equator.</dd>
+  <dt id="Rectangle.SouthLatitude" class="number"><em>SouthLatitude</em></dt>
+  <dd>Specifies the west-most edge of the <code class="highlighter-rouge">Rectangle</code>, in decimal degrees east of the prime meridian.</dd>
+  <dt id="Rectangle.StrokeColor" class="color"><em>StrokeColor</em></dt>
+  <dd>Sets or gets the color used to outline the <code class="highlighter-rouge">Rectangle</code>.</dd>
+  <dt id="Rectangle.StrokeOpacity" class="number"><em>StrokeOpacity</em></dt>
+  <dd>Sets or gets the opacity of the outline of the <code class="highlighter-rouge">Rectangle</code>. A value of 0.0 will be invisible and
+ a value of 1.0 will be opaque.</dd>
+  <dt id="Rectangle.StrokeWidth" class="number"><em>StrokeWidth</em></dt>
+  <dd>Sets or gets the width of the stroke used to outline the <code class="highlighter-rouge">Rectangle</code>.</dd>
+  <dt id="Rectangle.Title" class="text"><em>Title</em></dt>
+  <dd>Sets or gets the title displayed in the info window that appears when the user clicks on the
+ map feature.</dd>
+  <dt id="Rectangle.Type" class="text ro bo"><em>Type</em></dt>
+  <dd>Returns the type of the feature. For rectangles, this returns MapFeature.Rectangle (“Rectangle”).</dd>
+  <dt id="Rectangle.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Rectangle</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Rectangle</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Rectangle.WestLongitude" class="number"><em>WestLongitude</em></dt>
+  <dd>Specifies the south-most edge of the <code class="highlighter-rouge">Rectangle</code>, in decimal degrees south of the equator.</dd>
+</dl>
+
+<h3 id="Rectangle-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Rectangle.Click">Click()</dt>
+  <dd>The <code class="highlighter-rouge">Click</code> event runs when the user taps on the <code class="highlighter-rouge">Rectangle</code>.</dd>
+  <dt id="Rectangle.Drag">Drag()</dt>
+  <dd>The <code class="highlighter-rouge">Drag</code> event runs in response to position updates of the <code class="highlighter-rouge">Rectangle</code> as the user drags it.</dd>
+  <dt id="Rectangle.LongClick">LongClick()</dt>
+  <dd>The <code class="highlighter-rouge">LongClick</code> event runs when the user presses and holds the <code class="highlighter-rouge">Rectangle</code> and then releases it.
+ This event will only trigger if <a href="#Rectangle.Draggable"><code class="highlighter-rouge">Draggable</code></a> is <code class="logic block highlighter-rouge">false</code> because it
+ uses the same gesture as <a href="#Rectangle.StartDrag"><code class="highlighter-rouge">StartDrag</code></a>.</dd>
+  <dt id="Rectangle.StartDrag">StartDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StartDrag</code> event runs when the user presses and holds the <code class="highlighter-rouge">Rectangle</code> and then proceeds to
+ move their finger on the screen. It will be followed by the <a href="#Rectangle.Drag"><code class="highlighter-rouge">Drag</code></a> and
+ <a href="#Rectangle.StopDrag"><code class="highlighter-rouge">StopDrag</code></a> events.</dd>
+  <dt id="Rectangle.StopDrag">StopDrag()</dt>
+  <dd>The <code class="highlighter-rouge">StopDrag</code> event runs when the user releases the <code class="highlighter-rouge">Rectangle</code> at the end of a drag.</dd>
+</dl>
+
+<h3 id="Rectangle-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Rectangle.Bounds" class="method returns list"><i></i> Bounds()</dt>
+  <dd>Returns the bounding box of the <code class="highlighter-rouge">Rectangle</code> in the format <code class="highlighter-rouge">((North West) (South East))</code>.</dd>
+  <dt id="Rectangle.Center" class="method returns list"><i></i> Center()</dt>
+  <dd>Returns the center of the <code class="highlighter-rouge">Rectangle</code> as a list of the form <code class="highlighter-rouge">(Latitude Longitude)</code>.</dd>
+  <dt id="Rectangle.DistanceToFeature" class="method returns number"><i></i> DistanceToFeature(<em class="component">mapFeature</em>,<em class="boolean">centroids</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">Rectangle</code> and the given <code class="highlighter-rouge">mapFeature</code>. If <code class="highlighter-rouge">centroids</code> is
+ <code class="logic block highlighter-rouge">true</code>, the computation is done between the centroids of the two features.
+ Otherwise, the distance will be computed between the two features based on the closest points.
+ Further, when <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>, this method will return 0 if the <code class="highlighter-rouge">Rectangle</code>
+ intersects or contains the <code class="highlighter-rouge">mapFeature</code>. If an error occurs, this method will return -1.</dd>
+  <dt id="Rectangle.DistanceToPoint" class="method returns number"><i></i> DistanceToPoint(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="boolean">centroid</em>)</dt>
+  <dd>Computes the distance between the <code class="highlighter-rouge">Rectangle</code> and the given <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>. If
+ <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">true</code>, the distance is computed from the center of the <code class="highlighter-rouge">Rectangle</code>
+ to the given point. Otherwise, the distance is computed from the closest point on the <code class="highlighter-rouge">Rectangle</code>
+ to the given point. Further, this method will return 0 if <code class="highlighter-rouge">centroids</code> is <code class="logic block highlighter-rouge">false</code>
+ and the point is in the <code class="highlighter-rouge">Rectangle</code>. If an error occurs, -1 will be returned.</dd>
+  <dt id="Rectangle.HideInfobox" class="method"><i></i> HideInfobox()</dt>
+  <dd>Hides the <code class="highlighter-rouge">Rectangle</code>’s info box if it is visible. Otherwise, no action is taken.</dd>
+  <dt id="Rectangle.SetCenter" class="method"><i></i> SetCenter(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Move the <code class="highlighter-rouge">Rectangle</code> to be centered on the given <code class="highlighter-rouge">latitude</code> and <code class="highlighter-rouge">longitude</code>, attempting to keep
+ the width and height (in meters) as equal as possible adjusting for changes in latitude.</dd>
+  <dt id="Rectangle.ShowInfobox" class="method"><i></i> ShowInfobox()</dt>
+  <dd>Shows the info box for the <code class="highlighter-rouge">Rectangle</code> if it is not visible. Otherwise, this method has no effect.
+ This method can be used to show the info box even if <a href="#Rectangle.EnableInfobox"><code class="highlighter-rouge">EnableInfobox</code></a> is false.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

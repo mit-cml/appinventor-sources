@@ -8,7 +8,7 @@ package com.google.appinventor.client.widgets.properties;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.DropDownButton;
-import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
@@ -175,11 +175,13 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
       choices.add(new DropDownItem(WIDGET_NAME, description, new Command() {
         @Override
         public void execute() {
+          boolean isMultiple = isMultipleValues();
+          setMultipleValues(false);
           if (color.argbValue == 0) {
             // Handle default value specially to prevent sending #x00000000 to the REPL...
-            property.setValue(defaultValue);
+            property.setValue(defaultValue, isMultiple);
           } else {
-            property.setValue(hexPrefix + color.alphaString + color.rgbString);
+            property.setValue(hexPrefix + color.alphaString + color.rgbString, isMultiple);
           }
           if (advanced) {
             String customColor = color.argbValue == 0 ?
@@ -187,6 +189,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
                 color.alphaString + color.rgbString;
             selectedColorMenu.replaceLastItem(new DropDownItem(WIDGET_NAME, makeCustomHTML(customColor), showCustomPicker));
           }
+          selectedColorMenu.setFocus(true);
         }
       }));
     }
@@ -249,6 +252,11 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
   @Override
   protected void updateValue() {
+    // There was a collision so we should show the multiple indicator
+    if (isMultipleValues()) {
+      selectedColorMenu.setCaption(MESSAGES.multipleValues());
+      return;
+    }
     // When receiving the property values from the server hex numbers were converted to decimal
     // numbers
     String propertyValue = property.getValue();
@@ -362,7 +370,7 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
 
   // JSNI Methods
   private native void prepareCustomColorPicker(Element parent)/*-{
-    var picker = new goog.ui.HsvaPalette(new goog.dom.DomHelper(top.document), null, 1, 'goog-hsva-palette-sm');
+    var picker = new $wnd.goog.ui.HsvaPalette(new $wnd.goog.dom.DomHelper(top.document), null, 1, 'goog-hsva-palette-sm');
     picker.render(parent);
     this.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::palettePicker = picker;
   }-*/;

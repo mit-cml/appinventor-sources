@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>User Interface</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">User Interface</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="user-interface">User Interface</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#Button">Button</a></li>
+  <li><a href="#CheckBox">CheckBox</a></li>
+  <li><a href="#CircularProgress">CircularProgress</a></li>
+  <li><a href="#DatePicker">DatePicker</a></li>
+  <li><a href="#Image">Image</a></li>
+  <li><a href="#Label">Label</a></li>
+  <li><a href="#LinearProgress">LinearProgress</a></li>
+  <li><a href="#ListPicker">ListPicker</a></li>
+  <li><a href="#ListView">ListView</a></li>
+  <li><a href="#Notifier">Notifier</a></li>
+  <li><a href="#PasswordTextBox">PasswordTextBox</a></li>
+  <li><a href="#Screen">Screen</a></li>
+  <li><a href="#Slider">Slider</a></li>
+  <li><a href="#Spinner">Spinner</a></li>
+  <li><a href="#Switch">Switch</a></li>
+  <li><a href="#TextBox">TextBox</a></li>
+  <li><a href="#TimePicker">TimePicker</a></li>
+  <li><a href="#WebViewer">WebViewer</a></li>
+</ul>
+
+<h2 id="Button">Button</h2>
+
+<p>Button with the ability to detect clicks. Many aspects of its appearance can be changed, as well
+ as whether it is clickable (<code class="highlighter-rouge">Enabled</code>). Its properties can be changed in the Designer or in the
+ Blocks Editor.</p>
+
+<h3 id="Button-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Button.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Button</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#Button.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#Button.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="Button.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Button</code> should be active and clickable.</dd>
+  <dt id="Button.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">Button</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="Button.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">Button</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="Button.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">Button</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="Button.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">Button</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="Button.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Button</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Button.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Button</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Button.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">Button</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#Button.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="Button.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Button.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">Button</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#Button.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="Button.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">Button</code> with an assigned
+ <a href="#Button.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="Button.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">Button</code>.</dd>
+  <dt id="Button.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">Button</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="Button.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">Button</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="Button.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Button.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Button</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Button</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Button.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Button</code>, measured in pixels.</dd>
+  <dt id="Button.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Button</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Button-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Button.Click">Click()</dt>
+  <dd>Indicates that the user tapped and released the <code class="highlighter-rouge">Button</code>.</dd>
+  <dt id="Button.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">Button</code> so it is now possible
+ to click it.</dd>
+  <dt id="Button.LongClick">LongClick()</dt>
+  <dd>Indicates that the user held the <code class="highlighter-rouge">Button</code> down.</dd>
+  <dt id="Button.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">Button</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="Button.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">Button</code> was pressed down.</dd>
+  <dt id="Button.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">Button</code> has been released.</dd>
+</dl>
+
+<h3 id="Button-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
+<h2 id="CheckBox">CheckBox</h2>
+
+<p><img src="images/checkbox.png" alt="Example of a CheckBox" /></p>
+
+<p><code class="highlighter-rouge">CheckBox</code> components can detect user taps and can change their boolean state in response.</p>
+
+<p>A <code class="highlighter-rouge">CheckBox</code> component raises an event when the user taps it. There are many properties affecting
+ its appearance that can be set in the Designer or Blocks Editor.</p>
+
+<h3 id="CheckBox-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="CheckBox.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the background color of the <code class="highlighter-rouge">CheckBox</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="CheckBox.Checked" class="boolean"><em>Checked</em></dt>
+  <dd>Set to <code class="logic block highlighter-rouge">true</code> if the box is checked, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dt id="CheckBox.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">CheckBox</code> should be active and clickable.</dd>
+  <dt id="CheckBox.FontBold" class="boolean do"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">CheckBox</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="CheckBox.FontItalic" class="boolean do"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">CheckBox</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="CheckBox.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">CheckBox</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="CheckBox.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">CheckBox</code> as default, serif, sans
+ serif, or monospace.</dd>
+  <dt id="CheckBox.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">CheckBox</code>’s vertical height, measured in pixels.</dd>
+  <dt id="CheckBox.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">CheckBox</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="CheckBox.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="CheckBox.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">CheckBox</code>.</dd>
+  <dt id="CheckBox.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">CheckBox</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="CheckBox.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="CheckBox.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">CheckBox</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">CheckBox</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="CheckBox.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">CheckBox</code>, measured in pixels.</dd>
+  <dt id="CheckBox.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">CheckBox</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="CheckBox-Events">Events</h3>
+
+<dl class="events">
+  <dt id="CheckBox.Changed">Changed()</dt>
+  <dd>User tapped and released the <code class="highlighter-rouge">CheckBox</code>.</dd>
+  <dt id="CheckBox.GotFocus">GotFocus()</dt>
+  <dd><code class="highlighter-rouge">CheckBox</code> became the focused component.</dd>
+  <dt id="CheckBox.LostFocus">LostFocus()</dt>
+  <dd><code class="highlighter-rouge">CheckBox</code> stopped being the focused component.</dd>
+</dl>
+
+<h3 id="CheckBox-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
+<h2 id="CircularProgress">CircularProgress</h2>
+
+<p>Component for CircularProgress</p>
+
+<h3 id="CircularProgress-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="CircularProgress.Color" class="color"><em>Color</em></dt>
+  <dd>Change the indeterminate color of the circular progress bar.</dd>
+  <dt id="CircularProgress.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">CircularProgress</code>’s vertical height, measured in pixels.</dd>
+  <dt id="CircularProgress.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">CircularProgress</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="CircularProgress.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="CircularProgress.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="CircularProgress.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">CircularProgress</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">CircularProgress</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="CircularProgress.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">CircularProgress</code>, measured in pixels.</dd>
+  <dt id="CircularProgress.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">CircularProgress</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="CircularProgress-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="CircularProgress-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
+<h2 id="DatePicker">DatePicker</h2>
+
+<p>A button that, when clicked on, launches a popup dialog to allow the user to select a date on
+ the Gregorian Calendar.</p>
+
+<p>Note: Date and time are manipulated using methods in the <a href="sensors.html#Clock">Clock</a> component.</p>
+
+<h3 id="DatePicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="DatePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">DatePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#DatePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#DatePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="DatePicker.Day" class="number ro bo"><em>Day</em></dt>
+  <dd>Returns the Day of the month that was last picked using the DatePicker.</dd>
+  <dt id="DatePicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">DatePicker</code> should be active and clickable.</dd>
+  <dt id="DatePicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">DatePicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="DatePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">DatePicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="DatePicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">DatePicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="DatePicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">DatePicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="DatePicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">DatePicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="DatePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">DatePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="DatePicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">DatePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#DatePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="DatePicker.Instant" class="InstantInTime ro bo"><em>Instant</em></dt>
+  <dd>Returns instant of the date that was last picked using the DatePicker.</dd>
+  <dt id="DatePicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="DatePicker.Month" class="number ro bo"><em>Month</em></dt>
+  <dd>Returns the number of the Month that was last picked using the DatePicker.</dd>
+  <dt id="DatePicker.MonthInText" class="text ro bo"><em>MonthInText</em></dt>
+  <dd>Returns the name of the Month that was last picked using the DatePicker.</dd>
+  <dt id="DatePicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">DatePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#DatePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="DatePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">DatePicker</code> with an assigned
+ <a href="#DatePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="DatePicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">DatePicker</code>.</dd>
+  <dt id="DatePicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">DatePicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="DatePicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">DatePicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="DatePicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="DatePicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">DatePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">DatePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="DatePicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">DatePicker</code>, measured in pixels.</dd>
+  <dt id="DatePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">DatePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dt id="DatePicker.Year" class="number ro bo"><em>Year</em></dt>
+  <dd>Returns the Year that was last picked using the DatePicker.</dd>
+</dl>
+
+<h3 id="DatePicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="DatePicker.AfterDateSet">AfterDateSet()</dt>
+  <dd>Event that runs after the user chooses a Date in the dialog.</dd>
+  <dt id="DatePicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">DatePicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="DatePicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">DatePicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="DatePicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">DatePicker</code> was pressed down.</dd>
+  <dt id="DatePicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">DatePicker</code> has been released.</dd>
+</dl>
+
+<h3 id="DatePicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="DatePicker.LaunchPicker" class="method"><i></i> LaunchPicker()</dt>
+  <dd>Launches the DatePicker dialog. The <a href="#DatePicker.AfterDateSet"><code class="highlighter-rouge">AfterDateSet</code></a> event will be run after the user
+ confirms their selection.</dd>
+  <dt id="DatePicker.SetDateToDisplay" class="method"><i></i> SetDateToDisplay(<em class="number">year</em>,<em class="number">month</em>,<em class="number">day</em>)</dt>
+  <dd>Allows the user to set the date to be displayed when the date picker opens.
+Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
+  <dt id="DatePicker.SetDateToDisplayFromInstant" class="method"><i></i> SetDateToDisplayFromInstant(<em class="InstantInTime">instant</em>)</dt>
+  <dd>Allows the user to set the date from the instant to be displayed when the date picker opens.</dd>
+</dl>
+
+<h2 id="Image">Image</h2>
+
+<p>Component for displaying images and basic animations.</p>
+
+<p>The picture to display, and other aspects of the Image’s appearance, can be specified in the
+ Designer or in the Blocks Editor.</p>
+
+<h3 id="Image-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Image.AlternateText" class="text wo"><em>AlternateText</em></dt>
+  <dd>A written description of what the image looks like.</dd>
+  <dt id="Image.Animation" class="text wo bo"><em>Animation</em></dt>
+  <dd>This is a limited form of animation that can attach a small number of motion types to images.
+ The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
+ <code class="highlighter-rouge">ScrollLeftSlow</code>, <code class="highlighter-rouge">ScrollLeft</code>, <code class="highlighter-rouge">ScrollLeftFast</code>, and <code class="highlighter-rouge">Stop</code>.</dd>
+  <dt id="Image.Clickable" class="boolean"><em>Clickable</em></dt>
+  <dd>Specifies whether the image should be clickable or not.</dd>
+  <dt id="Image.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Image</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Image.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Image</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Image.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Image.Picture" class="text"><em>Picture</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">Image</code>’s <code class="highlighter-rouge">Picture</code>.</dd>
+  <dt id="Image.RotationAngle" class="number"><em>RotationAngle</em></dt>
+  <dd>The angle at which the image picture appears rotated. This rotation does not appear on the designer screen, only on the device.</dd>
+  <dt id="Image.ScalePictureToFit" class="boolean wo"><em>ScalePictureToFit</em></dt>
+  <dd>Specifies whether the image should be resized to match the size of the ImageView.</dd>
+  <dt id="Image.Scaling" class="number bo"><em>Scaling</em></dt>
+  <dd>This property determines how the picture scales according to the Height or Width of the Image. Scale proportionally (0) preserves the picture aspect ratio. Scale to fit (1) matches the Image area, even if the aspect ratio changes.</dd>
+  <dt id="Image.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Image.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Image</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Image</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Image.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Image</code>, measured in pixels.</dd>
+  <dt id="Image.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Image</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Image-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Image.Click">Click()</dt>
+  <dd>An event that occurs when an image is clicked.</dd>
+</dl>
+
+<h3 id="Image-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
+<h2 id="Label">Label</h2>
+
+<p>Labels are components used to show text.</p>
+
+<p><img src="images/label.png" alt="Example of a label" /></p>
+
+<p>A label displays text which is specified by the <code class="highlighter-rouge">Text</code> property. Other properties, all of which
+ can be set in the Designer or Blocks Editor, control the appearance and placement of the text.</p>
+
+<h3 id="Label-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Label.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the label’s background color as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="Label.FontBold" class="boolean do"><em>FontBold</em></dt>
+  <dd>Specifies whether the label’s text should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="Label.FontItalic" class="boolean do"><em>FontItalic</em></dt>
+  <dd>Specifies whether the label’s text should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="Label.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the label’s text’s font size, measured in sp(scale-independent pixels).</dd>
+  <dt id="Label.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the label’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
+  <dt id="Label.HTMLContent" class="text ro bo"><em>HTMLContent</em></dt>
+  <dd>Returns the content of the Label as HTML. This is only useful if the
+ HTMLFormat property is true.</dd>
+  <dt id="Label.HTMLFormat" class="boolean do"><em>HTMLFormat</em></dt>
+  <dd>Specifies the label’s text’s format</dd>
+  <dt id="Label.HasMargins" class="boolean"><em>HasMargins</em></dt>
+  <dd>Specifies whether the label should have margins.
+ This margin value is not well coordinated with the
+ designer, where the margins are defined for the arrangement, not just for individual
+ labels.</dd>
+  <dt id="Label.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Label</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Label.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Label</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Label.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Label.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the label.</dd>
+  <dt id="Label.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the label’s text: center, normal
+ (e.g., left-justified if text is written left to right), or
+ opposite (e.g., right-justified if text is written left to right).</dd>
+  <dt id="Label.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the label’s text color as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="Label.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Label.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Label</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Label</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Label.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Label</code>, measured in pixels.</dd>
+  <dt id="Label.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Label</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Label-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Label-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
+<h2 id="LinearProgress">LinearProgress</h2>
+
+<p>Component for LinearProgress</p>
+
+<h3 id="LinearProgress-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="LinearProgress.Indeterminate" class="boolean"><em>Indeterminate</em></dt>
+  <dd>Indicate whether this progress bar is in indeterminate mode.</dd>
+  <dt id="LinearProgress.IndeterminateColor" class="color"><em>IndeterminateColor</em></dt>
+  <dd>Change the indeterminate color of the progress bar.</dd>
+  <dt id="LinearProgress.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="LinearProgress.Maximum" class="number"><em>Maximum</em></dt>
+  <dd>Set the upper range of the progress bar max.</dd>
+  <dt id="LinearProgress.Minimum" class="number"><em>Minimum</em></dt>
+  <dd>Set the lower range of the progress bar to min. This function works only for devices with API &gt;= 26</dd>
+  <dt id="LinearProgress.Progress" class="number bo"><em>Progress</em></dt>
+  <dd>Get the progress bar’s current level of progress.</dd>
+  <dt id="LinearProgress.ProgressColor" class="color"><em>ProgressColor</em></dt>
+  <dd>Change the progress color of the progress bar.</dd>
+  <dt id="LinearProgress.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="LinearProgress.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">LinearProgress</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">LinearProgress</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="LinearProgress.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">LinearProgress</code>, measured in pixels.</dd>
+  <dt id="LinearProgress.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">LinearProgress</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="LinearProgress-Events">Events</h3>
+
+<dl class="events">
+  <dt id="LinearProgress.ProgressChanged">ProgressChanged(<em class="number">progress</em>)</dt>
+  <dd>Event that indicates that the progress of the progress bar has been changed. Returns the current progress value. If “Indeterminate” is set to true, then it returns “0”.</dd>
+</dl>
+
+<h3 id="LinearProgress-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="LinearProgress.IncrementProgressBy" class="method"><i></i> IncrementProgressBy(<em class="number">value</em>)</dt>
+  <dd>Increase the progress bar’s progress by the specified amount.</dd>
+</dl>
+
+<h2 id="ListPicker">ListPicker</h2>
+
+<p>A button that, when clicked on, displays a list of texts for the user to choose among. The texts
+ can be specified through the Designer or Blocks Editor by setting the
+ <a href="#ListPicker.ElementsFromString"><code class="highlighter-rouge">ElementsFromString</code></a>  property to their string-separated concatenation
+ (for example, <code class="highlighter-rouge">choice 1, choice 2, choice 3</code>) or by setting the <a href="#ListPicker.Elements"><code class="highlighter-rouge">Elements</code></a>
+ property to a List in the Blocks editor.</p>
+
+<p>Setting property <a href="#ListPicker.ShowFilterBar"><code class="highlighter-rouge">ShowFilterBar</code></a> to <code class="logic block highlighter-rouge">true</code>, will make the list
+ searchable. Other properties affect the appearance of the button (<a href="#ListPicker.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a>,
+ <a href="#ListPicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a>, etc.) and whether it can be clicked on
+ (<a href="#ListPicker.Enabled"><code class="highlighter-rouge">Enabled</code></a>).</p>
+
+<h3 id="ListPicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ListPicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ListPicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#ListPicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#ListPicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="ListPicker.Elements" class="list bo"><em>Elements</em></dt>
+  <dd>Specifies the list of choices to display.</dd>
+  <dt id="ListPicker.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
+  <dd>Set the list of choices from a string of comma-separated values.</dd>
+  <dt id="ListPicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">ListPicker</code> should be active and clickable.</dd>
+  <dt id="ListPicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ListPicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="ListPicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">ListPicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="ListPicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">ListPicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="ListPicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">ListPicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="ListPicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ListPicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="ListPicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ListPicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ListPicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">ListPicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#ListPicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="ListPicker.ItemBackgroundColor" class="color"><em>ItemBackgroundColor</em></dt>
+  <dd>The background color of the <code class="highlighter-rouge">ListPicker</code> items.</dd>
+  <dt id="ListPicker.ItemTextColor" class="color"><em>ItemTextColor</em></dt>
+  <dd>The text color of the ListPicker items.</dd>
+  <dt id="ListPicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ListPicker.Selection" class="text"><em>Selection</em></dt>
+  <dd>The selected item. When directly changed by the programmer, the <a href="#ListPicker.SelectionIndex"><code class="highlighter-rouge">SelectionIndex</code></a>
+ property is also changed to the first item in the <a href="#ListPicker"><code class="highlighter-rouge">ListPicker</code></a> with the given value.
+ If the value is not in <a href="#ListPicker.Elements"><code class="highlighter-rouge">Elements</code></a>, <a href="#ListPicker.SelectionIndex"><code class="highlighter-rouge">SelectionIndex</code></a> will be set to 0.</dd>
+  <dt id="ListPicker.SelectionIndex" class="number bo"><em>SelectionIndex</em></dt>
+  <dd>Selection index property setter method.</dd>
+  <dt id="ListPicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">ListPicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#ListPicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="ListPicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">ListPicker</code> with an assigned
+ <a href="#ListPicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="ListPicker.ShowFilterBar" class="boolean"><em>ShowFilterBar</em></dt>
+  <dd>If <code class="logic block highlighter-rouge">true</code>, the ListPicker will show a search filter bar.</dd>
+  <dt id="ListPicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">ListPicker</code>.</dd>
+  <dt id="ListPicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">ListPicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="ListPicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">ListPicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="ListPicker.Title" class="text"><em>Title</em></dt>
+  <dd>Optional title displayed at the top of the list of choices.</dd>
+  <dt id="ListPicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ListPicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">ListPicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">ListPicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="ListPicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ListPicker</code>, measured in pixels.</dd>
+  <dt id="ListPicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ListPicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="ListPicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ListPicker.AfterPicking">AfterPicking()</dt>
+  <dd>Event to be raised after the <code class="highlighter-rouge">ListPicker</code> activity returns its
+ result and the properties have been filled in.</dd>
+  <dt id="ListPicker.BeforePicking">BeforePicking()</dt>
+  <dd>Event to raise when the <code class="highlighter-rouge">ListPicker</code> is clicked or the picker is shown
+ using the <a href="#ListPicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+ can be used to prepare the picker before it is shown.</dd>
+  <dt id="ListPicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">ListPicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="ListPicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">ListPicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="ListPicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">ListPicker</code> was pressed down.</dd>
+  <dt id="ListPicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">ListPicker</code> has been released.</dd>
+</dl>
+
+<h3 id="ListPicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ListPicker.Open" class="method"><i></i> Open()</dt>
+  <dd>Opens the <code class="highlighter-rouge">ListPicker</code>, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="ListView">ListView</h2>
+
+<p>This is a visible component that displays a list of text and image elements in your <a href="#Screen"><code class="highlighter-rouge">Screen</code></a> to
+ display. Simple lists of strings may be set using the <a href="#ListView.ElementsFromString"><code class="highlighter-rouge">ElementsFromString</code></a> property.
+ More complex lists of elements containing multiple strings and/or images can be created using the
+ <a href="#ListView.ListData"><code class="highlighter-rouge">ListData</code></a> and <a href="#ListView.ListViewLayout"><code class="highlighter-rouge">ListViewLayout</code></a> properties.</p>
+
+<p><a href="../other/advanced-listview.html">Information on Layouts</a></p>
+
+<p>Warning: This component will not work correctly on Screens that are scrollable if its
+ <a href="#ListView.Height"><code class="highlighter-rouge">Height</code></a> is set to Fill Parent.</p>
+
+<h3 id="ListView-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ListView.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">ListView</code> background.</dd>
+  <dt id="ListView.BounceEdgeEffect" class="boolean"><em>BounceEdgeEffect</em></dt>
+  <dd>Sets the bounce effect function. <code class="logic block highlighter-rouge">true</code> will enable the function,
+ <code class="logic block highlighter-rouge">false</code> will disable.</dd>
+  <dt id="ListView.DividerColor" class="color"><em>DividerColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">ListView</code> divider.</dd>
+  <dt id="ListView.DividerThickness" class="number"><em>DividerThickness</em></dt>
+  <dd>Specifies the divider thickness of list view</dd>
+  <dt id="ListView.ElementColor" class="color"><em>ElementColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">ListView</code> element.</dd>
+  <dt id="ListView.ElementCornerRadius" class="number"><em>ElementCornerRadius</em></dt>
+  <dd>Specifies the corner radius of the list view element.</dd>
+  <dt id="ListView.ElementMarginsWidth" class="number"><em>ElementMarginsWidth</em></dt>
+  <dd>Specifies the width of the margins of a list view element</dd>
+  <dt id="ListView.Elements" class="list bo"><em>Elements</em></dt>
+  <dd>Specifies the list of choices to display.</dd>
+  <dt id="ListView.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
+  <dd>Set the list of choices specified as a string with the elements separated by commas
+ such as: Cheese,Fruit,Bacon,Radish.</dd>
+  <dt id="ListView.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the font size of the element’s main text.</dd>
+  <dt id="ListView.FontSizeDetail" class="number"><em>FontSizeDetail</em></dt>
+  <dd>Specifies the font size of the element’s detail text.</dd>
+  <dt id="ListView.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the label’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
+  <dt id="ListView.FontTypefaceDetail" class="text do"><em>FontTypefaceDetail</em></dt>
+  <dd>Specifies the label’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
+  <dt id="ListView.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height, measured in pixels.</dd>
+  <dt id="ListView.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">ListView</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="ListView.HintText" class="text"><em>HintText</em></dt>
+  <dd>Sets hint on the filter bar.</dd>
+  <dt id="ListView.ImageHeight" class="number"><em>ImageHeight</em></dt>
+  <dd>Specifies the image height of ListView layouts containing images</dd>
+  <dt id="ListView.ImageWidth" class="number"><em>ImageWidth</em></dt>
+  <dd>Specifies the image width of ListView layouts containing images</dd>
+  <dt id="ListView.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ListView.ListData" class="text do"><em>ListData</em></dt>
+  <dd>Specifies data to be displayed in the ListView elements. This property sets the
+ elements specified in <a href="#ListView.ListViewLayout"><code class="highlighter-rouge">ListViewLayout</code></a>. For example, if the chosen
+ layout is <code class="highlighter-rouge">Image,MainText</code> this property will allow any number of elements to be
+ defined, each containing a filename for Image and a string for MainText.
+ Designer only property.</dd>
+  <dt id="ListView.ListViewLayout" class="number"><em>ListViewLayout</em></dt>
+  <dd>Specifies type of layout for ListView row.</dd>
+  <dt id="ListView.Orientation" class="number"><em>Orientation</em></dt>
+  <dd>Specifies the layout’s orientation. This may be: <code class="highlighter-rouge">Vertical</code>, which displays elements
+ in rows one after the other; or <code class="highlighter-rouge">Horizontal</code>, which displays one element at a time and
+ allows the user to swipe left or right to brows the elements.</dd>
+  <dt id="ListView.Selection" class="text"><em>Selection</em></dt>
+  <dd>Returns the text in the <code class="highlighter-rouge">ListView</code> at the position of <a href="#ListView.SelectionIndex"><code class="highlighter-rouge">SelectionIndex</code></a>.</dd>
+  <dt id="ListView.SelectionColor" class="color"><em>SelectionColor</em></dt>
+  <dd>The color of the item when it is selected.</dd>
+  <dt id="ListView.SelectionDetailText" class="text ro bo"><em>SelectionDetailText</em></dt>
+  <dd>Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex</dd>
+  <dt id="ListView.SelectionIndex" class="number bo"><em>SelectionIndex</em></dt>
+  <dd>The index of the currently selected item, starting at <code class="highlighter-rouge">1</code>. If no item is selected, the value
+ will be <code class="highlighter-rouge">0</code>. If an attempt is made to set this to a number less than <code class="highlighter-rouge">1</code> or greater than the
+ number of items in the <code class="highlighter-rouge">ListView</code>, <code class="highlighter-rouge">SelectionIndex</code> will be set to <code class="highlighter-rouge">0</code>, and
+ <a href="#ListView.Selection"><code class="highlighter-rouge">Selection</code></a> will be set to the empty text.</dd>
+  <dt id="ListView.ShowFilterBar" class="boolean"><em>ShowFilterBar</em></dt>
+  <dd>Sets visibility of the filter bar. <code class="logic block highlighter-rouge">true</code> will show the bar,
+ <code class="logic block highlighter-rouge">false</code> will hide it.</dd>
+  <dt id="ListView.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>The text color of the <code class="highlighter-rouge">ListView</code> items.</dd>
+  <dt id="ListView.TextColorDetail" class="color"><em>TextColorDetail</em></dt>
+  <dd>Specifies the color of the secondary text in a ListView layout</dd>
+  <dt id="ListView.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="ListView.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">ListView</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">ListView</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="ListView.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ListView</code>, measured in pixels.</dd>
+  <dt id="ListView.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ListView</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="ListView-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ListView.AfterPicking">AfterPicking()</dt>
+  <dd>Simple event to be raised after the an element has been chosen in the list.
+ The selected element is available in the <a href="#ListView.Selection"><code class="highlighter-rouge">Selection</code></a> property.</dd>
+</dl>
+
+<h3 id="ListView-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ListView.AddItem" class="method"><i></i> AddItem(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Add new Item to list</dd>
+  <dt id="ListView.AddItemAtIndex" class="method"><i></i> AddItemAtIndex(<em class="number">index</em>,<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Add new Item to list at a given index</dd>
+  <dt id="ListView.AddItems" class="method"><i></i> AddItems(<em class="list">itemsList</em>)</dt>
+  <dd>Add new Items to list</dd>
+  <dt id="ListView.AddItemsAtIndex" class="method"><i></i> AddItemsAtIndex(<em class="number">index</em>,<em class="list">itemsList</em>)</dt>
+  <dd>Add new Items to list at specific index</dd>
+  <dt id="ListView.CreateElement" class="method returns dictionary"><i></i> CreateElement(<em class="text">mainText</em>,<em class="text">detailText</em>,<em class="text">imageName</em>)</dt>
+  <dd>Creates a</dd>
+  <dt id="ListView.GetDetailText" class="method returns text"><i></i> GetDetailText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Detail Text of a ListView element.</dd>
+  <dt id="ListView.GetImageName" class="method returns text"><i></i> GetImageName(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the filename of the image of a ListView element that has been uploaded to Media.</dd>
+  <dt id="ListView.GetMainText" class="method returns text"><i></i> GetMainText(<em class="dictionary">listElement</em>)</dt>
+  <dd>Get the Main Text of a ListView element.</dd>
+  <dt id="ListView.RemoveItemAtIndex" class="method"><i></i> RemoveItemAtIndex(<em class="number">index</em>)</dt>
+  <dd>Removes Item from list at a given index</dd>
+</dl>
+
+<h2 id="Notifier">Notifier</h2>
+
+<p>The Notifier component displays alert messages and creates Android log entries through
+ an assortment of methods.</p>
+
+<h3 id="Notifier-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Notifier.BackgroundColor" class="color wo"><em>BackgroundColor</em></dt>
+  <dd>Specifies the background color for alerts (not dialogs).</dd>
+  <dt id="Notifier.NotifierLength" class="number do"><em>NotifierLength</em></dt>
+  <dd>Specifies the length of time that the alert is shown – either “short” or “long”.</dd>
+  <dt id="Notifier.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color for alerts (not dialogs).</dd>
+</dl>
+
+<h3 id="Notifier-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Notifier.AfterChoosing">AfterChoosing(<em class="text">choice</em>)</dt>
+  <dd>Event after the user has made a selection for
+ <a href="#Notifier.ShowChooseDialog"><code class="highlighter-rouge">ShowChooseDialog</code></a>.</dd>
+  <dt id="Notifier.AfterTextInput">AfterTextInput(<em class="text">response</em>)</dt>
+  <dd>Event raised after the user has responded to <a href="#Notifier.ShowTextDialog"><code class="highlighter-rouge">ShowTextDialog</code></a>.</dd>
+  <dt id="Notifier.ChoosingCanceled">ChoosingCanceled()</dt>
+  <dd>Event raised when the user cancels choosing an option.
+ <a href="#Notifier.ShowChooseDialog"><code class="highlighter-rouge">ShowChooseDialog</code></a>.</dd>
+  <dt id="Notifier.TextInputCanceled">TextInputCanceled()</dt>
+  <dd>Event raised when the user cancels
+ <a href="#Notifier.ShowPasswordDialog"><code class="highlighter-rouge">ShowPasswordDialog</code></a>, or
+ <a href="#Notifier.ShowTextDialog"><code class="highlighter-rouge">ShowTextDialog</code></a>.</dd>
+</dl>
+
+<h3 id="Notifier-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Notifier.DismissProgressDialog" class="method"><i></i> DismissProgressDialog()</dt>
+  <dd>Dismisses the alert created by the ShowProgressDialog block</dd>
+  <dt id="Notifier.LogError" class="method"><i></i> LogError(<em class="text">message</em>)</dt>
+  <dd>Writes an error message to the Android system log. See the Google Android documentation for
+ how to access the log.</dd>
+  <dt id="Notifier.LogInfo" class="method"><i></i> LogInfo(<em class="text">message</em>)</dt>
+  <dd>Writes an information message to the Android log.</dd>
+  <dt id="Notifier.LogWarning" class="method"><i></i> LogWarning(<em class="text">message</em>)</dt>
+  <dd>Writes a warning message to the Android log. See the Google Android documentation for how to
+ access the log.</dd>
+  <dt id="Notifier.ShowAlert" class="method"><i></i> ShowAlert(<em class="text">notice</em>)</dt>
+  <dd>Display a temporary notification.</dd>
+  <dt id="Notifier.ShowChooseDialog" class="method"><i></i> ShowChooseDialog(<em class="text">message</em>,<em class="text">title</em>,<em class="text">button1Text</em>,<em class="text">button2Text</em>,<em class="boolean">cancelable</em>)</dt>
+  <dd>Shows a dialog box with two buttons, from which the user can choose. If <code class="highlighter-rouge">cancelable</code> is
+ <code class="logic block highlighter-rouge">true</code> there will be an additional CANCEL button. Pressing a button will raise
+ the <a href="#Notifier.AfterChoosing"><code class="highlighter-rouge">AfterChoosing</code></a> event. The “choice” parameter to
+ <a href="#Notifier.AfterChoosing"><code class="highlighter-rouge">AfterChoosing</code></a> will be the text on the button that was pressed, or “Cancel” if
+ the CANCEL button was pressed. If canceled, the <a href="#Notifier.TextInputCanceled"><code class="highlighter-rouge">TextInputCanceled</code></a> event will also
+ run.</dd>
+  <dt id="Notifier.ShowMessageDialog" class="method"><i></i> ShowMessageDialog(<em class="text">message</em>,<em class="text">title</em>,<em class="text">buttonText</em>)</dt>
+  <dd>Display an alert dialog with a single button that dismisses the alert.</dd>
+  <dt id="Notifier.ShowPasswordDialog" class="method"><i></i> ShowPasswordDialog(<em class="text">message</em>,<em class="text">title</em>,<em class="boolean">cancelable</em>)</dt>
+  <dd>Shows a dialog box where the user can enter password (input is masked), after which the
+ <a href="#Notifier.AfterTextInput"><code class="highlighter-rouge">AfterTextInput</code></a> event will be raised. If <code class="highlighter-rouge">cancelable</code> is <code class="logic block highlighter-rouge">true</code>
+ there will be an additional CANCEL button. The <a href="#Notifier.AfterTextInput"><code class="highlighter-rouge">AfterTextInput</code></a> and
+ <a href="#Notifier.TextInputCanceled"><code class="highlighter-rouge">TextInputCanceled</code></a> events behave the same way as described in
+ <a href="#Notifier.ShowTextDialog"><code class="highlighter-rouge">ShowTextDialog</code></a>.</dd>
+  <dt id="Notifier.ShowProgressDialog" class="method"><i></i> ShowProgressDialog(<em class="text">message</em>,<em class="text">title</em>)</dt>
+  <dd>Shows a dialog box with an optional title and message (use empty strings if they are not
+ wanted). This dialog box contains a spinning artifact to indicate that the program is working.
+ It cannot be canceled by the user but must be dismissed by the App Inventor Program by using
+ the <a href="#Notifier.DismissProgressDialog"><code class="highlighter-rouge">DismissProgressDialog</code></a> method.</dd>
+  <dt id="Notifier.ShowTextDialog" class="method"><i></i> ShowTextDialog(<em class="text">message</em>,<em class="text">title</em>,<em class="boolean">cancelable</em>)</dt>
+  <dd>Shows a dialog box where the user can enter text, after which the
+ <a href="#Notifier.AfterTextInput"><code class="highlighter-rouge">AfterTextInput</code></a>  event will be raised. If <code class="highlighter-rouge">cancelable</code> is <code class="logic block highlighter-rouge">true</code>
+ there will be an additional CANCEL button. Entering text will raise the
+ <a href="#Notifier.AfterTextInput"><code class="highlighter-rouge">AfterTextInput</code></a> event. The “response” parameter to
+ <a href="#Notifier.AfterTextInput"><code class="highlighter-rouge">AfterTextInput</code></a>  will be the text that was entered, or “Cancel” if the CANCEL
+ button was pressed. If canceled, the <a href="#Notifier.TextInputCanceled"><code class="highlighter-rouge">TextInputCanceled</code></a> event will also run.</dd>
+</dl>
+
+<h2 id="PasswordTextBox">PasswordTextBox</h2>
+
+<p>Users enter passwords in a password text box component, which hides the text that has been typed in it.</p>
+
+<p><img src="images/passwordtextbox.png" alt="Example of a PasswordTextBox" /></p>
+
+<p>A password text box is the same as the ordinary <a href="#TextBox"><code class="highlighter-rouge">TextBox</code></a> component, except that it does
+ not display the characters typed by the user.</p>
+
+<p>You can get or set the value of the text in the box with the <a href="#PasswordTextBox.Text"><code class="highlighter-rouge">Text</code></a> property. If
+ <a href="#PasswordTextBox.Text"><code class="highlighter-rouge">Text</code></a> is blank, you can use the <a href="#PasswordTextBox.Hint"><code class="highlighter-rouge">Hint</code></a> property to provide the user
+ with a suggestion of what to type. The <a href="#PasswordTextBox.Hint"><code class="highlighter-rouge">Hint</code></a> appears as faint text in the box.</p>
+
+<p>Password text box components are usually used with a <a href="#Button"><code class="highlighter-rouge">Button</code></a> component. The user taps the
+ <code class="highlighter-rouge">Button</code> after entering text.</p>
+
+<h3 id="PasswordTextBox-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="PasswordTextBox.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>The background color of the <code class="highlighter-rouge">PasswordTextBox</code>`. You can choose a color by name in the Designer or in
+ the Blocks Editor. The default background color is ‘default’ (shaded 3-D look).</dd>
+  <dt id="PasswordTextBox.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If set, user can enter text into the <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
+  <dt id="PasswordTextBox.FontBold" class="boolean do"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">PasswordTextBox</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="PasswordTextBox.FontItalic" class="boolean do"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">PasswordTextBox</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="PasswordTextBox.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">PasswordTextBox</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="PasswordTextBox.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>The text font face of the <code class="highlighter-rouge">PasswordTextBox</code>. Valid values are <code class="highlighter-rouge">0</code> (default), <code class="highlighter-rouge">1</code> (serif), <code class="highlighter-rouge">2</code> (sans
+ serif), or <code class="highlighter-rouge">3</code> (monospace).</dd>
+  <dt id="PasswordTextBox.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">PasswordTextBox</code>’s vertical height, measured in pixels.</dd>
+  <dt id="PasswordTextBox.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">PasswordTextBox</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="PasswordTextBox.Hint" class="text"><em>Hint</em></dt>
+  <dd><code class="highlighter-rouge">PasswordTextBox</code> hint for the user.</dd>
+  <dt id="PasswordTextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint of the PasswordTextBox.</dd>
+  <dt id="PasswordTextBox.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="PasswordTextBox.NumbersOnly" class="boolean"><em>NumbersOnly</em></dt>
+  <dd>If true, then this <code class="highlighter-rouge">PasswordTextBox</code><code class="highlighter-rouge"> accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if </code>NumbersOnly<code class="highlighter-rouge"> is true, you can set the text to anything at all using the
+ [</code>Text`](#PasswordTextBox.Text) property.</dd>
+  <dt id="PasswordTextBox.PasswordVisible" class="boolean bo"><em>PasswordVisible</em></dt>
+  <dd>Specifies whether the password is hidden (default) or shown.</dd>
+  <dt id="PasswordTextBox.Text" class="text"><em>Text</em></dt>
+  <dd>The text in the <code class="highlighter-rouge">PasswordTextBox</code>, which can be set by the programmer in the Designer or Blocks Editor,
+ or it can be entered by the user (unless the <a href="#PasswordTextBox.Enabled"><code class="highlighter-rouge">Enabled</code></a> property is false).</dd>
+  <dt id="PasswordTextBox.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">PasswordTextBox</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="PasswordTextBox.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">PasswordTextBox</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="PasswordTextBox.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="PasswordTextBox.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">PasswordTextBox</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">PasswordTextBox</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="PasswordTextBox.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">PasswordTextBox</code>, measured in pixels.</dd>
+  <dt id="PasswordTextBox.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">PasswordTextBox</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="PasswordTextBox-Events">Events</h3>
+
+<dl class="events">
+  <dt id="PasswordTextBox.GotFocus">GotFocus()</dt>
+  <dd>Event raised when the <code class="highlighter-rouge">PasswordTextBox</code> is selected for input, such as by
+ the user touching it.</dd>
+  <dt id="PasswordTextBox.LostFocus">LostFocus()</dt>
+  <dd>Event raised when the <code class="highlighter-rouge">PasswordTextBox</code> is no longer selected for input, such
+ as if the user touches a different text box.</dd>
+  <dt id="PasswordTextBox.TextChanged">TextChanged()</dt>
+  <dd>Event raised when the text of the PasswordTextBox is changed, either by the user or the program.</dd>
+</dl>
+
+<h3 id="PasswordTextBox-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="PasswordTextBox.MoveCursorTo" class="method"><i></i> MoveCursorTo(<em class="number">position</em>)</dt>
+  <dd>Repositions the cursor of the PasswordTextBox before the character at the given 1-indexed position. If the given position is larger than the length of the PasswordTextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.</dd>
+  <dt id="PasswordTextBox.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the PasswordTextBox’s text.</dd>
+  <dt id="PasswordTextBox.MoveCursorToStart" class="method"><i></i> MoveCursorToStart()</dt>
+  <dd>Repositions the cursor to the start of the PasswordTextBox’s text.</dd>
+  <dt id="PasswordTextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
+  <dd>Request focus to current <code class="highlighter-rouge">PasswordTextBox</code>.</dd>
+</dl>
+
+<h2 id="Screen">Screen</h2>
+
+<p>Top-level component containing all other components in the program.</p>
+
+<h3 id="Screen-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Screen.AboutScreen" class="text"><em>AboutScreen</em></dt>
+  <dd>Information about the screen. It appears when “About this Application” is selected from the
+ system menu. Use it to tell users about your app. In multiple screen apps, each screen has its
+ own <code class="highlighter-rouge">AboutScreen</code> info.</dd>
+  <dt id="Screen.AccentColor" class="color do"><em>AccentColor</em></dt>
+  <dd>This is the accent color used for highlights and other user interface accents in newer
+ versions of Android. Components affected by this property include dialogs created by the
+ <a href="#Notifier"><code class="highlighter-rouge">Notifier</code></a>, the <a href="#DatePicker"><code class="highlighter-rouge">DatePicker</code></a>, and others.</dd>
+  <dt id="Screen.AlignHorizontal" class="number"><em>AlignHorizontal</em></dt>
+  <dd>A number that encodes how contents of the screen are aligned horizontally. The choices are:
+ <code class="highlighter-rouge">1</code> (left aligned), <code class="highlighter-rouge">3</code> (horizontally centered), <code class="highlighter-rouge">2</code> (right aligned).</dd>
+  <dt id="Screen.AlignVertical" class="number"><em>AlignVertical</em></dt>
+  <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices
+ are: <code class="highlighter-rouge">1</code> (aligned at the top), <code class="highlighter-rouge">2</code> (vertically centered), <code class="highlighter-rouge">3</code> (aligned at the bottom). Vertical
+ alignment has no effect if the screen is scrollable.</dd>
+  <dt id="Screen.AppName" class="text wo do"><em>AppName</em></dt>
+  <dd>This is the display name of the installed application in the phone. If the <code class="highlighter-rouge">AppName</code> is blank,
+ it will be set to the name of the project when the project is built.</dd>
+  <dt id="Screen.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Screen</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#Screen.BackgroundImage"><code class="highlighter-rouge">BackgroundImage</code></a> has been set, the color
+ change will not be visible until the <a href="#Screen.BackgroundImage"><code class="highlighter-rouge">BackgroundImage</code></a> is removed.</dd>
+  <dt id="Screen.BackgroundImage" class="text"><em>BackgroundImage</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">Screen</code>’s background image. If there is both an <code class="highlighter-rouge">BackgroundImage</code>
+ and a <a href="#Screen.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">BackgroundImage</code> will be visible.</dd>
+  <dt id="Screen.BigDefaultText" class="boolean"><em>BigDefaultText</em></dt>
+  <dd>When checked, all default size text will be increased in size.</dd>
+  <dt id="Screen.BlocksToolkit" class="text wo do"><em>BlocksToolkit</em></dt>
+  <dd>Choose the set of components you’ll need for your project. A smaller set is good for beginner projects, while experts can use all options to build complex apps. For example, the Beginner Toolkit gives you access to all the features you need for our novice tutorials and curriculum.&lt;/p&gt;&lt;p&gt;You can always change your toolkit in Project Properties, so your choice now won’t limit the future possibilities for your app.&lt;/p&gt;</dd>
+  <dt id="Screen.CloseScreenAnimation" class="text"><em>CloseScreenAnimation</em></dt>
+  <dd>Sets the animation type for the transition of this form closing and returning
+ to a form behind it in the activity stack.</dd>
+  <dt id="Screen.DefaultFileScope" class="com google appinventor components common FileScopeEnum wo do"><em>DefaultFileScope</em></dt>
+  <dd>Specifies the default scope used when components access files. Note that the
+ <a href="/reference/components/storage.html#File" target="_blank">File</a>
+ component has its own property for controlling file scopes.</dd>
+  <dt id="Screen.Height" class="number ro bo"><em>Height</em></dt>
+  <dd>Returns the Screen height in pixels (y-size).</dd>
+  <dt id="Screen.HighContrast" class="boolean"><em>HighContrast</em></dt>
+  <dd>When checked, there will be high contrast mode turned on.</dd>
+  <dt id="Screen.Icon" class="text wo do"><em>Icon</em></dt>
+  <dd>The image used for your App’s display icon should be a square png or jpeg image with dimensions
+ up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
+ The build server will generate images of standard dimensions for Android devices.</dd>
+  <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
+  <dd>Sets the animation type for the transition of this form opening.</dd>
+  <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>
+  <dd>Gets the name of the underlying platform running the app. Currently, this is the text
+ “Android”. Other platforms may be supported in the future.</dd>
+  <dt id="Screen.PlatformVersion" class="text ro bo"><em>PlatformVersion</em></dt>
+  <dd>Gets the version number of the platform running the app. This is typically a dotted version
+ number, such as 10.0. Any value can be returned, however, so you should take care to handle
+ unexpected data. If the platform version is unavailable, the empty text will be returned.</dd>
+  <dt id="Screen.PrimaryColor" class="color do"><em>PrimaryColor</em></dt>
+  <dd>This is the primary color used as part of the Android theme, including coloring the <code class="highlighter-rouge">Screen</code>’s
+ title bar.</dd>
+  <dt id="Screen.PrimaryColorDark" class="color do"><em>PrimaryColorDark</em></dt>
+  <dd>This is the primary color used when the Theme property is specified to be Dark. It applies to
+ a number of elements, including the <code class="highlighter-rouge">Screen</code>’s title bar.</dd>
+  <dt id="Screen.ScreenOrientation" class="text"><em>ScreenOrientation</em></dt>
+  <dd>Declares the requested screen orientation, specified as a text value. Commonly used values are
+ <code class="highlighter-rouge">landscape</code>, <code class="highlighter-rouge">portrait</code>, <code class="highlighter-rouge">sensor</code>, <code class="highlighter-rouge">user</code> and <code class="highlighter-rouge">unspecified</code>. See the Android developer
+ documentation for the complete list of possible
+ <a href="https://developer.android.com/reference/android/R.attr.html#screenOrientation">options</a>.</dd>
+  <dt id="Screen.Scrollable" class="boolean"><em>Scrollable</em></dt>
+  <dd>When checked, there will be a vertical scrollbar on the screen, and the height of the
+ application can exceed the physical height of the device. When unchecked, the application
+ height is constrained to the height of the device.</dd>
+  <dt id="Screen.ShowListsAsJson" class="boolean do"><em>ShowListsAsJson</em></dt>
+  <dd>If <code class="logic block highlighter-rouge">true</code> (the default), lists will be shown as strings in JSON/Python notation
+ for example [1, “a”, true]. If <code class="logic block highlighter-rouge">false</code>, lists will be shown in the LISP
+ notation, for example (1 a true).
+
+    <p><strong>Note:</strong> This property appears only in Screen1 and the value for Screen1 determines the
+ behavior for all screens in the app.</p>
+  </dd>
+  <dt id="Screen.ShowStatusBar" class="boolean"><em>ShowStatusBar</em></dt>
+  <dd>The status bar is the topmost bar on the screen. This property reports whether the status bar
+ is visible.</dd>
+  <dt id="Screen.Sizing" class="text wo do"><em>Sizing</em></dt>
+  <dd>If set to responsive (the default), screen layouts will use the actual resolution of the
+ device. See the <a href="../other/responsiveDesign.html">documentation on responsive design</a> in App
+ Inventor for more information.
+ If set to fixed, screen layouts will be created for a single fixed-size screen and autoscaled.
+
+    <p><strong>Note:</strong> This property appears on Screen1 only and controls the sizing for all screens in
+ the app.</p>
+  </dd>
+  <dt id="Screen.Theme" class="text wo do"><em>Theme</em></dt>
+  <dd>Selects the theme for the application. Theme can only be set at compile time and the Companion
+ will approximate changes during live development. Possible options are:
+
+    <ul>
+      <li><code class="highlighter-rouge">Classic</code>, which is the same as older versions of App Inventor;</li>
+      <li><code class="highlighter-rouge">Device Default</code>, which gives the same theme as the version of Android running on the
+device and uses PrimaryColor for the Action Bar and has light buttons;</li>
+      <li><code class="highlighter-rouge">Black Title Text</code>, which is the <code class="highlighter-rouge">Device Default</code> theme but with black title text; and</li>
+      <li><code class="highlighter-rouge">Dark</code>, which is a dark version of the <code class="highlighter-rouge">Device Default</code> theme using <code class="highlighter-rouge">PrimaryColorDark</code> and
+having dark grey components.</li>
+    </ul>
+  </dd>
+  <dt id="Screen.Title" class="text"><em>Title</em></dt>
+  <dd>Title property setter method: sets a new caption for the form in the
+ form’s title bar.</dd>
+  <dt id="Screen.TitleVisible" class="boolean"><em>TitleVisible</em></dt>
+  <dd>The title bar is the top gray bar on the screen. This property reports whether the title bar
+ is visible.</dd>
+  <dt id="Screen.TutorialURL" class="text wo do"><em>TutorialURL</em></dt>
+  <dd>A URL which will be opened on the left side panel (which can be toggled once it is open). This
+ is intended for projects that have an in-line tutorial as part of the project. For security
+ reasons, only tutorials hosted on http://appinventor.mit.edu or linked to from our URL
+ shortener (http://appinv.us) may be used here. Other URLs will be silently ignored.</dd>
+  <dt id="Screen.VersionCode" class="number wo do"><em>VersionCode</em></dt>
+  <dd>An integer value which must be incremented each time a new Android Application Package File
+ (APK) is created for the Google Play Store.</dd>
+  <dt id="Screen.VersionName" class="text wo do"><em>VersionName</em></dt>
+  <dd>A string which can be changed to allow Google Play Store users to distinguish between
+ different versions of the App.</dd>
+  <dt id="Screen.Width" class="number ro bo"><em>Width</em></dt>
+  <dd>Returns the Screen width in pixels (x-size).</dd>
+</dl>
+
+<h3 id="Screen-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Screen.BackPressed">BackPressed()</dt>
+  <dd>Device back button pressed.</dd>
+  <dt id="Screen.ErrorOccurred">ErrorOccurred(<em class="component">component</em>,<em class="text">functionName</em>,<em class="number">errorNumber</em>,<em class="text">message</em>)</dt>
+  <dd>Event raised when an error occurs. Only some errors will raise this condition.  For those errors, the system will show a notification by default.  You can use this event handler to prescribe an error behavior different than the default.</dd>
+  <dt id="Screen.Initialize">Initialize()</dt>
+  <dd>The Initialize event is run when the Screen starts and is only run once per screen.</dd>
+  <dt id="Screen.OtherScreenClosed">OtherScreenClosed(<em class="text">otherScreenName</em>,<em class="any">result</em>)</dt>
+  <dd>Event raised when another screen has closed and control has returned to this screen.</dd>
+  <dt id="Screen.PermissionDenied">PermissionDenied(<em class="component">component</em>,<em class="text">functionName</em>,<em class="text">permissionName</em>)</dt>
+  <dd>Event to handle when the app user has denied a needed permission.</dd>
+  <dt id="Screen.PermissionGranted">PermissionGranted(<em class="text">permissionName</em>)</dt>
+  <dd>Event to handle when the app user has granted a needed permission. This event is only run when permission is
+ granted in response to the <a href="#Screen.AskForPermission"><code class="highlighter-rouge">AskForPermission</code></a> method.</dd>
+  <dt id="Screen.ScreenOrientationChanged">ScreenOrientationChanged()</dt>
+  <dd>Screen orientation changed</dd>
+</dl>
+
+<h3 id="Screen-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Screen.AskForPermission" class="method"><i></i> AskForPermission(<em class="text">permissionName</em>)</dt>
+  <dd>Ask the user to grant access to a sensitive permission, such as <code class="highlighter-rouge">ACCESS_FINE_LOCATION</code>. This
+ block is typically used as part of a <a href="#Screen.PermissionDenied"><code class="highlighter-rouge">PermissionDenied</code></a>
+ event to ask for permission. If the user grants permission, the
+ <a href="#Screen.PermissionGranted"><code class="highlighter-rouge">PermissionGranted</code></a> event will be run. If the user denies permission, the
+ <a href="#Screen.PermissionDenied"><code class="highlighter-rouge">PermissionDenied</code></a> event will be run.
+
+    <p><strong>Note:</strong> It is a best practice to only ask for permissions at the time they are needed,
+ which App Inventor components will do when necessary. You should not use <code class="highlighter-rouge">AskForPermission</code>
+ in your <a href="#Screen.Initialize"><code class="highlighter-rouge">Initialize</code></a> event unless access to that permission is critical to the
+ behavior of your app and is needed up front, such as location services for a navigation app.</p>
+  </dd>
+  <dt id="Screen.HideKeyboard" class="method"><i></i> HideKeyboard()</dt>
+  <dd>Hide the soft keyboard</dd>
+</dl>
+
+<h2 id="Slider">Slider</h2>
+
+<p>This class is used to display a <code class="highlighter-rouge">Slider</code>.</p>
+
+<p><img src="images/slider.png" alt="Example Slider icon" /></p>
+
+<p>A <code class="highlighter-rouge">Slider</code> is a progress bar that adds a draggable thumb. You can touch the thumb and drag left
+ or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the
+ <a href="#Slider.PositionChanged"><code class="highlighter-rouge">PositionChanged</code></a> event, reporting the position of the <code class="highlighter-rouge">Slider</code> thumb. The
+ reported position of the thumb can be used to dynamically update another component attribute,
+ such as the <a href="#TextBox.FontSize"><code class="highlighter-rouge">TextBox</code>’s <code class="highlighter-rouge">FontSize</code></a> of a <code class="highlighter-rouge">TextBox</code> or the
+ <a href="animation.html#Ball.Radius">Radius</a> of a <code class="highlighter-rouge">Ball</code>.</p>
+
+<p>The <code class="highlighter-rouge">Slider</code> uses the following default values. However these values can be changed through the
+ Designer or Blocks editor:</p>
+
+<ul>
+  <li><a href="#Slider.MinValue"><code class="highlighter-rouge">MinValue</code></a> = 10</li>
+  <li><a href="#Slider.MaxValue"><code class="highlighter-rouge">MaxValue</code></a> = 50</li>
+  <li><a href="#Slider.ThumbPosition"><code class="highlighter-rouge">ThumbPosition</code></a> = 30</li>
+</ul>
+
+<h3 id="Slider-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Slider.ColorLeft" class="color"><em>ColorLeft</em></dt>
+  <dd>Specifies the color of the slider bar to the left of the thumb as an alpha-red-green-blue
+ integer, i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code>
+ indicates fully transparent and <code class="highlighter-rouge">FF</code> means opaque.</dd>
+  <dt id="Slider.ColorRight" class="color"><em>ColorRight</em></dt>
+  <dd>Specifies the color of the slider bar to the right of the thumb as an alpha-red-green-blue
+ integer, i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code>
+ indicates fully transparent and <code class="highlighter-rouge">FF</code> means opaque.</dd>
+  <dt id="Slider.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Slider</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Slider.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Slider.MaxValue" class="number"><em>MaxValue</em></dt>
+  <dd>Sets the maximum value of slider. If the new maximum is less than the
+ current minimum, then minimum and maximum will both be set to this value.</dd>
+  <dt id="Slider.MinValue" class="number"><em>MinValue</em></dt>
+  <dd>Sets the minimum value of slider. If the new minimum is greater than the
+ current maximum, then minimum and maximum will both be set to this value.</dd>
+  <dt id="Slider.NumberOfSteps" class="number"><em>NumberOfSteps</em></dt>
+  <dd>Set the number of points on the slider scale.
+ Combined with MinValue and MaxValue, it allows you to get the slider precision that you want,
+ e.g. MinValue = 0, MaxValue = 150, NumberOfSteps = 1000. The slider will change position every 0.15.</dd>
+  <dt id="Slider.ThumbColor" class="color"><em>ThumbColor</em></dt>
+  <dd>Specifies the color of the thumb slider as an alpha-red-green-blue
+ integer, i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code>
+ indicates fully transparent and <code class="highlighter-rouge">FF</code> means opaque.</dd>
+  <dt id="Slider.ThumbEnabled" class="boolean"><em>ThumbEnabled</em></dt>
+  <dd>Whether or not the slider thumb is being be shown.</dd>
+  <dt id="Slider.ThumbPosition" class="number"><em>ThumbPosition</em></dt>
+  <dd>Sets the position of the slider thumb. If this value is greater than <a href="#Slider.MaxValue"><code class="highlighter-rouge">MaxValue</code></a>,
+ then it will be set to same value as <a href="#Slider.MaxValue"><code class="highlighter-rouge">MaxValue</code></a>. If this value is less than
+ <a href="#Slider.MinValue"><code class="highlighter-rouge">MinValue</code></a>, then it will be set to same value as <a href="#Slider.MinValue"><code class="highlighter-rouge">MinValue</code></a>.</dd>
+  <dt id="Slider.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Slider.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Slider</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Slider</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Slider.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Slider</code>, measured in pixels.</dd>
+  <dt id="Slider.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Slider</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Slider-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Slider.PositionChanged">PositionChanged(<em class="number">thumbPosition</em>)</dt>
+  <dd>Indicates that position of the slider thumb has changed.</dd>
+  <dt id="Slider.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the user has started a touch gesture.</dd>
+  <dt id="Slider.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the user has finished a touch gesture.</dd>
+</dl>
+
+<h3 id="Slider-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
+<h2 id="Spinner">Spinner</h2>
+
+<p>A <code class="highlighter-rouge">Spinner</code> component that displays a dialog with a list of elements. These elements can be set
+ in the Designer or Blocks Editor by setting the <a href="#Spinner.ElementsFromString"><code class="highlighter-rouge">ElementsFromString</code></a> property to
+ a comma-separated list of values (for example, <code class="highlighter-rouge">choice 1, choice 2, choice 3</code>) or by setting the
+ <a href="#Spinner.Elements"><code class="highlighter-rouge">Elements</code></a> property to a List in the Blocks editor. Spinners are created with
+ the first item already selected, so selecting it does not generate an
+ <a href="#Spinner.AfterSelecting"><code class="highlighter-rouge">AfterSelecting</code></a> event. Consequently it’s useful to make the first <code class="highlighter-rouge">Spinner</code> item
+ be a non-choice like “Select from below…”.</p>
+
+<h3 id="Spinner-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Spinner.Elements" class="list bo"><em>Elements</em></dt>
+  <dd>Specifies the list of choices to display.</dd>
+  <dt id="Spinner.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
+  <dd>Set the list of choices from a string of comma-separated values.</dd>
+  <dt id="Spinner.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Spinner</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Spinner.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Spinner</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Spinner.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Spinner.Prompt" class="text"><em>Prompt</em></dt>
+  <dd>Specifies the text used for the title of the Spinner window.</dd>
+  <dt id="Spinner.Selection" class="text"><em>Selection</em></dt>
+  <dd>Specifies the current selected item in the <code class="highlighter-rouge">Spinner</code>.</dd>
+  <dt id="Spinner.SelectionIndex" class="number bo"><em>SelectionIndex</em></dt>
+  <dd>Set the <code class="highlighter-rouge">Spinner</code> selection to the element at the given index.
+ If an attempt is made to set this to a number less than <code class="highlighter-rouge">1</code> or greater than the number of
+ items in the <code class="highlighter-rouge">Spinner</code>, <code class="highlighter-rouge">SelectionIndex</code> will be set to <code class="highlighter-rouge">0</code>, and <a href="#Spinner.Selection"><code class="highlighter-rouge">Selection</code></a>
+ will be set to the empty text.</dd>
+  <dt id="Spinner.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Spinner.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Spinner</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Spinner</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Spinner.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Spinner</code>, measured in pixels.</dd>
+  <dt id="Spinner.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Spinner</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Spinner-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Spinner.AfterSelecting">AfterSelecting(<em class="text">selection</em>)</dt>
+  <dd>Event called after the user selects an item from the dropdown list.</dd>
+</dl>
+
+<h3 id="Spinner-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Spinner.DisplayDropdown" class="method"><i></i> DisplayDropdown()</dt>
+  <dd>Displays the dropdown list for selection, same action as when the user clicks on the spinner.</dd>
+</dl>
+
+<h2 id="Switch">Switch</h2>
+
+<p><code class="highlighter-rouge">Switch</code> components can detect user taps and can change their boolean state in response. They
+ are identical to <a href="#CheckBox"><code class="highlighter-rouge">CheckBox</code></a>es except in appearance.</p>
+
+<p>Switches have an on (true) state and an off (false) state. A <code class="highlighter-rouge">Switch</code> component raises an event
+ when the user taps it to toggle between states.</p>
+
+<h3 id="Switch-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Switch.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the background color of the <code class="highlighter-rouge">Switch</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="Switch.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Switch</code> should be active and clickable.</dd>
+  <dt id="Switch.FontBold" class="boolean do"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">Switch</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="Switch.FontItalic" class="boolean do"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">Switch</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="Switch.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">Switch</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="Switch.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">Switch</code> as default, serif, sans
+ serif, or monospace.</dd>
+  <dt id="Switch.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Switch</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Switch.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Switch</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Switch.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Switch.On" class="boolean"><em>On</em></dt>
+  <dd>True if the switch is in the On state, false otherwise.</dd>
+  <dt id="Switch.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">Switch</code>.</dd>
+  <dt id="Switch.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">Switch</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="Switch.ThumbColorActive" class="color"><em>ThumbColorActive</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Switch</code>’s thumb color when switch is in the On state.</dd>
+  <dt id="Switch.ThumbColorInactive" class="color"><em>ThumbColorInactive</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Switch</code>’s thumb color when switch is in the Off state.</dd>
+  <dt id="Switch.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Switch.TrackColorActive" class="color"><em>TrackColorActive</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Switch</code>’s track color when in the On state.</dd>
+  <dt id="Switch.TrackColorInactive" class="color"><em>TrackColorInactive</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Switch</code>’s track color when in the Off state.</dd>
+  <dt id="Switch.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Switch</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Switch</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Switch.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Switch</code>, measured in pixels.</dd>
+  <dt id="Switch.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Switch</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Switch-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Switch.Changed">Changed()</dt>
+  <dd>User change the state of the <code class="highlighter-rouge">Switch</code> from On to Off or back.</dd>
+  <dt id="Switch.GotFocus">GotFocus()</dt>
+  <dd><code class="highlighter-rouge">Switch</code> became the focused component.</dd>
+  <dt id="Switch.LostFocus">LostFocus()</dt>
+  <dd><code class="highlighter-rouge">Switch</code> stopped being the focused component.</dd>
+</dl>
+
+<h3 id="Switch-Methods">Methods</h3>
+
+<p class="methods">None</p>
+
+<h2 id="TextBox">TextBox</h2>
+
+<p>Users enter text in a text box component.</p>
+
+<p><img src="images/textbox.png" alt="Example of a TextBox" /></p>
+
+<p>The initial or user-entered text value in a text box component is in the <a href="#TextBox.Text"><code class="highlighter-rouge">Text</code></a>
+ property. If <a href="#TextBox.Text"><code class="highlighter-rouge">Text</code></a> is blank, you can use the <a href="#TextBox.Hint"><code class="highlighter-rouge">Hint</code></a> property to provide
+ the user with a suggestion of what to type. The <a href="#TextBox.Hint"><code class="highlighter-rouge">Hint</code></a> appears as faint text in the box.</p>
+
+<p>The <a href="#TextBox.MultiLine"><code class="highlighter-rouge">MultiLine</code></a> property determines if the text can have more than one line.
+ For a single line text box, the keyboard will close automatically when the user presses the Done
+ key. To close the keyboard for multiline text boxes, the app should use the
+ <a href="#TextBox.HideKeyboard"><code class="highlighter-rouge">HideKeyboard</code></a> method or rely on the user to press the Back key.</p>
+
+<p>The <a href="#TextBox.NumbersOnly"><code class="highlighter-rouge">NumbersOnly</code></a> property restricts the keyboard to accept numeric input only.</p>
+
+<p>Other properties affect the appearance of the text box
+ (<a href="#TextBox.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a>, <a href="#TextBox.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a>, etc.) and whether it can be used
+ (<a href="#TextBox.Enabled"><code class="highlighter-rouge">Enabled</code></a>).</p>
+
+<p>Text boxes are usually used with the <a href="#Button"><code class="highlighter-rouge">Button</code></a> component, with the user clicking on the
+ <code class="highlighter-rouge">Button</code> when text entry is complete.</p>
+
+<p>If the text entered by the user should not be displayed, use <a href="#PasswordTextBox"><code class="highlighter-rouge">PasswordTextBox</code></a> instead.</p>
+
+<h3 id="TextBox-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="TextBox.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>The background color of the <code class="highlighter-rouge">TextBox</code>`. You can choose a color by name in the Designer or in
+ the Blocks Editor. The default background color is ‘default’ (shaded 3-D look).</dd>
+  <dt id="TextBox.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>If set, user can enter text into the <code class="highlighter-rouge">TextBox</code>.</dd>
+  <dt id="TextBox.FontBold" class="boolean do"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">TextBox</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="TextBox.FontItalic" class="boolean do"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">TextBox</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="TextBox.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">TextBox</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="TextBox.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>The text font face of the <code class="highlighter-rouge">TextBox</code>. Valid values are <code class="highlighter-rouge">0</code> (default), <code class="highlighter-rouge">1</code> (serif), <code class="highlighter-rouge">2</code> (sans
+ serif), or <code class="highlighter-rouge">3</code> (monospace).</dd>
+  <dt id="TextBox.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">TextBox</code>’s vertical height, measured in pixels.</dd>
+  <dt id="TextBox.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">TextBox</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="TextBox.Hint" class="text"><em>Hint</em></dt>
+  <dd><code class="highlighter-rouge">TextBox</code> hint for the user.</dd>
+  <dt id="TextBox.HintColor" class="color"><em>HintColor</em></dt>
+  <dd>Specifies the color of the hint of the TextBox.</dd>
+  <dt id="TextBox.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="TextBox.MultiLine" class="boolean"><em>MultiLine</em></dt>
+  <dd>If true, then this <code class="highlighter-rouge">TextBox</code> accepts multiple lines of input, which are entered using the
+ return key. For single line text boxes there is a Done key instead of a return key, and
+ pressing Done hides the keyboard. The app should call the HideKeyboard method to hide the
+ keyboard for a mutiline text box.</dd>
+  <dt id="TextBox.NumbersOnly" class="boolean"><em>NumbersOnly</em></dt>
+  <dd>If true, then this <code class="highlighter-rouge">TextBox</code><code class="highlighter-rouge"> accepts only numbers as keyboard input. Numbers can include a
+ decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+ if </code>NumbersOnly<code class="highlighter-rouge"> is true, you can set the text to anything at all using the
+ [</code>Text`](#TextBox.Text) property.</dd>
+  <dt id="TextBox.ReadOnly" class="boolean"><em>ReadOnly</em></dt>
+  <dd>Whether the TextBox is read-only. By default, this is <code class="logic block highlighter-rouge">false</code>.</dd>
+  <dt id="TextBox.Text" class="text"><em>Text</em></dt>
+  <dd>The text in the <code class="highlighter-rouge">TextBox</code>, which can be set by the programmer in the Designer or Blocks Editor,
+ or it can be entered by the user (unless the <a href="#TextBox.Enabled"><code class="highlighter-rouge">Enabled</code></a> property is false).</dd>
+  <dt id="TextBox.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">TextBox</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="TextBox.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">TextBox</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="TextBox.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="TextBox.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">TextBox</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">TextBox</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="TextBox.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">TextBox</code>, measured in pixels.</dd>
+  <dt id="TextBox.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">TextBox</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="TextBox-Events">Events</h3>
+
+<dl class="events">
+  <dt id="TextBox.GotFocus">GotFocus()</dt>
+  <dd>Event raised when the <code class="highlighter-rouge">TextBox</code> is selected for input, such as by
+ the user touching it.</dd>
+  <dt id="TextBox.LostFocus">LostFocus()</dt>
+  <dd>Event raised when the <code class="highlighter-rouge">TextBox</code> is no longer selected for input, such
+ as if the user touches a different text box.</dd>
+  <dt id="TextBox.TextChanged">TextChanged()</dt>
+  <dd>Event raised when the text of the TextBox is changed, either by the user or the program.</dd>
+</dl>
+
+<h3 id="TextBox-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="TextBox.HideKeyboard" class="method"><i></i> HideKeyboard()</dt>
+  <dd>Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the
+ keyboard when the users presses the Done key.</dd>
+  <dt id="TextBox.MoveCursorTo" class="method"><i></i> MoveCursorTo(<em class="number">position</em>)</dt>
+  <dd>Repositions the cursor of the TextBox before the character at the given 1-indexed position. If the given position is larger than the length of the TextBox, the cursor will be moved to the end of the text; and if the given position is smaller or equal to 1, the cursor will be moved to the start.</dd>
+  <dt id="TextBox.MoveCursorToEnd" class="method"><i></i> MoveCursorToEnd()</dt>
+  <dd>Repositions the cursor to the end of the TextBox’s text.</dd>
+  <dt id="TextBox.MoveCursorToStart" class="method"><i></i> MoveCursorToStart()</dt>
+  <dd>Repositions the cursor to the start of the TextBox’s text.</dd>
+  <dt id="TextBox.RequestFocus" class="method"><i></i> RequestFocus()</dt>
+  <dd>Request focus to current <code class="highlighter-rouge">TextBox</code>.</dd>
+</dl>
+
+<h2 id="TimePicker">TimePicker</h2>
+
+<p>A button that, when clicked on, opens a dialog to allow the user to select a time.</p>
+
+<p>Note: Date and time are manipulated using methods in the <a href="sensors.html#Clock"><code class="highlighter-rouge">Clock</code></a> component.</p>
+
+<h3 id="TimePicker-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="TimePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">TimePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#TimePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#TimePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dt id="TimePicker.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">TimePicker</code> should be active and clickable.</dd>
+  <dt id="TimePicker.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">TimePicker</code> should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="TimePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the text of the <code class="highlighter-rouge">TimePicker</code> should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="TimePicker.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the text font size of the <code class="highlighter-rouge">TimePicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dt id="TimePicker.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the text font face of the <code class="highlighter-rouge">TimePicker</code> as default, serif, sans
+ serif, monospace, or custom font typeface. To add a custom typeface,
+ upload a .ttf file to the project’s media.</dd>
+  <dt id="TimePicker.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">TimePicker</code>’s vertical height, measured in pixels.</dd>
+  <dt id="TimePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">TimePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="TimePicker.Hour" class="number ro bo"><em>Hour</em></dt>
+  <dd>Returns the hour of the time that was last picked using the <code class="highlighter-rouge">TimePicker</code>`.
+ The time returned is always in the 24hour format.</dd>
+  <dt id="TimePicker.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">TimePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#TimePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dt id="TimePicker.Instant" class="InstantInTime ro bo"><em>Instant</em></dt>
+  <dd>Returns the instant in time that was last picked using the <code class="highlighter-rouge">TimePicker</code>.</dd>
+  <dt id="TimePicker.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="TimePicker.Minute" class="number ro bo"><em>Minute</em></dt>
+  <dd>Returns the hour of the time that was last picked using the <code class="highlighter-rouge">TimePicker</code>.
+ The time returned is always in the 24hour format.</dd>
+  <dt id="TimePicker.Shape" class="number do"><em>Shape</em></dt>
+  <dd>Specifies the shape of the <code class="highlighter-rouge">TimePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
+ <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#TimePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dt id="TimePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">TimePicker</code> with an assigned
+ <a href="#TimePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="TimePicker.Text" class="text"><em>Text</em></dt>
+  <dd>Specifies the text displayed by the <code class="highlighter-rouge">TimePicker</code>.</dd>
+  <dt id="TimePicker.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the <code class="highlighter-rouge">TimePicker</code>’s text. Valid values are:
+ <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="highlighter-rouge">1</code> (center), or
+ <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dt id="TimePicker.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the text color of the <code class="highlighter-rouge">TimePicker</code> as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="TimePicker.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="TimePicker.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">TimePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">TimePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="TimePicker.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">TimePicker</code>, measured in pixels.</dd>
+  <dt id="TimePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">TimePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="TimePicker-Events">Events</h3>
+
+<dl class="events">
+  <dt id="TimePicker.AfterTimeSet">AfterTimeSet()</dt>
+  <dd>This event is run when a user has set the time in the popup dialog.</dd>
+  <dt id="TimePicker.GotFocus">GotFocus()</dt>
+  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">TimePicker</code> so it is now possible
+ to click it.</dd>
+  <dt id="TimePicker.LostFocus">LostFocus()</dt>
+  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">TimePicker</code> so it is now no
+ longer possible to click it.</dd>
+  <dt id="TimePicker.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">TimePicker</code> was pressed down.</dd>
+  <dt id="TimePicker.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">TimePicker</code> has been released.</dd>
+</dl>
+
+<h3 id="TimePicker-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="TimePicker.LaunchPicker" class="method"><i></i> LaunchPicker()</dt>
+  <dd>Launches the <code class="highlighter-rouge">TimePicker</code> dialog.</dd>
+  <dt id="TimePicker.SetTimeToDisplay" class="method"><i></i> SetTimeToDisplay(<em class="number">hour</em>,<em class="number">minute</em>)</dt>
+  <dd>Allows the user to set the time to be displayed when the <code class="highlighter-rouge">TimePicker</code> opens. Valid values for
+ the hour field are 0-23 and 0-59 for the second field.</dd>
+  <dt id="TimePicker.SetTimeToDisplayFromInstant" class="method"><i></i> SetTimeToDisplayFromInstant(<em class="InstantInTime">instant</em>)</dt>
+  <dd>Allows the instant to set the hour and minute to be displayed when the <code class="highlighter-rouge">TimePicker</code> opens.
+ Instants are used in <a href="sensors.html#Clock"><code class="highlighter-rouge">Clock</code></a>, <a href="#DatePicker"><code class="highlighter-rouge">DatePicker</code></a>, and <a href="#TimePicker"><code class="highlighter-rouge">TimePicker</code></a>
+ components.</dd>
+</dl>
+
+<h2 id="WebViewer">WebViewer</h2>
+
+<p>Component for viewing Web pages.</p>
+
+<p><img src="images/webviewer.png" alt="WebViewer icon" /></p>
+
+<p>The <a href="#WebViewer.HomeUrl"><code class="highlighter-rouge">HomeUrl</code></a> can be specified in the Designer or in the Blocks Editor. The view can be
+ set to follow links when they are tapped, and users can fill in Web forms.</p>
+
+<p><strong>Warning:</strong> This is not a full browser. For example, pressing the phone’s hardware Back key
+ will exit the app, rather than move back in the browser history.</p>
+
+<p>You can use the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property to communicate between your app and
+ Javascript code running in the <code class="highlighter-rouge">WebViewer</code> page. In the app, you get and set
+ <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a>. In the <code class="highlighter-rouge">WebViewer</code>, you include Javascript that references the
+ <code class="highlighter-rouge">window.AppInventor</code> object, using the methods <code class="highlighter-rouge">getWebViewString()</code> and <code class="highlighter-rouge">setWebViewString(text)</code>.</p>
+
+<p>For example, if the <code class="highlighter-rouge">WebViewer</code> opens to a page that contains the Javascript command</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="dl">"</span><span class="s2">The answer is</span><span class="dl">"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">AppInventor</span><span class="p">.</span><span class="nx">getWebViewString</span><span class="p">());</span>
+</code></pre></div></div>
+<p>and if you set <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> to “hello”, then the web page will show</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> The answer is hello.
+</code></pre></div></div>
+<p>And if the Web page contains Javascript that executes the command</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">windowAppInventor</span><span class="p">.</span><span class="nx">setWebViewString</span><span class="p">(</span><span class="dl">"</span><span class="s2">hello from Javascript</span><span class="dl">"</span><span class="p">),</span>
+</code></pre></div></div>
+<p>then the value of the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property will be</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> hello from Javascript.
+</code></pre></div></div>
+<p>Calling <code class="highlighter-rouge">setWebViewString</code> from JavaScript will also run the <a href="#WebViewer.WebViewStringChange"><code class="highlighter-rouge">WebViewStringChange</code></a>
+ event so that the blocks can handle when the <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> property changes.</p>
+
+<p>Beginning with release nb184a, you can specify a HomeUrl beginning with <code class="highlighter-rouge">http://localhost/</code>
+ to reference assets both in the Companion and in compiled apps. Previously, apps needed to use
+ <code class="highlighter-rouge">file:///android_asset/</code> in compiled apps and <code class="highlighter-rouge">/sdcard/AppInventor/assets/</code> in the Companion.
+ Both of these options will continue to work but the <code class="highlighter-rouge">http://localhost/</code> approach will work in
+ both scenarios. You may also use “file:///appinventor_asset/” which provides more security by
+ preventing the use of asynchronous requests from JavaScript in your assets from going out to the
+ web.</p>
+
+<h3 id="WebViewer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="WebViewer.CurrentPageTitle" class="text ro bo"><em>CurrentPageTitle</em></dt>
+  <dd>Returns the title of the page currently being viewed</dd>
+  <dt id="WebViewer.CurrentUrl" class="text ro bo"><em>CurrentUrl</em></dt>
+  <dd>Returns the URL currently being viewed. This could be different from the <a href="#WebViewer.HomeUrl"><code class="highlighter-rouge">HomeUrl</code></a>
+ if new pages were visited by following links.</dd>
+  <dt id="WebViewer.FollowLinks" class="boolean"><em>FollowLinks</em></dt>
+  <dd>Determines whether to follow links when they are tapped in the <code class="highlighter-rouge">WebViewer</code>. If you follow
+ links, you can use <a href="#WebViewer.GoBack"><code class="highlighter-rouge">GoBack</code></a> and <a href="#WebViewer.GoForward"><code class="highlighter-rouge">GoForward</code></a> to navigate the browser history.</dd>
+  <dt id="WebViewer.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">WebViewer</code>’s vertical height, measured in pixels.</dd>
+  <dt id="WebViewer.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">WebViewer</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="WebViewer.HomeUrl" class="text"><em>HomeUrl</em></dt>
+  <dd>Specifies the URL of the page the <code class="highlighter-rouge">WebViewer</code> should initially open to. Setting this will
+ load the page.</dd>
+  <dt id="WebViewer.IgnoreSslErrors" class="boolean"><em>IgnoreSslErrors</em></dt>
+  <dd>Determine whether or not to ignore SSL errors. Set to <code class="logic block highlighter-rouge">true</code> to ignore errors.
+ Use this to accept self signed certificates from websites.</dd>
+  <dt id="WebViewer.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="WebViewer.PromptforPermission" class="boolean"><em>PromptforPermission</em></dt>
+  <dd>Determine if the user should be prompted for permission to use the geolocation API while in
+ the <code class="highlighter-rouge">WebViewer</code>. If <code class="logic block highlighter-rouge">true</code>, prompt the user of the <code class="highlighter-rouge">WebViewer</code> to give
+ permission to access the geolocation API. If <code class="logic block highlighter-rouge">false</code>, assume permission is
+ granted.</dd>
+  <dt id="WebViewer.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="WebViewer.UsesCamera" class="boolean wo do"><em>UsesCamera</em></dt>
+  <dd>Specifies whether this <code class="highlighter-rouge">WebViewer</code> can access the camera.</dd>
+  <dt id="WebViewer.UsesLocation" class="boolean wo do"><em>UsesLocation</em></dt>
+  <dd>Specifies whether or not this <code class="highlighter-rouge">WebViewer</code> can access the JavaScript
+ geolocation API.</dd>
+  <dt id="WebViewer.UsesMicrophone" class="boolean wo do"><em>UsesMicrophone</em></dt>
+  <dd>Specifies whether this <code class="highlighter-rouge">WebViewer</code> can access the microphone.</dd>
+  <dt id="WebViewer.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">WebViewer</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">WebViewer</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="WebViewer.WebViewString" class="text bo"><em>WebViewString</em></dt>
+  <dd>Gets the <code class="highlighter-rouge">WebView</code>’s String, which is viewable through Javascript in the <code class="highlighter-rouge">WebView</code> as the
+ <code class="highlighter-rouge">window.AppInventor</code> object.</dd>
+  <dt id="WebViewer.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">WebViewer</code>, measured in pixels.</dd>
+  <dt id="WebViewer.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">WebViewer</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="WebViewer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="WebViewer.BeforePageLoad">BeforePageLoad(<em class="text">url</em>)</dt>
+  <dd>When a page is about to load this event is run.</dd>
+  <dt id="WebViewer.ErrorOccurred">ErrorOccurred(<em class="number">errorCode</em>,<em class="text">description</em>,<em class="text">failingUrl</em>)</dt>
+  <dd>When an error occurs this event is run.</dd>
+  <dt id="WebViewer.PageLoaded">PageLoaded(<em class="text">url</em>)</dt>
+  <dd>When a page is finished loading this event is run.</dd>
+  <dt id="WebViewer.WebViewStringChange">WebViewStringChange(<em class="text">value</em>)</dt>
+  <dd>Event that runs when the <code class="highlighter-rouge">AppInventor.setWebViewString</code> method is called from JavaScript.
+ The new <a href="#WebViewer.WebViewString"><code class="highlighter-rouge">WebViewString</code></a> is given by the <code class="variable block highlighter-rouge">value</code> parameter.</dd>
+</dl>
+
+<h3 id="WebViewer-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="WebViewer.CanGoBack" class="method returns boolean"><i></i> CanGoBack()</dt>
+  <dd>Returns true if the WebViewer can go back in the history list.</dd>
+  <dt id="WebViewer.CanGoForward" class="method returns boolean"><i></i> CanGoForward()</dt>
+  <dd>Returns true if the WebViewer can go forward in the history list.</dd>
+  <dt id="WebViewer.ClearCaches" class="method"><i></i> ClearCaches()</dt>
+  <dd>Clear the internal webview cache, both ram and disk. This is useful
+ when using the <code class="highlighter-rouge">WebViewer</code> to poll a page that may not be sending
+ appropriate cache control headers.</dd>
+  <dt id="WebViewer.ClearCookies" class="method"><i></i> ClearCookies()</dt>
+  <dd>Clear the webview’s cookies. This is useful if you want to
+ sign the user out of a website that uses them to store logins.</dd>
+  <dt id="WebViewer.ClearLocations" class="method"><i></i> ClearLocations()</dt>
+  <dd>Clear Stored Location permissions. When the geolocation API is used in
+ the <code class="highlighter-rouge">WebViewer</code>, the end user is prompted on a per URL basis for whether
+ or not permission should be granted to access their location. This
+ function clears this information for all locations.
+
+    <p>As the permissions interface is not available on phones older then
+Eclair, this function is a no-op on older phones.</p>
+  </dd>
+  <dt id="WebViewer.GoBack" class="method"><i></i> GoBack()</dt>
+  <dd>Go back to the previous page in the history list. Does nothing if there is no previous page.</dd>
+  <dt id="WebViewer.GoForward" class="method"><i></i> GoForward()</dt>
+  <dd>Go forward to the next page in the history list. Does nothing if there is no next page.</dd>
+  <dt id="WebViewer.GoHome" class="method"><i></i> GoHome()</dt>
+  <dd>Loads the  page from the home URL.  This happens automatically when
+ home URL is changed.</dd>
+  <dt id="WebViewer.GoToUrl" class="method"><i></i> GoToUrl(<em class="text">url</em>)</dt>
+  <dd>Load the page at the given URL.</dd>
+  <dt id="WebViewer.Reload" class="method"><i></i> Reload()</dt>
+  <dd>Reload the current page.</dd>
+  <dt id="WebViewer.RunJavaScript" class="method"><i></i> RunJavaScript(<em class="text">js</em>)</dt>
+  <dd>Run JavaScript in the current page.</dd>
+  <dt id="WebViewer.StopLoading" class="method"><i></i> StopLoading()</dt>
+  <dd>Stop loading a page.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

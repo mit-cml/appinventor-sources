@@ -6,12 +6,15 @@
 
 package com.google.appinventor.client.editor;
 
+import com.google.appinventor.client.AssetManager;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for all file editors.
@@ -19,6 +22,7 @@ import com.google.gwt.user.client.ui.Composite;
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class FileEditor extends Composite {
+  private static final Logger LOG = Logger.getLogger(FileEditor.class.getName());
 
   // The project editor that contains this file editor.
   protected final ProjectEditor projectEditor;
@@ -47,6 +51,14 @@ public abstract class FileEditor extends Composite {
   public final ProjectEditor getProjectEditor() {
     return projectEditor;
   }
+
+
+  /**
+   * Returns the drag drop targets for the gui
+   *
+   * @return  project editor associated with this file editor
+   */
+  public abstract DropTargetProvider getDropTargetProvider();
 
   /**
    * Returns the project ID associated with this file editor.
@@ -122,6 +134,17 @@ public abstract class FileEditor extends Composite {
   }
 
   /**
+   * Returns true if the current editor is shown, that is, only if the designer
+   * view is visible and this editor is the current file editor.
+   * @return true if the editor is shown, otherwise false.
+   */
+  @SuppressWarnings("unused")  // called from JSNI
+  public boolean isActiveEditor() {
+    return Ode.getInstance().getCurrentView() == 0 &&
+        Ode.getInstance().getCurrentFileEditor() == this;
+  }
+
+  /**
    * Called when the FileEditor is about to be closed. Subclasses can override this
    * to remove themselves as listeners.
    */
@@ -133,7 +156,7 @@ public abstract class FileEditor extends Composite {
    * but the YaBlocksEditor overrides this version with one that start the
    * Repl going.
    */
-  public void startRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) {
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) {
   }
 
   /**
@@ -174,4 +197,15 @@ public abstract class FileEditor extends Composite {
   public void makeActiveWorkspace() {
   }
 
+  /**
+   * YaBlockEditor will use Blockly.hideChaff to close tooltips, context menus etc.
+   */
+  public void hideChaff() {
+  }
+
+  /**
+   * Resize the editor in response to an external event.
+   */
+  public void resize() {
+  }
 }

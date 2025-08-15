@@ -1,0 +1,52 @@
+package tokens;
+
+option java_package = "com.google.appinventor.server.tokens";
+option java_outer_classname = "TokenProto";
+
+message token {
+  enum CommandType {
+    SSOLOGIN = 0;                             // Redirect only
+    SHOWPROJECT = 1;
+    CREATEACCOUNT = 2;
+    CREATEPROJECT = 3;
+    LOGOUT = 4;
+    SSOLOGIN2 = 5;                            // Redirect only
+    FETCHUUID = 6;                            // RestServlet, get UID from email
+    UUIDRETURN = 7;                           // FETCHUID return token, uuid contains return value
+                                              // name contains name from original FETCHUUID
+    SSOLOGIN3 = 8;                            // Yet another way to login, provide both uuid and name
+                                              // (email). Will lookup account by uuid and if it fails
+                                              // by email. If that fails, the account will be created
+                                              // The difference between this use and SSOLOGIN is that
+                                              // SSOLOGIN does not require an name (email) and will never
+                                              // create an account
+    NOOP = 20;
+    DELETEACCOUNT = 21;                       // Delete the account identified by uuid and name
+                                              // Note: Purposely using a high number as this is an
+                                              // infrequent event
+  }
+
+  required CommandType command = 1;
+  optional uint64 ts = 2;                     // Current timestamp (as a Java time, millis since 1970)
+  optional string uuid = 3;                   // userId (which is usually a uuid, but always a string)
+  optional uint64 projectid = 4;              // When showing a project, this is its ID, not used for SSOLOGIN
+                                              // this argument also is used in create project as the
+                                              // source project to copy
+  optional string name = 5;                   // Used for account creation, sets the account name.
+                                              // Also used for FETCHUID, contains email to lookup
+  optional uint64 oneProjectId = 6;           // non-zero to open a specific project
+  optional bool readOnly = 20;
+  optional uint64 duedate = 21;               // Date when the project is due 0 = never due
+                                              // or not an assignment
+  optional string displayprojectname = 22;    // project name to display instead of default
+  optional string displayaccountname = 23;    // User name to display instead of email address
+                                              // accounts created by the HK portal have "ugly" account
+                                              // names, so they provide something "better" to display instead
+  optional string backpackid = 24;            // uuid of shared backpack, if present
+  optional string classname = 25;             // Class user is associated with
+  optional string vendorid = 26;              // Vendor ID for Anonymous Alexa Accounts
+  optional string refreshtoken = 27;          // Refresh Token for Anonymous Alexa Account
+  optional bool anon = 28;                    // Alexa Account is anonymous
+}
+
+

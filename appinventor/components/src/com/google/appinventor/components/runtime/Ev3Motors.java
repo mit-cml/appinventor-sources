@@ -21,6 +21,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import android.os.Handler;
 
 /**
+ * ![EV3 component icon](images/legoMindstormsEv3.png)
+ *
  * A component that provides both high- and low-level interfaces to
  * control the motors on LEGO MINDSTORMS EV3.
  *

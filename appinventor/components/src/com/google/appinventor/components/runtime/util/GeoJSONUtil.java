@@ -22,7 +22,9 @@ import com.google.common.annotations.VisibleForTesting;
 import gnu.lists.FString;
 import gnu.lists.LList;
 import gnu.lists.Pair;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.util.GeoPoint;
 
 import java.io.FileOutputStream;
@@ -43,9 +45,15 @@ import static com.google.appinventor.components.runtime.Component.*;
  */
 public final class GeoJSONUtil {
   private static final java.util.Map<String, Integer> colors;
+  private static final int ERROR_CODE_MALFORMED_GEOJSON = -3;
+  private static final String ERROR_MALFORMED_GEOJSON = "Malformed GeoJSON response. Expected FeatureCollection as root element.";
+  private static final String ERROR_UNKNOWN_TYPE = "Unrecognized/invalid type in JSON object";
   private static final String GEOJSON_COORDINATES = "coordinates";
   private static final String GEOJSON_FEATURE = "Feature";
+  private static final String GEOJSON_FEATURECOLLECTION = "FeatureCollection";
+  private static final String GEOJSON_FEATURES = "features";
   private static final String GEOJSON_GEOMETRY = "geometry";
+  private static final String GEOJSON_GEOMETRYCOLLECTION = "GeometryCollection";
   private static final String GEOJSON_PROPERTIES = "properties";
   private static final String GEOJSON_TYPE = "type";
   private static final String PROPERTY_ANCHOR_HORIZONTAL = "anchorHorizontal";
@@ -53,10 +61,12 @@ public final class GeoJSONUtil {
   private static final String PROPERTY_DESCRIPTION = "description";
   private static final String PROPERTY_DRAGGABLE = "draggable";
   private static final String PROPERTY_FILL = "fill";
+  private static final String PROPERTY_FILL_OPACITY = "fill-opacity";
   private static final String PROPERTY_HEIGHT = "height";
   private static final String PROPERTY_IMAGE = "image";
   private static final String PROPERTY_INFOBOX = "infobox";
   private static final String PROPERTY_STROKE = "stroke";
+  private static final String PROPERTY_STROKE_OPACITY = "stroke-opacity";
   private static final String PROPERTY_STROKE_WIDTH = "stroke-width";
   private static final String PROPERTY_TITLE = "title";
   private static final String PROPERTY_WIDTH = "width";
@@ -126,6 +136,14 @@ public final class GeoJSONUtil {
         }
       }
     });
+    SUPPORTED_PROPERTIES.put(PROPERTY_FILL_OPACITY, new PropertyApplication() {
+      @Override
+      public void apply(MapFeature feature, Object value) {
+        if (feature instanceof HasFill) {
+          ((HasFill) feature).FillOpacity(parseFloatOrString(value));
+        }
+      }
+    });
     SUPPORTED_PROPERTIES.put(PROPERTY_HEIGHT, new PropertyApplication() {
       @Override
       public void apply(MapFeature feature, Object value) {
@@ -154,6 +172,14 @@ public final class GeoJSONUtil {
         if (feature instanceof HasStroke) {
           ((HasStroke) feature).StrokeColor(value instanceof Number ? ((Number) value).intValue() :
               parseColor(value.toString()));
+        }
+      }
+    });
+    SUPPORTED_PROPERTIES.put(PROPERTY_STROKE_OPACITY, new PropertyApplication() {
+      @Override
+      public void apply(MapFeature feature, Object value) {
+        if (feature instanceof HasStroke) {
+          ((HasStroke) feature).StrokeOpacity(parseFloatOrString(value));
         }
       }
     });
@@ -249,8 +275,8 @@ public final class GeoJSONUtil {
     }
   }
 
-  public static Object processGeoJSONFeature(final String logTag, final MapFactory.MapFeatureContainer container,
-      final YailList descriptions) {
+  public static MapFactory.MapFeature processGeoJSONFeature(final String logTag,
+      final MapFactory.MapFeatureContainer container, final YailList descriptions) {
     String type = null;
     YailList geometry = null;
     YailList properties = null;
@@ -272,7 +298,9 @@ public final class GeoJSONUtil {
       throw new IllegalArgumentException(String.format("Unknown type \"%s\"", type));
     }
     if (geometry == null) {
-      throw new IllegalArgumentException("No geometry defined for feature.");
+      // While GeoJSON supports features with null geometries, App Inventor has no way to
+      // represent them.
+      return null;
     }
     MapFactory.MapFeature feature = processGeometry(logTag, container, geometry);
     if (properties != null) {
@@ -347,6 +375,7 @@ public final class GeoJSONUtil {
     if (i.hasNext()) {
       polygon.HolePoints(YailList.makeList(swapNestedCoordinates((LList) ((Pair)coordinates.getCdr()).getCdr())));
     }
+    polygon.Initialize();
     return polygon;
   }
 
@@ -364,6 +393,7 @@ public final class GeoJSONUtil {
     }
     polygon.Points(YailList.makeList(points));
     polygon.HolePoints(YailList.makeList(holePoints));
+    polygon.Initialize();
     return polygon;
   }
 
@@ -406,6 +436,90 @@ public final class GeoJSONUtil {
       return Integer.parseInt(value.toString());
     } else {
       throw new IllegalArgumentException();
+    }
+  }
+
+  @VisibleForTesting
+  static float parseFloatOrString(Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).floatValue();
+    } else if (value instanceof String) {
+      return Float.parseFloat((String) value);
+    } else if (value instanceof FString) {
+      return Float.parseFloat(value.toString());
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  public static List<YailList> getGeoJSONFeatures(final String logTag, final String content) throws JSONException {
+    JSONObject parsedData = new JSONObject(stripBOM(content));
+    JSONArray features = parsedData.getJSONArray(GEOJSON_FEATURES);
+    List<YailList> yailFeatures = new ArrayList<YailList>();
+    for (int i = 0; i < features.length(); i++) {
+      yailFeatures.add(jsonObjectToYail(logTag, features.getJSONObject(i)));
+    }
+    return yailFeatures;
+  }
+
+  public static String getGeoJSONType(final String content, final String geojsonType) throws JSONException {
+    JSONObject parsedData = new JSONObject(stripBOM(content));
+    String type = parsedData.optString(geojsonType);
+    return type;
+  }
+
+  private static YailList jsonObjectToYail(final String logTag, final JSONObject object) throws JSONException {
+    List<YailList> pairs = new ArrayList<YailList>();
+    @SuppressWarnings("unchecked")  // json only allows String keys
+        Iterator<String> j = object.keys();
+    while (j.hasNext()) {
+      String key = j.next();
+      Object value = object.get(key);
+      if (value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Long ||
+          value instanceof Double ||
+          value instanceof String) {
+        pairs.add(YailList.makeList(new Object[] { key, value }));
+      } else if (value instanceof JSONArray) {
+        pairs.add(YailList.makeList(new Object[] { key, jsonArrayToYail(logTag, (JSONArray) value)}));
+      } else if (value instanceof JSONObject) {
+        pairs.add(YailList.makeList(new Object[] { key, jsonObjectToYail(logTag, (JSONObject) value)}));
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(logTag, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
+        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
+      }
+    }
+    return YailList.makeList(pairs);
+  }
+
+  private static YailList jsonArrayToYail(final String logTag, final JSONArray array) throws JSONException {
+    List<Object> items = new ArrayList<Object>();
+    for (int i = 0; i < array.length(); i++) {
+      Object value = array.get(i);
+      if (value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Long ||
+          value instanceof Double ||
+          value instanceof String) {
+        items.add(value);
+      } else if (value instanceof JSONArray) {
+        items.add(jsonArrayToYail(logTag, (JSONArray) value));
+      } else if (value instanceof JSONObject) {
+        items.add(jsonObjectToYail(logTag, (JSONObject) value));
+      } else if (!JSONObject.NULL.equals(value)) {
+        Log.wtf(logTag, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
+        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
+      }
+    }
+    return YailList.makeList(items);
+  }
+
+  private static String stripBOM(String content) {
+    if (content.charAt(0) == '\uFEFF') {
+      return content.substring(1);
+    } else {
+      return content;
     }
   }
 
@@ -481,11 +595,13 @@ public final class GeoJSONUtil {
 
     private void writeProperties(HasStroke feature) {
       writeColorProperty(PROPERTY_STROKE, feature.StrokeColor());
+      writeProperty(PROPERTY_STROKE_OPACITY, feature.StrokeOpacity());
       writeProperty(PROPERTY_STROKE_WIDTH, feature.StrokeWidth());
     }
 
     private void writeProperties(HasFill feature) {
       writeColorProperty(PROPERTY_FILL, feature.FillColor());
+      writeProperty(PROPERTY_FILL_OPACITY, feature.FillOpacity());
     }
 
     private void writePoints(List<GeoPoint> points) {
@@ -682,6 +798,15 @@ public final class GeoJSONUtil {
       p.setCar(coordinate.get(2));
       p = (Pair) p.getCdr();
       p.setCar(temp);
+    }
+    return coordinates;
+  }
+
+  public static <E> List<List<E>> swapCoordinates2(List<List<E>> coordinates) {
+    for (List<E> point : coordinates) {
+      E temp = point.get(0);
+      point.set(0, point.get(1));
+      point.set(1, temp);
     }
     return coordinates;
   }

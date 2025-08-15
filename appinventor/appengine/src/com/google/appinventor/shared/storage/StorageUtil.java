@@ -1,13 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.shared.storage;
 
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.gwt.core.client.GWT;
 
 /**
  * Constants and utility methods related to storage.
@@ -103,10 +102,12 @@ public class StorageUtil {
 
   /**
    * Returns the content type for the given filePath.
+   * References support media files listed at http://developer.android.com/guide/appendix/media-formats.html
    */
   public static String getContentTypeForFilePath(String filePath) {
     filePath = filePath.toLowerCase();
 
+    // Image File Types
     if (filePath.endsWith(".gif")) {
       return "image/gif";
     }
@@ -116,12 +117,74 @@ public class StorageUtil {
     if (filePath.endsWith(".png")) {
       return "image/png";
     }
+    if (filePath.endsWith(".bmp")) {
+      return "image/bmp";
+    }
+    if (filePath.endsWith(".webp")) {
+      return "image/webp";
+    }
     if (filePath.endsWith(".svg")) {
       return "image/svg+xml";
     }
 
+    // Audio File Types
+    if (filePath.endsWith(".mp3")) {
+      return "audio/mp3";
+    }
+    if (filePath.endsWith(".m4a")) {
+      return "audio/m4a";
+    }
+    if (filePath.endsWith(".aac")) {
+      return "audio/aac";
+    }
+    if (filePath.endsWith(".wav")) {
+      return "audio/wav";
+    }
+    if (filePath.endsWith(".flac")) {
+      return "audio/flac";
+    }
+    if (filePath.endsWith(".mid") || filePath.endsWith(".xmf") || filePath.endsWith(".mxmf")) {
+      return "audio/midi";
+    }
+    if (filePath.endsWith(".ota")) {
+      return "audio/ota";
+    }
+    if (filePath.endsWith(".rtttl")) {
+      return "audio/rtttl";
+    }
+    if (filePath.endsWith(".rtx")) {
+      return "audio/rtx";
+    }
+    if (filePath.endsWith(".imy")) {
+      return "audio/imy";
+    }
+    if (filePath.endsWith(".ogg")) {
+      return "audio/ogg";
+    }
+
+    // Video File Types
+    if (filePath.endsWith(".avi")) {
+      return "video/avi";
+    }
+    if (filePath.endsWith(".mp4")) {
+      return "video/mp4";
+    }
+    if (filePath.endsWith(".3gp")) {
+      return "video/3gp";
+    }
+    if (filePath.endsWith(".ts")) {
+      return "video/ts";
+    }
+    if (filePath.endsWith(".webm")) {
+      return "video/webm";
+    }
+    if (filePath.endsWith(".mkv")) {
+      return "video/mkv";
+    }
+
+    // Other File Types
     if (filePath.endsWith(".apk")) {
-      return "application/vnd.android.package-archive; charset=utf-8";
+      return "application/vnd.android.package-archive";
     }
 
     if (filePath.endsWith(".aia")) {
@@ -130,6 +193,13 @@ public class StorageUtil {
 
     if (filePath.endsWith(".keystore")) {
       return "application/octet-stream";
+    }
+    
+    if (filePath.endsWith(".ttf")) {
+      return "font/ttf";
+    }
+    if (filePath.endsWith(".otf"))  {
+      return "font/otf";
     }
 
     // default
@@ -153,10 +223,36 @@ public class StorageUtil {
   }
 
   /**
+   * Returns true if the given filePath refers an audio file.
+   */
+  public static boolean isAudioFile(String filePath) {
+    String contentType = getContentTypeForFilePath(filePath);
+    return contentType.startsWith("audio/");
+  }
+
+  /**
+   * Returns true if the given filePath refers a video file.
+   */
+  public static boolean isVideoFile(String filePath) {
+    String contentType = getContentTypeForFilePath(filePath);
+    return contentType.startsWith("video/");
+  }
+
+  /**
+   * Returns true if the given filePath refers a font file.
+   */
+  public static boolean isFontFile(String filePath)  {
+    String contentType = getContentTypeForFilePath(filePath);
+    return contentType.startsWith("font/");
+  }
+
+  /**
    * Returns the URL for the given project file.
    */
   public static String getFileUrl(long projectId, String fileId) {
-    return GWT.getModuleBaseURL() + getFilePath(projectId, fileId);
+    // Note: Cannot call ode.GetModuleBaseURL() here because it is shared
+    // and Ode is not in scope on the server side.
+    return (ServerLayout.getModuleBaseURL() + getFilePath(projectId, fileId));
   }
 
   /**

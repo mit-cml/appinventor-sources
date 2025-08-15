@@ -9,10 +9,13 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 import com.google.appinventor.client.widgets.dnd.DragSource;
+import com.google.common.collect.Sets;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -26,6 +29,8 @@ public final class MockCanvas extends MockContainer {
    * Component type name.
    */
   public static final String TYPE = "Canvas";
+
+  public static final Set<String> ACCEPTABLE_TYPES = Collections.unmodifiableSet(Sets.newHashSet(MockBall.TYPE, MockImageSprite.TYPE));
 
   // UI components
   private final AbsolutePanel canvasWidget;
@@ -61,6 +66,11 @@ public final class MockCanvas extends MockContainer {
     return false;
   }
 
+  @Override
+  public boolean willAcceptComponentType(String type) {
+    return ACCEPTABLE_TYPES.contains(type);
+  }
+
   /*
    * Sets the canvas's BackgroundColor property to a new value.
    */
@@ -84,7 +94,7 @@ public final class MockCanvas extends MockContainer {
     if (url == null) {
       // text was not recognized as an asset.
       ((MockCanvasLayout) layout).setBackgroundImageUrl("");
-      url = "images/canvas.png";
+      url = "static/images/canvas.png";
       // We set the background image of the canvasWidget so it displays the image. We do it inside
       // the if because we need to override the background-size property only for this case
       MockComponentsUtil.setWidgetBackgroundImage(this, canvasWidget, url);

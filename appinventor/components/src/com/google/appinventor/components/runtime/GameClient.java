@@ -316,7 +316,7 @@ public class GameClient extends AndroidNonvisibleComponent
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "http://appinvgameserver.appspot.com")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
   public void ServiceURL(String url){
     if (url.endsWith("/")) {
       this.serviceUrl = url.substring(0, url.length() - 1);
@@ -721,7 +721,7 @@ public class GameClient extends AndroidNonvisibleComponent
             String sender = message.getString(MESSAGE_SENDER_KEY);
             String time = message.getString(MESSAGE_TIME_KEY);
             List<Object> contents = JsonUtil.getListFromJsonArray(message.
-                getJSONArray(MESSAGE_CONTENT_KEY));
+                getJSONArray(MESSAGE_CONTENT_KEY), true);
             // Assumes that the server is going to return messages in
             // chronological order.
             if (requestedType.equals("")) {
@@ -985,7 +985,7 @@ public class GameClient extends AndroidNonvisibleComponent
       public void onSuccess(final JSONObject result) {
         try {
           ServerCommandSuccess(command, JsonUtil.getListFromJsonArray(result.
-              getJSONArray(MESSAGE_CONTENT_KEY)));
+              getJSONArray(MESSAGE_CONTENT_KEY), true));
         } catch (JSONException e) {
           Log.w(LOG_TAG, e);
           Info("Server command response failed to parse.");

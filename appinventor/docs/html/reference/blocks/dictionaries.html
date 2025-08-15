@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>MIT App Inventor Dictionary Blocks</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">MIT App Inventor Dictionary Blocks</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#dictionaries">Introduction</a></li>
+  <li><a href="#create-empty-dictionary">create empty dictionary</a></li>
+  <li><a href="#make-a-dictionary">make a dictionary</a></li>
+  <li><a href="#pair">pair</a></li>
+  <li><a href="#get-value-for-key">get value for key</a></li>
+  <li><a href="#set-value-for-key">set value for key</a></li>
+  <li><a href="#delete-entry-for-key">delete entry for key</a></li>
+  <li><a href="#get-value-at-key-path">get value at key path</a></li>
+  <li><a href="#set-value-for-key-path">set value for key path</a></li>
+  <li><a href="#get-keys">get keys</a></li>
+  <li><a href="#get-values">get values</a></li>
+  <li><a href="#is-key-in-dictionary">is key in dictionary?</a></li>
+  <li><a href="#size-of-dictionary">size of dictionary</a></li>
+  <li><a href="#list-of-pairs-to-dictionary">list of pairs to dictionary</a></li>
+  <li><a href="#dictionary-to-list-of-pairs">dictionary to list of pairs</a></li>
+  <li><a href="#copy-dictionary">copy dictionary</a></li>
+  <li><a href="#merge-into-dictionary">merge into dictionary</a></li>
+  <li><a href="#list-by-walking-key-path">list by walking key path</a></li>
+  <li><a href="#walk-all-at-level">walk all at level</a></li>
+  <li><a href="#is-a-dictionary">is a dictionary?</a></li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Dictionaries, called in other languages terms such as maps, associative arrays or lists, are data structures that associate one value, often called the key, with another value. A common way of displaying dictionaries is using the JavaScript Object Notation (JSON), for example:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w">  </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w">  </span><span class="s2">"Tim the Beaver"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"school"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Massachusetts Institute of Technology"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"enrolled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"classes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"6.001"</span><span class="p">,</span><span class="w"> </span><span class="s2">"18.01"</span><span class="p">,</span><span class="w"> </span><span class="s2">"8.01"</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The above example shows that in JSON the keys (quoted text before the <code class="highlighter-rouge">:</code>) can map to different types of values. The allowed types are number, text, other dictionaries, booleans, and lists. In the blocks language, you can bulid this dictionary as follows:</p>
+
+<p><img src="images/dictionaries/example-dictionary-blocks.png" alt="A blocks representation of the dictionary shown above" /></p>
+
+<p><strong>Figure 1</strong>: A blocks representation of the JSON code snippet shown above.</p>
+
+<h3 id="create-empty-dictionary">create empty dictionary</h3>
+
+<p><img src="images/dictionaries/create-with.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">create empty dictionary</code> block creates a dictionary without any key-value pairs. Entries can be added to the empty dictionary using the <code class="dictionary block highlighter-rouge">set value for key</code> block. The <code class="dictionary block highlighter-rouge">create empty dictionary</code> block can also be turned into a <code class="dictionary block highlighter-rouge">make a dictionary</code> block by using the blue mutator button to add <code class="dictionary block highlighter-rouge">pair</code> entries.</p>
+
+<h3 id="make-a-dictionary">make a dictionary</h3>
+
+<p><img src="images/dictionaries/make-a-dictionary.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">make a dictionary</code> is used to create a dictionary with a set of <code class="dictionary block highlighter-rouge">pair</code>s known in advance. Additional entries can be added using <code class="dictionary block highlighter-rouge">set value for key</code>.</p>
+
+<h3 id="pair">pair</h3>
+
+<p><img src="images/dictionaries/pair.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">pair</code> block is a special purpose block used for constructing dictionaries.</p>
+
+<h3 id="get-value-for-key">get value for key</h3>
+
+<p><img src="images/dictionaries/get-value-for-key2.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">get value for key</code> block checks to see if the dictionary contains a corresponding value for the given key. If it does, the value is returned. Otherwise, the value of the <code class="highlighter-rouge">not found</code> parameter is returned. This behavior is similar to the behavior of the <a href="lists.html#lookupinpairs"><code class="list block highlighter-rouge">lookup in pairs</code></a> block.</p>
+
+<h3 id="set-value-for-key">set value for key</h3>
+
+<p><img src="images/dictionaries/set-value-for-key.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">set value for key</code> block sets the corresponding value for the given <code class="highlighter-rouge">key</code> in the <code class="highlighter-rouge">dictionary</code> to <code class="highlighter-rouge">value</code>. If no mapping exists for <code class="highlighter-rouge">key</code>, a new one will be created. Otherwise, the existing value is replaced by the new value.</p>
+
+<h3 id="delete-entry-for-key">delete entry for key</h3>
+
+<p><img src="images/dictionaries/delete-value-for-key.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">delete entry for key</code> block removes the key-value mapping in the dictionary for the given key. If no entry for the key exists in the dictionary, the dictionary is not modified.</p>
+
+<h3 id="get-value-at-key-path">get value at key path</h3>
+
+<p>The <code class="dictionary block highlighter-rouge">get value at key path</code> block is a more advanced version of the <code class="dictionary block highlighter-rouge">get value for key</code> block. Rather than getting the value of a specific key, it instead takes a list of valid keys and numbers representing a path through a data structure. The <code class="dictionary block highlighter-rouge">get value for key</code> block is equivalent to using this block with a key path of length 1 containing the key. For example, the following two blocks would return <code class="text block highlighter-rouge">"Tim the Beaver"</code>:</p>
+
+<p><img src="images/dictionaries/get-value-for-key.png" alt="" /> <img src="images/dictionaries/get-value-for-key-path.png" alt="" /></p>
+
+<p>It walks the data structure, starting from the initial dictionary, using the <code class="highlighter-rouge">path</code> provided in order to retrieve values nested deeply in complex data structures. It is best used for processing JSON data from web services. Starting from the initial input, it takes the first element in the <code class="highlighter-rouge">key path</code> and checks to see if a key (if the input is a dictionary) or index (if the input is a list) exists at that point. If so, it selects that item as the input and proceeds to check the next element in the <code class="highlighter-rouge">key path</code>, continuing until either the whole path has been followed, at which point it returns what is at that location, or the <code class="highlighter-rouge">"not found"</code> parameter.</p>
+
+<p><strong>Examples</strong></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w">  </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w">  </span><span class="s2">"Tim the Beaver"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"school"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Massachusetts Institute of Technology"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"enrolled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"classes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"6.001"</span><span class="p">,</span><span class="w"> </span><span class="s2">"18.01"</span><span class="p">,</span><span class="w"> </span><span class="s2">"8.01"</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>For example, given the JSON dictionary above, the following use of <code class="dictionary block highlighter-rouge">get value at key path</code> will yield the result <code class="text block highlighter-rouge">"Massachusetts Institute of Technology"</code>.</p>
+
+<p><img src="images/dictionaries/get-value-for-key-path2.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">get value at key path&lt;</code> allows for the path to include numbers representing the index of elements to traverse when dictionaries and lists are mixed. For example, if we wanted to know the second class that Tim was taking, we could do the following:</p>
+
+<p><img src="images/dictionaries/get-value-for-key-path-with-index.png" alt="" /></p>
+
+<p>which returns the value <code class="highlighter-rouge">"18.01"</code>.</p>
+
+<h3 id="set-value-for-key-path">set value for key path</h3>
+
+<p><img src="images/dictionaries/set-value-for-key-path.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">set value for key path</code> block updates the value at a specific <code class="highlighter-rouge">key path</code> in a data structure. It is the mirror of <code class="dictionary block highlighter-rouge">get value for key path</code>, which retrieves a value at a specific <code class="highlighter-rouge">key path</code>. The path <strong>must be valid</strong>, except for the last key, which if a mapping does not exist will create a mapping to the new value. Otherwise, the existing value is replaced with the new value.</p>
+
+<h3 id="get-keys">get keys</h3>
+
+<p><img src="images/dictionaries/get-keys.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">get keys</code> returns a list of keys in the dictionary.</p>
+
+<h3 id="get-values">get values</h3>
+
+<p><img src="images/dictionaries/get-values.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">get values</code> returns a list containing the values in the dictionary. Modifying the contents of a value in the list will also modify it in the dictionary.</p>
+
+<h3 id="is-key-in-dictionary">is key in dictionary?</h3>
+
+<p><img src="images/dictionaries/is-key-in.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">is key in dictionary?</code> tests whether the key exists in the dictionary and returns <code class="logic block highlighter-rouge">true</code> if it does, otherwise it returns <code class="logic block highlighter-rouge">false</code>.</p>
+
+<h3 id="size-of-dictionary">size of dictionary</h3>
+
+<p><img src="images/dictionaries/size.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">size of dictionary</code> block returns the number of key-value pairs present in the dictionary.</p>
+
+<h3 id="list-of-pairs-to-dictionary">list of pairs to dictionary</h3>
+
+<p><img src="images/dictionaries/alist-to-dict.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">list of pairs to dictionary</code> block converts an associative list of the form <code class="highlighter-rouge">((key1 value1) (key2 value2) ...)</code> into a dictionary mapping the keys to their values.
+Because dictionaries provide better lookup performance than associative lists, if you want to perform many operations on a data structure it is advisable to use this block to convert the associative list into a dictionary first.</p>
+
+<h3 id="dictionary-to-list-of-pairs">dictionary to list of pairs</h3>
+
+<p><img src="images/dictionaries/dict-to-alist.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">dictionary to list of pairs</code> converts a dictionary into an associative list.
+This block reverses the conversion performed by the <a href="#list-of-pairs-to-dictionary"><code class="list block highlighter-rouge">list of pairs to dictionary</code></a> block.</p>
+
+<p><img src="images/dictionaries/alist-dict-reversability.png" alt="Example of how the dictionary to list of pairs block reverses the list of pairs to dictionary block" /></p>
+
+<h3 id="copy-dictionary">copy dictionary</h3>
+
+<p><img src="images/dictionaries/copy-dict.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">copy dictionary</code> makes a deep copy of the given dictionary. This means that all of the values are copied recursively and that changing a value in the copy will not change it in the original.</p>
+
+<h3 id="merge-into-dictionary">merge into dictionary</h3>
+
+<p><img src="images/dictionaries/combine-dicts.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">merge into dictionary from dictionary</code> block ccopies the key-value pairs from one dictionary into another, overwriting any keys in the target dictionary.</p>
+
+<h3 id="list-by-walking-key-path">list by walking key path</h3>
+
+<p><img src="images/dictionaries/walk-tree.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">list by walking key path</code> block works similarly to the <code class="dictionary block highlighter-rouge">get value at key path</code>, but creates a list of values rather than returning a single value. It works by starting at the given dictionary and walking down the tree of objects following the given path. Unlike the <code class="dictionary block highlighter-rouge">get value at key path</code> though, its path can be composed of three major types: dictionary keys, list indices, and the <a href="#walk-all-at-level"><code class="dictionary block highlighter-rouge">walk all at level</code></a> block. If a key or index is provided, the specific path is taken at that point in the tree. If the <code class="dictionary block highlighter-rouge">walk all at level</code> is specified, every value at that point is followed in succession (breadth-first), at which point the walk continues from the next element in the path. Any element that matches the whole path is added to the output list.</p>
+
+<p><strong>Examples</strong></p>
+
+<p>Consider the following JSON and blocks:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"people"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w">
+    </span><span class="nl">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tim"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Beaver"</span><span class="w">
+  </span><span class="p">},{</span><span class="w">
+    </span><span class="nl">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Smith"</span><span class="w">
+  </span><span class="p">},{</span><span class="w">
+    </span><span class="nl">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jane"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="w">
+  </span><span class="p">}]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="images/dictionaries/walk-tree-example.png" alt="" /></p>
+
+<p>If <code class="variable block highlighter-rouge">global data</code> contains a dictionary represented by the JSON, then the <code class="dictionary block highlighter-rouge">list by walking key path</code> block will produce the list <code class="list block highlighter-rouge">["Tim", "Beaver"]</code>. First, the value of the <code class="text block highlighter-rouge">"people"</code> tag, that is the list of people, is chosen. Next, the first element in the list is chosen. Lastly, the walk all at level block selects the values in the object at that point, that is, the values <code class="text block highlighter-rouge">"Tim"</code> and <code class="text block highlighter-rouge">"Beaver"</code>.</p>
+
+<p>You can also use <code class="dictionary block highlighter-rouge">walk all at level</code> at a level containing a list. For example, the following block selects the first names of all of the people in the structure, i.e., <code class="list block highlighter-rouge">["Tim", "John", "Jane"]</code>.</p>
+
+<p><img src="images/dictionaries/walk-tree-example2.png" alt="" /></p>
+
+<p>This block can also be used with XML parsed using the <a href="/reference/components/connectivity.html#Web.XMLTextDecodeAsDictionary"><code class="method block highlighter-rouge">Web.XMLTextDecodeAsDictionary</code></a> block. Consider the following XML document:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;schedule&gt;</span>
+  <span class="nt">&lt;day&gt;</span>
+    <span class="nt">&lt;room</span> <span class="na">name=</span><span class="s">"Hewlitt"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;room</span> <span class="na">name=</span><span class="s">"Bleil"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/day&gt;</span>
+  <span class="nt">&lt;day&gt;</span>
+    <span class="nt">&lt;room</span> <span class="na">name=</span><span class="s">"Kiva"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;room</span> <span class="na">name=</span><span class="s">"Star"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/day&gt;</span>
+<span class="nt">&lt;/schedule&gt;</span>
+</code></pre></div></div>
+
+<p>You can use the following blocks to get a list of the names of the rooms on the first day, i.e. <code class="list block highlighter-rouge">["Hewlitt", "Bleil"]</code>.</p>
+
+<p><img src="images/dictionaries/walk-tree-xml.png" alt="" /></p>
+
+<h3 id="walk-all-at-level">walk all at level</h3>
+
+<p><img src="images/dictionaries/walk-all.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">walk all at level</code> block is a specialized block that can be used in the key path of a <code class="dictionary block highlighter-rouge">list by walking key path</code>. When encountered during a walk, it causes every item at that level to be explored. For dictionaries, this means that every value is visited. For lists, each item in the list is visited. This can be used to aggregate information from a list of items in a dictionary, such as the first name of every person in a database represented by JSON objects. See the <a href="#list-by-walking-key-path"><code class="dictionary block highlighter-rouge">list by walking key path</code></a> block for examples.</p>
+
+<h3 id="is-a-dictionary">is a dictionary?</h3>
+
+<p><img src="images/dictionaries/is-dict.png" alt="" /></p>
+
+<p>The <code class="dictionary block highlighter-rouge">is a dictionary?</code> block tests to see whether the <code class="highlighter-rouge">thing</code> given to it is a dictionary or not. It will return <code class="logic block highlighter-rouge">true</code> if the <code class="highlighter-rouge">thing</code> is a dictionary and <code class="logic block highlighter-rouge">false</code> otherwise.</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

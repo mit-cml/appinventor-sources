@@ -23,7 +23,29 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 /**
- * A box in which the user can enter text.
+ * Users enter text in a text box component.
+ *
+ * ![Example of a TextBox](images/textbox.png)
+ *
+ * The initial or user-entered text value in a text box component is in the {@link #Text(String)}
+ * property. If {@link #Text()} is blank, you can use the {@link #Hint(String)} property to provide
+ * the user with a suggestion of what to type. The {@link #Hint()} appears as faint text in the box.
+ *
+ * The {@link #MultiLine(boolean)} property determines if the text can have more than one line.
+ * For a single line text box, the keyboard will close automatically when the user presses the Done
+ * key. To close the keyboard for multiline text boxes, the app should use the
+ * {@link #HideKeyboard()} method or rely on the user to press the Back key.
+ *
+ * The {@link #NumbersOnly(boolean)} property restricts the keyboard to accept numeric input only.
+ *
+ * Other properties affect the appearance of the text box
+ * ({@link #TextAlignment(int)}, {@link #BackgroundColor(int)}, etc.) and whether it can be used
+ * ({@link #Enabled(boolean)}).
+ *
+ * Text boxes are usually used with the {@link Button} component, with the user clicking on the
+ * `Button` when text entry is complete.
+ *
+ * If the text entered by the user should not be displayed, use {@link PasswordTextBox} instead.
  *
  * @author sharon@google.com (Sharon Perl)
  * @author halabelson@google.com (Hal Abelson)
@@ -48,7 +70,8 @@ import android.widget.EditText;
     "complete.</p>" +
     "<p>If the text entered by the user should not be displayed, use " +
     "<code>PasswordTextBox</code> instead.</p>",
-    category = ComponentCategory.USERINTERFACE)
+    category = ComponentCategory.USERINTERFACE,
+    iconName = "images/textbox.png")
 @SimpleObject
 public final class TextBox extends TextBoxBase {
   /* TODO(user): this code requires Android SDK M5 or newer - we are currently on M3
@@ -79,6 +102,9 @@ public final class TextBox extends TextBoxBase {
   // If true, then text box is multiline
   private boolean multiLine;
 
+  // If true, then text box is read-only
+  private boolean readOnly;
+
   /**
    * Creates a new TextBox component.
    *
@@ -88,6 +114,7 @@ public final class TextBox extends TextBoxBase {
     super(container, new EditText(container.$context()));
     NumbersOnly(false);
     MultiLine(false);
+    ReadOnly(false);
 
     // We need to set the IME options here.  Otherwise, Android's default
     // behavior is that the action button will be Done or Next, depending on
@@ -118,7 +145,10 @@ public final class TextBox extends TextBoxBase {
   }
 
   /**
-   * NumersOnly property setter method.
+   * If true, then this `%type%`` accepts only numbers as keyboard input. Numbers can include a
+   * decimal point and an optional leading minus sign. This applies to keyboard input only. Even
+   * if `NumbersOnly` is true, you can set the text to anything at all using the
+   * {@link #Text(String)} property.
    *
    * @param acceptsNumbersOnly {@code true} restricts input to numeric,
    * {@code false} allows any text
@@ -142,7 +172,8 @@ public final class TextBox extends TextBoxBase {
   }
 
   /**
-   * Hide the soft keyboard
+   * Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the
+   * keyboard when the users presses the Done key.
    */
   @SimpleFunction(
       description = "Hide the keyboard.  Only multiline text boxes need this. " +
@@ -171,7 +202,10 @@ public final class TextBox extends TextBoxBase {
   }
 
   /**
-   * MultiLine property setter method.
+   * If true, then this `%type%` accepts multiple lines of input, which are entered using the
+   * return key. For single line text boxes there is a Done key instead of a return key, and
+   * pressing Done hides the keyboard. The app should call the HideKeyboard method to hide the
+   * keyboard for a mutiline text box.
    *
    * @param multiLine {@code true} lets to textbox accept multiple lines of input
    * {@code false} restricts the textbox to only a single line
@@ -181,6 +215,28 @@ public final class TextBox extends TextBoxBase {
   public void MultiLine(boolean multiLine) {
     this.multiLine = multiLine;
     view.setSingleLine(!multiLine);
+  }
+
+  @SimpleProperty(
+    category = PropertyCategory.BEHAVIOR,
+    description = "Whether the %type% is read-only. By default, this is false."
+  )
+  public boolean ReadOnly() {
+    return readOnly;
+  }
+
+  /**
+   * Whether the %type% is read-only. By default, this is `false`{:.logic.block}.
+   * @param readOnly
+   */
+  @DesignerProperty(
+    editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False"
+  )
+  @SimpleProperty
+  public void ReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+    view.setEnabled(!readOnly);
   }
 
   // TODO(halabelson): We might also want a method to show the keyboard.

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Drawing and Animation</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Drawing and Animation</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="drawing-and-animation">Drawing and Animation</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#Ball">Ball</a></li>
+  <li><a href="#Canvas">Canvas</a></li>
+  <li><a href="#ImageSprite">ImageSprite</a></li>
+</ul>
+
+<h2 id="Ball">Ball</h2>
+
+<p>A round ‘sprite’ that can be placed on a <a href="#Canvas"><code class="highlighter-rouge">Canvas</code></a>, where it can react to touches and drags,
+ interact with other sprites (<a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a>s and other <code class="highlighter-rouge">Ball</code>s) and the edge of the
+ <code class="highlighter-rouge">Canvas</code>, and move according to its property values.</p>
+
+<p>For example, to have a <code class="highlighter-rouge">Ball</code> move 4 pixels toward the top of a <code class="highlighter-rouge">Canvas</code> every 500 milliseconds
+ (half second), you would set the <a href="#Ball.Speed"><code class="highlighter-rouge">Speed</code></a> property to 4 [pixels], the
+ <a href="#Ball.Interval"><code class="highlighter-rouge">Interval</code></a> property to 500 [milliseconds], the <a href="#Ball.Heading"><code class="highlighter-rouge">Heading</code></a> property to
+ 90 [degrees], and the <a href="#Ball.Enabled"><code class="highlighter-rouge">Enabled</code></a> property to <code class="logic block highlighter-rouge">true</code>. These and its
+ other properties can be changed at any time.</p>
+
+<p>The difference between a <code class="highlighter-rouge">Ball</code> and an <code class="highlighter-rouge">ImageSprite</code> is that the latter can get its appearance
+ from an image file, while a <code class="highlighter-rouge">Ball</code>’s appearance can only be changed by varying its
+ <a href="#Ball.PaintColor"><code class="highlighter-rouge">PaintColor</code></a> and <a href="#Ball.Radius"><code class="highlighter-rouge">Radius</code></a> properties.</p>
+
+<h3 id="Ball-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ball.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Controls whether the <code class="highlighter-rouge">Ball</code> moves when its speed is non-zero.</dd>
+  <dt id="Ball.Heading" class="number"><em>Heading</em></dt>
+  <dd>The <code class="highlighter-rouge">Ball</code>’s heading in degrees above the positive x-axis. Zero degrees is toward the right
+ of the screen; 90 degrees is toward the top of the screen.</dd>
+  <dt id="Ball.Interval" class="number"><em>Interval</em></dt>
+  <dd>The interval in milliseconds at which the <code class="highlighter-rouge">Ball</code>’s position is updated. For example, if the
+ <code class="highlighter-rouge">Interval</code> is 50 and the <a href="#Ball.Speed"><code class="highlighter-rouge">Speed</code></a> is 10, then the <code class="highlighter-rouge">Ball</code> will move 10 pixels
+ every 50 milliseconds.</dd>
+  <dt id="Ball.OriginAtCenter" class="boolean wo do"><em>OriginAtCenter</em></dt>
+  <dd>Whether the x- and y-coordinates should represent the center of the <code class="highlighter-rouge">Ball</code>
+ (<code class="logic block highlighter-rouge">true</code>) or its left and top edges (<code class="logic block highlighter-rouge">false</code>).</dd>
+  <dt id="Ball.PaintColor" class="color"><em>PaintColor</em></dt>
+  <dd>The color of the <code class="highlighter-rouge">Ball</code>.</dd>
+  <dt id="Ball.Radius" class="number"><em>Radius</em></dt>
+  <dd>The distance from the center of the <code class="highlighter-rouge">Ball</code> to its edge.</dd>
+  <dt id="Ball.Speed" class="number"><em>Speed</em></dt>
+  <dd>The speed at which the <code class="highlighter-rouge">Ball</code> moves. The <code class="highlighter-rouge">Ball</code> moves this many pixels every
+ <a href="#Ball.Interval"><code class="highlighter-rouge">Interval</code></a> milliseconds if <a href="#Ball.Enabled"><code class="highlighter-rouge">Enabled</code></a> is <code class="logic block highlighter-rouge">true</code>.</dd>
+  <dt id="Ball.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Sets whether sprite should be visible.</dd>
+  <dt id="Ball.X" class="number"><em>X</em></dt>
+  <dd>The horizontal coordinate of the <code class="highlighter-rouge">Ball</code>, increasing as the <code class="highlighter-rouge">Ball</code> moves right. If the property
+ <a href="#Ball.OriginAtCenter"><code class="highlighter-rouge">OriginAtCenter</code></a> is true, the coordinate is for the center of the <code class="highlighter-rouge">Ball</code>;
+ otherwise, it is for the leftmost point of the <code class="highlighter-rouge">Ball</code>.</dd>
+  <dt id="Ball.Y" class="number"><em>Y</em></dt>
+  <dd>The vertical coordinate of the <code class="highlighter-rouge">Ball</code>, increasing as the <code class="highlighter-rouge">Ball</code> moves down. If the property
+ <a href="#Ball.OriginAtCenter"><code class="highlighter-rouge">OriginAtCenter</code></a> is true, the coordinate is for the center of the <code class="highlighter-rouge">Ball</code>
+ otherwise, it is for the uppermost point of the <code class="highlighter-rouge">Ball</code>.</dd>
+  <dt id="Ball.Z" class="number"><em>Z</em></dt>
+  <dd>How the Ball should be layered relative to other Balls and ImageSprites, with higher-numbered layers in front of lower-numbered layers.</dd>
+</dl>
+
+<h3 id="Ball-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Ball.CollidedWith">CollidedWith(<em class="component">other</em>)</dt>
+  <dd>Event handler called when two enabled sprites (<a href="#Ball"><code class="highlighter-rouge">Ball</code></a>s or <a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a>s)
+ collide. Note that checking for collisions with a rotated <code class="highlighter-rouge">ImageSprite</code> currently
+ checks against its unrotated position. Therefore, collision
+ checking will be inaccurate for tall narrow or short wide sprites that are
+ rotated.</dd>
+  <dt id="Ball.Dragged">Dragged(<em class="number">startX</em>,<em class="number">startY</em>,<em class="number">prevX</em>,<em class="number">prevY</em>,<em class="number">currentX</em>,<em class="number">currentY</em>)</dt>
+  <dd>Event handler for Dragged events.  On all calls, the starting coordinates
+ are where the screen was first touched, and the “current” coordinates
+ describe the endpoint of the current line segment.  On the first call
+ within a given drag, the “previous” coordinates are the same as the
+ starting coordinates; subsequently, they are the “current” coordinates
+ from the prior call. Note that the <code class="highlighter-rouge">Ball</code> won’t actually move
+ anywhere in response to the Dragged event unless
+ <a href="#Ball.MoveTo"><code class="highlighter-rouge">MoveTo</code></a> is specifically called.</dd>
+  <dt id="Ball.EdgeReached">EdgeReached(<em class="number">edge</em>)</dt>
+  <dd>Event handler called when the <code class="highlighter-rouge">Ball</code> reaches an <code class="variable block highlighter-rouge">edge</code> of the screen.
+ If <a href="#Ball.Bounce"><code class="highlighter-rouge">Bounce</code></a> is then called with that edge, the sprite will appear to bounce off
+ of the edge it reached. Edge here is represented as an integer that indicates one of eight
+ directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3),
+ and northwest(-4).</dd>
+  <dt id="Ball.Flung">Flung(<em class="number">x</em>,<em class="number">y</em>,<em class="number">speed</em>,<em class="number">heading</em>,<em class="number">xvel</em>,<em class="number">yvel</em>)</dt>
+  <dd>When a fling gesture (quick swipe) is made on the sprite: provides
+ the (x,y) position of the start of the fling, relative to the upper
+ left of the canvas. Also provides the speed (pixels per millisecond) and heading
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
+ components of the fling’s vector.</dd>
+  <dt id="Ball.NoLongerCollidingWith">NoLongerCollidingWith(<em class="component">other</em>)</dt>
+  <dd>Event indicating that a pair of sprites are no longer colliding.</dd>
+  <dt id="Ball.TouchDown">TouchDown(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user begins touching the sprite (places finger on sprite and
+ leaves it there): provides the (x,y) position of the touch, relative
+ to the upper left of the canvas</dd>
+  <dt id="Ball.TouchUp">TouchUp(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user stops touching the sprite (lifts finger after a
+ TouchDown event): provides the (x,y) position of the touch, relative
+ to the upper left of the canvas.</dd>
+  <dt id="Ball.Touched">Touched(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user touches the sprite and then immediately lifts finger: provides
+ the (x,y) position of the touch, relative to the upper left of the canvas.</dd>
+</dl>
+
+<h3 id="Ball-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ball.Bounce" class="method"><i></i> Bounce(<em class="number">edge</em>)</dt>
+  <dd>Makes this <code class="highlighter-rouge">Ball</code> bounce, as if off a wall. For normal bouncing, the <code class="highlighter-rouge">edge</code> argument should
+ be the one returned by <a href="#Ball.EdgeReached"><code class="highlighter-rouge">EdgeReached</code></a>.</dd>
+  <dt id="Ball.CollidingWith" class="method returns boolean"><i></i> CollidingWith(<em class="component">other</em>)</dt>
+  <dd>Indicates whether a collision has been registered between this <code class="highlighter-rouge">Ball</code>
+ and the passed <code class="highlighter-rouge">other</code> sprite.</dd>
+  <dt id="Ball.MoveIntoBounds" class="method"><i></i> MoveIntoBounds()</dt>
+  <dd>Moves the sprite back in bounds if part of it extends out of bounds,
+ having no effect otherwise. If the sprite is too wide to fit on the
+ canvas, this aligns the left side of the sprite with the left side of the
+ canvas. If the sprite is too tall to fit on the canvas, this aligns the
+ top side of the sprite with the top side of the canvas.</dd>
+  <dt id="Ball.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Sets the <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> coordinates of the <code class="highlighter-rouge">Ball</code>. If <a href="#Ball.OriginAtCenter"><code class="highlighter-rouge">OriginAtCenter</code></a> is true,
+ the center of the <code class="highlighter-rouge">Ball</code> will be placed here. Otherwise, the top left edge of the <code class="highlighter-rouge">Ball</code> will
+ be placed at the specified coordinates.</dd>
+  <dt id="Ball.MoveToPoint" class="method"><i></i> MoveToPoint(<em class="list">coordinates</em>)</dt>
+  <dd>Moves the Ball so that its origin is at the specified x and y coordinates.</dd>
+  <dt id="Ball.PointInDirection" class="method"><i></i> PointInDirection(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Turns this <code class="highlighter-rouge">Ball</code> to point toward the point with the coordinates <code class="highlighter-rouge">(x, y)</code>.</dd>
+  <dt id="Ball.PointTowards" class="method"><i></i> PointTowards(<em class="component">target</em>)</dt>
+  <dd>Turns this <code class="highlighter-rouge">Ball</code> to point towards a given <code class="highlighter-rouge">target</code> sprite. The new heading will be parallel
+ to the line joining the origins of the two sprites.</dd>
+</dl>
+
+<h2 id="Canvas">Canvas</h2>
+
+<p>A two-dimensional touch-sensitive rectangular panel on which drawing can
+ be done and sprites can be moved.</p>
+
+<p>The <a href="#Canvas.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a>, <a href="#Canvas.PaintColor"><code class="highlighter-rouge">PaintColor</code></a>, <a href="#Canvas.BackgroundImage"><code class="highlighter-rouge">BackgroundImage</code></a>,
+ <a href="#Canvas.Width"><code class="highlighter-rouge">Width</code></a>, and <a href="#Canvas.Height"><code class="highlighter-rouge">Height</code></a> of the <code class="highlighter-rouge">Canvas</code> can be set in either the Designer or in
+ the Blocks Editor. The <code class="highlighter-rouge">Width</code> and <code class="highlighter-rouge">Height</code> are measured in pixels and must be positive.</p>
+
+<p>Any location on the <code class="highlighter-rouge">Canvas</code> can be specified as a pair of <code class="highlighter-rouge">(X, Y)</code> values, where</p>
+
+<ul>
+  <li>X is the number of pixels away from the left edge of the <code class="highlighter-rouge">Canvas</code></li>
+  <li>Y is the number of pixels away from the top edge of the <code class="highlighter-rouge">Canvas</code></li>
+</ul>
+
+<p>There are events to tell when and where a <code class="highlighter-rouge">Canvas</code> has been touched or a Sprite
+ (<a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a> or <a href="#Ball"><code class="highlighter-rouge">Ball</code></a>) has been dragged. There are also methods for drawing
+ points, lines, circles, shapes, arcs, and text.</p>
+
+<h3 id="Canvas-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Canvas.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the Canvas’s background color as an alpha-red-green-blue
+ integer, i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code>
+ indicates fully transparent and <code class="highlighter-rouge">FF</code> means opaque.
+ The background color only shows if there is no background image.</dd>
+  <dt id="Canvas.BackgroundImage" class="text"><em>BackgroundImage</em></dt>
+  <dd>Specifies the name of a file containing the background image for the <code class="highlighter-rouge">Canvas</code>.</dd>
+  <dt id="Canvas.BackgroundImageinBase64" class="text wo bo"><em>BackgroundImageinBase64</em></dt>
+  <dd>Set the background image in Base64 format. This requires API level &gt;= 8. For devices with API level less than 8, setting this will end up with an empty background.</dd>
+  <dt id="Canvas.ExtendMovesOutsideCanvas" class="boolean"><em>ExtendMovesOutsideCanvas</em></dt>
+  <dd>Determines whether moves can extend beyond the canvas borders.   Default is false. This should normally be false, and the property is provided for backwards compatibility.</dd>
+  <dt id="Canvas.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the font size of text drawn on the Canvas.</dd>
+  <dt id="Canvas.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Canvas</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Canvas.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Canvas</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Canvas.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Canvas.LineWidth" class="number"><em>LineWidth</em></dt>
+  <dd>Specifies the width of lines drawn on the Canvas.</dd>
+  <dt id="Canvas.PaintColor" class="color"><em>PaintColor</em></dt>
+  <dd>Specifies the paint color as an alpha-red-green-blue integer,
+ i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code> indicates fully
+ transparent and <code class="highlighter-rouge">FF</code> means opaque.</dd>
+  <dt id="Canvas.TapThreshold" class="number"><em>TapThreshold</em></dt>
+  <dd>Specifies the movement threshold to differentiate a drag from a tap.</dd>
+  <dt id="Canvas.TextAlignment" class="number"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the canvas’s text: center, normal
+ (starting at the specified point in <a href="#Canvas.DrawText"><code class="highlighter-rouge">DrawText</code></a> or
+ <a href="#Canvas.DrawTextAtAngle"><code class="highlighter-rouge">DrawTextAtAngle</code></a>),
+ or opposite (ending at the specified point in
+ <a href="#Canvas.DrawText"><code class="highlighter-rouge">DrawText</code></a> or
+ <a href="#Canvas.DrawTextAtAngle"><code class="highlighter-rouge">DrawTextAtAngle</code></a>).</dd>
+  <dt id="Canvas.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Canvas.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Canvas</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Canvas</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Canvas.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Canvas</code>, measured in pixels.</dd>
+  <dt id="Canvas.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Canvas</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+</dl>
+
+<h3 id="Canvas-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Canvas.Dragged">Dragged(<em class="number">startX</em>,<em class="number">startY</em>,<em class="number">prevX</em>,<em class="number">prevY</em>,<em class="number">currentX</em>,<em class="number">currentY</em>,<em class="boolean">draggedAnySprite</em>)</dt>
+  <dd>When the user does a drag from one point (prevX, prevY) to
+ another (x, y).  The pair (startX, startY) indicates where the
+ user first touched the screen, and “draggedAnySprite” indicates whether a
+ sprite is being dragged.</dd>
+  <dt id="Canvas.Flung">Flung(<em class="number">x</em>,<em class="number">y</em>,<em class="number">speed</em>,<em class="number">heading</em>,<em class="number">xvel</em>,<em class="number">yvel</em>,<em class="boolean">flungSprite</em>)</dt>
+  <dd>When a fling gesture (quick swipe) is made on the canvas: provides
+ the (x,y) position of the start of the fling, relative to the upper
+ left of the canvas. Also provides the speed (pixels per millisecond) and heading
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
+ components of the fling’s vector. The value “flungSprite” is true if a sprite
+ was located near the the starting point of the fling gesture.</dd>
+  <dt id="Canvas.TouchDown">TouchDown(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user begins touching the canvas (places finger on canvas and
+ leaves it there): provides the (x,y) position of the touch, relative
+ to the upper left of the canvas</dd>
+  <dt id="Canvas.TouchUp">TouchUp(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user stops touching the canvas (lifts finger after a
+ TouchDown event): provides the (x,y) position of the touch, relative
+ to the upper left of the canvas</dd>
+  <dt id="Canvas.Touched">Touched(<em class="number">x</em>,<em class="number">y</em>,<em class="boolean">touchedAnySprite</em>)</dt>
+  <dd>When the user touches the canvas and then immediately lifts finger: provides
+ the (x,y) position of the touch, relative to the upper left of the canvas.  TouchedAnySprite
+ is true if the same touch also touched a sprite, and false otherwise.</dd>
+</dl>
+
+<h3 id="Canvas-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Canvas.Clear" class="method"><i></i> Clear()</dt>
+  <dd>Clears the canvas, without removing the background image, if one
+ was provided.</dd>
+  <dt id="Canvas.DrawArc" class="method"><i></i> DrawArc(<em class="number">left</em>,<em class="number">top</em>,<em class="number">right</em>,<em class="number">bottom</em>,<em class="number">startAngle</em>,<em class="number">sweepAngle</em>,<em class="boolean">useCenter</em>,<em class="boolean">fill</em>)</dt>
+  <dd>Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right &amp; bottom).
+ Start angle is 0 when heading to the right, and increase when rotate clockwise.
+ When useCenter is true, a sector will be drawed instead of an arc.
+ When fill is true, a filled arc (or sector) will be drawed instead of just an outline.</dd>
+  <dt id="Canvas.DrawCircle" class="method"><i></i> DrawCircle(<em class="number">centerX</em>,<em class="number">centerY</em>,<em class="number">radius</em>,<em class="boolean">fill</em>)</dt>
+  <dd>Draws a circle (filled in) with the given radius centered at the given coordinates on the
+ Canvas.</dd>
+  <dt id="Canvas.DrawLine" class="method"><i></i> DrawLine(<em class="number">x1</em>,<em class="number">y1</em>,<em class="number">x2</em>,<em class="number">y2</em>)</dt>
+  <dd>Draws a line between the given coordinates on the canvas.</dd>
+  <dt id="Canvas.DrawPoint" class="method"><i></i> DrawPoint(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Draws a point at the given coordinates on the canvas.</dd>
+  <dt id="Canvas.DrawShape" class="method"><i></i> DrawShape(<em class="list">pointList</em>,<em class="boolean">fill</em>)</dt>
+  <dd>Draws a shape on the canvas.
+ pointList should be a list contains sub-lists with two number which represents a coordinate.
+ The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
+ When fill is true, the shape will be filled.</dd>
+  <dt id="Canvas.DrawText" class="method"><i></i> DrawText(<em class="text">text</em>,<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Draws the specified text relative to the specified coordinates
+ using the values of the <a href="#Canvas.FontSize"><code class="highlighter-rouge">FontSize</code></a> and
+ <a href="#Canvas.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a> properties.</dd>
+  <dt id="Canvas.DrawTextAtAngle" class="method"><i></i> DrawTextAtAngle(<em class="text">text</em>,<em class="number">x</em>,<em class="number">y</em>,<em class="number">angle</em>)</dt>
+  <dd>Draws the specified text starting at the specified coordinates
+ at the specified angle using the values of the <a href="#Canvas.FontSize"><code class="highlighter-rouge">FontSize</code></a> and
+ <a href="#Canvas.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a> properties.</dd>
+  <dt id="Canvas.GetBackgroundPixelColor" class="method returns color"><i></i> GetBackgroundPixelColor(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Gets the color of the given pixel, ignoring sprites.</dd>
+  <dt id="Canvas.GetPixelColor" class="method returns color"><i></i> GetPixelColor(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Gets the color of the given pixel, including sprites.</dd>
+  <dt id="Canvas.Save" class="method returns text"><i></i> Save()</dt>
+  <dd>Saves a picture of this Canvas to the device’s external storage.
+ If an error occurs, the Screen’s ErrorOccurred event will be called.</dd>
+  <dt id="Canvas.SaveAs" class="method returns text"><i></i> SaveAs(<em class="text">fileName</em>)</dt>
+  <dd>Saves a picture of this Canvas to the device’s external storage in the file
+ named fileName. fileName must end with one of “.jpg”, “.jpeg”, or “.png”
+ (which determines the file type: JPEG, or PNG).</dd>
+  <dt id="Canvas.SetBackgroundPixelColor" class="method"><i></i> SetBackgroundPixelColor(<em class="number">x</em>,<em class="number">y</em>,<em class="color">color</em>)</dt>
+  <dd>Sets the color of the given pixel.  This has no effect if the
+ coordinates are out of bounds.</dd>
+</dl>
+
+<h2 id="ImageSprite">ImageSprite</h2>
+
+<p>A ‘sprite’ that can be placed on a <a href="#Canvas"><code class="highlighter-rouge">Canvas</code></a>, where it can react to touches and drags,
+ interact with other sprites (<a href="#Ball"><code class="highlighter-rouge">Ball</code></a>s and other <code class="highlighter-rouge">ImageSprite</code>s) and the edge of the
+ <code class="highlighter-rouge">Canvas</code>, and move according to its property values. Its appearance is that of the image
+ specified in its <a href="#ImageSprite.Picture"><code class="highlighter-rouge">Picture</code></a> property (unless its <a href="#ImageSprite.Visible"><code class="highlighter-rouge">Visible</code></a> property is
+ <code class="logic block highlighter-rouge">false</code>.</p>
+
+<p>To have an <code class="highlighter-rouge">ImageSprite</code> move 10 pixels to the left every 1000 milliseconds (one second), for
+ example, you would set the <a href="#ImageSprite.Speed"><code class="highlighter-rouge">Speed</code></a> property to 10 [pixels], the <a href="#ImageSprite.Interval"><code class="highlighter-rouge">Interval</code></a>
+ property to 1000 [milliseconds], the <a href="#ImageSprite.Heading"><code class="highlighter-rouge">Heading</code></a> property to 180 [degrees], and the
+ <a href="#ImageSprite.Enabled"><code class="highlighter-rouge">Enabled</code></a> property to <code class="logic block highlighter-rouge">true</code>. A sprite whose <a href="#ImageSprite.Rotates"><code class="highlighter-rouge">Rotates</code></a>
+ property is <code class="logic block highlighter-rouge">true</code> will rotate its image as the sprite’s heading changes.
+ <em>Checking for collisions with a rotated sprite currently checks the sprite’s unrotated position
+ so that collision checking will be inaccurate for tall narrow or short wide sprites that are
+ rotated.</em> Any of the sprite properties can be changed at any time under program control.</p>
+
+<h3 id="ImageSprite-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ImageSprite.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Controls whether the <code class="highlighter-rouge">ImageSprite</code> moves when its speed is non-zero.</dd>
+  <dt id="ImageSprite.Heading" class="number"><em>Heading</em></dt>
+  <dd>The <code class="highlighter-rouge">ImageSprite</code>’s heading in degrees above the positive x-axis. Zero degrees is toward the right
+ of the screen; 90 degrees is toward the top of the screen.</dd>
+  <dt id="ImageSprite.Height" class="number bo"><em>Height</em></dt>
+  <dd>The height of the ImageSprite in pixels.</dd>
+  <dt id="ImageSprite.Interval" class="number"><em>Interval</em></dt>
+  <dd>The interval in milliseconds at which the <code class="highlighter-rouge">ImageSprite</code>’s position is updated. For example, if the
+ <code class="highlighter-rouge">Interval</code> is 50 and the <a href="#ImageSprite.Speed"><code class="highlighter-rouge">Speed</code></a> is 10, then the <code class="highlighter-rouge">ImageSprite</code> will move 10 pixels
+ every 50 milliseconds.</dd>
+  <dt id="ImageSprite.MarkOrigin" class="text wo"><em>MarkOrigin</em></dt>
+  <dd>Mark the origin of ImageSprite using a draggable marker.</dd>
+  <dt id="ImageSprite.OriginX" class="number"><em>OriginX</em></dt>
+  <dd>Horizontal unit coordinate of the origin with respect to left edge. Permitted values in [0, 1].
+ A value of 0.0 means the origin lies on the left edge, 0.5 means the origin lies in the middle
+ and 1.0 means the origin is on the right edge.</dd>
+  <dt id="ImageSprite.OriginY" class="number"><em>OriginY</em></dt>
+  <dd>Vertical unit coordinate of the origin with respect to top edge. Permitted values in [0, 1].
+ A value of 0.0 means the origin lies on the top edge, 0.5 means the origin lies in the middle
+ and 1.0 means the origin is on the bottom edge.</dd>
+  <dt id="ImageSprite.Picture" class="text"><em>Picture</em></dt>
+  <dd>Specifies the path of the sprite’s picture.</dd>
+  <dt id="ImageSprite.Rotates" class="boolean"><em>Rotates</em></dt>
+  <dd>If true, the sprite image rotates to match the sprite’s heading. If false, the sprite image
+ does not rotate when the sprite changes heading. The sprite rotates around its origin.</dd>
+  <dt id="ImageSprite.Speed" class="number"><em>Speed</em></dt>
+  <dd>The speed at which the <code class="highlighter-rouge">ImageSprite</code> moves. The <code class="highlighter-rouge">ImageSprite</code> moves this many pixels every
+ <a href="#ImageSprite.Interval"><code class="highlighter-rouge">Interval</code></a> milliseconds if <a href="#ImageSprite.Enabled"><code class="highlighter-rouge">Enabled</code></a> is <code class="logic block highlighter-rouge">true</code>.</dd>
+  <dt id="ImageSprite.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Sets whether sprite should be visible.</dd>
+  <dt id="ImageSprite.Width" class="number bo"><em>Width</em></dt>
+  <dd>The width of the ImageSprite in pixels.</dd>
+  <dt id="ImageSprite.X" class="number"><em>X</em></dt>
+  <dd>The horizontal coordinate of the origin of the ImageSprite, increasing as the ImageSprite moves right.</dd>
+  <dt id="ImageSprite.Y" class="number"><em>Y</em></dt>
+  <dd>The vertical coordinate of the origin of the ImageSprite, increasing as the ImageSprite moves down.</dd>
+  <dt id="ImageSprite.Z" class="number"><em>Z</em></dt>
+  <dd>How the ImageSprite should be layered relative to other Balls and ImageSprites, with higher-numbered layers in front of lower-numbered layers.</dd>
+</dl>
+
+<h3 id="ImageSprite-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ImageSprite.CollidedWith">CollidedWith(<em class="component">other</em>)</dt>
+  <dd>Event handler called when two enabled sprites (<a href="#Ball"><code class="highlighter-rouge">Ball</code></a>s or <a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a>s)
+ collide. Note that checking for collisions with a rotated <code class="highlighter-rouge">ImageSprite</code> currently
+ checks against its unrotated position. Therefore, collision
+ checking will be inaccurate for tall narrow or short wide sprites that are
+ rotated.</dd>
+  <dt id="ImageSprite.Dragged">Dragged(<em class="number">startX</em>,<em class="number">startY</em>,<em class="number">prevX</em>,<em class="number">prevY</em>,<em class="number">currentX</em>,<em class="number">currentY</em>)</dt>
+  <dd>Event handler for Dragged events.  On all calls, the starting coordinates
+ are where the screen was first touched, and the “current” coordinates
+ describe the endpoint of the current line segment.  On the first call
+ within a given drag, the “previous” coordinates are the same as the
+ starting coordinates; subsequently, they are the “current” coordinates
+ from the prior call. Note that the <code class="highlighter-rouge">ImageSprite</code> won’t actually move
+ anywhere in response to the Dragged event unless
+ <a href="#ImageSprite.MoveTo"><code class="highlighter-rouge">MoveTo</code></a> is specifically called.</dd>
+  <dt id="ImageSprite.EdgeReached">EdgeReached(<em class="number">edge</em>)</dt>
+  <dd>Event handler called when the <code class="highlighter-rouge">ImageSprite</code> reaches an <code class="variable block highlighter-rouge">edge</code> of the screen.
+ If <a href="#ImageSprite.Bounce"><code class="highlighter-rouge">Bounce</code></a> is then called with that edge, the sprite will appear to bounce off
+ of the edge it reached. Edge here is represented as an integer that indicates one of eight
+ directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3),
+ and northwest(-4).</dd>
+  <dt id="ImageSprite.Flung">Flung(<em class="number">x</em>,<em class="number">y</em>,<em class="number">speed</em>,<em class="number">heading</em>,<em class="number">xvel</em>,<em class="number">yvel</em>)</dt>
+  <dd>When a fling gesture (quick swipe) is made on the sprite: provides
+ the (x,y) position of the start of the fling, relative to the upper
+ left of the canvas. Also provides the speed (pixels per millisecond) and heading
+ (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
+ components of the fling’s vector.</dd>
+  <dt id="ImageSprite.NoLongerCollidingWith">NoLongerCollidingWith(<em class="component">other</em>)</dt>
+  <dd>Event indicating that a pair of sprites are no longer colliding.</dd>
+  <dt id="ImageSprite.TouchDown">TouchDown(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user begins touching the sprite (places finger on sprite and
+ leaves it there): provides the (x,y) position of the touch, relative
+ to the upper left of the canvas</dd>
+  <dt id="ImageSprite.TouchUp">TouchUp(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user stops touching the sprite (lifts finger after a
+ TouchDown event): provides the (x,y) position of the touch, relative
+ to the upper left of the canvas.</dd>
+  <dt id="ImageSprite.Touched">Touched(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>When the user touches the sprite and then immediately lifts finger: provides
+ the (x,y) position of the touch, relative to the upper left of the canvas.</dd>
+</dl>
+
+<h3 id="ImageSprite-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ImageSprite.Bounce" class="method"><i></i> Bounce(<em class="number">edge</em>)</dt>
+  <dd>Makes this <code class="highlighter-rouge">ImageSprite</code> bounce, as if off a wall. For normal bouncing, the <code class="highlighter-rouge">edge</code> argument should
+ be the one returned by <a href="#ImageSprite.EdgeReached"><code class="highlighter-rouge">EdgeReached</code></a>.</dd>
+  <dt id="ImageSprite.CollidingWith" class="method returns boolean"><i></i> CollidingWith(<em class="component">other</em>)</dt>
+  <dd>Indicates whether a collision has been registered between this <code class="highlighter-rouge">ImageSprite</code>
+ and the passed <code class="highlighter-rouge">other</code> sprite.</dd>
+  <dt id="ImageSprite.MoveIntoBounds" class="method"><i></i> MoveIntoBounds()</dt>
+  <dd>Moves the sprite back in bounds if part of it extends out of bounds,
+ having no effect otherwise. If the sprite is too wide to fit on the
+ canvas, this aligns the left side of the sprite with the left side of the
+ canvas. If the sprite is too tall to fit on the canvas, this aligns the
+ top side of the sprite with the top side of the canvas.</dd>
+  <dt id="ImageSprite.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Moves the ImageSprite so that its origin is at the specified <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> coordinates.</dd>
+  <dt id="ImageSprite.MoveToPoint" class="method"><i></i> MoveToPoint(<em class="list">coordinates</em>)</dt>
+  <dd>Moves the ImageSprite so that its origin is at the specified x and y coordinates.</dd>
+  <dt id="ImageSprite.PointInDirection" class="method"><i></i> PointInDirection(<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Turns this <code class="highlighter-rouge">ImageSprite</code> to point toward the point with the coordinates <code class="highlighter-rouge">(x, y)</code>.</dd>
+  <dt id="ImageSprite.PointTowards" class="method"><i></i> PointTowards(<em class="component">target</em>)</dt>
+  <dd>Turns this <code class="highlighter-rouge">ImageSprite</code> to point towards a given <code class="highlighter-rouge">target</code> sprite. The new heading will be parallel
+ to the line joining the origins of the two sprites.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

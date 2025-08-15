@@ -1,12 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+
+import java.util.List;
 
 /**
  * Components that can contain other components need to implement this
@@ -43,6 +45,15 @@ public interface ComponentContainer {
   void setChildWidth(AndroidViewComponent component, int width);
 
   void setChildHeight(AndroidViewComponent component, int height);
+
+  /**
+   * Indicate to the container that its child needs its layout updated.
+   *
+   * @param component  component whose view needs to be repositioned
+   */
+  void setChildNeedsLayout(AndroidViewComponent component);
+
+  List<? extends Component> getChildren();
 
   int Width();
 

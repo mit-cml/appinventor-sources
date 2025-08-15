@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -25,13 +25,16 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This component keeps count of steps using the accelerometer.
  *
  */
 @DesignerComponent(version = YaVersion.PEDOMETER_COMPONENT_VERSION,
   description = "A Component that acts like a Pedometer. It senses motion via the " +
-  "Accerleromter and attempts to determine if a step has been " +
+  "Accelerometer and attempts to determine if a step has been " +
   "taken. Using a configurable stride length, it can estimate the " +
   "distance traveled as well. ",
   category = ComponentCategory.SENSORS,
@@ -39,7 +42,8 @@ import android.util.Log;
   iconName = "images/pedometer.png")
 @SimpleObject
 public class Pedometer extends AndroidNonvisibleComponent
-    implements Component, SensorEventListener, Deleteable {
+    implements Component, SensorEventListener, Deleteable,
+    RealTimeDataSource<String, Float> {
   private static final String TAG = "Pedometer";
   private static final String PREFS_NAME = "PedometerPrefs";
 
@@ -69,6 +73,9 @@ public class Pedometer extends AndroidNonvisibleComponent
 
   private float[] avgWindow = new float[10];
   private int avgPos = 0;
+
+  // Set of observers
+  private Set<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   /** Constructor. */
   public Pedometer(ComponentContainer container) {
@@ -117,11 +124,17 @@ public class Pedometer extends AndroidNonvisibleComponent
    */
   @SimpleFunction(description = "Stop counting steps")
   public void Stop() {
-    Pause();
+    if (!pedometerPaused) {
+      pedometerPaused = true;
+      sensorManager.unregisterListener(this);
+      Log.d(TAG, "Unregistered listener on pause");
+      prevStopClockTime += (System.currentTimeMillis() - startTime);
+    }
   }
 
   /**
    * Resets the step count, distance, and clock.
+   * @suppressdoc
    */
   @SimpleFunction(description = "Resets the step counter, distance measure and time running.")
   public void Reset() {
@@ -133,28 +146,26 @@ public class Pedometer extends AndroidNonvisibleComponent
   }
 
   /**
-   * Resumes the counting of steps.
+   * This method has been deprecated. Use {@link #Start()} instead.
    */
+  @Deprecated
   @SimpleFunction(description = "Resumes counting, synonym of Start.")
   public void Resume() {
     Start();
   }
 
   /**
-   * Pauses the counting of steps.
+   * This method has been deprecated. Use {@link #Stop()} instead.
    */
+  @Deprecated
   @SimpleFunction(description = "Pause counting of steps and distance.")
   public void Pause() {
-    if (!pedometerPaused) {
-      pedometerPaused = true;
-      sensorManager.unregisterListener(this);
-      Log.d(TAG, "Unregistered listener on pause");
-      prevStopClockTime += (System.currentTimeMillis() - startTime);
-    }
+    Stop();
   }
 
   /**
    * Saves the pedometer state to shared preferences.
+   * @suppressdoc
    */
   @SimpleFunction(description = "Saves the pedometer state to the phone. Permits " +
     "permits accumulation of steps and distance between invocations of an App that uses " +
@@ -184,9 +195,14 @@ public class Pedometer extends AndroidNonvisibleComponent
    *
    * @param simpleSteps number of raw steps detected
    * @param distance approximate distance covered by number of simpleSteps in meters
+   * @suppressdoc
    */
-  @SimpleEvent(description = "This event is run when a raw step is detected")
+  @SimpleEvent(description = "This event is run when a raw step is detected.")
   public void SimpleStep(int simpleSteps, float distance) {
+    // Notify Data Observers with changed SimpleSteps and Distance values
+    notifyDataObservers("SimpleSteps", simpleSteps);
+    notifyDataObservers("Distance", distance);
+
     EventDispatcher.dispatchEvent(this, "SimpleStep", simpleSteps, distance);
   }
 
@@ -196,10 +212,15 @@ public class Pedometer extends AndroidNonvisibleComponent
    *
    * @param walkSteps number of walking steps detected
    * @param distance approximate distance covered by the number of walkSteps in meters
+   * @suppressdoc
    */
   @SimpleEvent(description = "This event is run when a walking step is detected. " +
     "A walking step is a step that appears to be involved in forward motion.")
   public void WalkStep(int walkSteps, float distance) {
+    // Notify Data Observers with changed WalkSteps and Distance values
+    notifyDataObservers("WalkSteps", walkSteps);
+    notifyDataObservers("Distance", distance);
+
     EventDispatcher.dispatchEvent(this, "WalkStep", walkSteps, distance);
   }
 
@@ -445,53 +466,100 @@ public class Pedometer extends AndroidNonvisibleComponent
   // that has them is loaded.
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void StartedMoving() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void StoppedMoving() {
 
   }
 
   @Deprecated
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "This property has been deprecated.")
   public void UseGPS(boolean gps) {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void CalibrationFailed() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void GPSAvailable() {
   }
 
   @Deprecated
-  @SimpleEvent
+  @SimpleEvent(description = "This event has been deprecated.")
   public void GPSLost() {
   }
 
   // Properties
 
   @Deprecated
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "This property has been deprecated.")
   public void CalibrateStrideLength(boolean cal) {
   }
 
   @Deprecated
-  @SimpleProperty
+  @SimpleProperty(description = "This property has been deprecated.")
   public boolean CalibrateStrideLength() {
     return false;
   }
 
   @Deprecated
-  @SimpleProperty
+  @SimpleProperty(description = "This property has been deprecated.")
   public boolean Moving() {
     return false;
   }
 
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value corresponding to the given key. Possible keys include:
+   * <ul>
+   *   <li>SimpleSteps - SimpleSteps value</li>
+   *   <li>WalkSteps   - WalkSteps value</li>
+   *   <li>Distance    - Distance value</li>
+   * </ul>
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "SimpleSteps":
+        return (float) numStepsRaw;
+
+      case "WalkSteps":
+        return (float) numStepsWithFilter;
+
+      case "Distance":
+        return totalDistance;
+
+      default:
+        return 0f;
+    }
+  }
 }

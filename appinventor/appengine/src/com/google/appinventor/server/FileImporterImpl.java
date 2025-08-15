@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,6 +9,7 @@ package com.google.appinventor.server;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -51,7 +52,7 @@ public final class FileImporterImpl implements FileImporter {
 
   private static final Logger LOG = Logger.getLogger(FileImporterImpl.class.getName());
 
-  private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   @Override
   public UserProject importProject(String userId, String projectName,
@@ -101,9 +102,10 @@ public final class FileImporterImpl implements FileImporter {
             // The content for the youngandroidproject/project.properties file must be regenerated
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
-            String content = YoungAndroidProjectService.getProjectPropertiesFileContents(
-              projectName, qualifiedFormName, null, null, null, null, null, null, null, null,
-              null, null, null, null, null);
+            String content = new YoungAndroidSettingsBuilder()
+                .setProjectName(projectName)
+                .setQualifiedFormName(qualifiedFormName)
+                .toProperties();
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
@@ -150,8 +152,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null, null,
-        null, null, null, null, null, null, null, null);
+    String settings = new YoungAndroidSettingsBuilder().build();
     long projectId = storageIo.createProject(userId, project, settings);
     return storageIo.getUserProject(userId, projectId);
   }
@@ -174,13 +175,16 @@ public final class FileImporterImpl implements FileImporter {
     while ((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
       bos.write(buffer, 0, bytes);
       fileLength += bytes;
+      if (fileLength > maxSizeBytes) {
+        // Read the rest of the stream, but throw it away
+        // and throw an error, so we do not consume memory storing
+        // a large object
+        while((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
+        }
+        throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
+      }
     }
     bos.flush();
-
-    // First check the file length, to avoid loading the file into memory if it is too large anyhow.
-    if (fileLength > maxSizeBytes) {
-      throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
-    }
 
     byte[] content = os.toByteArray();
 

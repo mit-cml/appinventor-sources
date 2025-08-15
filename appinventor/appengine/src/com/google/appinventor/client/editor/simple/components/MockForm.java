@@ -6,29 +6,25 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-
 import com.google.gwt.user.client.Timer;
-
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -38,6 +34,15 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+import java.util.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * Mock Form component. This implementation provides two main preview sizes corresponding to
@@ -46,6 +51,9 @@ import com.google.gwt.user.client.ui.TreeItem;
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
 public final class MockForm extends MockContainer {
+  private static final Logger LOG = Logger.getLogger(MockForm.class.getName());
+
+  private Integer view = 1;
 
   /*
    * Widget for the mock form title bar.
@@ -53,13 +61,21 @@ public final class MockForm extends MockContainer {
   private class TitleBar extends Composite {
     private static final int TITLEBAR_HEIGHT = 24;
     private static final int ACTIONBAR_HEIGHT = 56;
+    private static final int NAVBAR_HEIGHT = 44;
 
     // UI elements
     private Label title;
     private Button menuButton;
     private AbsolutePanel bar;
+    private Image bookIconWhite;
+    private Image bookIconBlack;
     private boolean actionBar;
+    private boolean navBar;
     private String backgroundColor;
+
+    public String getTitle() {
+      return title.getText();
+    }
 
     /*
      * Creates a new title bar.
@@ -67,11 +83,15 @@ public final class MockForm extends MockContainer {
     TitleBar() {
       title = new Label();
       title.setStylePrimaryName("ode-SimpleMockFormTitle");
-      title.setHorizontalAlignment(Label.ALIGN_LEFT);
 
       menuButton = new Button();
       menuButton.setText("\u22ee");
       menuButton.setStylePrimaryName("ode-SimpleMockFormMenuButton");
+
+      bookIconWhite = new Image(images.bookIconWhite());
+      bookIconWhite.setStylePrimaryName("ode-SimpleMockFormIconIOSWhite");
+      bookIconBlack = new Image(images.bookIconBlack());
+      bookIconBlack.setStylePrimaryName("ode-SimpleMockFormIconIOSBlack");
 
       bar = new AbsolutePanel();
       bar.add(title);
@@ -90,27 +110,40 @@ public final class MockForm extends MockContainer {
       title.setText(newTitle);
     }
 
-    void setActionBar(boolean actionBar) {
+    void setActionBar(boolean actionBar , boolean navBar) {
       this.actionBar = actionBar;
-      setSize("100%", (actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT) + "px");
+      this.navBar = navBar;
+      setSize("100%", (navBar ? NAVBAR_HEIGHT : (actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT)) + "px");
       if (actionBar) {
-        addStyleDependentName("ActionBar");
+        if (navBar) {
+          removeStyleDependentName("ActionBar");
+          addStyleDependentName("NavBar");
+        } else {
+          removeStyleDependentName("NavBar");
+          addStyleDependentName("ActionBar");
+        }
         MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, backgroundColor);
+
       } else {
         removeStyleDependentName("ActionBar");
         MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, "&HFF696969");
       }
     }
 
+    void changeBookmarkIcon(boolean black) {
+      bar.remove(black ? bookIconWhite : bookIconBlack);
+      bar.add(black ? bookIconBlack : bookIconWhite);
+    }
+
     void setBackgroundColor(String color) {
       this.backgroundColor = color;
-      if (actionBar) {
+      if (actionBar || navBar) {
         MockComponentsUtil.setWidgetBackgroundColor(titleBar.bar, color);
       }
     }
 
     int getHeight() {
-      return actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT;
+      return navBar ? NAVBAR_HEIGHT : (actionBar ? ACTIONBAR_HEIGHT : TITLEBAR_HEIGHT);
     }
   }
 
@@ -119,25 +152,119 @@ public final class MockForm extends MockContainer {
    */
   private class PhoneBar extends Composite {
     private static final int HEIGHT = 24;
+    private static final int IPAD_HEIGHT = 20;
+    private static final int IPHONEX_HEIGHT = 44;
 
     // UI elements
     private DockPanel bar;
-    private Image phoneBarImage;
+
+    private HorizontalPanel phoneBarLeftPanel;
+    private HorizontalPanel phoneBarRightPanel;
+    private HorizontalPanel iPadPhoneBarLeftPanel;
+    private HorizontalPanel iPadPhoneBarRightPanel;
+    private Image blackIconsLeft;
+    private Image blackIconsRight;
+    private Image whiteIconsLeft;
+    private Image whiteIconsRight;
+    private Image iPadWhiteIconsLeft;
+    private Image iPadWhiteIconsRight;
+    private Image iPadBlackIconsLeft;
+    private Image iPadBlackIconsRight;
+    private boolean visible;
 
     /*
      * Creates a new phone status bar.
      */
     PhoneBar() {
-      phoneBarImage = new Image(images.phonebar());
-
+      Image phoneBarImage = new Image(images.phonebar());
       bar = new DockPanel();
       bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       bar.add(phoneBarImage, DockPanel.EAST);
 
       initWidget(bar);
-
-      setStylePrimaryName("ode-SimpleMockFormPhoneBar");
+      setStylePrimaryName("ode-SimpleMockFormPhoneBarAndroidHolo");
       setSize("100%", HEIGHT + "px");
+    }
+
+    PhoneBar(String color) {
+      Image phoneBarAndroidMaterial = new Image(images.phonebarAndroidMaterial());
+
+      bar = new DockPanel();
+      bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
+      bar.add(phoneBarAndroidMaterial, DockPanel.EAST);
+
+      initWidget(bar);
+      MockComponentsUtil.setWidgetBackgroundColor(bar, color);
+      setStylePrimaryName("ode-SimpleMockFormPhoneBarAndroidMaterial");
+      setSize("100%", HEIGHT + "px");
+    }
+
+    PhoneBar(boolean blackIcons, int size, String color) {
+      // icons for iPhone
+      blackIconsLeft = new Image(images.phonebariPhoneLeftBlack());
+      blackIconsRight = new Image(images.phonebariPhoneRightBlack());
+      whiteIconsLeft = new Image(images.phonebariPhoneLeftWhite());
+      whiteIconsRight = new Image(images.phonebariPhoneRightWhite());
+
+      phoneBarLeftPanel = new HorizontalPanel();
+      phoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeft");
+      phoneBarRightPanel = new HorizontalPanel();
+      phoneBarRightPanel.setStylePrimaryName("ode-SimpleMockFormRight");
+
+      //icons for iPad
+      iPadWhiteIconsLeft = new Image(images.phonebariPadLeftWhite());
+      iPadWhiteIconsRight = new Image(images.phonebariPadRightWhite());
+      iPadBlackIconsLeft = new Image(images.phonebariPadLeftBlack());
+      iPadBlackIconsRight = new Image(images.phonebariPadRightBlack());
+
+      iPadPhoneBarLeftPanel = new HorizontalPanel();
+      iPadPhoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeftIPad");
+      iPadPhoneBarRightPanel = new HorizontalPanel();
+      iPadPhoneBarRightPanel.setStylePrimaryName("ode-SimpleMockFormRightIPad");
+
+      bar = new DockPanel();
+      setIconColor(blackIcons, size);
+      bar.add(phoneBarLeftPanel, DockPanel.WEST);
+      bar.add(phoneBarRightPanel, DockPanel.EAST);
+      bar.add(iPadPhoneBarLeftPanel, DockPanel.WEST);
+      bar.add(iPadPhoneBarRightPanel, DockPanel.EAST);
+      initWidget(bar);
+      MockComponentsUtil.setWidgetBackgroundColor(bar, color);
+      setStylePrimaryName("ode-SimpleMockFormPhoneBariOS");
+      setSize(size);
+    }
+
+    // changing Icons in Device Default and Black Title Text
+    void setIconColor(boolean blackIcons, int size) {
+      if (size == 0) {
+        bar.removeStyleDependentName("iPad");
+        bar.addStyleDependentName("iPhone");
+        phoneBarLeftPanel.remove(blackIcons ? whiteIconsLeft : blackIconsLeft);
+        phoneBarRightPanel.remove(blackIcons ? whiteIconsRight : blackIconsRight);
+        phoneBarLeftPanel.add(blackIcons ? blackIconsLeft : whiteIconsLeft);
+        phoneBarRightPanel.add(blackIcons ? blackIconsRight : whiteIconsRight);
+      } else {
+        bar.removeStyleDependentName("iPhone");
+        bar.addStyleDependentName("iPad");
+        iPadPhoneBarLeftPanel.remove(blackIcons? iPadWhiteIconsLeft : iPadBlackIconsLeft);
+        iPadPhoneBarRightPanel.remove(blackIcons ? iPadWhiteIconsRight : iPadBlackIconsRight);
+        iPadPhoneBarLeftPanel.add(blackIcons ? iPadBlackIconsLeft : iPadWhiteIconsLeft);
+        iPadPhoneBarRightPanel.add(blackIcons? iPadBlackIconsRight : iPadWhiteIconsRight);
+      }
+    }
+
+    //set status bar size for the iOS theme
+    void setSize(int size) {
+      setSize("100%", (size == 0 ? IPHONEX_HEIGHT : IPAD_HEIGHT) + "px");
+    }
+
+    void setVisibility(boolean visible) {
+      this.visible = visible;
+    }
+
+    int getHeight() {
+      // Adjust for CSS borders, which are not included in the height value
+      return visible ? PhoneBar.HEIGHT + 3 : 0;
     }
   }
 
@@ -146,25 +273,23 @@ public final class MockForm extends MockContainer {
    * Widget for a mock phone navigation bar; Shows at the bottom of the viewer
    */
   private class NavigationBar extends Composite {
-    private static final int HEIGHT = 35;
+    private static final int HEIGHT = 44;
 
     // UI elements
-    private DockPanel bar;
-    private Image navigationBarImage;
+    private AbsolutePanel bar;
 
     /*
      * Creates a new phone navigation bar; Shows at the bottom of the viewer.
      */
-
     NavigationBar() {
-      navigationBarImage = new Image(images.navigationbar());
-      bar = new DockPanel();
-      bar.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-      bar.add(navigationBarImage, DockPanel.CENTER);
+      bar = new AbsolutePanel();
       initWidget(bar);
 
-      setStylePrimaryName("ode-SimpleMockFormPhoneBar"); //reuse the css for the phone
-      setSize("100%", HEIGHT + "px");
+      setStylePrimaryName("ode-SimpleMockFormNavigationBarPortrait");
+    }
+
+    public int getHeight() {
+      return HEIGHT;
     }
   }
 
@@ -192,12 +317,27 @@ public final class MockForm extends MockContainer {
   private static final int TABLET_LANDSCAPE_WIDTH = TABLET_PORTRAIT_HEIGHT;
   private static final int TABLET_LANDSCAPE_HEIGHT = TABLET_PORTRAIT_WIDTH;
 
+  private static final int PHONE_PORTRAIT_WIDTH_iPHONE = 320;
+  private static final int PHONE_PORTRAIT_HEIGHT_iPHONE= 650;
+  private static final int PHONE_LANDSCAPE_WIDTH_iPHONE = PHONE_PORTRAIT_HEIGHT_iPHONE;
+  private static final int PHONE_LANDSCAPE_HEIGHT_iPHONE= PHONE_PORTRAIT_WIDTH_iPHONE;
+
   // These are default values but they can be changed in the changePreviewSize method
   private int PORTRAIT_WIDTH = PHONE_PORTRAIT_WIDTH;
   private int PORTRAIT_HEIGHT = PHONE_PORTRAIT_HEIGHT;
   private int LANDSCAPE_WIDTH = PHONE_LANDSCAPE_WIDTH;
   private int LANDSCAPE_HEIGHT = PHONE_LANDSCAPE_HEIGHT;
   private boolean landscape = false;
+  private int idxPhoneSize = 0;
+
+  //Default values for theme style
+  private boolean changePreviewFlag = false;
+  private boolean blackIcons = false ;
+  private int idxPhonePreviewStyle = -1;
+  private String primaryDarkColor="&HFF41521C";
+  private String primaryColor="&HFFA5CF47";
+  private boolean actionBar = false;
+  private boolean showStatusBar = true;
 
   // Property names
   private static final String PROPERTY_NAME_TITLE = "Title";
@@ -209,27 +349,41 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_ANAME = "AppName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   private static final String PROPERTY_NAME_TITLEVISIBLE = "TitleVisible";
+  private static final String PROPERTY_NAME_SHOW_STATUS_BAR = "ShowStatusBar";
   // Don't show except on screen1
   private static final String PROPERTY_NAME_SHOW_LISTS_AS_JSON = "ShowListsAsJson";
   private static final String PROPERTY_NAME_TUTORIAL_URL = "TutorialURL";
+  private static final String PROPERTY_NAME_BLOCK_SUBSET = "BlocksToolkit";
   private static final String PROPERTY_NAME_ACTIONBAR = "ActionBar";
   private static final String PROPERTY_NAME_PRIMARY_COLOR = "PrimaryColor";
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
   private static final String PROPERTY_NAME_THEME = "Theme";
+  private static final String PROPERTY_NAME_DEFAULTFILESCOPE = "DefaultFileScope";
 
   // Form UI components
   AbsolutePanel formWidget;
+  AbsolutePanel phoneWidget;
+  AbsolutePanel responsivePanel;
+  AbsolutePanel notchPanel;
+
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
-  private MockComponent selectedComponent;
+  private PhoneBar phoneBar;
+  private NavigationBar navigationBar;
+  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>(Collections.singleton(this));
+  private MockContainer pasteTarget = this;
 
   int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
   private int screenHeight;
   int usableScreenHeight;       // TEMP: Make package visible so we can use it MockHVLayoutBase
+  int usableScreenWidth;
 
   // Set of listeners for any changes of the form
   final HashSet<FormChangeListener> formChangeListeners = new HashSet<FormChangeListener>();
+
+  // Set of listeners for DesignPreviewChanges
+  final HashSet<DesignPreviewChangeListener> designPreviewChangeListeners = new HashSet<DesignPreviewChangeListener>();
 
   // Don't access the verticalScrollbarWidth field directly. Use getVerticalScrollbarWidth().
   private static int verticalScrollbarWidth;
@@ -262,28 +416,41 @@ public final class MockForm extends MockContainer {
     // future problems if we ever have threads creating forms in parallel.
     myLayout = MockFormHelper.getLayout();
 
+    phoneWidget = new AbsolutePanel();
+    phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
     formWidget = new AbsolutePanel();
     formWidget.setStylePrimaryName("ode-SimpleMockForm");
+    notchPanel = new AbsolutePanel();
+    notchPanel.setStylePrimaryName("ode-SimpleMockFormNotch");
+    notchPanel.getElement().getStyle().clearPosition();
+    notchPanel.getElement().getStyle().clearOverflow();
+    responsivePanel = new AbsolutePanel();
 
     // Initialize mock form UI by adding the phone bar and title bar.
-    formWidget.add(new PhoneBar());
+    changePreview();
+    responsivePanel.add(phoneBar);
     titleBar = new TitleBar();
-    formWidget.add(titleBar);
+    responsivePanel.add(titleBar);
 
     // Put a ScrollPanel around the rootPanel.
     scrollPanel = new ScrollPanel(rootPanel);
-    formWidget.add(scrollPanel);
+    responsivePanel.add(scrollPanel);
+
+    formWidget.add(responsivePanel);
 
     //Add navigation bar at the bottom of the viewer.
-    formWidget.add(new NavigationBar());
+    navigationBar = new NavigationBar();
+    formWidget.add(navigationBar);
 
-    initComponent(formWidget);
+    phoneWidget.add(formWidget);
+    phoneWidget.add(notchPanel);
+    initComponent(phoneWidget);
 
     // Set up the initial state of the vertical alignment property editor and its dropdowns
     try {
       myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
     } catch (BadPropertyEditorException e) {
-      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
+      LOG.info(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
     }
     enableAndDisableDropdowns();
@@ -292,40 +459,198 @@ public final class MockForm extends MockContainer {
     setScrollableProperty(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
   }
 
-  public void changePreviewSize(int width, int height) {
+  public void changePreviewSize(int width, int height, int idx) {
     // It will definitely be modified in the future to add more options.
     PORTRAIT_WIDTH = width;
     PORTRAIT_HEIGHT = height;
     LANDSCAPE_WIDTH = height;
     LANDSCAPE_HEIGHT = width;
 
-    if (landscape)
-      resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
-    else
-      resizePanel(PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+    idxPhoneSize = idx;
+    setPhoneStyle();
+    updateScreenSize();
+  }
+
+  private void updateScreenSize() {
+    if (landscape) {
+      if (idxPhoneSize == 0 && idxPhonePreviewStyle == 2) {
+        resizePanel(PHONE_LANDSCAPE_WIDTH_iPHONE, PHONE_LANDSCAPE_HEIGHT_iPHONE);
+      } else {
+        resizePanel(LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT);
+      }
+    } else {
+      if (idxPhoneSize == 0 && idxPhonePreviewStyle == 2) {
+        resizePanel(PHONE_PORTRAIT_WIDTH_iPHONE, PHONE_PORTRAIT_HEIGHT_iPHONE);
+      } else {
+        resizePanel(PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+      }
+    }
+  }
+
+  public void changePhonePreview(int idx, String previewName ) {
+    // storing the new preview style in the user settings
+    editor.getProjectEditor().changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, previewName);
+
+    idxPhonePreviewStyle = idx;
+    changePreviewFlag = true;
+    changePreview();
+    setPhoneStyle();
+    updateScreenSize();
+  }
+
+  private void setPhoneStyle() {
+    if (landscape) {
+      if (idxPhoneSize == 1) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
+      } else if (idxPhoneSize == 2) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+      } else {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
+      }
+      navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarLandscape");
+    } else {
+      if (idxPhoneSize == 1) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
+      } else if (idxPhoneSize == 2) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
+      } else {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
+      }
+      navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarPortrait");
+    }
+    if (idxPhonePreviewStyle == 2) {
+      setIOSPhoneStyle();
+    }
+    fireDesignPreviewChange();
+  }
+
+  private static String[] iosSizesLandscape = {
+      "ode-SimpleMockFormIOSLandscape",
+      "ode-SimpleMockFormIOSLandscapeTablet",
+      "ode-SimpleMockFormIOSLandscapeMonitor"
+  };
+
+  private static String[] iosSizesPortrait = {
+      "ode-SimpleMockFormIOSPortrait",
+      "ode-SimpleMockFormIOSPortraitTablet",
+      "ode-SimpleMockFormIOSPortraitMonitor"
+  };
+
+  private void setIOSPhoneStyle() {
+    if (landscape) {
+      phoneWidget.setStylePrimaryName(iosSizesLandscape[idxPhoneSize]);
+    } else {
+      phoneWidget.setStylePrimaryName(iosSizesPortrait[idxPhoneSize]);
+    }
+    navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarIOS");
+    phoneBar.setIconColor(blackIcons, idxPhoneSize);
+    phoneBar.setSize(idxPhoneSize);
   }
 
   /*
-   * Resizes the scrollPanel and formWidget based on the screen size.
+   * Resizes the scrollPanel, responsivePanel, and formWidget based on the screen size.
    */
   private void resizePanel(int newWidth, int newHeight){
     screenWidth = newWidth;
     screenHeight = newHeight;
-    usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
+    int scrollbarWidth = 0;
+    if (Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE))) {
+      // only display space for a scrollbar if the form is scrollable
+      scrollbarWidth = getVerticalScrollbarWidth();
+    }
 
-
-    rootPanel.setPixelSize(screenWidth, usableScreenHeight);
-    scrollPanel.setPixelSize(screenWidth + getVerticalScrollbarWidth(), usableScreenHeight);
-    formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);
+    if (landscape) {
+      String val = editor.getProjectEditor().getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+      if (val.equals("iOS")) {
+        usableScreenWidth = screenWidth;
+      } else {
+        usableScreenWidth = screenWidth - navigationBar.getHeight();
+      }
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
+    } else {
+      usableScreenWidth = screenWidth;
+      usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
+    }
+    rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
+    // This margin is to ensure the mockform aligns to the left when there is space for a scrollbar
+    rootPanel.getElement().getStyle().setProperty("marginRight", scrollbarWidth + "px");
+    scrollPanel.setPixelSize(usableScreenWidth + scrollbarWidth, usableScreenHeight);
+    formWidget.setPixelSize(screenWidth + scrollbarWidth, screenHeight);
+    // Added width to phoneWidget to prevent it from expanding wider than intended
+    // if the SimpleComponentsPanel menu is wider than the phonebar.
+    phoneWidget.setWidth(usableScreenWidth + scrollbarWidth + "px");
     // Store properties
-    changeProperty(PROPERTY_NAME_WIDTH, "" + screenWidth);
+    changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
     boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
     if (!scrollable) {
       changeProperty(PROPERTY_NAME_HEIGHT, "" + usableScreenHeight);
     }
   }
 
-   /*
+  /*
+   * Changes the preview of MockForm based on Android Holo, Android Material and iOS styles
+   */
+  private void changePreview() {
+    // this condition prevents adding multiple phoneBars and titleBars
+    if (changePreviewFlag)  {
+      responsivePanel.remove(phoneBar);
+      responsivePanel.remove(titleBar);
+    }
+
+    if (idxPhonePreviewStyle == -1) {
+      phoneBar = new PhoneBar();
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.removeStyleDependentName("AndroidHolo");
+    } else if (idxPhonePreviewStyle == 0) {
+      phoneBar = new PhoneBar(primaryDarkColor);
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidMaterial");
+    } else if (idxPhonePreviewStyle == 1) {
+      phoneBar = new PhoneBar();
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidHolo");
+    } else if (idxPhonePreviewStyle == 2) {
+      phoneBar = new PhoneBar(blackIcons, idxPhoneSize, primaryColor);
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.addStyleDependentName("iOS");
+    }
+
+    // updating changes to the MockForm
+    if (changePreviewFlag) {
+      formWidget.remove(responsivePanel);
+      formWidget.remove(navigationBar);
+
+      ///////////////////////////////////////////////////////////////////
+      // Always need to add the phoneBar to the designer, then set the /
+      // visibility accordingly!                                       /
+      ///////////////////////////////////////////////////////////////////
+
+      responsivePanel.add(phoneBar);
+      phoneBar.setVisible(showStatusBar);
+      phoneBar.setVisibility(showStatusBar);
+      responsivePanel.add(titleBar);
+      responsivePanel.add(scrollPanel);
+      formWidget.add(responsivePanel);
+      formWidget.add(navigationBar);
+      if (idxPhonePreviewStyle != 2) {
+        titleBar.setActionBar(actionBar, false);
+      } else {
+        titleBar.setActionBar(true, true);
+        titleBar.changeBookmarkIcon(blackIcons);
+      }
+    }
+    changePreviewFlag = false;
+  }
+
+  /*
    * Returns the width of a vertical scroll bar, calculating it if necessary.
    */
   private static int getVerticalScrollbarWidth() {
@@ -409,8 +734,10 @@ public final class MockForm extends MockContainer {
   @Override
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -427,67 +754,40 @@ public final class MockForm extends MockContainer {
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||
-        propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-      return false;
-    }
+    switch (propertyName) {
+      case PROPERTY_NAME_WIDTH:
+      case PROPERTY_NAME_HEIGHT:
+      case PROPERTY_NAME_ACTIONBAR: {
+        return false;
+      }
 
-    if (propertyName.equals(PROPERTY_NAME_ICON)) {
       // The Icon property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_VNAME)) {
+      case PROPERTY_NAME_ICON:
       // The VersionName property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_VCODE)) {
+      case PROPERTY_NAME_VNAME:
       // The VersionCode property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_SIZING)) {
+      case PROPERTY_NAME_VCODE:
       // The Sizing property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_ANAME)) {
+      case PROPERTY_NAME_SIZING:
       // The AppName property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {
+      case PROPERTY_NAME_ANAME:
       // The ShowListsAsJson property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
+      case PROPERTY_NAME_SHOW_LISTS_AS_JSON:
       // The TutorialURL property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
+      case PROPERTY_NAME_TUTORIAL_URL:
+      case PROPERTY_NAME_BLOCK_SUBSET:
+      case PROPERTY_NAME_PRIMARY_COLOR:
+      case PROPERTY_NAME_PRIMARY_COLOR_DARK:
+      case PROPERTY_NAME_ACCENT_COLOR:
+      case PROPERTY_NAME_THEME:
+      case PROPERTY_NAME_DEFAULTFILESCOPE: {
+        return false;
+      }
 
-    if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
-      return false;
+      default: {
+        return super.isPropertyVisible(propertyName);
+      }
     }
-
-    if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR_DARK)) {
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_ACCENT_COLOR)) {
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_THEME)) {
-      return editor.isScreen1();
-    }
-
-    return super.isPropertyVisible(propertyName);
   }
 
   /*
@@ -515,21 +815,45 @@ public final class MockForm extends MockContainer {
   }
 
   private void setScreenOrientationProperty(String text) {
-    if (hasProperty(PROPERTY_NAME_WIDTH) && hasProperty(PROPERTY_NAME_HEIGHT) &&
-        hasProperty(PROPERTY_NAME_SCROLLABLE)) {
+    String val = editor.getProjectEditor().getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW);
+    if (hasProperty(PROPERTY_NAME_WIDTH) && hasProperty(PROPERTY_NAME_HEIGHT)
+        && hasProperty(PROPERTY_NAME_SCROLLABLE)) {
       if (text.equalsIgnoreCase("landscape")) {
-        screenWidth = LANDSCAPE_WIDTH;
-        screenHeight = LANDSCAPE_HEIGHT;
+        if (val.equals("iOS") && idxPhoneSize == 0) {
+          screenWidth = PHONE_LANDSCAPE_WIDTH_iPHONE;
+          screenHeight = PHONE_LANDSCAPE_HEIGHT_iPHONE;
+        } else {
+          screenWidth = LANDSCAPE_WIDTH;
+          screenHeight = LANDSCAPE_HEIGHT;
+        }
         landscape = true;
       } else {
-        screenWidth = PORTRAIT_WIDTH;
-        screenHeight = PORTRAIT_HEIGHT;
+        if (val.equals("iOS") && idxPhoneSize == 0) {
+          screenWidth = PHONE_PORTRAIT_WIDTH_iPHONE;
+          screenHeight = PHONE_PORTRAIT_HEIGHT_iPHONE;
+        } else {
+          screenWidth = PORTRAIT_WIDTH;
+          screenHeight = PORTRAIT_HEIGHT;
+        }
         landscape = false;
       }
-      usableScreenHeight = screenHeight - PhoneBar.HEIGHT - titleBar.getHeight() - NavigationBar.HEIGHT;
+      setPhoneStyle();
+      if (landscape) {
+        if (val.equals("iOS")) {
+          usableScreenWidth = screenWidth;
+        } else {
+          usableScreenWidth = screenWidth - navigationBar.getHeight();
+        }
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight();
+      } else {
+        usableScreenWidth = screenWidth;
+        usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
+      }
       resizePanel(screenWidth, screenHeight);
 
-      changeProperty(PROPERTY_NAME_WIDTH, "" + screenWidth);
+      changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
       boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
       if (!scrollable) {
         changeProperty(PROPERTY_NAME_HEIGHT, "" + usableScreenHeight);
@@ -543,6 +867,7 @@ public final class MockForm extends MockContainer {
       int heightHint = scrollable ? LENGTH_PREFERRED : usableScreenHeight;
       changeProperty(PROPERTY_NAME_HEIGHT, "" + heightHint);
     }
+    resizePanel(screenWidth, screenHeight);
   }
 
   private void setIconProperty(String icon) {
@@ -600,6 +925,16 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  private void setShowStatusBarProperty(String text) {
+    showStatusBar = Boolean.parseBoolean(text);
+    phoneBar.setVisible(showStatusBar);
+    phoneBar.setVisibility(showStatusBar);
+    if (screenWidth == 0 || screenHeight == 0) { // This happens when a project is loaded
+      return;                                    // so don't attempt to resize to 0,0
+    }
+    resizePanel(screenWidth,screenHeight); // update the MockForm size
+  }
+
   private void setTutorialURLProperty(String asJson) {
     // This property actually applies to the application and is only visible on
     // Screen1. When we load a form that is not Screen1, this method will be called with the
@@ -608,6 +943,20 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, asJson);
+    }
+  }
+
+  private void setBlockSubsetProperty(String asJson) {
+    //This property applies to the application and is only visible on Screen1. When we load a form that is
+    //not Screen1, this method will be called with the default value for SubsetJson (""). We need to ignore that.
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
+    }
+    
+    if (editor.isLoadComplete()) {
+      ((YaFormEditor)editor).reloadComponentPalette(asJson);
     }
   }
 
@@ -627,12 +976,13 @@ public final class MockForm extends MockContainer {
   }
 
   private void setActionBarProperty(String actionBar) {
+    this.actionBar = Boolean.parseBoolean(actionBar);
     if (editor.isScreen1()) {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR, actionBar);
     }
-    titleBar.setActionBar(Boolean.parseBoolean(actionBar));
+    titleBar.setActionBar(this.actionBar, false);
     if (initialized) {
       resizePanel(screenWidth, screenHeight);  // update screen due to titlebar size change.
     }
@@ -649,6 +999,7 @@ public final class MockForm extends MockContainer {
       color = ComponentConstants.DEFAULT_PRIMARY_COLOR;
     }
     titleBar.setBackgroundColor(color);
+    primaryColor = color;
   }
 
   private void setPrimaryColorDark(String color) {
@@ -657,6 +1008,7 @@ public final class MockForm extends MockContainer {
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, color);
     }
+    primaryDarkColor= color;
   }
 
   private void setAccentColor(String color) {
@@ -675,19 +1027,51 @@ public final class MockForm extends MockContainer {
     }
     if (theme.equals("AppTheme.Light")) {
       final String newColor = "&HFF000000";
+      blackIcons = true;
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     } else {
       final String newColor = "&HFFFFFFFF";
+      blackIcons = false;
       MockComponentsUtil.setWidgetTextColor(titleBar.bar, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.menuButton, newColor);
       MockComponentsUtil.setWidgetTextColor(titleBar.title, newColor);
     }
     if (theme.equals("AppTheme")) {
-      formWidget.addStyleDependentName("Dark");
+      blackIcons = false;
+      formWidget.setStylePrimaryName("ode-SimpleMockFormDark");
     } else {
-      formWidget.removeStyleDependentName("Dark");
+      formWidget.setStylePrimaryName("ode-SimpleMockForm");
+    }
+
+    // Resetting the MockForm with new preview styles
+    if (idxPhonePreviewStyle == 0) {
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidMaterial");
+    } else if (idxPhonePreviewStyle == 1) {
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("iOS");
+      formWidget.addStyleDependentName("AndroidHolo");
+    } else if (idxPhonePreviewStyle == 2) {
+      formWidget.removeStyleDependentName("AndroidMaterial");
+      formWidget.removeStyleDependentName("AndroidHolo");
+      formWidget.addStyleDependentName("iOS");
+    }
+
+    if (idxPhonePreviewStyle == 2) {
+      phoneBar.setIconColor(blackIcons, idxPhoneSize);
+      titleBar.changeBookmarkIcon(blackIcons);
+    }
+
+  }
+
+  private void setDefaultFileScope(String defaultFileScope) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
     }
   }
 
@@ -724,7 +1108,6 @@ public final class MockForm extends MockContainer {
 
   private Timer refreshTimer = null;
   public final void refresh() {
-    Ode.CLog("MockForm: refresh() called.");
     if (refreshTimer != null) return;
     refreshTimer = new Timer() {
       @Override
@@ -745,7 +1128,6 @@ public final class MockForm extends MockContainer {
    */
 
   public final void doRefresh() {
-    Ode.CLog("MockForm: doRefresh() called");
     Map<MockComponent, LayoutInfo> layoutInfoMap = new HashMap<MockComponent, LayoutInfo>();
 
     collectLayoutInfos(layoutInfoMap, this);
@@ -759,7 +1141,6 @@ public final class MockForm extends MockContainer {
       layoutInfo.cleanUp();
     }
     layoutInfoMap.clear();
-    Ode.CLog("MockForm: doRefresh() done.");
   }
 
   /*
@@ -829,10 +1210,30 @@ public final class MockForm extends MockContainer {
   }
 
   /**
+   * Adds an {@link DesignPreviewChangeListener} to the listener set if it isn't already
+   * there.
+   *
+   * @param listener the {@code DesignPreviewChangeListener} to be added
+   */
+  public void addDesignPreviewChangeListener(DesignPreviewChangeListener listener) {
+    designPreviewChangeListeners.add(listener);
+  }
+
+  /**
+   * Removes an {@link DesignPreviewChangeListener} from the listener list.
+   *
+   * @param listener the {@code DesignPreviewChangeListener} to be removed.
+   */
+
+  public void removeDesignPreviewChangeListener(DesignPreviewChangeListener listener) {
+    designPreviewChangeListeners.remove(listener);
+  }
+
+  /**
    * Triggers a component property change event to be sent to the listener on the listener list.
    */
-  protected void fireComponentPropertyChanged(MockComponent component,
-      String propertyName, String propertyValue) {
+  protected void fireComponentPropertyChanged(MockComponent component, String propertyName,
+      String propertyValue) {
     for (FormChangeListener listener : formChangeListeners) {
       listener.onComponentPropertyChanged(component, propertyName, propertyValue);
     }
@@ -875,31 +1276,82 @@ public final class MockForm extends MockContainer {
   }
 
   /**
+   * Triggers the DesignChangePreviewChange listeners
+   */
+  protected void fireDesignPreviewChange() {
+    for (DesignPreviewChangeListener listener : designPreviewChangeListeners) {
+      listener.onDesignPreviewChanged();
+    }
+  }
+
+  private boolean shouldSelectMultipleComponents(NativeEvent e) {
+    if (e == null) {
+      return false;
+    }
+    if (Window.Navigator.getPlatform().toLowerCase().startsWith("mac")) {
+      return e.getMetaKey();
+    } else {
+      return e.getCtrlKey();
+    }
+  }
+
+  /**
    * Changes the component that is currently selected in the form.
    * <p>
    * There will always be exactly one component selected in a form
    * at any given time.
    */
-  public final void setSelectedComponent(MockComponent newSelectedComponent) {
-    MockComponent oldSelectedComponent = selectedComponent;
-
+  public final void setSelectedComponent(MockComponent newSelectedComponent, NativeEvent event) {
     if (newSelectedComponent == null) {
       throw new IllegalArgumentException("at least one component must always be selected");
     }
-    if (newSelectedComponent == oldSelectedComponent) {
+    boolean shouldSelectMultipleComponents = shouldSelectMultipleComponents(event);
+    if (selectedComponents.size() == 1 && selectedComponents.contains(newSelectedComponent)) {
+      // Attempting to change the selection from old to new when they are the same breaks
+      // Marker drag. See https://github.com/mit-cml/appinventor-sources/issues/1936
       return;
     }
 
-    selectedComponent = newSelectedComponent;
-
-    if (oldSelectedComponent != null) {     // Can be null initially
-      oldSelectedComponent.onSelectedChange(false);
+    // Remove an previously selected component from the list of selected components, but only if
+    // there would still be something selected.
+    if (shouldSelectMultipleComponents && selectedComponents.contains(newSelectedComponent)
+        && selectedComponents.size() > 1) {
+      selectedComponents.remove(newSelectedComponent);
+      newSelectedComponent.onSelectedChange(false);
+      return;
     }
+    if (newSelectedComponent instanceof MockContainer) {
+      pasteTarget = (MockContainer) newSelectedComponent;
+    } else {
+      pasteTarget = newSelectedComponent.getContainer();
+    }
+
+    if (!shouldSelectMultipleComponents) {
+      for (MockComponent component : selectedComponents) {
+        if (component != newSelectedComponent) {
+          component.onSelectedChange(false);
+        }
+      }
+      selectedComponents.clear();
+    }
+    selectedComponents.add(newSelectedComponent);
     newSelectedComponent.onSelectedChange(true);
   }
 
-  public final MockComponent getSelectedComponent() {
-    return selectedComponent;
+  public final List<MockComponent> getSelectedComponents() {
+    return selectedComponents;
+  }
+
+  public final MockComponent getLastSelectedComponent() {
+    return selectedComponents.get(selectedComponents.size() - 1);
+  }
+
+  public final MockContainer getPasteTarget() {
+    return pasteTarget;
+  }
+
+  public final void setPasteTarget(MockContainer target) {
+    this.pasteTarget = target;
   }
 
   /**
@@ -909,7 +1361,18 @@ public final class MockForm extends MockContainer {
    * @return  tree showing the component hierarchy of the form
    */
   public TreeItem buildComponentsTree() {
-    return buildTree();
+    return buildComponentsTree(view);
+  }
+
+  /**
+   * Builds a tree of the component hierarchy of the form for display in the
+   * {@code SourceStructureExplorer}.
+   *
+   * @return  tree showing the component hierarchy of the form
+   */
+  public TreeItem buildComponentsTree(Integer view) {
+    this.view = view;
+    return buildTree(view);
   }
 
   // PropertyChangeListener implementation
@@ -948,23 +1411,38 @@ public final class MockForm extends MockContainer {
       setANameProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SHOW_LISTS_AS_JSON)) {
       setShowListsAsJsonProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_SHOW_STATUS_BAR)) {
+      setShowStatusBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_TUTORIAL_URL)) {
       setTutorialURLProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_BLOCK_SUBSET)) {
+      setBlockSubsetProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ACTIONBAR)) {
       setActionBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
-      setTheme(newValue);
       if ("Classic".equals(newValue)) {
+        editor.getVisibleComponentsPanel().enablePhonePreviewCheckBox(false);
         getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("False");
       } else {
+        editor.getVisibleComponentsPanel().enablePhonePreviewCheckBox(true);
         getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("True");
       }
+      setTheme(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_DEFAULTFILESCOPE)) {
+      setDefaultFileScope(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
       setPrimaryColor(newValue);
+      if (idxPhonePreviewStyle == 2) {
+        MockComponentsUtil.setWidgetBackgroundColor(phoneBar, newValue);
+      }
     } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR_DARK)) {
       setPrimaryColorDark(newValue);
+      if (idxPhonePreviewStyle == 0) {
+        MockComponentsUtil.setWidgetBackgroundColor(phoneBar, newValue);
+      }
     } else if (propertyName.equals(PROPERTY_NAME_ACCENT_COLOR)) {
       setAccentColor(newValue);
+      fireDesignPreviewChange();
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
@@ -994,6 +1472,10 @@ public final class MockForm extends MockContainer {
     }
   }
 
+  public void projectPropertyChanged() {
+    ((YaFormEditor) editor).refreshCurrentPropertiesPanel();
+  }
+
   @Override
   public EditableProperties getProperties() {
     // Before we return the Properties object, we make sure that the
@@ -1004,9 +1486,9 @@ public final class MockForm extends MockContainer {
     // definitive.
     if (!editor.isScreen1()) {
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING,
-        editor.getProjectEditor().getProjectSettingsProperty(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -1015,6 +1497,10 @@ public final class MockForm extends MockContainer {
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,

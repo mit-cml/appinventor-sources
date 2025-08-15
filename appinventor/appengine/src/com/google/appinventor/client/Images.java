@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -26,7 +26,7 @@ public interface Images extends Resources {
   ImageResource codiVert();
 
   /**
-   * App Inventor Logo
+   * App Inventor Logo 
    * {@link Ode#createWelcomeDialog(boolean)}
    */
   @Source("com/google/appinventor/images/appinvlogo-32.png")
@@ -63,16 +63,76 @@ public interface Images extends Resources {
   ImageResource close();
 
   /**
-   * Phone status bar shown above the form in the visual designer
+   * Phone status bar for Android Holo shown above the form in the visual designer
    */
   @Source("com/google/appinventor/images/phonebar.png")
   ImageResource phonebar();
 
   /**
-   * Navigation bar shown below the form in the visual designer
+   * Phone status bar for the Android Material form in the visual designer
    */
-  @Source("com/google/appinventor/images/navigationbar.png")
-  ImageResource navigationbar();
+  @Source("com/google/appinventor/images/phonebarAndroidMaterial.png")
+  ImageResource phonebarAndroidMaterial();
+
+  /**
+   * Phone status bar for iPhone containing white left side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPhoneLeftWhiteFB.png")
+  ImageResource phonebariPhoneLeftWhite();
+
+  /**
+   * Phone status bar for iPhone containing white right side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPhoneRightWhite.png")
+  ImageResource phonebariPhoneRightWhite();
+
+  /**
+   * Phone status bar for iPhone containing black left side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPhoneLeftBlack.png")
+  ImageResource phonebariPhoneLeftBlack();
+
+  /**
+   * Phone status bar for iPhone containing black right side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPhoneRightBlack.png")
+  ImageResource phonebariPhoneRightBlack();
+
+  /**
+   * Phone status bar for iPad containing black left side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPadBlackFB.png")
+  ImageResource phonebariPadLeftBlack();
+
+  /**
+   * Phone status bar for iPad containing black right side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPadRightBlack.png")
+  ImageResource phonebariPadRightBlack();
+
+  /**
+   * Phone status bar for iPad containing white left side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPadLeftWhiteFB.png")
+  ImageResource phonebariPadLeftWhite();
+
+  /**
+   * Phone status bar for iPad containing white right side icons in the visual designer
+   */
+  @Source("com/google/appinventor/images/iPadRightWhite.png")
+  ImageResource phonebariPadRightWhite();
+
+  /**
+   * Phone status bar containing white book icon for the iOS form in the visual designer
+   */
+  @Source("com/google/appinventor/images/iOSBookmarkWhite.png")
+  ImageResource bookIconWhite();
+
+  /**
+   * Phone status bar containing black book icon for the iOS form in the visual designer
+   */
+  @Source("com/google/appinventor/images/iOSBookmarkBlack.png")
+  ImageResource bookIconBlack();
 
   /**
    * Spinning/wait graphic to indicate long-running operations.
@@ -97,6 +157,38 @@ public interface Images extends Resources {
     */
    @Source("com/google/appinventor/images/accelerometersensor.png")
    ImageResource accelerometersensor();
+
+   /**
+    * Designer palette item: lightsensor component
+    * <p>
+    * Source: https://feathericons.com/
+    */
+   @Source("com/google/appinventor/images/lightsensor.png")
+   ImageResource lightsensor();
+
+   /**
+    * Designer palette item: barometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/barometer.png")
+   ImageResource barometer();
+
+   /**
+    * Designer palette item: thermometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/thermometer.png")
+   ImageResource thermometer();
+
+  /**
+    * Designer palette item: hygrometer component
+    * <p>
+    * Source: Ellen Spertus, released into public domain
+    */
+   @Source("com/google/appinventor/images/hygrometer.png")
+   ImageResource hygrometer();
 
   /**
    * Designer palette item: barcode scanner component
@@ -133,6 +225,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/checkbox.png")
   ImageResource checkbox();
+
+  /**
+   * Designer palette item: checkbox component
+   */
+  @Source("com/google/appinventor/images/switch.png")
+  ImageResource toggleswitch();
 
   /**
    * Designer palette item: DatePicker Component
@@ -274,6 +372,13 @@ public interface Images extends Resources {
   ImageResource listview();
 
   /**
+ * Designer palette item: ListView component
+ */
+
+ @Source("com/google/appinventor/images/recyclerView.png")
+ ImageResource recyclerview();
+
+  /**
    * Designer palette item: PhoneCall component
    */
   @Source("com/google/appinventor/images/phoneCall.png")
@@ -302,6 +407,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/gameClient.png")
   ImageResource gameclient();
+
+  /**
+   * Designer pallete item: Spreadsheet component
+   */
+  @Source("com/google/appinventor/images/spreadsheet.png")
+  ImageResource spreadsheet();
 
   /**
    * Designer palette item: Sprite
@@ -400,6 +511,12 @@ public interface Images extends Resources {
   ImageResource voting();
 
   /**
+   * Designer palette item: ImageBot.
+   */
+  @Source("com/google/appinventor/images/paintpalette.png")
+  ImageResource paintPalette();
+
+  /**
    * Designer palette item: Pedometer Component
    */
   @Source("com/google/appinventor/images/pedometer.png")
@@ -492,6 +609,12 @@ public interface Images extends Resources {
   ImageResource lists();
 
   /**
+   * Built in drawer item: dictionaries
+   */
+  @Source("com/google/appinventor/images/dictionaries.png")
+  ImageResource dictionaries();
+
+  /**
    * Built in drawer item: colors
    */
   @Source("com/google/appinventor/images/colors.png")
@@ -525,6 +648,18 @@ public interface Images extends Resources {
     */
   @Source("com/google/appinventor/images/spinner.png")
   ImageResource spinner();
+
+  /**
+   * Designer palette item: Translator Component
+   */
+  @Source("com/google/appinventor/images/translator.png")
+  ImageResource translator();
+
+  /**
+   * Designer pallette item: ChatBot Component
+   */
+  @Source("com/google/appinventor/images/chatbot.png")
+  ImageResource chatbot();
 
   /**
     * Designer palette item: YandexTranslate
@@ -586,4 +721,117 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/rectangle.png")
   ImageResource rectangle();
 
+  /**
+   * Codi Logo
+   */
+   @Source("com/google/appinventor/images/logo.png")
+   ImageResource logo();
+
+  /**
+   * Designer palette item: Arduino component
+   */
+  @Source("com/google/appinventor/images/arduino.png")
+  ImageResource arduino();
+  
+  /**
+   * Media icon: image
+   */
+  @Source("com/google/appinventor/images/mediaIcon_img.png")
+  ImageResource mediaIconImg();
+
+  /**
+   * Media icon: audio
+   */
+  @Source("com/google/appinventor/images/mediaIcon_audio.png")
+  ImageResource mediaIconAudio();
+
+  /**
+   * Media icon: video
+   */
+  @Source("com/google/appinventor/images/mediaIcon_video.png")
+  ImageResource mediaIconVideo();
+  
+  /**
+   * Designer palette item: Magnetic Field Sensor component
+   */
+  @Source("com/google/appinventor/images/magneticSensor.png")
+  ImageResource magneticSensor();
+
+  /**
+   * Designer palette item:
+   */
+  @Source("com/google/appinventor/images/navigation.png")
+  ImageResource navigationComponent();
+
+  /**
+  * Wilson Logo 
+  */
+  @Source("com/google/appinventor/images/wilson.png")
+  ImageResource wilson();
+
+  /**
+  * Talk to Me Logo
+  */
+  @Source("com/google/appinventor/images/talkToMeLogo.png")
+  ImageResource talkToMeLogo();
+
+  /**
+  * YR Media Logo
+  */
+  @Source("com/google/appinventor/images/YRLogo.png")
+  ImageResource YRLogo();
+
+  /**
+   * Download app icon
+   */
+  @Source("com/google/appinventor/images/get-app.png")
+  ImageResource GetApp();
+
+  /**
+   * Designer palette item: Chart.
+   */
+  @Source("com/google/appinventor/images/chart.png")
+  ImageResource chart();
+
+  /**
+   * Designer palette item: ChartData2D.
+   */
+  @Source("com/google/appinventor/images/chartData.png")
+  ImageResource chartData2D();
+
+  /**
+   * Designer palette item: Regression.
+   */
+  @Source("com/google/appinventor/images/regression.png")
+  ImageResource regression();
+
+  /**
+   * Designer palette item: AnomalyDetection.
+   */
+  @Source("com/google/appinventor/images/anomaly.png")
+  ImageResource anomalyDetection();
+
+  /**
+   * Designer palette item: DataFile.
+   */
+  @Source("com/google/appinventor/images/dataFile.png")
+  ImageResource dataFile();
+
+  /**
+   * Designer palette item: progressbar circular component
+   */
+  @Source("com/google/appinventor/images/circularProgress.png")
+  ImageResource circularProgress();
+
+  /**
+   * Designer palette item: progressbar circular component
+   */
+  @Source("com/google/appinventor/images/linearProgress.png")
+  ImageResource linearProgress();
+
+  /**
+   * Designer palette item: Trendline.
+   */
+  @Source("com/google/appinventor/images/trendline.png")
+  ImageResource trendline();
 }

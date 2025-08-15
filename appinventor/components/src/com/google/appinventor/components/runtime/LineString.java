@@ -1,47 +1,53 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
+import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
 
-import android.support.annotation.NonNull;
-import com.google.appinventor.components.runtime.errors.DispatchableError;
-import com.google.appinventor.components.runtime.util.MapFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.locationtech.jts.geom.Geometry;
-import org.osmdroid.util.GeoPoint;
-
+import android.util.Log;
+import androidx.annotation.NonNull;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.MapFeature;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.DispatchableError;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.GeometryUtil;
+import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapCircle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureVisitor;
 import com.google.appinventor.components.runtime.util.MapFactory.MapLineString;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.locationtech.jts.geom.Geometry;
+import org.osmdroid.util.GeoPoint;
 
-import android.util.Log;
-
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
-import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
-
+/**
+ * `LineString` is a component for drawing an open, continuous sequence of lines on a `Map`. To add
+ * new points to a `LineString` in the designer, drag the midpoint of any segment away from the
+ * line to introduce a new vertex. Move a vertex by clicking and dragging the vertex to a new
+ * location. Clicking on a vertex will delete the vertex, unless only two remain.
+ */
 @DesignerComponent(version = YaVersion.LINESTRING_COMPONENT_VERSION,
     category = ComponentCategory.MAPS,
-    description = "LineString")
+    description = "LineString is a component for drawing an open, continuous sequence of lines on a Map. To add new points to a LineString in the designer, drag the midpoint of any segment away from the line to introduce a new vertex. Move a vertex by clicking and dragging the vertex to a new location. Clicking on a vertex will delete the vertex, unless only two remain.",
+    iconName = "images/linestring.png")
 @SimpleObject
 public class LineString extends MapFeatureBase implements MapLineString {
   private static final String TAG = LineString.class.getSimpleName();
@@ -101,10 +107,21 @@ public class LineString extends MapFeatureBase implements MapLineString {
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "The type of the map feature.")
+      description = "Returns the type of the map feature. For LineString, this returns "
+          + "MapFeature.LineString (\"LineString\").")
   @Override
-  public String Type() {
-    return MapFactory.MapFeatureType.TYPE_LINESTRING;
+  public @Options(MapFeature.class) String Type() {
+    return TypeAbstract().toUnderlyingValue();
+  }
+
+  /**
+   * Gets the type of this feature, as a {@link MapFeature}.
+   *
+   * @return the abstract MapFeature type of this feature. In this case MapFeature.LineString.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public MapFeature TypeAbstract() {
+    return MapFeature.LineString;
   }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
@@ -115,6 +132,10 @@ public class LineString extends MapFeatureBase implements MapLineString {
     return GeometryUtil.pointsListToYailList(points);
   }
 
+  /**
+   * The list of points, as pairs of latitudes and longitudes, in the `LineString`.
+   * @param points the new coordinates for the LineString.
+   */
   @SimpleProperty
   @Override
   public void Points(@NonNull YailList points) {
@@ -135,13 +156,12 @@ public class LineString extends MapFeatureBase implements MapLineString {
 
   /**
    * Set the points of the LineString from a specially-coded character string of the form:
-   * [[longitude1, latitude1], [longitude2, latitude2], ...]
-   * Note the reversal of latitude and longitude versus how they are typically represented.
+   * [[latitude1, longitude1], [latitude2, longitude2], ...]
    *
    * @param points String containing a sequence of points for the LineString.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
-  @SimpleProperty
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void PointsFromString(String points) {
     final String functionName = "PointsFromString";
     try {
@@ -183,6 +203,10 @@ public class LineString extends MapFeatureBase implements MapLineString {
     }
   }
 
+  /**
+   * Sets or gets the width of the stroke used to outline the `%type%`.
+   * @param width the outline width
+   */
   @Override
   @DesignerProperty(defaultValue = "3")
   @SimpleProperty

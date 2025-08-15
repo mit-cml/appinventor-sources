@@ -158,6 +158,15 @@ public abstract class ChainableCommand {
   protected abstract void execute(ProjectNode node);
 
   /**
+   * Check if the command can be used for the project node.
+   * @param node the project node to which the command is applied
+   * @return
+   */
+  protected boolean isSupported(ProjectNode node) {
+    return true;
+  }
+
+  /**
    * Executes the next command in the chain.
    *
    * @param node the project node to which the command is applied

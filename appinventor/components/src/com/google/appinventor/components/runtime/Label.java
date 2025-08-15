@@ -6,8 +6,13 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
@@ -16,23 +21,23 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 /**
- * Label containing a text string.
+ * Labels are components used to show text.
  *
+ * ![Example of a label](images/label.png)
+ *
+ * A label displays text which is specified by the `Text` property. Other properties, all of which
+ * can be set in the Designer or Blocks Editor, control the appearance and placement of the text.
  */
 @DesignerComponent(version = YaVersion.LABEL_COMPONENT_VERSION,
     description = "A Label displays a piece of text, which is " +
     "specified through the <code>Text</code> property.  Other properties, " +
     "all of which can be set in the Designer or Blocks Editor, control " +
     "the appearance and placement of the text.",
-    category = ComponentCategory.USERINTERFACE)
+    category = ComponentCategory.USERINTERFACE,
+    iconName = "images/label.png")
 @SimpleObject
-public final class Label extends AndroidViewComponent {
+public final class Label extends AndroidViewComponent implements AccessibleComponent{
 
   // default margin around a label in DPs
   // note that the spacing between adjacent labels will be twice this value
@@ -45,7 +50,7 @@ public final class Label extends AndroidViewComponent {
 
   private final TextView view;
 
-  private final LinearLayout.LayoutParams linearLayoutParams;
+  private final ViewGroup.MarginLayoutParams marginLayoutParams;
 
   // Backing for text alignment
   private int textAlignment;
@@ -54,7 +59,7 @@ public final class Label extends AndroidViewComponent {
   private int backgroundColor;
 
   // Backing for font typeface
-  private int fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
   private boolean bold;
@@ -70,6 +75,12 @@ public final class Label extends AndroidViewComponent {
 
   // Label Format
   private boolean htmlFormat;
+
+  // HTML content of the label
+  private String htmlContent;
+
+  //Whether or not the text should be big
+  private boolean isBigText = false;
 
   /**
    * Creates a new Label component.
@@ -90,12 +101,12 @@ public final class Label extends AndroidViewComponent {
     Object lp = view.getLayoutParams();
     // The following instanceof check will fail if we have not previously
     // added the label to the container (Why?)
-    if (lp instanceof LinearLayout.LayoutParams) {
-        linearLayoutParams = (LinearLayout.LayoutParams) lp;
-        defaultLabelMarginInDp = dpToPx(view, DEFAULT_LABEL_MARGIN);
+    if (lp instanceof ViewGroup.MarginLayoutParams) {
+      marginLayoutParams = (ViewGroup.MarginLayoutParams) lp;
+      defaultLabelMarginInDp = dpToPx(view, DEFAULT_LABEL_MARGIN);
     } else {
       defaultLabelMarginInDp = 0;
-      linearLayoutParams = null;
+      marginLayoutParams = null;
       Log.e("Label", "Error: The label's view does not have linear layout parameters");
       new RuntimeException().printStackTrace();
     }
@@ -104,7 +115,7 @@ public final class Label extends AndroidViewComponent {
     TextAlignment(Component.ALIGNMENT_NORMAL);
     BackgroundColor(Component.COLOR_NONE);
     fontTypeface = Component.TYPEFACE_DEFAULT;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
@@ -165,6 +176,7 @@ public final class Label extends AndroidViewComponent {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -213,7 +225,7 @@ public final class Label extends AndroidViewComponent {
       userVisible = false)
   public void FontBold(boolean bold) {
     this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -242,7 +254,7 @@ public final class Label extends AndroidViewComponent {
       userVisible = false)
   public void FontItalic(boolean italic) {
     this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -279,7 +291,7 @@ public final class Label extends AndroidViewComponent {
 
 private void setLabelMargins(boolean hasMargins) {
   int m = hasMargins ? defaultLabelMarginInDp : 0 ;
-  linearLayoutParams.setMargins(m, m, m, m);
+  marginLayoutParams.setMargins(m, m, m, m);
   view.invalidate();
 }
 
@@ -303,7 +315,12 @@ private void setLabelMargins(boolean hasMargins) {
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
+
+    if (size == FONT_DEFAULT_SIZE && (isBigText || container.$form().BigDefaultText())) {
+      TextViewUtil.setFontSize(view, 24);
+    } else {
+      TextViewUtil.setFontSize(view, size);
+    }
   }
 
   /**
@@ -318,7 +335,7 @@ private void setLabelMargins(boolean hasMargins) {
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 
@@ -335,9 +352,9 @@ private void setLabelMargins(boolean hasMargins) {
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -356,7 +373,7 @@ private void setLabelMargins(boolean hasMargins) {
    *
    * @param text  new caption for label
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
@@ -364,6 +381,22 @@ private void setLabelMargins(boolean hasMargins) {
       TextViewUtil.setTextHTML(view, text);
     } else {
       TextViewUtil.setText(view, text);
+    }
+    htmlContent = text;
+  }
+
+  /**
+   * Returns the content of the Label as HTML. This is only useful if the
+   * HTMLFormat property is true.
+   *
+   * @return the HTML content of the label
+   */
+  @SimpleProperty
+  public String HTMLContent() {
+    if (htmlFormat) {
+      return htmlContent;
+    } else {
+      return TextViewUtil.getText(view);
     }
   }
 
@@ -410,6 +443,7 @@ private void setLabelMargins(boolean hasMargins) {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
+  @IsColor
   public int TextColor() {
     return textColor;
   }
@@ -430,5 +464,31 @@ private void setLabelMargins(boolean hasMargins) {
     } else {
       TextViewUtil.setTextColor(view, container.$form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK);
     }
+  }
+
+  @Override
+  public void setHighContrast(boolean isHighContrast) {
+
+  }
+
+  @Override
+  public boolean getHighContrast() {
+    return false;
+  }
+
+  @Override
+  public void setLargeFont(boolean isLargeFont) {
+    if (TextViewUtil.getFontSize(view, container.$context()) == 24.0 || TextViewUtil.getFontSize(view, container.$context()) == Component.FONT_DEFAULT_SIZE) {
+      if (isLargeFont) {
+        TextViewUtil.setFontSize(view, 24);
+      } else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+  }
+
+  @Override
+  public boolean getLargeFont() {
+    return isBigText;
   }
 }

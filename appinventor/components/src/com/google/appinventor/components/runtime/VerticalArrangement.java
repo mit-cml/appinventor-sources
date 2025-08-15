@@ -13,7 +13,35 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 /**
- * A vertical arrangement of components
+ * ![VerticalArrangement icon](images/verticalarrangement.png)
+ *
+ * Use a `VerticalArrangement` component to display a group of components laid out from top to
+ * bottom, left-aligned.
+ *
+ * This component is a formatting element in which you place components that should be displayed
+ * one below another. The first child component is stored on top, the second beneath it, and so on.
+ * If you want to have components displayed next to one another, use {@link HorizontalArrangement}
+ * instead.
+ *
+ * In a `VerticalArrangement`, components are arranged along the vertical axis, left-aligned.
+ *
+ * If a `VerticalArrangement`'s {@link #Width()} property is set to `Automatic`, the actual width
+ * of the arrangement is determined by the widest component in the arrangement whose
+ * {@link #Width()} property is not set to `Fill Parent`. If a `VerticalArrangement`'s
+ * {@link #Width()} property is set to `Automatic` and it contains only components whose
+ * {@link #Width()} properties are set to `Fill Parent`, the actual width of the arrangement is
+ * calculated using the automatic widths of the components. If a `VerticalArrangement`'s
+ * {@link #Width()} property is set to `Automatic` and it is empty, the width will be 100.
+ *
+ * If a `VerticalArrangement`'s {@link #Height()} property is set to `Automatic`, the actual height
+ * of the arrangement is determined by the sum of the heights of the components. **If a
+ * `VerticalArrangement`'s {@link #Height()} property is set to `Automatic`, any components whose
+ * `Height` properties are set to `Fill Parent` will behave as if they were set to `Automatic`.**
+ *
+ * If a `VerticalArrangement`'s {@link #Height()} property is set to `Fill Parent` or specified in
+ * pixels, any components whose Height properties are set to `Fill Parent` will equally take up the
+ * height not occupied by other components.
+ *
  * @author sharon@google.com (Sharon Perl)
  *
  */
@@ -24,7 +52,8 @@ import com.google.appinventor.components.common.YaVersion;
     "is stored on top, the second beneath it, etc.)  If you wish to have " +
     "components displayed next to one another, use " +
     "<code>HorizontalArrangement</code> instead.</p>",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/vertical.png")
 @SimpleObject
 public class VerticalArrangement extends HVArrangement {
 
