@@ -12,7 +12,7 @@ import Combine
 open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
   
   public static var SHARED_GROUND_LEVEL: Float = -1.2
-   
+  public static var VERTICAL_OFFSET: Float = 0.1
    // Update your existing GROUND_LEVEL to use the shared value
    public var GROUND_LEVEL: Float {
        get { return ARView3D.SHARED_GROUND_LEVEL }
@@ -426,8 +426,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         let entityA = event.entityA
         let entityB = event.entityB
         
-        print("🔥 AR Object collision: \(entityA.name) ↔ \(entityB.name)")
-        
         // Find the nodes and notify them of the collision
         if let nodeA = self.findNodeForEntity(entityA as? ModelEntity),
            let nodeB = self.findNodeForEntity(entityB as? ModelEntity) {
@@ -438,7 +436,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           
           print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
         } else {
-          print("⚠️ Could not find nodes for collision entities")
+          
       }
       }
       
@@ -741,7 +739,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                     // Only use large, confident planes (at least 1 square meter)
                     if planeSize > 1.0 {
                       print("🏠 FIRST TIME: Setting ground level to detected floor: \(detectedRealFloorLevel)m")
-                      let invisibleFloorLevel = detectedRealFloorLevel + 0.3
+                      let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
                       // ✅ Update ground level reference
                       ARView3D.SHARED_GROUND_LEVEL = invisibleFloorLevel
                       
