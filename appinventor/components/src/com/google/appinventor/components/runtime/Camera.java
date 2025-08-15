@@ -6,23 +6,16 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
 import android.app.Activity;
-
 import android.content.ContentValues;
 import android.content.Intent;
-
+import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
-
 import android.os.Build;
 import android.os.Environment;
-
 import android.provider.MediaStore;
-
 import android.util.Log;
-
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -30,19 +23,21 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
-
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 import com.google.appinventor.components.runtime.util.ScopedFile;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.io.File;
-
 import java.net.URI;
+
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 /**
  * ![Camera icon](images/camera.png)
@@ -65,7 +60,7 @@ import java.net.URI;
    nonVisible = true,
    iconName = "images/camera.png")
 @SimpleObject
-@UsesPermissions({CAMERA})
+@UsesPermissions({CAMERA, "android.permission.FLASHLIGHT"})
 public class Camera extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 
@@ -85,6 +80,12 @@ public class Camera extends AndroidNonvisibleComponent
 
   private boolean havePermission = false;
 
+  private static final String LOG_TAG = "Camera";
+  @SuppressWarnings("deprecation")
+  private android.hardware.Camera camera = null;
+  private boolean lightOn;
+  private final boolean hasFlash;
+
   /**
    * Creates a Camera component.
    *
@@ -95,6 +96,9 @@ public class Camera extends AndroidNonvisibleComponent
   public Camera(ComponentContainer container) {
     super(container.$form());
     this.container = container;
+
+    this.lightOn = false;
+    this.hasFlash = container.$context().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
 
     // Default property values
     UseFront(false);
@@ -174,6 +178,58 @@ public class Camera extends AndroidNonvisibleComponent
       form.dispatchErrorOccurredEvent(this, "TakePicture",
           ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_NOT_AVAILABLE);
     }
+  }
+
+  @SuppressWarnings("deprecation")
+  @SimpleFunction(description = "Toggle the flash of your device to on or off.")
+  public void ToggleLight() {
+    if (!havePermission) {
+      form.askPermission(CAMERA,
+              new PermissionResultHandler() {
+                @Override
+                public void HandlePermissionResponse(String permission, boolean granted) {
+                  if (granted) {
+                    havePermission = true;
+                    ToggleLight();
+                  } else {
+                    form.dispatchPermissionDeniedEvent(Camera.this, "ToggleLight", CAMERA);
+                  }
+                }
+              });
+      return;
+    }
+
+    if (lightOn) {
+      if (camera != null) {
+        camera.stopPreview();
+        camera.release();
+        camera = null;
+      }
+      lightOn = false;
+      return;
+    }
+    try {
+      camera = android.hardware.Camera.open();
+      android.hardware.Camera.Parameters p = camera.getParameters();
+      p.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_TORCH);
+      camera.setParameters(p);
+      // Todo: Move this to HoneycombUtils class
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+        camera.setPreviewTexture(new SurfaceTexture(0));
+      }
+      camera.startPreview();
+      lightOn = true;
+    } catch (PermissionException e) {
+      Log.e(LOG_TAG, "ToggleLight: Failed to obtain CAMERA permission.", e);
+      form.dispatchPermissionDeniedEvent(this, "ToggleLight", e);
+    } catch (Exception e) {
+      Log.e(LOG_TAG, "ToggleLight: Unknown error", e);
+    }
+  }
+
+  @SimpleFunction(description = "Returns true if your device has a flash.")
+  public boolean HasFlash() {
+    return this.hasFlash;
   }
 
   private void capturePicture(final ScopedFile target) {
