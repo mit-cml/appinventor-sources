@@ -84,10 +84,34 @@ public final class YoungAndroidSettings extends Settings {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, "App",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, "{}",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED, "Screen1",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING, YOUNG_ANDROID_VERSION + "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "",
         EditableProperty.TYPE_INVISIBLE));
   }
 }

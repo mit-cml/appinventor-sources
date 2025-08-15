@@ -11,6 +11,7 @@ import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.Promise.RejectCallback;
 import com.google.appinventor.client.utils.Promise.ResolveCallback;
@@ -31,12 +32,14 @@ import com.google.gwt.user.client.Window;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Property editor for chatbot model property
  *
  */
 public class YoungAndroidChatbotModelPropertyEditor extends ChoicePropertyEditor {
+  private static final Logger LOG = Logger.getLogger(YoungAndroidChatbotModelPropertyEditor.class.getName());
 
   private static final Promise<Choice[]> choicePromise = new Promise<Choice[]>((resolve, reject) -> {
       String url = AppInventorFeatures.chatBotHost() + "model_list/v1";

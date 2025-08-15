@@ -222,7 +222,7 @@ open class Web: NonvisibleComponent {
         }
       }
     })
-
+    task.priority = 1.0
     task.resume()
   }
 
@@ -240,6 +240,7 @@ open class Web: NonvisibleComponent {
     let urlSessionConfiguration = URLSessionConfiguration.default
     urlSessionConfiguration.httpCookieStorage = _cookieStorage
     urlSessionConfiguration.httpShouldSetCookies = _allowCookies
+    urlSessionConfiguration.waitsForConnectivity = false
     if webProps.timeout > 0 {
       urlSessionConfiguration.timeoutIntervalForRequest = Double(webProps.timeout) / 1000.0
     }

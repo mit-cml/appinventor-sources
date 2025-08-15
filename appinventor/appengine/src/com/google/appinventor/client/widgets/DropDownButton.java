@@ -7,8 +7,10 @@ package com.google.appinventor.client.widgets;
 
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -248,6 +250,12 @@ public class DropDownButton extends TextButton {
       MenuItem menuItem = menu.addItem(content, true, item.command, item.styleName);
       if (item.dependentStyleName != null) {
         menuItem.addStyleDependentName(item.dependentStyleName);
+      }
+      if (item.beta) {
+        SpanElement el = Document.get().createSpanElement();
+        el.setInnerText("BETA");
+        el.setAttribute("class", "ode-BetaLabel");
+        menuItem.getElement().appendChild(el);
       }
       if (!item.getVisible()) {
         menuItem.setVisible(false);

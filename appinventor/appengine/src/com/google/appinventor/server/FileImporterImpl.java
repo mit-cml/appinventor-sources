@@ -12,6 +12,7 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -81,6 +82,7 @@ public final class FileImporterImpl implements FileImporter {
     String qualifiedFormName = StringUtils.getQualifiedFormName(
         storageIo.getUser(userId).getUserEmail(), projectName);
     String srcDirectory = YoungAndroidProjectService.getSourceDirectory(qualifiedFormName);
+    String projectSettings = new YoungAndroidSettingsBuilder().build();
 
     ZipInputStream zin = new ZipInputStream(uploadedFileStream);
     boolean isProjectArchive = false;  // have we found at least one project properties file?
@@ -107,14 +109,18 @@ public final class FileImporterImpl implements FileImporter {
             // The content for the youngandroidproject/project.properties file must be regenerated
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
+
             Properties props = new Properties();
             props.load(zin);
             lastOpened = props.getProperty("lastopened", "Screen1");
-            String content = new YoungAndroidSettingsBuilder()
+            String projectColors = props.getProperty("projectcolors", "{}");
+            YoungAndroidSettingsBuilder settingsBuilder = new YoungAndroidSettingsBuilder()
                 .setProjectName(projectName)
                 .setQualifiedFormName(qualifiedFormName)
                 .setDefaultLastOpened(lastOpened)
-                .toProperties();
+                .setProjectColors(projectColors);
+            String content = settingsBuilder.toProperties();
+            projectSettings = settingsBuilder.build();
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
@@ -161,8 +167,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = new YoungAndroidSettingsBuilder().setDefaultLastOpened(lastOpened).build();
-    long projectId = storageIo.createProject(userId, project, settings);
+    long projectId = storageIo.createProject(userId, project, projectSettings);
     return storageIo.getUserProject(userId, projectId);
   }
 

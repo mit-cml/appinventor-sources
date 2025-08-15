@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static java.util.Arrays.asList;
 
 import com.google.appinventor.client.editor.designer.DesignerChangeListener;
 import com.google.appinventor.client.editor.designer.DesignerRootComponent;
@@ -18,6 +19,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -37,6 +39,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import java.util.ArrayList;
@@ -365,6 +369,25 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
   private static final String PROPERTY_NAME_THEME = "Theme";
   private static final String PROPERTY_NAME_DEFAULTFILESCOPE = "DefaultFileScope";
+  private static final String PROPERTY_NAME_BUILD_NUMBER = "BuildNumber";
+  private static final String PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE;
+  private static final String PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE;
+  private static final String PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE;
+  private static final String PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE;
+  private static final String PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE;
+  private static final String PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE;
+  private static final String PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE;
+
+  private static final Set<String> IOS_PERMISSION_PROPERTIES = new HashSet<>(
+      asList(
+          PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION
+      ));
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -784,6 +807,14 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       case PROPERTY_NAME_PRIMARY_COLOR_DARK:
       case PROPERTY_NAME_ACCENT_COLOR:
       case PROPERTY_NAME_THEME:
+      case PROPERTY_NAME_BUILD_NUMBER:
+      case PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION:
       case PROPERTY_NAME_DEFAULTFILESCOPE: {
         return false;
       }
@@ -957,10 +988,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
-    }
-    
-    if (editor.isLoadComplete()) {
-      ((YaFormEditor)editor).reloadComponentPalette(asJson);
+
+      if (editor.isLoadComplete()) {
+        ((YaFormEditor)editor).reloadComponentPalette(asJson);
+      }
     }
   }
 
@@ -1077,6 +1108,23 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
     }
+  }
+
+  private void setBuildNumber(String buildNumber) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_BUILDNUMBER, buildNumber);
+    }
+  }
+
+  @Override
+  protected boolean isPropertyforYail(String propertyName) {
+    if (IOS_PERMISSION_PROPERTIES.contains(propertyName)) {
+      // These are project-level properties, not per form.
+      return false;
+    }
+    return super.isPropertyforYail(propertyName);
   }
 
   /**
@@ -1315,6 +1363,21 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     } else if (propertyName.equals(PROPERTY_NAME_TITLEVISIBLE)) {
       setTitleVisibleProperty(newValue);
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_BUILD_NUMBER)) {
+      setBuildNumber(newValue);
+    } else if (
+        propertyName.equals(PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION)) {
+      if (editor.isScreen1()) {
+        editor.getProjectEditor().changeProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            propertyName, newValue);
+      }
     }
   }
 

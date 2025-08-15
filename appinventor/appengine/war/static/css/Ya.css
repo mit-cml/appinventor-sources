@@ -235,6 +235,14 @@ div.StatusPanel {
   background: #99CC00;
 }
 
+.ode-ContextMenuItem .ode-BetaLabel {
+  color: red;
+  font-size: 60%;
+  line-height: 60%;
+  padding-left: 1ex;
+  vertical-align: super;
+}
+
 .ode-ContextMenuItem-disabled {
   color: #999;
 }
@@ -3470,6 +3478,7 @@ div.dropdiv p {
 #aiConsolePanel {
   height: 100%;
   background-color: white;
+  overflow-y: scroll;
 }
 
 #aiConsolePanel .Warning {

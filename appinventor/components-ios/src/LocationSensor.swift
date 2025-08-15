@@ -18,7 +18,7 @@ public enum LocationManagerStatus: String {
  * altitude, speed, and address.  This can also perform geocoding.
  * @author Nichole Clarke
  */
-open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
+open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate, LifecycleDelegate {
 
   fileprivate static let UNKNOWN_VALUE: Double = 0
   fileprivate var _listening: Bool = false
@@ -277,7 +277,8 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
         self.geocoder.reverseGeocodeLocation(location, completionHandler: { placemarks, error in
           if let error = error {
             self._form?.dispatchErrorOccurredEvent(self, "getAddressFromLocation",
-                Int32(error._code), ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message,
+                ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.code,
+                ErrorMessage.ERROR_LOCATION_SENSOR_UNEXPECTED_ERROR.message,
                 error.localizedDescription)
             return
           } else if let placemarks = placemarks {
@@ -405,6 +406,10 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     if _enabled {
       RefreshProvider()
     }
+  }
+
+  @objc open func onPause() {
+    stopListening()
   }
 
   @objc open func onStop() {

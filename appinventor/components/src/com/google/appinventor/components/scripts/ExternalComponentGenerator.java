@@ -357,8 +357,7 @@ public class ExternalComponentGenerator {
     return true;
   }
 
-  private static void copyExternalAar(String library, String packageName, boolean ensureFreshDir)
-      throws IOException {
+  private static void copyExternalAar(String library, String packageName, boolean ensureFreshDir) throws IOException {
     File sourceDir = new File(buildServerClassDirPath + File.separator);
     File aarFile = new File(sourceDir, library);
     if (!aarFile.exists() || !library.endsWith(".aar")) {

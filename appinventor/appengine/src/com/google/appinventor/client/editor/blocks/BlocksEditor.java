@@ -27,7 +27,6 @@ import com.google.appinventor.client.editor.youngandroid.events.EventHelper;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
@@ -38,12 +37,8 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.Widget;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -139,37 +134,8 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     // Listen for selection events for built-in drawers
     BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
 
-    // Create palettePanel, which will be used as the content of the PaletteBox.
     designer = (T) projectEditor.getFileEditor(blocksNode.getEntityName(), DesignerEditor.EDITOR_TYPE);
-    if (designer != null) {
-      palettePanel = designer.getComponentPalettePanel().copy();
-      palettePanel.loadComponents(new DropTargetProvider() {
-        // TODO(sharon): make the tree in the BlockSelectorBox a drop target
-        @Override
-        public DropTarget[] getDropTargets() {
-          return new DropTarget[0];
-        }
-      });
-      ((Widget) palettePanel).setSize("100%", "100%");
-    }
-
     formToBlocksEditor.put(entityName, this);
-  }
-
-  public void setDesigner(T designer) {
-    if (this.designer == designer) {
-      return;
-    }
-    this.designer = designer;
-    if (designer != null) {
-      palettePanel = designer.getComponentPalettePanel().copy();
-      palettePanel.loadComponents(new DropTargetProvider() {
-        @Override
-        public DropTarget[] getDropTargets() {
-          return new DropTarget[0];
-        }
-      });
-    }
   }
 
   public abstract void prepareForUnload();

@@ -206,7 +206,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     guard let text = connectCode?.text else {
       return
     }
-    if text.hasPrefix("https:") {
+    if (text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}")) || text.hasPrefix("https:") {
       ViewController.gotText(text)
       return
     }
@@ -265,7 +265,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NSLog("Values = \(values)")
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
-    URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+    let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
       if self.phoneStatus.WebRTC {
         guard let data = data, let responseContent = String(data: data, encoding: .utf8) else {
           return
@@ -287,7 +287,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         self.setPopup(popup: responseContent)
       }
     }
-    ).resume()
+    )
+    task.priority = 1.0
+    task.resume()
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
@@ -300,7 +302,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
-      ViewController.controller?.connect(nil)
+      if let first = text.first, Character("a") <= first && first <= Character("z") {
+        ViewController.controller?.connect(nil)
+      } else if text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}") {
+        let code = String(text[text.index(after: text.startIndex)..<text.index(before: text.endIndex)])
+        ViewController.controller?.openProject(named: code)
+      }
     }
   }
   
@@ -360,6 +367,16 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     if let newRoot = storyboard.instantiateInitialViewController() {
       UIApplication.shared.delegate?.window??.rootViewController = newRoot
+    }
+  }
+
+  private func openProject(named name: String) {
+    if Bundle.main.path(forResource: "Screen1", ofType: "yail", inDirectory: "samples/\(name)/") != nil {
+      let newapp = BundledApp(named: name, at: "samples/\(name)/")
+      newapp.makeCurrent()
+      newapp.loadScreen1(form)
+    } else {
+      view.makeToast("Unable to locate project \(name)")
     }
   }
 

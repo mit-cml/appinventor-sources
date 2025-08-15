@@ -5,7 +5,7 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
@@ -81,7 +81,7 @@ public class AttachAarLibs implements AndroidTask {
               } else if (context.getExtCompTypes().contains(type)) {
                 final String pathSuffix = "/aars/" + libname;
                 sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
-                        context.getExtTypePathCache()) + pathSuffix;
+                    context.getExtTypePathCache()) + pathSuffix;
               } else {
                 context.getReporter().error("Unknown component type: " + type, true);
                 return TaskResult.generateError("Error while attaching AAR libraries");

@@ -7,6 +7,7 @@
 package com.google.appinventor.server.storage;
 
 import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
 
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
@@ -134,6 +135,9 @@ public class ObjectifyStorageIo implements StorageIo {
 
   private static final String GCS_BUCKET_NAME;
   private static final String APK_BUCKET_NAME;
+
+  private static final String BUILD_STATUS_CACHE_KEY_PREFIX = "40bae275-070f-478b-9a5f-d50361809b99";
+  private static final String PROJECT_OWNER_CACHE_KEY_PREFIX = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
 
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
@@ -1545,7 +1549,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @VisibleForTesting
   boolean useGCSforFile(String fileName, int length) {
     boolean shouldUse =  fileName.contains("assets/")
-      || fileName.endsWith(".apk") || fileName.endsWith(".aab");
+      || fileName.endsWith(".apk") || fileName.endsWith(".aab") || fileName.endsWith(".ipa");
     if (shouldUse)
       return true;              // Use GCS for package output and assets
     boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
@@ -1775,17 +1779,19 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   /**
-   *  Exports project files as a zip archive
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project ID
+   * Exports project files as a zip archive
+   *
+   * @param userId                 a user Id (the request is made on behalf of this user)
+   * @param projectId              project ID
    * @param includeProjectHistory  whether or not to include the project history
-   * @param includeAndroidKeystore  whether or not to include the Android keystore
-   * @param zipName  the name of the zip file, if a specific one is desired
-   * @param includeYail include any yail files in the project
-   * @param includeScreenShots include any screen shots stored with the project
-   * @param fatalError Signal a fatal error if a file is not found
-   * @param forGallery flag to indicate we are exporting for the gallery
-   * @return  project with the content as requested by params.
+   * @param includeAndroidKeystore whether or not to include the Android keystore
+   * @param zipName                the name of the zip file, if a specific one is desired
+   * @param includeYail            include any yail files in the project
+   * @param includeScreenShots     include any screen shots stored with the project
+   * @param forGallery             flag to indicate we are exporting for the gallery
+   * @param fatalError             Signal a fatal error if a file is not found
+   * @param forAppStore            true if the export is for an App Store build
+   * @return project with the content as requested by params.
    */
   @Override
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
@@ -2015,6 +2021,12 @@ public class ObjectifyStorageIo implements StorageIo {
                   if (ufd.fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME) &&
                       (ufd.content.length > 0)) {
                     out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
+                    out.write(ufd.content, 0, ufd.content.length);
+                    out.closeEntry();
+                    fileCount.t++;
+                  } else if (forAppStore && ufd.fileName.equals(APPSTORE_CREDENTIALS_FILENAME)
+                      && ufd.content.length > 0) {
+                    out.putNextEntry(new ZipEntry(APPSTORE_CREDENTIALS_FILENAME));;
                     out.write(ufd.content, 0, ufd.content.length);
                     out.closeEntry();
                     fileCount.t++;
@@ -2675,15 +2687,13 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void storeBuildStatus(String userId, long projectId, int progress) {
-    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
-    String cacheKey = prelim + userId + projectId;
+    final String cacheKey = BUILD_STATUS_CACHE_KEY_PREFIX + userId + projectId;
     memcache.put(cacheKey, progress);
   }
 
   @Override
   public int getBuildStatus(String userId, long projectId) {
-    String prelim = "40bae275-070f-478b-9a5f-d50361809b99";
-    String cacheKey = prelim + userId + projectId;
+    final String cacheKey = BUILD_STATUS_CACHE_KEY_PREFIX + userId + projectId;
     Integer ival = (Integer) memcache.get(cacheKey);
     if (ival == null) {         // not in memcache (or memcache service down)
       return 50;
@@ -2694,6 +2704,20 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void assertUserHasProject(final String userId, final long projectId) {
+    final String cacheKey = PROJECT_OWNER_CACHE_KEY_PREFIX + "|" + projectId;
+    final String ownerUserId = (String) memcache.get(cacheKey);
+
+    if (ownerUserId != null) {
+      if (ownerUserId.equals(userId)) {
+        // The user in the cache owns the project, hence we don't need to throw anything
+        return;
+      }
+      // Whoops, it seems like someone is being sneaky :)
+      throw new SecurityException("Unauthorized access");
+    }
+
+    // Now, if the cache does not contain the project, we will fallback to datastore as
+    //   source of truth...
     try {
       runJobWithRetries(new JobRetryHelper() {
         @SuppressWarnings("RedundantThrows")
@@ -2706,6 +2730,9 @@ public class ObjectifyStorageIo implements StorageIo {
             throw new SecurityException("Unauthorized access");
           }
           // User has data for project, so everything checks out.
+          // We just store it now in the cache for future access, as we know the user requesting
+          //   this project owns it.
+          memcache.put(cacheKey, userId);
         }
       }, false);
     } catch(ObjectifyException e) {
