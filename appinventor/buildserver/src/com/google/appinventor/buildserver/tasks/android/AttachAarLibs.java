@@ -14,15 +14,16 @@ import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import java.io.BufferedReader;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -176,36 +177,32 @@ public class AttachAarLibs implements AndroidTask {
     }
   }
 
-  private String getAarPackageName(File aarFile) throws IOException {
-    try (ZipFile zip = new ZipFile(aarFile)) {
-      ZipEntry manifestEntry = zip.getEntry("AndroidManifest.xml");
+  private String getAarPackageName(File aarFile) {
+    try (ZipFile zipFile = new ZipFile(aarFile)) {
+      // Look for AndroidManifest.xml inside the AAR
+      ZipEntry manifestEntry = zipFile.getEntry("AndroidManifest.xml");
       if (manifestEntry == null) {
-        Enumeration<? extends ZipEntry> entries = zip.entries();
-        while (entries.hasMoreElements()) {
-          ZipEntry e = entries.nextElement();
-          if (!e.isDirectory() && e.getName().endsWith("AndroidManifest.xml")) {
-            manifestEntry = e;
-            break;
-          }
-        }
-      }
-      if (manifestEntry == null) {
-        return null; // No manifest found
+        return null;
       }
 
-      try (InputStream in = zip.getInputStream(manifestEntry);
-           BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          if (line.contains("package=\"")) {
-            int start = line.indexOf("package=\"") + "package=\"".length();
-            int end = line.indexOf("\"", start);
-            return line.substring(start, end);
-          }
+      try (InputStream inputStream = zipFile.getInputStream(manifestEntry)) {
+        // Parse the manifest
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(inputStream);
+        document.getDocumentElement().normalize();
+
+        Element rootElement = document.getDocumentElement();
+        String packageName = rootElement.getAttribute("package");
+
+        if (packageName != null && !packageName.isEmpty()) {
+          return packageName.toLowerCase();
+        } else {
+          return null;
         }
       }
-
+    } catch (Exception e) {
+      return null;
     }
-    return null;
   }
 }
