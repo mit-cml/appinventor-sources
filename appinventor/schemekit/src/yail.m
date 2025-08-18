@@ -1405,6 +1405,8 @@ pic_value yail_get_simple_name(pic_state *pic) {
     const NSString *className = NSStringFromClass(yail_native_class_ptr(pic, native_class)->class_);
     const char *name = [className UTF8String];
     size_t lastDot = 0;
+    if (name == NULL)
+        return pic_undef_value(pic);
     for (size_t i = 0; name[i] != 0; i++) {
       if (name[i] == '.') {
         lastDot = i + 1;

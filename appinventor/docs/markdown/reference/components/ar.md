@@ -113,6 +113,9 @@ Component for ARView3D
 {:id="ARView3D.ClickOnDetectedPlaneAt"} ClickOnDetectedPlaneAt(*targetPlane*{:.component},*p*{:.any},*isANodeAtPoint*{:.boolean})
 : The user tapped on a DetectedPlane, detectedPlane.  (x,y,z) is the real-world coordinate of the point.  isANoteAtPoint is true if a node is already at that point and false otherwise.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.
 
+{:id="ARView3D.CollisionDetected"} CollisionDetected()
+: Collision detected
+
 {:id="ARView3D.DetectedPlaneRemoved"} DetectedPlaneRemoved(*detectedPlane*{:.component})
 : A DetectedPlane was removed from the ARView3D.  This happens when two DetectedPlanes are combined to form one or the detected items were reset.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.
 
@@ -133,6 +136,12 @@ Component for ARView3D
 
 {:id="ARView3D.NodeLongClick"} NodeLongClick(*node*{:.component})
 : The user long-pressed a node in the ARView3D.
+
+{:id="ARView3D.ObjectCollidedWithObject"} ObjectCollidedWithObject(*node*{:.component},*node2*{:.component})
+: Object collided with Object detected
+
+{:id="ARView3D.ObjectCollidedWithScene"} ObjectCollidedWithScene(*node*{:.component})
+: Object collided with Scene detected
 
 {:id="ARView3D.PlaneDetected"} PlaneDetected(*detectedPlane*{:.component})
 : A real-world plane was detected.  The detectedPlane is the component added at the location of the real-world plane.  This event will only trigger if PlaneDetection is not None, and the TrackingType is WorldTracking.  Note that the default FillColor of a DetectedPlane is None, so it is shown visually by default.
@@ -314,8 +323,17 @@ Component for BoxNode
 {:id="BoxNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="BoxNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
 {:id="BoxNode.CornerRadius" .number} *CornerRadius*
 : This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the length, height, or width of the BoxNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be set to zero.
+
+{:id="BoxNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="BoxNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
 
 {:id="BoxNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
@@ -334,6 +352,9 @@ Component for BoxNode
 
 {:id="BoxNode.LengthInCentimeters" .number} *LengthInCentimeters*
 : How far, in centimeters, the BoxNode extends along the z-axis.  Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode will not appear.
+
+{:id="BoxNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="BoxNode.Model" .text} *Model*
 : The 3D model file to be loaded.
@@ -359,11 +380,20 @@ Component for BoxNode
 {:id="BoxNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="BoxNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="BoxNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="BoxNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
 {:id="BoxNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="BoxNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="BoxNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -412,6 +442,9 @@ Component for BoxNode
 
 {:.methods}
 
+{:id="BoxNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="BoxNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -454,6 +487,12 @@ Component for BoxNode
 {:id="BoxNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a capsule node properties to detectedplane.
 
+{:id="BoxNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="BoxNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="BoxNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -468,6 +507,9 @@ Component for BoxNode
 
 {:id="BoxNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
+
+{:id="BoxNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
 
 ## CapsuleNode  {#CapsuleNode}
 
@@ -485,6 +527,15 @@ Component for CapsuleNode
 {:id="CapsuleNode.CapRadiusInCentimeters" .number} *CapRadiusInCentimeters*
 : The radius, in centimeters, of two hemispheres or caps at the ends of a CapsuleNode.  Values less than zero will be treated as their absolute values.  When set to zero or when set to greater than half of the Height, the CapsuleNode will not appear.
 
+{:id="CapsuleNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="CapsuleNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="CapsuleNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
+
 {:id="CapsuleNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
 
@@ -499,6 +550,9 @@ Component for CapsuleNode
 
 {:id="CapsuleNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="CapsuleNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="CapsuleNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -527,6 +581,12 @@ Component for CapsuleNode
 {:id="CapsuleNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="CapsuleNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="CapsuleNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="CapsuleNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -535,6 +595,9 @@ Component for CapsuleNode
 
 {:id="CapsuleNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="CapsuleNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="CapsuleNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -579,6 +642,9 @@ Component for CapsuleNode
 ### Methods  {#CapsuleNode-Methods}
 
 {:.methods}
+
+{:id="CapsuleNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
 
 {:id="CapsuleNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
@@ -625,6 +691,12 @@ Component for CapsuleNode
 {:id="CapsuleNode.MoveToPose" class="method"} <i/> MoveToPose(*p*{:.text})
 : move a capsule node properties to detectedplane.
 
+{:id="CapsuleNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="CapsuleNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="CapsuleNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -639,6 +711,9 @@ Component for CapsuleNode
 
 {:id="CapsuleNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
+
+{:id="CapsuleNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
 
 ## ConeNode  {#ConeNode}
 
@@ -656,6 +731,15 @@ Component for ConeNode
 {:id="ConeNode.BottomRadiusInCentimeters" .number} *BottomRadiusInCentimeters*
 : This defines the radius of the bottom of the ConeNode.  A value of zero causes the cone to meet at a point at the bottom.  Values less than zero will be treated as their absolute value.  If the BottomRadius is set to zero and this is set to zero, the ConeNode will not be shown.
 
+{:id="ConeNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="ConeNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="ConeNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
+
 {:id="ConeNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
 
@@ -670,6 +754,9 @@ Component for ConeNode
 
 {:id="ConeNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="ConeNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="ConeNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -695,6 +782,12 @@ Component for ConeNode
 {:id="ConeNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="ConeNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="ConeNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="ConeNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -703,6 +796,9 @@ Component for ConeNode
 
 {:id="ConeNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="ConeNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="ConeNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -751,6 +847,9 @@ Component for ConeNode
 
 {:.methods}
 
+{:id="ConeNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="ConeNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -793,6 +892,12 @@ Component for ConeNode
 {:id="ConeNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
+{:id="ConeNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="ConeNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="ConeNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -808,6 +913,9 @@ Component for ConeNode
 {:id="ConeNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
 
+{:id="ConeNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
+
 ## CylinderNode  {#CylinderNode}
 
 Component for CylinderNode
@@ -820,6 +928,15 @@ Component for CylinderNode
 
 {:id="CylinderNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
+
+{:id="CylinderNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="CylinderNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="CylinderNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
 
 {:id="CylinderNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
@@ -835,6 +952,9 @@ Component for CylinderNode
 
 {:id="CylinderNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="CylinderNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="CylinderNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -863,6 +983,12 @@ Component for CylinderNode
 {:id="CylinderNode.RadiusInCentimeters" .number} *RadiusInCentimeters*
 : The radius of the CylinderNode determines the size of the cicular base and top.  Values less than zero will be treated as their absolute value.  When set to zero, the CylinderNode will not be shown.
 
+{:id="CylinderNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="CylinderNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="CylinderNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -871,6 +997,9 @@ Component for CylinderNode
 
 {:id="CylinderNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="CylinderNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="CylinderNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -916,6 +1045,9 @@ Component for CylinderNode
 
 {:.methods}
 
+{:id="CylinderNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="CylinderNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -958,6 +1090,12 @@ Component for CylinderNode
 {:id="CylinderNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
+{:id="CylinderNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="CylinderNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="CylinderNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -972,6 +1110,9 @@ Component for CylinderNode
 
 {:id="CylinderNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
+
+{:id="CylinderNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
 
 ## DirectionalLight  {#DirectionalLight}
 
@@ -1116,6 +1257,15 @@ Component for ModelNode
 {:id="ModelNode.BoundingBox" .list .ro .bo} *BoundingBox*
 : The minimum and maximum coordinates of the ModelNode.  The minimum and maximum are lists of the x-, y-, z-coordinates, and this returns a list of <code>[min, max]</code> where mine and max are <code>[x, y, z]</code>.
 
+{:id="ModelNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="ModelNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="ModelNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
+
 {:id="ModelNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
 
@@ -1127,6 +1277,9 @@ Component for ModelNode
 
 {:id="ModelNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="ModelNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="ModelNode.Model" .text} *Model*
 : The 3D model file to be loaded.
@@ -1155,6 +1308,12 @@ Component for ModelNode
 {:id="ModelNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="ModelNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="ModelNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="ModelNode.RootNodeName" .text .ro} *RootNodeName*
 : The name of the root node to add to the scene.  If this is "" or a node with the given name does not exist, then the model's default root node will be added.
 
@@ -1166,6 +1325,9 @@ Component for ModelNode
 
 {:id="ModelNode.ShowShadow" .boolean .do} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="ModelNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="ModelNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -1214,6 +1376,9 @@ Component for ModelNode
 
 {:.methods}
 
+{:id="ModelNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="ModelNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -1255,6 +1420,12 @@ Component for ModelNode
 
 {:id="ModelNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a capsule node properties at the specified (x,y,z) position.
+
+{:id="ModelNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="ModelNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
 
 {:id="ModelNode.PlayAnimationsForAllNodes" class="method"} <i/> PlayAnimationsForAllNodes()
 : Plays all animations in the model, if it has animations.
@@ -1304,6 +1475,9 @@ Component for ModelNode
 {:id="ModelNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
 
+{:id="ModelNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
+
 ## PlaneNode  {#PlaneNode}
 
 Component for PlaneNode
@@ -1317,8 +1491,17 @@ Component for PlaneNode
 {:id="PlaneNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="PlaneNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
 {:id="PlaneNode.CornerRadius" .number} *CornerRadius*
 : This determines how rounded the boxes corners will be.  A value of zero specifies no rounded corners, and a value of half the height or width of the PlaneNode (whichever is greater) makes it fully rounded, with no straight edges.  Values less than zero will be treated as zero.
+
+{:id="PlaneNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="PlaneNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
 
 {:id="PlaneNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
@@ -1334,6 +1517,9 @@ Component for PlaneNode
 
 {:id="PlaneNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="PlaneNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="PlaneNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -1359,6 +1545,12 @@ Component for PlaneNode
 {:id="PlaneNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="PlaneNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="PlaneNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="PlaneNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -1367,6 +1559,9 @@ Component for PlaneNode
 
 {:id="PlaneNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="PlaneNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="PlaneNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -1415,6 +1610,9 @@ Component for PlaneNode
 
 {:.methods}
 
+{:id="PlaneNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="PlaneNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -1457,6 +1655,12 @@ Component for PlaneNode
 {:id="PlaneNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a sphere node properties at the specified (x,y,z) position.
 
+{:id="PlaneNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="PlaneNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="PlaneNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -1471,6 +1675,9 @@ Component for PlaneNode
 
 {:id="PlaneNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
+
+{:id="PlaneNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
 
 ## PointLight  {#PointLight}
 
@@ -1559,6 +1766,15 @@ Component for PyramidNode
 {:id="PyramidNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="PyramidNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="PyramidNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="PyramidNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
+
 {:id="PyramidNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
 
@@ -1576,6 +1792,9 @@ Component for PyramidNode
 
 {:id="PyramidNode.LengthInCentimeters" .number} *LengthInCentimeters*
 : How far, in centimeters, the PyramidNode extends along the z-axis.  Values less than zero will be treated as their absolute values.  When set to zero, the PyramidNode will not be shown.
+
+{:id="PyramidNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="PyramidNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -1601,11 +1820,20 @@ Component for PyramidNode
 {:id="PyramidNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="PyramidNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="PyramidNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="PyramidNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
 {:id="PyramidNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="PyramidNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="PyramidNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -1654,6 +1882,9 @@ Component for PyramidNode
 
 {:.methods}
 
+{:id="PyramidNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="PyramidNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -1696,6 +1927,12 @@ Component for PyramidNode
 {:id="PyramidNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a capsule node properties to detectedplane.
 
+{:id="PyramidNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="PyramidNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="PyramidNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -1711,6 +1948,9 @@ Component for PyramidNode
 {:id="PyramidNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
 
+{:id="PyramidNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
+
 ## SphereNode  {#SphereNode}
 
 Component for SphereNode
@@ -1724,6 +1964,18 @@ Component for SphereNode
 {:id="SphereNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="SphereNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="SphereNode.DefaultBehavior" .text .wo} *DefaultBehavior*
+: Default behavior of object: heavy, light, bouncy, wet, sticky, slippery, floating. Use these settings to set Mass, StaticFriction, DynamicFriction, Restitution, and DragSensitivity appropriate to description OR tweak them below
+
+{:id="SphereNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="SphereNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
+
 {:id="SphereNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
 
@@ -1735,6 +1987,9 @@ Component for SphereNode
 
 {:id="SphereNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="SphereNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="SphereNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -1763,6 +2018,12 @@ Component for SphereNode
 {:id="SphereNode.RadiusInCentimeters" .number} *RadiusInCentimeters*
 : The radius of the sphere in centimeters.
 
+{:id="SphereNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="SphereNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="SphereNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -1771,6 +2032,9 @@ Component for SphereNode
 
 {:id="SphereNode.ShowShadow" .boolean .do} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="SphereNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="SphereNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -1819,6 +2083,9 @@ Component for SphereNode
 
 {:.methods}
 
+{:id="SphereNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="SphereNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -1860,6 +2127,12 @@ Component for SphereNode
 
 {:id="SphereNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a sphere node properties at the specified (x,y,z) position.
+
+{:id="SphereNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="SphereNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
 
 {:id="SphereNode.PlayAnimationsForAllNodes" class="method"} <i/> PlayAnimationsForAllNodes()
 : Plays all animations in the model, if it has animations.
@@ -1908,6 +2181,9 @@ Component for SphereNode
 
 {:id="SphereNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
+
+{:id="SphereNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
 
 ## Spotlight  {#Spotlight}
 
@@ -2050,8 +2326,17 @@ Component for TextNode
 {:id="TextNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="TextNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
 {:id="TextNode.DepthInCentimeters" .number} *DepthInCentimeters*
 : How far, in centimeters, the TextNode extends along the z-axis.  Values less than zero will be treated as zero.
+
+{:id="TextNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="TextNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
 
 {:id="TextNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
@@ -2067,6 +2352,9 @@ Component for TextNode
 
 {:id="TextNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="TextNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="TextNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -2092,6 +2380,12 @@ Component for TextNode
 {:id="TextNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="TextNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="TextNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="TextNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -2100,6 +2394,9 @@ Component for TextNode
 
 {:id="TextNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="TextNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="TextNode.Text" .text} *Text*
 : Text to display by the TextNode.  If this is set to "", the TextNode will not be shown.
@@ -2148,6 +2445,9 @@ Component for TextNode
 
 {:.methods}
 
+{:id="TextNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="TextNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -2190,6 +2490,12 @@ Component for TextNode
 {:id="TextNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
+{:id="TextNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="TextNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="TextNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -2205,6 +2511,9 @@ Component for TextNode
 {:id="TextNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
 
+{:id="TextNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
+
 ## TorusNode  {#TorusNode}
 
 Component for TorusNode
@@ -2218,6 +2527,15 @@ Component for TorusNode
 {:id="TorusNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
 
+{:id="TorusNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="TorusNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="TorusNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
+
 {:id="TorusNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
 
@@ -2229,6 +2547,9 @@ Component for TorusNode
 
 {:id="TorusNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="TorusNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="TorusNode.Model" .text} *Model*
 : The 3D model file to be loaded.
@@ -2257,8 +2578,14 @@ Component for TorusNode
 {:id="TorusNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="TorusNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
 {:id="TorusNode.RingRadiusInCentimeters" .number} *RingRadiusInCentimeters*
 : The ring radius defines the size of the overall torus (or major radius) in centimeters.  Values less than zero will be treated as their absolute value.  When set to zero, the TorusNode will not be shown.
+
+{:id="TorusNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
 
 {:id="TorusNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
@@ -2268,6 +2595,9 @@ Component for TorusNode
 
 {:id="TorusNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="TorusNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="TorusNode.TextureOpacity" .number} *TextureOpacity*
 : The opacity of the node's Texture.  Values less than zero will be treated as zero, and values greater than 100 will be treated as 100.
@@ -2309,6 +2639,9 @@ Component for TorusNode
 ### Methods  {#TorusNode-Methods}
 
 {:.methods}
+
+{:id="TorusNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
 
 {:id="TorusNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
@@ -2352,6 +2685,12 @@ Component for TorusNode
 {:id="TorusNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
+{:id="TorusNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="TorusNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="TorusNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -2367,6 +2706,9 @@ Component for TorusNode
 {:id="TorusNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
 
+{:id="TorusNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
+
 ## TubeNode  {#TubeNode}
 
 Component for TubeNode
@@ -2379,6 +2721,15 @@ Component for TubeNode
 
 {:id="TubeNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
+
+{:id="TubeNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="TubeNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="TubeNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
 
 {:id="TubeNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
@@ -2397,6 +2748,9 @@ Component for TubeNode
 
 {:id="TubeNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="TubeNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="TubeNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -2425,6 +2779,12 @@ Component for TubeNode
 {:id="TubeNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="TubeNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="TubeNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="TubeNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -2433,6 +2793,9 @@ Component for TubeNode
 
 {:id="TubeNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="TubeNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="TubeNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -2478,6 +2841,9 @@ Component for TubeNode
 
 {:.methods}
 
+{:id="TubeNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="TubeNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -2520,6 +2886,12 @@ Component for TubeNode
 {:id="TubeNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : Changes the node's position to (x,y,z).
 
+{:id="TubeNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="TubeNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="TubeNode.RotateXBy" class="method"} <i/> RotateXBy(*degrees*{:.number})
 : Changes the node's x rotation by the given degrees.
 
@@ -2535,6 +2907,9 @@ Component for TubeNode
 {:id="TubeNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
 
+{:id="TubeNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
+
 ## VideoNode  {#VideoNode}
 
 Component for VideoNode
@@ -2547,6 +2922,15 @@ Component for VideoNode
 
 {:id="VideoNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
+
+{:id="VideoNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="VideoNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="VideoNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
 
 {:id="VideoNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
@@ -2565,6 +2949,9 @@ Component for VideoNode
 
 {:id="VideoNode.IsPlaying" .boolean .ro .bo} *IsPlaying*
 : Returns true if the video is currently playing false otherwise.
+
+{:id="VideoNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="VideoNode.Model" .text} *Model*
 : The 3D model file to be loaded.
@@ -2590,6 +2977,12 @@ Component for VideoNode
 {:id="VideoNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="VideoNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="VideoNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="VideoNode.RotateWithGesture" .boolean} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -2601,6 +2994,9 @@ Component for VideoNode
 
 {:id="VideoNode.Source" .text .wo} *Source*
 : The "path" to the video.  Usually, this will be the name of the video file, which should be added in the Designer.
+
+{:id="VideoNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="VideoNode.Texture" .text .do} *Texture*
 : The 3D texture loaded.
@@ -2655,6 +3051,9 @@ Component for VideoNode
 
 {:.methods}
 
+{:id="VideoNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
+
 {:id="VideoNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
 
@@ -2700,6 +3099,12 @@ Component for VideoNode
 {:id="VideoNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a sphere node properties at the specified (x,y,z) position.
 
+{:id="VideoNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="VideoNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="VideoNode.Pause" class="method"} <i/> Pause()
 : Pauses playback of the video.
 
@@ -2724,6 +3129,9 @@ Component for VideoNode
 {:id="VideoNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
 
+{:id="VideoNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
+
 ## WebViewNode  {#WebViewNode}
 
 Component for WebViewNode
@@ -2736,6 +3144,15 @@ Component for WebViewNode
 
 {:id="WebViewNode.ARNodeToYail" .dictionary .ro .bo} *ARNodeToYail*
 : Serialize the arnode to yail
+
+{:id="WebViewNode.CollisionShape" .text .ro} *CollisionShape*
+: Property for CollisionShape
+
+{:id="WebViewNode.DragSensitivity" .number .wo} *DragSensitivity*
+: Property for DragSensitivity
+
+{:id="WebViewNode.DynamicFriction" .number .wo} *DynamicFriction*
+: Property for DynamicFriction
 
 {:id="WebViewNode.EnablePhysics" .boolean} *EnablePhysics*
 : If the property is set to true, physics apply
@@ -2754,6 +3171,9 @@ Component for WebViewNode
 
 {:id="WebViewNode.IsFollowingImageMarker" .boolean .ro .bo} *IsFollowingImageMarker*
 : Specifies whether a node is following an ImageMarker.  Returns true if it is and false otherwise.
+
+{:id="WebViewNode.Mass" .number .wo} *Mass*
+: Property for Mass
 
 {:id="WebViewNode.Model" .text .bo} *Model*
 : The 3D model file to be loaded.
@@ -2779,6 +3199,12 @@ Component for WebViewNode
 {:id="WebViewNode.PoseToYailDictionary" .dictionary .ro .bo} *PoseToYailDictionary*
 : Convert current pose to yail
 
+{:id="WebViewNode.Restitution" .number .wo} *Restitution*
+: Property for Restitution
+
+{:id="WebViewNode.RollingForce" .number .wo} *RollingForce*
+: Property for RollingForce
+
 {:id="WebViewNode.RotateWithGesture" .boolean .do} *RotateWithGesture*
 : If the property is set to true, the the node can be rotated around its y-axis using a two finger rotation gesture.  Clockwise increases the angle, and counter clockwise decreases the angle.  Otherwise, the node's rotation cannot be changed with a rotation gesutre.
 
@@ -2787,6 +3213,9 @@ Component for WebViewNode
 
 {:id="WebViewNode.ShowShadow" .boolean} *ShowShadow*
 : Specifies whether the node should show a shadow when it is lit by Lights.
+
+{:id="WebViewNode.StaticFriction" .number .wo} *StaticFriction*
+: Property for StaticFriction
 
 {:id="WebViewNode.Texture" .text} *Texture*
 : The 3D texture loaded.
@@ -2834,6 +3263,9 @@ Component for WebViewNode
 
 {:id="WebViewNode.CanGoForward" class="method returns boolean"} <i/> CanGoForward()
 : Returns true if the WebViewNode can go forward in the history list.
+
+{:id="WebViewNode.CollisionDetection" class="method"} <i/> CollisionDetection()
+: Changes the node's x rotation by the given degrees.
 
 {:id="WebViewNode.DistanceToDetectedPlane" class="method returns number"} <i/> DistanceToDetectedPlane(*detectedPlane*{:.component})
 : Caluates the distance, in centimeters, between a node and a DetectedPlane.
@@ -2889,6 +3321,12 @@ Component for WebViewNode
 {:id="WebViewNode.MoveToDetectedPlane" class="method"} <i/> MoveToDetectedPlane(*targetPlane*{:.component},*p*{:.any})
 : move a webview node properties at the specified (x,y,z) position.
 
+{:id="WebViewNode.ObjectCollidedWithObject" class="method"} <i/> ObjectCollidedWithObject()
+: Changes the node's x rotation by the given degrees.
+
+{:id="WebViewNode.ObjectCollidedWithScene" class="method"} <i/> ObjectCollidedWithScene()
+: Changes the node's x rotation by the given degrees.
+
 {:id="WebViewNode.Reload" class="method"} <i/> Reload()
 : Reloads the current webpage.
 
@@ -2906,3 +3344,6 @@ Component for WebViewNode
 
 {:id="WebViewNode.StopFollowingImageMarker" class="method"} <i/> StopFollowingImageMarker()
 : Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.
+
+{:id="WebViewNode.endDrag" class="method"} <i/> endDrag(*dragVelocity*{:.text},*worldDirection*{:.text})
+: Allow user to additionally add behavoir to the end of the drag/pan movement
