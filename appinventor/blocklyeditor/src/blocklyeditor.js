@@ -999,13 +999,12 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
     plugins: {
-      // FIXME: these all have to be set back with new builds of the plugins
-      // blockDragger: MultiselectBlockDragger, // Temporarily disabled for v11 compatibility
-      // metricsManager: ScrollMetricsManager, // Temporarily disabled for v11 compatibility
+      blockDragger: MultiselectBlockDragger,
+      metricsManager: ScrollMetricsManager,
       connectionPreviewer: decoratePreviewer(Blockly.InsertionMarkerPreviewer),
       [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
     },
-    // baseBlockDragger: ScrollBlockDragger, // Temporarily disabled for v11 compatibility
+    baseBlockDragger: ScrollBlockDragger,
     useDoubleClick: true,
     bumpNeighbours: true,
     multiselectIcon: {
@@ -1020,22 +1019,22 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     renderer: 'geras2_renderer',
   };
   var workspace = Blockly.inject(container, options);
-  // AI.Blockly.multiselect = Multiselect; // Temporarily disabled for v11 compatibility
-  // var multiselectPlugin = new AI.Blockly.multiselect(workspace);
-  // multiselectPlugin.init(options);
+  AI.Blockly.multiselect = Multiselect;
+  var multiselectPlugin = new AI.Blockly.multiselect(workspace);
+  multiselectPlugin.init(options);
   var lexicalVariablesPlugin = LexicalVariablesPlugin;
   lexicalVariablesPlugin.init(workspace);
   var searchPlugin = new WorkspaceSearch(workspace);
   searchPlugin.init();
-  // const scrollOptions = new ScrollOptions(workspace); // Temporarily disabled for v11 compatibility
+  const scrollOptions = new ScrollOptions(workspace);
   // Make autoscrolling be based purely on the mouse position ands slow it down a bit.
-  // scrollOptions.init({
-  //   edgeScrollOptions: {
-  //     oversizeBlockMargin: 0,
-  //     oversizeBlockThreshold: 0,
-  //     slowBlockSpeed: .15
-  //   }
-  // });
+  scrollOptions.init({
+    edgeScrollOptions: {
+      oversizeBlockMargin: 0,
+      oversizeBlockThreshold: 0,
+      slowBlockSpeed: .15
+    }
+  });
   /*
     Keyboard navigation -- needs to be fixed with multiselect
   if (!AI.Blockly.navigationController) {
