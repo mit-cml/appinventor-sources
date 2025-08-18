@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.components.MockComponentsUtil
 import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
+import com.google.appinventor.client.style.mobile.MobileSidebar;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -143,6 +144,22 @@ public class SimplePaletteItem extends DragSourcePanel {
         addComponent();
       }
     });
+    addTouchStartHandler(new TouchStartHandler() {
+      private long lastTouchTime = 0;
+      private static final int DOUBLE_TAP_TIMEOUT = 300;
+      @Override
+      public void onTouchStart(TouchStartEvent event) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastTouchTime < DOUBLE_TAP_TIMEOUT) {
+          // Double tap detected - add component
+          addComponent();
+        } else {
+          // Single tap - just select
+          select(getWidget());
+        }
+        lastTouchTime = currentTime;
+      }
+    });
   }
 
   private void addComponent() {
@@ -193,7 +210,13 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   @Override
   public void onDragStart() {
-    // no action
+    Widget current = this;
+    while (current != null && !(current instanceof MobileSidebar)) {
+      current = current.getParent();
+    }
+    if (current instanceof MobileSidebar) {
+      ((MobileSidebar) current).close();
+    }
   }
 
   @Override

@@ -33,8 +33,8 @@
 <!--                            content will be added here dynamically-->
                         </mob:MobileSidebar>
                         <box:PropertiesBox ui:field="propertiesBox" width="222px" addStyleNames="ode-Hidden"/>
-                        <mob:MobileBottomButton ui:field="mobileBottomButton" />
                     </g:FlowPanel>
+                    <mob:DesignTabBarMob ui:field="designTabBar" styleName="ode-BottomNavBar align" />
                 </g:FlowPanel>
                 <g:FlowPanel width="100%" visible="false">
                     <box:AdminUserListBox />

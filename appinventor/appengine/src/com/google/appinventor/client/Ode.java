@@ -39,10 +39,7 @@ import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.local.LocalProjectService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
-import com.google.appinventor.client.style.mobile.ImagesMobile;
-import com.google.appinventor.client.style.mobile.MobileBottomButton;
-import com.google.appinventor.client.style.mobile.MobileSidebar;
-import com.google.appinventor.client.style.mobile.UiFactoryMobile;
+import com.google.appinventor.client.style.mobile.*;
 import com.google.appinventor.client.style.neo.ImagesNeo;
 import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
 import com.google.appinventor.client.style.neo.UiFactoryNeo;
@@ -234,7 +231,7 @@ public class Ode implements EntryPoint {
   @UiField protected StatusPanel statusPanel;
   @UiField protected FlowPanel workColumns;
   @UiField protected MobileSidebar paletteSidebar;
-  @UiField protected MobileBottomButton mobileBottomButton;
+  @UiField protected DesignTabBarMob designTabBar;
   @UiField protected FlowPanel structureAndAssets;
   @UiField protected ProjectToolbar projectToolbar;
   @UiField (provided = true) protected ProjectListBox projectListbox;
@@ -1060,27 +1057,7 @@ public class Ode implements EntryPoint {
     style.ensureInjected();
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
-    mobileBottomButton.setSidebar(paletteSidebar);
-
-    mobileBottomButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        Element target = Element.as(event.getNativeEvent().getEventTarget());
-        if (target.getTagName().equalsIgnoreCase("button")) {
-          return;
-        }
-
-        if (paletteSidebar.isOpen()) {
-          paletteSidebar.close();
-        } else {
-          mobileBottomButton.setOpen(!mobileBottomButton.isOpen());
-        }
-      }
-    });
-
-    paletteSidebar.setSyncCallback(() -> {
-      mobileBottomButton.setOpen(false);
-    });
+    designTabBar.setSidebar(paletteSidebar);
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {

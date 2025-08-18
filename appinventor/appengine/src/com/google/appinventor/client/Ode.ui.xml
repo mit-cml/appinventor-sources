@@ -44,6 +44,6 @@
     <ode:StatusPanel ui:field="statusPanel" />
     <mob:MobileSidebar ui:field="paletteSidebar" styleName="ode-PaletteSidebar" visible="false">
     </mob:MobileSidebar>
-    <mob:MobileBottomButton ui:field="mobileBottomButton" visible="false"/>
+    <mob:DesignTabBarMob ui:field="designTabBar" styleName="ode-BottomNavBar" visible="false" />
   </g:FlowPanel>
 </ui:UiBinder>

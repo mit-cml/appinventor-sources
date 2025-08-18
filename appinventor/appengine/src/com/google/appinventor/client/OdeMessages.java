@@ -31,6 +31,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Title for the close button on the popup menu")
   String closeButton();
 
+  // designTabBar buttons
+
+  @DefaultMessage("Palette")
+  @Description("Title for the palette button")
+  String PaletteButton();
+
+  @DefaultMessage("Components")
+  @Description("Title for the Components button")
+  String componentsButton();
+
+  @DefaultMessage("Properties")
+  @Description("Title for the Properties button")
+  String propertiesButton();
+
   // Used in multiple files
 
   @DefaultMessage("Default")

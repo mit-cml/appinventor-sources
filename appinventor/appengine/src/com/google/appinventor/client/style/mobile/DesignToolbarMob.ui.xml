@@ -21,15 +21,15 @@
 
         <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false" visible="false"/>
         <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
-                           ui:field="pickFormItem" align="center" styleName="ode-ProjectListButton inline bleft primary" visible="false"/>
+                           ui:field="pickFormItem" align="center" styleName="ode-ProjectListButton inline bleft primary"/>
         <ai:ToolbarItem name="AddForm" icon="add" ui:field="addFormItem"
                         align="center" styleName="ode-ProjectListButton inline bcenter primary"
-                        tooltip="{messages.addFormButton}" visible="false">
+                        tooltip="{messages.addFormButton}">
             <ya:AddFormAction/>
         </ai:ToolbarItem>
         <ai:ToolbarItem name="RemoveForm" icon="remove" ui:field="removeFormItem"
                         align="center" styleName="ode-ProjectListButton inline bright primary"
-                        tooltip="{messages.removeFormButton}" visible="false">
+                        tooltip="{messages.removeFormButton}">
             <ya:RemoveFormAction/>
         </ai:ToolbarItem>
 

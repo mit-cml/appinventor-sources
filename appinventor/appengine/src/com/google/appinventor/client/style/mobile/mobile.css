@@ -831,7 +831,7 @@ body, html {
 
 .ode-BottomNavBar > * > *  {
     display: flex;
-    width: 60px;
+    width: 65px;
     height: 60px;
     padding: 10px 0px;
     flex-direction: column;
@@ -861,7 +861,7 @@ body, html {
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
     transition: all 0.2s ease !important;
     color: white !important;
-    min-width: 48px !important;
+    min-width: 8px !important;
     height: 40px !important;
 }
 
@@ -958,11 +958,11 @@ body, html {
 }
 
 .ya-Toolbar .left {
-    min-width: 220px;
+    min-width: 100px;
     text-align: left;
     display: flex;
     align-items: center;
-    gap: 8px;
+    /*gap: 8px;*/
 }
 
 .mobile-designer-button {
@@ -1099,7 +1099,7 @@ body, html {
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
     transition: all 0.2s ease !important;
     color: white !important;
-    min-width: 48px !important;
+    min-width: 8px !important;
     height: 40px !important;
     position: relative !important;
 }
@@ -1178,7 +1178,7 @@ body, html {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    height: 100vh !important;
+    height: 76vh !important;
     position: relative !important;
     border: solid darkred 5px;
 }
@@ -1238,7 +1238,7 @@ body, html {
 
 .content {
     width: 100%;
-    height: 100%;
+    height: 89%;
     overflow: auto;
 }
 
@@ -1360,3 +1360,194 @@ body, html {
 .button-container button:hover {
     background-color: #1565c0;
 }
+
+.ya-Toolbar .ya-ProjectName {
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-top: 2px;
+    padding-left: 0px;
+    /* padding-left: 8px; */
+    text-shadow: 0 0 1px #404040;
+    overflow: hidden;
+    max-width: 285px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.ode-ProjectListButton {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, opacity 0.1s;
+    color: gray-800;
+    font-family: "Poppins", Helvetica, sans-serif;
+    font-weight: 500;
+    font-size: 1.06em;
+    white-space: nowrap;
+    background-color: clr-primary;
+    border-color: gray-800;
+    box-shadow: 1px 1px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.bleft {
+    border-radius: 4px 0 0 4px;
+    flex-basis: 0;
+}
+
+.inline {
+    background-color: v-white;
+    border-color: gray-300;
+    box-shadow: 1px 1px gray-300;
+}
+
+.inline:hover {
+    background-color: gray-200;
+    color: text-highlight;
+}
+
+.action {
+    background-color: v-white;
+    border-color: gray-300;
+}
+
+.bcenter {
+    border-radius: 0;
+    border-width: 1px 0;
+}
+
+.bcenter + .bcenter {
+    border-left-width: 1px;
+}
+.bright {
+    border-radius: 0 4px 4px 0;
+}
+
+.ya-Toolbar .right {
+    flex-shrink: 0;
+    text-align: right;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+.ya-Toolbar .center {
+    text-align: center;
+    min-width: fit-content;
+    display: flex;
+    width: 100%;
+    order: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ya-Toolbar .left {
+    min-width: 100px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+.ya-Toolbar {
+    flex-wrap: wrap;
+}
+
+/* Design Tab Bar Styles */
+.design-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    z-index: 1000;
+    height: 60px;
+}
+
+.design-tab-button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.design-tab-button:hover {
+    background-color: #e9ecef;
+}
+
+.tab-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.tab-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.tab-label {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.align {
+    display: flex;
+}
+
+
+
+/*dragging issue*/
+
+.mobile-sidebar {
+    width: 100%;
+    background-color: #f5f5f5;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar-buttons {
+    display: flex;
+    justify-content: space-around;
+    background-color: #e0e0e0;
+    padding: 10px 0;
+}
+
+.sidebar-button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.sidebar-button.active {
+    background-color: #007cba;
+    color: white;
+}
+
+.sidebar-content {
+    min-height: 300px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.ode-SourceScrollPanel {
+    width: 320px;
+    height: 700px;
+}
+

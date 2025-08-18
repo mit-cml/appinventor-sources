@@ -52,7 +52,6 @@ public class DesignToolbarMob extends DesignToolbar {
             @Override
             public void onClick(ClickEvent event) {
                 addPopupStyling();
-                updateMobileDropdown();
             }
         }, ClickEvent.getType());
 
@@ -73,15 +72,7 @@ public class DesignToolbarMob extends DesignToolbar {
     }
 
     private void populateMobileDropdown() {
-        // Form management actions
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("AddForm", MESSAGES.addFormButton(), new AddFormAction(), "mobile-dropdown-button"));
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("RemoveForm", MESSAGES.removeFormButton(), new RemoveFormAction(), "mobile-dropdown-button"));
 
-        // View switching actions
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("ViewSeparator", "─────────", null, "mobile-dropdown-separator"));
         addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
                 new DropDownItem("SwitchToDesign", MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction(), "mobile-dropdown-button"));
         addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
@@ -97,25 +88,6 @@ public class DesignToolbarMob extends DesignToolbar {
         addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
                 new DropDownItem("TutorialToggle", MESSAGES.toggleTutorialButton(), new ToggleTutorialAction(), "mobile-dropdown-button"));
 
-        // Screens section
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("ScreensSeparator", "─────────", null, "mobile-dropdown-separator"));
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("ScreensLabel", MESSAGES.screensButton(), null, "mobile-dropdown-label"));
-    }
-
-    private void updateMobileDropdown() {
-        clearDropDownMenu(DESIGNER_ACTION_DROPDOWN);
-
-        populateMobileDropdown();
-
-        if (getCurrentProject() != null) {
-            for (Screen screen : getCurrentProject().screens.values()) {
-                addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                        new DropDownItem("Screen_" + screen.screenName, "  " + screen.screenName,
-                                new SwitchScreenAction(getCurrentProject().getProjectId(), screen.screenName), "mobile-dropdown-screen"));
-            }
-        }
     }
 
     @Override
