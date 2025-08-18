@@ -999,7 +999,6 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
     plugins: {
-      blockDragger: MultiselectBlockDragger,
       metricsManager: ScrollMetricsManager,
       connectionPreviewer: decoratePreviewer(Blockly.InsertionMarkerPreviewer),
       [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
