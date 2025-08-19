@@ -11,7 +11,7 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <wiz:Dialog ui:field="addDialog" caption="{messages.newProjectFolderMenuItem}" styleName="ode-DialogBox">
+  <wiz:Dialog ui:field="addDialog" caption="{messages.newProjectFolderMenuItem}" styleName="ode-DialogBox" width="400px">
     <g:FlowPanel>
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
         <w:LabeledTextBox ui:field="input" caption="{messages.newFolderWizardName}"
