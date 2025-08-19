@@ -331,7 +331,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
   // Component container the component belongs to (this will be null for the root component aka the
   // form)
-  private MockContainer container;
+  private MockContainer<?> container;
 
   private MouseListenerCollection mouseListeners = new MouseListenerCollection();
   private HandlerManager handlers;

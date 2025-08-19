@@ -42,7 +42,7 @@ import java.util.GregorianCalendar;
         " dialog to allow the user to select a date.</p>",
     iconName = "images/datePicker.png")
 @SimpleObject
-public class DatePicker extends ButtonBase {
+public class DatePicker extends ButtonBase<android.widget.Button> {
 
   private DatePickerDialog date;
   //month is the property that AI devs see, and it's always javaMonth + 1; month is 0-based in Java
@@ -58,7 +58,7 @@ public class DatePicker extends ButtonBase {
    * @param container the container in which the component will be placed in.
    */
   public DatePicker(ComponentContainer container) {
-    super(container);
+    super(container, new android.widget.Button(container.$context()));
     form = container.$form();
     //Set the current date on creation
     final Calendar c = Calendar.getInstance();

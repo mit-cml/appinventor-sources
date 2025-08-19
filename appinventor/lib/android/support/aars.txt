@@ -1,5 +1,6 @@
 annotation-experimental.aar
 appcompat.aar
+appcompat-resources.aar
 asynclayoutinflater.aar
 constraintlayout.aar
 coordinatorlayout.aar

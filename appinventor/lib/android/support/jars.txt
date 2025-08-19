@@ -1,6 +1,7 @@
 annotation.jar
 annotation-experimental.jar
 appcompat.jar
+appcompat-resources.jar
 asynclayoutinflater.jar
 collection.jar
 constraintlayout.jar

@@ -37,11 +37,13 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * @author hal@mit.edu (Hal Abelson) (added adjust alignment dropdowns)
  * @author kkashi01@gmail.com (Hossein Amerkashi) (added Image and BackgroundColors)
  */
-public class MockHVArrangement extends MockContainer {
+public class MockHVArrangement extends MockContainer<MockHVLayout> {
   private static final Logger LOG = Logger.getLogger(MockHVArrangement.class.getName());
 
   // Form UI components
   protected final AbsolutePanel layoutWidget;
+
+  protected final MockHVLayout myLayout;
 
   // Property names
   private static final String PROPERTY_NAME_IMAGE = "Image";
@@ -51,8 +53,6 @@ public class MockHVArrangement extends MockContainer {
   // We need to maintain these so we can show color and shape only when
   // there is no image.
   private String backgroundColor;
-
-  private MockHVLayout myLayout;
 
   private static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
   private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
@@ -71,16 +71,8 @@ public class MockHVArrangement extends MockContainer {
    */
   MockHVArrangement(SimpleEditor editor, String type, ImageResource icon, int orientation,
     boolean scrollable) {
-    // Note(Hal): This helper thing is a kludge because I really want to write:
-    // myLayout = new MockHVLayout(orientation);
-    // super(editor, type, icon, myLayout);
-    // but Java won't let me do that.
-
-    super(editor, type, icon, MockHVArrangementHelper.makeLayout(orientation));
-    // Note(hal): There better not be any calls to MockHVArrangementHelper before the
-    // next instruction.  Note that the Helper methods are synchronized to avoid possible
-    // future problems if we ever have threads creating arrangements in parallel.
-    myLayout = MockHVArrangementHelper.getLayout();
+    super(editor, type, icon, new MockHVLayout(orientation));
+    myLayout = getLayout();
     scrollAble = scrollable;
     this.orientation = orientation;
 
@@ -95,23 +87,25 @@ public class MockHVArrangement extends MockContainer {
     layoutWidget.setStylePrimaryName("ode-SimpleMockContainer");
     layoutWidget.add(rootPanel);
 
-      image = new Image();
-      image.addErrorHandler(new ErrorHandler() {
-        @Override
-        public void onError(ErrorEvent event) {
-          if (imagePropValue != null && !imagePropValue.isEmpty()) {
-            LOG.severe("Error occurred while loading image " + imagePropValue);
-          }
-          refreshForm();
+    image = new Image();
+    image.addErrorHandler(new ErrorHandler() {
+      @Override
+      public void onError(ErrorEvent event) {
+        if (imagePropValue != null && !imagePropValue.isEmpty()) {
+          LOG.severe("Error occurred while loading image " + imagePropValue);
         }
-      });
-      image.addLoadHandler(new LoadHandler() {
-        @Override
-        public void onLoad(LoadEvent event) {
-          refreshForm();
-        }
-      });
+        refreshForm();
+      }
+    });
+    image.addLoadHandler(new LoadHandler() {
+      @Override
+      public void onLoad(LoadEvent event) {
+        refreshForm();
+      }
+    });
+  }
 
+  protected void finishConfiguration() {
     initComponent(layoutWidget);
     try {
       myHAlignmentPropertyEditor = PropertiesUtil.getHAlignmentEditor(properties);

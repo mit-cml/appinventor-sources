@@ -10,6 +10,7 @@ import android.animation.StateListAnimator;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.view.ViewOutlineProvider;
+import android.widget.Button;
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -54,12 +55,12 @@ import java.io.IOException;
  */
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-public abstract class ButtonBase extends AndroidViewComponent
+public abstract class ButtonBase<T extends Button> extends AndroidViewComponent<T>
     implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener, AccessibleComponent {
 
   private static final String LOG_TAG = "ButtonBase";
 
-  private final android.widget.Button view;
+  private final T view;
 
   // Constant for shape
   // 10px is the radius of the rounded corners.
@@ -148,9 +149,9 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param container  container, component will be placed in
    */
-  public ButtonBase(ComponentContainer container) {
+  public ButtonBase(ComponentContainer container, T view) {
     super(container);
-    view = new android.widget.Button(container.$context());
+    this.view = view;
 
     // Save the default values in case the user wants them back later.
     defaultButtonDrawable = view.getBackground();
@@ -223,7 +224,7 @@ public abstract class ButtonBase extends AndroidViewComponent
     }
 
   @Override
-  public View getView() {
+  public T getView() {
     return view;
   }
 

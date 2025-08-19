@@ -31,7 +31,7 @@ import org.pepstock.charba.client.resources.ResourcesType;
  * <p>The class extends from McokContainer due to the Chart component
  * holding ChartData components as children.
  */
-public final class MockChart extends MockContainer {
+public final class MockChart extends MockContainer<MockChartLayout> {
   public static final String TYPE = "Chart";
 
   private static final String PROPERTY_NAME_TYPE = "Type";

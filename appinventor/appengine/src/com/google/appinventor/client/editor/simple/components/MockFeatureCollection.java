@@ -17,7 +17,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockFeatureCollection extends MockContainer implements MockMapFeature {
+public class MockFeatureCollection extends MockContainer<MockFeatureCollectionLayout> implements MockMapFeature {
   public static final String TYPE = "FeatureCollection";
 
   private static final String PROPERTY_NAME_SOURCE = "Source";

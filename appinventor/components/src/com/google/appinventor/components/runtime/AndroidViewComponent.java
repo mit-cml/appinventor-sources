@@ -24,7 +24,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
  *
  */
 @SimpleObject
-public abstract class AndroidViewComponent extends VisibleComponent {
+public abstract class AndroidViewComponent<T extends View> extends VisibleComponent {
 
   protected final ComponentContainer container;
 
@@ -51,7 +51,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   /**
    * Returns the {@link View} that is displayed in the UI.
    */
-  public abstract View getView();
+  public abstract T getView();
 
   /**
    * Returns true iff the `%type%` is visible.
@@ -167,7 +167,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * @param sourceComponent the component to copy from
    */
   @SimplePropertyCopier
-  public void CopyWidth(AndroidViewComponent sourceComponent) {
+  public void CopyWidth(AndroidViewComponent<T> sourceComponent) {
     Width(sourceComponent.lastSetWidth);
   }
 
@@ -229,7 +229,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * @param sourceComponent the component to copy from
    */
   @SimplePropertyCopier
-  public void CopyHeight(AndroidViewComponent sourceComponent) {
+  public void CopyHeight(AndroidViewComponent<T> sourceComponent) {
     Height(sourceComponent.lastSetHeight);
   }
 

@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public final class MockMap extends MockContainer {
+public final class MockMap extends MockContainer<MockMapLayout> {
   public static final String TYPE = "Map";
   public static final Set<String> ACCEPTABLE_TYPES = Collections.unmodifiableSet(Sets.newHashSet(MockMarker.TYPE, MockLineString.TYPE, MockPolygon.TYPE, MockRectangle.TYPE, MockCircle.TYPE, MockFeatureCollection.TYPE));
   protected static final String PROPERTY_NAME_LATITUDE = "Latitude";

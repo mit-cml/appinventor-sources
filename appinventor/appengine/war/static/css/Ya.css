@@ -3451,3 +3451,56 @@ div.dropdiv p {
     flex-direction: column;
   }
 }
+
+.ode-TabContentView {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+}
+
+.ode-TabContentViewTop {
+  position: absolute;
+  top: 49px;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+}
+
+.ode-TabContainer {
+  position: absolute;
+  width: 100%;
+  height: 48px;
+  top: 0;
+  border: 0;
+  border-top: 1px solid gray;
+}
+
+.ode-TabContentViewBottom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 49px;
+}
+
+.ode-TabContainerBottom {
+  position: absolute;
+  width: 100%;
+  height: 48px;
+  bottom: 0;
+  border: 0;
+  border-top: 1px solid gray;
+}
+
+.ode-Tab {
+  font-weight: normal;
+  font-size: 12px;
+  border: 2px solid transparent;
+  text-align: center;
+}
+
+.ode-Tab-selected {
+  border: 2px solid #8fc202;
+}

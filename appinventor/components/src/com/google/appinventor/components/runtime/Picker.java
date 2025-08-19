@@ -18,7 +18,7 @@ import android.content.Intent;
  *
  */
 @SimpleObject
-public abstract class Picker extends ButtonBase implements ActivityResultListener {
+public abstract class Picker extends ButtonBase<android.widget.Button> implements ActivityResultListener {
   protected final ComponentContainer container;
 
   /* Used to identify the call to startActivityForResult. Will be passed back into the
@@ -26,7 +26,7 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   protected int requestCode;
 
   public Picker(ComponentContainer container) {
-    super(container);
+    super(container, new android.widget.Button(container.$context()));
     this.container = container;
   }
 

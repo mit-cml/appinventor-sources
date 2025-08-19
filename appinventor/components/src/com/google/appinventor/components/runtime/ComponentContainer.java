@@ -7,6 +7,8 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.view.View;
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -40,18 +42,18 @@ public interface ComponentContainer {
    *
    * @param component  component associated with view
    */
-  void $add(AndroidViewComponent component);
+  void $add(AndroidViewComponent<? extends View> component);
 
-  void setChildWidth(AndroidViewComponent component, int width);
+  void setChildWidth(AndroidViewComponent<? extends View> component, int width);
 
-  void setChildHeight(AndroidViewComponent component, int height);
+  void setChildHeight(AndroidViewComponent<? extends View> component, int height);
 
   /**
    * Indicate to the container that its child needs its layout updated.
    *
    * @param component  component whose view needs to be repositioned
    */
-  void setChildNeedsLayout(AndroidViewComponent component);
+  void setChildNeedsLayout(AndroidViewComponent<?> component);
 
   List<? extends Component> getChildren();
 
