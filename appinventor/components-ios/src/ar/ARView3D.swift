@@ -11,10 +11,10 @@ import Combine
 @available(iOS 14.0, *)
 open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
   
-  public static var SHARED_GROUND_LEVEL: Float = -1.2
-  public static var VERTICAL_OFFSET: Float = 0.1
+  public static var SHARED_GROUND_LEVEL: Float = -0.8
+  public static var VERTICAL_OFFSET: Float = 0.05
    // Update your existing GROUND_LEVEL to use the shared value
-   public var GROUND_LEVEL: Float {
+  public var GROUND_LEVEL: Float {
        get { return ARView3D.SHARED_GROUND_LEVEL }
        set { ARView3D.SHARED_GROUND_LEVEL = newValue }
    }
@@ -741,7 +741,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                       print("🏠 FIRST TIME: Setting ground level to detected floor: \(detectedRealFloorLevel)m")
                       let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
                       // ✅ Update ground level reference
-                      ARView3D.SHARED_GROUND_LEVEL = invisibleFloorLevel
+                      GROUND_LEVEL = invisibleFloorLevel
                       
                       // ✅ RECREATE invisible floor at correct position
                       createInvisibleFloor(at: invisibleFloorLevel)
@@ -996,7 +996,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         let objectRadius = max((bounds.max.y - bounds.min.y) / 2.0, 0.025) // Minimum 2.5cm radius
         
         // Calculate minimum Y position (object bottom should be at ground level)
-        let minY = groundLevel + objectRadius + 0.05  // Extra 5cm buffer for safety
+        let minY = groundLevel + objectRadius + ARView3D.VERTICAL_OFFSET  // Extra 5cm buffer for safety
         
         let safeY = max(position.y, minY)
         
@@ -1029,11 +1029,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                         let zMeters: Float = UnitHelper.centimetersToMeters(z)
                         
              
-                        let groundLevel = Float(GROUND_LEVEL)
-                        let safeY = max(yMeters, groundLevel + 0.15) // At least 1cm above ground
+                        let groundLevel = GROUND_LEVEL
+                        let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
      
                         node.setPosition(x: xMeters, y: safeY, z: zMeters)
-                        
+                        print("create sphere node at y  \(safeY)")
                         node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
                         node._creatorSessionStart = anchorLocation
                         print("saved world coords for offset \(String(describing: node._worldOffset))")
@@ -1063,7 +1063,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Name = "GeoCapsuleNode"
       
       
-      optimizeFloorSetup()
+      
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
       
@@ -1099,6 +1099,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         _container?.form?.dispatchErrorOccurredEvent(self, "CreatModelNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
         return nil
       }
+      
+      optimizeFloorSetup()
       
       let node:ModelNode = ModelNode(self)
       node.Name = "GeoModelNode"
@@ -1353,8 +1355,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
 
-
-  
   
 // MARK: Functions Handling Gestures
 @available(iOS 14.0, *)
@@ -1508,7 +1508,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
   
   private func isPositionValid(_ position: SIMD3<Float>) -> Bool {
     // Basic collision check - make sure we're not going below floor
-    return position.y > -1.5
+    return position.y > GROUND_LEVEL
   }
 
   
@@ -1954,46 +1954,54 @@ extension ARView3D {
     }
     
   @objc private func handlePanComplete(_ gesture: UIPanGestureRecognizer) {
-    guard let node = _currentDraggedObject ?? findClosestNode(tapLocation: gesture.location(in: _arView)) else { return }
+      guard let node = _currentDraggedObject ?? findClosestNode(tapLocation: gesture.location(in: _arView)) else { return }
       
       if gesture.state == .began {
           _currentDraggedObject = node
+          
+          if let sphereNode = node as? SphereNode {
+              sphereNode.startDrag()
+          }
       }
+      let ballY = (_currentDraggedObject as? SphereNode)?._modelEntity.transform.translation.y ?? Float(GROUND_LEVEL)
+
       
-      let fingerLocation = gesture.location(in: _arView)
-      let fingerVelocity = gesture.velocity(in: _arView)
-      let groundProjection = projectFingerToGround(fingerLocation: fingerLocation)
-      let camera3DProjection = projectFingerWithCameraTransform(fingerLocation: fingerLocation, currentBall: node)
-      
-      node.handleAdvancedGestureUpdate(
-          fingerLocation: fingerLocation,
-          fingerVelocity: fingerVelocity,
-          groundProjection: groundProjection,
-          camera3DProjection: camera3DProjection,
-          gesturePhase: gesture.state
-      )
+      if gesture.state == .changed {
+          let fingerLocation = gesture.location(in: _arView)      // ✅ Where finger IS now
+          let fingerMovement = gesture.translation(in: _arView)   // ✅ How finger MOVED
+          let fingerVelocity = gesture.velocity(in: _arView)
+          
+          let screenSize = _arView.bounds.size
+        
+          if let sphereNode = node as? SphereNode {
+              // ✅ Pass both finger location AND movement
+            sphereNode.handleAdvancedGestureUpdate(
+                      fingerLocation: fingerLocation,
+                      fingerMovement: fingerMovement,
+                      fingerVelocity: fingerVelocity,
+                      groundProjection: safeProjectFingerToGround(fingerLocation: fingerLocation, fingerMovement: fingerMovement),
+                      camera3DProjection: projectFingerToPlane(fingerLocation: fingerLocation, planeY: ballY),
+                      gesturePhase: gesture.state
+                  )
+          }
+          
+          gesture.setTranslation(.zero, in: _arView)
+      }
       
       if gesture.state == .ended || gesture.state == .cancelled {
-        _currentDraggedObject = nil
+          if let sphereNode = node as? SphereNode {
+              sphereNode.endAngryBirdsDrag(releaseVelocity: gesture.velocity(in: _arView))
+          }
+          _currentDraggedObject = nil
       }
   }
-    // STEP 3: Camera-aware positioning methods
-    private func positionBallUnderFinger(fingerLocation: CGPoint, currentBall: ARNodeBase) -> SIMD3<Float>? {
-        
-      // Method 1: Try ARKit raycast first (most accurate)
-      if let raycastResult = performCameraAwareRaycast(from: fingerLocation) {
-          return constrainPositionForBall(raycastResult, ball: currentBall)
-      }
-      
-      // Method 2: Fallback to camera-space projection
-      return projectFingerWithCameraTransform(fingerLocation: fingerLocation, currentBall: currentBall)
-    }
+  
   
   private func constrainPositionForBall(_ position: SIMD3<Float>, ball: ARNodeBase) -> SIMD3<Float> {
     let groundLevel: Float = Float(GROUND_LEVEL)
     let ballRadius = (ball as? SphereNode)?.RadiusInCentimeters ?? 0.05
     let scaledRadius = ballRadius * ball.Scale
-    let minY = groundLevel + scaledRadius + 0.02
+    let minY = groundLevel + scaledRadius //+ 0.02
     let maxPickupHeight = groundLevel + 3.0
       
     return SIMD3<Float>(
@@ -2024,63 +2032,57 @@ extension ARView3D {
       return nil
     }
     
-    public func projectFingerWithCameraTransform(fingerLocation: CGPoint, currentBall: ARNodeBase) -> SIMD3<Float>? {
-        let cameraTransform = _arView.cameraTransform
-        let cameraPosition = SIMD3<Float>(cameraTransform.translation)
-        let currentBallPosition = currentBall._modelEntity.transform.translation
+  func safeProjectFingerToGround(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
+      guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
+      
+      // ✅ Use ARKit's stable raycast
+      let results = _arView.raycast(from: fingerLocation, allowing: .estimatedPlane, alignment: .horizontal)
+      
+    if let result = results.first {
+        // Force to ball's Y level
+        if let ball = _currentDraggedObject as? SphereNode {
+            let ballY = ball._modelEntity.transform.translation.y
+            return SIMD3<Float>(
+                result.worldTransform.columns.3.x,
+                ballY,
+                result.worldTransform.columns.3.z
+            )
+        }
         
-        let ballDistance = simd_distance(cameraPosition, currentBallPosition)
-        let targetDistance = max(ballDistance, 0.5)
-        
-        let normalizedX = (fingerLocation.x / _arView.bounds.width) * 2.0 - 1.0
-        let normalizedY = -((fingerLocation.y / _arView.bounds.height) * 2.0 - 1.0)
-        
-        let fov = Float.pi / 3.0
-        let aspectRatio = Float(_arView.bounds.width / _arView.bounds.height)
-        
-        let rayDirectionCamera = SIMD3<Float>(
-            Float(normalizedX) * tan(fov / 2.0) * aspectRatio,
-            Float(normalizedY) * tan(fov / 2.0),
-            -1.0
+        return SIMD3<Float>(
+            result.worldTransform.columns.3.x,
+            result.worldTransform.columns.3.y,
+            result.worldTransform.columns.3.z
         )
-        
-        let rayDirectionWorld = simd_normalize(cameraTransform.rotation.act(rayDirectionCamera))
-        let worldPosition = cameraPosition + rayDirectionWorld * targetDistance
-        
-        return worldPosition
-    }
-    
-    public func projectFingerToGround(fingerLocation: CGPoint) -> SIMD3<Float>? {
-        let cameraTransform = _arView.cameraTransform
-        let cameraPosition = SIMD3<Float>(cameraTransform.translation)
-        
-        let normalizedX = (fingerLocation.x / _arView.bounds.width) * 2.0 - 1.0
-        let normalizedY = -((fingerLocation.y / _arView.bounds.height) * 2.0 - 1.0)
-        
-        let fov = Float.pi / 3.0
-        let aspectRatio = Float(_arView.bounds.width / _arView.bounds.height)
-        
-        let rayDirectionCamera = SIMD3<Float>(
-            Float(normalizedX) * tan(fov / 2.0) * aspectRatio,
-            Float(normalizedY) * tan(fov / 2.0),
-            -1.0
-        )
-        
-        let rayDirectionWorld = cameraTransform.rotation.act(rayDirectionCamera)
-        let groundLevel: Float = Float(GROUND_LEVEL)
-        let rayToGround = groundLevel - cameraPosition.y
-        
-        guard abs(rayDirectionWorld.y) > 0.001 else { return nil }
-        
-        let t = rayToGround / rayDirectionWorld.y
-        guard t > 0 else { return nil }
-        
-        let groundIntersection = cameraPosition + rayDirectionWorld * t
-        return groundIntersection
     }
     
 
+    // ✅ FALLBACK: Use incremental movement
+    let currentPos = draggedSphere._modelEntity.transform.translation
+    
+    // Convert finger movement to world movement (much smaller scale)
+    let movementScale: Float = 0.001  // 2mm per pixel movement
+    let deltaX = Float(fingerMovement.x) * movementScale
+    let deltaZ = -Float(fingerMovement.y) * movementScale  // Flip Y
 
+    return SIMD3<Float>(
+        currentPos.x + deltaX,
+        currentPos.y,
+        currentPos.z + deltaZ
+    )
+  }
+  
+
+
+  private func projectFingerToPlane(fingerLocation: CGPoint, planeY: Float) -> SIMD3<Float>? {
+      // Use the same incremental movement as the fallback
+      guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
+      
+      let currentPos = draggedSphere._modelEntity.transform.translation
+      
+      // Don't try to do complex projection - just return current position
+      return SIMD3<Float>(currentPos.x, planeY, currentPos.z)
+  }
 
 }
 
@@ -2096,7 +2098,7 @@ extension ARView3D {
           let oldLevel = Float(GROUND_LEVEL)
           
           // Update references
-          ARView3D.SHARED_GROUND_LEVEL = realFloorLevel
+          GROUND_LEVEL = realFloorLevel
           
           // Move invisible floor
           _invisibleFloor?.transform.translation.y = realFloorLevel
@@ -2162,7 +2164,7 @@ extension ARView3D {
       let currentLevel = Float(GROUND_LEVEL)
       
       // ✅ ONLY CHANGE: Stop if floor hasn't moved
-      if abs(realFloorLevel - currentLevel) < 0.05 { return }
+      if abs(realFloorLevel - currentLevel) <= ARView3D.VERTICAL_OFFSET { return }
       
       // Keep ALL your existing code exactly as it was
       guard let invisibleFloor = _invisibleFloor else {
@@ -2173,7 +2175,7 @@ extension ARView3D {
       let oldLevel = invisibleFloor.transform.translation.y
       let newLevel = realFloorLevel
       
-      ARView3D.SHARED_GROUND_LEVEL = newLevel
+      GROUND_LEVEL = newLevel
       invisibleFloor.transform.translation.y = newLevel
       _floorAnchor?.transform.translation.y = newLevel
       
@@ -2233,7 +2235,8 @@ extension ARView3D {
       )
       
       // Position collision box so TOP surface is at the floor height
-    let collisionY = height - (floorThickness/2) + 0.5
+    let offset = ARView3D.VERTICAL_OFFSET
+    let collisionY = height - (floorThickness/2) + offset
     print("Collision Y: \(collisionY)m")
     _invisibleFloor?.collision = CollisionComponent(
         shapes: [floorShape],
@@ -2295,7 +2298,7 @@ extension ARView3D {
                 let bottom = pos.y - radius
                 print("  \(sphere.Name): center=Y\(pos.y), bottom=Y\(bottom)")
                 
-                if bottom < Float(GROUND_LEVEL) - 0.05 {
+              if bottom < Float(GROUND_LEVEL) - ARView3D.VERTICAL_OFFSET {
                     print("    ⚠️ This sphere might be below floor!")
                 }
             }

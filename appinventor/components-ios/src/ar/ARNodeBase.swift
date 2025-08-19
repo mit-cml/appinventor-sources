@@ -38,7 +38,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var hasTexture = false
   public var _texture: String = ""
   
-  private var _enablePhysics: Bool = false
+  public var _enablePhysics: Bool = false
   private var _pinchToScale: Bool = false
   private var _panToMove: Bool = false
   private var _rotateWithGesture: Bool = false
@@ -1059,13 +1059,13 @@ extension ARNodeBase {
           return ShapeResource.generateBox(size: size)
       }
   }
-  
-  
+
   @objc open func handleAdvancedGestureUpdate(
-      fingerLocation: CGPoint,
-      fingerVelocity: CGPoint,
-      groundProjection: Any?,
-      camera3DProjection: Any?, // Optional 3D projection for pickup
-      gesturePhase: UIGestureRecognizer.State
+    fingerLocation: CGPoint,
+    fingerMovement: CGPoint,
+    fingerVelocity: CGPoint,
+    groundProjection: Any?,
+    camera3DProjection: Any?,
+    gesturePhase: UIGestureRecognizer.State
   ) {}
 }

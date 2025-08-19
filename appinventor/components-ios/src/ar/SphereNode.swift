@@ -12,7 +12,6 @@ open class SphereNode: ARNodeBase, ARSphere {
   private var _rollDirection: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
   private var _totalRolling: SIMD3<Float> = SIMD3<Float>(0, 0, 0)  // Track total rotation
   private var _behaviorName: String = "default"
-  public var GROUND_LEVEL = -0.8
   
   private var _currentDragMode: DragMode = .rolling
   private var _dragStartPosition: SIMD3<Float>?
@@ -75,7 +74,7 @@ open class SphereNode: ARNodeBase, ARSphere {
   
   private func updateSphereMesh() {
     // Generate new sphere mesh with current radius
-    let mesh = MeshResource.generateSphere(radius: _radius)
+    let mesh = MeshResource.generateSphere(radius: _radius * Scale)
     
     // Preserve existing materials when updating mesh
     let existingMaterials = _modelEntity.model?.materials ?? []
@@ -266,7 +265,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       // ✅ Apply behavior-specific defaults (last behavior wins if multiple)
       if _behaviorFlags.contains(.heavy) {
-          mass = 0.8  // Heavy default
+        mass = 0.5  // Heavy default
         dragSensitivity = 1.0  // Harder to drag
       }
       
@@ -340,54 +339,59 @@ open class SphereNode: ARNodeBase, ARSphere {
       return names
   }
 
-     
   override open func ScaleBy(_ scalar: Float) {
       print("🔄 Scaling sphere \(Name) by \(scalar)")
       
       let currentPos = _modelEntity.transform.translation
       let oldScale = Scale
-      let newRadius = _radius * abs(scalar)
+      let oldActualRadius = _radius * oldScale
+      
+      // ✅ Calculate where the bottom of the sphere currently is
+      let currentBottomY = currentPos.y - oldActualRadius
       
       // ✅ Keep physics enabled during scaling
       let hadPhysics = _modelEntity.physicsBody != nil
       
-      // ✅ Update scale first
-      _modelEntity.transform.scale = SIMD3<Float>(abs(scalar), abs(scalar), abs(scalar))
-     
+      // ✅ Update scale
+      let newScale = oldScale * abs(scalar)
+      _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
       
-      // ✅ Calculate new position to keep bottom at same level
-      let groundLevel = Float(GROUND_LEVEL)
-      let ballRadius = newRadius
-      let currentBottomY = currentPos.y - (oldScale * _radius)
-      let newCenterY = currentBottomY + ballRadius
+      // ✅ Calculate new radius and maintain bottom position
+      let newActualRadius = _radius * newScale
+      let newCenterY = currentBottomY + newActualRadius
       
-      // ✅ Apply position immediately
+      print("🔄 Scaling sphere center y from \(currentPos.y) to \(newCenterY)")
+      print("🔄 Bottom Y stays at: \(currentBottomY), oldRadius: \(oldActualRadius), newRadius: \(newActualRadius)")
+      
+      // ✅ Apply new position
       let newPosition = SIMD3<Float>(currentPos.x, newCenterY, currentPos.z)
       _modelEntity.transform.translation = newPosition
-      
+
       // ✅ Update physics immediately if it was enabled
       if hadPhysics {
-          updatePhysicsCollisionShape() // Your existing method
+          updatePhysicsCollisionShape()
       }
       
-      print("🎾 Scale complete - no physics delay")
+      print("🎾 Scale complete - bottom position maintained")
   }
-      // MARK: - ScaleByPinch Method Override
-      
+
   override open func scaleByPinch(scalar: Float) {
       print("🤏 Pinch scaling sphere \(Name) by \(scalar)")
       
       let currentPos = _modelEntity.transform.translation
       let oldScale = Scale
-      let oldActualRadius = _radius * oldScale  // Current actual radius
+      let oldActualRadius = _radius * oldScale
       
-      // ✅ Calculate new scale and actual radius
+      // ✅ Calculate where the bottom currently is
+      let currentBottomY = currentPos.y - oldActualRadius
+      
+      // ✅ Calculate new scale and radius
       let newScale = oldScale * scalar
-      let newActualRadius = oldActualRadius * scalar  // Scale the actual size
+      let newActualRadius = _radius * newScale
       
       // ✅ Validate bounds using actual radius
       let minRadius: Float = 0.01
-      let maxRadius: Float = 1.0
+      let maxRadius: Float = 3.0
       guard newActualRadius >= minRadius && newActualRadius <= maxRadius else {
           print("🚫 Pinch scale rejected - radius would be \(newActualRadius)")
           return
@@ -396,13 +400,11 @@ open class SphereNode: ARNodeBase, ARSphere {
       // ✅ Apply scaling to transform
       _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
       
-      // ✅ DON'T change _radius - it stays constant, only scale changes
-      // _radius = ... // ❌ Remove this line entirely
+      // ✅ Maintain the bottom position - new center is bottom + new radius
+      let newCenterY = currentBottomY + newActualRadius
       
-      // ✅ Adjust position to keep bottom at same level
-      let groundLevel = Float(GROUND_LEVEL)
-      let oldBottomY = currentPos.y - oldActualRadius
-      let newCenterY = oldBottomY + newActualRadius
+      print("🔄 Pinch scale sphere center y from \(currentPos.y) to \(newCenterY)")
+      print("🔄 Bottom Y stays at: \(currentBottomY), oldRadius: \(oldActualRadius), newRadius: \(newActualRadius)")
       
       _modelEntity.transform.translation = SIMD3<Float>(
           currentPos.x,
@@ -415,35 +417,35 @@ open class SphereNode: ARNodeBase, ARSphere {
           updatePhysicsCollisionShape()
       }
       
-      print("🎾 Scale complete: oldRadius=\(oldActualRadius), newRadius=\(newActualRadius), newScale=\(newScale)")
+      print("🎾 Pinch scale complete: oldRadius=\(oldActualRadius), newRadius=\(newActualRadius), newScale=\(newScale)")
   }
-      // MARK: - Helper Methods for Scaling
+
+  
+  private func updatePhysicsCollisionShape() {
+      guard var physicsBody = _modelEntity.physicsBody else { return }
       
-      private func updatePhysicsCollisionShape() {
-          guard var physicsBody = _modelEntity.physicsBody else { return }
-          
-          // Create new collision shape with updated radius
-          let sphereShape = ShapeResource.generateSphere(radius: _radius)
-          
-          // Update collision component with new shape
-          _modelEntity.collision = CollisionComponent(
-              shapes: [sphereShape],
-              filter: _modelEntity.collision?.filter ?? CollisionFilter.default
-          )
-          
-          // Update physics body with new mass based on volume
-         let newMass = Mass * pow(Scale, 2.2)  //hybrd density for gameplay
-          
-          //physicsBody.massProperties = PhysicsMassProperties(mass: newMass)
-          // I don't think I should change the mass just based on scale? shouldn't it be a calculation? hmm
-          
-          print("🎾 Updated physics: radius=\(String(format: "%.3f", _radius)), mass=\(String(format: "%.3f", newMass))")
-      }
+      // ✅ Use precise sphere radius (not bounds calculation)
+      let radius = _radius * Scale
+      let sphereShape = ShapeResource.generateSphere(radius: radius)
       
+      // Update collision component with new shape
+      _modelEntity.collision = CollisionComponent(
+          shapes: [sphereShape],
+          filter: _modelEntity.collision?.filter ?? CollisionFilter.default
+      )
+      
+     // let newMass = Mass * pow(Scale, 2.2)  //hybrd density for gameplay
+      // Keep mass as your Mass property (don't scale with volume)
+    physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
+      
+      print("🎾 Updated sphere physics: radius=\(radius), mass=\(Mass)")
+  }
+  
+  
       // MARK: - Scale Validation and Constraints (Updated with proper integration)
       
       private func getValidScaledPosition(currentPos: SIMD3<Float>, newRadius: Float) -> SIMD3<Float> {
-          let groundLevel = Float(GROUND_LEVEL)
+          let groundLevel = ARView3D.SHARED_GROUND_LEVEL
           let currentBottomY = currentPos.y - (_radius * Scale)
           
           // Calculate new center position to keep bottom at same level
@@ -458,7 +460,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       // MARK: - Updated constrainToValidPosition to use current scale
       
       public func constrainToValidPosition(_ position: SIMD3<Float>) -> SIMD3<Float> {
-          let groundLevel = Float(GROUND_LEVEL)
+          let groundLevel = ARView3D.SHARED_GROUND_LEVEL
           let currentRadius = _radius * Scale  // Use current scaled radius
           
           // Ball center must be at least one radius above ground
@@ -480,11 +482,11 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       private func validatePositionAfterCollision(_ position: SIMD3<Float>) -> SIMD3<Float> {
           // Called after collision to prevent sphere from sinking into ground
-          let groundLevel = Float(GROUND_LEVEL)
+          let groundLevel = ARView3D.SHARED_GROUND_LEVEL
           let currentRadius = _radius * Scale
           
           // More aggressive constraint after collision (larger buffer)
-          let minY = groundLevel + currentRadius + 0.02  // 2cm buffer after collision
+          let minY = groundLevel + currentRadius //+ 0.02  // 2cm buffer after collision
           
           return SIMD3<Float>(
               position.x,
@@ -512,7 +514,7 @@ open class SphereNode: ARNodeBase, ARSphere {
           let radius = _radius
           let actualRadius = radius * scale
           let bottomY = currentPos.y - actualRadius
-          let groundLevel = Float(GROUND_LEVEL)
+        let groundLevel = ARView3D.SHARED_GROUND_LEVEL
           
           print("=== SPHERE SCALE DEBUG ===")
           print("Name: \(Name)")
@@ -529,76 +531,7 @@ open class SphereNode: ARNodeBase, ARSphere {
           }
           print("========================")
       }
-  
-
-  // Update sphere mesh to match new radius after scaling
-  private func updateSphereMeshAfterScale() {
-      // Generate new sphere mesh with current radius
-      let mesh = MeshResource.generateSphere(radius: _radius)
-      
-      // Preserve existing materials when updating mesh
-      let existingMaterials = _modelEntity.model?.materials ?? []
-      _modelEntity.model = ModelComponent(
-          mesh: mesh,
-          materials: existingMaterials.isEmpty ? [SimpleMaterial()] : existingMaterials
-      )
-  }
-  
-  /* built in drag sensitivity for certain behaviors */
-  private func getBehaviorDragSensitivity() -> Float {
-      var sensitivity: Float = 1.0
-      
-      if _behaviorFlags.contains(.heavy) {
-          sensitivity *= 0.7  // Heavy balls feel harder to move
-      }
-      
-      if _behaviorFlags.contains(.light) {
-          sensitivity *= 1.3  // Light balls move more easily
-      }
-      
-      if _behaviorFlags.contains(.sticky) {
-          sensitivity *= 0.5  // Sticky balls resist movement
-      }
-      
-      if _behaviorFlags.contains(.slippery) {
-          sensitivity *= 1.2  // Slippery balls move easily
-      }
-      
-      if _behaviorFlags.contains(.floating) {
-          sensitivity *= 1.4  // Floating objects move easily
-      }
-      
-      return sensitivity
-  }
-  
-  
-  override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
-      let finalPosition = _modelEntity.transform.translation
-      print("🎾 Ending OLD drag method - using simple restore")
-      
-      // ✅ FIX 3: Use simple physics restore instead of problematic velocity reset
-      EnablePhysics(true)
-      _modelEntity.transform.translation = finalPosition
-      
-      // ✅ Simple force application without mass manipulation
-      if simd_length(SIMD2<Float>(Float(releaseVelocity.x), Float(releaseVelocity.y))) > 50 {
-          let velocity3D = SIMD3<Float>(
-              Float(releaseVelocity.x) * 0.002,
-              Float(releaseVelocity.y) * 0.001,
-              0
-          )
-          _modelEntity.addForce(velocity3D, relativeTo: nil as Entity?)
-      }
-      
-      // Restore material
-      if let original = OriginalMaterial {
-          _modelEntity.model?.materials = [original]
-          OriginalMaterial = nil
-      }
-      
-      isBeingDragged = false
-      print("🎾 Simple drag end - no hop")
-  }
+ 
   
   private func getVelocityScaleForBehavior() -> Float {
       var scale: Float = 1.0
@@ -625,70 +558,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       return scale
   }
-
-  // ✅ REMOVE: Delete the problematic physics reset method entirely
-  // This method was causing the hop by manipulating mass
-  // private func restorePhysicsWithVelocityReset(...) { ... } // DELETED
   
-  // MARK: - Behavior-Aware Rolling Methods
-  
-  private func shouldRoll(currentHeight: Float, movement: SIMD3<Float>) -> Bool {
-      // Sticky balls don't roll well
-      if _behaviorFlags.contains(.sticky) {
-          return false
-      }
-      
-    let groundLevel: Float = Float(GROUND_LEVEL)
-      let ballRadius = _radius * _modelEntity.transform.scale.x
-      let isOnGround = currentHeight <= (groundLevel + ballRadius + 0.05)
-      
-      // ✅ Roll if on ground and moving horizontally
-      let horizontalMovement = sqrt(movement.x * movement.x + movement.z * movement.z)
-      let verticalMovement = abs(movement.y)
-      
-      return isOnGround && horizontalMovement > verticalMovement * 0.5
-  }
-  
-  private func applySimpleRolling(movement: SIMD3<Float>) {
-      let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
-      let distance = simd_length(horizontalMovement)
-      
-      guard distance > 0.001 else { return }
-      
-      // ✅ Calculate roll angle: distance = radius × angle
-      let ballRadius = _radius * _modelEntity.transform.scale.x
-      let rollAngle = distance / ballRadius
-      
-      // ✅ Modify rolling based on surface behavior
-      let effectiveRollAngle: Float
-      if _behaviorFlags.contains(.slippery) {
-          effectiveRollAngle = rollAngle * 1.5  // Slippery balls roll more
-      } else if _behaviorFlags.contains(.wet) {
-          effectiveRollAngle = rollAngle * 0.6  // Wet balls roll less
-      } else {
-          effectiveRollAngle = rollAngle
-      }
-      
-      // ✅ Roll axis perpendicular to movement
-      let direction = simd_normalize(horizontalMovement)
-      let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
-      
-      // ✅ Apply rotation
-      let rollRotation = simd_quatf(angle: effectiveRollAngle, axis: rollAxis)
-      _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-      
-      // ✅ Track for momentum
-      _accumulatedRoll += effectiveRollAngle
-      _rollDirection = direction
-      
-      print("🎾 Rolling: distance=\(distance), angle=\(effectiveRollAngle)")
-  }
-  
-  private func isNearGround(height: Float) -> Bool {
-    let groundLevel: Float = Float(GROUND_LEVEL)
-      let ballRadius = _radius * _modelEntity.transform.scale.x
-      return height <= (groundLevel + ballRadius + 0.1)
-  }
   
   private func startGroundMomentum() {
       // ✅ Simple momentum - gradually slow down rolling
@@ -730,72 +600,6 @@ open class SphereNode: ARNodeBase, ARSphere {
       }
   }
   
-  // MARK: - Behavior-Specific Drag Effects
-  
-  private func applyDragBehaviors(movement: SIMD3<Float>) {
-      // Rolling behavior during drag
-      if _behaviorFlags.contains(.rolling) && shouldRoll(currentHeight: _modelEntity.transform.translation.y, movement: movement) {
-          applySimpleRolling(movement: movement)
-      }
-      
-      // Floating behavior during drag
-      if _behaviorFlags.contains(.floating) {
-          applyFloatingMotion()
-      }
-      
-      // Slippery behavior during drag
-      if _behaviorFlags.contains(.slippery) {
-          applySlipperyMotion(movement: movement)
-      }
-      
-      // Sticky behavior during drag - resistance
-      if _behaviorFlags.contains(.sticky) {
-          applyStickyResistance()
-      }
-  }
-  
-  private func applyEndDragBehaviors() {
-      // Floating behavior after drag
-      if _behaviorFlags.contains(.floating) {
-          startFloatingBehavior()
-      }
-      
-      // Rolling momentum after drag
-      if _behaviorFlags.contains(.rolling) {
-          startGroundMomentum()
-      }
-      
-      // Sticky behavior after drag
-      if _behaviorFlags.contains(.sticky) {
-          startStickySettle()
-      }
-      
-      // Slippery behavior after drag
-      if _behaviorFlags.contains(.slippery) {
-          startSlipperySlide()
-      }
-  }
-  
-  private func applyFloatingMotion() {
-      // Add gentle floating oscillation
-      let time = Float(Date().timeIntervalSince1970)
-      let floatOffset = sin(time * 1.5) * 0.002  // 2mm gentle floating
-      _modelEntity.transform.translation.y += floatOffset
-  }
-  
-  private func applySlipperyMotion(movement: SIMD3<Float>) {
-      // Slippery objects have momentum - they keep moving slightly
-      let momentum = movement * 0.2
-      let currentPos = _modelEntity.transform.translation
-      _modelEntity.transform.translation = currentPos + momentum
-  }
-  
-  private func applyStickyResistance() {
-      // Sticky objects create subtle "stretching" effect when dragged
-      let time = Float(Date().timeIntervalSince1970)
-      let resistance = sin(time * 8.0) * 0.001  // Small resistance oscillation
-      _modelEntity.transform.translation.y += resistance
-  }
   
   private func startFloatingBehavior() {
       guard _behaviorFlags.contains(.floating) else { return }
@@ -813,7 +617,7 @@ open class SphereNode: ARNodeBase, ARSphere {
                   let newY = currentPos.y + floatOffset
                   
                   // Keep floating above ground level
-                let minFloatHeight: Float = Float(GROUND_LEVEL + 0.2)  // 20cm above ground
+                  let minFloatHeight = ARView3D.SHARED_GROUND_LEVEL + 0.2  // 20cm above ground
                   _modelEntity.transform.translation.y = max(newY, minFloatHeight)
               }
               
@@ -852,39 +656,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       }
   }
   
-  private func startSlipperySlide() {
-      guard _behaviorFlags.contains(.slippery) && isNearGround(height: _modelEntity.transform.translation.y) else { return }
-      
-      print("🎾 Slippery sphere sliding with momentum")
-      
-      // Slippery spheres keep sliding after being released
-      let slideDirection = _rollDirection
-      var slideSpeed: Float = _accumulatedRoll * 0.6  // Good momentum
-      
-      Task {
-          while slideSpeed > 0.005 && !isBeingDragged {
-              await MainActor.run {
-                  guard !isBeingDragged else { return }
-                  
-                  let slideMovement = slideDirection * slideSpeed * 0.03
-                  let currentPos = _modelEntity.transform.translation
-                  _modelEntity.transform.translation = currentPos + slideMovement
-                  
-                  // Keep rolling while sliding
-                  let rollAngle = slideSpeed * 0.1
-                  let rollRotation = simd_quatf(angle: rollAngle, axis: SIMD3<Float>(slideDirection.z, 0, -slideDirection.x))
-                  _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-                  
-                  slideSpeed *= 0.995  // Very slow deceleration for slippery
-              }
-              
-              try? await Task.sleep(nanoseconds: 33_000_000)
-          }
-          
-          print("🎾 Slippery slide stopped")
-      }
-  }
-
+  
   @available(iOS 15.0, *)
   private func showDragEffect() {
       var dragMaterial = SimpleMaterial()
@@ -964,156 +736,49 @@ open class SphereNode: ARNodeBase, ARSphere {
       IsBouncy = false  // Heavy, doesn't bounce much
       print("🎳 Configured as bowling ball")
   }
-}
 
-// MARK: - Fixed Advanced Gesture Handling Extension
-
-@available(iOS 14.0, *)
-extension SphereNode {
-    
-    // MARK: - Fixed Advanced Gesture Handler
-    
-    override open func handleAdvancedGestureUpdate(
-        fingerLocation: CGPoint,
-        fingerVelocity: CGPoint,
-        groundProjection: Any?,
-        camera3DProjection: Any?,
-        gesturePhase: UIGestureRecognizer.State
-    ) {
-        
-        // Convert Any? back to SIMD3<Float>? (your existing pattern)
-        let groundPos = groundProjection as? SIMD3<Float>
-        let cameraPos = camera3DProjection as? SIMD3<Float>
-        
-        switch gesturePhase {
-        case .began:
-            startSmoothRolling(fingerLocation: fingerLocation)
-            
-        case .changed:
-            updateSmoothRolling(
-                fingerLocation: fingerLocation,
-                fingerVelocity: fingerVelocity,
-                groundProjection: groundPos,
-                camera3DProjection: cameraPos
-            )
-            
-        case .ended, .cancelled:
-            endSmoothRolling(
-                fingerVelocity: fingerVelocity,
-                groundProjection: groundPos
-            )
-            
-        default:
-            break
-        }
-    }
-    
-    // MARK: - Fixed updateSmoothRolling Method
-    
-    private func updateSmoothRolling(
-        fingerLocation: CGPoint,
-        fingerVelocity: CGPoint,
-        groundProjection: SIMD3<Float>?,
-        camera3DProjection: SIMD3<Float>?
-    ) {
-        
-        print("🎾 Smooth update in \(_currentDragMode) mode:")
-        print("  fingerLocation: \(fingerLocation)")
-        print("  fingerVelocity: \(fingerVelocity)")
-        print("  DragSensitivity: \(DragSensitivity)")
-        
-        // Track finger movement for mode transitions
-        let fingerMovement = CGPoint(
-            x: fingerLocation.x - _lastFingerPosition.x,
-            y: fingerLocation.y - _lastFingerPosition.y
-        )
-        _lastFingerPosition = fingerLocation
-        
-        // Check for mode transitions with fixed thresholds
-        checkForModeTransition(fingerMovement: fingerMovement, fingerVelocity: fingerVelocity)
-        
-        // Apply movement based on current mode
-        switch _currentDragMode {
-        case .rolling:
-            updateRollingMode(
-                fingerMovement: fingerMovement,
-                groundProjection: groundProjection
-            )
-            
-        case .pickup:
-            updatePickupMode(
-                fingerMovement: fingerMovement,
-                camera3DProjection: camera3DProjection
-            )
-            
-        case .flinging:
-            updateFlingingMode(
-                fingerMovement: fingerMovement,
-                camera3DProjection: camera3DProjection
-            )
-        }
-    }
-    
-    // MARK: - Fixed endSmoothRolling Method
-    
-    private func endSmoothRolling(
-        fingerVelocity: CGPoint,
-        groundProjection: SIMD3<Float>?
-    ) {
-        print("🎾 Ending smooth interaction in \(_currentDragMode) mode")
-        
-        let releaseSpeed = sqrt(fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y)
-        
-        // Mode-specific ending behavior
-        switch _currentDragMode {
-        case .rolling:
-            endRollingMode(fingerVelocity: fingerVelocity, releaseSpeed: Float(releaseSpeed))
-            
-        case .pickup:
-            endPickupMode(fingerVelocity: fingerVelocity, releaseSpeed: Float(releaseSpeed))
-            
-        case .flinging:
-            endFlingingMode(fingerVelocity: fingerVelocity, releaseSpeed: Float(releaseSpeed))
-        }
-        
-        // Clean up
-        _isActivelyRolling = false
-        isBeingDragged = false
-        _currentDragMode = .rolling  // Reset to default
-        
-        // Restore material
-        if let original = OriginalMaterial {
-            _modelEntity.model?.materials = [original]
-            OriginalMaterial = nil
-        }
-        
-        print("🎾 Smooth interaction ended with speed: \(releaseSpeed)")
-    }
-
-  // ✅ FIX 1: Keep physics ENABLED during rolling (like your working version)
-  private func startSmoothRolling(fingerLocation: CGPoint) {
-      print("🎾 Starting smooth interaction for \(getBehaviorNames().joined(separator: "+")) sphere")
-      
-      _lastUpdateTime = Date()
-      _lastFingerPosition = fingerLocation
-      isBeingDragged = true
-      
-      let currentHeight = _modelEntity.transform.translation.y
-      let groundLevel = Float(GROUND_LEVEL)
-      let ballRadius = _radius * Scale
-      let isOnGround = currentHeight <= (groundLevel + ballRadius + 0.1)
-      
-      // Store original material
-      if OriginalMaterial == nil {
-          OriginalMaterial = _modelEntity.model?.materials.first
+  override open func handleAdvancedGestureUpdate(
+          fingerLocation: CGPoint,
+          fingerMovement: CGPoint,
+          fingerVelocity: CGPoint,
+          groundProjection: Any?,
+          camera3DProjection: Any?,
+          gesturePhase: UIGestureRecognizer.State
+      ) {
+          
+          let groundPos = groundProjection as? SIMD3<Float>
+          let cameraPos = camera3DProjection as? SIMD3<Float>
+          
+          switch gesturePhase {
+          case .began:
+              print("🎯 Starting simplified Angry Birds drag for \(Name)")
+              startAngryBirdsDrag()
+              
+          case .changed:
+              // ✅ Use our simplified rolling logic from the extension
+              updateAngryBirdsDrag(
+                  fingerLocation: fingerLocation,
+                  fingerMovement: fingerMovement,
+                  fingerVelocity: fingerVelocity,
+                  groundProjection: groundPos,
+                  camera3DProjection: cameraPos
+              )
+              
+          case .ended, .cancelled:
+              print("🎯 Ending simplified drag for \(Name)")
+              endAngryBirdsDrag(releaseVelocity: fingerVelocity)
+              
+          default:
+              break
+          }
       }
       
-      if !isOnGround && currentHeight > groundLevel + ballRadius + 0.3 {
-          // Ball is clearly in the air - pickup mode (disable physics)
-          _currentDragMode = .pickup
-          _pickupStartHeight = currentHeight
+      // ✅ SUPPORTING METHODS: Make sure these exist too
+      
+      func startAngryBirdsDrag() {
+          print("🎯 Starting Angry Birds drag for \(Name)")
           
-          // Store and disable physics for pickup
+          // Store physics settings if needed
           if let physicsBody = _modelEntity.physicsBody {
               _storedPhysicsSettings = PhysicsSettings(
                   mass: Mass,
@@ -1121,303 +786,270 @@ extension SphereNode {
                   mode: physicsBody.mode
               )
           }
+          
+          // Disable physics for direct control during drag
           _modelEntity.physicsBody = nil
           _modelEntity.collision = nil
-        print("🎾 Starting PICKUP mode - physics DISABLED, mass is \(Mass) and \(_modelEntity.physicsBody?.massProperties.mass)")
           
-      } else {
-          // ✅ CORRECTED: Rolling mode keeps physics ENABLED
-          _currentDragMode = .rolling
-          _pickupStartHeight = currentHeight
-          // DO NOT disable physics for rolling - keep it enabled!
-        print("🎾 Starting ROLLING mode - physics ENABLED,  mass is \(Mass) and \(_modelEntity.physicsBody?.massProperties.mass)")
+          isBeingDragged = true
+          _lastUpdateTime = Date()
+          
+          // Visual feedback
+          if #available(iOS 15.0, *) {
+              showDragEffect()
+          }
       }
       
-      // Visual feedback
-      if #available(iOS 15.0, *) {
-          showModeEffect()
+      func endAngryBirdsDrag(releaseVelocity: CGPoint) {
+        print("🎯 Ending Angry Birds drag for \(Name)")
+          
+        let finalDragPosition = _modelEntity.transform.translation
+        // ✅ Verify this is a reasonable world position
+        if abs(finalDragPosition.x) > 10 || abs(finalDragPosition.z) > 10 {
+            print("⚠️ Ball escaped to unrealistic position: \(finalDragPosition)")
+            // Reset to last known good position
+        }
+        
+        
+        EnablePhysics(true)
+        _modelEntity.transform.translation = finalDragPosition
+          let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
+          
+          if releaseSpeed > 200 {
+              // Apply momentum with mass consideration
+              let momentum = calculateAngryBirdsMomentum(releaseVelocity: releaseVelocity)
+              _modelEntity.addForce(momentum, relativeTo: nil as Entity?)
+              
+              print("🎾 Applied release momentum: \(momentum)")
+          }
+          
+          // Cleanup
+          isBeingDragged = false
+          _storedPhysicsSettings = nil
+          
+          // Restore visual
+          if let original = OriginalMaterial {
+              _modelEntity.model?.materials = [original]
+              OriginalMaterial = nil
+          }
       }
       
-      print("🎾 Smooth interaction started in \(_currentDragMode) mode")
+      private func calculateAngryBirdsMomentum(releaseVelocity: CGPoint) -> SIMD3<Float> {
+          // Convert finger velocity to world momentum
+          let baseForce = SIMD3<Float>(
+              Float(releaseVelocity.x) * 0.004,
+              Float(-releaseVelocity.y) * 0.003,  // Up finger movement = positive Y
+              Float(releaseVelocity.y) * 0.001    // Some Z component for depth
+          )
+          
+          // Apply behavior scale but don't compensate for mass (let physics handle it)
+          let behaviorScale = getVelocityScaleForBehavior()
+          
+          return baseForce * behaviorScale
+      }
+      
+      
+      // MARK: - Main Drag Update Method (Updated)
+      
+      func updateAngryBirdsDrag(
+          fingerLocation: CGPoint,
+          fingerMovement: CGPoint,
+          fingerVelocity: CGPoint,
+          groundProjection: SIMD3<Float>?,
+          camera3DProjection: SIMD3<Float>?
+      ) {
+          let currentTime = Date()
+          let deltaTime = Float(currentTime.timeIntervalSince(_lastUpdateTime))
+          _lastUpdateTime = currentTime
+          
+          let fingerSpeed = sqrt(fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y)
+          
+          // ✅ SIMPLE: Default to rolling, only throw on clear intent
+        let shouldThrow = checkThrowingIntent(fingerVelocity: fingerVelocity, fingerMovement: fingerMovement, fingerSpeed: fingerSpeed)
+          
+          if shouldThrow {
+              print("🎯 THROWING MODE: Clear throwing intent detected")
+              updateAngryBirdsThrowing(camera3DProjection: camera3DProjection, deltaTime: deltaTime)
+          } else {
+              print("🎯 ROLLING MODE: Default rolling behavior")
+              updateAngryBirdsRollingTrace(groundProjection: groundProjection, deltaTime: deltaTime)
+          }
+          
+          // Store momentum for release
+          let movement = calculateMovementFromFingerVelocity(fingerVelocity)
+          _currentMomentum = movement * getMassInertiaFactor()
+      }
+      
+      // MARK: - Throwing Intent Detection
+      
+  // ✅ MUCH more conservative pickup detection
+  private func shouldTransitionToPickup(fingerVelocity: CGPoint, fingerMovement: CGPoint) -> Bool {
+      let upwardThreshold: CGFloat = -800  // ✅ Much higher threshold (was -300)
+      let ratioThreshold: Float = 3.0      // ✅ Much stricter ratio (was 1.5)
+      let minimumDistance: CGFloat = 40    // ✅ Must move at least 40 pixels up
+      
+      // ✅ Must be fast upward movement
+      guard fingerVelocity.y < upwardThreshold else { return false }
+      
+      // ✅ Must be primarily vertical (3x more vertical than horizontal)
+     guard abs(fingerVelocity.y) > abs(fingerVelocity.x) * CGFloat(ratioThreshold) else { return false }
+      
+      // ✅ Must have actually moved upward a reasonable distance
+      guard fingerMovement.y < -minimumDistance else { return false }
+      
+      print("🎯 Pickup intent: velocity=\(fingerVelocity.y), ratio=\(abs(fingerVelocity.y)/abs(fingerVelocity.x)), distance=\(fingerMovement.y)")
+      return true
   }
-
-  // Replace updateRollingMode with this realistic physics version
-
-  private func updateRollingMode(
-      fingerMovement: CGPoint,
-      groundProjection: SIMD3<Float>?
-  ) {
+  
+      private func checkThrowingIntent(fingerVelocity: CGPoint, fingerMovement: CGPoint, fingerSpeed: CGFloat) -> Bool {
+          // ✅ INTENT 1: Very fast finger movement (clear flick/throw gesture)
+          if fingerSpeed > FLING_THRESHOLD_SPEED {
+              print("🎯 Throw intent: Fast finger speed \(fingerSpeed) > \(FLING_THRESHOLD_SPEED)")
+              return true
+          }
+          
+          // ✅ INTENT 2: Strong upward finger movement (trying to lift ball)
+    
+          if shouldTransitionToPickup(fingerVelocity: fingerVelocity, fingerMovement: fingerMovement){
+            return true
+          }
+          // ✅ DEFAULT: Always roll unless clear throwing intent
+          return false
+      }
+      
+      // MARK: - Rolling Mode (Simplified)
+      
+  private func updateAngryBirdsRollingTrace(groundProjection: SIMD3<Float>?, deltaTime: Float) {
       guard let targetPosition = groundProjection else {
-          print("❌ No ground projection for rolling mode")
+          print("❌ ROLLING - No ground projection, staying in place")
           return
       }
       
       let currentPos = _modelEntity.transform.translation
-      let direction = targetPosition - currentPos
-      let distance = simd_length(direction)
+      let movement = targetPosition - currentPos
+      let distance = simd_length(movement)
       
-      print("🎾 Rolling: current=\(currentPos), target=\(targetPosition), distance=\(distance)")
+      guard distance > 0.001 else {
+          print("🎯 ROLLING - Distance too small: \(distance)")
+          return
+      }
+     
+     
+      let yDifference = abs(targetPosition.y - currentPos.y)
+    if yDifference > 0.5 {
+        print("⚠️ ROLLING - Large Y difference: ball=\(currentPos.y), target=\(targetPosition.y), diff=\(yDifference)")
+    }
+      print("🎯 ROLLING: horizontal movement=\(movement)")
       
-      if let physicsBody = _modelEntity.physicsBody, distance > 0.01 {
-          let normalizedDirection = direction / distance
+    
+      _modelEntity.transform.translation = targetPosition
+      applyVisualRolling(movement: movement)
+  }
+      
+      // MARK: - Throwing Mode (Full 3D)
+      
+      private func updateAngryBirdsThrowing(camera3DProjection: SIMD3<Float>?, deltaTime: Float) {
+          guard let targetPosition = camera3DProjection else {
+              print("❌ THROWING - No camera projection")
+              return
+          }
           
-          // ✅ REALISTIC PHYSICS: Same force for all balls (like pushing with same effort)
-          let scaleFactor = Scale
-          let ballMass = Mass //physicsBody.massProperties.mass
+          let currentPos = _modelEntity.transform.translation
+          let movement = targetPosition - currentPos
           
-          // Apply same base force regardless of mass (realistic physics)
-          let baseForce: Float = min(distance * 6.0, 3.0) //why these numbers
+          // More aggressive following for intentional throwing
+          let throwResponsiveness = getThrowResponsivenessForMass() * DragSensitivity * 1.5
+          let lerpSpeed = throwResponsiveness * deltaTime * 10.0
           
-          // Let behavior multipliers modify the force (but not mass compensation)
-          let behaviorMultiplier = calculateRollBehaviorMovementMultiplier()
-          let finalForce = baseForce * behaviorMultiplier * DragSensitivity
+          let actualMovement = movement * min(lerpSpeed, 0.9)
+          _modelEntity.transform.translation = currentPos + actualMovement
           
-          // Apply horizontal force (minimal Y for rolling)
-          let force = SIMD3<Float>(
-              normalizedDirection.x * finalForce,
-              0,  // Keep on ground
-              normalizedDirection.z * finalForce
+          print("🎯 THROWING: full 3D movement=\(actualMovement)")
+      }
+      
+      // MARK: - Helper Methods
+      
+      private func calculateMovementFromFingerVelocity(_ fingerVelocity: CGPoint) -> SIMD3<Float> {
+          return SIMD3<Float>(
+              Float(fingerVelocity.x) * 0.001,
+              Float(-fingerVelocity.y) * 0.001,
+              0
           )
-          
-          _modelEntity.addForce(force, relativeTo: nil as Entity?)
-          
-          print("🎾 Applied rolling force: \(force), scale: \(scaleFactor), mass: \(ballMass)")
-          print("🎾 Physics lesson: Heavy ball (mass \(ballMass)) will accelerate slower than light ball!")
       }
       
-      // Store momentum for ending
-      let movementDirection = simd_normalize(direction)
-      _currentMomentum = movementDirection * min(distance, 0.5)
+      private func getResponsivenessForMass() -> Float {
+          // Heavy objects respond slower to finger movement (more realistic)
+          let baseMass: Float = 0.2  // Reference mass for calculations
+          let massRatio = Mass / baseMass
+          
+          // Inverse relationship: heavier = less responsive
+          let responsiveness = 1.0 / sqrt(massRatio)
+          
+          // Apply behavior modifiers
+          var finalResponsiveness = responsiveness
+          
+          if _behaviorFlags.contains(.heavy) {
+              finalResponsiveness *= 0.6  // Even slower for heavy behavior
+          }
+          if _behaviorFlags.contains(.light) {
+              finalResponsiveness *= 1.4  // Faster for light behavior
+          }
+          if _behaviorFlags.contains(.sticky) {
+              finalResponsiveness *= 0.4  // Very slow for sticky
+          }
+          if _behaviorFlags.contains(.floating) {
+              finalResponsiveness *= 1.6  // Very responsive for floating
+          }
+          if _behaviorFlags.contains(.slippery) {
+              finalResponsiveness *= 1.2  // Easier to move when slippery
+          }
+          if _behaviorFlags.contains(.wet) {
+              finalResponsiveness *= 0.8  // Slight resistance when wet
+          }
+          
+          return finalResponsiveness
+      }
       
-      print("🎾 Updated momentum: \(_currentMomentum)")
-  }
+      private func getThrowResponsivenessForMass() -> Float {
+          // Throwing is even more affected by mass than rolling
+          return getResponsivenessForMass() * 0.7  // 30% penalty for throwing
+      }
+      
+      private func getMassInertiaFactor() -> Float {
+          // Heavier objects have more inertia (resist changes in motion)
+          return Mass / 0.2  // Normalize to base mass of 0.2kg
+      }
+      
 
-  // Also update the momentum application to be realistic
-  private func applySimpleMomentum(releaseSpeed: Float) {
-      print("🎾 Applying momentum with speed: \(releaseSpeed)")
       
-      if let physicsBody = _modelEntity.physicsBody {
-          // ✅ REALISTIC PHYSICS: Don't compensate for mass in momentum either
-          let behaviorScale = getVelocityScaleForBehavior()
+      @objc open func debugRollingMode(fingerVelocity: CGPoint) {
+          let fingerSpeed = sqrt(fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y)
+          //let wouldThrow = checkThrowingIntent(fingerVelocity: fingerVelocity, , fingerSpeed: fingerSpeed)
           
-          // Clean momentum (no Y for rolling)
-          var cleanMomentum = _currentMomentum
-          cleanMomentum.y = 0
-          
-          // Apply same impulse regardless of mass (realistic)
-          let impulse = cleanMomentum * 2.0 * behaviorScale
-          _modelEntity.addForce(impulse, relativeTo: nil as Entity?)
-          
-          let ballMass = physicsBody.massProperties.mass
-          print("🎾 Applied momentum impulse: \(impulse), mass: \(ballMass)")
-          print("🎾 Physics lesson: Heavy ball will decelerate slower but also accelerated slower!")
+          print("=== ROLLING MODE DEBUG ===")
+          print("Finger velocity: \(fingerVelocity)")
+          print("Finger speed: \(fingerSpeed)")
+          print("Fling threshold: \(FLING_THRESHOLD_SPEED)")
+          //print("Would throw: \(wouldThrow)")
+          //print("Selected mode: \(wouldThrow ? "THROWING" : "ROLLING")")
+          print("Mass responsiveness: \(getResponsivenessForMass())")
+          print("========================")
       }
-  }
-  // ✅ FIX 3: No physics manipulation needed in rolling end
-  private func endRollingMode(fingerVelocity: CGPoint, releaseSpeed: Float) {
-      print("🎾 Ending rolling mode")
       
-      // ✅ Physics already enabled - just apply final momentum
-      if releaseSpeed > 500 {
-          applySimpleMomentum(releaseSpeed: releaseSpeed)
-      } else {
-          applySmoothSettle()
+      
+      @objc open func dropToPhysics() {
+          // Optional: Give ball a tiny downward impulse if it's floating
+          guard let _ = _modelEntity.physicsBody else {
+              print("No physics body to apply force to")
+              return
+          }
+          
+          let dropImpulse = SIMD3<Float>(0, -0.1, 0)  // Small downward impulse
+          _modelEntity.addForce(dropImpulse, relativeTo: nil)
+          print("🎾 Applied gentle drop impulse - physics will handle the rest")
       }
-  }
+  
 
-    // ✅ NEW: Smoother rolling calculation
-    private func calculateSmoothRollingMovement(
-        direction: SIMD3<Float>,
-        distance: Float,
-        deltaTime: Float
-    ) -> SIMD3<Float> {
-        
-        guard distance > 0.001 else { return SIMD3<Float>(0, 0, 0) }
-        
-        // Adaptive speed based on distance (like Pokemon GO)
-        var baseSpeed: Float = 4.0  // Base speed in m/s
-        
-        if distance < 0.1 {
-            baseSpeed = 2.0  // Slow when close
-        } else if distance > 0.5 {
-            baseSpeed = min(8.0, distance * 8.0)  // Faster for far distances
-        }
-        
-        // Apply behavior multipliers
-        let behaviorMultiplier = calculateRollBehaviorMovementMultiplier()
-        let finalSpeed = baseSpeed * behaviorMultiplier
-        
-        // Calculate movement for this frame
-        let normalizedDirection = direction / distance
-        let maxMovementThisFrame = finalSpeed * deltaTime
-        let actualMovementDistance = min(distance * 0.7, maxMovementThisFrame)
-        
-        let movement = normalizedDirection * actualMovementDistance
-        
-        print("🎾 Movement calc: baseSpeed=\(baseSpeed), behaviorMult=\(behaviorMultiplier), finalSpeed=\(finalSpeed)")
-        print("🎾 Frame movement: \(actualMovementDistance)m")
-        
-        return movement
-    }
-    
-    private func calculateRollBehaviorMovementMultiplier() -> Float {
-        var multiplier: Float = 1.0
-        
-        // Apply your existing behavior physics
-        if _behaviorFlags.contains(.heavy) {
-          multiplier *= 1.0  // Heavy balls move slower
-        }
-        if _behaviorFlags.contains(.light) {
-          multiplier *= 2.5  // Light balls move faster
-        }
-        if _behaviorFlags.contains(.sticky) {
-            multiplier *= 0.5  // Sticky balls resist movement
-        }
-        if _behaviorFlags.contains(.slippery) {
-            multiplier *= 1.2  // Slippery balls move easier
-        }
-        if _behaviorFlags.contains(.wet) {
-            multiplier *= 0.8  // Wet balls have resistance
-        }
-        if _behaviorFlags.contains(.floating) {
-            multiplier *= 1.4  // Floating balls move easily
-        }
-        
-        return multiplier
-    }
-    
-    // MARK: - Smooth Rolling Rotation
-    
-    private func applySmoothRollingRotation(movement: SIMD3<Float>) {
-        let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
-        let movementDistance = simd_length(horizontalMovement)
-        
-        guard movementDistance > 0.0001 else { return }
-        
-        // Perfect rolling physics: distance = radius × angle
-        let ballRadius = _radius * Scale
-        let rollAngle = movementDistance / ballRadius
-        
-        // Apply behavior modifiers to rolling
-        let effectiveRollAngle = rollAngle * getRollingBehaviorEffect()
-        
-        let maxAnglePerFrame: Float = 0.2  // ~11.5 degrees max per frame
-        let clampedAngle = min(effectiveRollAngle, maxAnglePerFrame)
-        
-        // Calculate rotation axis perpendicular to movement
-        let movementDirection = simd_normalize(horizontalMovement)
-        let rollAxis = SIMD3<Float>(movementDirection.z, 0, -movementDirection.x)
-        
-        // Apply the rolling rotation
-        let rollRotation = simd_quatf(angle: clampedAngle, axis: rollAxis)
-        _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-        
-        let degrees = effectiveRollAngle * 180.0 / Float.pi
-        print("🎾 Rolling rotation: distance=\(movementDistance)m, angle=\(degrees)°")
-    }
-    
-    private func getRollingBehaviorEffect() -> Float {
-        var effect: Float = 1.0
-        
-        if _behaviorFlags.contains(.slippery) {
-            effect *= 1.3  // Slippery balls roll more
-        }
-        if _behaviorFlags.contains(.wet) {
-            effect *= 0.7  // Wet balls roll less
-        }
-        if _behaviorFlags.contains(.sticky) {
-            effect *= 0.3  // Sticky balls barely roll
-        }
-        
-        return effect
-    }
-      
-    private func updateMomentumFromMovement(
-        fingerVelocity: CGPoint,
-        actualMovement: SIMD3<Float>
-    ) {
-        
-        // Convert finger velocity to world momentum
-        let fingerMomentum = SIMD3<Float>(
-            Float(fingerVelocity.x) * 0.001,
-            0,
-            Float(fingerVelocity.y) * 0.001
-        )
-        
-        let cleanMovement: SIMD3<Float>
-        if _currentDragMode == .rolling {  // do not apply momentum on y axis
-            cleanMovement = SIMD3<Float>(actualMovement.x, 0, actualMovement.z)
-        } else {
-            cleanMovement = actualMovement
-        }
-        
-        // Blend both sources
-        _currentMomentum = lerp(fingerMomentum, cleanMovement, 0.7)
-        
-        print("🎾 Updated momentum: \(_currentMomentum)")
-    }
-    
-    private func continueMomentumRolling() {
-        guard simd_length(_currentMomentum) > 0.01 else { return }
-        
-        Task {
-            var remainingMomentum = _currentMomentum
-            
-            while simd_length(remainingMomentum) > 0.005 && !isBeingDragged {
-                await MainActor.run {
-                    // Apply rolling rotation during momentum
-                    let momentumDistance = simd_length(remainingMomentum) * 0.016  // ~60fps
-                    if momentumDistance > 0.0001 {
-                        let ballRadius = self._radius * self.Scale
-                        let rollAngle = momentumDistance / ballRadius
-                        
-                        let rollDirection = simd_normalize(remainingMomentum)
-                        let rollAxis = SIMD3<Float>(rollDirection.z, 0, -rollDirection.x)
-                        
-                        let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
-                        self._modelEntity.transform.rotation = rollRotation * self._modelEntity.transform.rotation
-                    }
-                    
-                    // Apply behavior-specific momentum decay
-                    let decayRate = self.getMomentumDecayRate()
-                    remainingMomentum *= decayRate
-                }
-                
-                try? await Task.sleep(nanoseconds: 16_000_000)  // ~60fps
-            }
-            
-            await MainActor.run {
-                self.applySmoothSettle()
-            }
-        }
-    }
-    
-    private func getMomentumDecayRate() -> Float {
-        if _behaviorFlags.contains(.slippery) {
-            return 0.99  // Slippery balls maintain momentum longer
-        } else if _behaviorFlags.contains(.sticky) {
-            return 0.90  // Sticky balls lose momentum quickly
-        } else if _behaviorFlags.contains(.wet) {
-            return 0.92  // Wet balls have more resistance
-        } else {
-            return 0.96  // Normal decay
-        }
-    }
-    
-    private func applySmoothSettle() {
-        print("🎾 Smooth settling")
-        
-        _currentMomentum = SIMD3<Float>(0, 0, 0)
-        
-        // Ensure proper ground positioning
-        let currentPos = _modelEntity.transform.translation
-        let settledPos = constrainToGroundPlane(currentPos)
-        
-        if simd_distance(currentPos, settledPos) > 0.001 {
-            _modelEntity.transform.translation = settledPos
-        }
-    }
-    
     // ✅ FIXED: Remove problematic physics reset method entirely
     private func endPickupMode(fingerVelocity: CGPoint, releaseSpeed: Float) {
         print("🎾 Ending pickup mode with speed: \(releaseSpeed)")
@@ -1436,28 +1068,6 @@ extension SphereNode {
             // ✅ Simple force application - no mass manipulation
             _modelEntity.addForce(velocity3D, relativeTo: nil as Entity?)
         }
-    }
-    
-    private func endFlingingMode(fingerVelocity: CGPoint, releaseSpeed: Float) {
-        print("🎾 Ending flinging mode with speed: \(releaseSpeed)")
-        
-        // ✅ SIMPLE PHYSICS RESTORE
-        restorePhysicsSimple()
-        
-        // Calculate fling velocity
-        let flingMultiplier: Float = 0.004
-        let velocity3D = SIMD3<Float>(
-            Float(fingerVelocity.x) * flingMultiplier,
-            Float(-fingerVelocity.y) * flingMultiplier * 0.5,
-            Float(fingerVelocity.y) * flingMultiplier * 0.3
-        )
-        
-        let behaviorVelocity = velocity3D * getVelocityScaleForBehavior()
-        
-        // ✅ Simple force application
-        _modelEntity.addForce(behaviorVelocity, relativeTo: nil as Entity?)
-        
-        print("🎾 Fling velocity: \(behaviorVelocity)")
     }
     
     // ✅ NEW: Simple physics restore without mass manipulation
@@ -1626,21 +1236,6 @@ extension SphereNode {
         print("🎾 Flinging: movement magnitude=\(simd_length(movement))")
     }
     
-    // ✅ IMPROVED: More stable ground constraint
-    private func constrainToGroundPlane(_ position: SIMD3<Float>) -> SIMD3<Float> {
-        let groundLevel = Float(GROUND_LEVEL)
-        let ballRadius = _radius * Scale
-        
-        // Use a consistent offset
-        let minY = groundLevel + ballRadius + 0.01  // Small consistent buffer
-        
-        return SIMD3<Float>(
-            position.x,
-            max(position.y, minY),
-            position.z
-        )
-    }
-    
     // MARK: - Helper Functions for Different Modes
     
     private func getFlingSensitivity() -> Float {
@@ -1702,9 +1297,9 @@ extension SphereNode {
     }
     
     private func constrainPickupPosition(_ position: SIMD3<Float>) -> SIMD3<Float> {
-        let groundLevel = Float(GROUND_LEVEL)
+        let groundLevel = ARView3D.SHARED_GROUND_LEVEL
         let ballRadius = _radius * Scale
-        let minY = groundLevel + ballRadius + 0.02 // Keep ball above ground
+        let minY = groundLevel + ballRadius //+ 0.02 // Keep ball above ground
         let maxY = groundLevel + 2.0 // Maximum pickup height
         return SIMD3<Float>(
             position.x,
@@ -1721,11 +1316,11 @@ extension SphereNode {
         switch _currentDragMode {
         case .rolling:
             if _behaviorFlags.contains(.heavy) {
-                material.color = .init(tint: .blue.withAlphaComponent(0.6))
+                material.color = .init(tint: .blue)
             } else if _behaviorFlags.contains(.light) {
-                material.color = .init(tint: .orange.withAlphaComponent(0.6))
+                material.color = .init(tint: .orange)
             } else {
-                material.color = .init(tint: .yellow.withAlphaComponent(0.6))  // Rolling = yellow
+                material.color = .init(tint: .yellow)  // Rolling = yellow
             }
             
         case .pickup:
@@ -1755,6 +1350,7 @@ extension SphereNode {
         IsRolling = true
         
         print("🎾 Configured for smooth rolling")
+        debugSmoothRolling()
     }
     
     @objc open func debugSmoothRolling() {
@@ -1766,6 +1362,8 @@ extension SphereNode {
         print("DragSensitivity: \(DragSensitivity)")
         print("==========================")
     }
+  
+  
     
     // ✅ DEBUGGING: Add method to check current state
     @objc open func debugCurrentState() {
@@ -1776,10 +1374,142 @@ extension SphereNode {
         print("Current mode: \(_currentDragMode)")
         print("Position: \(pos)")
         print("Has physics: \(hasPhysics)")
-        print("Ground level: \(GROUND_LEVEL)")
+      print("Ground level: \(ARView3D.SHARED_GROUND_LEVEL)")
         print("Ball radius: \(_radius * Scale)")
         print("Is being dragged: \(isBeingDragged)")
         print("Current momentum: \(_currentMomentum)")
         print("========================")
+    }
+
+
+
+  // 5. ✅ TRUST PHYSICS: Let RealityKit handle everything
+  override open func EnablePhysics(_ isDynamic: Bool = true) {
+      if (!isDynamic) {
+          _enablePhysics = false
+          _modelEntity.collision = nil
+          _modelEntity.physicsBody = nil
+          return
+      }
+      
+      // ✅ SPHERE COLLISION: Use precise sphere collision
+      let radius = _radius * Scale
+      let shape = ShapeResource.generateSphere(radius: radius)
+      
+      _enablePhysics = isDynamic
+      _modelEntity.collision = CollisionComponent(shapes: [shape])
+      
+      // ✅ REALISTIC PHYSICS: Let RealityKit handle all collisions
+      let massProperties = PhysicsMassProperties(mass: Mass)
+      
+      let material = PhysicsMaterialResource.generate(
+          staticFriction: StaticFriction,
+          dynamicFriction: DynamicFriction,
+          restitution: Restitution
+      )
+      
+      _modelEntity.physicsBody = PhysicsBodyComponent(
+          massProperties: massProperties,
+          material: material,
+          mode: isDynamic ? .dynamic : .static
+      )
+      
+      print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
+      print("🎾 Sphere radius: \(radius), mass: \(Mass)")
+  }
+
+  // 6. ✅ REMOVE ground level constraints entirely
+  @objc open func debugPhysicsState() {
+      let currentPos = _modelEntity.transform.translation
+      
+      print("=== PHYSICS STATE DEBUG ===")
+      print("Position: \(currentPos)")
+      print("Has physics: \(_modelEntity.physicsBody != nil)")
+      
+      if let physicsBody = _modelEntity.physicsBody {
+
+          print("Mass: \(physicsBody.massProperties.mass)")
+      }
+      
+      print("Ball radius: \(_radius * Scale)")
+      print("Scale: \(Scale)")
+      print("==========================")
+  }
+
+
+
+    
+    private func applyVisualRolling(movement: SIMD3<Float>) {
+        let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
+        let distance = simd_length(horizontalMovement)
+        
+        guard distance > 0.0001 else { return }
+        
+        // Perfect rolling physics: distance = radius × angle
+        let ballRadius = _radius * Scale
+        let rollAngle = distance / ballRadius
+        
+        // Calculate rotation axis perpendicular to movement
+        let direction = simd_normalize(horizontalMovement)
+        let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
+        
+        // Apply rolling rotation
+        let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
+        _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
+    }
+    
+
+    
+    // MARK: - Visual Effects
+    
+    @available(iOS 15.0, *)
+    private func showAngryBirdsDragEffect() {
+        var material = SimpleMaterial()
+        
+        // Color based on mass for visual feedback
+        if Mass > 0.4 {
+            material.color = .init(tint: .blue.withAlphaComponent(0.7))  // Heavy = blue
+        } else if Mass < 0.1 {
+            material.color = .init(tint: .orange.withAlphaComponent(0.7)) // Light = orange
+        } else {
+            material.color = .init(tint: .green.withAlphaComponent(0.7))  // Normal = green
+        }
+        
+        // Store original for restoration
+        if OriginalMaterial == nil {
+            OriginalMaterial = _modelEntity.model?.materials.first
+        }
+        
+        _modelEntity.model?.materials = [material]
+    }
+    
+    private func showMassBasedReleaseEffect(momentum: SIMD3<Float>) {
+        let momentumStrength = simd_length(momentum)
+        
+        // Heavier balls show different release effects
+        if Mass > 0.4 {
+            print("💥 Heavy ball released with strong momentum: \(momentumStrength)")
+        } else if Mass < 0.1 {
+            print("🪶 Light ball released with quick momentum: \(momentumStrength)")
+        } else {
+            print("🎯 Normal ball released with momentum: \(momentumStrength)")
+        }
+    }
+    
+    // MARK: - Configuration for Angry Birds Demo
+    
+    @objc open func configureForAngryBirdsDemo() {
+        // Set up physics for clear mass demonstration
+        DragSensitivity = 1.0  // Neutral base sensitivity
+        StaticFriction = 0.4
+        DynamicFriction = 0.3
+        Restitution = 0.5
+        GravityScale = 1.0
+        
+        IsRolling = true
+        
+        print("🎯 Configured for Angry Birds style physics demo")
+        print("🎯 Mass effects: Heavy balls = slower response, Light balls = quick response")
+        print("🎯 Current mass: \(Mass)kg")
     }
 }
