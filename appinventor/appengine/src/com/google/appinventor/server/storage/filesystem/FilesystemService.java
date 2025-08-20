@@ -1,4 +1,4 @@
-package com.google.appinventor.server.filesystem;
+package com.google.appinventor.server.storage.filesystem;
 
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredDataRoleEnum;

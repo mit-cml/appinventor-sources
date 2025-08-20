@@ -1,4 +1,4 @@
-package com.google.appinventor.server.database;
+package com.google.appinventor.server.storage.database;
 
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData;

@@ -1,4 +1,4 @@
-package com.google.appinventor.server.cache;
+package com.google.appinventor.server.storage.cache;
 
 import com.google.appinventor.server.flags.Flag;
 import io.lettuce.core.RedisClient;

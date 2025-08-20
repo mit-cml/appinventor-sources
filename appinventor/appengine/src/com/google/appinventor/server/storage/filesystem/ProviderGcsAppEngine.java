@@ -1,4 +1,4 @@
-package com.google.appinventor.server.filesystem;
+package com.google.appinventor.server.storage.filesystem;
 
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
