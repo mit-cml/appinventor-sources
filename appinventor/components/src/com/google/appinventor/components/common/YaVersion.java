@@ -709,9 +709,9 @@ public class YaVersion {
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 35;
+  public static final int TARGET_SDK_VERSION = 36;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 15.0";
+  public static final String TARGET_ANDROID_VERSION = "Android 16.0";
 
   // ................................. Component Version Numbers ..................................
 
