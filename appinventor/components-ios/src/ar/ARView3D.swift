@@ -830,6 +830,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               handleGeoAnchorAdded(geoAnchor)
           }
       }
+    
+    debugARFrameRetention()
   }
   
   public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
@@ -848,7 +850,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   public func session(_ session: ARSession, didUpdate frame: ARFrame) {
     guard _lightingEstimationEnabled, let lightingEstimate = frame.lightEstimate else { return }
     
-    LightingEstimateUpdated(Float(lightingEstimate.ambientIntensity), Float(lightingEstimate.ambientColorTemperature))
+    if _lightingEstimationEnabled {
+            if let lightingEstimate = frame.lightEstimate {
+                // Extract the values immediately
+                let ambientIntensity = Float(lightingEstimate.ambientIntensity)
+                let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
+                
+                // Use the extracted values, not the frame/lightEstimate objects
+                LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
+            }
+        }
   }
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
@@ -902,6 +913,33 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
       }
     }
+  }
+  
+  @objc func debugARFrameRetention() {
+      print("=== AR FRAME RETENTION DIAGNOSTIC ===")
+      
+      // Check all properties of ARView3D for frame references
+      let mirror = Mirror(reflecting: self)
+      for child in mirror.children {
+          let label = child.label ?? "unknown"
+          let value = child.value
+          
+          if value is ARFrame {
+              print("⚠️ FOUND ARFrame property: \(label)")
+          }
+          if value is ARCamera {
+              print("⚠️ FOUND ARCamera property: \(label)")
+          }
+          if let array = value as? [ARFrame] {
+              print("⚠️ FOUND ARFrame array: \(label) with \(array.count) frames")
+          }
+          if let array = value as? [ARCamera] {
+              print("⚠️ FOUND ARCamera array: \(label) with \(array.count) cameras")
+          }
+      }
+      
+      print("Current session frame available: \(_arView.session.currentFrame != nil)")
+      print("===================================")
   }
     // MARK: Events
     @objc open func NodeClick(_ node: ARNode) {
@@ -2022,46 +2060,36 @@ extension ARView3D {
   }
   
  
-    
   func safeProjectFingerToGround(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
       guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
       
-      // ✅ Use ARKit's stable raycast
-     /* let results = _arView.raycast(from: fingerLocation, allowing: .estimatedPlane, alignment: .horizontal)
-      
-    if let result = results.first {
-        // Force to ball's Y level
-        if let ball = _currentDraggedObject as? SphereNode {
-            let ballY = ball._modelEntity.transform.translation.y
-            return SIMD3<Float>(
-                result.worldTransform.columns.3.x,
-                ballY,
-                result.worldTransform.columns.3.z
-            )
-        }
-        
-        return SIMD3<Float>(
-            result.worldTransform.columns.3.x,
-            result.worldTransform.columns.3.y,
-            result.worldTransform.columns.3.z
-        )
-    }*/
-
-    // ✅ FALLBACK: Use incremental movement
-    let currentPos = draggedSphere._modelEntity.transform.translation
-    
-    // Convert finger movement to world movement (much smaller scale)
-    let movementScale: Float = 0.0001  // 2mm per pixel movement
-    let deltaX = Float(fingerMovement.x) * movementScale
-    let deltaZ = Float(fingerMovement.y) * movementScale
-
-    return SIMD3<Float>(
-        currentPos.x + deltaX,
-        currentPos.y,
-        currentPos.z + deltaZ
-    )
-  }
   
+      // ✅ Work with transform components directly to avoid scale matrix issues
+      var transform = draggedSphere._modelEntity.transform
+      
+      let currentPos = draggedSphere._modelEntity.transform.translation
+    
+    // ✅ SCALE-AWARE MOVEMENT
+    let ballRadius = draggedSphere.RadiusInCentimeters * draggedSphere.Scale
+    let baseRadius: Float = 0.05  // Reference size
+    let baseMovementScale: Float = 0.000001
+    
+    // Larger balls move proportionally more
+    let sizeMultiplier = ballRadius / baseRadius
+    let adaptiveScale = baseMovementScale * sizeMultiplier
+    
+        // Convert finger movement to world movement (much smaller scale)
+       
+        let deltaX = Float(fingerMovement.x) * adaptiveScale
+        let deltaZ = Float(fingerMovement.y) * adaptiveScale
+
+        return SIMD3<Float>(
+            currentPos.x + deltaX,
+            currentPos.y,
+            currentPos.z + deltaZ
+        )
+
+  }
 
 
   private func projectFingerToPlane(fingerLocation: CGPoint, planeY: Float) -> SIMD3<Float>? {
