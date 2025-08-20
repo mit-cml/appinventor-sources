@@ -265,7 +265,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       // ✅ Apply behavior-specific defaults (last behavior wins if multiple)
       if _behaviorFlags.contains(.heavy) {
-        mass = 0.5  // Heavy default
+        mass = 1.0  // Heavy default
         dragSensitivity = 1.0  // Harder to drag
       }
       
@@ -376,71 +376,147 @@ open class SphereNode: ARNodeBase, ARSphere {
   }
 
   override open func scaleByPinch(scalar: Float) {
-      print("🤏 Pinch scaling sphere \(Name) by \(scalar)")
+          print("🤏 Pinch scaling sphere \(Name) by \(scalar)")
+          
+          let oldScale = Scale
+          let newScale = oldScale * scalar
+          
+          // Validate bounds
+          let newActualRadius = _radius * newScale
+          let minRadius: Float = 0.01
+          let maxRadius: Float = 3.0
+          
+          guard newActualRadius >= minRadius && newActualRadius <= maxRadius else {
+              print("🚫 Pinch scale rejected - radius would be \(newActualRadius)m")
+              return
+          }
+          
+          // ✅ CRITICAL: Update collision shape BEFORE and AFTER scaling
+          let hadPhysics = _modelEntity.physicsBody != nil
+          
+          if hadPhysics {
+              // Temporarily disable physics to avoid conflicts
+              let savedMass = Mass
+              let savedFriction = StaticFriction
+              let savedRestitution = Restitution
+              
+              _modelEntity.physicsBody = nil
+              _modelEntity.collision = nil
+              
+              // Apply visual scaling
+              _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
+              
+              // Recreate physics with NEW collision shape
+              createFreshCollisionShape(newScale: newScale)
+              
+              // Restore physics properties
+              Mass = savedMass
+              StaticFriction = savedFriction
+              Restitution = savedRestitution
+              EnablePhysics(true)
+              
+              print("🎾 Physics recreated with correct collision shape")
+          } else {
+              // No physics - just scale visually
+              _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
+          }
+          
+          print("🎾 Pinch scale complete: \(oldScale) → \(newScale), collision radius: \(newActualRadius)m")
+          
+          // Debug collision shape
+          debugCollisionShape()
+      }
+  
+  @objc open func debugCollisionShape() {
+         let visualScale = _modelEntity.transform.scale.x
+         let calculatedRadius = _radius * visualScale
+         
+         print("=== COLLISION SHAPE DEBUG ===")
+         print("Internal radius: \(_radius)m")
+         print("Visual scale: \(visualScale)")
+         print("Calculated collision radius: \(calculatedRadius)m")
+         print("Has collision: \(_modelEntity.collision != nil)")
+         print("Has physics: \(_modelEntity.physicsBody != nil)")
+         
+         if let collision = _modelEntity.collision {
+             print("Collision shapes count: \(collision.shapes.count)")
+             
+             // Try to extract actual collision radius (this is tricky in RealityKit)
+             if let shape = collision.shapes.first {
+                 print("Collision shape type: \(type(of: shape))")
+                 // Note: RealityKit doesn't easily expose collision shape dimensions
+             }
+         }
+         
+         // Visual bounds check
+         let bounds = _modelEntity.visualBounds(relativeTo: nil)
+         let visualRadius = (bounds.max.x - bounds.min.x) / 2.0
+         print("Visual bounds radius: \(visualRadius)m")
+         
+         if abs(visualRadius - calculatedRadius) > 0.01 {
+             print("⚠️ WARNING: Visual and calculated radius mismatch!")
+             print("  Visual: \(visualRadius)m")
+             print("  Calculated: \(calculatedRadius)m")
+         }
+         
+         print("==========================")
+     }
       
-      let currentPos = _modelEntity.transform.translation
-      let oldScale = Scale
-      let oldActualRadius = _radius * oldScale
+      // MARK: - Create Fresh Collision Shape (No Cached Issues)
       
-      // ✅ Calculate where the bottom currently is
-      let currentBottomY = currentPos.y - oldActualRadius
-      
-      // ✅ Calculate new scale and radius
-      let newScale = oldScale * scalar
-      let newActualRadius = _radius * newScale
-      
-      // ✅ Validate bounds using actual radius
-      let minRadius: Float = 0.01
-      let maxRadius: Float = 3.0
-      guard newActualRadius >= minRadius && newActualRadius <= maxRadius else {
-          print("🚫 Pinch scale rejected - radius would be \(newActualRadius)")
-          return
+      private func createFreshCollisionShape(newScale: Float) {
+          // ✅ Calculate the EXACT collision radius we want
+          let preciseRadius = _radius * newScale
+          
+          // ✅ Generate a completely new collision shape
+          let freshCollisionShape = ShapeResource.generateSphere(radius: preciseRadius)
+          
+          // ✅ Create new collision component (don't update existing)
+          _modelEntity.collision = CollisionComponent(
+              shapes: [freshCollisionShape],
+              filter: CollisionFilter(
+                  group: ARView3D.CollisionGroups.arObjects,
+                  mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
+              )
+          )
+          
+          print("🔄 Created fresh collision shape with radius: \(preciseRadius)m")
       }
       
-      // ✅ Apply scaling to transform
-      _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
+      // MARK: - Enhanced updatePhysicsCollisionShape Method
       
-      // ✅ Maintain the bottom position - new center is bottom + new radius
-      let newCenterY = currentBottomY + newActualRadius
-      
-      print("🔄 Pinch scale sphere center y from \(currentPos.y) to \(newCenterY)")
-      print("🔄 Bottom Y stays at: \(currentBottomY), oldRadius: \(oldActualRadius), newRadius: \(newActualRadius)")
-      
-      _modelEntity.transform.translation = SIMD3<Float>(
-          currentPos.x,
-          newCenterY,
-          currentPos.z
-      )
-      
-      // ✅ Update physics collision immediately
-      if _modelEntity.physicsBody != nil {
-          updatePhysicsCollisionShape()
+      private func updatePhysicsCollisionShape() {
+          guard _modelEntity.physicsBody != nil else {
+              print("⚠️ No physics body to update collision shape for")
+              return
+          }
+          
+          // ✅ Get the current visual scale
+          let currentScale = _modelEntity.transform.scale.x  // Uniform scaling
+          let preciseRadius = _radius * currentScale
+          
+          print("🔍 Updating collision: visual scale=\(currentScale), calculated radius=\(preciseRadius)")
+          
+          // ✅ Force recreation of collision shape
+          let newShape = ShapeResource.generateSphere(radius: preciseRadius)
+          
+          // ✅ Completely replace collision component
+          _modelEntity.collision = CollisionComponent(
+              shapes: [newShape],
+              filter: _modelEntity.collision?.filter ?? CollisionFilter(
+                  group: ARView3D.CollisionGroups.arObjects,
+                  mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
+              )
+          )
+          
+          // ✅ Update mass properties to match
+          if var physicsBody = _modelEntity.physicsBody {
+              physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
+              _modelEntity.physicsBody = physicsBody
+          }
+          
+          print("✅ Collision shape updated: radius=\(preciseRadius)m, mass=\(Mass)kg")
       }
-      
-      print("🎾 Pinch scale complete: oldRadius=\(oldActualRadius), newRadius=\(newActualRadius), newScale=\(newScale)")
-  }
-
-  
-  private func updatePhysicsCollisionShape() {
-      guard var physicsBody = _modelEntity.physicsBody else { return }
-      
-      // ✅ Use precise sphere radius (not bounds calculation)
-      let radius = _radius * Scale
-      let sphereShape = ShapeResource.generateSphere(radius: radius)
-      
-      // Update collision component with new shape
-      _modelEntity.collision = CollisionComponent(
-          shapes: [sphereShape],
-          filter: _modelEntity.collision?.filter ?? CollisionFilter.default
-      )
-      
-     // let newMass = Mass * pow(Scale, 2.2)  //hybrd density for gameplay
-      // Keep mass as your Mass property (don't scale with volume)
-    physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
-      
-      print("🎾 Updated sphere physics: radius=\(radius), mass=\(Mass)")
-  }
-  
   
       // MARK: - Scale Validation and Constraints (Updated with proper integration)
       
@@ -660,7 +736,8 @@ open class SphereNode: ARNodeBase, ARSphere {
   @available(iOS 15.0, *)
   private func showDragEffect() {
       var dragMaterial = SimpleMaterial()
-      
+    
+      OriginalMaterial = _modelEntity.model?.materials.first
       // Color based on behavior
       if _behaviorFlags.contains(.heavy) {
           dragMaterial.color = .init(tint: .blue.withAlphaComponent(0.7))  // Blue for wet
@@ -676,7 +753,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       _modelEntity.model?.materials = [dragMaterial]
     
-      restoreMaterial()
+      //restoreMaterial()
   }
     
   private func restoreMaterial() {
@@ -752,7 +829,7 @@ open class SphereNode: ARNodeBase, ARSphere {
           switch gesturePhase {
           case .began:
               print("🎯 Starting simplified Angry Birds drag for \(Name)")
-              startAngryBirdsDrag()
+              startDrag()
               
           case .changed:
               // ✅ Use our simplified rolling logic from the extension
@@ -766,7 +843,7 @@ open class SphereNode: ARNodeBase, ARSphere {
               
           case .ended, .cancelled:
               print("🎯 Ending simplified drag for \(Name)")
-              endAngryBirdsDrag(releaseVelocity: fingerVelocity)
+              endDrag(releaseVelocity: fingerVelocity)
               
           default:
               break
@@ -775,7 +852,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       // ✅ SUPPORTING METHODS: Make sure these exist too
       
-      func startAngryBirdsDrag() {
+    open override func startDrag() {
           print("🎯 Starting Angry Birds drag for \(Name)")
           
           // Store physics settings if needed
@@ -786,6 +863,9 @@ open class SphereNode: ARNodeBase, ARSphere {
                   mode: physicsBody.mode
               )
           }
+        
+        print("=== DRAG DEBUG ===")
+        print("initial position: \(_modelEntity.transform.translation)")
           
           // Disable physics for direct control during drag
           _modelEntity.physicsBody = nil
@@ -800,8 +880,8 @@ open class SphereNode: ARNodeBase, ARSphere {
           }
       }
       
-      func endAngryBirdsDrag(releaseVelocity: CGPoint) {
-        print("🎯 Ending Angry Birds drag for \(Name)")
+      func endDrag(releaseVelocity: CGPoint) {
+        print("🎯 Ending drag for \(Name)")
           
         let finalDragPosition = _modelEntity.transform.translation
         // ✅ Verify this is a reasonable world position
@@ -811,43 +891,27 @@ open class SphereNode: ARNodeBase, ARSphere {
         }
         
         
+        print("final position: \(finalDragPosition)")
+        print("=== END DRAG DEBUG ===")
         EnablePhysics(true)
         _modelEntity.transform.translation = finalDragPosition
-          let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
+        let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
           
-          if releaseSpeed > 200 {
-              // Apply momentum with mass consideration
-              let momentum = calculateAngryBirdsMomentum(releaseVelocity: releaseVelocity)
-              _modelEntity.addForce(momentum, relativeTo: nil as Entity?)
-              
-              print("🎾 Applied release momentum: \(momentum)")
-          }
-          
+        
           // Cleanup
-          isBeingDragged = false
-          _storedPhysicsSettings = nil
+        isBeingDragged = false
+        _storedPhysicsSettings = nil
           
           // Restore visual
-          if let original = OriginalMaterial {
-              _modelEntity.model?.materials = [original]
-              OriginalMaterial = nil
-          }
+        if let original = OriginalMaterial {
+          
+          print("🎾 restoring original material: \(original)")
+            _modelEntity.model?.materials = [original]
+            OriginalMaterial = nil
+        }
       }
       
-      private func calculateAngryBirdsMomentum(releaseVelocity: CGPoint) -> SIMD3<Float> {
-          // Convert finger velocity to world momentum
-          let baseForce = SIMD3<Float>(
-              Float(releaseVelocity.x) * 0.004,
-              Float(-releaseVelocity.y) * 0.003,  // Up finger movement = positive Y
-              Float(releaseVelocity.y) * 0.001    // Some Z component for depth
-          )
-          
-          // Apply behavior scale but don't compensate for mass (let physics handle it)
-          let behaviorScale = getVelocityScaleForBehavior()
-          
-          return baseForce * behaviorScale
-      }
-      
+
       
       // MARK: - Main Drag Update Method (Updated)
       
@@ -865,7 +929,7 @@ open class SphereNode: ARNodeBase, ARSphere {
           let fingerSpeed = sqrt(fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y)
           
           // ✅ SIMPLE: Default to rolling, only throw on clear intent
-        let shouldThrow = checkThrowingIntent(fingerVelocity: fingerVelocity, fingerMovement: fingerMovement, fingerSpeed: fingerSpeed)
+          let shouldThrow = checkThrowingIntent(fingerVelocity: fingerVelocity, fingerMovement: fingerMovement, fingerSpeed: fingerSpeed)
           
           if shouldThrow {
               print("🎯 THROWING MODE: Clear throwing intent detected")
@@ -884,7 +948,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
   // ✅ MUCH more conservative pickup detection
   private func shouldTransitionToPickup(fingerVelocity: CGPoint, fingerMovement: CGPoint) -> Bool {
-      let upwardThreshold: CGFloat = -800  // ✅ Much higher threshold (was -300)
+      let upwardThreshold: CGFloat = -400  // ✅ Much higher threshold (was -300)
       let ratioThreshold: Float = 3.0      // ✅ Much stricter ratio (was 1.5)
       let minimumDistance: CGFloat = 40    // ✅ Must move at least 40 pixels up
       
@@ -933,12 +997,12 @@ open class SphereNode: ARNodeBase, ARSphere {
           print("🎯 ROLLING - Distance too small: \(distance)")
           return
       }
-     
+      print("updating position: \(currentPos) to \(targetPosition)")
      
       let yDifference = abs(targetPosition.y - currentPos.y)
-    if yDifference > 0.5 {
-        print("⚠️ ROLLING - Large Y difference: ball=\(currentPos.y), target=\(targetPosition.y), diff=\(yDifference)")
-    }
+      if yDifference > 0.5 {
+          print("⚠️ ROLLING - Large Y difference: ball=\(currentPos.y), target=\(targetPosition.y), diff=\(yDifference)")
+      }
       print("🎯 ROLLING: horizontal movement=\(movement)")
       
     
@@ -1185,129 +1249,11 @@ open class SphereNode: ARNodeBase, ARSphere {
         }
     }
     
-    private func updatePickupMode(
-        fingerMovement: CGPoint,
-        camera3DProjection: SIMD3<Float>?
-    ) {
-        guard let targetPos = camera3DProjection else {
-            print("❌ No camera projection for pickup mode")
-            return
-        }
-        
-        let currentPos = _modelEntity.transform.translation
-        let movement = targetPos - currentPos
-        
-        // Apply behavior-specific pickup sensitivity
-        let sensitivity = getPickupSensitivity()
-        let constrainedTarget = constrainPickupPosition(targetPos)
-        
-        // Smooth interpolation (Pokemon GO style)
-        let lerpAmount = 0.8 * sensitivity
-        let newPos = lerp(currentPos, constrainedTarget, lerpAmount)
-        _modelEntity.transform.translation = newPos
-        
-        // Apply pickup-specific behaviors
-        applyPickupBehaviors(movement: movement)
-        
-        print("🎾 Pickup: target=\(targetPos.y), current=\(currentPos.y), new=\(newPos.y)")
-    }
-    
-    private func updateFlingingMode(
-        fingerMovement: CGPoint,
-        camera3DProjection: SIMD3<Float>?
-    ) {
-        guard let targetPos = camera3DProjection else {
-            print("❌ No camera projection for flinging mode")
-            return
-        }
-        
-        let currentPos = _modelEntity.transform.translation
-        let movement = targetPos - currentPos
-        
-        // More aggressive following for flinging (Pokemon GO style)
-        let flingSensitivity = getFlingSensitivity()
-        let flingTarget = currentPos + (movement * flingSensitivity)
-        
-        _modelEntity.transform.translation = flingTarget
-        
-        // Apply flinging visual effects
-        applyFlingingBehaviors(movement: movement)
-        
-        print("🎾 Flinging: movement magnitude=\(simd_length(movement))")
-    }
-    
-    // MARK: - Helper Functions for Different Modes
-    
-    private func getFlingSensitivity() -> Float {
-        var sensitivity: Float = 1.2 // Base fling sensitivity
-        
-        if _behaviorFlags.contains(.bouncy) {
-            sensitivity *= 1.4 // Bouncy balls respond more to flinging
-        }
-        if _behaviorFlags.contains(.heavy) {
-            sensitivity *= 0.6 // Heavy balls less responsive
-        }
-        if _behaviorFlags.contains(.light) {
-            sensitivity *= 1.6 // Light balls very responsive
-        }
-        
-        return sensitivity
-    }
+   
 
-    private func getPickupSensitivity() -> Float {
-        var sensitivity: Float = 1.0
-          
-        if _behaviorFlags.contains(.sticky) {
-            sensitivity *= 0.5 // Sticky balls resist pickup
-        }
-        if _behaviorFlags.contains(.floating) {
-            sensitivity *= 1.4 // Floating balls move easily
-        }
-        if _behaviorFlags.contains(.heavy) {
-            sensitivity *= 0.7 // Heavy balls harder to move
-        }
-        if _behaviorFlags.contains(.light) {
-            sensitivity *= 1.3 // Light balls easy to move
-        }
-        return sensitivity
-    }
     
-    private func applyPickupBehaviors(movement: SIMD3<Float>) {
-        // Floating spheres have gentle oscillation during pickup
-        if _behaviorFlags.contains(.floating) {
-            let time = Float(Date().timeIntervalSince1970)
-            let floatOffset = sin(time * 2.0) * 0.003
-            _modelEntity.transform.translation.y += floatOffset
-        }
-        
-        // Sticky spheres resist movement during pickup
-        if _behaviorFlags.contains(.sticky) {
-            let resistance = movement * -0.1
-            _modelEntity.transform.translation += resistance
-        }
-    }
-    
-    private func applyFlingingBehaviors(movement: SIMD3<Float>) {
-        // Add visual effects during flinging
-        if _behaviorFlags.contains(.bouncy) && _currentDragMode == .flinging {
-            let expansion = 1.0 + (simd_length(movement) * 0.01)  // Reduced effect
-            let targetScale = Scale * expansion  // Use proper base scale
-            _modelEntity.transform.scale = SIMD3<Float>(targetScale, targetScale, targetScale)
-        }
-    }
-    
-    private func constrainPickupPosition(_ position: SIMD3<Float>) -> SIMD3<Float> {
-        let groundLevel = ARView3D.SHARED_GROUND_LEVEL
-        let ballRadius = _radius * Scale
-        let minY = groundLevel + ballRadius //+ 0.02 // Keep ball above ground
-        let maxY = groundLevel + 2.0 // Maximum pickup height
-        return SIMD3<Float>(
-            position.x,
-            max(minY, min(position.y, maxY)),
-            position.z
-        )
-    }
-    
+   
+   
     @available(iOS 15.0, *)
     private func showModeEffect() {
         var material = SimpleMaterial()
@@ -1407,6 +1353,11 @@ open class SphereNode: ARNodeBase, ARSphere {
           dynamicFriction: DynamicFriction,
           restitution: Restitution
       )
+    
+    if _modelEntity.transform.translation.y < ARView3D.SHARED_GROUND_LEVEL{
+      print("Warning, sphere is below ground level \(_modelEntity.transform.translation.y) groundlevel: \(ARView3D.SHARED_GROUND_LEVEL)")
+      
+    }
       
       _modelEntity.physicsBody = PhysicsBodyComponent(
           massProperties: massProperties,
@@ -1415,6 +1366,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       )
       
       print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
+      debugPhysicsState()
       print("🎾 Sphere radius: \(radius), mass: \(Mass)")
   }
 
@@ -1425,6 +1377,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("=== PHYSICS STATE DEBUG ===")
       print("Position: \(currentPos)")
       print("Has physics: \(_modelEntity.physicsBody != nil)")
+      print("enabled physics: \(_modelEntity.EnablePhysics)")
       
       if let physicsBody = _modelEntity.physicsBody {
 
