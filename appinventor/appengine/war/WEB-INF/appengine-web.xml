@@ -199,6 +199,7 @@
 
     <!-- Cache Service Provider -->
     <property name="cache.provider" value="" />
+    <!-- REdis Compatible Cache Configuration -->
     <property name="cache.redis.host" value="localhost:6379" />
 
     <!-- File System Service Provider -->
