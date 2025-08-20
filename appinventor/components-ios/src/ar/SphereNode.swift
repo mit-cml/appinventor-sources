@@ -29,6 +29,7 @@ open class SphereNode: ARNodeBase, ARSphere {
   
   // MARK: - Smooth Tracking Properties
   private var _currentMomentum: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
+  private var _isRollingWithMomentum:Bool = false
   private var _lastUpdateTime: Date = Date()
   private var _isActivelyRolling: Bool = false
   
@@ -636,102 +637,7 @@ open class SphereNode: ARNodeBase, ARSphere {
   }
   
   
-  private func startGroundMomentum() {
-      // ✅ Simple momentum - gradually slow down rolling
-      guard _accumulatedRoll > 0.1 else { return }
-      
-      // Different momentum based on surface behavior
-      let momentumMultiplier: Float
-      let dampingRate: Float
-      
-      if _behaviorFlags.contains(.slippery) {
-          momentumMultiplier = 0.8  // High momentum for slippery
-          dampingRate = 0.98  // Very slow deceleration
-      } else if _behaviorFlags.contains(.wet) {
-          momentumMultiplier = 0.1  // Low momentum for wet
-          dampingRate = 0.8   // Fast deceleration
-      } else if _behaviorFlags.contains(.sticky) {
-          return  // No momentum for sticky balls
-      } else {
-          momentumMultiplier = 0.3  // Normal momentum
-          dampingRate = 0.9   // Normal deceleration
-      }
-      
-      Task {
-          var remainingRoll = _accumulatedRoll * momentumMultiplier
-          
-          while remainingRoll > 0.01 && !isBeingDragged {
-              await MainActor.run {
-                  let rollAngle = remainingRoll * 0.1  // Small increments
-                  let rollRotation = simd_quatf(angle: rollAngle, axis: _rollDirection)
-                  _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-                  
-                  remainingRoll *= dampingRate
-              }
-              
-              try? await Task.sleep(nanoseconds: 33_000_000)  // ~30fps
-          }
-          
-          print("🎾 Rolling momentum stopped")
-      }
-  }
-  
-  
-  private func startFloatingBehavior() {
-      guard _behaviorFlags.contains(.floating) else { return }
-      
-      print("🎾 Starting continuous floating behavior")
-      
-      Task {
-          while _behaviorFlags.contains(.floating) && !isBeingDragged {
-              await MainActor.run {
-                  guard !isBeingDragged else { return }
-                  
-                  let time = Float(Date().timeIntervalSince1970)
-                  let floatOffset = sin(time * 1.2) * 0.004  // 4mm gentle floating
-                  let currentPos = _modelEntity.transform.translation
-                  let newY = currentPos.y + floatOffset
-                  
-                  // Keep floating above ground level
-                  let minFloatHeight = ARView3D.SHARED_GROUND_LEVEL + 0.2  // 20cm above ground
-                  _modelEntity.transform.translation.y = max(newY, minFloatHeight)
-              }
-              
-              try? await Task.sleep(nanoseconds: 50_000_000)  // ~20fps for gentle motion
-          }
-      }
-  }
-  
-  private func startStickySettle() {
-      guard _behaviorFlags.contains(.sticky) else { return }
-      
-      print("🎾 Sticky sphere settling in place")
-      
-      // Sticky objects don't move after being placed
-      let settlePosition = _modelEntity.transform.translation
-      
-      Task {
-          // Make small settling movements to simulate sticking
-          for i in 0..<8 {
-              await MainActor.run {
-                  let microMovement = SIMD3<Float>(
-                      Float.random(in: -0.0003...0.0003),
-                      max(Float.random(in: -0.0003...0.0), 0),  // No upward movement
-                      Float.random(in: -0.0003...0.0003)
-                  )
-                  _modelEntity.transform.translation = settlePosition + microMovement
-              }
-              
-              try? await Task.sleep(nanoseconds: 60_000_000)
-          }
-          
-          await MainActor.run {
-              _modelEntity.transform.translation = settlePosition
-              print("🎾 Sticky sphere stuck in place")
-          }
-      }
-  }
-  
+    
   
   @available(iOS 15.0, *)
   private func showDragEffect() {
@@ -863,7 +769,7 @@ open class SphereNode: ARNodeBase, ARSphere {
                   mode: physicsBody.mode
               )
           }
-        
+      _currentMomentum = SIMD3<Float>(0, 0, 0)
         print("=== DRAG DEBUG ===")
         print("initial position: \(_modelEntity.transform.translation)")
           
@@ -895,8 +801,24 @@ open class SphereNode: ARNodeBase, ARSphere {
         print("=== END DRAG DEBUG ===")
         EnablePhysics(true)
         _modelEntity.transform.translation = finalDragPosition
-        let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
-          
+        
+        // ✅ SIMPLE MOMENTUM: Just convert finger velocity to force
+         let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
+         
+    
+          if releaseSpeed > 100 {
+                // ✅ Calculate sustained momentum
+                let momentumScale: Float = 0.002  // Adjust for strength
+                let momentumX = Float(releaseVelocity.x) * momentumScale
+                let momentumZ = Float(releaseVelocity.y) * momentumScale
+                
+                _currentMomentum = SIMD3<Float>(momentumX, 0, momentumZ)
+                
+                // ✅ Start sustained rolling
+                startSustainedRolling()
+                
+                print("🎾 Started sustained rolling with momentum: \(_currentMomentum)")
+            }
         
           // Cleanup
         isBeingDragged = false
@@ -912,6 +834,56 @@ open class SphereNode: ARNodeBase, ARSphere {
       }
       
 
+  private func startSustainedRolling() {
+      guard !_isRollingWithMomentum else { return }  // Prevent multiple rolling tasks
+      
+      _isRollingWithMomentum = true
+      
+      Task {
+          while simd_length(_currentMomentum) > 0.01 && !isBeingDragged {
+              await MainActor.run {
+                  // Apply current momentum as force
+                  _modelEntity.addForce(_currentMomentum, relativeTo: nil as Entity?)
+                  
+                  // ✅ GRADUALLY REDUCE momentum (deceleration)
+                  let dampingFactor: Float = 0.96  // 96% retention = 4% loss per frame
+                _currentMomentum *= dampingFactor
+                  
+                  // ✅ VISUAL ROLLING: Rotate ball based on movement
+                  applyRollingRotation()
+              }
+              
+              // ✅ Run at ~30fps for smooth rolling
+              try? await Task.sleep(nanoseconds: 33_000_000)
+          }
+          
+          await MainActor.run {
+              _isRollingWithMomentum = false
+            _currentMomentum = SIMD3<Float>(0, 0, 0)
+              print("🎾 Rolling momentum stopped")
+          }
+      }
+  }
+
+  // ✅ VISUAL ROLLING: Make ball rotate as it rolls
+
+  private func applyRollingRotation() {
+      let horizontalMomentum = SIMD3<Float>(_currentMomentum.x, 0, _currentMomentum.z)
+      let speed = simd_length(horizontalMomentum)
+      
+      guard speed > 0.001 else { return }
+      
+      // Calculate rolling rotation
+      let ballRadius = _radius * Scale
+      let rotationAmount = speed * 0.001 / ballRadius  // Adjust multiplier for visual effect
+      
+      // Rotation axis perpendicular to movement direction
+      let direction = simd_normalize(horizontalMomentum)
+      let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
+      
+      let rollRotation = simd_quatf(angle: rotationAmount, axis: rollAxis)
+      _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
+  }
       
       // MARK: - Main Drag Update Method (Updated)
       
@@ -1436,18 +1408,7 @@ open class SphereNode: ARNodeBase, ARSphere {
         _modelEntity.model?.materials = [material]
     }
     
-    private func showMassBasedReleaseEffect(momentum: SIMD3<Float>) {
-        let momentumStrength = simd_length(momentum)
-        
-        // Heavier balls show different release effects
-        if Mass > 0.4 {
-            print("💥 Heavy ball released with strong momentum: \(momentumStrength)")
-        } else if Mass < 0.1 {
-            print("🪶 Light ball released with quick momentum: \(momentumStrength)")
-        } else {
-            print("🎯 Normal ball released with momentum: \(momentumStrength)")
-        }
-    }
+   
     
     // MARK: - Configuration for Angry Birds Demo
     
