@@ -352,13 +352,14 @@ public interface StorageIo {
   byte[] downloadRawUserFile(String userId, String fileName);
 
   /**
-   * Downloads raw global asset file data.
+   * Downloads raw global asset file data for a specific user.
    *
-   * @param fileName file name
+   * @param userId a user Id
+   * @param fileName asset file name
    *
    * @return file content
    */
-  byte[] downloadRawGlobalAsset(String fileName);
+  byte[] downloadRawGlobalAsset(String userId, String fileName);
 
   /**
    * Deletes a user file.

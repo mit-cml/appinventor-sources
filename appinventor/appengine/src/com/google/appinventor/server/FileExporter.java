@@ -108,10 +108,11 @@ public interface FileExporter {
   /**
    * Exports a specific global asset file.
    *
+   * @param userId the user ID who owns the global asset
    * @param fileName the full path of the global asset file
    * @return RawFile with the name and content
    * @throws IllegalArgumentException if download request cannot be fulfilled
    *         (file is not known)
    */
-  RawFile exportGlobalAsset(String fileName) throws IOException;
+  RawFile exportGlobalAsset(String userId, String fileName) throws IOException;
 }

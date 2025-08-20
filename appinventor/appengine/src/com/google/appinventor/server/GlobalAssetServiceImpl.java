@@ -80,7 +80,8 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
         // Add the global asset as a source file to the project
         storageIo.addSourceFilesToProject(userId, projectId, true, projectFileName);
         // Upload the content of the global asset to the project file
-        storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetData.content);
+        byte[] globalAssetContent = storageIo.downloadRawGlobalAsset(userId, globalAssetId);
+        storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetContent);
         LOG.info("Successfully linked global asset " + globalAssetId + " to project " + projectId);
       } catch (Exception e) {
         LOG.severe("Error linking global asset " + globalAssetId + " to project " + projectId + ": " + e.getMessage());
@@ -141,7 +142,8 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
     // globalAssetData.tags = tags; // Uncomment if tags are added to StoredData.GlobalAssetData
 
     // Save updated entity
-    storageIo.uploadGlobalAsset(userId, folder, name, globalAssetData.content); // Re-upload with new metadata
+    byte[] globalAssetContent = storageIo.downloadRawGlobalAsset(userId, id);
+    storageIo.uploadGlobalAsset(userId, folder, name, globalAssetContent); // Re-upload with new metadata
   }
 
   @Override
@@ -178,7 +180,8 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
       // Add the global asset as a source file to the project
       storageIo.addSourceFilesToProject(userId, projectId, true, projectFileName);
       // Upload the content of the global asset to the project file
-      storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetData.content);
+      byte[] globalAssetContent = storageIo.downloadRawGlobalAsset(userId, assetId);
+      storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetContent);
 
       // Update project metadata
       String projectSettings = storageIo.loadProjectSettings(userId, projectId);
@@ -248,7 +251,8 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
         }
         projectFileName += globalAssetData.fileName;
 
-        storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetData.content);
+        byte[] globalAssetContent = storageIo.downloadRawGlobalAsset(userId, assetId);
+        storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetContent);
 
         // Update syncedAtTimestamp in project metadata
         JSONObject globalAssetMetadata = new JSONObject();
@@ -303,7 +307,8 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
       storageIo.addSourceFilesToProject(userId, projectId, true, projectFileName);
       
       // Upload the content to the project
-      storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetData.content);
+      byte[] globalAssetContent = storageIo.downloadRawGlobalAsset(userId, assetFileName);
+      storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetContent);
 
       // Create the relationship record
       storageIo.addProjectGlobalAssetRelation(projectId, assetFileName, userId, trackUsage, projectFileName);
@@ -391,7 +396,8 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
 
     try {
       // Update the project file with new content
-      storageIo.uploadRawFileForce(projectId, relation.localAssetPath, userId, globalAssetData.content);
+      byte[] globalAssetContent = storageIo.downloadRawGlobalAsset(userId, assetFileName);
+      storageIo.uploadRawFileForce(projectId, relation.localAssetPath, userId, globalAssetContent);
       
       // Update the sync timestamp
       storageIo.updateProjectGlobalAssetSyncTimestamp(projectId, assetFileName, userId, globalAssetData.timestamp);
@@ -440,10 +446,17 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
       String fileName = req.getPathInfo().substring("/globalasset/".length());
       StoredData.GlobalAssetData storedAsset = storageIo.getGlobalAssetByFileName(userId, fileName);
       if (storedAsset != null) {
-        resp.setStatus(HttpServletResponse.SC_OK);
-        resp.setHeader("Content-Disposition", "attachment; filename=\"" + storedAsset.fileName + "\"");
-        resp.setContentType(storedAsset.mimeType != null ? storedAsset.mimeType : "application/octet-stream");
-        resp.getOutputStream().write(storedAsset.content);
+        // Download the actual content (handles both datastore and GCS storage)
+        byte[] content = storageIo.downloadRawGlobalAsset(userId, fileName);
+        if (content != null) {
+          resp.setStatus(HttpServletResponse.SC_OK);
+          resp.setHeader("Content-Disposition", "attachment; filename=\"" + storedAsset.fileName + "\"");
+          resp.setContentType(storedAsset.mimeType != null ? storedAsset.mimeType : "application/octet-stream");
+          resp.getOutputStream().write(content);
+        } else {
+          resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+          resp.getWriter().write("Error downloading global asset content: " + fileName);
+        }
       } else {
         resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         resp.getWriter().write("Global asset not found: " + fileName);

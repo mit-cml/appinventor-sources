@@ -163,8 +163,16 @@ public class StoredData {
     // Timestamp of last modification
     public long timestamp;
 
-    // File content, these are raw bytes.
+    // File content, these are raw bytes. Note that if isGCS is true, the content field should be ignored and the data
+    // should be retrieved from GCS.
     public byte[] content;
+
+    // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
+    // GCS file name (sans bucket).
+    public Boolean isGCS = false;
+
+    // The GCS filename, sans bucket name
+    public String gcsName;
 
     // MIME type of the asset
     public String mimeType;

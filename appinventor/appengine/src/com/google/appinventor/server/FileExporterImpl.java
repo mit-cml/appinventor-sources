@@ -270,16 +270,20 @@ public final class FileExporterImpl implements FileExporter {
   }
 
   @Override
-  public RawFile exportGlobalAsset(String fileName) throws IOException {
+  public RawFile exportGlobalAsset(String userId, String fileName) throws IOException {
     // Download a specific global asset file.
     if (fileName == null || fileName.trim().isEmpty()) {
       throw new IllegalArgumentException("Global asset file name cannot be null or empty.");
     }
+    if (userId == null || userId.trim().isEmpty()) {
+      throw new IllegalArgumentException("User ID cannot be null or empty.");
+    }
     try {
-      byte[] content = storageIo.downloadRawGlobalAsset(fileName);
+      byte[] content = storageIo.downloadRawGlobalAsset(userId, fileName);
       return new RawFile(StorageUtil.basename(fileName), content);
     } catch (RuntimeException e) {
-      throw new RuntimeException("Error downloading global asset file: " + fileName, e);
+      throw new RuntimeException("Error downloading global asset file: " + fileName
+          + " user=" + userId, e);
     }
   }
 
