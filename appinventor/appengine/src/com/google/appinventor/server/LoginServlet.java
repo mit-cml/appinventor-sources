@@ -226,15 +226,15 @@ public class LoginServlet extends HttpServlet {
         fail(req, resp, "Invalid Set Password Link", locale);
         return;
       }
-      PWData data = storageIo.findPWData(uid);
-      if (data == null) {
+      String dataEmail = storageIo.findPWData(uid);
+      if (dataEmail == null) {
         fail(req, resp, "Invalid Set Password Link", locale);
         return;
       }
       if (DEBUG) {
-        LOG.info("setpw email = " + data.email);
+        LOG.info("setpw email = " + dataEmail);
       }
-      User user = storageIo.getUserFromEmail(data.email);
+      User user = storageIo.getUserFromEmail(dataEmail);
       userInfo = new OdeAuthFilter.UserInfo(); // Create new userInfo object
       userInfo.setUserId(user.getUserId()); // This effectively logs us in!
       out = setCookieOutput(userInfo, resp);
@@ -416,12 +416,12 @@ public class LoginServlet extends HttpServlet {
         return;
       }
       // Send email here, for now we put it in the error string and redirect
-      PWData pwData = storageIo.createPWData(email);
-      if (pwData == null) {
+      String pwDataId = storageIo.createPWData(email);
+      if (pwDataId == null) {
         fail(req, resp, "Internal Error", locale);
         return;
       }
-      String link = trimPage(req) + pwData.id + "/setpw";
+      String link = trimPage(req) + pwDataId + "/setpw";
       sendmail(email, link, locale);
       resp.sendRedirect("/login/linksent/?locale=" + locale);
       storageIo.cleanuppwdata();

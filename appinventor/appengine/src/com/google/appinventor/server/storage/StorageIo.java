@@ -583,8 +583,8 @@ public interface StorageIo {
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
 
-  StoredData.PWData createPWData(String email);
-  StoredData.PWData findPWData(String uid);
+  String createPWData(String email);
+  String findPWData(String uid);
   void cleanuppwdata();
 
   // Routines for user admin interface

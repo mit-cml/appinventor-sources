@@ -2091,8 +2091,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
-  public PWData createPWData(final String email) {
-    Objectify datastore = ObjectifyService.begin();
+  public String createPWData(final String email) {
     final PWData pwData = new PWData();
     pwData.id = UUID.randomUUID().toString();
     pwData.email = email;
@@ -2107,11 +2106,11 @@ public class ObjectifyStorageIo implements StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
-    return pwData;
+    return pwData.id;
   }
 
   @Override
-  public StoredData.PWData findPWData(final String uid) {
+  public String findPWData(final String uid) {
     final Result<PWData> result = new Result<PWData>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -2126,7 +2125,11 @@ public class ObjectifyStorageIo implements StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
-    return result.t;
+
+    if (result.t == null) {
+      return null;
+    }
+    return result.t.email;
   }
 
   // Remove up to 10 expired PWData elements from the datastore
