@@ -678,6 +678,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           )
           
         }
+        
+        if (hasInvisibleFloor){
+          node.EnablePhysics(node.EnablePhysics)
+        }
       } else {
         _requiresAddNodes = true
       }
@@ -2023,7 +2027,7 @@ extension ARView3D {
       guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
       
       // ✅ Use ARKit's stable raycast
-      let results = _arView.raycast(from: fingerLocation, allowing: .estimatedPlane, alignment: .horizontal)
+     /* let results = _arView.raycast(from: fingerLocation, allowing: .estimatedPlane, alignment: .horizontal)
       
     if let result = results.first {
         // Force to ball's Y level
@@ -2041,16 +2045,15 @@ extension ARView3D {
             result.worldTransform.columns.3.y,
             result.worldTransform.columns.3.z
         )
-    }
-    
+    }*/
 
     // ✅ FALLBACK: Use incremental movement
     let currentPos = draggedSphere._modelEntity.transform.translation
     
     // Convert finger movement to world movement (much smaller scale)
-    let movementScale: Float = 0.001  // 2mm per pixel movement
+    let movementScale: Float = 0.0001  // 2mm per pixel movement
     let deltaX = Float(fingerMovement.x) * movementScale
-    let deltaZ = -Float(fingerMovement.y) * movementScale  // Flip Y
+    let deltaZ = Float(fingerMovement.y) * movementScale
 
     return SIMD3<Float>(
         currentPos.x + deltaX,

@@ -1377,7 +1377,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("=== PHYSICS STATE DEBUG ===")
       print("Position: \(currentPos)")
       print("Has physics: \(_modelEntity.physicsBody != nil)")
-      print("enabled physics: \(_modelEntity.EnablePhysics)")
+     print("enabled physics?: \(EnablePhysics)")
       
       if let physicsBody = _modelEntity.physicsBody {
 
