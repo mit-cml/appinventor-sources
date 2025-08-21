@@ -806,20 +806,19 @@ open class SphereNode: ARNodeBase, ARSphere {
          let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
          
     
-          if releaseSpeed > 100 {
-                // ✅ Calculate sustained momentum
-                let momentumScale: Float = 0.002  // Adjust for strength
-                let momentumX = Float(releaseVelocity.x) * momentumScale
-                let momentumZ = Float(releaseVelocity.y) * momentumScale
-                
-                _currentMomentum = SIMD3<Float>(momentumX, 0, momentumZ)
-                
-                // ✅ Start sustained rolling
-                startSustainedRolling()
-                
-                print("🎾 Started sustained rolling with momentum: \(_currentMomentum)")
-            }
-        
+        if releaseSpeed > 100 {
+             // ✅ Apply behavior multiplier
+             let behaviorMultiplier = getBehaviorMomentumMultiplier()
+             let momentumScale: Float = 0.002 * behaviorMultiplier
+             
+             let momentumX = Float(releaseVelocity.x) * momentumScale
+             let momentumZ = Float(releaseVelocity.y) * momentumScale
+             
+             _currentMomentum = SIMD3<Float>(momentumX, 0, momentumZ)
+             startSustainedRolling()
+             
+             print("🎾 released ball with rolling: momentum=\(_currentMomentum), behavior=\(behaviorMultiplier)")
+         }
           // Cleanup
         isBeingDragged = false
         _storedPhysicsSettings = nil
@@ -916,7 +915,31 @@ open class SphereNode: ARNodeBase, ARSphere {
           _currentMomentum = movement * getMassInertiaFactor()
       }
       
-      // MARK: - Throwing Intent Detection
+  private func getBehaviorMomentumMultiplier() -> Float {
+      var multiplier: Float = 1.0
+      
+      if _behaviorFlags.contains(.heavy) {
+          multiplier *= 0.7  // Heavy balls harder to get rolling, but roll further
+      }
+      
+      if _behaviorFlags.contains(.light) {
+          multiplier *= 1.3  // Light balls roll easily
+      }
+      
+      if _behaviorFlags.contains(.sticky) {
+          multiplier *= 0.2  // Sticky balls barely roll
+      }
+      
+      if _behaviorFlags.contains(.slippery) {
+          multiplier *= 1.5  // Slippery balls roll well
+      }
+      
+      if _behaviorFlags.contains(.wet) {
+          multiplier *= 0.6  // Wet balls have resistance
+      }
+      
+      return multiplier
+  }
       
   // ✅ MUCH more conservative pickup detection
   private func shouldTransitionToPickup(fingerVelocity: CGPoint, fingerMovement: CGPoint) -> Bool {
@@ -965,7 +988,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       let movement = targetPosition - currentPos
       let distance = simd_length(movement)
       
-      guard distance > 0.001 else {
+      guard distance > 0.0001 else {
           print("🎯 ROLLING - Distance too small: \(distance)")
           return
       }

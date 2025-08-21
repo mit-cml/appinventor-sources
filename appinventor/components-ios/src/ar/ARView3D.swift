@@ -92,6 +92,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   var currentState: State = .none
   
+  
+  private var _cachedCameraRight: SIMD3<Float>?
+  private var _cachedCameraForward: SIMD3<Float>?
   private var _currentDraggedObject: ARNodeBase? = nil
   
   struct CollisionGroups {
@@ -1993,37 +1996,37 @@ extension matrix_float4x4 {
 
 @available(iOS 14.0, *)
 extension ARView3D {
+  
+  // STEP 1: Replace your initializeGestureRecognizers method with this
+  private func initializeGestureRecognizers() {
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+    _arView.addGestureRecognizer(tapGesture)
     
-    // STEP 1: Replace your initializeGestureRecognizers method with this
-    private func initializeGestureRecognizers() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        _arView.addGestureRecognizer(tapGesture)
-        
-        // ✅ NEW: Enhanced pan gesture with camera-aware finger following + rolling + flicking
-        if #available(iOS 16.0, *) {
-            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanComplete))
-            panGesture.maximumNumberOfTouches = 1
-            _arView.addGestureRecognizer(panGesture)
-        } else {
-            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanComplete))
-            panGesture.maximumNumberOfTouches = 1
-            _arView.addGestureRecognizer(panGesture)
-        }
-        
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
-        longPressGesture.minimumPressDuration = 0.75
-        _arView.addGestureRecognizer(longPressGesture)
-        
-        tapGesture.require(toFail: longPressGesture)
-        
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch))
-        _arView.addGestureRecognizer(pinchGesture)
-        pinchGesture.delegate = self
-        
-        let rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotation))
-        _arView.addGestureRecognizer(rotationGesture)
-        rotationGesture.delegate = self
+    // ✅ NEW: Enhanced pan gesture with camera-aware finger following + rolling + flicking
+    if #available(iOS 16.0, *) {
+      let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanComplete))
+      panGesture.maximumNumberOfTouches = 1
+      _arView.addGestureRecognizer(panGesture)
+    } else {
+      let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanComplete))
+      panGesture.maximumNumberOfTouches = 1
+      _arView.addGestureRecognizer(panGesture)
     }
+    
+    let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+    longPressGesture.minimumPressDuration = 0.75
+    _arView.addGestureRecognizer(longPressGesture)
+    
+    tapGesture.require(toFail: longPressGesture)
+    
+    let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch))
+    _arView.addGestureRecognizer(pinchGesture)
+    pinchGesture.delegate = self
+    
+    let rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotation))
+    _arView.addGestureRecognizer(rotationGesture)
+    rotationGesture.delegate = self
+  }
     
   @objc private func handlePanComplete(_ gesture: UIPanGestureRecognizer) {
       guard let node = _currentDraggedObject ?? findClosestNode(tapLocation: gesture.location(in: _arView)) else { return }
@@ -2038,12 +2041,15 @@ extension ARView3D {
 
       if gesture.state == .began {
         _currentDraggedObject = node
+        cacheCurrentCameraOrientation()
       }
       if gesture.state == .changed {
           //gesture.setTranslation(.zero, in: _arView)
       }
       if gesture.state == .ended || gesture.state == .cancelled {
           _currentDraggedObject = nil
+        _cachedCameraRight = nil
+        _cachedCameraForward = nil
       }
     
     if let sphereNode = node as? SphereNode {
@@ -2059,39 +2065,89 @@ extension ARView3D {
     }
   }
   
- 
+  
+  private func cacheCurrentCameraOrientation() {
+      guard let frame = _arView.session.currentFrame else {
+          // Fallback to identity vectors if no frame available
+          _cachedCameraRight = SIMD3<Float>(1, 0, 0)
+          _cachedCameraForward = SIMD3<Float>(0, 0, 1)
+          return
+      }
+      
+      let cameraTransform = frame.camera.transform
+
+    print("📷 Raw camera transform columns:")
+    print("  Column 0 (right): \(cameraTransform.columns.0)")
+    print("  Column 2 (forward): \(cameraTransform.columns.2)")
+    
+    let rawRight = SIMD3<Float>(
+        cameraTransform.columns.0.x,
+        0,
+        cameraTransform.columns.0.z
+    )
+    let rawForward = SIMD3<Float>(
+        cameraTransform.columns.2.x,
+        0,
+        cameraTransform.columns.2.z
+    )
+    print("📷 Horizontal vectors (before normalize):")
+     print("  Right: \(rawRight)")
+     print("  Forward: \(rawForward)")
+     
+     _cachedCameraRight = simd_normalize(rawRight)
+     _cachedCameraForward = simd_normalize(rawForward)
+     
+     print("📷 Cached normalized vectors:")
+     print("  Right: \(_cachedCameraRight!)")
+     print("  Forward: \(_cachedCameraForward!)")
+  }
+  
   func safeProjectFingerToGround(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
       guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
       
-  
-      // ✅ Work with transform components directly to avoid scale matrix issues
-      var transform = draggedSphere._modelEntity.transform
-      
       let currentPos = draggedSphere._modelEntity.transform.translation
-    
-    // ✅ SCALE-AWARE MOVEMENT
-    let ballRadius = draggedSphere.RadiusInCentimeters * draggedSphere.Scale
-    let baseRadius: Float = 0.05  // Reference size
-    let baseMovementScale: Float = 0.000001
-    
-    // Larger balls move proportionally more
-    let sizeMultiplier = ballRadius / baseRadius
-    let adaptiveScale = baseMovementScale * sizeMultiplier
-    
-        // Convert finger movement to world movement (much smaller scale)
-       
-        let deltaX = Float(fingerMovement.x) * adaptiveScale
-        let deltaZ = Float(fingerMovement.y) * adaptiveScale
-
-        return SIMD3<Float>(
-            currentPos.x + deltaX,
-            currentPos.y,
-            currentPos.z + deltaZ
-        )
-
+      
+      guard let frame = _arView.session.currentFrame else {
+          let scale: Float = 0.005
+          return SIMD3<Float>(
+              currentPos.x + Float(fingerMovement.x) * scale,
+              currentPos.y,
+              currentPos.z + Float(fingerMovement.y) * scale
+          )
+      }
+      
+      let camera = frame.camera
+      let cameraTransform = camera.transform
+      let cameraPosition = SIMD3<Float>(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+      let distanceFromCamera = simd_distance(currentPos, cameraPosition)
+      
+      // ✅ FORCE WORLD-ALIGNED MOVEMENT: Ignore camera rotation for horizontal plane
+      let baseScale: Float = 0.001
+      let distanceScale = max(distanceFromCamera * 0.5, 0.5)
+      let movementScale = baseScale * distanceScale
+      
+      // ✅ Direct world-space movement (this is what most AR games actually do)
+      let worldMovement = SIMD3<Float>(
+          Float(fingerMovement.x) * movementScale,  // Finger X → World X directly
+          0,
+          Float(fingerMovement.y) * movementScale  // Finger Y → World Z (negative for intuitive direction)
+      )
+      
+      let newPosition = SIMD3<Float>(
+          currentPos.x + worldMovement.x,
+          currentPos.y,
+          currentPos.z + worldMovement.z
+      )
+      
+      print("🎮 WORLD-ALIGNED AR:")
+      print("  Finger: (\(Int(fingerMovement.x)), \(Int(fingerMovement.y)))")
+      print("  World movement: (\(String(format: "%.4f", worldMovement.x)), \(String(format: "%.4f", worldMovement.z)))")
+      print("  Position: X: \(String(format: "%.4f", currentPos.x)) → \(String(format: "%.4f", newPosition.x))")
+      print("  Position: Z: \(String(format: "%.4f", currentPos.z)) → \(String(format: "%.4f", newPosition.z))")
+      
+      return newPosition
   }
-
-
+  
   private func projectFingerToPlane(fingerLocation: CGPoint, planeY: Float) -> SIMD3<Float>? {
       // Use the same incremental movement as the fallback
       guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
