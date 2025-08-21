@@ -3478,6 +3478,7 @@ div.dropdiv p {
 #aiConsolePanel {
   height: 100%;
   background-color: white;
+  overflow-y: scroll;
 }
 
 #aiConsolePanel .Warning {

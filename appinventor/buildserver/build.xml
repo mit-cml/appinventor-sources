@@ -355,6 +355,8 @@
       <jvmarg value="-Djava.awt.headless=true" />
       <arg value="--dexCacheDir" />
       <arg value="${public.build.dir}/dexCache" />
+      <arg value="--buildserverPassword" />
+      <arg value="${buildserverPassword}" />
       <arg value="--shutdownToken" />
       <arg value="token" />
       <arg value="--ios" if:true="${ios.build.run}" />

@@ -43,6 +43,8 @@ public class RunApkSigner implements AndroidTask {
       return TaskResult.generateError("Error while running ApkSigner tool");
     }
 
+    context.getOutputFiles().add(context.getPaths().getDeployFile());
+
     return TaskResult.generateSuccess();
   }
 }

@@ -8,6 +8,7 @@ package com.google.appinventor.buildserver;
 
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -117,7 +118,7 @@ public final class Project {
   private static final String DEFAULT_APP_NAME = "AI2 App";
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
-  private static final String DEFAULT_MIN_SDK = "7";
+  private static final String DEFAULT_MIN_SDK = ComponentConstants.APP_INVENTOR_MIN_SDK + "";
   private static final String DEFAULT_COLOR_PRIMARY = "#A5CF47";
   private static final String DEFAULT_COLOR_PRIMARY_DARK = "#41521C";
   private static final String DEFAULT_COLOR_ACCENT = "#00728A";

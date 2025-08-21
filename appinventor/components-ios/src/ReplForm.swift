@@ -12,7 +12,11 @@ import SchemeKit
   fileprivate var _assetsLoaded = false
   fileprivate var _isScreenClosed = false
   private static var _webRtcManager: WebRTCNativeManager? = nil
-  
+
+  public convenience init() {
+    self.init(nibName: nil, bundle: nil)
+  }
+
   public override init(nibName nibNameOrNil: String?, bundle bundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: bundleOrNil)
     if ReplForm.topform == nil {

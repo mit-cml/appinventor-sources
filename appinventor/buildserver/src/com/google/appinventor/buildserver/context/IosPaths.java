@@ -21,6 +21,12 @@ public class IosPaths extends Paths {
   public IosPaths() {
   }
 
+  @Override
+  public void setProjectRootDir(File projectRootDir) {
+    super.setProjectRootDir(projectRootDir);
+    setAssetsDir(new File(projectRootDir, "assets"));
+  }
+
   public void setBuildDir(File buildDir) {
     super.setBuildDir(buildDir);
   }
@@ -63,9 +69,5 @@ public class IosPaths extends Paths {
 
   public List<File> getPartialPlistFiles() {
     return Collections.unmodifiableList(plistParts);
-  }
-
-  public File getAssetsDir() {
-    return new File(getProjectRootDir(), "assets");
   }
 }

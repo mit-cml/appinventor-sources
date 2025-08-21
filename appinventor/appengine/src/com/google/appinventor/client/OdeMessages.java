@@ -840,6 +840,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Open wizard for user interface settings")
   String uiSettings();
 
+  @DefaultMessage("App Store Settings")
+  @Description("Title for the App Store Settings menu item")
+  String appStoreSettingsMenuTitle();
+
   //Admin
   @DefaultMessage("Admin")
   @Description("Label of the button leading to admin functionality")

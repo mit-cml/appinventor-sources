@@ -177,7 +177,8 @@ public class SignPackage implements IosTask {
     };
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ByteArrayOutputStream err = new ByteArrayOutputStream();
-    Execution.execute(context.getPaths().getBuildDir(), args, new PrintStream(out), new PrintStream(err));
+    Execution.execute(context.getPaths().getBuildDir(), args, new PrintStream(out),
+        new PrintStream(err));
     String[] existingKeychains = out.toString().split("\n");
     for (int i = 0; i < existingKeychains.length; i++) {
       int left = existingKeychains[i].indexOf("\"");

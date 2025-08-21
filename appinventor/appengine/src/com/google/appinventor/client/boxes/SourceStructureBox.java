@@ -8,7 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -57,12 +57,13 @@ public class SourceStructureBox extends Box implements ISourceStructureBox {
 
   /**
    * Calls the child box and renders it according to its behaviour.
-   * @param form current form
+   * @param root current form
    */
-  public void show(MockForm form) {
-    getSourceStructureExplorer().updateTree(form.buildComponentsTree(),
-        form.getLastSelectedComponent().getSourceStructureExplorerItem());
+  public void show(DesignerRootComponent root) {
+    getSourceStructureExplorer().updateTree(root.buildComponentsTree(),
+        root.getLastSelectedComponent().getSourceStructureExplorerItem());
     getSourceStructureBox().setVisible(true);
+    this.setVisible(true);
     setContent(SUBINSTANCE.getSourceStructureExplorer());
   }
 

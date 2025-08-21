@@ -88,6 +88,33 @@ public final class Execution {
   }
 
   /**
+   *
+   * @param workingDir
+   * @param command
+   * @param env
+   * @param out
+   * @param err
+   * @return
+   */
+  public static boolean execute(File workingDir, String[] command, Map<String, String> env,
+      PrintStream out, PrintStream err) {
+    LOG.log(Level.INFO, "____Executing " + joiner.join(command));
+    ProcessBuilder pb = new ProcessBuilder(command).directory(workingDir);
+    pb.environment().putAll(env);
+    Process proc;
+    try {
+      proc = pb.start();
+      int result = proc.waitFor();
+      IOUtils.copy(proc.getInputStream(), out);
+      IOUtils.copy(proc.getErrorStream(), err);
+      return result == 0;
+    } catch (IOException | InterruptedException e) {
+      LOG.log(Level.WARNING, "____Execution failure: ", e);
+      return false;
+    }
+  }
+
+  /**
    * Executes a command in a command shell.
    *
    * @param workingDir  working directory for the command

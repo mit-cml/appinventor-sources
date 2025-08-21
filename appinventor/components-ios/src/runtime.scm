@@ -112,7 +112,7 @@
   (syntax-rules ()
     ((_ container component-type component-name)
      (begin
-       (define component-name #!null)
+       ;(define component-name #!null)
        (if *this-is-the-repl*
            (add-component-within-repl 'container
                                       component-type
@@ -124,7 +124,7 @@
                               #f))))
     ((_ container component-type component-name init-property-form ...)
      (begin
-       (define component-name #!null)
+       ;(define component-name #!null)
        (if *this-is-the-repl*
            (add-component-within-repl 'container
                                       component-type
@@ -139,12 +139,12 @@
   (syntax-rules ()
     ((_ event-func-name (arg ...) (expr ...))
      (begin
-       (define (event-func-name arg ...)
-         (let ((arg (sanitize-component-data arg)) ...)
-           expr ...))
-       (if *this-is-the-repl*
-           (add-to-current-form-environment 'event-func-name event-func-name)
-           (add-to-form-environment 'event-func-name event-func-name))))))
+       (let ((event-func-name (lambda (arg ...)
+               (let ((arg (sanitize-component-data arg)) ...)
+                 expr ...))))
+         (if *this-is-the-repl*
+             (add-to-current-form-environment 'event-func-name event-func-name)
+             (add-to-form-environment 'event-func-name event-func-name)))))))
 
 (define-syntax *list-for-runtime*
   (syntax-rules ()

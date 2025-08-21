@@ -84,6 +84,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -119,9 +120,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+  private static final Flag<String> buildServerPassword =
+      Flag.createFlag("build.server.password", "");
   // host[:port] to use for connecting to the second build server
   private static final Flag<String> buildServerHost2 =
       Flag.createFlag("build2.server.host", "");
+  private static final Flag<String> buildServerPassword2 =
+      Flag.createFlag("build2.server.password", "");
   // host[:port] to tell build server app host url
   private static final Flag<String> iosBuildServer =
       Flag.createFlag("ios.build.server.host", "");
@@ -547,6 +552,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           outputFileDir,
           isAab, foriOS, forAppStore));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
+      setBuildServerPassword(connection, secondBuildserver);
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
 
@@ -817,6 +823,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       uriBuilder.add("gitBuildVersion", GitBuildId.getVersion());
     }
     return uriBuilder.build();
+  }
+
+  private void setBuildServerPassword(HttpURLConnection connection, boolean secondBuildserver) {
+    final String buildServerPassword = secondBuildserver
+            ? YoungAndroidProjectService.buildServerPassword2.get()
+            : YoungAndroidProjectService.buildServerPassword.get();
+
+    if (Objects.isNull(buildServerPassword) || buildServerPassword.isEmpty()) {
+      // No need to set a password, as the build server is not password protected.
+      return;
+    }
+
+    // Set the password as Password token...
+    connection.setRequestProperty("Authorization", "Password " + buildServerPassword);
   }
 
   private String getCurrentHost() {

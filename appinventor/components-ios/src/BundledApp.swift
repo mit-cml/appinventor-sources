@@ -131,6 +131,18 @@ public class BundledApp : Application, UINavigationControllerDelegate {
     return try? String(contentsOfFile: screen)
   }
 
+  @objc open func loadScheme(for screenName: String) -> String? {
+    guard let screen = locateScreen(named: screenName) else {
+      if screenName == "Screen1" {
+        fatalError("Unable to load Screen1")
+      } else {
+        print("Unable to load \(screenName)")
+      }
+      return nil
+    }
+    return try? String(contentsOfFile: screen)
+  }
+
   private func locateScreen(named name: String) -> String? {
     if FileManager.default.fileExists(atPath: "\(path)/src") {
       do {
