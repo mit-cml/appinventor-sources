@@ -10,6 +10,14 @@ public abstract class DatabaseService {
 
   public abstract StoredData.UserData findOrCreateUser(final String userId, final String email);
 
+  public abstract void setUserSessionId(final String userId, final String sessionId);
+
+  public abstract StoredData.UserData getUserFromEmail(String email);
+
+  public abstract void setTosAccepted(final String userId);
+
+  public abstract void setUserEmail(final String userId, String inputemail);
+
   public static DatabaseService getDatabaseService() {
     final String provider = PROVIDER.get();
 

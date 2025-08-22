@@ -48,7 +48,7 @@ public class StoredData {
     public String settings;
 
     // Has user accepted terms of service?
-    boolean tosAccepted;
+    public boolean tosAccepted;
     boolean isAdmin;            // Internal flag for local login administrators
 
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
@@ -56,7 +56,7 @@ public class StoredData {
     public String name;
     public String link;
     public int type;
-    String sessionid;           // uuid of active session
+    public String sessionid;           // uuid of active session
     String password;            // Hashed (PBKDF2 hashing) password
   }
 
