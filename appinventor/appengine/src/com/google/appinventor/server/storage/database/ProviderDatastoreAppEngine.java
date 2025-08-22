@@ -2,7 +2,6 @@ package com.google.appinventor.server.storage.database;
 
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.storage.ObjectifyException;
-import com.google.appinventor.server.storage.ObjectifyStorageIo;
 import com.google.appinventor.server.storage.StoredData;
 import com.google.common.annotations.VisibleForTesting;
 import com.googlecode.objectify.Key;
@@ -133,7 +132,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   @Override
   public void setTosAccepted(final String userId) {
     try {
-      runJobWithRetries(new ObjectifyStorageIo.JobRetryHelper() {
+      runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           StoredData.UserData userData = datastore.find(userKey(userId));
@@ -151,7 +150,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   @Override
   public void setUserEmail(final String userId, final String email) {
     try {
-      runJobWithRetries(new ObjectifyStorageIo.JobRetryHelper() {
+      runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           StoredData.UserData userData = datastore.find(userKey(userId));
