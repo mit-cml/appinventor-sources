@@ -46,7 +46,9 @@ public interface StorageIo {
    * @param userId unique user id
    * @return user data
    */
-  User getUser(String userId);
+  default User getUser(String userId) {
+    return getUser(userId, null);
+  }
 
   /**
    * Returns user data given user id. If the user data for the given id

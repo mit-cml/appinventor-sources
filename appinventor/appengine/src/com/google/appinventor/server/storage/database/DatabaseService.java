@@ -1,5 +1,6 @@
 package com.google.appinventor.server.storage.database;
 
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData;
 
@@ -7,9 +8,7 @@ import com.google.appinventor.server.storage.StoredData;
 public abstract class DatabaseService {
   private static final Flag<String> PROVIDER = Flag.createFlag("database.provider", "gae");
 
-  public abstract StoredData.UserData findUserDataByEmail(final String email);
-
-  public abstract StoredData.UserData findUserById(final String userId);
+  public abstract StoredData.UserData findOrCreateUser(final String userId, final String email);
 
   public static DatabaseService getDatabaseService() {
     final String provider = PROVIDER.get();
@@ -19,5 +18,21 @@ public abstract class DatabaseService {
     }
 
     throw new UnsupportedOperationException("Unknown database provider: " + provider);
+  }
+
+  protected static String collectUserErrorInfo(final String userId) {
+    return collectUserErrorInfo(userId, CrashReport.NOT_AVAILABLE);
+  }
+
+  protected static String collectUserErrorInfo(final String userId, String fileName) {
+    return "user=" + userId + ", file=" + fileName;
+  }
+
+  protected static String collectProjectErrorInfo(final String userId, final long projectId, final String fileName) {
+    return "user=" + userId + ", project=" + projectId + ", file=" + fileName;
+  }
+
+  protected static String collectUserProjectErrorInfo(final String userId, final long projectId) {
+    return "user=" + userId + ", project=" + projectId;
   }
 }
