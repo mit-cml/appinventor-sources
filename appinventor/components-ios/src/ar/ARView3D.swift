@@ -919,7 +919,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   @objc func debugARFrameRetention() {
-      print("=== AR FRAME RETENTION DIAGNOSTIC ===")
+      print("=== AR FRAME RETENTION DIAGNOSTIC available in debug builds ===")
       
       // Check all properties of ARView3D for frame references
       let mirror = Mirror(reflecting: self)
@@ -941,8 +941,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           }
       }
       
-      print("Current session frame available: \(_arView.session.currentFrame != nil)")
-      print("===================================")
   }
     // MARK: Events
     @objc open func NodeClick(_ node: ARNode) {
