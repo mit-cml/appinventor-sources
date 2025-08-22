@@ -2121,17 +2121,22 @@ extension ARView3D {
       let cameraPosition = SIMD3<Float>(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
       let distanceFromCamera = simd_distance(currentPos, cameraPosition)
       
-      // ✅ FORCE WORLD-ALIGNED MOVEMENT: Ignore camera rotation for horizontal plane
-      let baseScale: Float = 0.001
+      // ✅ Calculate camera's horizontal rotation (yaw)
+      let cameraForward = -SIMD3<Float>(cameraTransform.columns.2.x, 0, cameraTransform.columns.2.z)
+      let cameraYaw = atan2(cameraForward.x, cameraForward.z)
+      
+      let baseScale: Float = 0.0001
       let distanceScale = max(distanceFromCamera * 0.5, 0.5)
       let movementScale = baseScale * distanceScale
       
-      // ✅ Direct world-space movement (this is what most AR games actually do)
-      let worldMovement = SIMD3<Float>(
-          Float(fingerMovement.x) * movementScale,  // Finger X → World X directly
-          0,
-          Float(fingerMovement.y) * movementScale  // Finger Y → World Z (negative for intuitive direction)
-      )
+      // ✅ Rotate finger movement by camera yaw to align with world
+      let fingerX = -Float(fingerMovement.x) * movementScale
+      let fingerZ = -Float(fingerMovement.y) * movementScale
+      
+      let rotatedX = fingerX * cos(-cameraYaw) - fingerZ * sin(-cameraYaw)
+      let rotatedZ = fingerX * sin(-cameraYaw) + fingerZ * cos(-cameraYaw)
+      
+      let worldMovement = SIMD3<Float>(rotatedX, 0, rotatedZ)
       
       let newPosition = SIMD3<Float>(
           currentPos.x + worldMovement.x,
@@ -2139,11 +2144,10 @@ extension ARView3D {
           currentPos.z + worldMovement.z
       )
       
-      print("🎮 WORLD-ALIGNED AR:")
+      print("🎮 YAW-COMPENSATED AR:")
+      print("  Camera yaw: \(String(format: "%.2f", cameraYaw * 180 / .pi))°")
       print("  Finger: (\(Int(fingerMovement.x)), \(Int(fingerMovement.y)))")
-      print("  World movement: (\(String(format: "%.4f", worldMovement.x)), \(String(format: "%.4f", worldMovement.z)))")
-      print("  Position: X: \(String(format: "%.4f", currentPos.x)) → \(String(format: "%.4f", newPosition.x))")
-      print("  Position: Z: \(String(format: "%.4f", currentPos.z)) → \(String(format: "%.4f", newPosition.z))")
+      print("  Rotated movement: (\(String(format: "%.4f", rotatedX)), \(String(format: "%.4f", rotatedZ)))")
       
       return newPosition
   }

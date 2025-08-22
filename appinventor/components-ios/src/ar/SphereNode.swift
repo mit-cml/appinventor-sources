@@ -16,10 +16,12 @@ open class SphereNode: ARNodeBase, ARSphere {
   private var _currentDragMode: DragMode = .rolling
   private var _dragStartPosition: SIMD3<Float>?
   private var _dragStartTime: Date?
-  private var _lastFingerPosition: CGPoint = .zero
+  private var _lastFingerPosition: SIMD3<Float>? = nil
   private var _fingerTrajectory: [CGPoint] = []
   private var _rollingPath: [SIMD3<Float>] = []
   private var _pickupStartHeight: Float = 0.0
+
+  private var _dragStartDamping: Float = 0.1
   
   private let NORMAL_ROLLING_SPEED: CGFloat = 1200      // Normal finger movement
   private let FAST_ROLLING_SPEED: CGFloat = 2500        // Fast but still rolling
@@ -719,118 +721,179 @@ open class SphereNode: ARNodeBase, ARSphere {
       IsBouncy = false  // Heavy, doesn't bounce much
       print("🎳 Configured as bowling ball")
   }
+  override open func startDrag() {
+      print("🎾 Starting industry standard drag for \(Name)")
+      
+  
+      _lastFingerPosition = nil
+      
+      // ✅ KEEP PHYSICS ENABLED - just modify damping for control
+      if var physicsBody = _modelEntity.physicsBody {
+          // Store original damping value
+          if #available(iOS 18.0, *) {
+            _dragStartDamping = physicsBody.linearDamping
+            // Increase damping during drag for better control
+            physicsBody.linearDamping = 0.8
+            _modelEntity.physicsBody = physicsBody
+          } else {
+            // Fallback on earlier versions
+          }
+          
 
+          
+          print("🎾 Increased linear damping for drag control")
+      }
+      
+      _isBeingDragged = true
+      
+      // Visual feedback
+      if #available(iOS 15.0, *) {
+          showDragEffect()
+      }
+  }
+
+  /*func updateDragSimple(fingerWorldPosition: SIMD3<Float>) {
+      guard _isBeingDragged else { return }
+      
+      // ✅ SIMPLE TEST: Direct position control during drag
+      let currentPos = _modelEntity.transform.translation
+      let targetPos = SIMD3<Float>(
+          fingerWorldPosition.x,
+          currentPos.y, // Keep current Y
+          fingerWorldPosition.z
+      )
+      
+      _modelEntity.transform.translation = targetPos
+      
+      print("🎾 DIRECT DRAG: \(currentPos) → \(targetPos)")
+      
+      _lastFingerPosition = fingerWorldPosition
+  }*/
+  
+  func updateDrag(fingerWorldPosition: SIMD3<Float>) {
+    guard _isBeingDragged else { return }
+      
+      let currentPos = _modelEntity.transform.translation
+      
+      if let lastPos = _lastFingerPosition {
+          let movement = fingerWorldPosition - lastPos
+          let distance = simd_length(movement)
+          
+          print("🎾 DRAG UPDATE:")
+          print("  Current pos: \(currentPos)")
+          print("  Target pos: \(fingerWorldPosition)")
+          print("  Movement: \(movement)")
+          print("  Distance: \(distance)")
+          
+          // ✅ DIRECT POSITION CONTROL for immediate feedback
+          let targetPos = SIMD3<Float>(
+              fingerWorldPosition.x,
+              currentPos.y, // Keep current Y
+              fingerWorldPosition.z
+          )
+          
+          _modelEntity.transform.translation = targetPos
+          
+          // ✅ VISUAL ROLLING: Apply rotation based on movement
+          applyDragRotation(movement: movement)
+          
+          print("  Applied position: \(targetPos)")
+          print("  Applied rolling rotation for movement: \(movement)")
+          
+      } else {
+          print("🎾 DRAG START: Initial position \(fingerWorldPosition)")
+      }
+      
+      _lastFingerPosition = fingerWorldPosition
+  }
+
+  override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+      guard _isBeingDragged else { return }
+      
+      print("🎾 Ending industry standard drag for \(Name)")
+
+      _isBeingDragged = false
+      
+      // ✅ RESTORE NORMAL PHYSICS DAMPING
+      if var physicsBody = _modelEntity.physicsBody {
+        if #available(iOS 18.0, *) {
+          physicsBody.linearDamping = _dragStartDamping
+        } else {
+          // Fallback on earlier versions
+        }
+          _modelEntity.physicsBody = physicsBody
+          
+          // ✅ Apply release impulse based on finger velocity
+          let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
+          
+          if releaseSpeed > 100 {
+              let behaviorMultiplier = getBehaviorMomentumMultiplier()
+              let impulseScale: Float = 0.02 * behaviorMultiplier // Larger scale for addForce vs addImpulse
+              
+              let releaseForce = SIMD3<Float>(
+                  Float(releaseVelocity.x) * impulseScale,
+                  0, // Don't add Y force for ground rolling
+                  Float(releaseVelocity.y) * impulseScale
+              )
+              
+              // ✅ Apply force impulse (iOS 16 compatible)
+              _modelEntity.addForce(releaseForce, relativeTo: nil as Entity?)
+              
+              print("🎾 Applied release force: \(releaseForce)")
+          }
+      }
+      
+      // Restore visual appearance
+      if let original = OriginalMaterial {
+          _modelEntity.model?.materials = [original]
+          OriginalMaterial = nil
+      }
+  }
+  
+  private func applyDragRotation(movement: SIMD3<Float>) {
+      let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
+      let distance = simd_length(horizontalMovement)
+      
+      guard distance > 0.0001 else { return }
+      
+      // Visual rolling rotation
+      let ballRadius = _radius * Scale
+      let rollAngle = distance / ballRadius * 2.0 // Slightly exaggerated for visual effect
+      
+      let direction = simd_normalize(horizontalMovement)
+      let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
+      
+      let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
+      _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
+  }
+
+  // ✅ REPLACE the complex handleAdvancedGestureUpdate method
   override open func handleAdvancedGestureUpdate(
-          fingerLocation: CGPoint,
-          fingerMovement: CGPoint,
-          fingerVelocity: CGPoint,
-          groundProjection: Any?,
-          camera3DProjection: Any?,
-          gesturePhase: UIGestureRecognizer.State
-      ) {
-          
-          let groundPos = groundProjection as? SIMD3<Float>
-          let cameraPos = camera3DProjection as? SIMD3<Float>
-          
-          switch gesturePhase {
-          case .began:
-              print("🎯 Starting simplified Angry Birds drag for \(Name)")
-              startDrag()
-              
-          case .changed:
-              // ✅ Use our simplified rolling logic from the extension
-              updateAngryBirdsDrag(
-                  fingerLocation: fingerLocation,
-                  fingerMovement: fingerMovement,
-                  fingerVelocity: fingerVelocity,
-                  groundProjection: groundPos,
-                  camera3DProjection: cameraPos
-              )
-              
-          case .ended, .cancelled:
-              print("🎯 Ending simplified drag for \(Name)")
-              endDrag(releaseVelocity: fingerVelocity)
-              
-          default:
-              break
-          }
-      }
+      fingerLocation: CGPoint,
+      fingerMovement: CGPoint,
+      fingerVelocity: CGPoint,
+      groundProjection: Any?,
+      camera3DProjection: Any?,
+      gesturePhase: UIGestureRecognizer.State
+  ) {
       
-      // ✅ SUPPORTING METHODS: Make sure these exist too
-      
-    open override func startDrag() {
-          print("🎯 Starting Angry Birds drag for \(Name)")
+      switch gesturePhase {
+      case .began:
+          startDrag()
           
-          // Store physics settings if needed
-          if let physicsBody = _modelEntity.physicsBody {
-              _storedPhysicsSettings = PhysicsSettings(
-                  mass: Mass,
-                  material: physicsBody.material,
-                  mode: physicsBody.mode
-              )
+      case .changed:
+          // ✅ Use the camera-relative position from your gesture handler
+          if let worldPos = groundProjection as? SIMD3<Float> {
+              updateDrag(fingerWorldPosition: worldPos)
           }
-      _currentMomentum = SIMD3<Float>(0, 0, 0)
-        print("=== DRAG DEBUG ===")
-        print("initial position: \(_modelEntity.transform.translation)")
           
-          // Disable physics for direct control during drag
-          _modelEntity.physicsBody = nil
-          _modelEntity.collision = nil
+      case .ended, .cancelled:
+        endDrag(releaseVelocity: fingerVelocity, worldDirection: SIMD3<Float>(0, 0, 0))
           
-          isBeingDragged = true
-          _lastUpdateTime = Date()
-          
-          // Visual feedback
-          if #available(iOS 15.0, *) {
-              showDragEffect()
-          }
+      default:
+          break
       }
-      
-      func endDrag(releaseVelocity: CGPoint) {
-        print("🎯 Ending drag for \(Name)")
-          
-        let finalDragPosition = _modelEntity.transform.translation
-        // ✅ Verify this is a reasonable world position
-        if abs(finalDragPosition.x) > 10 || abs(finalDragPosition.z) > 10 {
-            print("⚠️ Ball escaped to unrealistic position: \(finalDragPosition)")
-            // Reset to last known good position
-        }
-        
-        
-        print("final position: \(finalDragPosition)")
-        print("=== END DRAG DEBUG ===")
-        EnablePhysics(true)
-        _modelEntity.transform.translation = finalDragPosition
-        
-        // ✅ SIMPLE MOMENTUM: Just convert finger velocity to force
-         let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
-         
-    
-        if releaseSpeed > 100 {
-             // ✅ Apply behavior multiplier
-             let behaviorMultiplier = getBehaviorMomentumMultiplier()
-             let momentumScale: Float = 0.002 * behaviorMultiplier
-             
-             let momentumX = Float(releaseVelocity.x) * momentumScale
-             let momentumZ = Float(releaseVelocity.y) * momentumScale
-             
-             _currentMomentum = SIMD3<Float>(momentumX, 0, momentumZ)
-             startSustainedRolling()
-             
-             print("🎾 released ball with rolling: momentum=\(_currentMomentum), behavior=\(behaviorMultiplier)")
-         }
-          // Cleanup
-        isBeingDragged = false
-        _storedPhysicsSettings = nil
-          
-          // Restore visual
-        if let original = OriginalMaterial {
-          
-          print("🎾 restoring original material: \(original)")
-            _modelEntity.model?.materials = [original]
-            OriginalMaterial = nil
-        }
-      }
+  }
       
 
   private func startSustainedRolling() {
@@ -1197,7 +1260,6 @@ open class SphereNode: ARNodeBase, ARSphere {
         
         // Store physics settings and disable
         if var physicsBody = _modelEntity.physicsBody {
-          physicsBody.linearVelocity = 0.0
             _storedPhysicsSettings = PhysicsSettings(
                 mass: Mass,
                 material: physicsBody.material,

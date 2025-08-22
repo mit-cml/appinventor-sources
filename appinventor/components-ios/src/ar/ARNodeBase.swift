@@ -43,7 +43,7 @@ open class ARNodeBase: NSObject, ARNode {
   private var _panToMove: Bool = false
   private var _rotateWithGesture: Bool = false
   
-  private var _isBeingDragged = false
+  public var _isBeingDragged = false
   private var _dragStartLocation: CGPoint = .zero
   private var _lastDragLocation: CGPoint = .zero
   private var _originalMaterial: Material?
