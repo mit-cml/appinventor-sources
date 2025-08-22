@@ -842,8 +842,15 @@ open class SphereNode: ARNodeBase, ARSphere {
           while simd_length(_currentMomentum) > 0.01 && !isBeingDragged {
               await MainActor.run {
                   // Apply current momentum as force
-                  _modelEntity.addForce(_currentMomentum, relativeTo: nil as Entity?)
-                  
+          
+                // ✅ Apply initial impulse once, then let physics and friction handle deceleration
+                if simd_length(_currentMomentum) > 0.01 {
+                    let impulseScale: Float = 1.0  // Adjust this to control initial speed
+                    let initialImpulse = _currentMomentum * impulseScale
+                    _modelEntity.addForce(initialImpulse, relativeTo: nil as Entity?)
+                    
+                    print("🎾 Applied single impulse: \(initialImpulse)")
+                }
                   // ✅ GRADUALLY REDUCE momentum (deceleration)
                   let dampingFactor: Float = 0.96  // 96% retention = 4% loss per frame
                 _currentMomentum *= dampingFactor
@@ -1189,7 +1196,8 @@ open class SphereNode: ARNodeBase, ARSphere {
         _currentDragMode = .pickup
         
         // Store physics settings and disable
-        if let physicsBody = _modelEntity.physicsBody {
+        if var physicsBody = _modelEntity.physicsBody {
+          physicsBody.linearVelocity = 0.0
             _storedPhysicsSettings = PhysicsSettings(
                 mass: Mass,
                 material: physicsBody.material,
