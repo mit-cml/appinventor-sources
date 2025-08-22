@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2024 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -29,6 +29,8 @@ import com.google.appinventor.components.annotations.UsesQueries;
 import com.google.appinventor.components.annotations.UsesServices;
 import com.google.appinventor.components.annotations.UsesXmls;
 import com.google.appinventor.components.annotations.XmlElement;
+import com.google.appinventor.components.annotations.UsesFeatures;
+import com.google.appinventor.components.annotations.androidmanifest.FeatureElement;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
 import com.google.appinventor.components.annotations.androidmanifest.IntentFilterElement;
@@ -170,7 +172,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.UsesQueries",
       "com.google.appinventor.components.annotations.UsesServices",
       "com.google.appinventor.components.annotations.UsesContentProviders",
-      "com.google.appinventor.components.annotations.UsesXmls");
+      "com.google.appinventor.components.annotations.UsesXmls",
+      "com.google.appinventor.components.annotations.UsesFeature");
 
   // Returned by getRwString()
   private static final String READ_WRITE = "read-write";
@@ -1189,6 +1192,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> xmls;
 
     /**
+     * Uses features required by this component.
+     */
+    protected final Set<String> features;
+
+    /**
      * TODO(Will): Remove the following field once the deprecated {@link SimpleBroadcastReceiver}
      *             annotation is removed. It should should remain for the time being
      *             because otherwise we'll break extensions currently using it.
@@ -1281,6 +1289,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       queries = Sets.newHashSet();
       services = Sets.newHashSet();
       xmls = Sets.newHashSet();
+      features = Sets.newHashSet();
 
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
@@ -1648,6 +1657,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.services.addAll(parentComponent.services);
         componentInfo.contentProviders.addAll(parentComponent.contentProviders);
         componentInfo.xmls.addAll(parentComponent.xmls);
+        componentInfo.features.addAll(parentComponent.features);
         // TODO(Will): Remove the following call once the deprecated
         //             @SimpleBroadcastReceiver annotation is removed. It should
         //             should remain for the time being because otherwise we'll break
@@ -1858,6 +1868,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (usesXmls != null) {
       for (XmlElement xe : usesXmls.xmls()) {
         updateWithNonEmptyValue(componentInfo.xmls, xmlElementToString(xe));
+      }
+    }
+
+    // Gather the required uses-feature elements and build their element strings.
+    UsesFeatures usesFeatures = element.getAnnotation(UsesFeatures.class);
+    if (usesFeatures != null) {
+      for (FeatureElement fe : usesFeatures.features()) {
+        updateWithNonEmptyValue(componentInfo.features, featureElementToString(fe));
       }
     }
 
@@ -2415,6 +2433,23 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     elementString.append(":");
 
     return elementString.append(element.content()).toString();
+  }
+
+  // Transform a @FeatureElement into an XML element String for use later
+  // in creating AndroidManifest.xml.
+  private static String featureElementToString(FeatureElement element) {
+    StringBuilder elementString = new StringBuilder("  <uses-feature android:name=\"");
+    elementString.append(element.name());
+    elementString.append("\" android:required=\"");
+    elementString.append(element.required());
+    elementString.append("\" ");
+    if (element.glEsVersion() != -1) {
+      elementString.append("android:glEsVersion=\"");
+      elementString.append(element.glEsVersion());
+      elementString.append("\" ");
+    }
+    elementString.append("/>\n");
+    return elementString.toString();
   }
 
   // Transform a @ProviderElement into an XML element String for use later
