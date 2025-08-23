@@ -7,6 +7,7 @@
 package com.google.appinventor.server.storage;
 
 import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
 
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
@@ -133,6 +134,9 @@ public class ObjectifyStorageIo implements StorageIo {
 
   private static final String GCS_BUCKET_NAME;
   private static final String APK_BUCKET_NAME;
+
+  private static final String BUILD_STATUS_CACHE_KEY_PREFIX = "40bae275-070f-478b-9a5f-d50361809b99";
+  private static final String PROJECT_OWNER_CACHE_KEY_PREFIX = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
 
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
@@ -1543,7 +1547,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @VisibleForTesting
   boolean useGCSforFile(String fileName, int length) {
     boolean shouldUse =  fileName.contains("assets/")
-      || fileName.endsWith(".apk") || fileName.endsWith(".aab");
+      || fileName.endsWith(".apk") || fileName.endsWith(".aab") || fileName.endsWith(".ipa");
     if (shouldUse)
       return true;              // Use GCS for package output and assets
     boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
@@ -2013,6 +2017,12 @@ public class ObjectifyStorageIo implements StorageIo {
                   if (ufd.fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME) &&
                       (ufd.content.length > 0)) {
                     out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
+                    out.write(ufd.content, 0, ufd.content.length);
+                    out.closeEntry();
+                    fileCount.t++;
+                  } else if (forAppStore && ufd.fileName.equals(APPSTORE_CREDENTIALS_FILENAME)
+                      && ufd.content.length > 0) {
+                    out.putNextEntry(new ZipEntry(APPSTORE_CREDENTIALS_FILENAME));;
                     out.write(ufd.content, 0, ufd.content.length);
                     out.closeEntry();
                     fileCount.t++;
@@ -2695,6 +2705,20 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void assertUserHasProject(final String userId, final long projectId) {
+    final String cacheKey = PROJECT_OWNER_CACHE_KEY_PREFIX + "|" + projectId;
+    final String ownerUserId = (String) memcache.get(cacheKey);
+
+    if (ownerUserId != null) {
+      if (ownerUserId.equals(userId)) {
+        // The user in the cache owns the project, hence we don't need to throw anything
+        return;
+      }
+      // Whoops, it seems like someone is being sneaky :)
+      throw new SecurityException("Unauthorized access");
+    }
+
+    // Now, if the cache does not contain the project, we will fallback to datastore as
+    //   source of truth...
     try {
       runJobWithRetries(new JobRetryHelper() {
         @SuppressWarnings("RedundantThrows")
@@ -2707,6 +2731,9 @@ public class ObjectifyStorageIo implements StorageIo {
             throw new SecurityException("Unauthorized access");
           }
           // User has data for project, so everything checks out.
+          // We just store it now in the cache for future access, as we know the user requesting
+          //   this project owns it.
+          memcache.put(cacheKey, userId);
         }
       }, false);
     } catch(ObjectifyException e) {
