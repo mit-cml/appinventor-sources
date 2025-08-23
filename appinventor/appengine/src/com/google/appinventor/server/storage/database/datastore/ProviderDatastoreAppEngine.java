@@ -1,11 +1,7 @@
 package com.google.appinventor.server.storage.database.datastore;
 
-import com.android.tools.r8.C.a.a.E;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.storage.ErrorUtils;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
@@ -14,14 +10,16 @@ import com.google.appinventor.server.storage.UnauthorizedAccessException;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
@@ -29,9 +27,6 @@ import com.googlecode.objectify.Query;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -149,7 +144,8 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   }
 
   @Override
-  public User getUserFromEmail(final String email) {
+  public User getUserFromEmail(final String email, final boolean create) {
+    final String emailLower = email.toLowerCase();
     Objectify datastore = ObjectifyService.begin();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
@@ -157,11 +153,23 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     if (user == null) {
       LOG.info("getUserFromEmail: first attempt failed using " + email);
       // Now try lower case version
-      user = datastore.query(StoredData.UserData.class).filter("emaillower", email).get();
+      user = datastore.query(StoredData.UserData.class).filter("email", emailLower).get();
       if (user == null) {       // Finally, create it (in lower case)
-        LOG.info("getUserFromEmail: second attempt failed using " + email);
-        user = createUser(datastore, newId, email);
+        LOG.info("getUserFromEmail: second attempt failed using " + emailLower);
+        user = datastore.query(StoredData.UserData.class).filter("emaillower", emailLower).get();
+        if (user == null) {       // Finally, create it (in lower case)
+          LOG.info("getUserFromEmail: third attempt failed using " + emailLower);
+
+          if (create) {
+            user = createUser(datastore, newId, email);
+          }
+        }
       }
+    }
+
+    if (user == null) {
+      // Only happens when create is false and we didn't find it
+      return null;
     }
 
     User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
@@ -278,6 +286,81 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
       }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public List<AdminUser> searchUsers(final String partialEmail) {
+    final List<AdminUser> retval = new ArrayList<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Query<StoredData.UserData> userDataQuery = datastore.query(StoredData.UserData.class).filter("email >=", partialEmail);
+          int count = 0;
+          for (StoredData.UserData user : userDataQuery) {
+            retval.add(new AdminUser(user.id, user.name, user.email, user.tosAccepted,
+                user.isAdmin, user.visited));
+            count++;
+            if (count > 20) {
+              break;
+            }
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return retval;
+  }
+
+  @Override
+  public void storeUser(final AdminUser user) throws AdminInterfaceException {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException {
+          StoredData.UserData userData = null;
+          if (user.getId() != null) {
+            userData = datastore.find(userKey(user.getId()));
+          }
+          if (userData != null) {
+            userData.email = user.getEmail();
+            userData.emaillower = userData.email.toLowerCase();
+            String password = user.getPassword();
+            if (password != null && !password.isEmpty()) {
+              userData.password = user.getPassword();
+            }
+            userData.isAdmin = user.getIsAdmin();
+            datastore.put(userData);
+          } else {            // New User
+            String emaillower = user.getEmail().toLowerCase();
+            Objectify qDatastore = ObjectifyService.begin(); // Need an instance not in this transaction
+            StoredData.UserData tuser = qDatastore.query(StoredData.UserData.class).filter("email", emaillower).get();
+            if (tuser != null) {
+              // This is a total kludge, but we have to do things this way because of
+              // how runJobWithRetries works
+              throw new ObjectifyException("User Already exists = " + user.getEmail());
+            }
+            userData = new StoredData.UserData();
+            userData.id = UUID.randomUUID().toString();
+            userData.tosAccepted = false;
+            userData.settings = "";
+            userData.email = user.getEmail();
+            userData.emaillower = emaillower;
+            if (!user.getPassword().isEmpty()) {
+              userData.password = user.getPassword();
+            }
+            userData.isAdmin = user.getIsAdmin();
+            datastore.put(userData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      if (e.getMessage().startsWith("User Al")) {
+        throw new AdminInterfaceException(e.getMessage());
+      }
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 
@@ -1049,6 +1132,257 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   }
 
   @Override
+  public void storeCorruptionRecord(String userId, long projectId, String fileId, String message) {
+    final StoredData.CorruptionRecord data = new StoredData.CorruptionRecord();
+    data.timestamp = new Date();
+    data.id = null;
+    data.userId = userId;
+    data.fileId = fileId;
+    data.projectId = projectId;
+    data.message = message;
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          datastore.put(data);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public String getIpAddressFromRendezvousKey(final String key) {
+    Objectify datastore = ObjectifyService.begin();
+    StoredData.RendezvousData data  = datastore.query(StoredData.RendezvousData.class).filter("key", key).get();
+    if (data == null) {
+      return null;
+    } else {
+      return data.ipAddress;
+    }
+  }
+
+  @Override
+  public void storeIpAddressByRendezvousKey(final String key, final String ipAddress) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.RendezvousData data = datastore.query(StoredData.RendezvousData.class).filter("key", key).get();
+          if (data == null) {
+            data = new StoredData.RendezvousData();
+            data.id = null;
+            data.key = key;
+            data.ipAddress = ipAddress;
+            data.used = new Date(); // So we can cleanup old entries
+            datastore.put(data);
+          } else {
+            data.ipAddress = ipAddress;
+            data.used = new Date();
+            datastore.put(data);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public boolean isEmailAddressInAllowlist(final String emailAddress) {
+    Objectify datastore = ObjectifyService.begin();
+    StoredData.WhiteListData data = datastore.query(StoredData.WhiteListData.class).filter("emailLower", emailAddress).get();
+    return data != null;
+  }
+
+  @Override
+  public void storeFeedbackData(final String notes, final String foundIn, final String faultData,
+                         final String comments, final String datestamp, final String email, final String projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.FeedbackData data = new StoredData.FeedbackData();
+          data.id = null;
+          data.notes = notes;
+          data.foundIn = foundIn;
+          data.faultData = faultData;
+          data.comments = comments;
+          data.datestamp = datestamp;
+          data.email = email;
+          data.projectId = projectId;
+          datastore.put(data);
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public void storeNonce(final String nonceValue, final String userId, final long projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.NonceData data = datastore.query(StoredData.NonceData.class).filter("nonce", nonceValue).get();
+          if (data == null) {
+            data = new StoredData.NonceData();
+            data.id = null;
+            data.nonce = nonceValue;
+            data.userId = userId;
+            data.projectId = projectId;
+            data.timestamp = new Date();
+            datastore.put(data);
+          } else {
+            data.userId = userId;
+            data.projectId = projectId;
+            data.timestamp = new Date();
+            datastore.put(data);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public Nonce getNonceByValue(String nonceValue) {
+    Objectify datastore = ObjectifyService.begin();
+    StoredData.NonceData data  = datastore.query(StoredData.NonceData.class).filter("nonce", nonceValue).get();
+    if (data == null) {
+      return null;
+    } else {
+      return new Nonce(nonceValue, data.userId, data.projectId, data.timestamp);
+    }
+  }
+
+  @Override
+  public void cleanupNonces() {
+    // Cleanup expired nonces which are older then 3 hours. Normal Nonce lifetime
+    // is 2 hours. So for one hour they persist and return "link expired" instead of
+    // "link not found" (after the object itself is removed).
+    //
+    // Note: We only process up to 10 here to limit the amount of processing time
+    // we spend here. If we remove up to 10 for each call, we should keep ahead
+    // of the growing garbage.
+    //
+    // Also note that we are not running in a transaction, there is no need
+    Objectify datastore = ObjectifyService.begin();
+    // We do not use runJobWithRetries because if we fail here, we will be
+    // called again the next time someone attempts to download a built APK
+    // via a QR Code.
+    try {
+      datastore.delete(datastore.query(StoredData.NonceData.class)
+          .filter("timestamp <", new Date((new Date()).getTime() - 3600*3*1000L))
+          .limit(10).fetchKeys());
+    } catch (Exception ex) {
+      LOG.log(Level.WARNING, "Exception during cleanupNonces", ex);
+    }
+  }
+
+  @Override
+  public String createPWData(final String email) {
+    final String uuid = UUID.randomUUID().toString();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          final StoredData.PWData pwData = new StoredData.PWData();
+          pwData.id = uuid;
+          pwData.email = email;
+          pwData.timestamp = new Date();
+          datastore.put(pwData);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return uuid;
+  }
+
+  @Override
+  public String getPWData(final String uid) {
+    final AtomicReference<StoredData.PWData> result = new AtomicReference<>(null);
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          result.set(datastore.find(pwdataKey(uid)));
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+
+    final StoredData.PWData pwData = result.get();
+    if (pwData == null) {
+      return null;
+    }
+    return pwData.email;
+  }
+
+  @Override
+  public void cleanupPWDatas() {
+    // Remove up to 10 expired PWData elements from the datastore
+    Objectify datastore = ObjectifyService.begin();
+    // We do not use runJobWithRetries because if we fail here, we will be
+    // called again the next time someone attempts to set a password
+    // Note: we remove data after 24 hours.
+    try {
+      datastore.delete(datastore.query(StoredData.PWData.class)
+          .filter("timestamp <", new Date((new Date()).getTime() - 3600*24*1000L))
+          .limit(10).fetchKeys());
+    } catch (Exception ex) {
+      LOG.log(Level.WARNING, "Exception during cleanupPWData", ex);
+    }
+  }
+
+  @Override
+  public String getBackpack(final String backPackId) {
+    final AtomicReference<StoredData.Backpack> result = new AtomicReference<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.Backpack backPack = datastore.find(backpackdataKey(backPackId));
+          if (backPack != null) {
+            result.set(backPack);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+
+    StoredData.Backpack backpack = result.get();
+    if (backpack != null) {
+      return backpack.content;
+    } else {
+      return "[]";              // No shared backpack, return an empty backpack
+    }
+  }
+
+  @Override
+  public void storeBackpack(String backPackId, String content) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          final StoredData.Backpack backPack = new StoredData.Backpack();
+          backPack.id = backPackId;
+          backPack.content = content;
+          datastore.put(backPack);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
   public boolean assertUserIdOwnerOfProject(final String userId, final long projectId) {
     final AtomicReference<Boolean> ownsProject = new AtomicReference<>(false);
     try {
@@ -1160,12 +1494,20 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     return new Key<>(userKey, StoredData.UserFileData.class, fileName);
   }
 
+  private Key<StoredData.PWData> pwdataKey(String uid) {
+    return new Key<>(StoredData.PWData.class, uid);
+  }
+
   private Key<StoredData.ProjectData> projectKey(long projectId) {
     return new Key<>(StoredData.ProjectData.class, projectId);
   }
 
   private Key<StoredData.FileData> projectFileKey(Key<StoredData.ProjectData> projectKey, String fileName) {
     return new Key<>(projectKey, StoredData.FileData.class, fileName);
+  }
+
+  private Key<StoredData.Backpack> backpackdataKey(String backPackId) {
+    return new Key<>(StoredData.Backpack.class, backPackId);
   }
 
   private boolean isTrue(Boolean b) {

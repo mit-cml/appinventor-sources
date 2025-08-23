@@ -4,7 +4,10 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.datastore.ProviderDatastoreAppEngine;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
@@ -19,7 +22,7 @@ public abstract class DatabaseService {
 
   public abstract void setUserSessionId(final String userId, final String sessionId);
 
-  public abstract User getUserFromEmail(String email);
+  public abstract User getUserFromEmail(String email, boolean create);
 
   public abstract void setTosAccepted(final String userId);
 
@@ -30,6 +33,10 @@ public abstract class DatabaseService {
   public abstract String loadUserDataSettings(final String userId);
 
   public abstract void storeUserDataSettings(final String userId, final String settings);
+
+  public abstract List<AdminUser> searchUsers(final String partialEmail);
+
+  public abstract void storeUser(final AdminUser user) throws AdminInterfaceException;
 
   public abstract Long createProjectData(final Project project, final String projectSettings) throws DatabaseAccessException;
 
@@ -92,6 +99,33 @@ public abstract class DatabaseService {
 
   public abstract UploadProjectFileResult uploadProjectFile(final String userId, final long projectId, final String fileName,
                                                             final boolean force, final byte[] content, final Long backupThreshold, final String filesystemName) throws BlocksTruncatedException;
+
+  public abstract void storeCorruptionRecord(final String userId, final long projectId, final String fileId, final String message);
+
+  public abstract String getIpAddressFromRendezvousKey(final String rendezvousKey);
+
+  public abstract void storeIpAddressByRendezvousKey(final String rendezvousKey, final String ipAddress);
+
+  public abstract boolean isEmailAddressInAllowlist(final String emailAddress);
+
+  public abstract void storeFeedbackData(final String notes, final String foundIn, final String faultData,
+                                         final String comments, final String datestamp, final String email, final String projectId);
+
+  public abstract void storeNonce(final String nonceValue, final String userId, final long projectId);
+
+  public abstract Nonce getNonceByValue(String nonceValue);
+
+  public abstract void cleanupNonces();
+
+  public abstract String createPWData(final String email);
+
+  public abstract String getPWData(final String uid);
+
+  public abstract void cleanupPWDatas();
+
+  public abstract String getBackpack(final String backPackId);
+
+  public abstract void storeBackpack(String backPackId, String content);
 
   public abstract boolean assertUserIdOwnerOfProject(final String userId, final long projectId);
 

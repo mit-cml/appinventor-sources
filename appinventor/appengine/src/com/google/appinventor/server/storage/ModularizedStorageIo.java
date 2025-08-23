@@ -6,7 +6,10 @@ import com.google.appinventor.server.storage.cache.CacheService;
 import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
 import com.google.appinventor.server.storage.filesystem.FilesystemService;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -14,12 +17,16 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +43,8 @@ public final class ModularizedStorageIo implements StorageIo {
   private final static String CACHE_KEY_PREFIX__BUILD_STATUS = "40bae275-070f-478b-9a5f-d50361809b99";
   private static final String CACHE_KEY_PREFIX__PROJECT_OWNER = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
   private static final String CACHE_KEY_PREFIX__PROJECT_FILE = "9f06aaeb-aaaa-4ab9-9fa6-00413b181eb6";
+
+  private static final String TEMP_FILE_PREFIX = "__TEMP__/";
 
   private final CacheService cacheService = CacheService.getCacheService();
   private final DatabaseService databaseService = DatabaseService.getDatabaseService();
@@ -70,9 +79,19 @@ public final class ModularizedStorageIo implements StorageIo {
   // if they don't exist
   @Override
   public User getUserFromEmail(String email) {
-    String emaillower = email.toLowerCase();
-    LOG.info("getUserFromEmail: email = " + email + " emaillower = " + emaillower);
-    return databaseService.getUserFromEmail(emaillower);
+    LOG.info("getUserFromEmail: email = " + email + " email = " + email);
+    return databaseService.getUserFromEmail(email, true);
+  }
+
+  // Find a user by email address. This version does *not* create a new user
+  // if the user does not exist
+  @Override
+  public String findUserByEmail(String email) throws NoSuchElementException {
+    User user = databaseService.getUserFromEmail(email, true);
+    if (user == null) {
+      throw new NoSuchElementException("Couldn't find a user with email " + email);
+    }
+    return user.getUserId();
   }
 
   @Override
@@ -255,20 +274,6 @@ public final class ModularizedStorageIo implements StorageIo {
   }
 
   @Override
-  public void storeBuildStatus(String userId, long projectId, int progress) {
-    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
-    cacheService.put(cacheKey, progress);
-  }
-
-  @Override
-  public int getBuildStatus(String userId, long projectId) {
-    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
-    Integer progress = (Integer) cacheService.get(cacheKey);
-    // 50% fallback if not in memcache (or memcache service down)
-    return Objects.requireNonNullElse(progress, 50);
-  }
-
-  @Override
   public List<String> getUserFiles(final String userId) {
     return databaseService.getUserFileNames(userId);
   }
@@ -392,6 +397,140 @@ public final class ModularizedStorageIo implements StorageIo {
     // Return time in ISO_8660 format
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     return formatter.format(new Date());
+  }
+
+  // deleteFile
+
+  // downloadRawFile
+
+  @Override
+  public void recordCorruption(String userId, long projectId, String fileId, String message) {
+    databaseService.storeCorruptionRecord(userId, projectId, fileId, message);
+  }
+
+  // exportProjectSourceZip
+
+  @Override
+  public String findIpAddressByKey(final String key) {
+    return databaseService.getIpAddressFromRendezvousKey(key);
+  }
+
+  @Override
+  public void storeIpAddressByKey(final String key, final String ipAddress) {
+    databaseService.storeIpAddressByRendezvousKey(key, ipAddress);
+  }
+
+  @Override
+  public boolean checkWhiteList(String email) {
+    return databaseService.isEmailAddressInAllowlist(email.toLowerCase());
+  }
+
+  @Override
+  public void storeFeedback(final String notes, final String foundIn, final String faultData,
+                            final String comments, final String datestamp, final String email, final String projectId) {
+    databaseService.storeFeedbackData(notes, foundIn, faultData, comments, datestamp, email, projectId);
+  }
+
+  @Override
+  public void storeNonce(final String nonceValue, final String userId, final long projectId) {
+    databaseService.storeNonce(nonceValue, userId, projectId);
+  }
+
+  @Override
+  public Nonce getNoncebyValue(String nonceValue) {
+    return databaseService.getNonceByValue(nonceValue);
+  }
+
+  @Override
+  public void cleanupNonces() {
+    try {
+      databaseService.cleanupNonces();
+    } catch (UnsupportedOperationException e) {
+      // We catch and log silently in case manual cleanup of Nonces is not supported
+      //  (for example, if they get cleaned up automatically by the database using a TTL attribute)
+      LOG.warning("Cannot manually clean up Nonces");
+    }
+  }
+
+  @Override
+  public String createPWData(final String email) {
+    return databaseService.createPWData(email);
+  }
+
+  @Override
+  public String findPWData(final String uid) {
+    return databaseService.getPWData(uid);
+  }
+
+  @Override
+  public void cleanuppwdata() {
+    try {
+      databaseService.cleanupPWDatas();
+    } catch (UnsupportedOperationException e) {
+      // We catch and log silently in case manual cleanup of PWDatas is not supported
+      //  (for example, if they get cleaned up automatically by the database using a TTL attribute)
+      LOG.warning("Cannot manually clean up PWDatas");
+    }
+  }
+
+  @Override
+  public String uploadTempFile(byte[] content) throws IOException {
+    String uuid = UUID.randomUUID().toString();
+    String fileName = TEMP_FILE_PREFIX + "/" + uuid;
+    filesystemService.save(FileDataRoleEnum.TEMPORARY, fileName, content);
+    return fileName;
+  }
+
+  @Override
+  public InputStream openTempFile(String fileName) throws IOException {
+    if (!fileName.startsWith(TEMP_FILE_PREFIX)) {
+      throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
+    }
+
+    final byte[] result = filesystemService.read(FileDataRoleEnum.TEMPORARY, fileName);
+    return new ByteArrayInputStream(result);
+  }
+
+  @Override
+  public void deleteTempFile(String fileName) throws IOException {
+    if (!fileName.startsWith(TEMP_FILE_PREFIX)) {
+      throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
+    }
+    filesystemService.delete(FileDataRoleEnum.TEMPORARY, fileName);
+  }
+
+  @Override
+  public List<AdminUser> searchUsers(final String partialEmail) {
+    return databaseService.searchUsers(partialEmail);
+  }
+
+  @Override
+  public void storeUser(final AdminUser user) throws AdminInterfaceException {
+    databaseService.storeUser(user);
+  }
+
+  @Override
+  public String downloadBackpack(final String backPackId) {
+    return databaseService.getBackpack(backPackId);
+  }
+
+  @Override
+  public void uploadBackpack(String backPackId, String content) {
+    databaseService.storeBackpack(backPackId, content);
+  }
+
+  @Override
+  public void storeBuildStatus(String userId, long projectId, int progress) {
+    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
+    cacheService.put(cacheKey, progress);
+  }
+
+  @Override
+  public int getBuildStatus(String userId, long projectId) {
+    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
+    Integer progress = (Integer) cacheService.get(cacheKey);
+    // 50% fallback if not in memcache (or memcache service down)
+    return Objects.requireNonNullElse(progress, 50);
   }
 
   @Override

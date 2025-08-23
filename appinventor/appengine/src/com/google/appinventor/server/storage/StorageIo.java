@@ -504,7 +504,14 @@ public interface StorageIo {
    *
    * @return  text file content
    */
-  String downloadFile(String userId, long projectId, String fileId, String encoding);
+  default String downloadFile(String userId, long projectId, String fileId, String encoding) {
+    try {
+      return new String(downloadRawFile(userId, projectId, fileId), encoding);
+    } catch (UnsupportedEncodingException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding, "
+          + ErrorUtils.collectProjectErrorInfo(userId, projectId, fileId), e);
+    }
+  }
 
   /**
    * Records a "corruption" record so we can analyze if corruption is
