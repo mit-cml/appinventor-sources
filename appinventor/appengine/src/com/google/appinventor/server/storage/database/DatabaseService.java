@@ -1,9 +1,13 @@
 package com.google.appinventor.server.storage.database;
 
-import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.FileDataRoleEnum;
+import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.datastore.ProviderDatastoreAppEngine;
+import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.user.User;
+
+import java.util.List;
 
 
 public abstract class DatabaseService {
@@ -17,7 +21,21 @@ public abstract class DatabaseService {
 
   public abstract void setTosAccepted(final String userId);
 
-  public abstract void setUserEmail(final String userId, String inputemail);
+  public abstract void setUserEmail(final String userId, final String emailLower);
+
+  public abstract void setUserPassword(final String userId, final String password);
+
+  public abstract String loadUserDataSettings(final String userId);
+
+  public abstract void storeUserDataSettings(final String userId, final String settings);
+
+  public abstract Long createProjectData(final Project project, final String projectSettings) throws DatabaseAccessException;
+
+  public abstract void createUserProjectData(final String userId, final Long projectId, final String projectSettings) throws DatabaseAccessException;
+
+  public abstract void createProjectFileData(final String userId, final Long projectId, final FileDataRoleEnum role, final List<UnifiedFile> files) throws DatabaseAccessException;
+
+  public abstract boolean assertUserIdOwnerOfProject(final String userId, final long projectId);
 
   public static DatabaseService getDatabaseService() {
     final String provider = PROVIDER.get();
@@ -27,21 +45,5 @@ public abstract class DatabaseService {
     }
 
     throw new UnsupportedOperationException("Unknown database provider: " + provider);
-  }
-
-  protected static String collectUserErrorInfo(final String userId) {
-    return collectUserErrorInfo(userId, CrashReport.NOT_AVAILABLE);
-  }
-
-  protected static String collectUserErrorInfo(final String userId, String fileName) {
-    return "user=" + userId + ", file=" + fileName;
-  }
-
-  protected static String collectProjectErrorInfo(final String userId, final long projectId, final String fileName) {
-    return "user=" + userId + ", project=" + projectId + ", file=" + fileName;
-  }
-
-  protected static String collectUserProjectErrorInfo(final String userId, final long projectId) {
-    return "user=" + userId + ", project=" + projectId;
   }
 }

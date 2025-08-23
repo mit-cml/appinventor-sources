@@ -1,8 +1,13 @@
 package com.google.appinventor.server.storage.database.datastore;
 
 import com.google.appinventor.server.CrashReport;
-import com.google.appinventor.server.storage.ObjectifyException;
+import com.google.appinventor.server.Server;
+import com.google.appinventor.server.storage.ErrorUtils;
+import com.google.appinventor.server.storage.FileDataRoleEnum;
+import com.google.appinventor.server.storage.UnifiedFile;
+import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
+import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.annotations.VisibleForTesting;
 import com.googlecode.objectify.Key;
@@ -10,7 +15,10 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -24,41 +32,41 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   private static final int MAX_JOB_RETRIES = 10;
 
   public ProviderDatastoreAppEngine() {
-    ObjectifyService.register(ModelsDatastoreAppEngine.UserData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.ProjectData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.UserProjectData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.FileData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.UserFileData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.RendezvousData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.WhiteListData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.FeedbackData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.NonceData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.CorruptionRecord.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.PWData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.SplashData.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.Backpack.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.AllowedTutorialUrls.class);
-    ObjectifyService.register(ModelsDatastoreAppEngine.AllowedIosExtensions.class);
+    ObjectifyService.register(StoredData.UserData.class);
+    ObjectifyService.register(StoredData.ProjectData.class);
+    ObjectifyService.register(StoredData.UserProjectData.class);
+    ObjectifyService.register(StoredData.FileData.class);
+    ObjectifyService.register(StoredData.UserFileData.class);
+    ObjectifyService.register(StoredData.RendezvousData.class);
+    ObjectifyService.register(StoredData.WhiteListData.class);
+    ObjectifyService.register(StoredData.FeedbackData.class);
+    ObjectifyService.register(StoredData.NonceData.class);
+    ObjectifyService.register(StoredData.CorruptionRecord.class);
+    ObjectifyService.register(StoredData.PWData.class);
+    ObjectifyService.register(StoredData.SplashData.class);
+    ObjectifyService.register(StoredData.Backpack.class);
+    ObjectifyService.register(StoredData.AllowedTutorialUrls.class);
+    ObjectifyService.register(StoredData.AllowedIosExtensions.class);
   }
 
   @Override
   public User findOrCreateUser(final String userId, final String email, final boolean requireTos) {
-    final AtomicReference<ModelsDatastoreAppEngine.UserData> finalUserData = new AtomicReference<>();
+    final AtomicReference<StoredData.UserData> finalUserData = new AtomicReference<>();
 
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          ModelsDatastoreAppEngine.UserData userData = datastore.find(userKey(userId));
+          StoredData.UserData userData = datastore.find(userKey(userId));
           boolean viaemail = false; // Which datastore copy did we find it with...
           Objectify qDatastore = null;
           if (userData == null) { // Attempt to find them by email
             LOG.info("Did not find userId " + userId);
             if (email != null) {
               qDatastore = ObjectifyService.begin(); // Need an instance not in this transaction
-              userData = qDatastore.query(ModelsDatastoreAppEngine.UserData.class).filter("email", email).get();
+              userData = qDatastore.query(StoredData.UserData.class).filter("email", email).get();
               if (userData == null) { // Still null!
-                userData = qDatastore.query(ModelsDatastoreAppEngine.UserData.class).filter("emaillower", email.toLowerCase()).get();
+                userData = qDatastore.query(StoredData.UserData.class).filter("emaillower", email.toLowerCase()).get();
               }
 
               // Need to fix userId...
@@ -90,12 +98,12 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
         }
       }, false);                // Transaction not needed. If we fail there is nothing to rollback
     } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
     }
 
 
     final User user = new User(userId, email, false, false, null);
-    final ModelsDatastoreAppEngine.UserData userData = finalUserData.get();
+    final StoredData.UserData userData = finalUserData.get();
     user.setUserId(userData.id);
     user.setUserEmail(userData.email);
     user.setUserTosAccepted(userData.tosAccepted || !requireTos);
@@ -106,12 +114,12 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     return user;
   }
 
-  private ModelsDatastoreAppEngine.UserData createUser(Objectify datastore, String userId, String email) {
+  private StoredData.UserData createUser(Objectify datastore, String userId, String email) {
     String emaillower = null;
     if (email != null) {
       emaillower = email.toLowerCase();
     }
-    ModelsDatastoreAppEngine.UserData userData = new ModelsDatastoreAppEngine.UserData();
+    StoredData.UserData userData = new StoredData.UserData();
     userData.id = userId;
     userData.tosAccepted = false;
     userData.settings = "";
@@ -126,11 +134,11 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     Objectify datastore = ObjectifyService.begin();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
-    ModelsDatastoreAppEngine.UserData user = datastore.query(ModelsDatastoreAppEngine.UserData.class).filter("email", email).get();
+    StoredData.UserData user = datastore.query(StoredData.UserData.class).filter("email", email).get();
     if (user == null) {
       LOG.info("getUserFromEmail: first attempt failed using " + email);
       // Now try lower case version
-      user = datastore.query(ModelsDatastoreAppEngine.UserData.class).filter("emaillower", email).get();
+      user = datastore.query(StoredData.UserData.class).filter("emaillower", email).get();
       if (user == null) {       // Finally, create it (in lower case)
         LOG.info("getUserFromEmail: second attempt failed using " + email);
         user = createUser(datastore, newId, email);
@@ -148,7 +156,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          ModelsDatastoreAppEngine.UserData userData = datastore.find(userKey(userId));
+          StoredData.UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.tosAccepted = true;
             datastore.put(userData);
@@ -156,7 +164,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
         }
       }, true);
     } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
     }
   }
 
@@ -166,7 +174,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          ModelsDatastoreAppEngine.UserData userData = datastore.find(userKey(userId));
+          StoredData.UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.email = email;
             datastore.put(userData);
@@ -174,10 +182,9 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
         }
       }, true);
     } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
     }
   }
-
 
   @Override
   public void setUserSessionId(final String userId, final String sessionId) {
@@ -185,7 +192,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          ModelsDatastoreAppEngine.UserData userData = datastore.find(userKey(userId));
+          StoredData.UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.sessionid = sessionId;
             datastore.put(userData);
@@ -193,8 +200,175 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
         }
       }, false);
     } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
     }
+  }
+
+  @Override
+  public void setUserPassword(final String userId, final String password) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.password = password;
+            datastore.put(userData);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public String loadUserDataSettings(final String userId) {
+    final AtomicReference<String> settings = new AtomicReference<>("");
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.UserData userData = datastore.find(StoredData.UserData.class, userId);
+          if (userData != null) {
+            settings.set(userData.settings);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+
+    return settings.get();
+  }
+
+  @Override
+  public void storeUserDataSettings(final String userId, final String settings) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.settings = settings;
+            userData.visited = new Date(); // Indicate that this person was active now
+            datastore.put(userData);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public Long createProjectData(final Project project, final String projectSettings) throws DatabaseAccessException {
+    final AtomicReference<Long> projectId = new AtomicReference<>(null);
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          long date = System.currentTimeMillis();
+          StoredData.ProjectData pd = new StoredData.ProjectData();
+          pd.id = null;  // let Objectify auto-generate the project id
+          pd.dateCreated = date;
+          pd.dateModified = date;
+          pd.dateBuilt = 0;
+          pd.history = project.getProjectHistory();
+          pd.name = project.getProjectName();
+          pd.settings = projectSettings;
+          pd.type = project.getProjectType();
+          datastore.put(pd); // put the project in the db so that it gets assigned an id
+
+          assert pd.id != null;
+          projectId.set(pd.id);
+        }
+
+      }, Server.isProductionServer());
+    } catch (ObjectifyException e) {
+      throw new DatabaseAccessException(e);
+    }
+
+    return projectId.get();
+  }
+
+  @Override
+  public void createUserProjectData(final String userId, final Long projectId, final String projectSettings) throws DatabaseAccessException {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.UserProjectData upd = new StoredData.UserProjectData();
+          upd.projectId = projectId;
+          upd.settings = projectSettings;
+          upd.state = StoredData.UserProjectData.StateEnum.OPEN;
+          upd.userKey = userKey(userId);
+          datastore.put(upd);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw new DatabaseAccessException(e);
+    }
+  }
+
+  @Override
+  public void createProjectFileData(final String userId, final Long projectId, final FileDataRoleEnum role,
+                                    final List<UnifiedFile> files) throws DatabaseAccessException {
+    final List<StoredData.FileData> addedFiles = new ArrayList<>();
+
+    for (UnifiedFile unifiedFile : files) {
+      final Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+
+      StoredData.FileData file = new StoredData.FileData();
+      file.fileName = unifiedFile.getFileName();
+      file.projectKey = projectKey;
+      file.role = role;
+      file.userId = userId;
+      if (unifiedFile.getFilesystemName() != null) {
+        file.isGCS = true;
+        file.gcsName = unifiedFile.getFilesystemName();
+      } else {
+        file.content = unifiedFile.getContent();
+      }
+
+      addedFiles.add(file);
+    }
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          datastore.put(addedFiles);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw new DatabaseAccessException(e);
+    }
+  }
+
+  @Override
+  public boolean assertUserIdOwnerOfProject(final String userId, final long projectId) {
+    final AtomicReference<Boolean> ownsProject = new AtomicReference<>(false);
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @SuppressWarnings("RedundantThrows")
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          Key<StoredData.UserData> userKey = userKey(userId);
+          Key<StoredData.UserProjectData> userProjectKey = userProjectKey(userKey, projectId);
+          StoredData.UserProjectData data = datastore.find(userProjectKey);
+          if (data != null) {  // User doesn't have the corresponding project.
+            ownsProject.set(true);
+          }
+        }
+      }, false);
+    } catch(ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+
+    return ownsProject.get();
   }
 
   @VisibleForTesting
@@ -264,7 +438,15 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     }
   }
 
-  private Key<ModelsDatastoreAppEngine.UserData> userKey(String userId) {
-    return new Key<>(ModelsDatastoreAppEngine.UserData.class, userId);
+  private Key<StoredData.UserData> userKey(String userId) {
+    return new Key<>(StoredData.UserData.class, userId);
+  }
+
+  private Key<StoredData.UserProjectData> userProjectKey(Key<StoredData.UserData> userKey, long projectId) {
+    return new Key<>(userKey, StoredData.UserProjectData.class, projectId);
+  }
+
+  private Key<StoredData.ProjectData> projectKey(long projectId) {
+    return new Key<>(StoredData.ProjectData.class, projectId);
   }
 }

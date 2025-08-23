@@ -32,7 +32,7 @@ import java.util.Date;
  * @author sharon@google.com (Sharon Perl)
  *
  */
-class ModelsDatastoreAppEngine {
+final class StoredData {
   // The UserData class is an entity root, and the parent of UserFileData
   // and UserProjectData
   @Unindexed
