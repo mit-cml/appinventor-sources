@@ -472,12 +472,6 @@ public final class ModularizedStorageIo implements StorageIo {
       }
     }
 
-    if (result.content.length == 0) {
-      throw CrashReport.createAndLogError(LOG, null,
-          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName),
-          new FileNotFoundException("No data for " + fileName));
-    }
-
     if (useCacheForFile(result.fileRole, fileName, result.content.length)) {
       // Only cache source files that are not assets
       cacheService.put(cacheKey, result, 60 * 60);  // Cache for 1 hour

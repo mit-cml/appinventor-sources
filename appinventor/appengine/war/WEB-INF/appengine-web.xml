@@ -212,5 +212,8 @@
     <property name="filesystem.s3.accesskeyid" value="" />
     <property name="filesystem.s3.secretaccesskey" value="" />
 
+    <!-- Database Service Provider -->
+    <property name="database.provider" value="" />
+
   </system-properties>
 </appengine-web-app>
