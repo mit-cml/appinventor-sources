@@ -1,8 +1,9 @@
-package com.google.appinventor.server.storage.database;
+package com.google.appinventor.server.storage.database.datastore;
 
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.storage.ObjectifyException;
-import com.google.appinventor.server.storage.StoredData;
+import com.google.appinventor.server.storage.database.DatabaseService;
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.annotations.VisibleForTesting;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -41,7 +42,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   }
 
   @Override
-  public StoredData.UserData findOrCreateUser(final String userId, final String email) {
+  public User findOrCreateUser(final String userId, final String email, final boolean requireTos) {
     final AtomicReference<StoredData.UserData> finalUserData = new AtomicReference<>();
 
     try {
@@ -92,7 +93,17 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
 
-    return finalUserData.get();
+
+    final User user = new User(userId, email, false, false, null);
+    final StoredData.UserData userData = finalUserData.get();
+    user.setUserId(userData.id);
+    user.setUserEmail(userData.email);
+    user.setUserTosAccepted(userData.tosAccepted || !requireTos);
+    user.setIsAdmin(userData.isAdmin);
+    user.setSessionId(userData.sessionid);
+    user.setPassword(userData.password);
+
+    return user;
   }
 
   private StoredData.UserData createUser(Objectify datastore, String userId, String email) {
@@ -111,7 +122,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   }
 
   @Override
-  public StoredData.UserData getUserFromEmail(final String email) {
+  public User getUserFromEmail(final String email) {
     Objectify datastore = ObjectifyService.begin();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
@@ -126,7 +137,9 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
       }
     }
 
-    return user;
+    User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
+    retUser.setPassword(user.password);
+    return retUser;
   }
 
   @Override

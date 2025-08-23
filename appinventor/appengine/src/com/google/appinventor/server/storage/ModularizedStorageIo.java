@@ -34,14 +34,7 @@ public final class ModularizedStorageIo implements StorageIo {
     }
 
     // If not in memcache, or tos not yet accepted, fetch from datastore
-    final User user = new User(userId, email, false, false, null);
-    final StoredData.UserData userData = databaseService.findOrCreateUser(userId, email);
-    user.setUserId(userData.id);
-    user.setUserEmail(userData.email);
-    user.setUserTosAccepted(userData.tosAccepted || !REQUIRE_TOS.get());
-    user.setIsAdmin(userData.isAdmin);
-    user.setSessionId(userData.sessionid);
-    user.setPassword(userData.password);
+    final User user = databaseService.findOrCreateUser(userId, email, REQUIRE_TOS.get());
 
     cacheService.put(cacheKey, user, 60); // Remember for one minute
     // The choice of one minute here is arbitrary. getUser() is called on every authenticated
@@ -60,10 +53,7 @@ public final class ModularizedStorageIo implements StorageIo {
   public User getUserFromEmail(String email) {
     String emaillower = email.toLowerCase();
     LOG.info("getUserFromEmail: email = " + email + " emaillower = " + emaillower);
-    StoredData.UserData user = databaseService.getUserFromEmail(emaillower);
-    User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
-    retUser.setPassword(user.password);
-    return retUser;
+    return databaseService.getUserFromEmail(emaillower);
   }
 
   @Override
