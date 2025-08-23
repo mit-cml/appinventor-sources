@@ -23,6 +23,7 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -44,8 +45,9 @@ public final class ModularizedStorageIo implements StorageIo {
   // used for getting the allowed tutorial urls
   private static final JSONParser JSON_PARSER = new ServerJsonParser();
 
-  private static final int MAX_FILE_SIZE_BYTES_IN_DB = 50_000;
+  private static final int MAX_FILE_SIZE_BYTES_IN_DB = 50_000;  // 50 Kb
   private static final long BACKUP_THRESHOLD_SECONDS = 24 * 3600;  // 24 hours in seconds
+  private static final int MAX_FILE_SIZE_BYTES_IN_CACHE = 1_000_000;  // 1 Mb
 
   private final static String CACHE_KEY_PREFIX__USER = "f682688a-1065-4cda-8515-a8bd70200ac9";
   private final static String CACHE_KEY_PREFIX__BUILD_STATUS = "40bae275-070f-478b-9a5f-d50361809b99";
@@ -412,9 +414,59 @@ public final class ModularizedStorageIo implements StorageIo {
     return formatter.format(new Date());
   }
 
-  // deleteFile
+  @Override
+  public long deleteFile(final String userId, final long projectId, final String fileName) {
+    final DatabaseService.DeleteProjectFileResult result = databaseService.deleteProjectFile(userId, projectId, fileName);
 
-  // downloadRawFile
+    final String cacheKey = CACHE_KEY_PREFIX__PROJECT_FILE + "|" + projectId + "|" + fileName;
+    cacheService.delete(cacheKey); // Remove it from memcache (if it is there)
+
+    if (result.filesystemToDelete != null) {
+      try {
+        filesystemService.delete(result.fileRole, result.filesystemToDelete);
+      } catch (IOException e) {
+        // This may get logged if we attempt to delete an APK file. But we can ignore
+        // this case because APK files will be deleted on their own
+        LOG.log(Level.WARNING, "Unable to delete " + result.filesystemToDelete + " from GCS.", e);
+      }
+    }
+
+    return (result.lastModifiedDate == null) ? 0 : result.lastModifiedDate;
+  }
+
+  @Override
+  public byte[] downloadRawFile(final String userId, final long projectId, final String fileName) {
+    final String cacheKey = CACHE_KEY_PREFIX__PROJECT_FILE + "|" + projectId + "|" + fileName;
+
+    final DatabaseService.GetProjectFileResult cachedBytes = (DatabaseService.GetProjectFileResult) cacheService.get(cacheKey);
+    if (cachedBytes != null) {
+      return cachedBytes.content;
+    }
+
+    final DatabaseService.GetProjectFileResult result = databaseService.getProjectFile(userId, projectId, fileName);
+
+    if (result.filesystemToRetrieve != null) {
+      try {
+        result.content = filesystemService.read(result.fileRole, result.filesystemToRetrieve);
+      } catch (IOException e) {
+        throw CrashReport.createAndLogError(LOG, null,
+            ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+      }
+    }
+
+    if (result.content.length == 0) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName),
+          new FileNotFoundException("No data for " + fileName));
+    }
+
+    if (useCacheForFile(result.fileRole, fileName, result.content.length)) {
+      // Only cache source files that are not assets
+      cacheService.put(cacheKey, result, 60 * 60);  // Cache for 1 hour
+    }
+
+    return result.content;
+  }
 
   @Override
   public void recordCorruption(String userId, long projectId, String fileId, String message) {
@@ -610,6 +662,17 @@ public final class ModularizedStorageIo implements StorageIo {
     return mayUse && length > MAX_FILE_SIZE_BYTES_IN_DB;
   }
 
+  private boolean useCacheForFile(FileDataRoleEnum role, String fileName, int length) {
+    if (role != FileDataRoleEnum.SOURCE) {
+      return false;  // Only cache source files
+    }
+
+    if (fileName.contains("assets/")) {
+      return false;  // Never cache assets files
+    }
+
+    return length > MAX_FILE_SIZE_BYTES_IN_CACHE;
+  }
 
   private String makeFilesystemFileName(String fileName, long projectId) {
     return (projectId + "/" + fileName);

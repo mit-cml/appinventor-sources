@@ -1,8 +1,13 @@
 package com.google.appinventor.server.storage.database.datastore;
 
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
+import com.google.appinventor.server.storage.BlobReadException;
 import com.google.appinventor.server.storage.ErrorUtils;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
 import com.google.appinventor.server.storage.ObjectifyStorageIo;
@@ -21,6 +26,7 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.io.ByteStreams;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
@@ -28,6 +34,8 @@ import com.googlecode.objectify.Query;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -1130,6 +1138,113 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
       throw new ObjectifyException("BlocksTruncated"); // Hack
     // I'm avoiding having to modify every use of runJobWithRetries to handle a new
     // exception, so we use this dodge.
+  }
+
+  @Override
+  public DeleteProjectFileResult deleteProjectFile(final String userId, final long projectId, final String fileName) {
+    final DeleteProjectFileResult deleteProjectFileResult = new DeleteProjectFileResult();
+    final AtomicReference<String> oldBlobKeyString = new AtomicReference<>();
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
+          StoredData.FileData fileData = datastore.find(fileKey);
+          if (fileData != null) {
+            if (fileData.userId != null && !fileData.userId.isEmpty()) {
+              if (!fileData.userId.equals(userId)) {
+                throw CrashReport.createAndLogError(LOG, null,
+                    ErrorUtils.collectUserProjectErrorInfo(userId, projectId),
+                    new UnauthorizedAccessException(userId, projectId, null));
+              }
+            }
+            oldBlobKeyString.set(fileData.blobKey);
+            if (isTrue(fileData.isGCS)) {
+              deleteProjectFileResult.fileRole = fileData.role;
+              deleteProjectFileResult.filesystemToDelete = fileData.gcsName;
+            }
+          }
+          datastore.delete(fileKey);
+          deleteProjectFileResult.lastModifiedDate = updateProjectModDate(datastore, projectId);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+
+    final String oldBlobKeyStr = oldBlobKeyString.get();
+    if (oldBlobKeyStr != null) {
+      deleteBlobstoreFile(oldBlobKeyStr);
+    }
+
+    return deleteProjectFileResult;
+  }
+
+  @Override
+  public GetProjectFileResult getProjectFile(final String userId, final long projectId, final String fileName) {
+    final GetProjectFileResult getProjectFileResult = new GetProjectFileResult();
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.FileData> fileKey = projectFileKey(projectKey(projectId), fileName);
+          StoredData.FileData fd = datastore.find(fileKey);
+
+          if (fd == null) {
+            throw CrashReport.createAndLogError(LOG, null,
+                ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName),
+                new FileNotFoundException("No data for " + fileName));
+          }
+
+          if (fd.userId != null && !fd.userId.isEmpty()) {
+            if (!fd.userId.equals(userId)) {
+              throw CrashReport.createAndLogError(LOG, null,
+                  ErrorUtils.collectUserProjectErrorInfo(userId, projectId),
+                  new UnauthorizedAccessException(userId, projectId, null));
+            }
+          }
+
+          if (isTrue(fd.isGCS)) {     // It's in the Cloud Store
+            getProjectFileResult.fileRole = fd.role;
+            getProjectFileResult.filesystemToRetrieve = fd.gcsName;
+          } else if (fd.isBlob) {
+            try {
+              if (fd.blobKey == null) {
+                throw new BlobReadException("blobKey is null");
+              }
+              getProjectFileResult.content = getBlobstoreBytes(fd.blobKey);
+            } catch (BlobReadException e) {
+              throw CrashReport.createAndLogError(LOG, null,
+                  ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+            }
+          } else {
+            if (fd.content != null) {
+              getProjectFileResult.content = fd.content;
+            }
+          }
+        }
+      }, false); // Transaction not needed
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+    return getProjectFileResult;
+  }
+
+  // Note: this must be called outside of any transaction, since getBlobKey()
+  // uses the current transaction and it will most likely have the wrong
+  // entity group!
+  private byte[] getBlobstoreBytes(String blobKeyString) throws BlobReadException {
+    BlobKey blobKey = new BlobKey(blobKeyString);
+    try {
+      InputStream blobInputStream = new BlobstoreInputStream(blobKey);
+      return ByteStreams.toByteArray(blobInputStream);
+    } catch (IOException e) {
+      throw new BlobReadException(e, "Error trying to read blob from " + blobKey);
+    }
   }
 
   @Override

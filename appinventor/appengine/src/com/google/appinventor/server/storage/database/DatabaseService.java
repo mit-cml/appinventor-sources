@@ -101,6 +101,22 @@ public abstract class DatabaseService {
   public abstract UploadProjectFileResult uploadProjectFile(final String userId, final long projectId, final String fileName,
                                                             final boolean force, final byte[] content, final Long backupThreshold, final String filesystemName) throws BlocksTruncatedException;
 
+  public static final class DeleteProjectFileResult {
+    public Long lastModifiedDate;
+    public FileDataRoleEnum fileRole = null;
+    public String filesystemToDelete = null;
+  }
+
+  public abstract DeleteProjectFileResult deleteProjectFile(final String userId, final long projectId, final String fileName);
+
+  public static final class GetProjectFileResult {
+    public byte[] content = new byte[0];
+    public FileDataRoleEnum fileRole = null;
+    public String filesystemToRetrieve = null;
+  }
+
+  public abstract GetProjectFileResult getProjectFile(final String userId, final long projectId, final String fileName);
+
   public abstract void storeCorruptionRecord(final String userId, final long projectId, final String fileId, final String message);
 
   public abstract String getIpAddressFromRendezvousKey(final String rendezvousKey);
