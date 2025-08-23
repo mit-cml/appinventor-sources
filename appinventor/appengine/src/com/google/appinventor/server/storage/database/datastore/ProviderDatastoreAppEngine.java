@@ -1580,6 +1580,33 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   }
 
   @Override
+  public boolean isProjectInTrash(final Long projectId) {
+    StoredData.ProjectData projectData = ObjectifyService.begin().find(projectKey(projectId));
+    if (projectData == null) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(null, projectId),
+          new IllegalArgumentException("Project " + projectId + " doesn't exist"));
+    }
+
+    return projectData.projectMovedToTrashFlag;
+  }
+
+  @Override
+  public void deleteUser(final String userId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          datastore.delete(userKey(userId));
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+
+  }
+
+  @Override
   public String getAllowedTutorialUrls(final Long allowedTutorialUrlsId) {
     final AtomicReference<String> result = new AtomicReference<>("[]");
     try {

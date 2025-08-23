@@ -150,6 +150,10 @@ public abstract class DatabaseService {
 
   public abstract SplashConfig getSplashConfig(final Long splashConfigId);
 
+  public abstract boolean isProjectInTrash(final Long projectId);
+
+  public abstract void deleteUser(final String userId);
+
   public abstract String getAllowedTutorialUrls(final Long tutorialsAllowedUrlsId);
 
   public static DatabaseService getDatabaseService() {
