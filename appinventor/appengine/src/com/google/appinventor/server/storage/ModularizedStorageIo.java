@@ -9,12 +9,15 @@ import com.google.appinventor.server.storage.filesystem.FilesystemService;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -103,46 +106,6 @@ public final class ModularizedStorageIo implements StorageIo {
   }
 
   @Override
-  public void storeBuildStatus(String userId, long projectId, int progress) {
-    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
-    cacheService.put(cacheKey, progress);
-  }
-
-  @Override
-  public int getBuildStatus(String userId, long projectId) {
-    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
-    Integer progress = (Integer) cacheService.get(cacheKey);
-    // 50% fallback if not in memcache (or memcache service down)
-    return Objects.requireNonNullElse(progress, 50);
-  }
-
-  @Override
-  public void assertUserHasProject(final String userId, final long projectId) {
-    final String cacheKey = CACHE_KEY_PREFIX__PROJECT_OWNER + "|" + projectId;
-    final String ownerUserId = (String) cacheService.get(cacheKey);
-
-    if (ownerUserId != null) {
-      if (ownerUserId.equals(userId)) {
-        // The user in the cache owns the project, hence we don't need to throw anything
-        return;
-      }
-      // Whoops, it seems like someone is being sneaky :)
-      throw new SecurityException("Unauthorized access");
-    }
-
-    final boolean ownsProject = databaseService.assertUserIdOwnerOfProject(userId, projectId);
-    if (!ownsProject) {
-      // User doesn't have the corresponding project.
-      throw new SecurityException("Unauthorized access");
-    }
-
-    // User has data for project, so everything checks out.
-    // We just store it now in the cache for future access, as we know the user requesting
-    //   this project owns it.
-    cacheService.put(cacheKey, userId);
-  }
-
-  @Override
   public long createProject(final String userId, final Project project,
                             final String projectSettings) {
     final List<UnifiedFile> unifiedFiles = new ArrayList<>();
@@ -189,6 +152,141 @@ public final class ModularizedStorageIo implements StorageIo {
       }
       throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
     }
+  }
+
+  @Override
+  public void deleteProject(final String userId, final long projectId) {
+    // First job deletes the UserProjectData in the user's entity group
+    databaseService.deleteUserProject(userId, projectId);
+
+    // Second job deletes the project files and ProjectData in the project's
+    final List<String> gcsPaths = databaseService.deleteProjectData(userId, projectId);
+
+    // Now delete the gcs files
+    for (String gcsName : gcsPaths) {
+      try {
+        filesystemService.delete(FileDataRoleEnum.SOURCE, gcsName);
+      } catch (IOException e) {
+        // Note: this warning will happen if we attempt to remove an APK file, because we may be looking
+        // in the wrong bucket. But that's OK. Things in the apk bucket will go away on their own.
+        LOG.log(Level.WARNING, "Unable to delete " + gcsName + " from GCS while deleting project", e);
+      }
+    }
+  }
+
+  @Override
+  public void setMoveToTrashFlag(final String userId, final long projectId, final boolean flag) {
+    databaseService.setProjectMovedToTrashFlag(userId, projectId, flag);
+  }
+
+  @Override
+  public List<Long> getProjects(final String userId) {
+    return databaseService.getProjectIdsByUser(userId);
+  }
+
+  @Override
+  public String loadProjectSettings(final String userId, final long projectId) {
+    return databaseService.getProjectSettings(userId, projectId);
+  }
+
+  @Override
+  public void storeProjectSettings(final String userId, final long projectId,
+                                   final String settings) {
+    databaseService.setProjectSettings(userId, projectId, settings);
+  }
+
+  @Override
+  public String getProjectType(final String userId, final long projectId) {
+    // We only have one project type, no need to ask about it
+    return YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE;
+  }
+
+  @Override
+  public UserProject getUserProject(final String userId, final long projectId) {
+    return databaseService.getUserProject(userId, projectId);
+  }
+
+  @Override
+  public List<UserProject> getUserProjects(final String userId, final List<Long> projectIds) {
+    return databaseService.getUserProjects(userId, projectIds);
+  }
+
+  @Override
+  public String getProjectName(final String userId, final long projectId) {
+    return databaseService.getProjectName(userId, projectId);
+  }
+
+  @Override
+  public long getProjectDateModified(final String userId, final long projectId) {
+    return databaseService.getProjectDateModified(userId, projectId);
+  }
+
+  @Override
+  public long getProjectDateBuilt(final String userId, final long projectId) {
+    return databaseService.getProjectDateBuilt(userId, projectId);
+  }
+
+  @Override
+  public long updateProjectBuiltDate(final String userId, final long projectId, final long builtDate) {
+    databaseService.setProjectBuiltDate(userId, projectId, builtDate);
+    return builtDate;
+  }
+
+  @Override
+  public String getProjectHistory(final String userId, final long projectId) {
+    return databaseService.getProjectHistory(userId, projectId);
+  }
+
+  @Override
+  public long getProjectDateCreated(final String userId, final long projectId) {
+    return databaseService.getProjectDateCreated(userId, projectId);
+  }
+
+  @Override
+  public void addFilesToUser(final String userId, final String... fileNames) {
+    for (String fileName : fileNames) {
+      databaseService.createUserFileData(userId, fileName);
+    }
+  }
+
+  @Override
+  public void storeBuildStatus(String userId, long projectId, int progress) {
+    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
+    cacheService.put(cacheKey, progress);
+  }
+
+  @Override
+  public int getBuildStatus(String userId, long projectId) {
+    String cacheKey = CACHE_KEY_PREFIX__BUILD_STATUS + "|" + userId + "|" + projectId;
+    Integer progress = (Integer) cacheService.get(cacheKey);
+    // 50% fallback if not in memcache (or memcache service down)
+    return Objects.requireNonNullElse(progress, 50);
+  }
+
+  @Override
+  public void assertUserHasProject(final String userId, final long projectId) {
+    final String cacheKey = CACHE_KEY_PREFIX__PROJECT_OWNER + "|" + projectId;
+    final String ownerUserId = (String) cacheService.get(cacheKey);
+
+    if (ownerUserId != null) {
+      if (ownerUserId.equals(userId)) {
+        // The user in the cache owns the project, hence we don't need to throw anything
+        return;
+      }
+      // Whoops, it seems like someone is being sneaky :)
+      throw new SecurityException("Unauthorized access");
+    }
+
+    final boolean ownsProject = databaseService.assertUserIdOwnerOfProject(userId, projectId);
+    if (!ownsProject) {
+      // User doesn't have the corresponding project.
+      throw new SecurityException("Unauthorized access");
+    }
+
+    // User has data for project, so everything checks out.
+    // We just store it now in the cache for future access, as we know the user requesting
+    //   this project owns it.
+    cacheService.put(cacheKey, userId);
   }
 
   private boolean useFilesystemForFile(String fileName, int length) {

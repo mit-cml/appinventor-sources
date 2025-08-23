@@ -5,6 +5,7 @@ import com.google.appinventor.server.storage.FileDataRoleEnum;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.datastore.ProviderDatastoreAppEngine;
 import com.google.appinventor.shared.rpc.project.Project;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.util.List;
@@ -34,6 +35,36 @@ public abstract class DatabaseService {
   public abstract void createUserProjectData(final String userId, final Long projectId, final String projectSettings) throws DatabaseAccessException;
 
   public abstract void createProjectFileData(final String userId, final Long projectId, final FileDataRoleEnum role, final List<UnifiedFile> files) throws DatabaseAccessException;
+
+  public abstract void deleteUserProject(final String userId, final Long projectId);
+
+  public abstract List<String> deleteProjectData(final String userId, final Long projectId);
+
+  public abstract void setProjectMovedToTrashFlag(final String userId, final long projectId, final boolean flag);
+
+  public abstract List<Long> getProjectIdsByUser(final String userId);
+
+  public abstract String getProjectSettings(final String userId, final long projectId);
+
+  public abstract void setProjectSettings(final String userId, final long projectId, final String projectSettings);
+
+  public abstract UserProject getUserProject(final String userId, final long projectId);
+
+  public abstract List<UserProject> getUserProjects(final String userId, final List<Long> projectIds);
+
+  public abstract String getProjectName(final String userId, final long projectId);
+
+  public abstract Long getProjectDateModified(final String userId, final long projectId);
+
+  public abstract Long getProjectDateBuilt(final String userId, final long projectId);
+
+  public abstract void setProjectBuiltDate(final String userId, final long projectId, final long builtDate);
+
+  public abstract String getProjectHistory(final String userId, final long projectId);
+
+  public abstract Long getProjectDateCreated(final String userId, final long projectId);
+
+  public abstract void createUserFileData(final String userId, final String fileName);
 
   public abstract boolean assertUserIdOwnerOfProject(final String userId, final long projectId);
 
