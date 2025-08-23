@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
@@ -18,8 +19,10 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
@@ -32,6 +35,8 @@ import javax.annotation.Nullable;
  *
  */
 public interface StorageIo {
+  Logger LOG = Logger.getLogger(StorageIo.class.getName());
+
   /**
    * Constant for an invalid project ID.
    */
@@ -291,7 +296,18 @@ public interface StorageIo {
    * @param content file content
    * @param encoding encoding of content
    */
-  void uploadUserFile(String userId, String fileId, String content, String encoding);
+  default void uploadUserFile(String userId, String fileId, String content, String encoding) {
+    final byte[] bytes;
+    try {
+      bytes = content.getBytes(encoding);
+    } catch (UnsupportedEncodingException e) {
+      // Note: this RuntimeException should propagate up out of runJobWithRetries
+      throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding, "
+          + ErrorUtils.collectUserErrorInfo(userId, fileId), e);
+    }
+
+    uploadRawUserFile(userId, fileId, bytes);
+  }
 
   /**
    * Uploads a non-project-specific file.
@@ -311,7 +327,14 @@ public interface StorageIo {
    *
    * @return text file content
    */
-  String downloadUserFile(String userId, String fileId, String encoding);
+  default String downloadUserFile(String userId, String fileId, String encoding) {
+    try {
+      return new String(downloadRawUserFile(userId, fileId), encoding);
+    } catch (UnsupportedEncodingException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding, " +
+          ErrorUtils.collectUserErrorInfo(userId, fileId), e);
+    }
+  }
 
   /**
    * Downloads raw user file data.
@@ -406,8 +429,15 @@ public interface StorageIo {
    * @param encoding encoding of content
    * @return modification date for project
    */
-  long uploadFile(long projectId, String fileId, String userId, String content, String encoding)
-      throws BlocksTruncatedException;
+  default long uploadFile(long projectId, String fileId, String userId, String content, String encoding)
+      throws BlocksTruncatedException {
+    try {
+      return uploadRawFile(projectId, fileId, userId, false, content.getBytes(encoding));
+    } catch (UnsupportedEncodingException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding,"
+          + ErrorUtils.collectProjectErrorInfo(null, projectId, fileId), e);
+    }
+  }
 
   /**
    * Uploads a file. -- This version uses "force" to write even a trivial workspace file
@@ -418,7 +448,14 @@ public interface StorageIo {
    * @param encoding encoding of content
    * @return modification date for project
    */
-  long uploadFileForce(long projectId, String fileId, String userId, String content, String encoding);
+  default long uploadFileForce(long projectId, String fileId, String userId, String content, String encoding) {
+    try {
+      return uploadRawFileForce(projectId, fileId, userId, content.getBytes(encoding));
+    } catch (UnsupportedEncodingException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding,"
+          + ErrorUtils.collectProjectErrorInfo(null, projectId, fileId), e);
+    }
+  }
 
   /**
    * Uploads a file.
@@ -429,8 +466,15 @@ public interface StorageIo {
    * @param content  file content
    * @return modification date for project
    */
-  long uploadRawFile(long projectId, String fileId, String userId, boolean force, byte[] content)
-      throws BlocksTruncatedException;
+  default long uploadRawFile(long projectId, String fileId, String userId, boolean force, byte[] content)
+      throws BlocksTruncatedException {
+    try {
+      return uploadRawFile(projectId, fileId, userId, true, content);
+    } catch (BlocksTruncatedException e) {
+      // Won't get here, exception isn't thrown when force is true
+      return 0;
+    }
+  }
 
   /**
    * Uploads a file. -- forces the save even with trivial workspace

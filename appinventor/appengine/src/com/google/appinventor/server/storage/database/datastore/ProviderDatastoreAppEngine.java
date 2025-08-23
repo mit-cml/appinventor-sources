@@ -3,25 +3,37 @@ package com.google.appinventor.server.storage.database.datastore;
 import com.android.tools.r8.C.a.a.E;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.storage.ErrorUtils;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
 import com.google.appinventor.server.storage.ObjectifyStorageIo;
+import com.google.appinventor.server.storage.UnauthorizedAccessException;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
@@ -728,6 +740,315 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
   }
 
   @Override
+  public List<String> getUserFileNames(final String userId) {
+    final List<String> fileList = new ArrayList<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.UserData> userKey = userKey(userId);
+          for (StoredData.UserFileData ufd : datastore.query(StoredData.UserFileData.class).ancestor(userKey)) {
+            fileList.add(ufd.fileName);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+    return fileList;
+  }
+
+  @Override
+  public void uploadUserFile(final String userId, final String fileName, final byte[] content) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.UserFileData ufd = datastore.find(userFileKey(userKey(userId), fileName));
+          /*
+           * We look for the UserFileData object for the given userId and fileName.
+           * If it doesn't exit, we create it.
+           *
+           * SPECIAL CASE: If fileName == StorageUtil.USER_BACKBACK_FILENAME and the
+           * content is "[]", we *delete* the file because the default value returned
+           * if the file doesn't exist is "[]" (the JSON empty list). This is to reduce
+           * the clutter of files for the case where someone doesn't have anything in
+           * the backpack. We pay $$ for storage.
+           */
+          byte [] empty = new byte[] { (byte)0x5b, (byte)0x5d }; // "[]" in bytes
+          if (ufd == null) {          // File doesn't exist
+            if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+                Arrays.equals(empty, content)) {
+              return;                 // Nothing to do
+            }
+            ufd = new StoredData.UserFileData();
+            ufd.fileName = fileName;
+            ufd.userKey = userKey(userId);
+          } else {
+            if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+                Arrays.equals(empty, content)) {
+              // Storing an empty backback, just delete the file
+              datastore.delete(userFileKey(userKey(userId), fileName));
+              return;
+            }
+          }
+          ufd.content = content;
+          datastore.put(ufd);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName), e);
+    }
+  }
+
+  @Override
+  public byte[] getUserFile(final String userId, final String fileName) {
+    final AtomicReference<byte[]> result = new AtomicReference<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.UserFileData ufd = datastore.find(userFileKey(userKey(userId), fileName));
+          if (ufd != null) {
+            result.set(ufd.content);
+          } else {
+            throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName),
+                new FileNotFoundException(fileName));
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName), e);
+    }
+    return result.get();
+  }
+
+  @Override
+  public void deleteUserFile(final String userId, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.UserFileData> ufdKey = userFileKey(userKey(userId), fileName);
+          if (datastore.find(ufdKey) != null) {
+            datastore.delete(ufdKey);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName), e);
+    }
+  }
+
+  @Override
+  public void addFileToProject(final String userId, final Long projectId, final FileDataRoleEnum role,
+                               final boolean changeModDate, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          StoredData.FileData fd = createProjectFile(datastore, projectKey, role, fileName);
+          fd.userId = userId;
+          datastore.put(fd);
+          if (changeModDate) {
+            updateProjectModDate(datastore, projectId);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+  }
+
+  private StoredData.FileData createProjectFile(Objectify datastore, Key<StoredData.ProjectData> projectKey,
+                                                                                      FileDataRoleEnum role, String fileName) {
+    StoredData.FileData fd = datastore.find(projectFileKey(projectKey, fileName));
+    if (fd == null) {
+      fd = new StoredData.FileData();
+      fd.fileName = fileName;
+      fd.projectKey = projectKey;
+      fd.role = role;
+    } else if (!fd.role.equals(role)) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(null, projectKey.getId(), fileName),
+          new IllegalStateException("File role change is not supported"));
+    }
+
+    return fd;
+  }
+
+  private Long updateProjectModDate(Objectify datastore, long projectId) {
+    long modDate = System.currentTimeMillis();
+    StoredData.ProjectData pd = datastore.find(projectKey(projectId));
+    if (pd != null) {
+      // Only update the ProjectData dateModified if it is more then a minute
+      // in the future. Do this to avoid unnecessary datastore puts.
+      if (modDate > (pd.dateModified + 1000*60)) {
+        pd.dateModified = modDate;
+        datastore.put(pd);
+      } else {
+        // return the (old) dateModified
+        modDate = pd.dateModified;
+      }
+      return modDate;
+    } else {
+      throw CrashReport.createAndLogError(LOG, null, null,
+          new IllegalArgumentException("project " + projectId + " doesn't exist"));
+    }
+  }
+
+  @Override
+  public void removeFileFromProject(final String userId, final Long projectId, final FileDataRoleEnum role,
+                                    final boolean changeModDate, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          Key<StoredData.FileData> key = projectFileKey(projectKey, fileName);
+          StoredData.FileData fd = datastore.find(key);
+          if (fd != null) {
+            if (fd.role.equals(role)) {
+              datastore.delete(projectFileKey(projectKey, fileName));
+            } else {
+              throw CrashReport.createAndLogError(LOG, null,
+                  ErrorUtils.collectProjectErrorInfo(null, projectId, fileName),
+                  new IllegalStateException("File role change is not supported"));
+            }
+          }
+
+          if (changeModDate) {
+            updateProjectModDate(datastore, projectId);
+          }
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+  }
+
+  @Override
+  public List<String> getProjectFiles(final String userId, final long projectId, FileDataRoleEnum role) {
+    final List<String> fileList = new ArrayList<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<StoredData.ProjectData> projectKey = projectKey(projectId);
+          for (StoredData.FileData fd : datastore.query(StoredData.FileData.class).ancestor(projectKey)) {
+            if (fd.role.equals(role)) {
+              fileList.add(fd.fileName);
+            }
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return fileList;
+  }
+
+  @Override
+  public UploadProjectFileResult uploadProjectFile(final String userId, final long projectId, final String fileName,
+                            final boolean force, final byte[] content, final Long backupThreshold, final String filesystemName) throws BlocksTruncatedException {
+    final UploadProjectFileResult uploadProjectFileResult = new UploadProjectFileResult();
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException {
+          StoredData.FileData fd = datastore.find(projectFileKey(projectKey(projectId), fileName));
+
+          // <Screen>.yail files are missing when user converts AI1 project to AI2
+          // instead of blowing up, just create a <Screen>.yail file
+          if (fd == null && (fileName.endsWith(".yail") || (fileName.endsWith(".png")))){
+            fd = createProjectFile(datastore, projectKey(projectId), FileDataRoleEnum.SOURCE, fileName);
+            fd.userId = userId;
+          }
+
+          Preconditions.checkState(fd != null);
+
+          if (fd.userId != null && !fd.userId.isEmpty()) {
+            if (!fd.userId.equals(userId)) {
+              throw CrashReport.createAndLogError(LOG, null,
+                  ErrorUtils.collectUserProjectErrorInfo(userId, projectId),
+                  new UnauthorizedAccessException(userId, projectId, null));
+            }
+          }
+
+          if ((content.length < 125) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
+            if (!force) {            // force is true if we *really* want to save it!
+              checkForBlocksTruncation(fd); // See if we had previous content and throw and exception if so
+            }
+          }
+
+          if (filesystemName != null) {
+            fd.isGCS = true;
+            fd.gcsName = filesystemName;
+            uploadProjectFileResult.fileRole = fd.role;
+            // If the content was previously stored in the datastore, clear it out.
+            fd.content = null;
+            fd.isBlob = false;  // in case we are converting from a blob
+            fd.blobstorePath = null;
+          } else {
+            if (isTrue(fd.isGCS)) {     // Was a GCS file, must have gotten smaller
+              uploadProjectFileResult.needsFilesystemDelete = true;
+              fd.isGCS = false;
+              fd.gcsName = null;
+            }
+            // Note, Don't have to do anything if the file was in the
+            // Blobstore and shrank because the code above (3 lines
+            // into the function) already handles removing the old
+            // contents from the Blobstore.
+            fd.isBlob = false;
+            fd.blobstorePath = null;
+            fd.content = content;
+          }
+
+          if (backupThreshold != null) {
+            if ((fd.lastBackup + backupThreshold) < System.currentTimeMillis()) {
+              uploadProjectFileResult.shouldDoFilesystemBackup = true;
+              fd.lastBackup = System.currentTimeMillis();
+            }
+          }
+
+          // Old file not marked with ownership, mark it now
+          if (fd.userId == null || fd.userId.isEmpty()) {
+            fd.userId = userId;
+          }
+          datastore.put(fd);
+          uploadProjectFileResult.lastModifiedDate = updateProjectModDate(datastore, projectId);
+        }
+      }, false); // Use transaction for blobstore, otherwise we don't need one
+      // and without one the caching code comes into play.
+    } catch (ObjectifyException e) {
+      if (e.getMessage().startsWith("Blocks")) { // Convert Exception
+        throw new BlocksTruncatedException();
+      }
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+
+    return uploadProjectFileResult;
+  }
+
+  // We are called when our caller detects we are about to write a trivial (empty)
+  // workspace. We check to see if previously the workspace was non-trivial and
+  // if so, throw the BlocksTruncatedException. This will be passed through the RPC
+  // layer to the client code which will put up a dialog box for the user to review
+  // See Ode.java for more information
+  private void checkForBlocksTruncation(StoredData.FileData fd) throws ObjectifyException {
+    if (fd.isBlob || isTrue(fd.isGCS) || fd.content.length > 120)
+      throw new ObjectifyException("BlocksTruncated"); // Hack
+    // I'm avoiding having to modify every use of runJobWithRetries to handle a new
+    // exception, so we use this dodge.
+  }
+
+  @Override
   public boolean assertUserIdOwnerOfProject(final String userId, final long projectId) {
     final AtomicReference<Boolean> ownsProject = new AtomicReference<>(false);
     try {
@@ -841,6 +1162,10 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
 
   private Key<StoredData.ProjectData> projectKey(long projectId) {
     return new Key<>(StoredData.ProjectData.class, projectId);
+  }
+
+  private Key<StoredData.FileData> projectFileKey(Key<StoredData.ProjectData> projectKey, String fileName) {
+    return new Key<>(projectKey, StoredData.FileData.class, fileName);
   }
 
   private boolean isTrue(Boolean b) {

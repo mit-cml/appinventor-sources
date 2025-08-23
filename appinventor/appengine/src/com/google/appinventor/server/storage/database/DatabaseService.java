@@ -4,6 +4,7 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.datastore.ProviderDatastoreAppEngine;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
@@ -65,6 +66,32 @@ public abstract class DatabaseService {
   public abstract Long getProjectDateCreated(final String userId, final long projectId);
 
   public abstract void createUserFileData(final String userId, final String fileName);
+
+  public abstract List<String> getUserFileNames(final String userId);
+
+  public abstract void uploadUserFile(final String userId, final String fileName, final byte[] content);
+
+  public abstract byte[] getUserFile(final String userId, final String fileName);
+
+  public abstract void deleteUserFile(final String userId, final String fileName);
+
+  public abstract void addFileToProject(final String userId, final Long projectId, final FileDataRoleEnum role,
+                                        final boolean changeModDate, final String fileName);
+
+  public abstract void removeFileFromProject(final String userId, final Long projectId, final FileDataRoleEnum role,
+                                                  final boolean changeModDate, final String fileName);
+
+  public abstract List<String> getProjectFiles(final String userId, final long projectId, FileDataRoleEnum role);
+
+  public static final class UploadProjectFileResult {
+    public Long lastModifiedDate;
+    public FileDataRoleEnum fileRole = null;
+    public boolean needsFilesystemDelete = false;
+    public boolean shouldDoFilesystemBackup = false;
+  }
+
+  public abstract UploadProjectFileResult uploadProjectFile(final String userId, final long projectId, final String fileName,
+                                                            final boolean force, final byte[] content, final Long backupThreshold, final String filesystemName) throws BlocksTruncatedException;
 
   public abstract boolean assertUserIdOwnerOfProject(final String userId, final long projectId);
 

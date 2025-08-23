@@ -6,6 +6,7 @@ import com.google.appinventor.server.storage.cache.CacheService;
 import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
 import com.google.appinventor.server.storage.filesystem.FilesystemService;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -14,7 +15,9 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -27,10 +30,12 @@ public final class ModularizedStorageIo implements StorageIo {
   private static final Logger LOG = Logger.getLogger(ModularizedStorageIo.class.getName());
 
   private static final int MAX_FILE_SIZE_BYTES_IN_DB = 50_000;
+  private static final long BACKUP_THRESHOLD_SECONDS = 24 * 3600;  // 24 hours in seconds
 
   private final static String CACHE_KEY_PREFIX__USER = "f682688a-1065-4cda-8515-a8bd70200ac9";
   private final static String CACHE_KEY_PREFIX__BUILD_STATUS = "40bae275-070f-478b-9a5f-d50361809b99";
   private static final String CACHE_KEY_PREFIX__PROJECT_OWNER = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
+  private static final String CACHE_KEY_PREFIX__PROJECT_FILE = "9f06aaeb-aaaa-4ab9-9fa6-00413b181eb6";
 
   private final CacheService cacheService = CacheService.getCacheService();
   private final DatabaseService databaseService = DatabaseService.getDatabaseService();
@@ -261,6 +266,132 @@ public final class ModularizedStorageIo implements StorageIo {
     Integer progress = (Integer) cacheService.get(cacheKey);
     // 50% fallback if not in memcache (or memcache service down)
     return Objects.requireNonNullElse(progress, 50);
+  }
+
+  @Override
+  public List<String> getUserFiles(final String userId) {
+    return databaseService.getUserFileNames(userId);
+  }
+
+  @Override
+  public void uploadRawUserFile(final String userId, final String fileName, final byte[] content) {
+    databaseService.uploadUserFile(userId, fileName, content);
+  }
+
+  @Override
+  public byte[] downloadRawUserFile(final String userId, final String fileName) {
+    return databaseService.getUserFile(userId, fileName);
+  }
+
+  @Override
+  public void deleteUserFile(final String userId, final String fileName) {
+    databaseService.deleteUserFile(userId, fileName);
+  }
+
+  @Override
+  public int getMaxJobSizeBytes() {
+    // TODO(user): what should this mean?
+    return 5 * 1024 * 1024;
+  }
+
+  @Override
+  public void addSourceFilesToProject(final String userId, final long projectId,
+                                      final boolean changeModDate, final String... fileNames) {
+    for (String fileName : fileNames) {
+      databaseService.addFileToProject(userId, projectId, FileDataRoleEnum.SOURCE, changeModDate, fileName);
+    }
+  }
+
+  @Override
+  public void addOutputFilesToProject(final String userId, final long projectId,
+                                      final String... fileNames) {
+    for (String fileName : fileNames) {
+      databaseService.addFileToProject(userId, projectId, FileDataRoleEnum.TARGET, false, fileName);
+    }
+  }
+
+  @Override
+  public void removeSourceFilesFromProject(final String userId, final long projectId,
+                                           final boolean changeModDate, final String... fileNames) {
+    boolean isFirst = true;
+    for (String fileName : fileNames) {
+      // Only try to update the modification date for the first file
+      databaseService.removeFileFromProject(userId, projectId, FileDataRoleEnum.SOURCE, changeModDate && isFirst, fileName);
+      final String cacheKey = CACHE_KEY_PREFIX__PROJECT_FILE + "|" + projectId + "|" + fileName;
+      cacheService.delete(cacheKey); // Remove it from memcache (if it is there)
+
+      if (isFirst) {
+        isFirst = false;
+      }
+    }
+  }
+
+  @Override
+  public void removeOutputFilesFromProject(final String userId, final long projectId,
+                                           final String... fileNames) {
+    for (String fileName : fileNames) {
+      databaseService.removeFileFromProject(userId, projectId, FileDataRoleEnum.SOURCE, false, fileName);
+      final String cacheKey = CACHE_KEY_PREFIX__PROJECT_FILE + "|" + projectId + "|" + fileName;
+      cacheService.delete(cacheKey); // Remove it from memcache (if it is there)
+    }
+  }
+
+  @Override
+  public List<String> getProjectSourceFiles(final String userId, final long projectId) {
+    return databaseService.getProjectFiles(userId, projectId, FileDataRoleEnum.SOURCE);
+  }
+
+  @Override
+  public List<String> getProjectOutputFiles(final String userId, final long projectId) {
+    return databaseService.getProjectFiles(userId, projectId, FileDataRoleEnum.TARGET);
+  }
+
+  @Override
+  public long uploadRawFile(final long projectId, final String fileName, final String userId,
+                            final boolean force, final byte[] content) throws BlocksTruncatedException {
+    final boolean useFilesystem = useFilesystemForFile(fileName, content.length);
+    final String filesystemName = makeFilesystemFileName(fileName, projectId);
+
+    final boolean considerBackup = (fileName.contains("src/") &&
+        (fileName.endsWith(".bky") || fileName.endsWith(".scm")));
+
+    DatabaseService.UploadProjectFileResult result = databaseService.uploadProjectFile(userId, projectId, fileName,
+        force, content,
+        considerBackup ? BACKUP_THRESHOLD_SECONDS : null,
+        useFilesystem ? filesystemName : null);
+
+    if (useFilesystem) {
+      try {
+        filesystemService.save(result.fileRole, filesystemName, content);
+      } catch (IOException e) {
+        throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+      }
+    }
+
+    if (result.needsFilesystemDelete) {
+      try {
+        filesystemService.delete(result.fileRole, makeFilesystemFileName(fileName, projectId));
+      } catch (IOException e) {
+        LOG.warning("Failed to delete old filesystem file: " + ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName));
+      }
+    }
+
+    if (result.shouldDoFilesystemBackup) {
+      final String filesystemBackupName = makeFilesystemFileName(fileName + "." + formattedTime() + ".backup", projectId);
+      try {
+        filesystemService.save(result.fileRole, filesystemBackupName, content);
+      } catch (IOException e) {
+        LOG.warning("Failed to backup filesystem file: " + ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName));
+      }
+    }
+
+    return result.lastModifiedDate;
+  }
+
+  private static String formattedTime() {
+    // Return time in ISO_8660 format
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    return formatter.format(new Date());
   }
 
   @Override
