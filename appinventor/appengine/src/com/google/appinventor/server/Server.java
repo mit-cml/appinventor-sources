@@ -26,8 +26,7 @@ public class Server {
   // System property name to obtain GWT UI module
   private static final String START_PAGE_KEY = "StartPage";
 
-  private static final Flag<String> appengineHost =
-      Flag.createFlag("appengine.host", "");
+  private static final Flag<String> appengineHost = Flag.createFlag("appengine.host", "");
 
   public static String getStartPage() {
     return System.getProperty(START_PAGE_KEY);
