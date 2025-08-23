@@ -2,10 +2,14 @@ package com.google.appinventor.server.storage;
 
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.cache.CacheService;
 import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
 import com.google.appinventor.server.storage.filesystem.FilesystemService;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
@@ -15,6 +19,7 @@ import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.ByteArrayInputStream;
@@ -36,6 +41,9 @@ public final class ModularizedStorageIo implements StorageIo {
 
   private static final Logger LOG = Logger.getLogger(ModularizedStorageIo.class.getName());
 
+  // used for getting the allowed tutorial urls
+  private static final JSONParser JSON_PARSER = new ServerJsonParser();
+
   private static final int MAX_FILE_SIZE_BYTES_IN_DB = 50_000;
   private static final long BACKUP_THRESHOLD_SECONDS = 24 * 3600;  // 24 hours in seconds
 
@@ -46,6 +54,10 @@ public final class ModularizedStorageIo implements StorageIo {
 
   private static final String TEMP_FILE_PREFIX = "__TEMP__/";
 
+  private static final long ALLOWED_TUTORIAL_URL_ID = 1;
+  private static final long SPLASH_DATA_ID = 1;
+  private static final long ALLOWED_IOS_EXTENSIONS_ID = 1;
+
   private final CacheService cacheService = CacheService.getCacheService();
   private final DatabaseService databaseService = DatabaseService.getDatabaseService();
   private final FilesystemService filesystemService = FilesystemService.getFilesystemService();
@@ -53,6 +65,7 @@ public final class ModularizedStorageIo implements StorageIo {
   public ModularizedStorageIo() {
   }
 
+  @Override
   public User getUser(final String userId, final String email) {
     final String cacheKey = CACHE_KEY_PREFIX__USER + "|" + userId;
 
@@ -500,6 +513,11 @@ public final class ModularizedStorageIo implements StorageIo {
   }
 
   @Override
+  public SplashConfig getSplashConfig() {
+    return databaseService.getSplashConfig(SPLASH_DATA_ID);
+  }
+
+  @Override
   public List<AdminUser> searchUsers(final String partialEmail) {
     return databaseService.searchUsers(partialEmail);
   }
@@ -557,6 +575,25 @@ public final class ModularizedStorageIo implements StorageIo {
     // We just store it now in the cache for future access, as we know the user requesting
     //   this project owns it.
     cacheService.put(cacheKey, userId);
+  }
+
+  @Override
+  public List<String> getTutorialsUrlAllowed() {
+    final String rawResult = databaseService.getAllowedTutorialUrls(ALLOWED_TUTORIAL_URL_ID);
+
+    JSONArray parsedUrls = (JSONArray) JSON_PARSER.parse(rawResult);
+    List<JSONValue> jsonList = parsedUrls.getElements();
+    List<String> returnValue = new ArrayList<>();
+    for (JSONValue v : jsonList) {
+      returnValue.add(v.asString().getString());
+    }
+
+    return returnValue;
+  }
+
+  @Override
+  public String getIosExtensionsConfig() {
+    return databaseService.getAllowedIosExtensions(ALLOWED_IOS_EXTENSIONS_ID);
   }
 
   private boolean useFilesystemForFile(String fileName, int length) {

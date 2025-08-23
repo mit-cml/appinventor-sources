@@ -16,6 +16,7 @@ import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
@@ -1403,6 +1404,84 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     }
 
     return ownsProject.get();
+  }
+
+  @Override
+  public String getAllowedIosExtensions(final Long allowedIosExtensionsId) {
+    final AtomicReference<String> result = new AtomicReference<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.AllowedIosExtensions iosSettingsData = datastore.find(StoredData.AllowedIosExtensions.class,
+              allowedIosExtensionsId);
+          if (iosSettingsData != null) {
+            result.set(iosSettingsData.allowedExtensions);
+          } else {
+            StoredData.AllowedIosExtensions firstIosSettingsData = new StoredData.AllowedIosExtensions();
+            firstIosSettingsData.id = allowedIosExtensionsId;
+            firstIosSettingsData.allowedExtensions = "[]";
+            datastore.put(firstIosSettingsData);
+            result.set(firstIosSettingsData.allowedExtensions);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+
+    return result.get();
+  }
+
+  @Override
+  public SplashConfig getSplashConfig(final Long splashConfigId) {
+    final AtomicReference<SplashConfig> result = new AtomicReference<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          // Fixed key because only one record
+          StoredData.SplashData sd = datastore.find(StoredData.SplashData.class, splashConfigId);
+          SplashConfig splashConfig;
+          if (sd == null) {   // If we don't have Splash Data, create it
+            StoredData.SplashData firstSd = new StoredData.SplashData(); // We do this so cacheing works
+            firstSd.id = splashConfigId;
+            firstSd.version = 0;                   // on future calls
+            firstSd.content = "<b>Welcome to MIT App Inventor</b>";
+            firstSd.width = 350;
+            firstSd.height = 100;
+            datastore.put(firstSd);
+            splashConfig = new SplashConfig(0, firstSd.width, firstSd.height, firstSd.content);
+          } else {
+            splashConfig = new SplashConfig(sd.version, sd.width, sd.height, sd.content);
+          }
+          result.set(splashConfig);
+        }
+      }, false);             // No transaction, Objectify will cache
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.get();
+  }
+
+  @Override
+  public String getAllowedTutorialUrls(final Long allowedTutorialUrlsId) {
+    final AtomicReference<String> result = new AtomicReference<>("[]");
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          StoredData.AllowedTutorialUrls allowedUrls = datastore.find(StoredData.AllowedTutorialUrls.class, allowedTutorialUrlsId);
+          if (allowedUrls != null) { // This shouldn't be
+            result.set(allowedUrls.allowedUrls);
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+
+    return result.get();
   }
 
   @VisibleForTesting

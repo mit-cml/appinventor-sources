@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.util.List;
@@ -128,6 +129,12 @@ public abstract class DatabaseService {
   public abstract void storeBackpack(String backPackId, String content);
 
   public abstract boolean assertUserIdOwnerOfProject(final String userId, final long projectId);
+
+  public abstract String getAllowedIosExtensions(final Long allowedIosExtensionsId);
+
+  public abstract SplashConfig getSplashConfig(final Long splashConfigId);
+
+  public abstract String getAllowedTutorialUrls(final Long tutorialsAllowedUrlsId);
 
   public static DatabaseService getDatabaseService() {
     final String provider = PROVIDER.get();
