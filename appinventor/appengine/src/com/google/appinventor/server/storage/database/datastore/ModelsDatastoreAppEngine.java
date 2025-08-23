@@ -6,7 +6,7 @@
 
 package com.google.appinventor.server.storage.database.datastore;
 
-import com.google.appinventor.server.storage.StoredDataRoleEnum;
+import com.google.appinventor.server.storage.FileDataRoleEnum;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Indexed;
@@ -32,7 +32,7 @@ import java.util.Date;
  * @author sharon@google.com (Sharon Perl)
  *
  */
-class StoredData {
+class ModelsDatastoreAppEngine {
   // The UserData class is an entity root, and the parent of UserFileData
   // and UserProjectData
   @Unindexed
@@ -147,7 +147,7 @@ class StoredData {
     @Parent Key<ProjectData> projectKey;
 
     // File role
-    StoredDataRoleEnum role;
+    FileDataRoleEnum role;
 
     // File content, these are raw bytes. Note that Objectify automatically
     // converts byte[] to an App Engine Datastore Blob (which is not the same thing as a Blobstore

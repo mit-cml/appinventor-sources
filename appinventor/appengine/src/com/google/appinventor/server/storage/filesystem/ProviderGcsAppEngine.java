@@ -11,7 +11,7 @@ import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.server.flags.Flag;
-import com.google.appinventor.server.storage.StoredDataRoleEnum;
+import com.google.appinventor.server.storage.FileDataRoleEnum;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -68,7 +68,7 @@ public final class ProviderGcsAppEngine extends FilesystemService {
   }
 
   @Override
-  public int save(final StoredDataRoleEnum role, final String objectKey, final byte[] content) throws IOException {
+  public int save(final FileDataRoleEnum role, final String objectKey, final byte[] content) throws IOException {
     GcsOutputChannel outputChannel = gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(role), objectKey),
         GcsFileOptions.getDefaultInstance());
     int result = outputChannel.write(ByteBuffer.wrap(content));
@@ -77,7 +77,7 @@ public final class ProviderGcsAppEngine extends FilesystemService {
   }
 
   @Override
-  public byte[] read(final StoredDataRoleEnum role, final String objectKey) throws IOException {
+  public byte[] read(final FileDataRoleEnum role, final String objectKey) throws IOException {
     GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(role), objectKey);
 
     try {
@@ -104,7 +104,7 @@ public final class ProviderGcsAppEngine extends FilesystemService {
   }
 
   @Override
-  public boolean delete(final StoredDataRoleEnum role, final String fileName) throws IOException {
+  public boolean delete(final FileDataRoleEnum role, final String fileName) throws IOException {
     return gcsService.delete(new GcsFilename(getGcsBucketToUse(role), fileName));
   }
 
@@ -116,8 +116,8 @@ public final class ProviderGcsAppEngine extends FilesystemService {
    * @param role the kind of file to store
    * @return the bucket name to use
    */
-  private static String getGcsBucketToUse(StoredDataRoleEnum role) {
-    if (role == StoredDataRoleEnum.TARGET) {
+  private static String getGcsBucketToUse(FileDataRoleEnum role) {
+    if (role == FileDataRoleEnum.TARGET) {
       return APK_BUCKET_NAME;
     } else {
       return GCS_BUCKET_NAME;

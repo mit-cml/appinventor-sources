@@ -1,7 +1,7 @@
 package com.google.appinventor.server.storage.filesystem;
 
 import com.google.appinventor.server.flags.Flag;
-import com.google.appinventor.server.storage.StoredDataRoleEnum;
+import com.google.appinventor.server.storage.FileDataRoleEnum;
 
 import java.io.IOException;
 import java.net.URI;
@@ -88,7 +88,7 @@ public final class ProviderS3 extends FilesystemService {
   }
 
   @Override
-  public int save(final StoredDataRoleEnum role, final String objectKey, final byte[] content) throws IOException {
+  public int save(final FileDataRoleEnum role, final String objectKey, final byte[] content) throws IOException {
     try {
       PutObjectRequest putRequest = PutObjectRequest.builder()
           .bucket(bucketName)
@@ -110,7 +110,7 @@ public final class ProviderS3 extends FilesystemService {
   }
 
   @Override
-  public byte[] read(final StoredDataRoleEnum role, final String objectKey) throws IOException {
+  public byte[] read(final FileDataRoleEnum role, final String objectKey) throws IOException {
     try {
       GetObjectRequest getRequest = GetObjectRequest.builder()
           .bucket(bucketName)
@@ -135,7 +135,7 @@ public final class ProviderS3 extends FilesystemService {
   }
 
   @Override
-  public boolean delete(final StoredDataRoleEnum role, final String fileName) throws IOException {
+  public boolean delete(final FileDataRoleEnum role, final String fileName) throws IOException {
     try {
       DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
           .bucket(bucketName)

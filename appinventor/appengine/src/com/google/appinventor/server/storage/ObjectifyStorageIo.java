@@ -57,7 +57,6 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
-import com.google.appinventor.shared.settings.Settings;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -529,7 +528,7 @@ public class ObjectifyStorageIo implements StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId.t);
           for (TextFile file : project.getSourceFiles()) {
             try {
-              addedFiles.add(createRawFile(projectKey, StoredDataRoleEnum.SOURCE, userId,
+              addedFiles.add(createRawFile(projectKey, FileDataRoleEnum.SOURCE, userId,
                   file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
             } catch (IOException e) { // GCS throws this
               throw CrashReport.createAndLogError(LOG, null,
@@ -538,7 +537,7 @@ public class ObjectifyStorageIo implements StorageIo {
           }
           for (RawFile file : project.getRawSourceFiles()) {
             try {
-              addedFiles.add(createRawFile(projectKey, StoredDataRoleEnum.SOURCE, userId, file.getFileName(),
+              addedFiles.add(createRawFile(projectKey, FileDataRoleEnum.SOURCE, userId, file.getFileName(),
                   file.getContent()));
             } catch (IOException e) {
               throw CrashReport.createAndLogError(LOG, null,
@@ -600,7 +599,7 @@ public class ObjectifyStorageIo implements StorageIo {
    *  Does not check for the existence of the object and does not update
    *  the database.
    */
-  private FileData createRawFile(Key<ProjectData> projectKey, StoredDataRoleEnum role,
+  private FileData createRawFile(Key<ProjectData> projectKey, FileDataRoleEnum role,
     String userId, String fileName, byte[] content) throws ObjectifyException, IOException {
     validateGCS();
     FileData file = new FileData();
@@ -664,7 +663,7 @@ public class ObjectifyStorageIo implements StorageIo {
       // Now delete the gcs files
       for (String gcsName: gcsPaths) {
         try {
-          gcsService.delete(new GcsFilename(getGcsBucketToUse(StoredDataRoleEnum.SOURCE), gcsName));
+          gcsService.delete(new GcsFilename(getGcsBucketToUse(FileDataRoleEnum.SOURCE), gcsName));
         } catch (IOException e) {
           // Note: this warning will happen if we attempt to remove an APK file, because we may be looking
           // in the wrong bucket. But that's OK. Things in the apk bucket will go away on their own.
@@ -1196,7 +1195,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          addFilesToProject(datastore, projectId, StoredDataRoleEnum.SOURCE, changeModDate, userId, fileNames);
+          addFilesToProject(datastore, projectId, FileDataRoleEnum.SOURCE, changeModDate, userId, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1212,7 +1211,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          addFilesToProject(datastore, projectId, StoredDataRoleEnum.TARGET, false, userId, fileNames);
+          addFilesToProject(datastore, projectId, FileDataRoleEnum.TARGET, false, userId, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1221,7 +1220,7 @@ public class ObjectifyStorageIo implements StorageIo {
     }
   }
 
-  private void addFilesToProject(Objectify datastore, long projectId, StoredDataRoleEnum role,
+  private void addFilesToProject(Objectify datastore, long projectId, FileDataRoleEnum role,
     boolean changeModDate, String userId, String... fileNames) {
     List<FileData> addedFiles = new ArrayList<FileData>();
     Key<ProjectData> projectKey = projectKey(projectId);
@@ -1239,7 +1238,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   private FileData createProjectFile(Objectify datastore, Key<ProjectData> projectKey,
-                                     StoredDataRoleEnum role, String fileName) {
+                                     FileDataRoleEnum role, String fileName) {
     FileData fd = datastore.find(projectFileKey(projectKey, fileName));
     if (fd == null) {
       fd = new FileData();
@@ -1262,7 +1261,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          removeFilesFromProject(datastore, projectId, StoredDataRoleEnum.SOURCE, changeModDate, fileNames);
+          removeFilesFromProject(datastore, projectId, FileDataRoleEnum.SOURCE, changeModDate, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1278,7 +1277,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          removeFilesFromProject(datastore, projectId, StoredDataRoleEnum.TARGET, false, fileNames);
+          removeFilesFromProject(datastore, projectId, FileDataRoleEnum.TARGET, false, fileNames);
         }
       }, true);
     } catch (ObjectifyException e) {
@@ -1288,7 +1287,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   private void removeFilesFromProject(Objectify datastore, long projectId,
-                                      StoredDataRoleEnum role, boolean changeModDate, String... fileNames) {
+                                      FileDataRoleEnum role, boolean changeModDate, String... fileNames) {
     Key<ProjectData> projectKey = projectKey(projectId);
     List<Key<FileData>> filesToRemove = new ArrayList<Key<FileData>>();
     for (String fileName : fileNames) {
@@ -1318,7 +1317,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          result.t = getProjectFiles(datastore, projectId, StoredDataRoleEnum.SOURCE);
+          result.t = getProjectFiles(datastore, projectId, FileDataRoleEnum.SOURCE);
         }
       }, false);
     } catch (ObjectifyException e) {
@@ -1335,7 +1334,7 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          result.t = getProjectFiles(datastore, projectId, StoredDataRoleEnum.TARGET);
+          result.t = getProjectFiles(datastore, projectId, FileDataRoleEnum.TARGET);
         }
       }, false);
     } catch (ObjectifyException e) {
@@ -1346,7 +1345,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   private List<String> getProjectFiles(Objectify datastore, long projectId,
-                                       StoredDataRoleEnum role) {
+                                       FileDataRoleEnum role) {
     Key<ProjectData> projectKey = projectKey(projectId);
     List<String> fileList = new ArrayList<String>();
     for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
@@ -1439,7 +1438,7 @@ public class ObjectifyStorageIo implements StorageIo {
           // <Screen>.yail files are missing when user converts AI1 project to AI2
           // instead of blowing up, just create a <Screen>.yail file
           if (fd == null && (fileName.endsWith(".yail") || (fileName.endsWith(".png")))){
-            fd = createProjectFile(datastore, projectKey(projectId), StoredDataRoleEnum.SOURCE, fileName);
+            fd = createProjectFile(datastore, projectKey(projectId), FileDataRoleEnum.SOURCE, fileName);
             fd.userId = userId;
           }
 
@@ -1499,7 +1498,7 @@ public class ObjectifyStorageIo implements StorageIo {
               try {
                 String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
                 GcsOutputChannel outputChannel =
-                    gcsService.createOrReplace((new GcsFilename(getGcsBucketToUse(StoredDataRoleEnum.SOURCE), gcsName)), GcsFileOptions.getDefaultInstance());
+                    gcsService.createOrReplace((new GcsFilename(getGcsBucketToUse(FileDataRoleEnum.SOURCE), gcsName)), GcsFileOptions.getDefaultInstance());
                 outputChannel.write(ByteBuffer.wrap(content));
                 outputChannel.close();
                 fd.lastBackup = System.currentTimeMillis();
@@ -1601,7 +1600,7 @@ public class ObjectifyStorageIo implements StorageIo {
     }
     if (oldgcsName.t != null) {
       try {
-        gcsService.delete(new GcsFilename(getGcsBucketToUse(StoredDataRoleEnum.SOURCE), oldgcsName.t));
+        gcsService.delete(new GcsFilename(getGcsBucketToUse(FileDataRoleEnum.SOURCE), oldgcsName.t));
       } catch (IOException e) {
         // This may get logged if we attempt to delete an APK file. But we can ignore
         // this case because APK files will be deleted on their own
@@ -1841,7 +1840,7 @@ public class ObjectifyStorageIo implements StorageIo {
             if (fileName.startsWith("assets/external_comps") && forGallery) {
               throw new GalleryExtensionException();
             }
-            if (!fd.role.equals(StoredDataRoleEnum.SOURCE)) {
+            if (!fd.role.equals(FileDataRoleEnum.SOURCE)) {
               it.remove();
             } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
                       (fileName.startsWith("screenshots") && !includeScreenShots) ||
@@ -2419,7 +2418,7 @@ public class ObjectifyStorageIo implements StorageIo {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
     // Use StoredDataRoleEnum.TARGET because these temp files never live very long
-    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(StoredDataRoleEnum.TARGET), fileName);
+    GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(FileDataRoleEnum.TARGET), fileName);
     int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
     ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
     GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
@@ -2439,7 +2438,7 @@ public class ObjectifyStorageIo implements StorageIo {
     if (!fileName.startsWith("__TEMP__")) {
       throw new RuntimeException("deleteTempFile (" + fileName + ") Invalid File Name");
     }
-    gcsService.delete(new GcsFilename(getGcsBucketToUse(StoredDataRoleEnum.TARGET), fileName));
+    gcsService.delete(new GcsFilename(getGcsBucketToUse(FileDataRoleEnum.TARGET), fileName));
   }
 
   // ********* METHODS BELOW ARE ONLY FOR TESTING *********
@@ -2478,7 +2477,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @VisibleForTesting
   void setGcsFileContent(String gcsPath, byte[] content) throws IOException {
     GcsOutputChannel outputChannel = gcsService.createOrReplace(
-      new GcsFilename(getGcsBucketToUse(StoredDataRoleEnum.TARGET), gcsPath),
+      new GcsFilename(getGcsBucketToUse(FileDataRoleEnum.TARGET), gcsPath),
         GcsFileOptions.getDefaultInstance());
     outputChannel.write(ByteBuffer.wrap(content));
     outputChannel.close();
@@ -2838,8 +2837,8 @@ public class ObjectifyStorageIo implements StorageIo {
    * APK files go in a bucket with a short TTL, because they are really
    * temporary files.
    */
-  private static final String getGcsBucketToUse(StoredDataRoleEnum role) {
-    if (role == StoredDataRoleEnum.TARGET) {
+  private static final String getGcsBucketToUse(FileDataRoleEnum role) {
+    if (role == FileDataRoleEnum.TARGET) {
       return APK_BUCKET_NAME;
     } else {
       return GCS_BUCKET_NAME;

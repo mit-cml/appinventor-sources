@@ -1,18 +1,18 @@
 package com.google.appinventor.server.storage.filesystem;
 
 import com.google.appinventor.server.flags.Flag;
-import com.google.appinventor.server.storage.StoredDataRoleEnum;
+import com.google.appinventor.server.storage.FileDataRoleEnum;
 
 import java.io.IOException;
 
 public abstract class FilesystemService {
   private static final Flag<String> PROVIDER = Flag.createFlag("filesystem.provider", "s3");
 
-  public abstract int save(final StoredDataRoleEnum role, final String fileName, final byte[] content) throws IOException;
+  public abstract int save(final FileDataRoleEnum role, final String fileName, final byte[] content) throws IOException;
 
-  public abstract byte[] read(final StoredDataRoleEnum role, final String fileName) throws IOException;
+  public abstract byte[] read(final FileDataRoleEnum role, final String fileName) throws IOException;
 
-  public abstract boolean delete(final StoredDataRoleEnum role, final String fileName) throws IOException;
+  public abstract boolean delete(final FileDataRoleEnum role, final String fileName) throws IOException;
 
   public static FilesystemService getFilesystemService() {
     final String provider = PROVIDER.get();

@@ -1,6 +1,6 @@
 package com.google.appinventor.server.storage;
 
-public enum StoredDataRoleEnum {
+public enum FileDataRoleEnum {
   SOURCE,
   TARGET,
   TEMPORARY
