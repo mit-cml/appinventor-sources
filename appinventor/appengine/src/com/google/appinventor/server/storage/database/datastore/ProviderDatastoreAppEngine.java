@@ -3,14 +3,10 @@ package com.google.appinventor.server.storage.database.datastore;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsInputChannel;
-import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.storage.BlobReadException;
 import com.google.appinventor.server.storage.ErrorUtils;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
-import com.google.appinventor.server.storage.ObjectifyStorageIo;
 import com.google.appinventor.server.storage.UnauthorizedAccessException;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.DatabaseAccessException;
@@ -35,7 +31,6 @@ import com.googlecode.objectify.Query;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -60,7 +55,6 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     ObjectifyService.register(StoredData.UserProjectData.class);
     ObjectifyService.register(StoredData.FileData.class);
     ObjectifyService.register(StoredData.UserFileData.class);
-    ObjectifyService.register(StoredData.RendezvousData.class);
     ObjectifyService.register(StoredData.WhiteListData.class);
     ObjectifyService.register(StoredData.FeedbackData.class);
     ObjectifyService.register(StoredData.NonceData.class);
@@ -1261,43 +1255,6 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
         @Override
         public void run(Objectify datastore) {
           datastore.put(data);
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, null, e);
-    }
-  }
-
-  @Override
-  public String getIpAddressFromRendezvousKey(final String key) {
-    Objectify datastore = ObjectifyService.begin();
-    StoredData.RendezvousData data  = datastore.query(StoredData.RendezvousData.class).filter("key", key).get();
-    if (data == null) {
-      return null;
-    } else {
-      return data.ipAddress;
-    }
-  }
-
-  @Override
-  public void storeIpAddressByRendezvousKey(final String key, final String ipAddress) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          StoredData.RendezvousData data = datastore.query(StoredData.RendezvousData.class).filter("key", key).get();
-          if (data == null) {
-            data = new StoredData.RendezvousData();
-            data.id = null;
-            data.key = key;
-            data.ipAddress = ipAddress;
-            data.used = new Date(); // So we can cleanup old entries
-            datastore.put(data);
-          } else {
-            data.ipAddress = ipAddress;
-            data.used = new Date();
-            datastore.put(data);
-          }
         }
       }, true);
     } catch (ObjectifyException e) {

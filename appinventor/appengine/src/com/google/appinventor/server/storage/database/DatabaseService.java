@@ -119,10 +119,6 @@ public abstract class DatabaseService {
 
   public abstract void storeCorruptionRecord(final String userId, final long projectId, final String fileId, final String message);
 
-  public abstract String getIpAddressFromRendezvousKey(final String rendezvousKey);
-
-  public abstract void storeIpAddressByRendezvousKey(final String rendezvousKey, final String ipAddress);
-
   public abstract boolean isEmailAddressInAllowlist(final String emailAddress);
 
   public abstract void storeFeedbackData(final String notes, final String foundIn, final String faultData,

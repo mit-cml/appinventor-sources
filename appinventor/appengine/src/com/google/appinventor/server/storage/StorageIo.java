@@ -40,7 +40,7 @@ public interface StorageIo {
   /**
    * Constant for an invalid project ID.
    */
-  public static final long INVALID_PROJECTID = 0;
+  long INVALID_PROJECTID = 0;
 
   // User management
 
@@ -72,7 +72,7 @@ public interface StorageIo {
    * doesn't already exist in the storage, it should be created. email
    * is the email address currently associated with this user.
    *
-   * @param user email address
+   * @param email user email address
    * @return user data
    */
   User getUserFromEmail(String email);
@@ -103,7 +103,7 @@ public interface StorageIo {
    * Sets the user's hashed password.
    *
    * @param userId user id
-   * @param hashed password
+   * @param password hashed password
    */
   void setUserPassword(String userId, String password);
 
@@ -598,30 +598,6 @@ public interface StorageIo {
    */
   String findUserByEmail(String email) throws NoSuchElementException;
 
-  /**
-   * Find a phone's IP address given the six character key. Used by the
-   * RendezvousServlet. This is used only when memcache is unavailable.
-   *
-   * @param key the six character key
-   * @return Ip Address as string or null if not found
-   *
-   */
-  String findIpAddressByKey(String key);
-
-  /**
-   * Store a phone's IP address indexed by six character key. Used by the
-   * RendezvousServlet. This is used only when memcache is unavailable.
-   *
-   * Note: Nothing currently cleans up these entries, but we have a
-   * timestamp field which we update so a later process can recognize
-   * and remove stale entries.
-   *
-   * @param key the six character key
-   * @param ipAddress the IP Address of the phone
-   *
-   */
-  void storeIpAddressByKey(String key, String ipAddress);
-
   boolean checkWhiteList(String email);
 
   void storeFeedback(final String notes, final String foundIn, final String faultData,
@@ -660,7 +636,7 @@ public interface StorageIo {
    * @return the contents of the backpack as an XML encoded string
    */
 
-  public String downloadBackpack(String backPackId);
+  String downloadBackpack(String backPackId);
 
   /**
    * Used to upload a shared backpack Note: This code will over-write
@@ -668,10 +644,9 @@ public interface StorageIo {
    * the responsibility of our caller to merge contents if desired.
    *
    * @param backPackId The uuid of the shared backpack to store
-   * @param String content the new contents of the backpack
+   * @param content content the new contents of the backpack
    */
-
-  public void uploadBackpack(String backPackId, String content);
+  void uploadBackpack(String backPackId, String content);
 
   /**
    * Store the status of a pending build. We used to poll the buildserver
@@ -691,9 +666,9 @@ public interface StorageIo {
    *
    */
 
-  public void storeBuildStatus(String userId, long projectId, int progress);
+  void storeBuildStatus(String userId, long projectId, int progress);
 
-  public int getBuildStatus(String userId, long projectId);
+  int getBuildStatus(String userId, long projectId);
 
   /**
    * Checks that the user identified by {@code userId} has a reference to the project identified

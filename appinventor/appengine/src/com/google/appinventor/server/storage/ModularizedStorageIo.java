@@ -30,7 +30,6 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -637,16 +636,6 @@ public final class ModularizedStorageIo implements StorageIo {
     ProjectSourceZip projectSourceZip = new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount);
     projectSourceZip.setMetadata(projectName);
     return projectSourceZip;
-  }
-
-  @Override
-  public String findIpAddressByKey(final String key) {
-    return databaseService.getIpAddressFromRendezvousKey(key);
-  }
-
-  @Override
-  public void storeIpAddressByKey(final String key, final String ipAddress) {
-    databaseService.storeIpAddressByRendezvousKey(key, ipAddress);
   }
 
   @Override

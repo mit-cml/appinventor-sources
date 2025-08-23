@@ -39,7 +39,6 @@ import com.google.appinventor.server.storage.StoredData.SplashData;
 import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
-import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONParser;
@@ -196,7 +195,6 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(UserProjectData.class);
     ObjectifyService.register(FileData.class);
     ObjectifyService.register(UserFileData.class);
-    ObjectifyService.register(RendezvousData.class);
     ObjectifyService.register(WhiteListData.class);
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
@@ -2066,46 +2064,6 @@ public class ObjectifyStorageIo implements StorageIo {
       }
     }
     return userData.id;
-  }
-
-  @Override
-  public String findIpAddressByKey(final String key) {
-    Objectify datastore = ObjectifyService.begin();
-    RendezvousData data  = datastore.query(RendezvousData.class).filter("key", key).get();
-    if (data == null) {
-      return null;
-    } else {
-      return data.ipAddress;
-    }
-  }
-
-  @Override
-  public void storeIpAddressByKey(final String key, final String ipAddress) {
-    Objectify datastore = ObjectifyService.begin();
-    final RendezvousData data  = datastore.query(RendezvousData.class).filter("key", key).get();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-          @Override
-          public void run(Objectify datastore) {
-            RendezvousData new_data = null;
-            if (data == null) {
-              new_data = new RendezvousData();
-              new_data.id = null;
-              new_data.key = key;
-              new_data.ipAddress = ipAddress;
-              new_data.used = new Date(); // So we can cleanup old entries
-              datastore.put(new_data);
-            } else {
-              new_data = data;
-              new_data.ipAddress = ipAddress;
-              new_data.used = new Date();
-              datastore.put(new_data);
-          }
-          }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, null, e);
-    }
   }
 
   @Override
