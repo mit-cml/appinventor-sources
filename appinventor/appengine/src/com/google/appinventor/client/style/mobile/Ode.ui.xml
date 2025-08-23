@@ -12,7 +12,6 @@
     <Ui:with field="style" />
     <g:FlowPanel ui:field="rootPanel" styleName="ode-MobileRoot">
         <mob:TopPanelMob ui:field="topPanel" />
-        <box:AssetListBox ui:field="assetListBox" visible="false"/>
         <g:FlowPanel styleName="ode-TutorialWrapper ode-MainContent" ui:field="overDeckPanel">
             <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
@@ -24,16 +23,17 @@
                     <mob:DesignToolbarMob ui:field="designToolbar" />
                     <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
                         <box:PaletteBox width="100%" ui:field="paletteBox" visible="false" addStyleNames="ode-Hidden"/>
-                        <g:FlowPanel ui:field="structureAndAssets" addStyleNames="ode-Hidden">
-                            <box:SourceStructureBox ui:field="sourceStructureBox"/>
-                            <box:BlockSelectorBox />
-                        </g:FlowPanel>
                         <box:ViewerBox ui:field="viewerBox"/>
-                        <mob:MobileSidebar ui:field="paletteSidebar">
-<!--                            content will be added here dynamically-->
-                        </mob:MobileSidebar>
+                        <g:FlowPanel ui:field="structureAndAssets">
+                            <box:SourceStructureBox ui:field="sourceStructureBox" visible="false"/>
+                            <box:BlockSelectorBox />
+                            <box:AssetListBox ui:field="assetListBox" visible="false"/>
+                        </g:FlowPanel>
                         <box:PropertiesBox ui:field="propertiesBox" width="222px" addStyleNames="ode-Hidden"/>
                     </g:FlowPanel>
+                    <mob:MobileSidebar ui:field="paletteSidebar">
+                        <!--                            content will be added here dynamically-->
+                    </mob:MobileSidebar>
                     <mob:DesignTabBarMob ui:field="designTabBar" styleName="ode-BottomNavBar align" />
                 </g:FlowPanel>
                 <g:FlowPanel width="100%" visible="false">

@@ -1255,112 +1255,6 @@ body, html {
     }
 }
 
-.Btm-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1001;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.Btm-container:hover {
-    transform: scale(1.05);
-}
-
-.btm-button {
-    width: 56px;
-    height: 56px;
-    border-radius: 28px;
-    background-color: #1976d2;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    user-select: none;
-}
-
-.Btm-container.open .btm-button {
-    background-color: #f44336;
-    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
-}
-
-.btm-button:hover {
-    box-shadow: 0 6px 16px rgba(25, 118, 210, 0.6);
-}
-
-.Btm-container.open .btm-button:hover {
-    box-shadow: 0 6px 16px rgba(244, 67, 54, 0.6);
-}
-
-.btm-label {
-    margin-top: 8px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    white-space: nowrap;
-    user-select: none;
-}
-
-@media (max-width: 768px) {
-    .Btm-container {
-        bottom: 16px;
-        left: 16px;
-    }
-
-    .btm-button {
-        width: 48px;
-        height: 48px;
-        border-radius: 24px;
-        font-size: 18px;
-    }
-}
-
-.button-container {
-    position: absolute;
-    bottom: 80px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    padding: 10px;
-    z-index: 1002;
-    transform: scale(0);
-    transform-origin: bottom right;
-    transition: transform 0.3s ease;
-}
-
-.Btm-container.open .button-container {
-    transform: scale(1); /* Expand animation */
-}
-
-.button-container button {
-    margin: 5px 0;
-    padding: 10px 20px;
-    background-color: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.button-container button:hover {
-    background-color: #1565c0;
-}
-
 .ya-Toolbar .ya-ProjectName {
     color: white;
     font-weight: bold;
@@ -1508,8 +1402,6 @@ body, html {
 .align {
     display: flex;
 }
-
-
 
 /*dragging issue*/
 

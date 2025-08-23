@@ -11,12 +11,7 @@ import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
 import static com.google.appinventor.client.wizards.TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY;
 
-import com.google.appinventor.client.boxes.AssetListBox;
-import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
-import com.google.appinventor.client.boxes.SourceStructureBox;
-import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.boxes.*;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
@@ -2720,6 +2715,15 @@ public class Ode implements EntryPoint {
       top.proxy.close();
     }
   }-*/;
+
+  public DesignTabBarMob getDesignTabBar() {
+    return designTabBar;
+  }
+
+  public MobileSidebar getPaletteSidebar() {
+    return paletteSidebar;
+  }
+
 
   public interface Resources extends ClientBundle {
 

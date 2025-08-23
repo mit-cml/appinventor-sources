@@ -1,5 +1,9 @@
 package com.google.appinventor.client.style.mobile;
 
+import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.boxes.BlockSelectorBox;
+import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.actions.*;
 import com.google.appinventor.client.actions.SendToGalleryAction;
@@ -93,7 +97,25 @@ public class DesignToolbarMob extends DesignToolbar {
     @Override
     public void toggleEditor(boolean blocks) {
         super.toggleEditor(blocks);
+        toggleDesignTabBar(!blocks); // Hide tab bar when in blocks view, show when in design view
+    }
 
+    private void toggleDesignTabBar(boolean visible) {
+        try {
+            DesignTabBarMob tabBar = Ode.getInstance().getDesignTabBar();
+            if (tabBar != null) {
+                tabBar.setVisible(visible);
+                // Close sidebar when switching to blocks view
+                if (!visible) {
+                    MobileSidebar sidebar = Ode.getInstance().getPaletteSidebar();
+                    if (sidebar != null) {
+                        sidebar.close();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.warning("Failed to toggle design tab bar visibility: " + e.getMessage());
+        }
     }
 
 }

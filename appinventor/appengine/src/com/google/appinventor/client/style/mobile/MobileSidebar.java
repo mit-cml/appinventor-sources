@@ -79,41 +79,10 @@ public class MobileSidebar extends Composite implements HasWidgets {
         return isOpen;
     }
 
-    public void setSyncCallback(Runnable syncCallback) {
-        this.syncCallback = syncCallback;
-    }
 
     @UiHandler("overlay")
     void onOverlayClick(ClickEvent event) {
         close();
     }
 
-    public void openPanel(String panelName) {
-        content.clear();
-        Widget widgetToAdd = null;
-        switch (panelName) {
-            case "Palette":
-                widgetToAdd = PaletteBox.getPaletteBox();
-                break;
-            case "Components":
-                FlowPanel componentsPanel = new FlowPanel();
-                componentsPanel.add(SourceStructureBox.getSourceStructureBox());
-                componentsPanel.add(BlockSelectorBox.getBlockSelectorBox());
-                componentsPanel.setWidth("100%");
-                componentsPanel.setHeight("100%");
-                widgetToAdd = componentsPanel;
-                break;
-            case "Properties":
-                widgetToAdd = PropertiesBox.getPropertiesBox();
-                widgetToAdd.setWidth("100%");
-                break;
-        }
-        if (widgetToAdd != null) {
-            if (panelName.equals("Palette") || panelName.equals("Properties")) {
-                widgetToAdd.removeStyleName("ode-Hidden");
-            }
-            content.add(widgetToAdd);
-        }
-        open();
-    }
 }

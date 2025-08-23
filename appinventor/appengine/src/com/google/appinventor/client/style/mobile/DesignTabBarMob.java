@@ -85,7 +85,6 @@ public class DesignTabBarMob extends Composite {
             case COMPONENTS:
                 FlowPanel componentsPanel = new FlowPanel();
                 componentsPanel.add(SourceStructureBox.getSourceStructureBox());
-                componentsPanel.add(BlockSelectorBox.getBlockSelectorBox());
                 componentsPanel.setWidth("100%");
                 componentsPanel.setHeight("100%");
                 widgetToAdd = componentsPanel;
