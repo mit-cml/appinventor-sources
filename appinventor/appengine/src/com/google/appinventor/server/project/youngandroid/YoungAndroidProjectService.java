@@ -129,8 +129,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to tell build server app host url
   private static final Flag<String> iosBuildServer =
       Flag.createFlag("ios.build.server.host", "");
-  private static final Flag<String> appengineHost =
-      Flag.createFlag("appengine.host", "");
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
   private static final String galleryLocation = Flag.createFlag("gallery.location", "http://localhost:9001").get();
@@ -812,7 +810,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "http://" + host + "/buildserver/build-all-from-zip-async"
     )
         .add("uname", userName)
-        .add("callback", "http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH +
+        .add("callback", "http://" + Server.getAppEngineHost() + ServerLayout.ODE_BASEURL_NOAUTH +
             ServerLayout.RECEIVE_BUILD_SERVLET + "/" +
             Security.encryptUserAndProjectId(userId, projectId) + "/" +
             fileName)
@@ -836,23 +834,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Set the password as Password token...
     connection.setRequestProperty("Authorization", "Password " + buildServerPassword);
-  }
-
-  private String getCurrentHost() {
-    if (Server.isProductionServer()) {
-      if (StringUtils.isNullOrEmpty(appengineHost.get())) {
-        // String applicationVersionId = SystemProperty.applicationVersion.get();
-        // String applicationId = SystemProperty.applicationId.get();
-        // return applicationVersionId + "." + applicationId + ".appspot.com";
-        // TODO(diego@barreiro.dev): This is wrong
-        return "appspot.com";
-      } else {
-        return appengineHost.get();
-      }
-    } else {
-      // TODO(user): Figure out how to make this more generic
-      return "localhost:8888";
-    }
   }
 
   /*

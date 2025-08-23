@@ -56,6 +56,13 @@ public final class CrashReport {
     StringBuilder s = new StringBuilder();
 
     // If the app is running on App Engine...
+    if (Server.isProductionServer()) {
+      // the version ID of the runtime environment
+      s.append("runtime.version").append("=").append(Server.getRuntimeVersion()).append("\n");
+      // the application major version number + deploy timestamp
+      s.append("application.version").append("=").append(Server.getDeploymentVersion()).append("\n");
+    }
+
     s.append("build.version").append("=").append(buildData).append("\n");
     s.append("git.build.version").append("=").append(GitBuildId.getVersion()).append("\n");
     s.append("git.build.fingerprint").append("=").append(GitBuildId.getFingerprint()).append("\n");
