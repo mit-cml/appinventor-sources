@@ -52,7 +52,7 @@ public final class ModularizedStorageIo implements StorageIo {
   private static final String CACHE_KEY_PREFIX__PROJECT_OWNER = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
   private static final String CACHE_KEY_PREFIX__PROJECT_FILE = "9f06aaeb-aaaa-4ab9-9fa6-00413b181eb6";
 
-  private static final String TEMP_FILE_PREFIX = "__TEMP__/";
+  private static final String TEMP_FILE_PREFIX = "__TEMP__";
 
   private static final long ALLOWED_TUTORIAL_URL_ID = 1;
   private static final long SPLASH_DATA_ID = 1;

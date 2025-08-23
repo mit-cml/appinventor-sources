@@ -466,15 +466,8 @@ public interface StorageIo {
    * @param content  file content
    * @return modification date for project
    */
-  default long uploadRawFile(long projectId, String fileId, String userId, boolean force, byte[] content)
-      throws BlocksTruncatedException {
-    try {
-      return uploadRawFile(projectId, fileId, userId, true, content);
-    } catch (BlocksTruncatedException e) {
-      // Won't get here, exception isn't thrown when force is true
-      return 0;
-    }
-  }
+  long uploadRawFile(long projectId, String fileId, String userId, boolean force, byte[] content)
+      throws BlocksTruncatedException;
 
   /**
    * Uploads a file. -- forces the save even with trivial workspace
@@ -484,7 +477,14 @@ public interface StorageIo {
    * @param content  file content
    * @return modification date for project
    */
-  long uploadRawFileForce(long projectId, String fileId, String userId, byte[] content);
+  default long uploadRawFileForce(long projectId, String fileId, String userId, byte[] content) {
+    try {
+      return uploadRawFile(projectId, fileId, userId, true, content);
+    } catch (BlocksTruncatedException e) {
+      // Won't get here, exception isn't thrown when force is true
+      return 0;
+    }
+  }
 
   /**
    * Deletes a file.
