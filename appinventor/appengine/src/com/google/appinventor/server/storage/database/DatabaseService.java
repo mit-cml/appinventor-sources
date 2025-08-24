@@ -14,6 +14,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -113,7 +114,8 @@ public abstract class DatabaseService {
 
   public abstract DeleteProjectFileResult deleteProjectFile(final String userId, final long projectId, final String fileName);
 
-  public static final class GetProjectFileResult {
+  // We add Serializable here so it can be cached
+  public static final class GetProjectFileResult implements Serializable {
     public byte[] content = new byte[0];
     public FileDataRoleEnum fileRole = null;
     public String filesystemToRetrieve = null;

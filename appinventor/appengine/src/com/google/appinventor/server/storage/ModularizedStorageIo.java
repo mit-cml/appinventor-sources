@@ -64,7 +64,7 @@ public final class ModularizedStorageIo implements StorageIo {
 
   private static final int MAX_FILE_SIZE_BYTES_IN_DB = 50_000;  // 50 Kb
   private static final long BACKUP_THRESHOLD_SECONDS = 24 * 3600;  // 24 hours in seconds
-  private static final int MAX_FILE_SIZE_BYTES_IN_CACHE = 1_000_000;  // 1 Mb
+  private static final int MAX_FILE_SIZE_BYTES_IN_CACHE = 500_000;  // 500 Kb
 
   private final static String CACHE_KEY_PREFIX__USER = "USER";
   private final static String CACHE_KEY_PREFIX__BUILD_STATUS = "BUILD_STATUS";
@@ -846,29 +846,35 @@ public final class ModularizedStorageIo implements StorageIo {
   }
 
   private boolean useFilesystemForFile(String fileName, int length) {
-    final boolean isAssetsFile = fileName.contains("assets/");
-    final boolean isOutputBinaryFile = fileName.endsWith(".apk") || fileName.endsWith(".aab")
-        || fileName.endsWith(".ipa");
+    final boolean isAssetsFile = fileName.startsWith("assets/");
+    final boolean isOutputBinaryFile = fileName.startsWith("build/") &&
+        (fileName.endsWith(".apk") || fileName.endsWith(".aab")
+            || fileName.endsWith(".ipa"));
     if (isAssetsFile || isOutputBinaryFile) {
-      return true;            // Use filesystem for assets and output binaries
+      // Use filesystem for assets and output binaries
+      return true;
     }
 
-    boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
-        || (fileName.contains("src/") && fileName.endsWith(".bky")); // Blockly files
+    // We will now send all "large" source files to GCS. Originally, only block files were sent, but to
+    //   optimize storage (and tech limitations in providers like DDB of having a hard limit of 400 Kbs per item).
+    //   we will now send them all.
+    boolean mayUse = fileName.startsWith("src/");
     // Only use GCS for larger blocks files
     return mayUse && length > MAX_FILE_SIZE_BYTES_IN_DB;
   }
 
   private boolean useCacheForFile(FileDataRoleEnum role, String fileName, int length) {
     if (role != FileDataRoleEnum.SOURCE) {
-      return false;  // Only cache source files
+      // Only cache source files
+      return false;
     }
 
-    if (fileName.contains("assets/")) {
-      return false;  // Never cache assets files
+    if (fileName.startsWith("assets/")) {
+      // Never cache assets files
+      return false;
     }
 
-    return length > MAX_FILE_SIZE_BYTES_IN_CACHE;
+    return length < MAX_FILE_SIZE_BYTES_IN_CACHE;
   }
 
   private String makeFilesystemFileName(String fileName, long projectId) {
