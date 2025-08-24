@@ -539,7 +539,7 @@ public final class ProviderDynamoDB extends DatabaseService {
               .build()));
 
           for (StoredData.FileData fd : fdq.items()) {
-            if (fd.isFilesystem()) {
+            if (fd.getIsFilesystem()) {
               gcsPaths.add(fd.getFilesystemName());
             }
             fileDataTable.deleteItem(fd);
@@ -1155,7 +1155,7 @@ public final class ProviderDynamoDB extends DatabaseService {
             // If the content was previously stored in the datastore, clear it out.
             fd.setContent(null);
           } else {
-            if (fd.isFilesystem()) {     // Was a GCS file, must have gotten smaller
+            if (fd.getIsFilesystem()) {     // Was a GCS file, must have gotten smaller
               uploadProjectFileResult.needsFilesystemDelete = true;
               fd.setIsFilesystem(false);
               fd.setFilesystemName(null);
@@ -1169,7 +1169,7 @@ public final class ProviderDynamoDB extends DatabaseService {
 
           if (backupThreshold != null) {
             Instant now = Instant.now();
-            if (fd.getLastBackup().plusSeconds(backupThreshold).isBefore(now)) {
+            if (fd.getLastBackup() == null || fd.getLastBackup().plusSeconds(backupThreshold).isBefore(now)) {
               uploadProjectFileResult.shouldDoFilesystemBackup = true;
               fd.setLastBackup(now);
             }
@@ -1201,7 +1201,7 @@ public final class ProviderDynamoDB extends DatabaseService {
   // layer to the client code which will put up a dialog box for the user to review
   // See Ode.java for more information
   private void checkForBlocksTruncation(StoredData.FileData fd) throws DynamoException {
-    if (fd.isFilesystem() || fd.getContent().length > 120)
+    if (fd.getIsFilesystem() || fd.getContent().length > 120)
       throw new DynamoException("BlocksTruncated"); // Hack
     // I'm avoiding having to modify every use of runJobWithRetries to handle a new
     // exception, so we use this dodge.
@@ -1225,7 +1225,7 @@ public final class ProviderDynamoDB extends DatabaseService {
                     new UnauthorizedAccessException(userId, projectId, null));
               }
             }
-            if (fileData.isFilesystem()) {
+            if (fileData.getIsFilesystem()) {
               deleteProjectFileResult.fileRole = fileData.getRole();
               deleteProjectFileResult.filesystemToDelete = fileData.getFilesystemName();
             }
@@ -1266,8 +1266,8 @@ public final class ProviderDynamoDB extends DatabaseService {
             }
           }
 
-          if (fd.isFilesystem()) {     // It's in the Cloud Store
-            getProjectFileResult.fileRole = fd.getRole();
+          getProjectFileResult.fileRole = fd.getRole();
+          if (fd.getIsFilesystem()) {     // It's in the Cloud Store
             getProjectFileResult.filesystemToRetrieve = fd.getFilesystemName();
           } else {
             if (fd.getContent() != null) {
@@ -1563,7 +1563,7 @@ public final class ProviderDynamoDB extends DatabaseService {
           new IllegalArgumentException("Project " + projectId + " doesn't exist"));
     }
 
-    return projectData.isProjectMovedToTrash();
+    return projectData.getIsProjectMovedToTrash();
   }
 
   @Override
@@ -1693,11 +1693,18 @@ public final class ProviderDynamoDB extends DatabaseService {
     }
   }
 
+  private Long instantToLong(final Instant nullable) {
+    if (nullable == null) {
+      return 0L;
+    }
+    return nullable.toEpochMilli();
+  }
+
   private UserProject mapProjectDataToUserProject(final Long projectId, final StoredData.ProjectData projectData) {
     return new UserProject(projectId, projectData.getName(),
-        projectData.getType(), projectData.getDateCreated().toEpochMilli(),
-        projectData.getDateModified().toEpochMilli(), projectData.getDateBuilt().toEpochMilli(),
-        projectData.isProjectMovedToTrash());
+        projectData.getType(), instantToLong(projectData.getDateCreated()),
+        instantToLong(projectData.getDateModified()), instantToLong(projectData.getDateBuilt()),
+        projectData.getIsProjectMovedToTrash());
   }
 
   private Key partitionKey(final String str) {

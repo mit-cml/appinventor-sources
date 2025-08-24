@@ -242,7 +242,7 @@ final class StoredData {
     }
 
     @DynamoDbAttribute("IsProjectMovedToTrash")
-    public Boolean isProjectMovedToTrash() {
+    public Boolean getIsProjectMovedToTrash() {
       return projectMovedToTrashFlag;
     }
 
@@ -253,7 +253,7 @@ final class StoredData {
 
   @DynamoDbBean
   public static final class UserProjectData {
-    enum StateEnum {
+    public enum StateEnum {
       CLOSED,
       OPEN,
       DELETED
@@ -377,7 +377,7 @@ final class StoredData {
 
     // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
     // GCS file name (sans bucket).
-    private Boolean isFilesystem = false;
+    private boolean isFilesystem;
 
     // The GCS filename, sans bucket name
     private String filesystemName;
@@ -428,7 +428,7 @@ final class StoredData {
     }
 
     @DynamoDbAttribute("IsFilesystem")
-    public Boolean isFilesystem() {
+    public Boolean getIsFilesystem() {
       return isFilesystem;
     }
 
