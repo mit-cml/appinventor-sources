@@ -37,26 +37,26 @@ final class StoredData {
   // and UserProjectData
   @Unindexed
   @Cached
-  public static final class UserData {
+  static final class UserData {
     // The Google Account userid
-    @Id public String id;
+    @Id String id;
 
-    @Indexed public String email;
-    @Indexed public String emaillower;
+    @Indexed String email;
+    @Indexed String emaillower;
 
     // User settings
-    public String settings;
+    String settings;
 
     // Has user accepted terms of service?
-    public boolean tosAccepted;
+    boolean tosAccepted;
     boolean isAdmin;            // Internal flag for local login administrators
 
-    @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
+    @Indexed Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
-    public String name;
-    public String link;
-    public int type;
-    public String sessionid;           // uuid of active session
+    String name;
+    String link;
+    int type;
+    String sessionid;           // uuid of active session
     String password;            // Hashed (PBKDF2 hashing) password
   }
 
@@ -64,7 +64,7 @@ final class StoredData {
   // The ProjectData class is an entity root, and the parent of FileData
   @Cached
   @Unindexed
-  public static final class ProjectData {
+  static final class ProjectData {
     // Auto-generated unique project id
     @Id Long id;
 
@@ -98,7 +98,7 @@ final class StoredData {
 
   // Project properties specific to the user
   @Unindexed
-  public static final class UserProjectData {
+  static final class UserProjectData {
     enum StateEnum {
       CLOSED,
       OPEN,
@@ -122,7 +122,7 @@ final class StoredData {
 
   // Non-project-specific files (tied to user)
   @Unindexed
-  public static final class UserFileData {
+  static final class UserFileData {
     // The file name
     @Id String fileName;
 
@@ -139,7 +139,7 @@ final class StoredData {
   //       memcache.
   @Cached
   @Unindexed
-  public static final class FileData implements Serializable {
+  static final class FileData implements Serializable {
     // The file name
     @Id String fileName;
 
@@ -181,21 +181,21 @@ final class StoredData {
   }
 
   @Unindexed
-  public static final class WhiteListData {
+  static final class WhiteListData {
     @Id Long id;
-    @Indexed public String emailLower;
+    @Indexed String emailLower;
   }
 
   @Unindexed
-  public static final class FeedbackData {
+  static final class FeedbackData {
     @Id Long id;
-    public String notes;
-    public String foundIn;
-    public String faultData;
-    public String comments;
-    public String datestamp;
-    public String email;
-    public String projectId;
+    String notes;
+    String foundIn;
+    String faultData;
+    String comments;
+    String datestamp;
+    String email;
+    String projectId;
   }
 
   // NonceData -- A unique (and obscure) nonce is used to map between
@@ -204,43 +204,43 @@ final class StoredData {
   // both to provide a way to clean them up and to expire the APK downloads.
 
   @Unindexed
-  public static final class NonceData {
+  static final class NonceData {
     @Id Long id;
-    @Indexed public String nonce;
-    public String userId;
-    public long projectId;
+    @Indexed String nonce;
+    String userId;
+    long projectId;
     @Indexed
-    public Date timestamp;
+    Date timestamp;
   }
 
   @Unindexed
-  public static final class CorruptionRecord {
+  static final class CorruptionRecord {
     @Id Long id;
-    @Indexed public Date timestamp;
-    public String userId;
-    public long projectId;
-    public String fileId;
-    public String message;
+    @Indexed Date timestamp;
+    String userId;
+    long projectId;
+    String fileId;
+    String message;
   }
 
   @Cached(expirationSeconds=60)
   @Unindexed
-  public static final class SplashData {
+  static final class SplashData {
     @Id Long id;
-    public int version;
-    public String content;
-    public int height;
-    public int width;
+    int version;
+    String content;
+    int height;
+    int width;
   }
 
   // Data Structure to keep track of url's emailed out for password
   // setting and reseting. The Id (which is a UUID) is part of the URL
   // that is mailed out.
   @Unindexed
-  public static final class PWData {
-    @Id public String id;              // "Secret" URL part
-    @Indexed public Date timestamp; // So we know when to expire this objects
-    public String email;            // Email of account in question
+  static final class PWData {
+    @Id String id;              // "Secret" URL part
+    @Indexed Date timestamp; // So we know when to expire this objects
+    String email;            // Email of account in question
   }
 
   // A Shared backpack. Shared backpacks are not associated with
@@ -250,14 +250,14 @@ final class StoredData {
   // it.
   @Cached(expirationSeconds=120)
   @Unindexed
-  public static final class Backpack {
-    @Id public String id;
-    public String content;
+  static final class Backpack {
+    @Id String id;
+    String content;
   }
 
   @Cached(expirationSeconds=120)
   @Unindexed
-  public static final class AllowedTutorialUrls {
+  static final class AllowedTutorialUrls {
     // Unique Id - for now we expect there to be only 1 MotdData object.
     @Id Long id;
 
@@ -270,7 +270,7 @@ final class StoredData {
 
   @Cached(expirationSeconds = 120)
   @Unindexed
-  public static final class AllowedIosExtensions {
+  static final class AllowedIosExtensions {
     // Unique Id - for now we expect there to be only 1 AllowedIosExtensions object.
     @Id Long id;
 
@@ -278,7 +278,7 @@ final class StoredData {
     String allowedExtensions;
   }
 
-  public static final class ProjectNotFoundException extends IOException {
+  static final class ProjectNotFoundException extends IOException {
     ProjectNotFoundException(String message) {
       super(message);
     }
