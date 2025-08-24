@@ -1315,7 +1315,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
             datastore.put(data);
           }
         }
-      }, true);
+      }, false);
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
