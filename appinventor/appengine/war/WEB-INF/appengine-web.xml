@@ -199,8 +199,8 @@
 
     <!-- Cache Service Provider -->
     <property name="cache.provider" value="" />
-    <!-- REdis Compatible Cache Configuration -->
-    <property name="cache.redis.host" value="localhost:6379" />
+    <!-- Redis Compatible Cache Configuration -->
+    <property name="cache.redis.host" value="" />
 
     <!-- File System Service Provider -->
     <property name="filesystem.provider" value="" />
@@ -214,6 +214,11 @@
 
     <!-- Database Service Provider -->
     <property name="database.provider" value="" />
+    <!-- DynamoDB Compatible Database Configuration -->
+    <property name="database.ddb.endpoint" value="" />
+    <property name="database.ddb.tablesregion" value="" />
+    <property name="database.ddb.accesskeyid" value="" />
+    <property name="database.ddb.secretaccesskey" value="" />
 
   </system-properties>
 </appengine-web-app>

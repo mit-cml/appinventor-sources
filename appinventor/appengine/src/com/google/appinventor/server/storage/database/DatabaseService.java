@@ -4,6 +4,7 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.datastore.ProviderDatastoreAppEngine;
+import com.google.appinventor.server.storage.database.dynamodb.ProviderDynamoDB;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
@@ -155,7 +156,9 @@ public abstract class DatabaseService {
   public static DatabaseService getDatabaseService() {
     final String provider = PROVIDER.get();
 
-    if ("gae".equals(provider) || (provider == null || provider.isEmpty())) {
+    if ("ddb".equals(provider) || "dynamodb".equals(provider)) {
+      return new ProviderDynamoDB();
+    } else if ("gae".equals(provider) || (provider == null || provider.isEmpty())) {
       return new ProviderDatastoreAppEngine();
     }
 

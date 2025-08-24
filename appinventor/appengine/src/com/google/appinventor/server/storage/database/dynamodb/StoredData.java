@@ -1,0 +1,505 @@
+package com.google.appinventor.server.storage.database.dynamodb;
+
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+
+import javax.persistence.Id;
+import java.time.Instant;
+
+
+final class StoredData {
+  @DynamoDbBean
+  public static final class UserData {
+    private String id;
+
+    private String email;
+
+    private String settings;
+
+    private boolean tosAccepted;
+    private boolean isAdmin;
+
+    // TODO: This is indexed in Datastore, but DDB does not support queries on partition keys
+    private Instant visited;
+
+    private String name;
+    private String link;
+    private int type;
+    private String sessionId;
+    private String password;
+
+    public UserData() {}
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("UserId")
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    @DynamoDbSecondaryPartitionKey(indexNames = "EmailIndex")
+    @DynamoDbAttribute("Email")
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+
+    @DynamoDbAttribute("Settings")
+    public String getSettings() {
+      return settings;
+    }
+
+    public void setSettings(String settings) {
+      this.settings = settings;
+    }
+
+    @DynamoDbAttribute("TosAccepted")
+    public Boolean getTosAccepted() {
+      return tosAccepted;
+    }
+
+    public void setTosAccepted(Boolean tosAccepted) {
+      this.tosAccepted = tosAccepted;
+    }
+
+    @DynamoDbAttribute("IsAdmin")
+    public Boolean getIsAdmin() {
+      return isAdmin;
+    }
+
+    public void setIsAdmin(Boolean isAdmin) {
+      this.isAdmin = isAdmin;
+    }
+
+    @DynamoDbAttribute("Visited")
+    public Instant getVisited() {
+      return visited;
+    }
+
+    public void setVisited(Instant visited) {
+      this.visited = visited;
+    }
+
+    @DynamoDbAttribute("Name")
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    @DynamoDbAttribute("Link")
+    public String getLink() {
+      return link;
+    }
+
+    public void setLink(String link) {
+      this.link = link;
+    }
+
+    @DynamoDbAttribute("Type")
+    public Integer getType() {
+      return type;
+    }
+
+    public void setType(Integer type) {
+      this.type = type;
+    }
+
+    @DynamoDbAttribute("SessionId")
+    public String getSessionId() {
+      return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+      this.sessionId = sessionId;
+    }
+
+    @DynamoDbAttribute("Password")
+    public String getPassword() {
+      return password;
+    }
+
+    public void setPassword(String password) {
+      this.password = password;
+    }
+  }
+
+  // Project properties
+  @DynamoDbBean
+  public static final class ProjectData {
+    // Auto-generated unique project id
+    private Long id;
+
+    // Verbose project name
+    private String name;
+
+    // Project type. Currently Simple and YoungAndroid
+    // TODO(user): convert to enum
+    private String type;
+
+    // Global project settings
+    private String settings;
+
+    // Date project created
+    // TODO(): Make required
+    private Instant dateCreated;
+
+    // Date project last modified
+    // TODO(): Make required
+    private Instant dateModified;
+
+    // Date project last built/exported as a runnable binary
+    private Instant dateBuilt;
+
+    // The specially formatted project history
+    private String history;
+
+    //adding a boolean variable to mark deleted project
+    private boolean projectMovedToTrashFlag;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("ProjectId")
+    public Long getId() {
+      return id;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("Name")
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    @DynamoDbAttribute("Type")
+    public String getType() {
+      return type;
+    }
+
+    public void setType(String type) {
+      this.type = type;
+    }
+
+    @DynamoDbAttribute("Settings")
+    public String getSettings() {
+      return settings;
+    }
+
+    public void setSettings(String settings) {
+      this.settings = settings;
+    }
+
+    @DynamoDbAttribute("DateCreated")
+    public Instant getDateCreated() {
+      return dateCreated;
+    }
+
+    public void setDateCreated(Instant dateCreated) {
+      this.dateCreated = dateCreated;
+    }
+
+    @DynamoDbAttribute("DateModified")
+    public Instant getDateModified() {
+      return dateModified;
+    }
+
+    public void setDateModified(Instant dateModified) {
+      this.dateModified = dateModified;
+    }
+
+    @DynamoDbAttribute("DateBuilt")
+    public Instant getDateBuilt() {
+      return dateBuilt;
+    }
+
+    public void setDateBuilt(Instant dateBuilt) {
+      this.dateBuilt = dateBuilt;
+    }
+
+    @DynamoDbAttribute("History")
+    public String getHistory() {
+      return history;
+    }
+
+    public void setHistory(String history) {
+      this.history = history;
+    }
+
+    @DynamoDbAttribute("IsProjectMovedToTrash")
+    public Boolean isProjectMovedToTrash() {
+      return projectMovedToTrashFlag;
+    }
+
+    public void setProjectMovedToTrash(Boolean projectMovedToTrashFlag) {
+      this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    }
+  }
+
+  @DynamoDbBean
+  public static final class UserProjectData {
+    enum StateEnum {
+      CLOSED,
+      OPEN,
+      DELETED
+    }
+
+    // The user (parent's) key
+    private String userKey;
+
+    // The project id
+    private long projectId;
+
+    // State of the project relative to user
+    // TODO(user): is this ever used?
+    private StateEnum state;
+
+    // User specific project settings
+    // TODO(user): is this ever used?
+    private String settings;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("UserId")
+    public String getUserKey() {
+      return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+      this.userKey = userKey;
+    }
+
+    @DynamoDbSortKey
+    @DynamoDbAttribute("ProjectId")
+    public Long getProjectId() {
+      return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+      this.projectId = projectId;
+    }
+
+    @DynamoDbAttribute("State")
+    public StateEnum getState() {
+      return state;
+    }
+
+    public void setState(StateEnum state) {
+      this.state = state;
+    }
+
+    @DynamoDbAttribute("Settings")
+    public String getSettings() {
+      return settings;
+    }
+
+    public void setSettings(String settings) {
+      this.settings = settings;
+    }
+  }
+
+  @DynamoDbBean
+  public static final class SplashData {
+    private Long id;
+    private int version;
+    private String content;
+    private int height;
+    private int width;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("SplashId")
+    public Long getId() {
+      return id;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("Version")
+    public Integer getVersion() {
+      return version;
+    }
+
+    public void setVersion(Integer version) {
+      this.version = version;
+    }
+
+    @DynamoDbAttribute("Content")
+    public String getContent() {
+      return content;
+    }
+
+    public void setContent(String content) {
+      this.content = content;
+    }
+
+    @DynamoDbAttribute("Height")
+    public Integer getHeight() {
+      return height;
+    }
+
+    public void setHeight(Integer height) {
+      this.height = height;
+    }
+
+    @DynamoDbAttribute("Width")
+    public Integer getWidth() {
+      return width;
+    }
+
+    public void setWidth(Integer width) {
+      this.width = width;
+    }
+  }
+
+  // Data Structure to keep track of url's emailed out for password
+  // setting and reseting. The Id (which is a UUID) is part of the URL
+  // that is mailed out.
+  @DynamoDbBean
+  public static final class PWData {
+    @Id String id;              // "Secret" URL part
+
+    // TODO: This is indexed in Datastore, but DDB does not support queries on partition keys
+    Instant timestamp; // So we know when to expire this objects
+
+    String email;            // Email of account in question
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Id")
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("Timestamp")
+    public Instant getTimestamp() {
+      return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+      this.timestamp = timestamp;
+    }
+
+    @DynamoDbAttribute("Email")
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+  }
+
+  // A Shared backpack. Shared backpacks are not associated with
+  // any one user. Instead they are stored independent of projects
+  // and users. At login time a shared backpack may be specified.
+  // This requires an SSO Login from an external system to provide
+  // it.
+  @DynamoDbBean
+  public static final class Backpack {
+    @Id String id;
+    String content;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Id")
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("Content")
+    public String getContent() {
+      return content;
+    }
+
+    public void setContent(String content) {
+      this.content = content;
+    }
+  }
+
+  @DynamoDbBean
+  public static final class AllowedTutorialUrls {
+    // Unique Id - for now we expect there to be only 1 MotdData object.
+    private Long id;
+
+    // list of allowed Urls as JSON
+    // we use JSON here to make it easier to hand edit via
+    // datastore editing tools
+    private String allowedUrls;
+
+    public AllowedTutorialUrls() {
+    }
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Id")
+    public Long getId() {
+      return id;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("AllowedUrls")
+    public String getAllowedUrls() {
+      return allowedUrls;
+    }
+
+    public void setAllowedUrls(String allowedUrls) {
+      this.allowedUrls = allowedUrls;
+    }
+  }
+
+  @DynamoDbBean
+    public static final class AllowedIosExtensions {
+    // Unique Id - for now we expect there to be only 1 AllowedIosExtensions object.
+    private Long id;
+
+    // list of allowed extension packages as JSON
+    private String allowedExtensions;
+
+    public AllowedIosExtensions() {
+    }
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Id")
+    public Long getId() {
+      return id;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("AllowedExtensions")
+    public String getAllowedExtensions() {
+      return allowedExtensions;
+    }
+
+    public void setAllowedExtensions(String allowedExtensions) {
+      this.allowedExtensions = allowedExtensions;
+    }
+  }
+
+}

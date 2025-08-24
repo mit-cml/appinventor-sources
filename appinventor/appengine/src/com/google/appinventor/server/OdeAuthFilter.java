@@ -144,7 +144,7 @@ public class OdeAuthFilter implements Filter {
     // If using local login, we *must* have an email address because that is how we
     // find the UserData object.
     String lemail = localUser.getUserEmail();
-    if (lemail.equals("")) {
+    if (lemail == null || lemail.isEmpty()) {
       // We send a SC_PRECONDITION_FAILED which will cause the login page to
       // be displayed (or the use of Google Authentication if that is the only
       // mechanism enabled). This should *not* happen in production. However
