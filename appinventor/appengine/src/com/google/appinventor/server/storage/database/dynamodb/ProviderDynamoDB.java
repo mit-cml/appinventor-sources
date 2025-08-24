@@ -4,16 +4,20 @@ import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.ErrorUtils;
 import com.google.appinventor.server.storage.FileDataRoleEnum;
+import com.google.appinventor.server.storage.UnauthorizedAccessException;
 import com.google.appinventor.server.storage.UnifiedFile;
 import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.common.base.Preconditions;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -42,14 +46,15 @@ import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedExce
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughputExceededException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -857,6 +862,428 @@ public final class ProviderDynamoDB extends DatabaseService {
   }
 
   @Override
+  public void createUserFileData(final String userId, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.UserFileData ufd = createUserFile(userId, fileName);
+          if (ufd != null) {
+            userFileDataTable.putItem(ufd);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserErrorInfo(userId, fileName), e);
+    }
+  }
+
+  /**
+   * Creates a UserFileData object for the given userKey and fileName, if it
+   * doesn't already exist. Returns the new UserFileData object, or null if
+   * already existed. This method does not add the UserFileData object to the
+   * datastore.
+   */
+  private StoredData.UserFileData createUserFile(String userKey, String fileName) {
+    StoredData.UserFileData ufd = userFileDataTable.getItem(partitionAndSortKey(userKey, fileName));
+    if (ufd == null) {
+      ufd = new StoredData.UserFileData();
+      ufd.setFileName(fileName);
+      ufd.setUserKey(userKey);
+      return ufd;
+    }
+
+    return null;
+  }
+
+  @Override
+  public List<String> getUserFileNames(final String userId) {
+    final List<String> fileList = new ArrayList<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          PageIterable<StoredData.UserFileData> fdq = userFileDataTable.query(QueryConditional.keyEqualTo(Key.builder()
+              .partitionValue(userId)
+              .build()));
+
+          for (StoredData.UserFileData ufd : fdq.items()) {
+            fileList.add(ufd.getFileName());
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+    return fileList;
+  }
+
+  @Override
+  public void uploadUserFile(final String userId, final String fileName, final byte[] content) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          Key key = partitionAndSortKey(userId, fileName);
+          StoredData.UserFileData ufd = userFileDataTable.getItem(key);
+          /*
+           * We look for the UserFileData object for the given userId and fileName.
+           * If it doesn't exit, we create it.
+           *
+           * SPECIAL CASE: If fileName == StorageUtil.USER_BACKBACK_FILENAME and the
+           * content is "[]", we *delete* the file because the default value returned
+           * if the file doesn't exist is "[]" (the JSON empty list). This is to reduce
+           * the clutter of files for the case where someone doesn't have anything in
+           * the backpack. We pay $$ for storage.
+           */
+          byte [] empty = new byte[] { (byte)0x5b, (byte)0x5d }; // "[]" in bytes
+          if (ufd == null) {          // File doesn't exist
+            if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+                Arrays.equals(empty, content)) {
+              return;                 // Nothing to do
+            }
+            ufd = new StoredData.UserFileData();
+            ufd.setFileName(fileName);
+            ufd.setUserKey(userId);
+          } else {
+            if (fileName.equals(StorageUtil.USER_BACKPACK_FILENAME) &&
+                Arrays.equals(empty, content)) {
+              // Storing an empty backback, just delete the file
+              userFileDataTable.deleteItem(key);
+              return;
+            }
+          }
+          ufd.setContent(content);
+          userFileDataTable.putItem(ufd);
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName), e);
+    }
+  }
+
+  @Override
+  public byte[] getUserFile(final String userId, final String fileName) {
+    final AtomicReference<byte[]> result = new AtomicReference<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.UserFileData ufd = userFileDataTable.getItem(partitionAndSortKey(userId, fileName));
+          if (ufd != null) {
+            result.set(ufd.getContent());
+          } else {
+            throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName),
+                new FileNotFoundException(fileName));
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName), e);
+    }
+    return result.get();
+  }
+
+  @Override
+  public void deleteUserFile(final String userId, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          Key key = partitionAndSortKey(userId, fileName);
+          if (userFileDataTable.getItem(key) != null) {
+            userFileDataTable.deleteItem(key);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId, fileName), e);
+    }
+  }
+
+  @Override
+  public void addFileToProject(final String userId, final Long projectId, final FileDataRoleEnum role,
+                               final boolean changeModDate, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.FileData fd = createProjectFile(projectId, role, fileName);
+          fd.setUserId(userId);
+          fileDataTable.putItem(fd);
+          if (changeModDate) {
+            updateProjectModDate(projectId);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+  }
+
+  private StoredData.FileData createProjectFile(Long projectKey, FileDataRoleEnum role, String fileName) {
+    StoredData.FileData fd = fileDataTable.getItem(partitionAndSortKey(projectKey, fileName));
+    if (fd == null) {
+      fd = new StoredData.FileData();
+      fd.setFileName(fileName);
+      fd.setProjectKey(projectKey);
+      fd.setRole(role);
+    } else if (!fd.getRole().equals(role)) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(null, projectKey, fileName),
+          new IllegalStateException("File role change is not supported"));
+    }
+
+    return fd;
+  }
+
+  private Long updateProjectModDate(long projectId) {
+    Instant modDate = Instant.now();
+    StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+    if (pd != null) {
+      // Only update the ProjectData dateModified if it is more then a minute
+      // in the future. Do this to avoid unnecessary datastore puts.
+      if (modDate.isAfter(pd.getDateModified().plusSeconds(60))) {
+        pd.setDateModified(modDate);
+        projectDataTable.putItem(pd);
+      } else {
+        // return the (old) dateModified
+        modDate = pd.getDateModified();
+      }
+      return modDate.toEpochMilli();
+    } else {
+      throw CrashReport.createAndLogError(LOG, null, null,
+          new IllegalArgumentException("project " + projectId + " doesn't exist"));
+    }
+  }
+
+  @Override
+  public void removeFileFromProject(final String userId, final Long projectId, final FileDataRoleEnum role,
+                                    final boolean changeModDate, final String fileName) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          Key key = partitionAndSortKey(projectId, fileName);
+          StoredData.FileData fd = fileDataTable.getItem(key);
+          if (fd != null) {
+            if (fd.getRole().equals(role)) {
+              fileDataTable.deleteItem(key);
+            } else {
+              throw CrashReport.createAndLogError(LOG, null,
+                  ErrorUtils.collectProjectErrorInfo(null, projectId, fileName),
+                  new IllegalStateException("File role change is not supported"));
+            }
+          }
+
+          if (changeModDate) {
+            updateProjectModDate(projectId);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+  }
+
+  @Override
+  public List<String> getProjectFiles(final String userId, final long projectId, FileDataRoleEnum role) {
+    final List<String> fileList = new ArrayList<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          PageIterable<StoredData.FileData> fdq = fileDataTable.query(QueryConditional.keyEqualTo(Key.builder()
+              .partitionValue(projectId)
+              .build()));
+
+          for (StoredData.FileData fd : fdq.items()) {
+            if (fd.getRole().equals(role)) {
+              fileList.add(fd.getFileName());
+            }
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return fileList;
+  }
+
+  @Override
+  public UploadProjectFileResult uploadProjectFile(final String userId, final long projectId, final String fileName,
+                                                   final boolean force, final byte[] content, final Long backupThreshold, final String filesystemName) throws BlocksTruncatedException {
+    final UploadProjectFileResult uploadProjectFileResult = new UploadProjectFileResult();
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() throws DynamoException {
+          StoredData.FileData fd = fileDataTable.getItem(partitionAndSortKey(projectId, fileName));
+
+          // <Screen>.yail files are missing when user converts AI1 project to AI2
+          // instead of blowing up, just create a <Screen>.yail file
+          if (fd == null && (fileName.endsWith(".yail") || (fileName.endsWith(".png")))){
+            fd = createProjectFile(projectId, FileDataRoleEnum.SOURCE, fileName);
+            fd.setUserId(userId);
+          }
+
+          Preconditions.checkState(fd != null);
+
+          if (fd.getUserId() != null && !fd.getUserId().isEmpty()) {
+            if (!fd.getUserId().equals(userId)) {
+              throw CrashReport.createAndLogError(LOG, null,
+                  ErrorUtils.collectUserProjectErrorInfo(userId, projectId),
+                  new UnauthorizedAccessException(userId, projectId, null));
+            }
+          }
+
+          if ((content.length < 125) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
+            if (!force) {            // force is true if we *really* want to save it!
+              checkForBlocksTruncation(fd); // See if we had previous content and throw and exception if so
+            }
+          }
+
+          if (filesystemName != null) {
+            fd.setIsFilesystem(true);
+            fd.setFilesystemName(filesystemName);
+            uploadProjectFileResult.fileRole = fd.getRole();
+            // If the content was previously stored in the datastore, clear it out.
+            fd.setContent(null);
+          } else {
+            if (fd.isFilesystem()) {     // Was a GCS file, must have gotten smaller
+              uploadProjectFileResult.needsFilesystemDelete = true;
+              fd.setIsFilesystem(false);
+              fd.setFilesystemName(null);
+            }
+            // Note, Don't have to do anything if the file was in the
+            // Blobstore and shrank because the code above (3 lines
+            // into the function) already handles removing the old
+            // contents from the Blobstore.
+            fd.setContent(content);
+          }
+
+          if (backupThreshold != null) {
+            Instant now = Instant.now();
+            if (fd.getLastBackup().plusSeconds(backupThreshold).isBefore(now)) {
+              uploadProjectFileResult.shouldDoFilesystemBackup = true;
+              fd.setLastBackup(now);
+            }
+          }
+
+          // Old file not marked with ownership, mark it now
+          if (fd.getUserId() == null || fd.getUserId().isEmpty()) {
+            fd.setUserId(userId);
+          }
+          fileDataTable.putItem(fd);
+          uploadProjectFileResult.lastModifiedDate = updateProjectModDate(projectId);
+        }
+      }); // Use transaction for blobstore, otherwise we don't need one
+      // and without one the caching code comes into play.
+    } catch (DynamoException e) {
+      if (e.getMessage().startsWith("Blocks")) { // Convert Exception
+        throw new BlocksTruncatedException();
+      }
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+
+    return uploadProjectFileResult;
+  }
+
+  // We are called when our caller detects we are about to write a trivial (empty)
+  // workspace. We check to see if previously the workspace was non-trivial and
+  // if so, throw the BlocksTruncatedException. This will be passed through the RPC
+  // layer to the client code which will put up a dialog box for the user to review
+  // See Ode.java for more information
+  private void checkForBlocksTruncation(StoredData.FileData fd) throws DynamoException {
+    if (fd.isFilesystem() || fd.getContent().length > 120)
+      throw new DynamoException("BlocksTruncated"); // Hack
+    // I'm avoiding having to modify every use of runJobWithRetries to handle a new
+    // exception, so we use this dodge.
+  }
+
+  @Override
+  public DeleteProjectFileResult deleteProjectFile(final String userId, final long projectId, final String fileName) {
+    final DeleteProjectFileResult deleteProjectFileResult = new DeleteProjectFileResult();
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          Key key = partitionAndSortKey(projectId, fileName);
+          StoredData.FileData fileData = fileDataTable.getItem(key);
+          if (fileData != null) {
+            if (fileData.getUserId() != null && !fileData.getUserId().isEmpty()) {
+              if (!fileData.getUserId().equals(userId)) {
+                throw CrashReport.createAndLogError(LOG, null,
+                    ErrorUtils.collectUserProjectErrorInfo(userId, projectId),
+                    new UnauthorizedAccessException(userId, projectId, null));
+              }
+            }
+            if (fileData.isFilesystem()) {
+              deleteProjectFileResult.fileRole = fileData.getRole();
+              deleteProjectFileResult.filesystemToDelete = fileData.getFilesystemName();
+            }
+          }
+          fileDataTable.deleteItem(key);
+          deleteProjectFileResult.lastModifiedDate = updateProjectModDate(projectId);
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+
+    return deleteProjectFileResult;
+  }
+
+  @Override
+  public GetProjectFileResult getProjectFile(final String userId, final long projectId, final String fileName) {
+    final GetProjectFileResult getProjectFileResult = new GetProjectFileResult();
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.FileData fd = fileDataTable.getItem(partitionAndSortKey(projectId, fileName));
+
+          if (fd == null) {
+            throw CrashReport.createAndLogError(LOG, null,
+                ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName),
+                new FileNotFoundException("No data for " + fileName));
+          }
+
+          if (fd.getUserId() != null && !fd.getUserId().isEmpty()) {
+            if (!fd.getUserId().equals(userId)) {
+              throw CrashReport.createAndLogError(LOG, null,
+                  ErrorUtils.collectUserProjectErrorInfo(userId, projectId),
+                  new UnauthorizedAccessException(userId, projectId, null));
+            }
+          }
+
+          if (fd.isFilesystem()) {     // It's in the Cloud Store
+            getProjectFileResult.fileRole = fd.getRole();
+            getProjectFileResult.filesystemToRetrieve = fd.getFilesystemName();
+          } else {
+            if (fd.getContent() != null) {
+              getProjectFileResult.content = fd.getContent();
+            }
+          }
+        }
+      }); // Transaction not needed
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+    return getProjectFileResult;
+  }
+
+  @Override
   public void storeCorruptionRecord(String userId, long projectId, String fileId, String message) {
     final StoredData.CorruptionRecord data = new StoredData.CorruptionRecord();
     data.setTimestamp(Instant.now());
@@ -1283,5 +1710,13 @@ public final class ProviderDynamoDB extends DatabaseService {
 
   private Key partitionAndSortKey(final String str1, final Long lng2) {
     return Key.builder().partitionValue(str1).sortValue(lng2).build();
+  }
+
+  private Key partitionAndSortKey(final String str1, final String str2) {
+    return Key.builder().partitionValue(str1).sortValue(str2).build();
+  }
+
+  private Key partitionAndSortKey(final Long lng1, final String str2) {
+    return Key.builder().partitionValue(lng1).sortValue(str2).build();
   }
 }
