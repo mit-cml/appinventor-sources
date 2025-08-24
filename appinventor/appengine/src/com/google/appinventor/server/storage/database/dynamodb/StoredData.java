@@ -1,5 +1,6 @@
 package com.google.appinventor.server.storage.database.dynamodb;
 
+import com.google.appinventor.server.storage.FileDataRoleEnum;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
@@ -308,6 +309,158 @@ final class StoredData {
 
     public void setSettings(String settings) {
       this.settings = settings;
+    }
+  }
+
+  // Non-project-specific files (tied to user)
+  @DynamoDbBean
+  public static final class UserFileData {
+    // The user (parent's) key
+    private String userKey;
+
+    // The file name
+    private String fileName;
+
+    // File content, these are raw bytes. Note that Objectify automatically
+    // converts byte[] to Blob.
+    private byte[] content;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("UserId")
+    public String getUserKey() {
+      return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+      this.userKey = userKey;
+    }
+
+    @DynamoDbSortKey
+    @DynamoDbAttribute("FileName")
+    public String getFileName() {
+      return fileName;
+    }
+
+    public void setFileName(String fileName) {
+      this.fileName = fileName;
+    }
+
+    @DynamoDbAttribute("Content")
+    public byte[] getContent() {
+      return content;
+    }
+
+    public void setContent(byte[] content) {
+      this.content = content;
+    }
+  }
+
+  // Project files
+  // Note: FileData has to be Serializable so we can put it into
+  //       memcache.
+  @DynamoDbBean
+  public static final class FileData {
+    // Key of the project (parent) to which this file belongs
+    private Long projectKey;
+
+    // The file name
+    private String fileName;
+
+    // File role
+    private FileDataRoleEnum role;
+
+    // File content, these are raw bytes. Note that Objectify automatically
+    // converts byte[] to an App Engine Datastore Blob (which is not the same thing as a Blobstore
+    // Blob).  Consequently, if isBlob is true, the content field should be ignored and the data
+    // should be retrieved from Blobstore.
+    private byte[] content;
+
+    // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
+    // GCS file name (sans bucket).
+    private Boolean isFilesystem = false;
+
+    // The GCS filename, sans bucket name
+    private String filesystemName;
+
+    // DateTime of last backup only used if GCS is enabled
+    private Instant lastBackup;
+
+    private String userId;              // The userId which owns this file
+    // if null or the empty string, we haven't initialized
+    // it yet
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("ProjectId")
+    public Long getProjectKey() {
+      return projectKey;
+    }
+
+    public void setProjectKey(Long projectKey) {
+      this.projectKey = projectKey;
+    }
+
+    @DynamoDbSortKey
+    @DynamoDbAttribute("FileName")
+    public String getFileName() {
+      return fileName;
+    }
+
+    public void setFileName(String fileName) {
+      this.fileName = fileName;
+    }
+
+    @DynamoDbAttribute("Role")
+    public FileDataRoleEnum getRole() {
+      return role;
+    }
+
+    public void setRole(FileDataRoleEnum role) {
+      this.role = role;
+    }
+
+    @DynamoDbAttribute("Content")
+    public byte[] getContent() {
+      return content;
+    }
+
+    public void setContent(byte[] content) {
+      this.content = content;
+    }
+
+    @DynamoDbAttribute("IsFilesystem")
+    public Boolean isFilesystem() {
+      return isFilesystem;
+    }
+
+    public void setIsFilesystem(Boolean filesystem) {
+      isFilesystem = filesystem;
+    }
+
+    @DynamoDbAttribute("FilesystemName")
+    public String getFilesystemName() {
+      return filesystemName;
+    }
+
+    public void setFilesystemName(String filesystemName) {
+      this.filesystemName = filesystemName;
+    }
+
+    @DynamoDbAttribute("LastBackup")
+    public Instant getLastBackup() {
+      return lastBackup;
+    }
+
+    public void setLastBackup(Instant lastBackup) {
+      this.lastBackup = lastBackup;
+    }
+
+    @DynamoDbAttribute("UserId")
+    public String getUserId() {
+      return userId;
+    }
+
+    public void setUserId(String userId) {
+      this.userId = userId;
     }
   }
 

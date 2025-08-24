@@ -3,11 +3,17 @@ package com.google.appinventor.server.storage.database.dynamodb;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.ErrorUtils;
+import com.google.appinventor.server.storage.FileDataRoleEnum;
+import com.google.appinventor.server.storage.UnifiedFile;
+import com.google.appinventor.server.storage.database.DatabaseAccessException;
 import com.google.appinventor.server.storage.database.DatabaseService;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.admin.AdminUser;
+import com.google.appinventor.shared.rpc.project.Project;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
-import com.google.common.annotations.VisibleForTesting;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -15,11 +21,20 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchGetItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchGetResultPage;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchGetResultPageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.ReadBatch;
 import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.WriteBatch;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
@@ -30,12 +45,18 @@ import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughputExcee
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 public final class ProviderDynamoDB extends DatabaseService {
@@ -53,9 +74,12 @@ public final class ProviderDynamoDB extends DatabaseService {
   private static final Flag<String> ACCESS_KEY_ID = Flag.createFlag("database.ddb.accesskeyid", null);
   private static final Flag<String> SECRET_ACCESS_KEY = Flag.createFlag("database.ddb.secretaccesskey", null);
 
+  private final DynamoDbEnhancedClient enhancedClient;
   private final DynamoDbTable<StoredData.UserData> userDataTable;
   private final DynamoDbTable<StoredData.ProjectData> projectDataTable;
   private final DynamoDbTable<StoredData.UserProjectData> userProjectDataTable;
+  private final DynamoDbTable<StoredData.UserFileData> userFileDataTable;
+  private final DynamoDbTable<StoredData.FileData> fileDataTable;
   private final DynamoDbTable<StoredData.WhiteListData> whiteListDataTable;
   private final DynamoDbTable<StoredData.FeedbackData> feedbackDataTable;
   private final DynamoDbTable<StoredData.NonceData> nonceDataTable;
@@ -67,13 +91,15 @@ public final class ProviderDynamoDB extends DatabaseService {
   private final DynamoDbTable<StoredData.AllowedIosExtensions> allowedIosExtensionsTable;
 
   public ProviderDynamoDB() {
-    final DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
+    enhancedClient = DynamoDbEnhancedClient.builder()
         .dynamoDbClient(createDynamoDbClient())
         .build();
 
     userDataTable = enhancedClient.table("UserData", TableSchema.fromBean(StoredData.UserData.class));
     projectDataTable = enhancedClient.table("ProjectData", TableSchema.fromBean(StoredData.ProjectData.class));
     userProjectDataTable = enhancedClient.table("UserProjectData", TableSchema.fromBean(StoredData.UserProjectData.class));
+    userFileDataTable = enhancedClient.table("UserFileData", TableSchema.fromBean(StoredData.UserFileData.class));
+    fileDataTable = enhancedClient.table("FileData", TableSchema.fromBean(StoredData.FileData.class));
     whiteListDataTable = enhancedClient.table("WhiteListData", TableSchema.fromBean(StoredData.WhiteListData.class));
     feedbackDataTable = enhancedClient.table("FeedbackData", TableSchema.fromBean(StoredData.FeedbackData.class));
     nonceDataTable = enhancedClient.table("NonceData", TableSchema.fromBean(StoredData.NonceData.class));
@@ -116,6 +142,12 @@ public final class ProviderDynamoDB extends DatabaseService {
     return clientBuilder.build();
   }
 
+  private StoredData.UserData findUserDataByEmail(final String emailLower) {
+    SdkIterable<Page<StoredData.UserData>> pagedResult = userDataTable.index("EmailIndex")
+        .query(QueryConditional.keyEqualTo(k -> k.partitionValue(emailLower)));
+
+    return getItemIndex(pagedResult);
+  }
 
   @Override
   public User findOrCreateUser(final String userId, final String email, final boolean requireTos) {
@@ -131,10 +163,7 @@ public final class ProviderDynamoDB extends DatabaseService {
           if (userData == null) { // Attempt to find them by email
             LOG.info("Did not find userId " + userId);
             if (emailLower != null) {
-              SdkIterable<Page<StoredData.UserData>> pagedResult = userDataTable.index("EmailIndex")
-                  .query(QueryConditional.keyEqualTo(k -> k.partitionValue(emailLower)));
-
-              userData = getItemIndex(pagedResult);
+              userData = findUserDataByEmail(emailLower);
             }
 
             if (userData == null) { // No joy, create it.
@@ -185,10 +214,7 @@ public final class ProviderDynamoDB extends DatabaseService {
     final String emailLower = email.toLowerCase();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
-    SdkIterable<Page<StoredData.UserData>> pagedResult = userDataTable.index("EmailIndex")
-        .query(QueryConditional.keyEqualTo(k -> k.partitionValue(emailLower)));
-
-    StoredData.UserData user = getItemIndex(pagedResult);
+    StoredData.UserData user = findUserDataByEmail(emailLower);
     if (user == null) {       // Finally, create it (in lower case)
       LOG.info("getUserFromEmail: attempt failed using " + emailLower);
 
@@ -317,6 +343,517 @@ public final class ProviderDynamoDB extends DatabaseService {
     } catch (DynamoException e) {
       throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
     }
+  }
+
+  @Override
+  public List<AdminUser> searchUsers(final String partialEmail) {
+    throw new UnsupportedOperationException("searchUsers is not supported in DynamoDB");
+  }
+
+  @Override
+  public void storeUser(final AdminUser user) throws AdminInterfaceException {
+    final String emailLower = user.getEmail().toLowerCase();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() throws DynamoException {
+          StoredData.UserData userData = null;
+          if (user.getId() != null) {
+            userData = userDataTable.getItem(partitionKey(user.getId()));
+          }
+
+          if (userData != null) {
+            userData.setEmail(emailLower);
+            String password = user.getPassword();
+            if (password != null && !password.isEmpty()) {
+              userData.setPassword(user.getPassword());
+            }
+            userData.setIsAdmin(user.getIsAdmin());
+            userDataTable.updateItem(userData);
+          } else {            // New User
+            StoredData.UserData tuser = findUserDataByEmail(emailLower);
+            if (tuser != null) {
+              // This is a total kludge, but we have to do things this way because of
+              // how runJobWithRetries works
+              throw new DynamoException("User Already exists = " + user.getEmail());
+            }
+            userData = new StoredData.UserData();
+            userData.setId(UUID.randomUUID().toString());
+            userData.setTosAccepted(false);
+            userData.setSettings("");
+            userData.setEmail(emailLower);
+            if (!user.getPassword().isEmpty()) {
+              userData.setPassword(user.getPassword());
+            }
+            userData.setIsAdmin(user.getIsAdmin());
+            userDataTable.putItem(userData);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      if (e.getMessage().startsWith("User Al")) {
+        throw new AdminInterfaceException(e.getMessage());
+      }
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public Long createProjectData(final Project project, final String projectSettings) throws DatabaseAccessException {
+    final AtomicReference<Long> projectId = new AtomicReference<>(null);
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          Instant date = Instant.now();
+          StoredData.ProjectData pd = new StoredData.ProjectData();
+          UUID uuid = UUID.randomUUID();
+          long id = Math.abs(uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits());
+          pd.setId(id);
+          pd.setDateCreated(date);
+          pd.setDateModified(date);
+          pd.setDateBuilt(null);
+          pd.setHistory(project.getProjectHistory());
+          pd.setName(project.getProjectName());
+          pd.setSettings(projectSettings);
+          pd.setType(project.getProjectType());
+
+          projectDataTable.putItem(PutItemEnhancedRequest.builder(StoredData.ProjectData.class)
+              .item(pd)
+              // Ensure the Project ID is not taken, otherwise retry
+              .conditionExpression(Expression.builder()
+                  .expression("attribute_not_exists(ProjectId)")
+                  .build())
+              .build());
+
+          projectId.set(pd.getId());
+        }
+      });
+    } catch (DynamoException e) {
+      throw new DatabaseAccessException(e);
+    }
+
+    return projectId.get();
+  }
+
+  @Override
+  public void createUserProjectData(final String userId, final Long projectId, final String projectSettings) throws DatabaseAccessException {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.UserProjectData upd = new StoredData.UserProjectData();
+          upd.setProjectId(projectId);
+          upd.setSettings(projectSettings);
+          upd.setState(StoredData.UserProjectData.StateEnum.OPEN);
+          upd.setUserKey(userId);
+          userProjectDataTable.putItem(upd);
+        }
+      });
+    } catch (DynamoException e) {
+      throw new DatabaseAccessException(e);
+    }
+  }
+
+  @Override
+  public void createProjectFileData(final String userId, final Long projectId, final FileDataRoleEnum role,
+                                    final List<UnifiedFile> files) throws DatabaseAccessException {
+    final List<StoredData.FileData> addedFiles = new ArrayList<>();
+
+    for (UnifiedFile unifiedFile : files) {
+      StoredData.FileData file = new StoredData.FileData();
+      file.setProjectKey(projectId);
+      file.setFileName(unifiedFile.getFileName());
+      file.setRole(role);
+      file.setUserId(userId);
+      if (unifiedFile.getFilesystemName() != null) {
+        file.setIsFilesystem(true);
+        file.setFilesystemName(unifiedFile.getFilesystemName());
+      } else {
+        file.setContent(unifiedFile.getContent());
+      }
+
+      addedFiles.add(file);
+    }
+
+    // Batch Write only accepts up to 25 items, but let's add some buffer so set it to 20
+    for (int i = 0; i < addedFiles.size(); i += 20) {
+      int endIndex = Math.min(i + 20, addedFiles.size());
+      List<StoredData.FileData> batch = addedFiles.subList(i, endIndex);
+
+      try {
+        runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run() {
+            WriteBatch.Builder<StoredData.FileData> writeBatchBuilder = WriteBatch.builder(StoredData.FileData.class)
+                .mappedTableResource(fileDataTable);
+
+            for (StoredData.FileData file : batch) {
+              writeBatchBuilder.addPutItem(file);
+            }
+
+            enhancedClient.batchWriteItem(BatchWriteItemEnhancedRequest.builder()
+                .writeBatches(writeBatchBuilder.build())
+                .build());
+          }
+        });
+      } catch (DynamoException e) {
+        throw new DatabaseAccessException(e);
+      }
+    }
+  }
+
+  public void deleteUserProject(final String userId, final Long projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          // delete the UserProjectData object
+          userProjectDataTable.deleteItem(partitionAndSortKey(userId, projectId));
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+  }
+
+  public List<String> deleteProjectData(final String userId, final Long projectId) {
+    // blobs associated with the project
+    final List<String> blobKeys = new ArrayList<>();
+    final List<String> gcsPaths = new ArrayList<>();
+
+    try {
+      // entity group
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          PageIterable<StoredData.FileData> fdq = fileDataTable.query(QueryConditional.keyEqualTo(Key.builder()
+              .partitionValue(projectId)
+              .build()));
+
+          for (StoredData.FileData fd : fdq.items()) {
+            if (fd.isFilesystem()) {
+              gcsPaths.add(fd.getFilesystemName());
+            }
+            fileDataTable.deleteItem(fd);
+          }
+
+          // finally, delete the ProjectData object
+          projectDataTable.deleteItem(partitionKey(projectId));
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+
+    // We send the gcs paths to be deleted by the filesystem service
+    return gcsPaths;
+  }
+
+  @Override
+  public void setProjectMovedToTrashFlag(final String userId, final long projectId, final boolean flag) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData projectData = projectDataTable.getItem(partitionKey(projectId));
+          if (projectData != null) {
+            projectData.setProjectMovedToTrash(flag);
+            projectDataTable.putItem(projectData);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
+  public List<Long> getProjectIdsByUser(final String userId) {
+    final List<Long> projects = new ArrayList<>();
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          PageIterable<StoredData.UserProjectData> fdq = userProjectDataTable.query(QueryConditional.keyEqualTo(Key.builder()
+              .partitionValue(userId)
+              .build()));
+
+          for (StoredData.UserProjectData upd : fdq.items()) {
+            projects.add(upd.getProjectId());
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, ErrorUtils.collectUserErrorInfo(userId), e);
+    }
+
+    return projects;
+  }
+
+  @Override
+  public String getProjectSettings(final String userId, final long projectId) {
+    final AtomicReference<String> settings = new AtomicReference<>("");
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            settings.set(pd.getSettings());
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+
+    return settings.get();
+  }
+
+  @Override
+  public void setProjectSettings(final String userId, final long projectId, final String projectSettings) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            pd.setSettings(projectSettings);
+            projectDataTable.putItem(pd);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+  }
+
+  @Override
+  public UserProject getUserProject(final String userId, final long projectId) {
+    final AtomicReference<StoredData.ProjectData> projectData = new AtomicReference<>(null);
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            projectData.set(pd);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+
+    final StoredData.ProjectData projectDataVal = projectData.get();
+    if (projectDataVal == null) {
+      return null;
+    }
+
+    return mapProjectDataToUserProject(projectId, projectDataVal);
+  }
+
+  @Override
+  public List<UserProject> getUserProjects(final String userId, final List<Long> projectIds) {
+    final List<StoredData.ProjectData> projectDatas = new ArrayList<>();
+
+    final Set<Long> remainingProjectIds = new HashSet<>(projectIds);
+
+    while (!remainingProjectIds.isEmpty()) {
+      try {
+        runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run() {
+            // DDB BatchGetItem allows up to 100 elements
+            Set<Long> elementsToGet = remainingProjectIds.stream().limit(100).collect(Collectors.toSet());
+
+            ReadBatch.Builder<StoredData.ProjectData> readBatchBuilder = ReadBatch.builder(StoredData.ProjectData.class)
+                .mappedTableResource(projectDataTable);
+
+            for (Long projectId : elementsToGet) {
+              readBatchBuilder.addGetItem(Key.builder().partitionValue(projectId).build());
+            }
+
+            BatchGetItemEnhancedRequest batchRequest = BatchGetItemEnhancedRequest.builder()
+                .readBatches(readBatchBuilder.build())
+                .build();
+
+            BatchGetResultPageIterable results = enhancedClient.batchGetItem(batchRequest);
+
+            for (BatchGetResultPage page : results) {
+              for (Key key : page.unprocessedKeysForTable(projectDataTable)) {
+                // Key failed to be processed, so let's remove it from the pending-to-be-analyzed set
+                elementsToGet.remove(Long.valueOf(key.partitionKeyValue().n()));
+              }
+
+              List<StoredData.ProjectData> pageItems = page.resultsForTable(projectDataTable);
+              for (StoredData.ProjectData pd : pageItems) {
+                elementsToGet.remove(pd.getId());
+                projectDatas.add(pd);
+                remainingProjectIds.remove(pd.getId());
+              }
+            }
+
+            if (!elementsToGet.isEmpty()) {
+              // We now remove the elements we did not find, as we know they don't exist
+              LOG.info("Found non existent items!");
+              for (Long projectId : elementsToGet) {
+                remainingProjectIds.remove(projectId);
+              }
+            }
+          }
+        });
+      } catch (DynamoException e) {
+        throw CrashReport.createAndLogError(LOG, null,
+            ErrorUtils.collectUserErrorInfo(userId), e);
+      }
+    }
+
+    if (!remainingProjectIds.isEmpty()) {
+      LOG.severe("Remaining projects is not 0!");
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserErrorInfo(userId), new DynamoException("Something went wrong!"));
+    }
+
+    List<UserProject> uProjects = new ArrayList<>();
+    for (StoredData.ProjectData projectData : projectDatas) {
+      uProjects.add(mapProjectDataToUserProject(projectData.getId(), projectData));
+    }
+
+    return uProjects;
+  }
+
+  @Override
+  public String getProjectName(final String userId, final long projectId) {
+    final AtomicReference<String> projectName = new AtomicReference<>("");
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            projectName.set(pd.getName());
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+
+    return projectName.get();
+  }
+
+  @Override
+  public Long getProjectDateModified(final String userId, final long projectId) {
+    final AtomicReference<Long> modDate = new AtomicReference<>(0L);
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            modDate.set(pd.getDateModified().toEpochMilli());
+          }
+        }
+      }); // Transaction not needed, and we want the caching we get if we don't
+      // use them.
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return modDate.get();
+  }
+
+  @Override
+  public Long getProjectDateBuilt(final String userId, final long projectId) {
+    final AtomicReference<Long> builtDate = new AtomicReference<>(0L);
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            builtDate.set(pd.getDateBuilt().toEpochMilli());
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return builtDate.get();
+  }
+
+  @Override
+  public void setProjectBuiltDate(final String userId, final long projectId, final long builtDate) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            pd.setDateBuilt(Instant.ofEpochMilli(builtDate));
+            projectDataTable.putItem(pd);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+  }
+
+  @Override
+  public String getProjectHistory(final String userId, final long projectId) {
+    final AtomicReference<String> projectHistory = new AtomicReference<>("");
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            projectHistory.set(pd.getHistory());
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return projectHistory.get();
+  }
+
+  @Override
+  public Long getProjectDateCreated(final String userId, final long projectId) {
+    final AtomicReference<Long> dateCreated = new AtomicReference<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.ProjectData pd = projectDataTable.getItem(partitionKey(projectId));
+          if (pd != null) {
+            dateCreated.set(pd.getDateCreated().toEpochMilli());
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          ErrorUtils.collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return dateCreated.get();
   }
 
   @Override
@@ -647,7 +1184,6 @@ public final class ProviderDynamoDB extends DatabaseService {
     return result.get();
   }
 
-  @VisibleForTesting
   private abstract static class JobRetryHelper {
     private IOException exception = null;
 
@@ -687,7 +1223,6 @@ public final class ProviderDynamoDB extends DatabaseService {
     return Math.min(delayWithJitter, MAX_DELAY_MS);
   }
 
-  @VisibleForTesting
   private void runJobWithRetries(JobRetryHelper job) throws DynamoException {
     int tries = 0;
     while (tries <= MAX_JOB_RETRIES) {
@@ -729,6 +1264,13 @@ public final class ProviderDynamoDB extends DatabaseService {
     if (tries > MAX_JOB_RETRIES) {
       throw new DynamoException("Couldn't finish job after max retries");
     }
+  }
+
+  private UserProject mapProjectDataToUserProject(final Long projectId, final StoredData.ProjectData projectData) {
+    return new UserProject(projectId, projectData.getName(),
+        projectData.getType(), projectData.getDateCreated().toEpochMilli(),
+        projectData.getDateModified().toEpochMilli(), projectData.getDateBuilt().toEpochMilli(),
+        projectData.isProjectMovedToTrash());
   }
 
   private Key partitionKey(final String str) {
