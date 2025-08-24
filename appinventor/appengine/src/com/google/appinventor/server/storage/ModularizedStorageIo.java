@@ -66,10 +66,10 @@ public final class ModularizedStorageIo implements StorageIo {
   private static final long BACKUP_THRESHOLD_SECONDS = 24 * 3600;  // 24 hours in seconds
   private static final int MAX_FILE_SIZE_BYTES_IN_CACHE = 1_000_000;  // 1 Mb
 
-  private final static String CACHE_KEY_PREFIX__USER = "f682688a-1065-4cda-8515-a8bd70200ac9";
-  private final static String CACHE_KEY_PREFIX__BUILD_STATUS = "40bae275-070f-478b-9a5f-d50361809b99";
-  private static final String CACHE_KEY_PREFIX__PROJECT_OWNER = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
-  private static final String CACHE_KEY_PREFIX__PROJECT_FILE = "9f06aaeb-aaaa-4ab9-9fa6-00413b181eb6";
+  private final static String CACHE_KEY_PREFIX__USER = "USER";
+  private final static String CACHE_KEY_PREFIX__BUILD_STATUS = "BUILD_STATUS";
+  private static final String CACHE_KEY_PREFIX__PROJECT_OWNER = "PROJECT_OWNER";
+  private static final String CACHE_KEY_PREFIX__PROJECT_FILE = "PROJECT_FILE";
 
   private static final String TEMP_FILE_PREFIX = "__TEMP__";
 
@@ -119,10 +119,11 @@ public final class ModularizedStorageIo implements StorageIo {
   // if the user does not exist
   @Override
   public String findUserByEmail(String email) throws NoSuchElementException {
-    User user = databaseService.getUserFromEmail(email, true);
+    User user = databaseService.getUserFromEmail(email, false);
     if (user == null) {
       throw new NoSuchElementException("Couldn't find a user with email " + email);
     }
+
     return user.getUserId();
   }
 
@@ -420,6 +421,18 @@ public final class ModularizedStorageIo implements StorageIo {
       } catch (IOException e) {
         LOG.warning("Failed to backup filesystem file: " + ErrorUtils.collectProjectErrorInfo(userId, projectId, fileName));
       }
+    }
+
+    // Make sure to update the cache, if appropriate.
+    // The cache for files takes serialized GetProjectFileResult objects. As such, we need to construct
+    //   a similar object based on the content bytes and UploadProjectFileResult.
+    DatabaseService.GetProjectFileResult cacheResult = new DatabaseService.GetProjectFileResult();
+    cacheResult.content = content;
+    cacheResult.fileRole = result.fileRole;
+    if (useCacheForFile(cacheResult.fileRole, fileName, cacheResult.content.length)) {
+      // Only cache source files that are not assets
+      final String cacheKey = CACHE_KEY_PREFIX__PROJECT_FILE + "|" + projectId + "|" + fileName;
+      cacheService.put(cacheKey, cacheResult, 60 * 60);  // Cache for 1 hour
     }
 
     return result.lastModifiedDate;
