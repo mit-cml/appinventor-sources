@@ -4,6 +4,7 @@ import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.ErrorUtils;
 import com.google.appinventor.server.storage.database.DatabaseService;
+import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.annotations.VisibleForTesting;
@@ -29,6 +30,7 @@ import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughputExcee
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,7 +56,13 @@ public final class ProviderDynamoDB extends DatabaseService {
   private final DynamoDbTable<StoredData.UserData> userDataTable;
   private final DynamoDbTable<StoredData.ProjectData> projectDataTable;
   private final DynamoDbTable<StoredData.UserProjectData> userProjectDataTable;
+  private final DynamoDbTable<StoredData.WhiteListData> whiteListDataTable;
+  private final DynamoDbTable<StoredData.FeedbackData> feedbackDataTable;
+  private final DynamoDbTable<StoredData.NonceData> nonceDataTable;
+  private final DynamoDbTable<StoredData.CorruptionRecord> corruptionRecordTable;
   private final DynamoDbTable<StoredData.SplashData> splashDataTable;
+  private final DynamoDbTable<StoredData.PWData> pwDataTable;
+  private final DynamoDbTable<StoredData.Backpack> backpackTable;
   private final DynamoDbTable<StoredData.AllowedTutorialUrls> allowedTutorialUrlsTable;
   private final DynamoDbTable<StoredData.AllowedIosExtensions> allowedIosExtensionsTable;
 
@@ -66,7 +74,13 @@ public final class ProviderDynamoDB extends DatabaseService {
     userDataTable = enhancedClient.table("UserData", TableSchema.fromBean(StoredData.UserData.class));
     projectDataTable = enhancedClient.table("ProjectData", TableSchema.fromBean(StoredData.ProjectData.class));
     userProjectDataTable = enhancedClient.table("UserProjectData", TableSchema.fromBean(StoredData.UserProjectData.class));
+    whiteListDataTable = enhancedClient.table("WhiteListData", TableSchema.fromBean(StoredData.WhiteListData.class));
+    feedbackDataTable = enhancedClient.table("FeedbackData", TableSchema.fromBean(StoredData.FeedbackData.class));
+    nonceDataTable = enhancedClient.table("NonceData", TableSchema.fromBean(StoredData.NonceData.class));
+    corruptionRecordTable = enhancedClient.table("CorruptionRecord", TableSchema.fromBean(StoredData.CorruptionRecord.class));
     splashDataTable = enhancedClient.table("SplashData", TableSchema.fromBean(StoredData.SplashData.class));
+    pwDataTable = enhancedClient.table("PWData", TableSchema.fromBean(StoredData.PWData.class));
+    backpackTable = enhancedClient.table("Backpack", TableSchema.fromBean(StoredData.Backpack.class));
     allowedTutorialUrlsTable = enhancedClient.table("AllowedTutorialUrls", TableSchema.fromBean(StoredData.AllowedTutorialUrls.class));
     allowedIosExtensionsTable = enhancedClient.table("AllowedIosExtensions", TableSchema.fromBean(StoredData.AllowedIosExtensions.class));
   }
@@ -306,6 +320,200 @@ public final class ProviderDynamoDB extends DatabaseService {
   }
 
   @Override
+  public void storeCorruptionRecord(String userId, long projectId, String fileId, String message) {
+    final StoredData.CorruptionRecord data = new StoredData.CorruptionRecord();
+    data.setTimestamp(Instant.now());
+    data.setId(UUID.randomUUID().toString());
+    data.setUserId(userId);
+    data.setFileId(fileId);
+    data.setProjectId(projectId);
+    data.setMessage(message);
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          corruptionRecordTable.putItem(data);
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public boolean isEmailAddressInAllowlist(final String emailAddress) {
+    StoredData.WhiteListData data = whiteListDataTable.getItem(partitionKey(emailAddress.toLowerCase()));
+    return data != null;
+  }
+
+  @Override
+  public void storeFeedbackData(final String notes, final String foundIn, final String faultData,
+                                final String comments, final String datestamp, final String email, final String projectId) {
+    StoredData.FeedbackData data = new StoredData.FeedbackData();
+    data.setId(UUID.randomUUID().toString());
+    data.setNotes(notes);
+    data.setFoundIn(foundIn);
+    data.setFaultData(faultData);
+    data.setComments(comments);
+    data.setDatestamp(datestamp);
+    data.setEmail(email.toLowerCase());
+    data.setProjectId(projectId);
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          feedbackDataTable.putItem(data);
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public void storeNonce(final String nonceValue, final String userId, final long projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.NonceData data = nonceDataTable.getItem(partitionKey(nonceValue));
+          if (data == null) {
+            data = new StoredData.NonceData();
+            data.setNonce(nonceValue);
+          }
+          data.setUserId(userId);
+          data.setProjectId(projectId);
+          data.setTimestamp(Instant.now());
+          data.setValidUntil(data.getTimestamp().plusMillis(PWDATA_EXPIRATION_TIME_MS));
+          nonceDataTable.putItem(data);
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public Nonce getNonceByValue(String nonceValue) {
+    StoredData.NonceData data = nonceDataTable.getItem(partitionKey(nonceValue));
+    if (data == null) {
+      return null;
+    }
+
+    if (data.getValidUntil().isBefore(Instant.now())) {
+      // Expired, manually delete it as TTL cleanup did not trigger yet
+      nonceDataTable.deleteItem(data);
+      return null;
+    }
+
+    return new Nonce(nonceValue, data.getUserId(), data.getProjectId(), new Date(data.getTimestamp().toEpochMilli()));
+  }
+
+  @Override
+  public void cleanupNonces() {
+    // We do not perform manual cleanup of old PWData records in DDB, as it is taken by automatic TTL
+    throw new UnsupportedOperationException("cleanupNonces is not supported in DynamoDB");
+  }
+
+  @Override
+  public String createPWData(final String email) {
+    final String uuid = UUID.randomUUID().toString();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          final StoredData.PWData pwData = new StoredData.PWData();
+          pwData.setId(uuid);
+          pwData.setEmail(email.toLowerCase());
+          pwData.setTimestamp(Instant.now());
+          pwData.setValidUntil(pwData.getTimestamp().plusMillis(PWDATA_EXPIRATION_TIME_MS));
+          pwDataTable.putItem(pwData);
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return uuid;
+  }
+
+  @Override
+  public String getPWData(final String uid) {
+    final AtomicReference<StoredData.PWData> result = new AtomicReference<>(null);
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          result.set(pwDataTable.getItem(partitionKey(uid)));
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+
+    final StoredData.PWData pwData = result.get();
+    if (pwData == null) {
+      return null;
+    }
+    if (pwData.getValidUntil().isBefore(Instant.now())) {
+      // Expired, manually delete it as TTL cleanup did not trigger yet
+      pwDataTable.deleteItem(pwData);
+      return null;
+    }
+
+    return pwData.getEmail();
+  }
+
+  @Override
+  public void cleanupPWDatas() {
+    // We do not perform manual cleanup of old PWData records in DDB, as it is taken by automatic TTL
+    throw new UnsupportedOperationException("cleanupPWDatas is not supported in DynamoDB");
+  }
+
+  @Override
+  public String getBackpack(final String backPackId) {
+    final AtomicReference<StoredData.Backpack> result = new AtomicReference<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          StoredData.Backpack backPack = backpackTable.getItem(partitionKey(backPackId));
+          if (backPack != null) {
+            result.set(backPack);
+          }
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+
+    StoredData.Backpack backpack = result.get();
+    if (backpack != null) {
+      return backpack.getContent();
+    } else {
+      return "[]";              // No shared backpack, return an empty backpack
+    }
+  }
+
+  @Override
+  public void storeBackpack(String backPackId, String content) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run() {
+          final StoredData.Backpack backPack = new StoredData.Backpack();
+          backPack.setId(backPackId);
+          backPack.setContent(content);
+          backpackTable.putItem(backPack);
+        }
+      });
+    } catch (DynamoException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
   public boolean assertUserIdOwnerOfProject(final String userId, final long projectId) {
     final AtomicReference<Boolean> ownsProject = new AtomicReference<>(false);
     try {
@@ -519,7 +727,7 @@ public final class ProviderDynamoDB extends DatabaseService {
     }
 
     if (tries > MAX_JOB_RETRIES) {
-      throw new DynamoException("Couldn't commit job after max retries.");
+      throw new DynamoException("Couldn't finish job after max retries");
     }
   }
 

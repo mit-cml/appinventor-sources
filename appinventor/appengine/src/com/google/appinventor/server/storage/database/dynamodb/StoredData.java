@@ -6,7 +6,6 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
-import javax.persistence.Id;
 import java.time.Instant;
 
 
@@ -313,6 +312,228 @@ final class StoredData {
   }
 
   @DynamoDbBean
+  public static final class WhiteListData {
+    private String email;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Email")
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+  }
+
+  @DynamoDbBean
+  public static final class FeedbackData {
+    private String id;
+    private String notes;
+    private String foundIn;
+    private String faultData;
+    private String comments;
+    private String datestamp;
+    private String email;
+    private String projectId;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Id")
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("Notes")
+    public String getNotes() {
+      return notes;
+    }
+
+    public void setNotes(String notes) {
+      this.notes = notes;
+    }
+
+    @DynamoDbAttribute("FoundIn")
+    public String getFoundIn() {
+      return foundIn;
+    }
+
+    public void setFoundIn(String foundIn) {
+      this.foundIn = foundIn;
+    }
+
+    @DynamoDbAttribute("FaultData")
+    public String getFaultData() {
+      return faultData;
+    }
+
+    public void setFaultData(String faultData) {
+      this.faultData = faultData;
+    }
+
+    @DynamoDbAttribute("Comments")
+    public String getComments() {
+      return comments;
+    }
+
+    public void setComments(String comments) {
+      this.comments = comments;
+    }
+
+    @DynamoDbAttribute("Datestamp")
+    public String getDatestamp() {
+      return datestamp;
+    }
+
+    public void setDatestamp(String datestamp) {
+      this.datestamp = datestamp;
+    }
+
+    @DynamoDbAttribute("Email")
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+
+    @DynamoDbAttribute("ProjectId")
+    public String getProjectId() {
+      return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+      this.projectId = projectId;
+    }
+
+  }
+
+  @DynamoDbBean
+  public static final class NonceData {
+    private String nonce;
+    private String userId;
+    private Long projectId;
+    private Instant timestamp;
+    private Instant validUntil;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Nonce")
+    public String getNonce() {
+      return nonce;
+    }
+
+    public void setNonce(String nonce) {
+      this.nonce = nonce;
+    }
+
+    @DynamoDbAttribute("UserId")
+    public String getUserId() {
+      return userId;
+    }
+
+    public void setUserId(String userId) {
+      this.userId = userId;
+    }
+
+    @DynamoDbAttribute("ProjectId")
+    public Long getProjectId() {
+      return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+      this.projectId = projectId;
+    }
+
+    @DynamoDbAttribute("Timestamp")
+    public Instant getTimestamp() {
+      return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+      this.timestamp = timestamp;
+    }
+
+    @DynamoDbAttribute("ValidUntil")
+    public Instant getValidUntil() {
+      return validUntil;
+    }
+
+    public void setValidUntil(Instant validUntil) {
+      this.validUntil = validUntil;
+    }
+  }
+
+  @DynamoDbBean
+  public static final class CorruptionRecord {
+    private String id;
+    // TODO: This is indexed in Datastore, but DDB does not support queries on partition keys
+    private Instant timestamp;
+    private String userId;
+    private long projectId;
+    private String fileId;
+    private String message;
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Id")
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    @DynamoDbAttribute("Timestamp")
+    public Instant getTimestamp() {
+      return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+      this.timestamp = timestamp;
+    }
+
+    @DynamoDbAttribute("UserId")
+    public String getUserId() {
+      return userId;
+    }
+
+    public void setUserId(String userId) {
+      this.userId = userId;
+    }
+
+    @DynamoDbAttribute("ProjectId")
+    public Long getProjectId() {
+      return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+      this.projectId = projectId;
+    }
+
+    @DynamoDbAttribute("FileId")
+    public String getFileId() {
+      return fileId;
+    }
+
+    public void setFileId(String fileId) {
+      this.fileId = fileId;
+    }
+
+    @DynamoDbAttribute("Message")
+    public String getMessage() {
+      return message;
+    }
+
+    public void setMessage(String message) {
+      this.message = message;
+    }
+  }
+
+  @DynamoDbBean
   public static final class SplashData {
     private Long id;
     private int version;
@@ -372,12 +593,13 @@ final class StoredData {
   // that is mailed out.
   @DynamoDbBean
   public static final class PWData {
-    @Id String id;              // "Secret" URL part
+    private String id;              // "Secret" URL part
 
     // TODO: This is indexed in Datastore, but DDB does not support queries on partition keys
-    Instant timestamp; // So we know when to expire this objects
+    private Instant timestamp; // So we know when to expire this objects
+    private Instant validUntil;
 
-    String email;            // Email of account in question
+    private String email;            // Email of account in question
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("Id")
@@ -406,6 +628,15 @@ final class StoredData {
     public void setEmail(String email) {
       this.email = email;
     }
+
+    @DynamoDbAttribute("ValidUntil")
+    public Instant getValidUntil() {
+      return validUntil;
+    }
+
+    public void setValidUntil(Instant validUntil) {
+      this.validUntil = validUntil;
+    }
   }
 
   // A Shared backpack. Shared backpacks are not associated with
@@ -415,8 +646,8 @@ final class StoredData {
   // it.
   @DynamoDbBean
   public static final class Backpack {
-    @Id String id;
-    String content;
+    private String id;
+    private String content;
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("Id")
@@ -472,7 +703,7 @@ final class StoredData {
   }
 
   @DynamoDbBean
-    public static final class AllowedIosExtensions {
+  public static final class AllowedIosExtensions {
     // Unique Id - for now we expect there to be only 1 AllowedIosExtensions object.
     private Long id;
 

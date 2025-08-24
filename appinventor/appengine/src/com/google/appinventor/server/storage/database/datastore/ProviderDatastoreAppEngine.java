@@ -1349,7 +1349,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     // via a QR Code.
     try {
       datastore.delete(datastore.query(StoredData.NonceData.class)
-          .filter("timestamp <", new Date((new Date()).getTime() - 3600*3*1000L))
+          .filter("timestamp <", new Date((new Date()).getTime() - NONCE_EXPIRATION_TIME_MS))
           .limit(10).fetchKeys());
     } catch (Exception ex) {
       LOG.log(Level.WARNING, "Exception during cleanupNonces", ex);
@@ -1406,7 +1406,7 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
     // Note: we remove data after 24 hours.
     try {
       datastore.delete(datastore.query(StoredData.PWData.class)
-          .filter("timestamp <", new Date((new Date()).getTime() - 3600*24*1000L))
+          .filter("timestamp <", new Date((new Date()).getTime() - PWDATA_EXPIRATION_TIME_MS))
           .limit(10).fetchKeys());
     } catch (Exception ex) {
       LOG.log(Level.WARNING, "Exception during cleanupPWData", ex);

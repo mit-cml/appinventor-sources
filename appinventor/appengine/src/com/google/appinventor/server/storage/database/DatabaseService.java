@@ -20,6 +20,9 @@ import java.util.List;
 public abstract class DatabaseService {
   private static final Flag<String> PROVIDER = Flag.createFlag("database.provider", "gae");
 
+  protected static final Long NONCE_EXPIRATION_TIME_MS = 3 * 3600 * 1000L;  // 3 hours
+  protected static final Long PWDATA_EXPIRATION_TIME_MS = 24 * 3600 * 1000L;  // 24 hours
+
   public abstract User findOrCreateUser(final String userId, final String email, final boolean requireTos);
 
   public abstract void setUserSessionId(final String userId, final String sessionId);
