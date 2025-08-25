@@ -6,7 +6,7 @@ import com.google.appinventor.server.storage.FileDataRoleEnum;
 import java.io.IOException;
 
 public abstract class FilesystemService {
-  private static final Flag<String> PROVIDER = Flag.createFlag("filesystem.provider", "s3");
+  private static final Flag<String> PROVIDER = Flag.createFlag("filesystem.provider", "gae");
 
   public abstract int save(final FileDataRoleEnum role, final String fileName, final byte[] content) throws IOException;
 
@@ -19,7 +19,8 @@ public abstract class FilesystemService {
 
     if ("s3".equals(provider)) {
       return new ProviderS3();
-    } else if ("gae".equals(provider) || (provider == null || provider.isEmpty())) {
+    } else if ("gae".equals(provider) || "gcs".equals(provider)
+        || (provider == null || provider.isEmpty())) {
       return new ProviderGcsAppEngine();
     }
 

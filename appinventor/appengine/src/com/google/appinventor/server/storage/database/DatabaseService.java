@@ -163,7 +163,8 @@ public abstract class DatabaseService {
 
     if ("ddb".equals(provider) || "dynamodb".equals(provider)) {
       return new ProviderDynamoDB();
-    } else if ("gae".equals(provider) || (provider == null || provider.isEmpty())) {
+    } else if ("gae".equals(provider) || "datastore".equals(provider) || "objectify".equals(provider)
+        || (provider == null || provider.isEmpty())) {
       return new ProviderDatastoreAppEngine();
     }
 

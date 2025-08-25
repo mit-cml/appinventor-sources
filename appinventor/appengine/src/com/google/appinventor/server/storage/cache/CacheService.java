@@ -19,7 +19,8 @@ public abstract class CacheService {
 
     if ("redis".equals(provider)) {
       return new ProviderRedis();
-    } else if ("gae".equals(provider) || (provider == null || provider.isEmpty())) {
+    } else if ("gae".equals(provider) || "memcache".equals(provider)
+        || (provider == null || provider.isEmpty())) {
       return new ProviderMemcacheAppEngine();
     }
 
