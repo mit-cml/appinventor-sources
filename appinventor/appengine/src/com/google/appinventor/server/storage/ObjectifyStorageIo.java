@@ -205,7 +205,7 @@ public class ObjectifyStorageIo implements StorageIo {
       ObjectifyService.register(Backpack.class);
       ObjectifyService.register(AllowedTutorialUrls.class);
       ObjectifyService.register(AllowedIosExtensions.class);
-    } catch (ExceptionInInitializerError e) {
+    } catch (IllegalArgumentException e) {
       String message = e.getMessage();
       if (message == null) {
         message = "";
