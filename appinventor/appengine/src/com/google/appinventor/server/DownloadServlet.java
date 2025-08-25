@@ -250,14 +250,6 @@ public class DownloadServlet extends OdeServlet {
         } else {
           throw new IllegalArgumentException("Missing user file path.");
         }
-      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_CSR)) {
-        byte[] csr = getCSR();
-        if (csr == null) {
-          resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
-          return;
-        } else {
-          downloadableFile = new RawFile("AppInventor.certSigningRequest", csr);
-        }
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_CACHED)) {
         // Download project source files as a zip.
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);

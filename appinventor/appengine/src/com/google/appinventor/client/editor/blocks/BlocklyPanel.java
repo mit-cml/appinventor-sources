@@ -40,7 +40,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.Command;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

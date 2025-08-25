@@ -111,9 +111,6 @@
     <!-- host[:port] to use for the iOS build server -->
     <property name="ios.build.server.host" value="localhost:9990" />
 
-    <!-- host[:port] to use for the iOS build server -->
-    <property name="ios.build.server.host" value="localhost:9990" />
-
     <!-- host[:port] to tell build server the app host url to callback
          when deploy AppInventor on other GAE implementation such as
          AppScale.Keep it blank when deploy on GAE -->

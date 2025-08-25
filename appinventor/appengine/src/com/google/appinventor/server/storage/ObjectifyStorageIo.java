@@ -66,8 +66,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
-import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
