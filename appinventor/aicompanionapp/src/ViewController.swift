@@ -274,7 +274,6 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         guard let data = data, let responseContent = String(data: data, encoding: .utf8) else {
           return
         }
-        print("response content: \(responseContent)")
         DispatchQueue.main.async {
           self.connectProgressDialog?.message = "Waiting for remote..."
           self.connectProgressView?.progress = 0.15
@@ -305,12 +304,14 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
   
-  @objc func openLibrary(){
-      let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as! AppLibraryViewController
-      libraryVC.form = self.form
-      self.pushViewController(libraryVC, animated:true)
+  @objc func openLibrary() {
+    guard let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as? AppLibraryViewController else {
+      return
     }
-  
+    libraryVC.form = self.form
+    self.pushViewController(libraryVC, animated:true)
+  }
+
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
@@ -395,43 +396,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       newapp.makeCurrent()
       newapp.loadScreen1(form)
     } else {
-      openProjectFromWeb(named: name)
+      view.makeToast("Unable to locate project \(name)")
     }
   }
 
   private func setPopup(popup: String) {
     phoneStatus.setPopup(popup)
-  }
-
-  private var urlSession = URLSession(configuration: .ephemeral)
-
-  private func openProjectFromWeb(named name: String) {
-    DispatchQueue(label: "ProjectLoader").async {
-      guard let url = URL(string: "https://appserver.appinventor.mit.edu/serve/\(name).aia") else {
-        return
-      }
-      let task = self.urlSession.dataTask(with: url) { (data, response, error) in
-        do {
-          let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-          var destination = paths[0]
-          destination.appendPathComponent("\(name).aia")
-          if let data = data {
-            do {
-              try data.write(to: destination)
-              let app = BundledApp(aiaPath: destination)
-              DispatchQueue.main.async {
-                app.makeCurrent()
-                app.loadScreen1(self.form)
-              }
-            } catch {
-              print(error)
-            }
-          }
-        }
-      }
-      task.priority = 1.0
-      task.resume()
-    }
   }
 
   /**
