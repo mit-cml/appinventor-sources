@@ -23,7 +23,6 @@ public class BundledApp : Application, UINavigationControllerDelegate {
       let dirname = aiaPath.lastPathComponent.replace(target: ".\(aiaPath.pathExtension)", withString: "")
       docUrl.appendPathComponent(dirname, isDirectory: true)
       path = docUrl.absoluteString.replace(target: "file://", withString: "")
-      print(path)
       if FileManager.default.fileExists(atPath: path) {
         try FileManager.default.removeItem(at: docUrl)
       }
@@ -71,7 +70,6 @@ public class BundledApp : Application, UINavigationControllerDelegate {
       if let startValue = startValue {
         newForm.startValue = startValue
       }
-      print(yail)
       let interpreter = SCMInterpreter.shared
       interpreter.setCurrentForm(newForm)
       interpreter.evalForm(yail)
@@ -111,7 +109,6 @@ public class BundledApp : Application, UINavigationControllerDelegate {
     let interpreter = SCMInterpreter.shared
     interpreter.setCurrentForm(form)
     interpreter.evalForm(yail)
-    print(yail)
     if let exception = interpreter.exception {
       print("\(exception)")
     }
