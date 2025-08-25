@@ -189,21 +189,36 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   static {
-    // Register the data object classes stored in the database
-    ObjectifyService.register(UserData.class);
-    ObjectifyService.register(ProjectData.class);
-    ObjectifyService.register(UserProjectData.class);
-    ObjectifyService.register(FileData.class);
-    ObjectifyService.register(UserFileData.class);
-    ObjectifyService.register(WhiteListData.class);
-    ObjectifyService.register(FeedbackData.class);
-    ObjectifyService.register(NonceData.class);
-    ObjectifyService.register(CorruptionRecord.class);
-    ObjectifyService.register(PWData.class);
-    ObjectifyService.register(SplashData.class);
-    ObjectifyService.register(Backpack.class);
-    ObjectifyService.register(AllowedTutorialUrls.class);
-    ObjectifyService.register(AllowedIosExtensions.class);
+    try {
+      // Register the data object classes stored in the database
+      ObjectifyService.register(UserData.class);
+      ObjectifyService.register(ProjectData.class);
+      ObjectifyService.register(UserProjectData.class);
+      ObjectifyService.register(FileData.class);
+      ObjectifyService.register(UserFileData.class);
+      ObjectifyService.register(WhiteListData.class);
+      ObjectifyService.register(FeedbackData.class);
+      ObjectifyService.register(NonceData.class);
+      ObjectifyService.register(CorruptionRecord.class);
+      ObjectifyService.register(PWData.class);
+      ObjectifyService.register(SplashData.class);
+      ObjectifyService.register(Backpack.class);
+      ObjectifyService.register(AllowedTutorialUrls.class);
+      ObjectifyService.register(AllowedIosExtensions.class);
+    } catch (ExceptionInInitializerError e) {
+      String message = e.getMessage();
+      if (message == null) {
+        message = "";
+      }
+
+      // This will happen when we declare Objectify classes twice. This usually happens when, for example,
+      //   using a different implementation and running this one with tests.
+      if (message.startsWith("Attempted to register kind '") && message.endsWith("' twice")) {
+        LOG.warning("Tried to register Objectify objects twice, skipping init...");
+      } else {
+        throw e;
+      }
+    }
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     // gcsBucket is where project storage goes
