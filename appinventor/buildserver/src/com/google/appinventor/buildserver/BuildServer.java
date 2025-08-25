@@ -40,6 +40,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
@@ -47,6 +48,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -133,6 +135,10 @@ public class BuildServer {
       usage = "Token needed to shutdown the server remotely.")
     String shutdownToken = null;
 
+    @Option(name = "--buildserverPassword",
+      usage = "Password needed to invoke the buildserver.")
+    String buildserverPassword = null;
+
     @Option(name = "--childProcessRamMb",
       usage = "Maximum ram that can be used by a child processes, in MB.")
     int childProcessRamMb = 2048;
@@ -194,6 +200,8 @@ public class BuildServer {
   //The number of failed build requests for this server run
   private static final AtomicInteger failedBuildRequests = new AtomicInteger(0);
 
+  private static final String PASSWORD_HEADER_PREFIX = "Password ";
+
   // The reporter for gathering build stats.
   private static StatReporter statReporter;
 
@@ -227,8 +235,6 @@ public class BuildServer {
   // balancer sends a job our way because it hasn't decided we are down.
   private static volatile long shuttingTime = 0;
   private static volatile long turningOnTime = 0;
-
-  private static String shutdownToken = null;
 
   // ShutdownState: UP:         We are up and running
   //                SHUTTING:   We have been told to shutdown, with a time delay
@@ -459,8 +465,16 @@ public class BuildServer {
   @POST
   @Path("build-from-zip")
   @Produces("application/vnd.android.package-archive;charset=utf-8")
-  public Response buildFromZipFile(@QueryParam("uname") String userName, @QueryParam("ext") String ext, File zipFile)
-    throws IOException {
+  public Response buildFromZipFile(
+    @QueryParam("uname") String userName,
+    @QueryParam("ext") String ext,
+    @HeaderParam("Authorization") String authHeader,
+    File zipFile) throws IOException {
+
+    if (!isBuildRequestAllowed(authHeader)) {
+      return BuildServer.incorrectPasswordResponse().build();
+    }
+
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = zipFile;
     inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -502,8 +516,16 @@ public class BuildServer {
   @POST
   @Path("build-all-from-zip")
   @Produces("application/zip;charset=utf-8")
-  public Response buildAllFromZipFile(@QueryParam("uname") String userName, @QueryParam("ext") String ext, File inputZipFile)
-    throws IOException, JSONException {
+  public Response buildAllFromZipFile(
+    @QueryParam("uname") String userName,
+    @QueryParam("ext") String ext,
+    @HeaderParam("Authorization") String authHeader,
+    File inputZipFile) throws IOException, JSONException {
+
+    if (!isBuildRequestAllowed(authHeader)) {
+      return BuildServer.incorrectPasswordResponse().build();
+    }
+
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = inputZipFile;
     inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -561,7 +583,13 @@ public class BuildServer {
     @QueryParam("callback") final String callbackUrlStr,
     @QueryParam("gitBuildVersion") final String gitBuildVersion,
     @QueryParam("ext") final String ext,
+    @HeaderParam("Authorization") String authHeader,
     final File inputZipFile) throws IOException {
+
+    if (!isBuildRequestAllowed(authHeader)) {
+      return BuildServer.incorrectPasswordResponse().build();
+    }
+
     // Set the inputZip field so we can delete the input zip file later in
     // cleanUp.
     inputZip = inputZipFile;
@@ -699,6 +727,7 @@ public class BuildServer {
         for (File file : files) {
           zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
           Files.copy(file, zipOutputStream);
+          file.delete();        // Cleanup
         }
       }
       successfulBuildRequests.getAndIncrement();
@@ -920,6 +949,32 @@ public class BuildServer {
       }
     }
     return hostname;
+  }
+
+  private boolean isBuildRequestAllowed(final String headerValue) {
+    if (Objects.isNull(commandLineOptions.buildserverPassword) || commandLineOptions.buildserverPassword.isEmpty()) {
+      // When no password is set, we always allow this request.
+      return true;
+    }
+
+    if (Objects.isNull(headerValue)) {
+      // Now we do require password, but it has not been provided.
+      return false;
+    }
+
+    if (!headerValue.startsWith(BuildServer.PASSWORD_HEADER_PREFIX)) {
+      // The header value does not start with "Password " as per the GAE contract
+      return false;
+    }
+
+    final String passwordValue = headerValue.substring(BuildServer.PASSWORD_HEADER_PREFIX.length());
+
+    // Now just make sure the password matches
+    return commandLineOptions.buildserverPassword.equals(passwordValue);
+  }
+
+  private static Response.ResponseBuilder incorrectPasswordResponse() {
+    return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Not Authorized");
   }
 
 }

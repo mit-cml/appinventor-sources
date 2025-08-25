@@ -61,6 +61,7 @@ public interface FileExporter {
     boolean includeYail,
     boolean includeScreenShots,
     boolean fatalError, boolean forGallery, boolean forAppStore, boolean locallyCachedApp) throws IOException;
+
   /**
    * Exports projects selected by the user as a zip of zips.
    *

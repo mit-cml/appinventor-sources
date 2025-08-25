@@ -15,90 +15,6 @@ public interface ImagesNeo extends Images {
    * */
 
   /**
-   * Phone status bar for Android Holo shown above the form in the visual designer
-   */
-  @Override
-  @Source("images/phonebar.png")
-  ImageResource phonebar();
-
-  /**
-   * Phone status bar for the Android Material form in the visual designer
-   */
-  @Override
-  @Source("images/phonebarAndroidMaterial.png")
-  ImageResource phonebarAndroidMaterial();
-
-  /**
-   * Phone status bar for iPhone containing white left side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPhoneLeftWhiteFB.png")
-  ImageResource phonebariPhoneLeftWhite();
-
-  /**
-   * Phone status bar for iPhone containing white right side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPhoneRightWhite.png")
-  ImageResource phonebariPhoneRightWhite();
-
-  /**
-   * Phone status bar for iPhone containing black left side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPhoneLeftBlack.png")
-  ImageResource phonebariPhoneLeftBlack();
-
-  /**
-   * Phone status bar for iPhone containing black right side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPhoneRightBlack.png")
-  ImageResource phonebariPhoneRightBlack();
-
-  /**
-   * Phone status bar for iPad containing black left side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPadBlackFB.png")
-  ImageResource phonebariPadLeftBlack();
-
-  /**
-   * Phone status bar for iPad containing black right side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPadRightBlack.png")
-  ImageResource phonebariPadRightBlack();
-
-  /**
-   * Phone status bar for iPad containing white left side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPadLeftWhiteFB.png")
-  ImageResource phonebariPadLeftWhite();
-
-  /**
-   * Phone status bar for iPad containing white right side icons in the visual designer
-   */
-  @Override
-  @Source("images/iPadRightWhite.png")
-  ImageResource phonebariPadRightWhite();
-
-  /**
-   * Phone status bar containing white book icon for the iOS form in the visual designer
-   */
-  @Override
-  @Source("images/iOSBookmarkWhite.png")
-  ImageResource bookIconWhite();
-
-  /**
-   * Phone status bar containing black book icon for the iOS form in the visual designer
-   */
-  @Override
-  @Source("images/iOSBookmarkBlack.png")
-  ImageResource bookIconBlack();
-
-  /**
    * Designer palette item: nearfield component
    */
   @Override
@@ -204,6 +120,12 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/datePicker.png")
   ImageResource datePickerComponent();
+
+  /**
+   * Designer palette item: form component
+   */
+  @Source("com/google/appinventor/images/form.png")
+  ImageResource form();
 
   /**
    * Designer palette item: horizontal arrangement component
@@ -522,13 +444,6 @@ public interface ImagesNeo extends Images {
   @Override
   @Source("images/bluetooth.png")
   ImageResource bluetooth();
-
-  /**
-   * Designer palette item: FusiontablesControl component
-   */
-  @Override
-  @Source("images/fusiontables.png")
-  ImageResource fusiontables();
 
   /**
    * Designer palette item: WebViewer component

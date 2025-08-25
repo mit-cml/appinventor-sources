@@ -1141,15 +1141,20 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         case "startCache":
             top.BlocklyPanel_startCache().then((success) => {
                 if (!success) {
-                    console.log("Failed to cache project.");
+                    runtimeerr("Failed to cache project");
                 }})
                 .catch((error) => {
-                    console.log("Error while caching project: " + error);
+                    runtimeerr("Encountered issue while caching project: " + error);
                 });
             break;
         case "error":
             console.log("processRetVals: Error value = " + r.value);
             runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
+            break;
+        case "log":
+            top.ConsolePanel_addLog(r.level, r.item);
+            console.log("processRetVals: Log level = " + r.level);
+            console.log("processRetVals: Log content = " + r.item);
         }
     }
     var handler = Blockly.common.getMainWorkspace().getWarningHandler();
@@ -1177,7 +1182,7 @@ Blockly.ReplMgr.setDoitResult = function(block, value) {
     block.getIcon(Blockly.icons.CommentIcon.TYPE).setVisible(true);
 };
 
-Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
+Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
     var first = true;
     var context = this;
     var counter = 0;            // Used to for counting down
@@ -1398,7 +1403,7 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
     return sb.join("");
 };
 
-Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
+Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, loopback) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
@@ -1411,9 +1416,16 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb) {
     if (!already) {
         if (top.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
-        if (emulator || usb) {         // If we are talking to the emulator, don't use rendezvou server
-            this.startAdbDevice(rs, usb);
-            rs.state = this.rsState.WAITING; // Wait for the emulator to start
+        if (emulator || usb || loopback) {         // If we are talking to the emulator, don't use rendezvou server
+            this.startAdbDevice(rs, usb, loopback);
+            if (loopback) {
+                rs.state = this.rsState.ASSET;
+                top.AssetManager_refreshAssets(function() {
+                    Blockly.ReplMgr.loadExtensions();
+                });
+            } else {
+                rs.state = this.rsState.WAITING; // Wait for the emulator to start
+            }
             rs.replcode = "emulator";          // Must match code in Companion Source
             rs.url = 'http://127.0.0.1:8001/_newblocks';
             rs.rurl = 'http://127.0.0.1:8001/_values';
@@ -1505,6 +1517,10 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.android = !(new RegExp('^i(pad)?os$').test((json.os || 'Android').toLowerCase()));
+                if (!rs.android && json.extensions) {
+                    // Newer iOS versions will report the extensions that they support
+                    top.ALLOWED_IOS_EXTENSIONS = JSON.parse(json.extensions);
+                }
                 if (!(rs.android) && Blockly.ReplMgr.hasDisallowedIosExtensions()) {
                     rs.dialog.hide();
                     top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
@@ -1897,6 +1913,22 @@ Blockly.ReplMgr.connectCache = function(projectId, projectName) {
     return true;
 }
 
+
+Blockly.ReplMgr.connectCache = function(projectId, projectName) {
+    if (top.ReplState === undefined)
+        return false;
+    if (top.ReplState.state != this.rsState.ASSET && top.ReplState.state != this.rsState.CONNECTED)
+        return false;
+
+    var uri = window.location.origin;
+    var cookie = this.getCookie();
+    console.log("connectCache uri = " + uri + " cookie = " + cookie);
+    var yail = "(AssetFetcher:fetchCachedProject \"" + cookie + "\" \"" + projectId + "\" \"" + uri + "\" \"" + projectName + "\")";
+    console.log("Yail for connectCache = " + yail);
+    this.putYail();
+    this.putYail.putAsset(yail)
+    return true;
+}
 
 Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, force) {
     if (top.ReplState === undefined)

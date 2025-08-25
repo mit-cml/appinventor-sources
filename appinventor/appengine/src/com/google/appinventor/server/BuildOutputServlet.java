@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -114,8 +114,8 @@ public class BuildOutputServlet extends OdeServlet {
           return;
         }
       } else {
-        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(),
-            nonce.getProjectId(), null, "apk");
+        // Looking for an Android build file
+        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(), nonce.getProjectId(), "Android");
       }
 
     } catch (FileNotFoundException e) {

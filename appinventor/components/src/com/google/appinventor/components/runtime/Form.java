@@ -1,12 +1,20 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.BLUETOOTH_ADVERTISE;
+import static android.Manifest.permission.BLUETOOTH_CONNECT;
+import static android.Manifest.permission.BLUETOOTH_SCAN;
 import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
+import static android.Manifest.permission.READ_MEDIA_VIDEO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
 import android.annotation.SuppressLint;
@@ -79,6 +87,7 @@ import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.PermissionRegistry;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -166,6 +175,7 @@ public class Form extends AppInventorCompatActivity
   protected final Handler androidUIHandler = new Handler();
 
   protected String formName;
+  protected String componentName;
 
   private boolean screenInitialized;
 
@@ -218,6 +228,16 @@ public class Form extends AppInventorCompatActivity
   private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
+
+  private final PermissionRegistry permissionRegistry = new PermissionRegistry()
+      .recordMinSdk(BLUETOOTH_ADVERTISE, Build.VERSION_CODES.S)
+      .recordMinSdk(BLUETOOTH_CONNECT, Build.VERSION_CODES.S)
+      .recordMinSdk(BLUETOOTH_SCAN, Build.VERSION_CODES.S)
+      .recordMaxSdk(READ_EXTERNAL_STORAGE, Build.VERSION_CODES.TIRAMISU)
+      .recordMinSdk(READ_MEDIA_AUDIO, Build.VERSION_CODES.TIRAMISU)
+      .recordMinSdk(READ_MEDIA_IMAGES, Build.VERSION_CODES.TIRAMISU)
+      .recordMinSdk(READ_MEDIA_VIDEO, Build.VERSION_CODES.TIRAMISU)
+      .recordMaxSdk(WRITE_EXTERNAL_STORAGE, Build.VERSION_CODES.R);
 
   private FileScope defaultFileScope = FileScope.App;
 
@@ -2411,6 +2431,11 @@ public class Form extends AppInventorCompatActivity
     ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
   }
 
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for linear layout
+  }
+
   /*
    * This is called from runtime.scm at the beginning of each event handler.
    * It allows runtime.scm to know which form environment should be used for
@@ -2831,8 +2856,14 @@ public class Form extends AppInventorCompatActivity
    * @return true if the permission has been denied, otherwise false.
    */
   public boolean isDeniedPermission(String permission) {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return false;  // Do not need to ask permissions before Marshmallow
+    } else if (!permissionRegistry.needsPermission(permission)) {
+      return false;  // Do not need to ask for this permission on this SDK level
+    } else {
+      return ContextCompat.checkSelfPermission(this, permission)
+          == PackageManager.PERMISSION_DENIED;
+    }
   }
 
   /**
@@ -3049,5 +3080,11 @@ public class Form extends AppInventorCompatActivity
     } else {
       return FileUtil.openFile(this, path);
     }
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    // Note this here will have the same value as formName, but formName is specific to only Forms
+    this.componentName = componentName;
   }
 }

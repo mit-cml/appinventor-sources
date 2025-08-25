@@ -6,6 +6,13 @@
 
 package com.google.appinventor.server.project.youngandroid;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 import static com.google.appinventor.server.ios.ProvisioningProfileUtil.validateProvisioningProfile;
 
 import com.google.appengine.api.utils.SystemProperty;
@@ -56,7 +63,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNo
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.Settings;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
@@ -78,6 +84,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -99,24 +106,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private static final Flag<Integer> MAX_PROJECT_SIZE =
       Flag.createFlag("project.maxsize", 30);
-  private static final String ERROR_LARGE_PROJECT =
-      "Sorry, can't package projects larger than %1$d MB. Yours is %2$3.2f MB.";
 
-  // Project folder prefixes
-  public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
-  protected static final String ASSETS_FOLDER = "assets";
-  private static final String EXTERNAL_COMPS_FOLDER = "assets/external_comps";
-  static final String PROJECT_DIRECTORY = "youngandroidproject";
-
-  // TODO(user) Source these from a common constants library.
-  private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
-  private static final String CODEBLOCKS_SOURCE_EXTENSION =
-      YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
-  private static final String BLOCKLY_SOURCE_EXTENSION =
-      YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION;
-  private static final String YAIL_FILE_EXTENSION =
-      YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION;
+  private static final String EXTERNAL_COMPS_FOLDER = ASSETS_FOLDER + "/external_comps";
 
   public static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
       "project.properties";
@@ -126,14 +117,16 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // Build folder path
   private static final String BUILD_FOLDER = "build";
 
-  public static final String PROJECT_KEYSTORE_LOCATION = "android.keystore";
-
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+  private static final Flag<String> buildServerPassword =
+      Flag.createFlag("build.server.password", "");
   // host[:port] to use for connecting to the second build server
   private static final Flag<String> buildServerHost2 =
       Flag.createFlag("build2.server.host", "");
+  private static final Flag<String> buildServerPassword2 =
+      Flag.createFlag("build2.server.password", "");
   // host[:port] to tell build server app host url
   private static final Flag<String> iosBuildServer =
       Flag.createFlag("ios.build.server.host", "");
@@ -239,12 +232,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     YoungAndroidSettingsBuilder oldProperties = new YoungAndroidSettingsBuilder(properties);
 
 
+    // Project settings do not include the name and package (main). So we add them
+    // here so the comparison below is accurate. Before this change, we always write out the
+    // project properties file, even when there are no changes to it.
+    String projectName = properties.getProperty("name");
+    String qualifiedName = properties.getProperty("main");
+    newProperties.setProjectName(projectName)
+      .setQualifiedFormName(qualifiedName);
+
     if (!oldProperties.equals(newProperties)) {
       // Recreate the project.properties and upload it to storageIo.
-      String projectName = properties.getProperty("name");
-      String qualifiedName = properties.getProperty("main");
-      String newContent = newProperties.setProjectName(projectName)
-          .setQualifiedFormName(qualifiedName).toProperties();
+      String newContent = newProperties.toProperties();
       storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -554,6 +552,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           outputFileDir,
           isAab, foriOS, forAppStore));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
+      setBuildServerPassword(connection, secondBuildserver);
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
 
@@ -824,6 +823,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       uriBuilder.add("gitBuildVersion", GitBuildId.getVersion());
     }
     return uriBuilder.build();
+  }
+
+  private void setBuildServerPassword(HttpURLConnection connection, boolean secondBuildserver) {
+    final String buildServerPassword = secondBuildserver
+            ? YoungAndroidProjectService.buildServerPassword2.get()
+            : YoungAndroidProjectService.buildServerPassword.get();
+
+    if (Objects.isNull(buildServerPassword) || buildServerPassword.isEmpty()) {
+      // No need to set a password, as the build server is not password protected.
+      return;
+    }
+
+    // Set the password as Password token...
+    connection.setRequestProperty("Authorization", "Password " + buildServerPassword);
   }
 
   private String getCurrentHost() {

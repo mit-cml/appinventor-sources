@@ -1,26 +1,30 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime.util;
 
+import android.Manifest;
+import android.webkit.PermissionRequest;
+
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.WebViewer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 
 import android.text.InputType;
-import android.view.MotionEvent;
-import android.view.View;
 import android.webkit.GeolocationPermissions;
 import android.webkit.GeolocationPermissions.Callback;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Helper methods for calling methods added in Eclair (2.0, API level 5)
@@ -57,33 +61,75 @@ public class EclairUtil {
     webview.getSettings().setGeolocationDatabasePath(activity.getFilesDir().getAbsolutePath());
     webview.getSettings().setDatabaseEnabled(true);
     webview.setWebChromeClient(new WebChromeClient() {
+        private boolean askedPermission = false;
+
         @Override
         public void onGeolocationPermissionsShowPrompt(String origin,
           Callback callback) {
-          final Callback theCallback = callback;
-          final String theOrigin = origin;
           if (!caller.PromptforPermission()) { // Don't prompt, assume permission
             callback.invoke(origin, true, true);
             return;
           }
-          AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
-          alertDialog.setTitle("Permission Request");
-          if (origin.equals("file://"))
-            origin = "This Application";
-          alertDialog.setMessage(origin + " would like to access your location.");
-          alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Allow",
-            new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                theCallback.invoke(theOrigin, true, true);
+          showPermissionDialog(activity, origin, "location", callback);
+        }
+
+        @Override
+        public void onPermissionRequest(final PermissionRequest request) {
+          List<String> permissionsNeeded = new ArrayList<>();
+          for (String resource : request.getResources()) {
+            if (resource.equals(PermissionRequest.RESOURCE_VIDEO_CAPTURE)) {
+              if (!caller.UsesCamera()) {
+                // If the app requests video or audio capture, we will not allow it.
+                request.deny();
+                return;
+              }
+              permissionsNeeded.add(Manifest.permission.CAMERA);
+            } else if (resource.equals(PermissionRequest.RESOURCE_AUDIO_CAPTURE)) {
+              if (!caller.UsesMicrophone()) {
+                // If the app requests video or audio capture, we will not allow it.
+                request.deny();
+                return;
+              }
+              permissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
+            } else {
+              // We don't support any other resources.
+              request.deny();
+              return;
+            }
+          }
+          // At this point, we have a list of permissions that the app is requesting.
+          if (activity instanceof Form) {
+            Form form = (Form) activity;
+            form.askPermission(new BulkPermissionRequest(caller, "WebView Permission Request", permissionsNeeded.toArray(new String[0])) {
+              @Override
+              public void onGranted() {
+                if (caller.PromptforPermission() && !askedPermission) {
+                  showPermissionDialog(activity, request.getOrigin().getHost(), "camera and/or microphone", new Callback() {
+                    @Override
+                    public void invoke(String origin, boolean allow, boolean remember) {
+                      if (allow) {
+                        askedPermission = true;
+                        request.grant(request.getResources());
+                      } else {
+                        request.deny();
+                      }
+                    }
+                  });
+                } else {
+                  request.grant(request.getResources());
+                }
+              }
+
+              @Override
+              public void onDenied(String[] permissions) {
+                request.deny();
+                super.onDenied(permissions);
               }
             });
-          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Refuse",
-            new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                theCallback.invoke(theOrigin, false, true);
-              }
-            });
-          alertDialog.show();
+          } else {
+            // If the activity is not a Form, we deny the request.
+            request.deny();
+          }
         }
       });
   }
@@ -118,4 +164,26 @@ public class EclairUtil {
     textview.setInputType(textview.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
   }
 
+  private static void showPermissionDialog(final Activity activity, String origin, String item,
+      final Callback callback) {
+    final String theOrigin = origin;
+    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+    alertDialog.setTitle("Permission Request");
+    if (origin.equals("file://"))
+      origin = "This Application";
+    alertDialog.setMessage(origin + " would like to access your " + item + ".");
+    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Allow",
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+            callback.invoke(theOrigin, true, true);
+          }
+        });
+    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Refuse",
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+            callback.invoke(theOrigin, false, true);
+          }
+        });
+    alertDialog.show();
+  }
 }

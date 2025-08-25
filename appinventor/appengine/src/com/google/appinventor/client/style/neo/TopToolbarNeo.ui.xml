@@ -130,7 +130,13 @@
           visible="{hasWriteAccess}" >
         <actions:SetFontRegularAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="AppStoreSettings" caption="{messages.appStoreSettingsMenuTitle}">
+        <actions:ShowAppStoreSettingsDialog />
+      </ai:DropDownItem>
       <hr/>
+      <ai:DropDownItem name="DownloadCSR" caption="{messages.downloadCertificateRequestItem}">
+        <actions:DownloadCsrAction />
+      </ai:DropDownItem>
       <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:UploadKeystoreAction/>
       </ai:DropDownItem>

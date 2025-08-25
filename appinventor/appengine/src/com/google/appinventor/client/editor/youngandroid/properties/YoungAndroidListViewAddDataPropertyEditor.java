@@ -9,7 +9,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
 
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
 
 import com.google.appinventor.client.explorer.project.Project;
 
@@ -64,9 +64,9 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
   private List<JSONObject> items;
   private List<JSONObject> itemsCopy;
 
-  private YaFormEditor editor;
+  private final SimpleEditor editor;
 
-  public YoungAndroidListViewAddDataPropertyEditor(final YaFormEditor editor) {
+  public YoungAndroidListViewAddDataPropertyEditor(final SimpleEditor editor) {
     items = new ArrayList<JSONObject>();
     itemsCopy = new ArrayList<JSONObject>();
     addData = new Button("Click to Add/Delete Data");
@@ -226,7 +226,8 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
       } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
         table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
         table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
-      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
+      } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT ||
+          layoutValue ==ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
         table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
         table.addColumn(createTextBoxes("Text2"), MESSAGES.listDataDetailTextHeader());
         table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
@@ -250,7 +251,8 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
           } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
             data.put("Text1", new JSONString(""));
             data.put("Image", new JSONString("None"));
-          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT) {
+          } else if (layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT ||
+              layoutValue == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
             data.put("Text1", new JSONString(""));
             data.put("Text2", new JSONString(""));
             data.put("Image", new JSONString("None"));

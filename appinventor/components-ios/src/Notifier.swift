@@ -350,16 +350,26 @@ open class Notifier: NonvisibleComponent {
     alert.show(animated: true)
   }
   
+
   @objc open func LogError(_ message: String) {
     NSLog("Error: \(message)")
+    if _form?.isRepl ?? false {
+      RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Error")
+    }
   }
 
   @objc open func LogInfo(_ message: String) {
     NSLog("Info: \(message)")
+    if _form?.isRepl ?? false {
+      RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Info")
+    }
   }
 
   @objc open func LogWarning(_ message: String) {
     NSLog("Warning: \(message)")
+    if _form?.isRepl ?? false {
+      RetValManager.shared().appendLogValue(message, forBlock: "Notifier", withStatus: "OK", withLevel: "Warning")
+    }
   }
 
   @objc open func ShowAlert(_ notice: String) {
@@ -488,7 +498,7 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc fileprivate func afterTextInput(sender: UIButton) {
-    _activeAlert?.dismiss(animated: true)
+    DismissActiveDialog()
     if let button = sender as? CustomButton {
       if let field = button.value as? UITextField {
         AfterTextInput(field.text ?? "")
@@ -500,14 +510,13 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc fileprivate func afterChoosing(sender: UIButton) {
-    _activeAlert?.dismiss(animated: true)
+    DismissActiveDialog()
     if let button = sender as? CustomButton, let choice = button.value as? String {
       if choice == "Cancel" {
         ChoosingCanceled()
       }
       AfterChoosing(choice)
     }
-    promoteNextAlert()
   }
 
   @objc fileprivate func cancelChoosing(sender: UIButton) {

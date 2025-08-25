@@ -47,7 +47,7 @@ import android.widget.EditText;
     "component, with the user clicking on the button when text entry is " +
     "complete.</p>",
     category = ComponentCategory.USERINTERFACE,
-    iconName = "images/passwordTextBox.png")
+    iconName = "images/passwordtextbox.png")
 @SimpleObject
 public final class PasswordTextBox extends TextBoxBase {
     

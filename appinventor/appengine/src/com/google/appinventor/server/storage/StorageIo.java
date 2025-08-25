@@ -7,7 +7,6 @@
 package com.google.appinventor.server.storage;
 
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
-import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
@@ -512,15 +511,6 @@ public interface StorageIo {
    */
 
   void deleteTempFile(String fileName) throws IOException;
-
-  // MOTD management
-
-  /**
-   * Returns the most recent motd.
-   *
-   * @return  motd
-   */
-  Motd getCurrentMotd();
 
   /**
    * Exports project files as a zip archive

@@ -250,6 +250,18 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       "os": form.Platform,
       "aid": phoneStatus.InstallationId(),
       "r2": "true",
+      "extensions": """
+      [
+      \"edu.mit.appinventor.ble\",
+      \"com.bbc.microbit.profile\",
+      \"edu.mit.appinventor.ai.personalimageclassifier\",
+      \"edu.mit.appinventor.ai.personalaudioclassifier\",
+      \"edu.mit.appinventor.ai.posenet\",
+      \"edu.mit.appinventor.ai.facemesh\",
+      \"edu.mit.appinventor.ai.teachablemachine\",
+      \"fun.microblocks.microblocks\"
+      ]
+      """,
       "useproxy": phoneStatus.UseProxy ? "true" : "false"
     ].map({ (key: String, value: String) -> String in
       return "\(key)=\(value)"
@@ -379,7 +391,6 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
 
   private func openProject(named name: String) {
     if Bundle.main.path(forResource: "Screen1", ofType: "yail", inDirectory: "samples/\(name)/") != nil {
-      print("----Creating new app-----")
       let newapp = BundledApp(named: name, at: "samples/\(name)/")
       newapp.makeCurrent()
       newapp.loadScreen1(form)

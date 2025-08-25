@@ -88,6 +88,7 @@
 
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
+    <property name="build.server.password" value="" />
 
     <!-- We provide below for a second buildserver. If this field is
          non-empty then the user is presented a choice of two different
@@ -105,6 +106,10 @@
 
     <!-- host[:port] to use for the second build server -->
     <property name="build2.server.host" value="" />
+    <property name="build2.server.password" value="" />
+
+    <!-- host[:port] to use for the iOS build server -->
+    <property name="ios.build.server.host" value="localhost:9990" />
 
     <!-- host[:port] to use for the iOS build server -->
     <property name="ios.build.server.host" value="localhost:9990" />
@@ -158,7 +163,7 @@
     <property name="firebase.url" value="" />
 
     <property name="library.url" value="http://appinventor.mit.edu/explore/library" />
-    <property name="get_started.url" value="http://appinventor.mit.edu/explore/get-started" />
+    <property name="getstarted.url" value="http://appinventor.mit.edu/explore/get-started" />
     <property name="tutorials.url" value="http://appinventor.mit.edu/explore/ai2/tutorials" />
     <property name="extensions.url" value="http://appinventor.mit.edu/extensions" />
     <property name="troubleshooting.url" value="http://appinventor.mit.edu/explore/ai2/support/troubleshooting" />

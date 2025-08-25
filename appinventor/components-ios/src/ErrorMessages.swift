@@ -320,7 +320,7 @@ import Foundation
     case .ERROR_INVALID_ANCHOR_HORIZONTAL:
       return "Invalid value %d given for AnchorHorizontal. Valid settings are 1, 2, or 3."
     case .ERROR_INVALID_MAP_TYPE:
-      return "The MapType must be 1, 2, or 3"
+      return "The MapType must be 1, 2, 3, or 4"
 
     // File Errors
     case .ERROR_CANNOT_FIND_FILE:
@@ -384,11 +384,11 @@ import Foundation
 
     // ChatBot Errors
     case .ERROR_CHATBOT_ERROR:
-      return "Error from the ChatBot code: %d %@"
+      return "Error from the ChatBot code: %d %s"
 
     // ImageBot Errors
     case .ERROR_IMAGEBOT_ERROR:
-      return "Error from the ImageBot code: %d %@"
+      return "Error from the ImageBot code: %d %s"
 
     // ListView Errors
     case .ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS:
