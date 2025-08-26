@@ -59,6 +59,7 @@ import Foundation
   case ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115
   case ERROR_WEB_REQUEST_TIMED_OUT = 1117
   case ERROR_WEB_JSON_TEXT_ENCODE_FAILED = 1118
+  case ERROR_WEB_UNKNOWN_ERROR = 1119
 
   // Camcorder Errors
   case ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201
@@ -262,6 +263,8 @@ import Foundation
       return "Took longer than timeout period to receive data from the URL: %s"
     case .ERROR_WEB_JSON_TEXT_ENCODE_FAILED:
       return "Unable to encode as JSON the object %@"
+    case .ERROR_WEB_UNKNOWN_ERROR:
+      return "Unknown Web error: %s"
 
     // Camcorder Errors
     case .ERROR_CAMCORDER_NO_CLIP_RETURNED:
