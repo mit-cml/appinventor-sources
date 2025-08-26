@@ -215,6 +215,9 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate, Lifec
     geocoder.geocodeAddressString(address) { [self] placemarks, error in
       if let error = error {
         print("Error geocoding address: \(error.localizedDescription)")
+        // Note in theory we could have a single error here, but the Android version will produce an error for each dimension.
+        self._form?.dispatchErrorOccurredEvent(self, "LatitudeFromAddress", ErrorMessage.ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND, address)
+        self._form?.dispatchErrorOccurredEvent(self, "LongitudeFromAddress", ErrorMessage.ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND, address)
         // Trigger the GotLocation event with default/fallback values
         self.GotLocationFromAddress(address, LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
         return
