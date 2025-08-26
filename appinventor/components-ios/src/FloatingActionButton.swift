@@ -6,13 +6,6 @@
 //  Updated to properly link ContextMenu in MIT App Inventor
 //
 
-//
-//  FloatingActionButton.swift
-//  AIComponentKit
-//
-//  Created by Kashish Sharma on 07/07/25.
-//  Updated to properly link ContextMenu in MIT App Inventor
-//
 
 import UIKit
 import ObjectiveC
@@ -106,27 +99,56 @@ open class FloatingActionButton: ViewComponent, AbstractMethodsForViewComponent 
 
     open override var view: UIView { _view }
 
-    // MARK: - Size
+    // MARK: - Override to remove unwanted properties
+    // Remove Height property - FloatingActionButton has fixed size
     @objc open override var Height: Int32 {
-        get { Int32(_view.frame.height) }
+        get { 
+            print("[FAB] Height property is not available for FloatingActionButton")
+            return 56 // Return default size
+        }
         set {
-            let h = CGFloat(newValue)
-            if let c = heightConstraint { c.constant = h }
-            else { heightConstraint = _view.heightAnchor.constraint(equalToConstant: h); heightConstraint?.isActive = true }
-            _view.layoutIfNeeded(); updateCornerRadius()
+            print("[FAB] Height property is not available for FloatingActionButton")
+            // Do nothing - ignore attempts to set height
         }
     }
 
+    // Remove Width property - FloatingActionButton has fixed size
     @objc open override var Width: Int32 {
-        get { Int32(_view.frame.width) }
+        get { 
+            print("[FAB] Width property is not available for FloatingActionButton")
+            return 56 // Return default size
+        }
         set {
-            let w = CGFloat(newValue)
-            if let c = widthConstraint { c.constant = w }
-            else { widthConstraint = _view.widthAnchor.constraint(equalToConstant: w); widthConstraint?.isActive = true }
-            _view.layoutIfNeeded(); updateCornerRadius()
+            print("[FAB] Width property is not available for FloatingActionButton")
+            // Do nothing - ignore attempts to set width
         }
     }
 
+    // Remove HeightPercent functionality
+    @objc open override func setHeightPercent(_ toPercent: Int32) {
+        print("[FAB] HeightPercent is not available for FloatingActionButton")
+        // Do nothing - ignore attempts to set height percent
+    }
+
+    // Remove WidthPercent functionality
+    @objc open override func setWidthPercent(_ toPercent: Int32) {
+        print("[FAB] WidthPercent is not available for FloatingActionButton")
+        // Do nothing - ignore attempts to set width percent
+    }
+
+    // Remove Visible property - FloatingActionButton is always visible
+    @objc open override var Visible: Bool {
+        get { 
+            print("[FAB] Visible property is not available for FloatingActionButton")
+            return true // Always return true
+        }
+        set {
+            print("[FAB] Visible property is not available for FloatingActionButton")
+            // Do nothing - ignore attempts to set visibility
+        }
+    }
+
+    // MARK: - Internal size management (for corner radius updates)
     private func updateCornerRadius() {
         button.layer.cornerRadius = min(_view.bounds.width, _view.bounds.height) / 2.0
     }
