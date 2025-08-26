@@ -10,8 +10,11 @@ import Combine
 
 @available(iOS 14.0, *)
 open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
+
   
-  public static var SHARED_GROUND_LEVEL: Float = -0.8
+
+  
+  public static var SHARED_GROUND_LEVEL: Float = -1.0
   public static var VERTICAL_OFFSET: Float = 0.05
    // Update your existing GROUND_LEVEL to use the shared value
   public var GROUND_LEVEL: Float {
@@ -35,6 +38,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     // TODO: Fix this
   }
   
+  
   public func getChildren() -> [any Component] {
     return []
   }
@@ -54,6 +58,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _trackingType: ARTrackingType = .worldTracking
   private var _configuration: ARConfiguration = ARWorldTrackingConfiguration()
   private var _planeDetection: ARPlaneDetectionType = .horizontal
+  private var _enableOcclusion: Bool = false
   private var _showWorldOrigin: Bool = false
   private var _showFeaturePoints: Bool = false
   private var _showWireframes: Bool = false
@@ -97,6 +102,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _cachedCameraForward: SIMD3<Float>?
   private var _currentDraggedObject: ARNodeBase? = nil
   
+  private var _placementIndicator: AnchorEntity?
+
+  
   struct CollisionGroups {
       static let arObjects: CollisionGroup = CollisionGroup(rawValue: 1 << 0)
       static let environment: CollisionGroup = CollisionGroup(rawValue: 1 << 1)
@@ -127,10 +135,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
-    _arView.environment.sceneUnderstanding.options = [.occlusion]
-    _arView.environment.sceneUnderstanding.options.insert(.physics)
-    _arView.environment.sceneUnderstanding.options.insert(.collision)
-    _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+    _arView.environment.sceneUnderstanding.options = [.physics, .collision]
+
+    
+    if (_enableOcclusion){
+      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+    } else {
+      _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+      
+    }
     
     _arView.translatesAutoresizingMaskIntoConstraints = false
     
@@ -197,6 +210,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       _planeDetection = ARPlaneDetectionType(rawValue: type)!
       setupConfiguration()
+    }
+  }
+  
+  @objc open var EnableOcclusion: Bool {
+    get {
+      return _enableOcclusion
+    }
+    set(enableOcclusion) {
+      
+    _enableOcclusion = enableOcclusion
     }
   }
   
@@ -413,14 +436,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         if let nodeA = self.findNodeForEntity(entityA as? ModelEntity),
            let nodeB = self.findNodeForEntity(entityB as? ModelEntity) {
           
-          // Both nodes handle the collision (color flash, behavior-specific effects, etc.)
-          nodeA.ObjectCollidedWithObject(nodeB)
-          nodeB.ObjectCollidedWithObject(nodeA)
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+              nodeA.ObjectCollidedWithObject(nodeB)
+              nodeB.ObjectCollidedWithObject(nodeA)
+              
+              // Notify app level
+              self?.NodesCollided(nodeA, nodeB)
+          }
           
           print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
         } else {
           
         }
+        
+        // Apply collision effects on a delay to avoid interfering with drag
+
       }
       
       print("✅ Simplified collision observer set up")
@@ -834,7 +864,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           }
       }
     
-    debugARFrameRetention()
+  
   }
   
   public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
@@ -851,18 +881,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-    guard _lightingEstimationEnabled, let lightingEstimate = frame.lightEstimate else { return }
+    guard _lightingEstimationEnabled else { return }
     
-    if _lightingEstimationEnabled {
-            if let lightingEstimate = frame.lightEstimate {
-                // Extract the values immediately
-                let ambientIntensity = Float(lightingEstimate.ambientIntensity)
-                let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
-                
-                // Use the extracted values, not the frame/lightEstimate objects
-                LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
-            }
+    if let lightingEstimate = frame.lightEstimate {
+        let ambientIntensity = Float(lightingEstimate.ambientIntensity)
+        let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
+        
+        // ✅ Dispatch on main queue if needed, but don't capture frame
+        DispatchQueue.main.async { [weak self] in
+            self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
         }
+    }
+        
   }
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
@@ -918,30 +948,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
-  @objc func debugARFrameRetention() {
-      print("=== AR FRAME RETENTION DIAGNOSTIC available in debug builds ===")
-      
-      // Check all properties of ARView3D for frame references
-      let mirror = Mirror(reflecting: self)
-      for child in mirror.children {
-          let label = child.label ?? "unknown"
-          let value = child.value
-          
-          if value is ARFrame {
-              print("⚠️ FOUND ARFrame property: \(label)")
-          }
-          if value is ARCamera {
-              print("⚠️ FOUND ARCamera property: \(label)")
-          }
-          if let array = value as? [ARFrame] {
-              print("⚠️ FOUND ARFrame array: \(label) with \(array.count) frames")
-          }
-          if let array = value as? [ARCamera] {
-              print("⚠️ FOUND ARCamera array: \(label) with \(array.count) cameras")
-          }
-      }
-      
-  }
+  
     // MARK: Events
     @objc open func NodeClick(_ node: ARNode) {
       EventDispatcher.dispatchEvent(of: self, called: "NodeClick", arguments: node as AnyObject)
@@ -1483,7 +1490,14 @@ extension ARView3D: UIGestureRecognizerDelegate {
           let sphereRadiusInCM = sphereNode.RadiusInCentimeters
           let sphereRadiusInMeters = sphereRadiusInCM / 100.0  // Simple conversion
         
-            worldThreshold = sphereRadiusInMeters * 1.5  // 50% buffer around actual sphere
+            worldThreshold = sphereRadiusInMeters * 0.05  // 50% buffer around actual sphere
+        }
+        
+        if let modelNode = node as? ModelNode {
+          let bounds = modelNode._modelEntity.visualBounds(relativeTo: nil as Entity?)
+          let currentSize = bounds.max - bounds.min
+          worldThreshold = currentSize.max()
+          print("Selected model node size is \(currentSize) and \(node.Scale)")
         }
 
         let normalizedWorldDistance = min(worldDistance / worldThreshold, 1.0)  // Normalize to 0-1
@@ -1583,49 +1597,49 @@ extension ARView3D: UIGestureRecognizerDelegate {
     // Basic collision check - make sure we're not going below floor
     return position.y > GROUND_LEVEL
   }
-
   
-    func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
-      let cameraTransform = _arView.cameraTransform
-      
-      let rightVector = simd_normalize(SIMD3<Float>(
-          cameraTransform.matrix.columns.0.x,
-          cameraTransform.matrix.columns.0.y,
-          cameraTransform.matrix.columns.0.z
+  
+  func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
+    let cameraTransform = _arView.cameraTransform
+    
+    let rightVector = simd_normalize(SIMD3<Float>(
+      cameraTransform.matrix.columns.0.x,
+      cameraTransform.matrix.columns.0.y,
+      cameraTransform.matrix.columns.0.z
+    ))
+    
+    // ✅ Choose forward vs up vector based on camera angle
+    let cameraUpComponent = cameraTransform.matrix.columns.1.y  // How "up" is the camera?
+    
+    if abs(cameraUpComponent) > 0.7 {  // Camera mostly level
+      // Use up vector for lifting
+      let upVector = simd_normalize(SIMD3<Float>(
+        cameraTransform.matrix.columns.1.x,
+        cameraTransform.matrix.columns.1.y,
+        cameraTransform.matrix.columns.1.z
       ))
       
-      // ✅ Choose forward vs up vector based on camera angle
-      let cameraUpComponent = cameraTransform.matrix.columns.1.y  // How "up" is the camera?
+      return rightVector * Float(screenVector.x) * 0.001 +
+      upVector * Float(-screenVector.y) * 0.001
       
-      if abs(cameraUpComponent) > 0.7 {  // Camera mostly level
-          // Use up vector for lifting
-          let upVector = simd_normalize(SIMD3<Float>(
-            cameraTransform.matrix.columns.1.x,
-              cameraTransform.matrix.columns.1.y,
-              cameraTransform.matrix.columns.1.z
-          ))
-          
-          return rightVector * Float(screenVector.x) * 0.001 +
-                 upVector * Float(-screenVector.y) * 0.001
-          
-      } else {  // Camera angled down (looking at floor)
-          // Use forward vector for ground movement
-          let forwardVector = simd_normalize(SIMD3<Float>(
-              -cameraTransform.matrix.columns.2.x,
-              0,  // Keep on ground plane
-              -cameraTransform.matrix.columns.2.z
-          ))
-          
-          return rightVector * Float(screenVector.x) * 0.001 +
-                 forwardVector * Float(-screenVector.y) * 0.001
-      }
+    } else {  // Camera angled down (looking at floor)
+      // Use forward vector for ground movement
+      let forwardVector = simd_normalize(SIMD3<Float>(
+        -cameraTransform.matrix.columns.2.x,
+         0,  // Keep on ground plane
+         -cameraTransform.matrix.columns.2.z
+      ))
       
-
+      return rightVector * Float(screenVector.x) * 0.001 +
+      forwardVector * Float(-screenVector.y) * 0.001
+    }
+    
+    
   }
-     
-
-
-
+  
+  
+  
+  
   @objc fileprivate func handleLongPress(sender: UILongPressGestureRecognizer) {
     guard _sessionRunning else { return }
     
@@ -1674,69 +1688,76 @@ extension ARView3D: UIGestureRecognizerDelegate {
     guard _sessionRunning else { return }
     
     switch sender.state {
-      case .changed:
-          let tapLocation = sender.location(in: _arView)
-          
-          let nodeEntity = findClosestNode(tapLocation:  tapLocation )
-              if nodeEntity != nil {
-                print("Found closest node for scaling: \(nodeEntity!.Name) at distance:")
-                nodeEntity!.scaleByPinch(scalar: Float(sender.scale))
-              } else {
-                  print("No nodes close to tap location")
-              }
-          sender.scale = 1
-      default:
-          break
-      }
-}
-   
-    
-  @objc fileprivate func handleRotation(sender: UIRotationGestureRecognizer) {
-      guard _sessionRunning else { return }
+    case .changed:
+      let tapLocation = sender.location(in: _arView)
       
-      switch sender.state {
-      case .began:
-          let tapLocation = sender.location(in: _arView)
-          
-          if let closestNode = findClosestNode(tapLocation: tapLocation) {
-              trackingNode = closestNode
-              // Store the starting rotation
-              let euler = closestNode.quaternionToEulerAngles(closestNode._modelEntity.transform.rotation)
-              _rotation = euler.y
-              print("Started rotating node: \(closestNode.Name)")
-          }
-          
-      case .changed:
-          if let node = trackingNode {
-              // Add the gesture rotation to the starting rotation
-              let newRotation = _rotation + Float(sender.rotation)
-              node.rotateByGesture(radians: newRotation)
-          }
-          
-      case .ended, .cancelled, .failed:
-          trackingNode = nil
-          _rotation = 0.0
-          
-      default:
-          break
+      let nodeEntity = findClosestNode(tapLocation:  tapLocation )
+      if nodeEntity != nil {
+        print("Found closest node for scaling: \(nodeEntity!.Name) at distance:")
+        nodeEntity!.scaleByPinch(scalar: Float(sender.scale))
+      } else {
+        print("No nodes close to tap location")
       }
+      sender.scale = 1
+    default:
+      break
+    }
+  }
+  
+  
+  @objc fileprivate func handleRotation(sender: UIRotationGestureRecognizer) {
+    guard _sessionRunning else { return }
+    
+    switch sender.state {
+    case .began:
+      let tapLocation = sender.location(in: _arView)
+      
+      if let closestNode = findClosestNode(tapLocation: tapLocation) {
+        trackingNode = closestNode
+        // Store the starting rotation
+        let euler = closestNode.quaternionToEulerAngles(closestNode._modelEntity.transform.rotation)
+        _rotation = euler.y
+        print("Started rotating node: \(closestNode.Name)")
+      }
+      
+    case .changed:
+      if let node = trackingNode {
+        // Add the gesture rotation to the starting rotation
+        let newRotation = _rotation + Float(sender.rotation)
+        node.rotateByGesture(radians: newRotation)
+      }
+      
+    case .ended, .cancelled, .failed:
+      trackingNode = nil
+      print("Ended rotating node: \(_rotation)")
+      _rotation = 0.0
+      
+    default:
+      break
+    }
   }
   
   
   public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
                                 shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     
-    let rotationAndPinch = gestureRecognizer is UIRotationGestureRecognizer &&
-    otherGestureRecognizer is UIPinchGestureRecognizer
-    let pinchAndRotation = gestureRecognizer is UIPinchGestureRecognizer &&
-    otherGestureRecognizer is UIRotationGestureRecognizer
+    // ✅ Allow pinch and rotation to work together
+    let isPinchAndRotation = (gestureRecognizer is UIPinchGestureRecognizer && otherGestureRecognizer is UIRotationGestureRecognizer) ||
+    (gestureRecognizer is UIRotationGestureRecognizer && otherGestureRecognizer is UIPinchGestureRecognizer)
     
-    if rotationAndPinch || pinchAndRotation {
+    if isPinchAndRotation {
       return true
     }
     
-    return false
+    // ✅ Don't allow pan with pinch/rotation to avoid conflicts
+    let isPanWithOther = (gestureRecognizer is UIPanGestureRecognizer &&
+                          (otherGestureRecognizer is UIPinchGestureRecognizer || otherGestureRecognizer is UIRotationGestureRecognizer)) ||
+    ((gestureRecognizer is UIPinchGestureRecognizer || gestureRecognizer is UIRotationGestureRecognizer) &&
+     otherGestureRecognizer is UIPanGestureRecognizer)
+    
+    return !isPanWithOther
   }
+  
 }
 
 // MARK: ARImageMarkerContainer
@@ -2025,88 +2046,176 @@ extension ARView3D {
     _arView.addGestureRecognizer(rotationGesture)
     rotationGesture.delegate = self
   }
+  
+  
+  public func addPlacementIndicator(_ indicator: AnchorEntity) {
+      _arView.scene.addAnchor(indicator)
+  }
+
+  public func removePlacementIndicator(_ indicator: AnchorEntity) {
+      _arView.scene.removeAnchor(indicator)
+  }
+  
+  // MARK: - Preview Surface Handling (called from ARView3D during drag)
+  
+
+  
+  /// Shows a visual indicator at the predicted placement location
+  private func showPlacementPreview(at position: SIMD3<Float>) {
+    guard #available(iOS 15.0, *) else { return }
     
+    // Remove existing indicator
+    hidePlacementPreview()
+    
+    // Create a simple placement indicator (small translucent disc)
+    let indicatorEntity = ModelEntity()
+    
+    let indicatorGeometry = MeshResource.generatePlane(width: 0.1, depth: 0.1)
+    var indicatorMaterial = SimpleMaterial()
+    indicatorMaterial.color = .init(tint: UIColor.systemGreen.withAlphaComponent(0.6))
+    indicatorMaterial.baseColor = MaterialColorParameter.color(UIColor.systemGreen.withAlphaComponent(0.6))
+    
+    indicatorEntity.model = ModelComponent(mesh: indicatorGeometry, materials: [indicatorMaterial])
+    indicatorEntity.transform.translation = position
+    
+    let aEntity = AnchorEntity()
+    
+    aEntity.addChild(indicatorEntity)
+    addPlacementIndicator(aEntity)
+    _placementIndicator = aEntity
+  }
+  
+  /// Hides the placement preview indicator
+  public func hidePlacementPreview() {
+    if let indicator = _placementIndicator {
+      removePlacementIndicator(indicator)
+      _placementIndicator = nil
+    }
+  }
+
+
+
+  
   @objc private func handlePanComplete(_ gesture: UIPanGestureRecognizer) {
-      guard let node = _currentDraggedObject ?? findClosestNode(tapLocation: gesture.location(in: _arView)) else { return }
-      
-
-      let ballY = (_currentDraggedObject as? SphereNode)?._modelEntity.transform.translation.y ?? Float(GROUND_LEVEL)
-
-      let fingerLocation = gesture.location(in: _arView)      // ✅ Where finger IS now
-      let fingerMovement = gesture.translation(in: _arView)   // ✅ How finger MOVED
-      let fingerVelocity = gesture.velocity(in: _arView)
     
-
-      if gesture.state == .began {
+    let targetNode: ARNodeBase?
+    
+    if gesture.state == .began {
+      // Fresh selection on begin
+      targetNode = findClosestNode(tapLocation: gesture.location(in: _arView))
+      if let node = targetNode {
         _currentDraggedObject = node
-        cacheCurrentCameraOrientation()
+        print("🎯 BEGAN dragging: \(node.Name)")
       }
-      if gesture.state == .changed {
-          //gesture.setTranslation(.zero, in: _arView)
-      }
-      if gesture.state == .ended || gesture.state == .cancelled {
-          _currentDraggedObject = nil
-        _cachedCameraRight = nil
-        _cachedCameraForward = nil
-      }
+      cacheCurrentCameraOrientation()
+    } else {
+      // Maintain existing drag target during gesture
+      targetNode = _currentDraggedObject
+    }
     
-    if let sphereNode = node as? SphereNode {
-        // ✅ Pass both finger location AND movement
-      sphereNode.handleAdvancedGestureUpdate(
-                fingerLocation: fingerLocation,
-                fingerMovement: fingerMovement,
-                fingerVelocity: fingerVelocity,
-                groundProjection: safeProjectFingerToGround(fingerLocation: fingerLocation, fingerMovement: fingerMovement),
-                camera3DProjection: projectFingerToPlane(fingerLocation: fingerLocation, planeY: ballY),
-                gesturePhase: gesture.state
-            )
+    let nodeY = targetNode?._modelEntity.transform.translation.y ?? Float(GROUND_LEVEL)
+    
+    let fingerLocation = gesture.location(in: _arView)      // ✅ Where finger IS now
+    let fingerMovement = gesture.translation(in: _arView)   // ✅ How finger MOVED
+    let fingerVelocity = gesture.velocity(in: _arView)
+    
+    if let node = targetNode as? ARNodeBase {
+      // ✅ Get appropriate projection based on node type and drag phase
+      let groundProjection = getProjectionForNode(
+        node: node,
+        fingerLocation: fingerLocation,
+        fingerMovement: fingerMovement,
+        gesturePhase: gesture.state
+      )
+      
+      node.handleAdvancedGestureUpdate(
+        fingerLocation: fingerLocation,
+        fingerMovement: fingerMovement,
+        fingerVelocity: fingerVelocity,
+        groundProjection: groundProjection,
+        camera3DProjection: projectFingerToPlane(fingerLocation: fingerLocation, planeY: nodeY), //using?
+        gesturePhase: gesture.state
+      )
+    }
+    
+    if gesture.state == .changed {
+      // Reset translation to get relative movements
+      gesture.setTranslation(.zero, in: _arView)
+    }
+    
+    if gesture.state == .ended || gesture.state == .cancelled {
+      _currentDraggedObject = nil
+      _cachedCameraRight = nil
+      _cachedCameraForward = nil
     }
   }
   
-  
-  private func cacheCurrentCameraOrientation() {
-      guard let frame = _arView.session.currentFrame else {
-          // Fallback to identity vectors if no frame available
-          _cachedCameraRight = SIMD3<Float>(1, 0, 0)
-          _cachedCameraForward = SIMD3<Float>(0, 0, 1)
-          return
-      }
-      
-      let cameraTransform = frame.camera.transform
-
-    print("📷 Raw camera transform columns:")
-    print("  Column 0 (right): \(cameraTransform.columns.0)")
-    print("  Column 2 (forward): \(cameraTransform.columns.2)")
+  private func projectFingerToPlane(fingerLocation: CGPoint, planeY: Float) -> SIMD3<Float>? {
+    // Use the same incremental movement as the fallback
+    guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
     
-    let rawRight = SIMD3<Float>(
-        cameraTransform.columns.0.x,
-        0,
-        cameraTransform.columns.0.z
-    )
-    let rawForward = SIMD3<Float>(
-        cameraTransform.columns.2.x,
-        0,
-        cameraTransform.columns.2.z
-    )
-    print("📷 Horizontal vectors (before normalize):")
-     print("  Right: \(rawRight)")
-     print("  Forward: \(rawForward)")
-     
-     _cachedCameraRight = simd_normalize(rawRight)
-     _cachedCameraForward = simd_normalize(rawForward)
-     
-     print("📷 Cached normalized vectors:")
-     print("  Right: \(_cachedCameraRight!)")
-     print("  Forward: \(_cachedCameraForward!)")
+    let currentPos = draggedSphere._modelEntity.transform.translation
+    return SIMD3<Float>(currentPos.x, planeY, currentPos.z)
   }
   
-  func safeProjectFingerToGround(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
-      guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
+  
+  // per node, different dragging behavior
+  func getProjectionForNode(node: ARNodeBase, fingerLocation: CGPoint, fingerMovement: CGPoint, gesturePhase: UIGestureRecognizer.State) -> SIMD3<Float>? {
+    
+    if let sphereNode = node as? SphereNode {
+      // Spheres use ground projection for rolling behavior
+      return projectFingerToGround(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
       
-      let currentPos = draggedSphere._modelEntity.transform.translation
+    } else if let modelNode = node as? ModelNode {
+      // ✅ Pokemon GO style: different behavior for different phases
+
+      return projectFingerTo3DSpace(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
       
+      
+    } else {
+      // Default behavior for other node types
+      return projectFingerRaycast(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
+    }
+  }
+  
+  // ✅ NEW: Project finger to smooth 3D space for Pokemon GO style dragging
+  private func projectFingerTo3DSpace(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
+    guard let draggedNode = _currentDraggedObject else { return nil }
+    
+    // Get current position
+    let currentPos = draggedNode._modelEntity.transform.translation
+    
+    // Use camera-compensated incremental movement for smooth dragging
+    let newPosition = projectFingerIncrementally(currentPos, fingerMovement: fingerMovement)
+    
+    // ✅ Allow Y movement but with constraints for better UX
+    let constrainedY = max(newPosition.y, Float(GROUND_LEVEL) + 0.05) // Stay above ground
+    
+    
+    if let modelNode = draggedNode as? ModelNode {
+        if let nearestSurface = findNearestHorizontalSurface(from: newPosition) {
+            modelNode.setPreviewPlacementSurface(nearestSurface)  // Store data in ModelNode
+            showPlacementPreview(at: nearestSurface)              // Show visual in ARView3D
+        } else {
+            modelNode.clearPreviewPlacementSurface()             // Clear data in ModelNode
+            hidePlacementPreview()                                // Hide visual in ARView3D
+        }
+    }
+    
+    
+    
+    return SIMD3<Float>(
+      newPosition.x,
+      constrainedY,
+      newPosition.z
+    )
+  }
+  
+
+  private func projectFingerIncrementally(_ currentPos: SIMD3<Float>, fingerMovement: CGPoint) -> SIMD3<Float> {
       guard let frame = _arView.session.currentFrame else {
-          let scale: Float = 0.005
+          // Basic fallback without camera info
+          let scale: Float = 0.002
           return SIMD3<Float>(
               currentPos.x + Float(fingerMovement.x) * scale,
               currentPos.y,
@@ -2114,52 +2223,217 @@ extension ARView3D {
           )
       }
       
-      let camera = frame.camera
-      let cameraTransform = camera.transform
-      let cameraPosition = SIMD3<Float>(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
-      let distanceFromCamera = simd_distance(currentPos, cameraPosition)
-      
-      // ✅ Calculate camera's horizontal rotation (yaw)
-      let cameraForward = -SIMD3<Float>(cameraTransform.columns.2.x, 0, cameraTransform.columns.2.z)
+      // Camera-compensated movement (restored from original working code)
+      let cameraTransform = frame.camera.transform
+      let cameraForward = -SIMD3<Float>(
+          cameraTransform.columns.2.x,
+          0,
+          cameraTransform.columns.2.z
+      )
       let cameraYaw = atan2(cameraForward.x, cameraForward.z)
       
-      let baseScale: Float = 0.0001
-      let distanceScale = max(distanceFromCamera * 0.5, 0.5)
-      let movementScale = baseScale * distanceScale
+      // Scale movement based on distance
+      let cameraPosition = SIMD3<Float>(
+          cameraTransform.columns.3.x,
+          cameraTransform.columns.3.y,
+          cameraTransform.columns.3.z
+      )
+      let distance = simd_distance(currentPos, cameraPosition)
+      let scale: Float = 0.004 * max(distance * 0.5, 0.5)
       
-      // ✅ Rotate finger movement by camera yaw to align with world
-      let fingerX = -Float(fingerMovement.x) * movementScale
-      let fingerZ = -Float(fingerMovement.y) * movementScale
+      // Apply camera rotation to movement (this is what was missing!)
+      let fingerX = -Float(fingerMovement.x) * scale
+      let fingerZ = -Float(fingerMovement.y) * scale
       
       let rotatedX = fingerX * cos(-cameraYaw) - fingerZ * sin(-cameraYaw)
       let rotatedZ = fingerX * sin(-cameraYaw) + fingerZ * cos(-cameraYaw)
       
-      let worldMovement = SIMD3<Float>(rotatedX, 0, rotatedZ)
-      
-      let newPosition = SIMD3<Float>(
-          currentPos.x + worldMovement.x,
-          currentPos.y,
-          currentPos.z + worldMovement.z
+      return SIMD3<Float>(
+          currentPos.x + rotatedX,
+          currentPos.y, // Maintain current Y during drag
+          currentPos.z + rotatedZ
       )
-      
-      print("🎮 YAW-COMPENSATED AR:")
-      print("  Camera yaw: \(String(format: "%.2f", cameraYaw * 180 / .pi))°")
-      print("  Finger: (\(Int(fingerMovement.x)), \(Int(fingerMovement.y)))")
-      print("  Rotated movement: (\(String(format: "%.4f", rotatedX)), \(String(format: "%.4f", rotatedZ)))")
-      
-      return newPosition
   }
   
-  private func projectFingerToPlane(fingerLocation: CGPoint, planeY: Float) -> SIMD3<Float>? {
-      // Use the same incremental movement as the fallback
-      guard let draggedSphere = _currentDraggedObject as? SphereNode else { return nil }
-      
-      let currentPos = draggedSphere._modelEntity.transform.translation
-      
-      // Don't try to do complex projection - just return current position
-      return SIMD3<Float>(currentPos.x, planeY, currentPos.z)
+  // ✅ Fallback incremental projection using current frame
+  private func projectFingerIncrementallyFromFrame(_ currentPos: SIMD3<Float>, fingerMovement: CGPoint, frame: ARFrame) -> SIMD3<Float> {
+    let cameraTransform = frame.camera.transform
+    
+    // Extract horizontal camera vectors
+    let rawRight = SIMD3<Float>(
+      cameraTransform.columns.0.x,
+      0,
+      cameraTransform.columns.0.z
+    )
+    let rawForward = SIMD3<Float>(
+      cameraTransform.columns.2.x,
+      0,
+      cameraTransform.columns.2.z
+    )
+    
+    let cameraRight = simd_normalize(rawRight)
+    let cameraForward = simd_normalize(rawForward)
+    
+    // Calculate movement
+    let cameraPosition = SIMD3<Float>(
+      cameraTransform.columns.3.x,
+      cameraTransform.columns.3.y,
+      cameraTransform.columns.3.z
+    )
+    let distance = simd_distance(currentPos, cameraPosition)
+    let scale: Float = 0.001 * max(distance * 0.3, 0.8)
+    
+    let fingerX = Float(fingerMovement.x) * scale
+    let fingerY = Float(fingerMovement.y) * scale
+    
+    let rightMovement = cameraRight * fingerX
+    let forwardMovement = cameraForward * (fingerY)
+    let yMovement = fingerY * -0.3
+    
+    return SIMD3<Float>(
+      currentPos.x + rightMovement.x + forwardMovement.x,
+      currentPos.y + yMovement,
+      currentPos.z + rightMovement.z + forwardMovement.z
+    )
   }
-
+  
+  // ✅ Keep existing methods but with improvements
+  
+  private func projectFingerRaycast(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
+    guard let draggedNode = _currentDraggedObject else { return nil }
+    
+    // ✅ Try raycast first, but don't require it for smooth interaction
+    let raycastResults = _arView.raycast(from: fingerLocation, allowing: .estimatedPlane, alignment: .horizontal)
+    
+    if let raycastResult = raycastResults.first {
+      let hitPoint = SIMD3<Float>(
+        raycastResult.worldTransform.columns.3.x,
+        raycastResult.worldTransform.columns.3.y + 0.01, // Slight offset above surface
+        raycastResult.worldTransform.columns.3.z
+      )
+      
+      print("🎯 Raycast hit plane at: \(hitPoint)")
+      return hitPoint
+      
+    } else {
+      // ✅ Always fallback to smooth incremental movement
+      let currentPos = draggedNode._modelEntity.transform.translation
+      return projectFingerIncrementally(currentPos, fingerMovement: fingerMovement)
+    }
+  }
+  
+  func projectFingerToGround(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
+    guard let draggedNode = _currentDraggedObject else { return nil }
+    let currentPos = draggedNode._modelEntity.transform.translation
+    
+    // ✅ Enhanced ground projection with Y constraint
+    var newPosition = projectFingerIncrementally(currentPos, fingerMovement: fingerMovement)
+    
+    // Keep on or slightly above ground level
+    newPosition.y = max(newPosition.y, Float(GROUND_LEVEL))
+    
+    return newPosition
+  }
+  
+  // Add this method to your ARView3D class
+  public func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
+      // Raycast downward from the given position
+      let raycastQuery = ARRaycastQuery(
+          origin: position,
+          direction: SIMD3<Float>(0, -1, 0), // Straight down
+          allowing: .existingPlaneGeometry,
+          alignment: .horizontal
+      )
+      
+      let raycastResults = _arView.session.raycast(raycastQuery)
+      
+      if let firstResult = raycastResults.first {
+          let hitPosition = SIMD3<Float>(
+              firstResult.worldTransform.columns.3.x,
+              firstResult.worldTransform.columns.3.y,
+              firstResult.worldTransform.columns.3.z
+          )
+          
+          // Add small offset above the surface
+          let surfacePosition = SIMD3<Float>(
+              hitPosition.x,
+              hitPosition.y + 0.01,
+              hitPosition.z
+          )
+          
+          return surfacePosition
+      }
+      
+      // Fallback: raycast from camera toward the position
+      guard let cameraTransform = _arView.session.currentFrame?.camera.transform else {
+          return nil
+      }
+      
+      let cameraPosition = SIMD3<Float>(
+          cameraTransform.columns.3.x,
+          cameraTransform.columns.3.y,
+          cameraTransform.columns.3.z
+      )
+      let direction = simd_normalize(position - cameraPosition)
+      
+      let cameraRaycast = ARRaycastQuery(
+          origin: cameraPosition,
+          direction: direction,
+          allowing: .existingPlaneGeometry,
+          alignment: .horizontal
+      )
+      
+      let cameraResults = _arView.session.raycast(cameraRaycast)
+      if let result = cameraResults.first {
+          let hitPos = SIMD3<Float>(
+              result.worldTransform.columns.3.x,
+              result.worldTransform.columns.3.y + 0.01,
+              result.worldTransform.columns.3.z
+          )
+          return hitPos
+      }
+      
+      return nil
+  }
+  // ✅ Enhanced camera caching with validation
+  private func cacheCurrentCameraOrientation() {
+    guard let frame = _arView.session.currentFrame else {
+      print("⚠️ No camera frame available for orientation caching")
+      // Fallback to identity vectors
+      _cachedCameraRight = SIMD3<Float>(1, 0, 0)
+      _cachedCameraForward = SIMD3<Float>(0, 0, 1)
+      return
+    }
+    
+    let cameraTransform = frame.camera.transform
+    
+    // Extract and normalize horizontal camera vectors
+    let rawRight = SIMD3<Float>(
+      cameraTransform.columns.0.x,
+      0,
+      cameraTransform.columns.0.z
+    )
+    let rawForward = SIMD3<Float>(
+      cameraTransform.columns.2.x,
+      0,
+      cameraTransform.columns.2.z
+    )
+    
+    // ✅ Validate vectors before normalizing
+    let rightLength = simd_length(rawRight)
+    let forwardLength = simd_length(rawForward)
+    
+    if rightLength > 0.001 && forwardLength > 0.001 {
+      _cachedCameraRight = simd_normalize(rawRight)
+      _cachedCameraForward = simd_normalize(rawForward)
+      
+      print("📷 Cached camera orientation - Right: \(_cachedCameraRight!), Forward: \(_cachedCameraForward!)")
+    } else {
+      print("⚠️ Invalid camera vectors, using fallback orientation")
+      _cachedCameraRight = SIMD3<Float>(1, 0, 0)
+      _cachedCameraForward = SIMD3<Float>(0, 0, 1)
+    }
+  }
 }
 
 
@@ -2312,7 +2586,9 @@ extension ARView3D {
       
       // Position collision box so TOP surface is at the floor height
     let offset = ARView3D.VERTICAL_OFFSET
-    let collisionY = height - (floorThickness/2) + offset
+    let collisionY = height + (floorThickness / 2) // Position so top of box is at 'height'
+    _invisibleFloor?.transform.translation = SIMD3<Float>(0, collisionY, 0)
+    
     print("Collision Y: \(collisionY)m")
     _invisibleFloor?.collision = CollisionComponent(
         shapes: [floorShape],

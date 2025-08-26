@@ -138,6 +138,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private boolean hasSetTextureNames = false;
     private final DepthSettings depthSettings = new DepthSettings();
     private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
+    private boolean enableOcclusion = false;
 
     // Rendering components
     private ARFilamentRenderer arFilamentRenderer;
@@ -1234,6 +1235,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public int TrackingType() {
         return 1;
     }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+    @SimpleProperty
+    public void EnableOcclusion(boolean occlusion) {
+        enableOcclusion = occlusion;
+    }
+
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether enable occlusion in world understanding. If true, objects will disappear behind walls, furniture and sometime floor")
+    public boolean EnableOcclusion() {
+        return enableOcclusion;
+    }
+
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty

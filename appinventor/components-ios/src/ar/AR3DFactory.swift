@@ -4,6 +4,8 @@
 import Foundation
 import ARKit
 import RealityKit
+import UIKit
+
 
 // MARK: - Core Protocols
 
@@ -317,6 +319,8 @@ public protocol ARModel: ARNode {
   func addNode(_ node: ARNodeBase)
   func removeNode(_ node: ARNodeBase)
 
+  func hidePlacementPreview()
+
   // Events
   func NodeClick(_ node: ARNode)
   func TapAtPoint(_ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool)
@@ -324,6 +328,7 @@ public protocol ARModel: ARNode {
   func NodeLongClick(_ node: ARNode)
 }
 
+@available(iOS 13.0, *)
 @objc public protocol ARDetectedPlaneContainer: ComponentContainer {
   var DetectedPlanes: [ARDetectedPlane] { get }
 
@@ -332,6 +337,8 @@ public protocol ARModel: ARNode {
   func PlaneDetected(_ detectedPlane: ARDetectedPlane)
   func DetectedPlaneUpdated(_ detectedPlane: ARDetectedPlane)
   func DetectedPlaneRemoved(_ detectedPlane: ARDetectedPlane)
+  
+
 }
 
 @available(iOS 14.0, *)

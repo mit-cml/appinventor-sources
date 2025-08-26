@@ -75,6 +75,9 @@ open class ARNodeBase: NSObject, ARNode {
   public var _geoAnchor: ARGeoAnchor?
   public var _worldOffset: SIMD3<Float>?
   public var _creatorSessionStart: CLLocation?
+  
+  public var _previewPlacementSurface: SIMD3<Float>?
+
 
   // MARK: - Initialization
   
@@ -488,6 +491,7 @@ open class ARNodeBase: NSObject, ARNode {
       var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
       euler.y = radians
       _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+      print("node rotation \(radians)")
     }
   }
   
@@ -796,9 +800,9 @@ open class ARNodeBase: NSObject, ARNode {
     
     // Ensure minimum size and make slightly larger for stability
     let safeSize = SIMD3<Float>(
-        max(size.x, 0.05) * 1.1,  // 10% larger for stability
-        max(size.y, 0.05) * 1.1,
-        max(size.z, 0.05) * 1.1
+        max(size.x, 0.05) * 1.01,  // 10% larger for stability
+        max(size.y, 0.05) * 1.01,
+        max(size.z, 0.05) * 1.01
     )
     
     // For round objects, use sphere collision (more stable)
@@ -1068,4 +1072,12 @@ extension ARNodeBase {
     camera3DProjection: Any?,
     gesturePhase: UIGestureRecognizer.State
   ) {}
+  
+  public func setPreviewPlacementSurface(_ surface: SIMD3<Float>) {
+      _previewPlacementSurface = surface
+  }
+
+  public func clearPreviewPlacementSurface() {
+      _previewPlacementSurface = nil
+  }
 }

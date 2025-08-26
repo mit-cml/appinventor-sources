@@ -522,126 +522,10 @@ open class SphereNode: ARNodeBase, ARSphere {
           print("✅ Collision shape updated: radius=\(preciseRadius)m, mass=\(Mass)kg")
       }
   
-      // MARK: - Scale Validation and Constraints (Updated with proper integration)
-      
-      private func getValidScaledPosition(currentPos: SIMD3<Float>, newRadius: Float) -> SIMD3<Float> {
-          let groundLevel = ARView3D.SHARED_GROUND_LEVEL
-          let currentBottomY = currentPos.y - (_radius * Scale)
-          
-          // Calculate new center position to keep bottom at same level
-          let newCenterY = max(
-              currentBottomY + newRadius,           // Maintain bottom position
-              groundLevel + newRadius + 0.01       // Ensure above ground
-          )
-          
-          return SIMD3<Float>(currentPos.x, newCenterY, currentPos.z)
-      }
-      
-      // MARK: - Updated constrainToValidPosition to use current scale
-      
-      public func constrainToValidPosition(_ position: SIMD3<Float>) -> SIMD3<Float> {
-          let groundLevel = ARView3D.SHARED_GROUND_LEVEL
-          let currentRadius = _radius * Scale  // Use current scaled radius
-          
-          // Ball center must be at least one radius above ground
-          let minY = groundLevel + currentRadius + 0.01  // Small buffer
-          
-          return SIMD3<Float>(
-              position.x,
-              max(position.y, minY),
-              position.z
-          )
-      }
-      
-      // MARK: - Position validation for different scenarios
-      
-      private func validatePositionAfterDrag(_ position: SIMD3<Float>) -> SIMD3<Float> {
-          // Called during and after dragging to ensure sphere stays above ground
-          return constrainToValidPosition(position)
-      }
-      
-      private func validatePositionAfterCollision(_ position: SIMD3<Float>) -> SIMD3<Float> {
-          // Called after collision to prevent sphere from sinking into ground
-          let groundLevel = ARView3D.SHARED_GROUND_LEVEL
-          let currentRadius = _radius * Scale
-          
-          // More aggressive constraint after collision (larger buffer)
-          let minY = groundLevel + currentRadius //+ 0.02  // 2cm buffer after collision
-          
-          return SIMD3<Float>(
-              position.x,
-              max(position.y, minY),
-              position.z
-          )
-      }
-      
-      private func validatePositionAfterPhysicsUpdate(_ position: SIMD3<Float>) -> SIMD3<Float> {
-          // Called when physics might have moved the sphere below ground
-          return constrainToValidPosition(position)
-      }
-      
-      private func isValidScaleSize(_ newRadius: Float) -> Bool {
-          let minRadius: Float = 0.005  // 5mm minimum
-          let maxRadius: Float = 2.0    // 2m maximum
-          return newRadius >= minRadius && newRadius <= maxRadius
-      }
-      
-      // MARK: - Scale Behavior Integration
-      
-      @objc open func debugScaleInfo() {
-          let currentPos = _modelEntity.transform.translation
-          let scale = Scale
-          let radius = _radius
-          let actualRadius = radius * scale
-          let bottomY = currentPos.y - actualRadius
-        let groundLevel = ARView3D.SHARED_GROUND_LEVEL
-          
-          print("=== SPHERE SCALE DEBUG ===")
-          print("Name: \(Name)")
-          print("Internal radius: \(String(format: "%.4f", radius))m")
-          print("Scale factor: \(String(format: "%.4f", scale))")
-          print("Actual radius: \(String(format: "%.4f", actualRadius))m")
-          print("Center position: (\(String(format: "%.4f", currentPos.x)), \(String(format: "%.4f", currentPos.y)), \(String(format: "%.4f", currentPos.z)))")
-          print("Bottom Y: \(String(format: "%.4f", bottomY))m")
-          print("Ground level: \(String(format: "%.4f", groundLevel))m")
-          print("Distance above ground: \(String(format: "%.4f", bottomY - groundLevel))m")
-          print("Has physics: \(_modelEntity.physicsBody != nil)")
-          if let mass = _modelEntity.physicsBody?.massProperties.mass {
-              print("Mass: \(String(format: "%.4f", mass))kg")
-          }
-          print("========================")
-      }
- 
-  
-  private func getVelocityScaleForBehavior() -> Float {
-      var scale: Float = 1.0
-      
-      if _behaviorFlags.contains(.heavy) {
-          scale *= 0.6  // Heavy balls need more force to fling
-      }
-      
-      if _behaviorFlags.contains(.light) {
-          scale *= 1.8  // Light balls fling easily
-      }
-      
-      if _behaviorFlags.contains(.sticky) {
-          scale *= 0.3  // Sticky balls resist being flung
-      }
-      
-      if _behaviorFlags.contains(.slippery) {
-          scale *= 1.4  // Slippery balls fling well
-      }
-      
-      if _behaviorFlags.contains(.floating) {
-          scale *= 1.6  // Floating objects move easily
-      }
-      
-      return scale
-  }
-  
-  
+
+
+       
     
-  
   @available(iOS 15.0, *)
   private func showDragEffect() {
       var dragMaterial = SimpleMaterial()
@@ -662,7 +546,6 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       _modelEntity.model?.materials = [dragMaterial]
     
-      //restoreMaterial()
   }
     
   private func restoreMaterial() {
@@ -850,7 +733,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("🎾 iOS 16-17: Direct position \(constrainedPos)")
   }
 
-  open func endDrag(releaseVelocity: CGPoint) {
+  open override func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {  //fingervelocity
     guard _isBeingDragged else { return }
       
       print("🎾 Ending optimized drag for \(Name)")
@@ -940,7 +823,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       if releaseSpeed > 100 {
           let behaviorMultiplier = getBehaviorMomentumMultiplier()
-          let forceScale: Float = 0.2 * behaviorMultiplier // Increased for better momentum
+        let forceScale: Float = 2.0 * behaviorMultiplier // Increased for better momentum
           
           let releaseForce = SIMD3<Float>(
               Float(releaseVelocity.x) * forceScale,
@@ -986,20 +869,22 @@ open class SphereNode: ARNodeBase, ARSphere {
       camera3DProjection: Any?,
       gesturePhase: UIGestureRecognizer.State
   ) {
-      
+      var groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
+      print("sphereNode, handling drag gesture \(groundPos)")
+    
       switch gesturePhase {
       case .began:
           startDrag()
           
       case .changed:
-          if let worldPos = groundProjection as? SIMD3<Float> {
+          if let worldPos = groundPos {
               updateDrag(fingerWorldPosition: worldPos)
           } else {
               print("⚠️ No groundProjection available during drag")
           }
           
       case .ended, .cancelled:
-          endDrag(releaseVelocity: fingerVelocity)
+        endDrag(releaseVelocity: fingerVelocity, worldDirection: groundPos ?? SIMD3<Float>(0, 0, 0))
           
       default:
           break
