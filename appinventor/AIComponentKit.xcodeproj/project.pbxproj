@@ -322,6 +322,7 @@
 		A403EA222E12C6540030262A /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EA212E12C6540030262A /* Menu.swift */; };
 		A42756332E2E3DFB00815ECB /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42756322E2E3DFB00815ECB /* MenuItem.swift */; };
 		A476916C2E1C0956005427CA /* FloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A476916B2E1C0956005427CA /* FloatingActionButton.swift */; };
+		A4BD27182E521971009DDAC3 /* ContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BD27172E521971009DDAC3 /* ContextMenu.swift */; };
 		B48808C82ACFB1AD0046DF4F /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C72ACFB1AD0046DF4F /* LineChartView.swift */; };
 		B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */; };
 		B48808CC2ACFB3780046DF4F /* PointChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48808CB2ACFB3770046DF4F /* PointChartView.swift */; };
@@ -726,6 +727,7 @@
 		A403EA212E12C6540030262A /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 		A42756322E2E3DFB00815ECB /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
 		A476916B2E1C0956005427CA /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
+		A4BD27172E521971009DDAC3 /* ContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenu.swift; sourceTree = "<group>"; };
 		B48808C72ACFB1AD0046DF4F /* LineChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
 		B48808C92ACFB21A0046DF4F /* LineChartViewBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChartViewBase.swift; sourceTree = "<group>"; };
 		B48808CB2ACFB3770046DF4F /* PointChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointChartView.swift; sourceTree = "<group>"; };
@@ -1117,6 +1119,7 @@
 				06D998ED1F53CDDB00A13A0E /* ContactPicker.swift */,
 				4656A6422A6075E80097DF06 /* LinearProgress.swift */,
 				4656A6442A6076090097DF06 /* CircularProgress.swift */,
+				A4BD27172E521971009DDAC3 /* ContextMenu.swift */,
 				06B216051DB95155000B3366 /* Image.swift */,
 				A403EA212E12C6540030262A /* Menu.swift */,
 				A42756322E2E3DFB00815ECB /* MenuItem.swift */,
@@ -2053,6 +2056,7 @@
 				B48808CA2ACFB21A0046DF4F /* LineChartViewBase.swift in Sources */,
 				B49FD9BC2AF6E1690049FA79 /* LineChartBaseDataModel.swift in Sources */,
 				151EB7E2298853E400315044 /* AccessibleComponent.swift in Sources */,
+				A4BD27182E521971009DDAC3 /* ContextMenu.swift in Sources */,
 				062832981DBE95A7009605D5 /* Layout.swift in Sources */,
 				46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */,
 				06D1519C1DC4736900FC981E /* NSString_SHA1.m in Sources */,

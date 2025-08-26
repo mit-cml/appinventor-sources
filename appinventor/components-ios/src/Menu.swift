@@ -34,6 +34,18 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             updateMenuOnly()
         }
     }
+    
+    public func removeChildComponent(_ component: NonvisibleComponent) {
+        if let menuItem = component as? MenuItem {
+            if let index = menuItems.firstIndex(where: { $0 === menuItem }) {
+                menuItems.remove(at: index)
+                print("[Menu] Removed MenuItem: \(menuItem.Text), total items: \(menuItems.count)")
+                
+                // Update the menu and check if we need to hide the button
+                updateMenuOnly()
+            }
+        }
+    }
 
     
     @objc open func ShowFrom(_ anchor: UIView) {
@@ -41,8 +53,8 @@ open class Menu: NonvisibleComponent, ComponentContainer {
 
         let actions = filteredItems.map { item in
             let action = UIAction(title: item.Text,
-                                  image: getIconForMenuItem(item),
-                                  state: .off) { [weak self] _ in
+                     image: getIconForMenuItem(item),
+                     state: .off) { [weak self] _ in
                 // Trigger the click event
                 item.Click()
                 self?.AfterSelecting(item.Text)
@@ -125,6 +137,27 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             print("[Menu] Cleared global menu")
         }
         
+        // Check if we need to remove the global button due to no visible items
+        let hasVisibleItems = menuItems.contains { $0.Visible }
+        if !hasVisibleItems && Menu.buttonCreated, let form = _form, let navigationController = form.navigationController {
+            print("[Menu] No visible menu items - removing global button during ForceRefresh")
+            
+            // Remove the global button from navigation bar
+            var existingButtons = navigationController.navigationBar.topItem?.rightBarButtonItems ?? []
+            existingButtons.removeAll { $0 === Menu.globalMenuButton }
+            navigationController.navigationBar.topItem?.rightBarButtonItems = existingButtons
+            
+            // Clear the button references
+            Menu.globalMenuButton = nil
+            Menu.globalCustomButton = nil
+            Menu.buttonCreated = false
+            Menu.actionBarButtons.removeAll()
+            Menu.actionBarMenuItems.removeAll()
+            
+            print("[Menu] Global button removed during ForceRefresh, total right items: \(existingButtons.count)")
+            return
+        }
+        
         // Force immediate recreation
         DispatchQueue.main.async { [weak self] in
             self?.recreateAllMenus()
@@ -181,7 +214,7 @@ open class Menu: NonvisibleComponent, ComponentContainer {
         }
     }
 
-    
+
     @objc open func createUIMenu(title: String = "", image: UIImage? = nil, options: UIMenu.Options = []) -> UIMenu {
         print("[Menu] createUIMenu called with \(menuItems.count) items")
         
@@ -250,6 +283,31 @@ open class Menu: NonvisibleComponent, ComponentContainer {
     private func updateMenuOnly() {
         print("[Menu] updateMenuOnly called, global buttonCreated: \(Menu.buttonCreated)")
         
+        // Check if we have any visible menu items
+        let hasVisibleItems = menuItems.contains { $0.Visible }
+        
+        // If no visible items, remove the button
+        if !hasVisibleItems {
+            if Menu.buttonCreated, let form = _form, let navigationController = form.navigationController {
+                print("[Menu] No visible menu items - removing global button")
+                
+                // Remove the global button from navigation bar
+                var existingButtons = navigationController.navigationBar.topItem?.rightBarButtonItems ?? []
+                existingButtons.removeAll { $0 === Menu.globalMenuButton }
+                navigationController.navigationBar.topItem?.rightBarButtonItems = existingButtons
+                
+                // Clear the button references
+                Menu.globalMenuButton = nil
+                Menu.globalCustomButton = nil
+                Menu.buttonCreated = false
+                Menu.actionBarButtons.removeAll()
+                Menu.actionBarMenuItems.removeAll()
+                
+                print("[Menu] Global button removed from updateMenuOnly, total right items: \(existingButtons.count)")
+                return
+            }
+        }
+        
         guard Menu.buttonCreated, let customButton = Menu.globalCustomButton else {
             print("[Menu] Global button not created yet, skipping menu update")
             return
@@ -289,22 +347,45 @@ open class Menu: NonvisibleComponent, ComponentContainer {
         
         print("[Menu] updateNavigationBarMenu called, global buttonCreated: \(Menu.buttonCreated)")
         
+        // Check if we have any visible menu items
+        let hasVisibleItems = menuItems.contains { $0.Visible }
+        print("[Menu] Has visible menu items: \(hasVisibleItems)")
         
-        if !Menu.buttonCreated {
+        // If no visible items, remove the button if it exists
+        if !hasVisibleItems {
+            if Menu.buttonCreated, let navigationController = form.navigationController {
+                print("[Menu] No visible menu items - removing global button")
+                
+                // Remove the global button from navigation bar
+                var existingButtons = navigationController.navigationBar.topItem?.rightBarButtonItems ?? []
+                existingButtons.removeAll { $0 === Menu.globalMenuButton }
+                navigationController.navigationBar.topItem?.rightBarButtonItems = existingButtons
+                
+                // Clear the button references
+                Menu.globalMenuButton = nil
+                Menu.globalCustomButton = nil
+                Menu.buttonCreated = false
+                Menu.actionBarButtons.removeAll()
+                Menu.actionBarMenuItems.removeAll()
+                
+                print("[Menu] Global button removed, total right items: \(existingButtons.count)")
+                return
+            }
+        }
+        
+        // Create global button only if we don't have one and we have visible items
+        if !Menu.buttonCreated && hasVisibleItems {
             print("[Menu] Creating global button - FIRST TIME ONLY")
             
             Menu.globalCustomButton = UIButton(type: .system)
             Menu.globalCustomButton?.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
             Menu.globalCustomButton?.tintColor = .systemBlue
             
-            
             if #available(iOS 14.0, *) {
                 Menu.globalCustomButton?.showsMenuAsPrimaryAction = true
             }
             
-            
             Menu.globalMenuButton = UIBarButtonItem(customView: Menu.globalCustomButton!)
-            
             
             if let navigationController = form.navigationController {
                 var existingButtons = navigationController.navigationBar.topItem?.rightBarButtonItems ?? []
@@ -320,6 +401,11 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             Menu.buttonCreated = true
         }
         
+        // Only proceed with menu updates if we have a button and visible items
+        guard Menu.buttonCreated && hasVisibleItems else {
+            print("[Menu] Skipping menu updates - no button or no visible items")
+            return
+        }
         
         // Build action bar items (icons) and overflow items
         let (actionBarItems, overflowItems) = splitActionBarAndOverflowItems()
@@ -328,8 +414,8 @@ open class Menu: NonvisibleComponent, ComponentContainer {
         if #available(iOS 14.0, *), let customButton = Menu.globalCustomButton {
             let actions = overflowItems.map { item in
                 let action = UIAction(title: item.Text,
-                                      image: getIconForMenuItem(item),
-                                      state: .off) { [weak self] _ in
+                         image: getIconForMenuItem(item),
+                         state: .off) { [weak self] _ in
                     // Trigger the click event
                     item.Click()
                     self?.ItemSelected(self?.menuItems.firstIndex(where: { $0 === item }) ?? 0, item)
@@ -509,6 +595,35 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             item.Text = originalText
             print("  Restored Text: '\(item.Text)'")
         }
+    }
+    
+    @objc open func UpdateButtonVisibility() {
+        print("[Menu] UpdateButtonVisibility called")
+        print("[Menu] Total menu items: \(menuItems.count)")
+        
+        let visibleItems = menuItems.filter { $0.Visible }
+        print("[Menu] Visible menu items: \(visibleItems.count)")
+        
+        for (index, item) in visibleItems.enumerated() {
+            print("[Menu] Visible item[\(index)]: '\(item.Text)'")
+        }
+        
+        // Force update the navigation bar menu
+        updateNavigationBarMenu()
+        
+        print("[Menu] Button visibility updated")
+    }
+    
+    @objc open func ClearAllMenuItems() {
+        print("[Menu] ClearAllMenuItems called")
+        print("[Menu] Clearing \(menuItems.count) menu items")
+        
+        menuItems.removeAll()
+        
+        // Force update to remove the button
+        updateNavigationBarMenu()
+        
+        print("[Menu] All menu items cleared")
     }
 }
 

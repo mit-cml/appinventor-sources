@@ -102,9 +102,26 @@ open class MenuItem: NonvisibleComponent {
     @objc public override init(_ container: ComponentContainer) {
         self._container = container
         super.init(container)
-        // Add this MenuItem to its parent Menu
+        print("[MenuItem] 🔍 Initializing MenuItem with container: \(String(describing: type(of: container)))")
+        print("[MenuItem] Container form: \(String(describing: container.form))")
+        
+        // Add this MenuItem to its parent Menu or ContextMenu
         if let menu = container as? Menu {
+            print("[MenuItem] ✅ Adding to Menu component")
             menu.addChildComponent(self)
+        } else if let contextMenu = container as? ContextMenu {
+            print("[MenuItem] ✅ Adding to ContextMenu component")
+            contextMenu.addChildComponent(self)
+        } else {
+            print("[MenuItem] ❌ Warning: Container is neither Menu nor ContextMenu: \(String(describing: type(of: container)))")
+            print("[MenuItem] Container type details: \(String(describing: type(of: container)))")
+            
+            // Try to get more details about the container
+            let mirror = Mirror(reflecting: container)
+            print("[MenuItem] Container mirror children:")
+            for (label, value) in mirror.children {
+                print("[MenuItem]   \(label ?? "nil"): \(value)")
+            }
         }
     }
 
@@ -135,14 +152,23 @@ open class MenuItem: NonvisibleComponent {
     }
     
     private func notifyMenuUpdate() {
-        // Notify the parent menu to refresh when properties change
+        // Notify the parent menu or context menu to refresh when properties change
         if let menu = _container as? Menu {
-            print("[MenuItem] Notifying menu of property change for: \(Text)")
+            print("[MenuItem] Notifying Menu of property change for: \(Text)")
             
             // Add a small delay to ensure property is fully updated
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 menu.ForceRefresh()
             }
+        } else if let contextMenu = _container as? ContextMenu {
+            print("[MenuItem] Notifying ContextMenu of property change for: \(Text)")
+            
+            // Add a small delay to ensure property is fully updated
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                contextMenu.Refresh()
+            }
+        } else {
+            print("[MenuItem] Warning: Container is neither Menu nor ContextMenu: \(String(describing: type(of: _container)))")
         }
     }
 }
