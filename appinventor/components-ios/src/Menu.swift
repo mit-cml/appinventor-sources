@@ -5,11 +5,7 @@
 //  Created by Kashish Sharma on 9/07/25.
 //  Copyright © 2025 Massachusetts Institute of Technology. All rights reserved.
 //
-//  Menu component with integrated click events for MenuItems.
-//  Each MenuItem has a Click() event that is triggered when the user selects it.
-//  The Menu component also has an ItemSelected() event that provides the index and item reference.
-//  Menu automatically refreshes when MenuItem properties change to reflect updates in the UI.
-//
+
 
 import UIKit
 
@@ -17,13 +13,13 @@ import UIKit
 @objc(Menu)
 open class Menu: NonvisibleComponent, ComponentContainer {
     private var menuItems: [MenuItem] = []
-    private weak var anchorButton: UIButton? // Track anchor to reattach menus if needed
-    private static var globalMenuButton: UIBarButtonItem? // Static to ensure only one button ever exists
-    private static var globalCustomButton: UIButton? // Static custom button
-    private static var buttonCreated: Bool = false // Static flag
-    private static var actionBarButtons: [UIBarButtonItem] = [] // Icons shown directly on the action bar
-    private static var actionBarMenuItems: [MenuItem] = [] // Backing items for action bar buttons (same order)
-    private static let maxActionBarItems: Int = 3 // Basic cap; overflow will contain the rest
+    private weak var anchorButton: UIButton? 
+    private static var globalMenuButton: UIBarButtonItem? 
+    private static var globalCustomButton: UIButton? 
+    private static var buttonCreated: Bool = false 
+    private static var actionBarButtons: [UIBarButtonItem] = []
+    private static var actionBarMenuItems: [MenuItem] = [] 
+    private static let maxActionBarItems: Int = 3 
 
     
     public func addChildComponent(_ component: NonvisibleComponent) {
@@ -41,7 +37,7 @@ open class Menu: NonvisibleComponent, ComponentContainer {
                 menuItems.remove(at: index)
                 print("[Menu] Removed MenuItem: \(menuItem.Text), total items: \(menuItems.count)")
                 
-                // Update the menu and check if we need to hide the button
+                
                 updateMenuOnly()
             }
         }
@@ -55,11 +51,11 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             let action = UIAction(title: item.Text,
                      image: getIconForMenuItem(item),
                      state: .off) { [weak self] _ in
-                // Trigger the click event
+                
                 item.Click()
                 self?.AfterSelecting(item.Text)
                 
-                // Refresh the menu to show updated properties
+                
                 DispatchQueue.main.async {
                     self?.Refresh()
                 }
@@ -102,18 +98,18 @@ open class Menu: NonvisibleComponent, ComponentContainer {
     @objc open func Refresh() {
         print("[Menu] Refresh called - updating all menus")
         
-        // Update anchor button menu if it exists
+       
         if let button = anchorButton {
             attachTo(button: button)
         }
         
-        // Update navigation bar menu
+       
         updateNavigationBarMenu()
         
-        // Update any other menu instances
+        
         updateMenuOnly()
         
-        // Force UI update
+       
         DispatchQueue.main.async {
             if let form = self._form {
                 form.view.setNeedsLayout()
@@ -125,29 +121,29 @@ open class Menu: NonvisibleComponent, ComponentContainer {
     @objc open func ForceRefresh() {
         print("[Menu] ForceRefresh called - recreating all menus")
         
-        // Clear existing menus completely
+        
         if let button = anchorButton {
             button.menu = nil
             print("[Menu] Cleared anchor button menu")
         }
         
-        // Clear global menu
+       
         if let customButton = Menu.globalCustomButton {
             customButton.menu = nil
             print("[Menu] Cleared global menu")
         }
         
-        // Check if we need to remove the global button due to no visible items
+        
         let hasVisibleItems = menuItems.contains { $0.Visible }
         if !hasVisibleItems && Menu.buttonCreated, let form = _form, let navigationController = form.navigationController {
             print("[Menu] No visible menu items - removing global button during ForceRefresh")
             
-            // Remove the global button from navigation bar
+            
             var existingButtons = navigationController.navigationBar.topItem?.rightBarButtonItems ?? []
             existingButtons.removeAll { $0 === Menu.globalMenuButton }
             navigationController.navigationBar.topItem?.rightBarButtonItems = existingButtons
             
-            // Clear the button references
+            
             Menu.globalMenuButton = nil
             Menu.globalCustomButton = nil
             Menu.buttonCreated = false
@@ -158,7 +154,7 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             return
         }
         
-        // Force immediate recreation
+        
         DispatchQueue.main.async { [weak self] in
             self?.recreateAllMenus()
         }
@@ -167,16 +163,16 @@ open class Menu: NonvisibleComponent, ComponentContainer {
     private func recreateAllMenus() {
         print("[Menu] recreateAllMenus called")
         
-        // Recreate anchor button menu
+        
         if let button = anchorButton {
             attachTo(button: button)
             print("[Menu] Recreated anchor button menu")
         }
         
-        // Recreate navigation bar menu
+       
         updateNavigationBarMenu()
         
-        // Force UI update
+        
         if let form = _form {
             form.view.setNeedsLayout()
             form.view.layoutIfNeeded()
@@ -184,13 +180,13 @@ open class Menu: NonvisibleComponent, ComponentContainer {
         }
     }
 
-    // MARK: - Helpers for splitting action bar vs overflow items
+    
     private func splitActionBarAndOverflowItems() -> (actionBarItems: [MenuItem], overflowItems: [MenuItem]) {
-        // Visible items that requested action bar placement
+       
         let requestedActionBar = menuItems.filter { $0.Visible && $0.ShowOnActionBar }
-        // Cap how many can be shown directly
+        
         let actionBar = Array(requestedActionBar.prefix(Menu.maxActionBarItems))
-        // Everything else (including items that requested action bar but are over the cap) goes to overflow
+       
         let overflow = menuItems.filter { candidate in
             candidate.Visible && !actionBar.contains { ab in ab === candidate }
         }
@@ -198,14 +194,14 @@ open class Menu: NonvisibleComponent, ComponentContainer {
     }
 
     @objc private func actionBarItemTapped(_ sender: UIBarButtonItem) {
-        // Find which item was tapped based on our stored arrays
+        
         guard let index = Menu.actionBarButtons.firstIndex(where: { $0 === sender }),
               index < Menu.actionBarMenuItems.count else {
             return
         }
         let item = Menu.actionBarMenuItems[index]
         guard item.Enabled else { return }
-        // Trigger events consistent with overflow actions
+       
         item.Click()
         ItemSelected(menuItems.firstIndex(where: { $0 === item }) ?? index, item)
         AfterSelecting(item.Text)
@@ -222,11 +218,11 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             print("[Menu] Creating action for item: '\(item.Text)' (Enabled: \(item.Enabled), Visible: \(item.Visible))")
             
             let action = UIAction(title: item.Text, image: getIconForMenuItem(item)) { [weak self] _ in
-                // Trigger the click event
+              
                 item.Click()
                 self?.AfterSelecting(item.Text)
                 
-                // Refresh the menu to show updated properties
+               
                 DispatchQueue.main.async {
                     self?.ForceRefresh()
                 }
@@ -283,10 +279,10 @@ open class Menu: NonvisibleComponent, ComponentContainer {
     private func updateMenuOnly() {
         print("[Menu] updateMenuOnly called, global buttonCreated: \(Menu.buttonCreated)")
         
-        // Check if we have any visible menu items
+       
         let hasVisibleItems = menuItems.contains { $0.Visible }
         
-        // If no visible items, remove the button
+       
         if !hasVisibleItems {
             if Menu.buttonCreated, let form = _form, let navigationController = form.navigationController {
                 print("[Menu] No visible menu items - removing global button")
@@ -296,7 +292,7 @@ open class Menu: NonvisibleComponent, ComponentContainer {
                 existingButtons.removeAll { $0 === Menu.globalMenuButton }
                 navigationController.navigationBar.topItem?.rightBarButtonItems = existingButtons
                 
-                // Clear the button references
+                
                 Menu.globalMenuButton = nil
                 Menu.globalCustomButton = nil
                 Menu.buttonCreated = false
@@ -503,19 +499,19 @@ open class Menu: NonvisibleComponent, ComponentContainer {
         
         var iconImage: UIImage?
         
-        // First try to load as a custom image using AssetManager
+        
         if let customImage = AssetManager.shared.imageFromPath(path: item.Icon) {
             print("[Menu] Loaded custom image for menu item: \(item.Icon)")
             iconImage = customImage
         }
-        // Fallback to SF Symbols
+       
         else if #available(iOS 13.0, *) {
             if let systemImage = UIImage(systemName: item.Icon) {
                 print("[Menu] Using SF Symbol for menu item: \(item.Icon)")
                 iconImage = systemImage
             }
         }
-        // Try as asset name
+       
         else if let assetImage = UIImage(named: item.Icon) {
             print("[Menu] Using asset image for menu item: \(item.Icon)")
             iconImage = assetImage
@@ -526,8 +522,8 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             return nil
         }
         
-        // Configure icon for proper left alignment in menu
-        // Ensure icon is properly sized for menu display
+       
+       
         let menuIconSize: CGFloat = 20.0
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: menuIconSize, height: menuIconSize))
         
@@ -535,7 +531,7 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             iconImage?.draw(in: CGRect(x: 0, y: 0, width: menuIconSize, height: menuIconSize))
         }
         
-        // Configure for left alignment
+        
         if #available(iOS 13.0, *) {
             resizedIcon.withRenderingMode(.alwaysTemplate)
         }
@@ -550,17 +546,17 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             print("  [\(index)] Text: '\(item.Text)', Enabled: \(item.Enabled), Visible: \(item.Visible), Icon: '\(item.Icon)'")
         }
         
-        // Force a complete menu rebuild
+        
         ForceRefresh()
     }
 
     @objc open func ShowUpdatedMenu() {
         print("[Menu] ShowUpdatedMenu called")
         
-        // Force refresh first
+       
         ForceRefresh()
         
-        // Then show the menu again
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             self?.Show()
         }
@@ -578,20 +574,20 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             print("  Original Text: '\(originalText)'")
             print("  Setting Text to: '\(testText)'")
             
-            // Test the setter using direct property assignment
+            
             item.Text = testText
             
             print("  Text after set: '\(item.Text)'")
             print("  Getter result: '\(item.getText())'")
             
-            // Verify it worked
+            
             if item.Text == testText {
                 print("  ✅ Text setter working for MenuItem[\(index)]")
             } else {
                 print("  ❌ Text setter NOT working for MenuItem[\(index)]")
             }
             
-            // Restore original text
+            
             item.Text = originalText
             print("  Restored Text: '\(item.Text)'")
         }
@@ -608,7 +604,7 @@ open class Menu: NonvisibleComponent, ComponentContainer {
             print("[Menu] Visible item[\(index)]: '\(item.Text)'")
         }
         
-        // Force update the navigation bar menu
+       
         updateNavigationBarMenu()
         
         print("[Menu] Button visibility updated")
@@ -620,7 +616,7 @@ open class Menu: NonvisibleComponent, ComponentContainer {
         
         menuItems.removeAll()
         
-        // Force update to remove the button
+        
         updateNavigationBarMenu()
         
         print("[Menu] All menu items cleared")
