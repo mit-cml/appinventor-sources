@@ -1530,29 +1530,54 @@ extension ARView3D: UIGestureRecognizerDelegate {
       isNodeAtPoint = true
     }
     
+    var hitPoint: SIMD3<Float> = .zero
+    
     // Perform raycast for world interaction
-    if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
-      let hitPoint = SIMD3<Float>(
-        result.worldTransform.columns.3.x,
-        result.worldTransform.columns.3.y,
-        result.worldTransform.columns.3.z
-      )
-      
-      if let geoData = worldToGPS(hitPoint){
-        print("Converted to GPS: \(geoData)")
-        self.TapAtLocation(hitPoint.x, hitPoint.y, hitPoint.z,
-                           geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
-                           true, isNodeAtPoint)
+    // 1. First priority: Real detected planes
+    if let result = _arView.raycast(from: tapLocation, allowing: .existingPlaneGeometry, alignment: .horizontal).first {
+        hitPoint = SIMD3<Float>(
+            result.worldTransform.columns.3.x,
+            result.worldTransform.columns.3.y,
+            result.worldTransform.columns.3.z
+        )
+        print("Placed on detected plane")
         
-      } else {
-        print("❌ Failed to convert to GPS - sessionStartLocation: \(sessionStartLocation)")
+    // 2. Second priority: Check if we're close to a detected plane in 3D space
+    } else {
+      // Cast a wider net for any estimated plane
+      if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
+        let hitY = result.worldTransform.columns.3.y
+        let floorLevel = Float(GROUND_LEVEL)
         
-        self.TapAtLocation(hitPoint.x, hitPoint.y, hitPoint.z,
-                           0.0,0.0,0.0,
-                           false, isNodeAtPoint)
-        
+        // Check if we hit significantly above the invisible floor (likely a real surface)
+        if hitY > floorLevel + 0.2 {
+          hitPoint = SIMD3<Float>(result.worldTransform.columns.3.x, hitY, result.worldTransform.columns.3.z)
+          print("Placed on elevated surface")
+        } else {
+          // Fallback to invisible floor (your safety net)
+          hitPoint = SIMD3<Float>(result.worldTransform.columns.3.x, floorLevel + 0.02, result.worldTransform.columns.3.z)
+          print("Using invisible floor fallback")
+        }
       }
     }
+    
+        
+
+    if let geoData = worldToGPS(hitPoint){
+      print("Converted to GPS: \(geoData)")
+      self.TapAtLocation(hitPoint.x, hitPoint.y, hitPoint.z,
+                         geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
+                         true, isNodeAtPoint)
+      
+    } else {
+      print("❌ Failed to convert to GPS - sessionStartLocation: \(sessionStartLocation)")
+      
+      self.TapAtLocation(hitPoint.x, hitPoint.y, hitPoint.z,
+                         0.0,0.0,0.0,
+                         false, isNodeAtPoint)
+      
+    }
+    
   }
   
   
@@ -2194,12 +2219,17 @@ extension ARView3D {
     
     if let modelNode = draggedNode as? ModelNode {
         if let nearestSurface = findNearestHorizontalSurface(from: newPosition) {
+          print("DEBUG: Found surface at: \(nearestSurface)")
+          print("DEBUG: Current finger position: \(newPosition)")
+          print("DEBUG: Surface Y vs Floor: \(nearestSurface.y) vs \(Float(GROUND_LEVEL))")
+          
             modelNode.setPreviewPlacementSurface(nearestSurface)  // Store data in ModelNode
             showPlacementPreview(at: nearestSurface)              // Show visual in ARView3D
         } else {
             modelNode.clearPreviewPlacementSurface()             // Clear data in ModelNode
             hidePlacementPreview()                                // Hide visual in ARView3D
         }
+      
     }
     
     
@@ -2335,12 +2365,33 @@ extension ARView3D {
     return newPosition
   }
   
-  // Add this method to your ARView3D class
+  
   public func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
-      // Raycast downward from the given position
+      let floorLevel = Float(GROUND_LEVEL)
+      
+      // First check detected planes ABOVE the floor
+      for (anchor, detectedPlane) in _detectedPlanesDict {
+          if let planeAnchor = anchor as? ARPlaneAnchor,
+             planeAnchor.alignment == .horizontal {
+              
+              let planeY = planeAnchor.transform.translation.y
+              let planeCenter = planeAnchor.transform.translation
+              let distance = simd_distance(position, planeCenter)
+              
+              // Only use planes that are ABOVE the invisible floor
+              if planeY > floorLevel + 0.1 && distance < 2.0 {
+                  let surfaceY = planeY + 0.01 // Small offset above plane
+                  let surfacePosition = SIMD3<Float>(position.x, surfaceY, position.z)
+                  print("📍 Found detected plane surface ABOVE floor at: \(surfacePosition)")
+                  return surfacePosition
+              }
+          }
+      }
+      
+      // Fallback to raycast, but ensure result is above floor
       let raycastQuery = ARRaycastQuery(
           origin: position,
-          direction: SIMD3<Float>(0, -1, 0), // Straight down
+          direction: SIMD3<Float>(0, -1, 0),
           allowing: .existingPlaneGeometry,
           alignment: .horizontal
       )
@@ -2348,53 +2399,25 @@ extension ARView3D {
       let raycastResults = _arView.session.raycast(raycastQuery)
       
       if let firstResult = raycastResults.first {
-          let hitPosition = SIMD3<Float>(
-              firstResult.worldTransform.columns.3.x,
-              firstResult.worldTransform.columns.3.y,
-              firstResult.worldTransform.columns.3.z
-          )
+          let hitY = firstResult.worldTransform.columns.3.y
           
-          // Add small offset above the surface
-          let surfacePosition = SIMD3<Float>(
-              hitPosition.x,
-              hitPosition.y + 0.01,
-              hitPosition.z
-          )
-          
-          return surfacePosition
+          // Only use raycast result if it's above the floor
+          if hitY > floorLevel + 0.1 {
+              let surfacePosition = SIMD3<Float>(
+                  firstResult.worldTransform.columns.3.x,
+                  hitY + 0.01,
+                  firstResult.worldTransform.columns.3.z
+              )
+              return surfacePosition
+          }
       }
       
-      // Fallback: raycast from camera toward the position
-      guard let cameraTransform = _arView.session.currentFrame?.camera.transform else {
-          return nil
-      }
-      
-      let cameraPosition = SIMD3<Float>(
-          cameraTransform.columns.3.x,
-          cameraTransform.columns.3.y,
-          cameraTransform.columns.3.z
-      )
-      let direction = simd_normalize(position - cameraPosition)
-      
-      let cameraRaycast = ARRaycastQuery(
-          origin: cameraPosition,
-          direction: direction,
-          allowing: .existingPlaneGeometry,
-          alignment: .horizontal
-      )
-      
-      let cameraResults = _arView.session.raycast(cameraRaycast)
-      if let result = cameraResults.first {
-          let hitPos = SIMD3<Float>(
-              result.worldTransform.columns.3.x,
-              result.worldTransform.columns.3.y + 0.01,
-              result.worldTransform.columns.3.z
-          )
-          return hitPos
-      }
-      
+      // No valid surface found above floor
+      print("⚠️ No surface found above floor level (\(floorLevel))")
       return nil
   }
+  
+  
   // ✅ Enhanced camera caching with validation
   private func cacheCurrentCameraOrientation() {
     guard let frame = _arView.session.currentFrame else {
@@ -2442,183 +2465,188 @@ extension ARView3D {
 
 @available(iOS 14.0, *)
 extension ARView3D {
-    
+  
   private func optimizeFloorSetup() {
       if let realFloorLevel = findMostAccurateFloorLevel() {
-          let oldLevel = Float(GROUND_LEVEL)
+          let currentLevel = Float(GROUND_LEVEL)
+          let change = abs(realFloorLevel - currentLevel)
           
-          // Update references
-          GROUND_LEVEL = realFloorLevel
-          
-          // Move invisible floor
-          _invisibleFloor?.transform.translation.y = realFloorLevel
-          _floorAnchor?.transform.translation.y = realFloorLevel
-          
-          print("🏠 Floor reference updated: \(oldLevel) → \(realFloorLevel)")
-          print("🏠 Objects will settle via physics")
-          
-          // NO automatic object repositioning
+          // Only update if the change is significant AND we have confidence
+          if change > 0.1 && hasStableFloorDetection() {
+              print("🏠 Significant floor change detected: \(currentLevel) → \(realFloorLevel)")
+              GROUND_LEVEL = realFloorLevel
+              createInvisibleFloor(at: realFloorLevel)
+          } else {
+              print("🏠 Floor change too small (\(change)m) or not stable enough - keeping current level")
+          }
       }
   }
-    
-    // STEP 2: Find the most accurate floor level from multiple sources
-    private func findMostAccurateFloorLevel() -> Float? {
-        var floorCandidates: [(Float, String, Float)] = []  // (Y level, source, confidence)
-        
-        // Check detected planes (high confidence)
-        for (anchor, _) in _detectedPlanesDict {
-            if let planeAnchor = anchor as? ARPlaneAnchor,
-               planeAnchor.alignment == .horizontal {
-                let planeY = planeAnchor.transform.translation.y
+
+  private func hasStableFloorDetection() -> Bool {
+      // Only update floor if we have large, confident floor planes
+      for (anchor, _) in _detectedPlanesDict {
+          if let planeAnchor = anchor as? ARPlaneAnchor,
+             planeAnchor.alignment == .horizontal {
               
               if #available(iOS 16.0, *) {
-                let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
-                let confidence = min(planeSize * 10.0, 100.0)  // Larger planes = higher confidence
-                
-                if planeY < 0.1 { // Below camera level = likely floor
-                    floorCandidates.append((planeY, "DetectedPlane", confidence))
-                    print("📏 Detected plane floor candidate: Y=\(planeY), confidence=\(confidence)")
-                }
-              } else {
-                // Fallback on earlier versions
+                  let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+                  
+                  // Require large floor planes (at least 2 square meters) for updates
+                  if planeAnchor.classification == .floor && planeSize > 2.0 {
+                      return true
+                  }
               }
-                
-            }
+          }
+      }
+      return false
+  }
+  
+  
+  // STEP 2: Find the most accurate floor level from multiple sources
+  private func findMostAccurateFloorLevel() -> Float? {
+    var floorCandidates: [(Float, String, Float)] = []  // (Y level, source, confidence)
+    
+    // Check detected planes (high confidence)
+    for (anchor, _) in _detectedPlanesDict {
+      if let planeAnchor = anchor as? ARPlaneAnchor,
+         planeAnchor.alignment == .horizontal {
+        let planeY = planeAnchor.transform.translation.y
+        
+        if #available(iOS 16.0, *) {
+          let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+          let confidence = min(planeSize * 10.0, 100.0)  // Larger planes = higher confidence
+          
+          if planeY < 0.1 { // Below camera level = likely floor
+            floorCandidates.append((planeY, "DetectedPlane", confidence))
+            print("📏 Detected plane floor candidate: Y=\(planeY), confidence=\(confidence)")
+          }
+        } else {
+          // Fallback on earlier versions
         }
         
-        // Check scene understanding meshes (medium confidence)
-        for anchor in _arView.scene.anchors {
-            for child in anchor.children {
-                let entityType = String(describing: type(of: child))
-                if entityType.contains("RKSceneUnderstanding") || entityType.contains("MeshEntity") {
-                    let meshY = child.transform.translation.y
-                    
-                    if meshY < 0.1 { // Below camera = likely floor
-                        floorCandidates.append((meshY, "SceneUnderstanding", 50.0))
-                        print("📏 Scene understanding floor candidate: Y=\(meshY)")
-                    }
-                }
-            }
-        }
-        
-        // Return the most confident floor level
-        if let bestCandidate = floorCandidates.max(by: { $0.2 < $1.2 }) {
-            print("✅ Best floor candidate: Y=\(bestCandidate.0) from \(bestCandidate.1) (confidence: \(bestCandidate.2))")
-            return bestCandidate.0
-        }
-        
-        return nil
+      }
     }
+    
+    // Check scene understanding meshes (medium confidence)
+    for anchor in _arView.scene.anchors {
+      for child in anchor.children {
+        let entityType = String(describing: type(of: child))
+        if entityType.contains("RKSceneUnderstanding") || entityType.contains("MeshEntity") {
+          let meshY = child.transform.translation.y
+          
+          if meshY < 0.1 { // Below camera = likely floor
+            floorCandidates.append((meshY, "SceneUnderstanding", 50.0))
+            print("📏 Scene understanding floor candidate: Y=\(meshY)")
+          }
+        }
+      }
+    }
+    
+    // Return the most confident floor level
+    if let bestCandidate = floorCandidates.max(by: { $0.2 < $1.2 }) {
+      print("✅ Best floor candidate: Y=\(bestCandidate.0) from \(bestCandidate.1) (confidence: \(bestCandidate.2))")
+      return bestCandidate.0
+    }
+    
+    return nil
+  }
   
   private func moveInvisibleFloorToRealFloor(realFloorLevel: Float) {
-      let currentLevel = Float(GROUND_LEVEL)
-      
-      // ✅ ONLY CHANGE: Stop if floor hasn't moved
-      if abs(realFloorLevel - currentLevel) <= ARView3D.VERTICAL_OFFSET { return }
-      
-      // Keep ALL your existing code exactly as it was
-      guard let invisibleFloor = _invisibleFloor else {
-          print("❌ No invisible floor to move")
-          return
-      }
-      
-      let oldLevel = invisibleFloor.transform.translation.y
-      let newLevel = realFloorLevel
-      
-      GROUND_LEVEL = newLevel
-      invisibleFloor.transform.translation.y = newLevel
-      _floorAnchor?.transform.translation.y = newLevel
-      
-      print("🔄 Moved invisible floor: \(oldLevel)m → \(newLevel)m")
-      
-      // Keep your original adjustAllObjectsToNewFloorLevel code
-      adjustAllObjectsToNewFloorLevel(oldLevel: oldLevel, newLevel: newLevel)
-  }
-  
-
-    private func adjustAllObjectsToNewFloorLevel(oldLevel: Float, newLevel: Float) {
-        let levelChange = newLevel - oldLevel
-        
-        for (node, _) in _nodeToAnchorDict {
-            let currentPos = node._modelEntity.transform.translation
-            
-            // Only adjust objects that were sitting on the old floor
-            let bounds = node._modelEntity.visualBounds(relativeTo: nil)
-            let objectBottom = currentPos.y - (bounds.max.y - bounds.min.y) / 2.0 * node.Scale
-            
-            // If object was sitting on old floor (within 10cm), move it to new floor
-            if abs(objectBottom - oldLevel) < 0.1 {
-                let newY = currentPos.y + levelChange
-                node._modelEntity.transform.translation.y = newY
-                print("📦 Adjusted \(node.Name): Y=\(currentPos.y) → Y=\(newY)")
-            }
-        }
+    let currentLevel = Float(GROUND_LEVEL)
+    
+    // ✅ ONLY CHANGE: Stop if floor hasn't moved
+    if abs(realFloorLevel - currentLevel) <= ARView3D.VERTICAL_OFFSET { return }
+    
+    // Keep ALL your existing code exactly as it was
+    guard let invisibleFloor = _invisibleFloor else {
+      print("❌ No invisible floor to move")
+      return
     }
     
-  @objc func createInvisibleFloor(at height: Float = SHARED_GROUND_LEVEL) {
-      print("🏠 Creating simple invisible floor at: \(height)m")
-      
-      // Remove existing floor
-      removeInvisibleFloor()
-      
-      // Create large invisible floor
-      let floorSize: Float = 200.0  // 200m x 200m
-      let floorMesh = MeshResource.generatePlane(width: floorSize, depth: floorSize)
-      
-      // Invisible material
-      var invisibleMaterial = SimpleMaterial()
-      if #available(iOS 15.0, *) {
-          invisibleMaterial.color = .init(tint: .clear)
-      }
-      
-      // Create floor entity
-      _invisibleFloor = ModelEntity(mesh: floorMesh, materials: [invisibleMaterial])
-      _invisibleFloor?.name = "InvisibleFloor"
-      
-      // Position at specified height
-      _invisibleFloor?.transform.translation = SIMD3<Float>(0, height, 0)
-      let floorThickness: Float = 0.1  // 10cm
-      let floorShape = ShapeResource.generateBox(
-          width: floorSize,
-          height: floorThickness,  // Thicker
-          depth: floorSize
-      )
-      
-      // Position collision box so TOP surface is at the floor height
-    let offset = ARView3D.VERTICAL_OFFSET
-    let collisionY = height + (floorThickness / 2) // Position so top of box is at 'height'
-    _invisibleFloor?.transform.translation = SIMD3<Float>(0, collisionY, 0)
+    let oldLevel = invisibleFloor.transform.translation.y
+    let newLevel = realFloorLevel
     
-    print("Collision Y: \(collisionY)m")
-    _invisibleFloor?.collision = CollisionComponent(
-        shapes: [floorShape],
-        filter: CollisionFilter(
-          group: CollisionGroups.environment,  // ✅ "I am environment"
-          mask: [CollisionGroups.arObjects]    // ✅ "I can hit AR objects"
-        )
-    )
-      _invisibleFloor?.position.y = collisionY  // Lower the collision box
-      
-      // Static physics body
-      _invisibleFloor?.physicsBody = PhysicsBodyComponent(
-          massProperties: PhysicsMassProperties(mass: 1000.0),
-          material: PhysicsMaterialResource.generate(
-              staticFriction: 0.6,
-              dynamicFriction: 0.4,
-              restitution: 0.3
-          ),
-          mode: .static
-      )
-      
-      // Create anchor and add to scene
-      _floorAnchor = AnchorEntity(world: SIMD3<Float>(0, height, 0))
-      _floorAnchor?.addChild(_invisibleFloor!)
-      _arView.scene.addAnchor(_floorAnchor!)
-      
-    print("✅ Simple invisible floor created at: \(collisionY)m")
+    GROUND_LEVEL = newLevel
+    invisibleFloor.transform.translation.y = newLevel
+    _floorAnchor?.transform.translation.y = newLevel
+    
+    print("🔄 Moved invisible floor: \(oldLevel)m → \(newLevel)m")
+    
+    // Keep your original adjustAllObjectsToNewFloorLevel code
+    adjustAllObjectsToNewFloorLevel(oldLevel: oldLevel, newLevel: newLevel)
   }
-   
+  
+  
+  private func adjustAllObjectsToNewFloorLevel(oldLevel: Float, newLevel: Float) {
+    let levelChange = newLevel - oldLevel
+    
+    for (node, _) in _nodeToAnchorDict {
+      let currentPos = node._modelEntity.transform.translation
+      
+      // Only adjust objects that were sitting on the old floor
+      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+      let objectBottom = currentPos.y - (bounds.max.y - bounds.min.y) / 2.0 * node.Scale
+      
+      // If object was sitting on old floor (within 10cm), move it to new floor
+      if abs(objectBottom - oldLevel) < 0.1 {
+        let newY = currentPos.y + levelChange
+        node._modelEntity.transform.translation.y = newY
+        print("📦 Adjusted \(node.Name): Y=\(currentPos.y) → Y=\(newY)")
+      }
+    }
+  }
+  
+  @objc func createInvisibleFloor(at height: Float = SHARED_GROUND_LEVEL) {
+    print("Creating simple invisible floor at: \(height)m")
+    
+    // Remove existing floor
+    removeInvisibleFloor()
+    
+    // Create large invisible floor
+    let floorSize: Float = 200.0
+    let floorThickness: Float = 0.1
+    
+    // Create collision shape - this will be centered on the entity
+    let floorShape = ShapeResource.generateBox(
+      width: floorSize,
+      height: floorThickness,
+      depth: floorSize
+    )
+    
+    // Create floor entity
+    _invisibleFloor = ModelEntity()
+    _invisibleFloor?.name = "InvisibleFloor"
+    
+    // Position the ENTITY at the desired floor height
+    // The collision box will be centered on this position
+    let entityY = height + (floorThickness / 2) // Position so top of box is at 'height'
+    _invisibleFloor?.transform.translation = SIMD3<Float>(0, entityY, 0)
+    
+    _invisibleFloor?.collision = CollisionComponent(
+      shapes: [floorShape],
+      filter: CollisionFilter(
+        group: CollisionGroups.environment,
+        mask: [CollisionGroups.arObjects]
+      )
+    )
+    
+    _invisibleFloor?.physicsBody = PhysicsBodyComponent(
+      massProperties: PhysicsMassProperties(mass: 1000.0),
+      material: PhysicsMaterialResource.generate(
+        staticFriction: 0.6,
+        dynamicFriction: 0.4,
+        restitution: 0.3
+      ),
+      mode: .static
+    )
+    
+    // Create anchor at the specified height
+    _floorAnchor = AnchorEntity(world: SIMD3<Float>(0, height, 0))
+    _floorAnchor?.addChild(_invisibleFloor!)
+    _arView.scene.addAnchor(_floorAnchor!)
+    
+    print("Simple invisible floor created with top at: \(height)m")
+  }
+  
 }
-
-
    

@@ -35,8 +35,8 @@ open class ModelNode: ARNodeBase, ARModel {
   // Physics and trajectory constants
   private let VELOCITY_HISTORY_COUNT = 5
   private let MIN_THROW_SPEED: Float = 0.5  // m/s
-  private let MAX_THROW_SPEED: Float = 8.0  // m/s
-  private let VELOCITY_SCALE: Float = 2.0   // Amplify finger velocity
+  private let MAX_THROW_SPEED: Float = 4.0  // m/s
+  private let VELOCITY_SCALE: Float = 1.0   // Amplify finger velocity
   private let GRAVITY: Float = -9.81        // Earth gravity
   private let DRAG_HEIGHT_OFFSET: Float = 0.001 // Hover above surfaces during drag
   private let PLACEMENT_RAYCAST_DISTANCE: Float = 50.0
@@ -387,36 +387,38 @@ open class ModelNode: ARNodeBase, ARModel {
     // Start monitoring trajectory for placement
     monitorTrajectoryForPlacement()
   }
-
-  /// Places the model on the nearest horizontal surface
   @available(iOS 15.0, *)
   private func placeOnNearestSurface() {
-    print("Placing on nearest surface")
-    
-    // Try to use the cached preview surface first
-    if let previewSurface = _previewPlacementSurface {
-      print("Using cached preview surface: \(previewSurface)")
-      animateToPosition(previewSurface) {
-        self.finalizeModelPlacement()
+      print("Placing on nearest surface")
+      
+      // Use the cached preview surface if available
+      if let cachedSurface = getPreviewPlacementSurface() {
+          print("Using cached preview surface: \(cachedSurface)")
+          
+          // Disable physics completely during placement
+          _modelEntity.physicsBody = nil
+          
+          animateToPosition(cachedSurface) {
+              self.finalizeModelPlacement()
+              self.clearPreviewPlacementSurface()
+          }
+          return
       }
-      return
-    }
-    
-    // Fallback: find surface from current position
-    let currentPos = _modelEntity.transform.translation
-    if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
-      animateToPosition(placementPosition) {
-        self.finalizeModelPlacement()
+      
+      // Fallback: find surface from current position
+      let currentPos = _modelEntity.transform.translation
+      if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
+          animateToPosition(placementPosition) {
+              self.finalizeModelPlacement()
+          }
+      } else {
+          // Final fallback to ground level
+          let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
+          animateToPosition(groundPosition) {
+              self.finalizeModelPlacement()
+          }
       }
-    } else {
-      // Final fallback to ground level
-      let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
-      animateToPosition(groundPosition) {
-        self.finalizeModelPlacement()
-      }
-    }
   }
-
 
   private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
     guard let container = _container else { return nil }
@@ -450,9 +452,9 @@ open class ModelNode: ARNodeBase, ARModel {
     // Apply realistic physics material
     if var physicsBody = _modelEntity.physicsBody {
       physicsBody.material = PhysicsMaterialResource.generate(
-        staticFriction: 0.6,
-        dynamicFriction: 0.4,
-        restitution: 0.3
+        staticFriction: StaticFriction,
+        dynamicFriction: DynamicFriction,
+        restitution: Restitution
       )
       _modelEntity.physicsBody = physicsBody
     }
@@ -544,9 +546,10 @@ open class ModelNode: ARNodeBase, ARModel {
     
     _isFlying = false
     
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+        self?.EnablePhysics(true)
+    }
 
-    // Restore physics for final placement
-    EnablePhysics(true)
     
     if let container = _container {
       container.hidePlacementPreview()

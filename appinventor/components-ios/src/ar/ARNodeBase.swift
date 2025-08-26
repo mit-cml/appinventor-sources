@@ -77,7 +77,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var _creatorSessionStart: CLLocation?
   
   public var _previewPlacementSurface: SIMD3<Float>?
-
+  public var _hasPreviewSurface: Bool = false
 
   // MARK: - Initialization
   
@@ -1073,11 +1073,22 @@ extension ARNodeBase {
     gesturePhase: UIGestureRecognizer.State
   ) {}
   
-  public func setPreviewPlacementSurface(_ surface: SIMD3<Float>) {
+  // Add these methods to ModelNode class
+  @objc public func setPreviewPlacementSurface(_ surface: SIMD3<Float>) {
       _previewPlacementSurface = surface
+      _hasPreviewSurface = true
   }
 
-  public func clearPreviewPlacementSurface() {
+  @objc public func clearPreviewPlacementSurface() {
       _previewPlacementSurface = nil
+      _hasPreviewSurface = false
+  }
+
+  public func getPreviewPlacementSurface() -> SIMD3<Float>? {
+      return _previewPlacementSurface
+  }
+
+  public func hasPreviewSurface() -> Bool {
+      return _hasPreviewSurface
   }
 }

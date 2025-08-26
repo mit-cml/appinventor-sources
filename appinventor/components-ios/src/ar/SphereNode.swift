@@ -233,6 +233,7 @@ open class SphereNode: ARNodeBase, ARSphere {
     }
     if #available(iOS 15.0, *) {
       collidedMaterial.color = .init(tint: .green.withAlphaComponent(0.7))
+      self._modelEntity.model?.materials = [collidedMaterial]
     } else {
       // Fallback on earlier versions
     }  // Green for default
@@ -271,6 +272,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       if _behaviorFlags.contains(.heavy) {
         mass = 1.0  // Heavy default
         dragSensitivity = 1.0  // Harder to drag
+        staticFriction = 0.7
       }
       
       if _behaviorFlags.contains(.light) {
@@ -437,7 +439,7 @@ open class SphereNode: ARNodeBase, ARSphere {
          
          print("=== COLLISION SHAPE DEBUG ===")
          print("Internal radius: \(_radius)m")
-         print("Visual scale: \(visualScale)")
+         print("Visual scale: \(visualScale), and Scale is \(Scale)")
          print("Calculated collision radius: \(calculatedRadius)m")
          print("Has collision: \(_modelEntity.collision != nil)")
          print("Has physics: \(_modelEntity.physicsBody != nil)")
@@ -454,12 +456,12 @@ open class SphereNode: ARNodeBase, ARSphere {
          
          // Visual bounds check
          let bounds = _modelEntity.visualBounds(relativeTo: nil)
-         let visualRadius = (bounds.max.x - bounds.min.x) / 2.0
-         print("Visual bounds radius: \(visualRadius)m")
+         let visualBoundRadius = (bounds.max.x - bounds.min.x) / 2.0
+         print("Visual bounds radius: \(visualBoundRadius)m")
          
-         if abs(visualRadius - calculatedRadius) > 0.01 {
+         if abs(visualBoundRadius - calculatedRadius) > 0.01 {
              print("⚠️ WARNING: Visual and calculated radius mismatch!")
-             print("  Visual: \(visualRadius)m")
+             print("  Visual: \(visualBoundRadius)m")
              print("  Calculated: \(calculatedRadius)m")
          }
          
@@ -684,11 +686,10 @@ open class SphereNode: ARNodeBase, ARSphere {
       _modelEntity.transform.translation = constrainedPos
       
       // ✅ iOS 18+ ENHANCEMENT: Also set velocity for smoother physics integration
-      if let physicsBody = _modelEntity.physicsBody,
-         var physicsMotion = _modelEntity.physicsMotion {
+      if var physicsMotion = _modelEntity.physicsMotion {
           
           let responsiveness = getResponsivenessForMass() * DragSensitivity
-          let velocityScale: Float = 20.0
+          let velocityScale: Float = 5.0
           
           // Calculate target velocity from movement
           let targetVelocity = movement * responsiveness * velocityScale
@@ -742,14 +743,18 @@ open class SphereNode: ARNodeBase, ARSphere {
       // ✅ RESTORE PHYSICS: Use appropriate method per iOS version
       if var physicsBody = _modelEntity.physicsBody {
           if #available(iOS 18.0, *) {
-              // ✅ iOS 18+: Restore both damping values
-              physicsBody.linearDamping = _dragStartDamping
-              physicsBody.angularDamping = _dragStartAngularDamping
-              _modelEntity.physicsBody = physicsBody
-              
-              // Apply release with velocity (more precise)
+
               applyReleaseVelocityIOS18(physicsBody: &physicsBody, releaseVelocity: releaseVelocity)
-              
+            
+            // Restore damping after a delay to allow momentum to take effect
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                  guard let self = self else { return }
+                  if var delayedPhysicsBody = self._modelEntity.physicsBody {
+                      delayedPhysicsBody.linearDamping = self._dragStartDamping
+                      delayedPhysicsBody.angularDamping = self._dragStartAngularDamping
+                      self._modelEntity.physicsBody = delayedPhysicsBody
+                  }
+              }
           } else {
               // ✅ iOS 16-17: No damping to restore, just apply release force
               applyReleaseForceIOS16(releaseVelocity: releaseVelocity)
@@ -763,55 +768,42 @@ open class SphereNode: ARNodeBase, ARSphere {
       }
   }
 
-  // ✅ iOS 18+ Release (with velocity control via physicsMotion)
   @available(iOS 18.0, *)
   private func applyReleaseVelocityIOS18(physicsBody: inout PhysicsBodyComponent, releaseVelocity: CGPoint) {
       let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
       
-      print("🎾 Release analysis: finger velocity (\(releaseVelocity.x), \(releaseVelocity.y)), speed: \(releaseSpeed)")
-      
       if releaseSpeed > 100 {
-          let behaviorMultiplier = getBehaviorMomentumMultiplier()
+          // Calculate object properties
+          let objectMass = physicsBody.massProperties.mass
+          let bounds = _modelEntity.visualBounds(relativeTo: nil)
+          let avgSize = ((bounds.max.x - bounds.min.x) + (bounds.max.y - bounds.min.y) + (bounds.max.z - bounds.min.z)) / 3.0
+          let scaledSize = avgSize * Scale
           
-          // ✅ PROPER SCALE for release momentum
-          let velocityScale: Float = 0.001 * behaviorMultiplier
+          // Mass-based velocity scaling (lighter objects move faster for same finger motion)
+          let massScale = 2.0 / max(objectMass, 0.1)  // Inverse relationship
           
-          // ✅ Apply same yaw compensation as during dragging
-          // TODO: You should pass the camera yaw from your gesture handler
-          // For now using simple mapping - but this should match your finger tracking
-          let fingerX = Float(releaseVelocity.x) * velocityScale
-          let fingerY = Float(releaseVelocity.y) * velocityScale
+          // Size-based air resistance simulation (larger objects have more drag)
+          let sizeScale = 1.0 / max(scaledSize, 0.05)
           
-          let releaseVel = SIMD3<Float>(
-              fingerX,    // Should apply yaw compensation here too
-              0,          // Don't interfere with Y physics
-              fingerY     // Should apply yaw compensation here too
-          )
+          // Combined scaling
+          let physicsScale = massScale * sizeScale * 0.002
           
-          // ✅ Try physicsMotion first, then fallback to force
+          let fingerX = Float(releaseVelocity.x) * physicsScale
+          let fingerY = Float(releaseVelocity.y) * physicsScale
+          
+          let releaseVel = SIMD3<Float>(fingerX, 0, fingerY)
+          
+          // Apply momentum considering mass
           if var physicsMotion = _modelEntity.physicsMotion {
-              let currentVel = physicsMotion.linearVelocity
-              
               physicsMotion.linearVelocity = SIMD3<Float>(
-                  currentVel.x + releaseVel.x,
-                  currentVel.y, // Preserve Y velocity from physics
-                  currentVel.z + releaseVel.z
+                  physicsMotion.linearVelocity.x + releaseVel.x,
+                  physicsMotion.linearVelocity.y,
+                  physicsMotion.linearVelocity.z + releaseVel.z
               )
-              
               _modelEntity.physicsMotion = physicsMotion
-              print("🎾 iOS 18+: Applied release velocity \(releaseVel) via physicsMotion")
               
-          } else {
-              // ✅ Enhanced fallback with proper force scaling
-              print("🎾 iOS 18+: No physicsMotion available, using enhanced fallback force")
-              let forceScale: Float = 5.0 * behaviorMultiplier // Much larger for visible effect
-              let releaseForce = releaseVel * forceScale
-              
-              _modelEntity.addForce(releaseForce, relativeTo: nil as Entity?)
-              print("🎾 iOS 18+: Applied fallback force \(releaseForce)")
+              print("Physics-accurate release: mass=\(objectMass)kg, size=\(scaledSize)m, velocity=\(releaseVel)")
           }
-      } else {
-          print("🎾 iOS 18+: Release speed too low (\(releaseSpeed)), no momentum applied")
       }
   }
 
@@ -942,211 +934,9 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       return finalResponsiveness
   }
-  // ✅ MUCH more conservative pickup detection
-  private func shouldTransitionToPickup(fingerVelocity: CGPoint, fingerMovement: CGPoint) -> Bool {
-      let upwardThreshold: CGFloat = -400  // ✅ Much higher threshold (was -300)
-      let ratioThreshold: Float = 3.0      // ✅ Much stricter ratio (was 1.5)
-      let minimumDistance: CGFloat = 40    // ✅ Must move at least 40 pixels up
-      
-      // ✅ Must be fast upward movement
-      guard fingerVelocity.y < upwardThreshold else { return false }
-      
-      // ✅ Must be primarily vertical (3x more vertical than horizontal)
-     guard abs(fingerVelocity.y) > abs(fingerVelocity.x) * CGFloat(ratioThreshold) else { return false }
-      
-      // ✅ Must have actually moved upward a reasonable distance
-      guard fingerMovement.y < -minimumDistance else { return false }
-      
-      print("🎯 Pickup intent: velocity=\(fingerVelocity.y), ratio=\(abs(fingerVelocity.y)/abs(fingerVelocity.x)), distance=\(fingerMovement.y)")
-      return true
-  }
-  
-      private func checkThrowingIntent(fingerVelocity: CGPoint, fingerMovement: CGPoint, fingerSpeed: CGFloat) -> Bool {
-          // ✅ INTENT 1: Very fast finger movement (clear flick/throw gesture)
-          if fingerSpeed > FLING_THRESHOLD_SPEED {
-              print("🎯 Throw intent: Fast finger speed \(fingerSpeed) > \(FLING_THRESHOLD_SPEED)")
-              return true
-          }
-          
-          // ✅ INTENT 2: Strong upward finger movement (trying to lift ball)
-    
-          if shouldTransitionToPickup(fingerVelocity: fingerVelocity, fingerMovement: fingerMovement){
-            return true
-          }
-          // ✅ DEFAULT: Always roll unless clear throwing intent
-          return false
-      }
-      
 
 
-      
-      @objc open func debugRollingMode(fingerVelocity: CGPoint) {
-          let fingerSpeed = sqrt(fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y)
-          //let wouldThrow = checkThrowingIntent(fingerVelocity: fingerVelocity, , fingerSpeed: fingerSpeed)
-          
-          print("=== ROLLING MODE DEBUG ===")
-          print("Finger velocity: \(fingerVelocity)")
-          print("Finger speed: \(fingerSpeed)")
-          print("Fling threshold: \(FLING_THRESHOLD_SPEED)")
-          //print("Would throw: \(wouldThrow)")
-          //print("Selected mode: \(wouldThrow ? "THROWING" : "ROLLING")")
-          print("Mass responsiveness: \(getResponsivenessForMass())")
-          print("========================")
-      }
-      
-      
-      @objc open func dropToPhysics() {
-          // Optional: Give ball a tiny downward impulse if it's floating
-          guard let _ = _modelEntity.physicsBody else {
-              print("No physics body to apply force to")
-              return
-          }
-          
-          let dropImpulse = SIMD3<Float>(0, -0.1, 0)  // Small downward impulse
-          _modelEntity.addForce(dropImpulse, relativeTo: nil)
-          print("🎾 Applied gentle drop impulse - physics will handle the rest")
-      }
-  
 
-    // ✅ FIXED: Remove problematic physics reset method entirely
-    private func endPickupMode(fingerVelocity: CGPoint, releaseSpeed: Float) {
-        print("🎾 Ending pickup mode with speed: \(releaseSpeed)")
-        
-        // ✅ SIMPLE PHYSICS RESTORE without velocity reset
-        restorePhysicsSimple()
-        
-        // Apply release velocity if fast enough
-        if releaseSpeed > 300 {
-            let velocity3D = SIMD3<Float>(
-                Float(fingerVelocity.x) * 0.003,
-                Float(-fingerVelocity.y) * 0.002,
-                0
-            )
-            
-            // ✅ Simple force application - no mass manipulation
-            _modelEntity.addForce(velocity3D, relativeTo: nil as Entity?)
-        }
-    }
-    
-    // ✅ NEW: Simple physics restore without mass manipulation
-    private func restorePhysicsSimple() {
-        guard _storedPhysicsSettings != nil else { return }
-        
-        // Simply re-enable physics with stored settings
-        EnablePhysics(true)
-        
-        // Clear stored settings
-        _storedPhysicsSettings = nil
-        
-        print("🎾 Physics restored simply - no mass manipulation")
-    }
-    
-    // ✅ FIXED: More conservative mode transitions - pickup only on clear upward swipe
-    private func checkForModeTransition(fingerMovement: CGPoint, fingerVelocity: CGPoint) {
-        let verticalMovement = fingerMovement.y
-        let speed = sqrt(fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y)
-        
-        switch _currentDragMode {
-        case .rolling:
-            // ✅ VERY CONSERVATIVE: Only transition to pickup on strong upward swipe
-            if verticalMovement < -60 && speed > 800 {  // Strong upward movement
-                transitionToPickupMode()
-            }
-            // ✅ High threshold for flinging
-            else if speed > 4000 {
-                transitionToFlingingMode()
-            }
-            // Otherwise stay in rolling mode with physics enabled
-            
-        case .pickup:
-            // Only transition to flinging on very fast movement
-            if speed > 3000 {
-                transitionToFlingingMode()
-            }
-            // Transition back to rolling when moving toward ground
-            else if verticalMovement > 40 && _modelEntity.transform.translation.y < _pickupStartHeight + 0.2 {
-                transitionToRollingMode()
-            }
-            
-        case .flinging:
-            // Stay in flinging mode until gesture ends
-            break
-        }
-    }
-    
-    private func restoreOriginalScale() {
-        let baseScale = Scale  // Your property that tracks intended scale
-        _modelEntity.transform.scale = SIMD3<Float>(baseScale, baseScale, baseScale)
-    }
-    
-    // ✅ FIXED: Smoother transitions
-    private func transitionToPickupMode() {
-        guard _currentDragMode != .pickup else { return }
-        restoreOriginalScale()
-        
-        print("🎾 Transitioning to PICKUP mode")
-        _currentDragMode = .pickup
-        
-        // Store physics settings and disable
-        if var physicsBody = _modelEntity.physicsBody {
-            _storedPhysicsSettings = PhysicsSettings(
-                mass: Mass,
-                material: physicsBody.material,
-                mode: physicsBody.mode
-            )
-        }
-        _modelEntity.physicsBody = nil
-        _modelEntity.collision = nil
-        
-        if #available(iOS 15.0, *) {
-            showModeEffect()
-        }
-    }
-    
-    private func transitionToRollingMode() {
-        guard _currentDragMode != .rolling else { return }
-        restoreOriginalScale()
-        
-        print("🎾 Transitioning to ROLLING mode")
-        _currentDragMode = .rolling
-        
-        // ✅ Simple physics restore
-        restorePhysicsSimple()
-        
-        if #available(iOS 15.0, *) {
-            showModeEffect()
-        }
-    }
-    
-    private func transitionToFlingingMode() {
-        guard _currentDragMode != .flinging else { return }
-        restoreOriginalScale()
-        
-        print("🎾 Transitioning to FLINGING mode")
-        _currentDragMode = .flinging
-        
-        // Store physics and disable for flinging
-        if _modelEntity.physicsBody != nil {
-            if let physicsBody = _modelEntity.physicsBody {
-                _storedPhysicsSettings = PhysicsSettings(
-                    mass: Mass,
-                    material: physicsBody.material,
-                    mode: physicsBody.mode
-                )
-            }
-            _modelEntity.physicsBody = nil
-            _modelEntity.collision = nil
-        }
-        
-        if #available(iOS 15.0, *) {
-            showModeEffect()
-        }
-    }
-    
-   
-
-    
-   
    
     @available(iOS 15.0, *)
     private func showModeEffect() {
@@ -1173,53 +963,7 @@ open class SphereNode: ARNodeBase, ARSphere {
         _modelEntity.model?.materials = [material]
     }
     
-    private func lerp(_ a: SIMD3<Float>, _ b: SIMD3<Float>, _ t: Float) -> SIMD3<Float> {
-        return a + (b - a) * t
-    }
-    
-    // MARK: - Configuration and Debug Methods
-    
-    @objc open func configureSmoothRolling() {
-        // Optimize settings for smooth rolling experience
-        DragSensitivity = 1.0
-        StaticFriction = 0.6
-        DynamicFriction = 0.4
-        Restitution = 0.5
-        
-        // Ensure rolling behavior is enabled
-        IsRolling = true
-        
-        print("🎾 Configured for smooth rolling")
-        debugSmoothRolling()
-    }
-    
-    @objc open func debugSmoothRolling() {
-        print("=== SMOOTH ROLLING DEBUG ===")
-        print("Is actively rolling: \(_isActivelyRolling)")
-        print("Current momentum: \(_currentMomentum)")
-        print("Current position: \(_modelEntity.transform.translation)")
-        print("Behaviors: \(getBehaviorNames().joined(separator: ", "))")
-        print("DragSensitivity: \(DragSensitivity)")
-        print("==========================")
-    }
-  
-  
-    
-    // ✅ DEBUGGING: Add method to check current state
-    @objc open func debugCurrentState() {
-        let pos = _modelEntity.transform.translation
-        let hasPhysics = _modelEntity.physicsBody != nil
-        
-        print("=== SPHERE STATE DEBUG ===")
-        print("Current mode: \(_currentDragMode)")
-        print("Position: \(pos)")
-        print("Has physics: \(hasPhysics)")
-      print("Ground level: \(ARView3D.SHARED_GROUND_LEVEL)")
-        print("Ball radius: \(_radius * Scale)")
-        print("Is being dragged: \(isBeingDragged)")
-        print("Current momentum: \(_currentMomentum)")
-        print("========================")
-    }
+
 
 
 
@@ -1258,6 +1002,8 @@ open class SphereNode: ARNodeBase, ARSphere {
           material: material,
           mode: isDynamic ? .dynamic : .static
       )
+    
+      _modelEntity.physicsMotion = PhysicsMotionComponent()
       
       print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
       debugPhysicsState()
