@@ -15,6 +15,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
     UserDefaults.standard.register(defaults: ["isNewUser": true])
+    UserDefaults.standard.register(defaults: ["isInConnectedApp": false])
+    UserDefaults.standard.register(defaults: ["lastOpenedTable" : [String : Date]()])
+    UserDefaults.standard.register(defaults: ["sortMode": "mostRecent"])
     AppInventorRuntime.initialize()
     return true
   }

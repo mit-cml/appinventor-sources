@@ -9,6 +9,7 @@
 
 static NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, SCMMethod *> *> *methodLookupDict = nil;
 static NSString *JAVA_PACKAGE = @"com.google.appinventor.components.runtime";
+static NSString *AR_PACKAGE = @"com.google.appinventor.components.runtime.ar";
 static NSString *JAVA_UTIL_PACKAGE =
     @"com.google.appinventor.components.runtime.util";
 static NSString *JAVA_COMMON_PACKAGE = @"com.google.appinventor.components.common";
@@ -97,6 +98,8 @@ static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil
                    stringByReplacingOccurrencesOfString:JAVA_UTIL_PACKAGE
                    withString:SWIFT_PACKAGE];
     }
+  } else if ([localName hasPrefix:AR_PACKAGE]) {
+      localName = [localName stringByReplacingOccurrencesOfString:AR_PACKAGE withString:SWIFT_PACKAGE];
   } else if ([localName hasPrefix:JAVA_PACKAGE]) {
     localName = [localName stringByReplacingOccurrencesOfString:JAVA_PACKAGE withString:SWIFT_PACKAGE];
   } else if ([localName hasPrefix:JAVA_COMMON_PACKAGE]) {
@@ -110,7 +113,9 @@ static NSMutableDictionary<NSString *, Protocol *> *preregisteredProtocols = nil
 
 + (Protocol *)protocolFromQualifiedName:(const char *)name {
   NSString *localName = [NSString stringWithUTF8String:name];
-  if ([localName hasPrefix:JAVA_PACKAGE]) {
+    if ([localName hasPrefix:AR_PACKAGE]) {
+        localName = [localName stringByReplacingOccurrencesOfString:AR_PACKAGE withString:SWIFT_PACKAGE];
+    } else if ([localName hasPrefix:JAVA_PACKAGE]) {
     localName = [localName stringByReplacingOccurrencesOfString:JAVA_PACKAGE withString:SWIFT_PACKAGE];
   }
   Protocol *result = NSProtocolFromString(localName);
