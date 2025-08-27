@@ -9,7 +9,8 @@ import DGCharts
 open class ChartView {
   unowned let _chartComponent: Chart
   private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
-
+  var _valueType: Int = 0
+  
   var form: Form {
     return _chartComponent.form!
   }
@@ -89,6 +90,11 @@ open class ChartView {
     self.chart?.setNeedsDisplay()
   }
 
+  public func setValueType(valueType: Int){
+    _valueType = valueType;
+  }
+  
+  
   // make RefreshTask
   private class RefreshTask {
     var _entries: Array<DGCharts.ChartDataEntry> = []
