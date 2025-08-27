@@ -110,8 +110,8 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
   public init(_ delegate: DateTimePickerDelegate, screen form: Form, isDatePicker: Bool) {
     _delegate = delegate
     super.init(contentView: _pickerView, screen: form)
-    if #available(iOS 14.0, *) {
-      _pickerView.preferredDatePickerStyle = .inline
+    if #available(iOS 13.4, *) {
+      _pickerView.preferredDatePickerStyle = .wheels
     }
     _pickerView.datePickerMode = isDatePicker ? .date: .time
   }
@@ -147,14 +147,9 @@ class DateTimePickerPhoneController: PickerPhoneController, DateTimePickerContro
 }
 
 func getDateTimePickerController(_ delegate: DateTimePickerDelegate, screen form: Form, isDatePicker: Bool, isPhone: Bool) -> DateTimePickerController {
-  if #available(iOS 13.4, *){
-    return DateTimePickerPadController(delegate, isDatePicker: isDatePicker)
+  if isPhone {
+    return DateTimePickerPhoneController(delegate, screen: form, isDatePicker: isDatePicker)
   } else {
-    if isPhone {
-      return DateTimePickerPhoneController(delegate, screen: form, isDatePicker: isDatePicker)
-    } else {
-      return DateTimePickerPadController(delegate, isDatePicker: isDatePicker)
-    }
+    return DateTimePickerPadController(delegate, isDatePicker: isDatePicker)
   }
-  
 }
