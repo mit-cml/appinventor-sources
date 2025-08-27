@@ -148,6 +148,21 @@ import android.util.Log;
     Log.i("created Model Anchor!", " ");
   }
 
+  //CSB: this needs to be set up in Android, but this is for blockly interp
+  @Override
+  @SimpleEvent(description = "Collision event detected")
+  public void CollisionDetection() {}
+
+  @Override
+  @SimpleEvent(description = "Collision event detected between object and scene")
+  public void ObjectCollidedWithScene() {}
+
+  @Override
+  @SimpleEvent(description = "Collision event detected between object and another object")
+  public void ObjectCollidedWithObject(ARNode otherNode) {
+      // eg play an animation or something by default?
+  }
+
 
   @Override
   @SimpleProperty(description = "Returns a list of the names of all nodes in the model.  " +
@@ -207,6 +222,9 @@ import android.util.Log;
       "will be triggered.  <code>shouldPlayChildNodes</code> specifies if all nodes below " +
       "below the named node in the node tree should also have their animations played.")
     public void PlayAnimationsForNode(String name, boolean shouldPlayChildNodes) {}
+
+    @SimpleFunction(description = "Plays specific animation attached to node named \"name\"")
+    public void PlaySpecificAnimationForNode(String name, String animation){}
 
     @SimpleFunction(description = "Stops all animations in the model, if it has animations.")
     public void StopAnimationsForAllNodes() {}

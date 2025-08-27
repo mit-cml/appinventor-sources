@@ -168,7 +168,7 @@ public final class AR3DFactory {
 
     void CollisionDetection();
     void ObjectCollidedWithScene();
-    void ObjectCollidedWithObject();
+    void ObjectCollidedWithObject(ARNode otherNode);
 
     void endDrag(String dragVelocity, String worldDirection);
 

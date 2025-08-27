@@ -234,10 +234,11 @@ open class SphereNode: ARNodeBase, ARSphere {
     if #available(iOS 15.0, *) {
       collidedMaterial.color = .init(tint: .green.withAlphaComponent(0.7))
       self._modelEntity.model?.materials = [collidedMaterial]
+      restoreColorAfterCollision()
     } else {
       // Fallback on earlier versions
     }  // Green for default
-    restoreColorAfterCollision()
+    
     
   }
   
@@ -543,7 +544,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       } else if _behaviorFlags.contains(.floating) {
           dragMaterial.color = .init(tint: .cyan.withAlphaComponent(0.6))  // Cyan for floating
       } else {
-          dragMaterial.color = .init(tint: .green.withAlphaComponent(0.7))  // Green for default
+          dragMaterial.color = .init(tint: .yellow.withAlphaComponent(0.7))  // Green for default
       }
       
       _modelEntity.model?.materials = [dragMaterial]
@@ -689,7 +690,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       if var physicsMotion = _modelEntity.physicsMotion {
           
           let responsiveness = getResponsivenessForMass() * DragSensitivity
-          let velocityScale: Float = 5.0
+          let velocityScale: Float = 1.5
           
           // Calculate target velocity from movement
           let targetVelocity = movement * responsiveness * velocityScale
@@ -772,9 +773,10 @@ open class SphereNode: ARNodeBase, ARSphere {
   private func applyReleaseVelocityIOS18(physicsBody: inout PhysicsBodyComponent, releaseVelocity: CGPoint) {
       let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
       
-      if releaseSpeed > 100 {
+    if releaseSpeed > NORMAL_ROLLING_SPEED {
           // Calculate object properties
-          let objectMass = physicsBody.massProperties.mass
+          let objectMass = Mass
+        //bounds or scale??
           let bounds = _modelEntity.visualBounds(relativeTo: nil)
           let avgSize = ((bounds.max.x - bounds.min.x) + (bounds.max.y - bounds.min.y) + (bounds.max.z - bounds.min.z)) / 3.0
           let scaledSize = avgSize * Scale
@@ -786,7 +788,7 @@ open class SphereNode: ARNodeBase, ARSphere {
           let sizeScale = 1.0 / max(scaledSize, 0.05)
           
           // Combined scaling
-          let physicsScale = massScale * sizeScale * 0.002
+          let physicsScale = massScale * sizeScale * 0.005
           
           let fingerX = Float(releaseVelocity.x) * physicsScale
           let fingerY = Float(releaseVelocity.y) * physicsScale
@@ -953,13 +955,13 @@ open class SphereNode: ARNodeBase, ARSphere {
                 material.color = .init(tint: .yellow)  // Rolling = yellow
             }
             
-        case .pickup:
-            material.color = .init(tint: .green.withAlphaComponent(0.6))  // Pickup = green
-            
+           
         case .flinging:
             material.color = .init(tint: .red.withAlphaComponent(0.7))    // Flinging = red
-        }
         
+        default:
+          material.color = .init(tint: .red.withAlphaComponent(0.7))    // Flinging = red
+        }
         _modelEntity.model?.materials = [material]
     }
     
@@ -1065,7 +1067,7 @@ open class SphereNode: ARNodeBase, ARSphere {
         } else if Mass < 0.1 {
             material.color = .init(tint: .orange.withAlphaComponent(0.7)) // Light = orange
         } else {
-            material.color = .init(tint: .green.withAlphaComponent(0.7))  // Normal = green
+            material.color = .init(tint: .yellow.withAlphaComponent(0.7))  // Normal = green
         }
         
         // Store original for restoration

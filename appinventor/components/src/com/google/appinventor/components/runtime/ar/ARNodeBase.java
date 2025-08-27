@@ -450,17 +450,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   // Functions
 
-  @Override
-  @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
-  public void CollisionDetection() {}
 
-  @Override
-  @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
-  public void ObjectCollidedWithScene() {}
-
-  @Override
-  @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
-  public void ObjectCollidedWithObject() {}
 
   @Override
   @SimpleFunction(description = "Allow user to additionally add behavoir to the end of the drag/pan movement")
@@ -560,7 +550,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleFunction(description = "Rotates the node to look at the (x,y,z) position.")
   public void LookAtPosition(float x, float y, float z) {}
 
-
   // Events
 
   @Override
@@ -580,5 +569,19 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public HandlesEventDispatching getDispatchDelegate() {
     return arView.getDispatchDelegate();
   }
+
+
+  //CSB: this needs to be set up in Android, but this is for blockly interp
+  @Override
+  @SimpleEvent(description = "Collision event detected")
+  public void CollisionDetection() {}
+
+  @Override
+  @SimpleEvent(description = "Collision event detected between object and scene")
+  public void ObjectCollidedWithScene() {}
+
+  @Override
+  @SimpleEvent(description = "Collision event detected between object and another object")
+  public void ObjectCollidedWithObject(ARNode otherNode) {}
 
 }

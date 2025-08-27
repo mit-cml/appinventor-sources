@@ -217,7 +217,13 @@ import android.util.Log;
           "node named \"name\", but a node with that \"name\" does not exist.")
   public void NodeNotFound(String name) {}
 
-  // Hidden Properties
+
+  @SimpleEvent(description = "This event is triggered when a sphereNode collides with another object. Note: physics must be enabled")
+  public void ObjectCollidedWithObject(ARNodeBase otherNode) {
+    // eg play an animation or something by default?
+  }
+
+    // Hidden Properties
   @Override
   @SimpleProperty(userVisible = false)
   public boolean ShowShadow() { return false; }
@@ -227,19 +233,19 @@ import android.util.Log;
   public void ShowShadow(boolean showShadow) {}
 
   @Override
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description =  "get the color of the sphere")
   public int FillColor() { return 0; }
 
   @Override
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description =  "set the color of the sphere")
   public void FillColor(int color) {}
 
   @Override
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description =  "get the opacity of the sphere")
   public int FillColorOpacity() { return 0; }
 
   @Override
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description =  "set the opacity of the sphere")
   public void FillColorOpacity(int FillColorOpacity) {}
 
 

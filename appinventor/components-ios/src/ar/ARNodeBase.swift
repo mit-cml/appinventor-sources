@@ -849,7 +849,7 @@ open class ARNodeBase: NSObject, ARNode {
 
   @objc open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
     // Default collision behavior for all AR objects
-    print("🔥 \(Name) collided with \(otherNode.Name) at \(String(_modelEntity.transform.translation.y))")
+    print("🔥 \(Name) collided with another node \(otherNode.Name) at y \(String(_modelEntity.transform.translation.y))")
     
     // Show collision effect if available
     if #available(iOS 15.0, *) {
@@ -857,7 +857,7 @@ open class ARNodeBase: NSObject, ARNode {
     }
     
     // Dispatch event to app level
-    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: otherNode as AnyObject)
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject")
   }
 
   

@@ -477,7 +477,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return nil
     }
     
-    // ✅ OPTIONAL: Keep these if you want to dispatch events to your app level
+   
     @objc open func NodesCollided(_ nodeA: ARNodeBase, _ nodeB: ARNodeBase) {
       EventDispatcher.dispatchEvent(of: self, called: "NodesCollided",
                                     arguments: nodeA as AnyObject, nodeB as AnyObject)
@@ -2097,8 +2097,8 @@ extension ARView3D {
     
     let indicatorGeometry = MeshResource.generatePlane(width: 0.1, depth: 0.1)
     var indicatorMaterial = SimpleMaterial()
-    indicatorMaterial.color = .init(tint: UIColor.systemGreen.withAlphaComponent(0.6))
-    indicatorMaterial.baseColor = MaterialColorParameter.color(UIColor.systemGreen.withAlphaComponent(0.6))
+    indicatorMaterial.color = .init(tint: UIColor.systemGreen.withAlphaComponent(0.8))
+    indicatorMaterial.baseColor = MaterialColorParameter.color(UIColor.systemGreen.withAlphaComponent(0.8))
     
     indicatorEntity.model = ModelComponent(mesh: indicatorGeometry, materials: [indicatorMaterial])
     indicatorEntity.transform.translation = position
@@ -2214,7 +2214,7 @@ extension ARView3D {
     let newPosition = projectFingerIncrementally(currentPos, fingerMovement: fingerMovement)
     
     // ✅ Allow Y movement but with constraints for better UX
-    let constrainedY = max(newPosition.y, Float(GROUND_LEVEL) + 0.05) // Stay above ground
+    let constrainedY = max(newPosition.y, Float(GROUND_LEVEL) + 0.005) // Stay above ground
     
     
     if let modelNode = draggedNode as? ModelNode {

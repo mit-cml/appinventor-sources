@@ -224,9 +224,6 @@ open class ModelNode: ARNodeBase, ARModel {
     }
   }
 
-  
-  // MARK: - Pokemon GO Style Dragging System
-
   /// Starts the Pokémon GO style drag interaction
   override open func startDrag() {
     print("🎯 Starting Pokémon GO style drag for \(Name)")
@@ -930,6 +927,24 @@ extension ModelNode {
     }
   }
   
+  @objc open func PlaySpecificAnimationForNode(_ name: String, _ animation: String) {
+    guard let entity = _addedEntity else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "PlayAnimationsForNode", ErrorMessage.ERROR_MODELNODE_NOT_LOADED.code)
+      return
+    }
+    
+    guard let animationEntity = (entity.name == name) ? entity : findEntity(in: entity, withName: name) else {
+      NodeNotFound(name)
+      return
+    }
+    
+    if #available(iOS 15.0, *) {
+      playSpecificAnimation(entity: animationEntity, animationName: animation)
+    }
+    
+
+  }
+  
   @objc open func PlayAnimationsForAllNodes() {
     guard let entity = _addedEntity else {
       _container?.form?.dispatchErrorOccurredEvent(self, "PlayAnimationsForAllNodes", ErrorMessage.ERROR_MODELNODE_NOT_LOADED.code)
@@ -967,6 +982,29 @@ extension ModelNode {
     stopEntityAnimations(entity: entity)
     stopAnimationsForAllChildren(entity: entity)
   }
+  
+  @available(iOS 15.0, *)
+   private func playSpecificAnimation(entity: Entity, animationName: String) -> Bool {
+       guard let modelEntity = entity as? ModelEntity else { return false }
+       
+       // Find the animation by name
+       let matchingAnimation = modelEntity.availableAnimations.first { animation in
+           // Check if animation has a name property or identifier
+           return animation.name == animationName ||
+                  animation.definition.name == animationName
+       }
+       
+       guard let animation = matchingAnimation else {
+           print("⚠️ Animation '\(animationName)' not found in entity '\(entity.name)'")
+           return false
+       }
+       
+       // Play the specific animation
+       let controller = modelEntity.playAnimation(animation.repeat(duration: .infinity))
+       
+       print("✅ Playing animation '\(animationName)' on entity '\(entity.name)'")
+       return true
+   }
   
   @available(iOS 14.0, *)
   private func playAnimationsForAllChildren(entity: Entity) {
