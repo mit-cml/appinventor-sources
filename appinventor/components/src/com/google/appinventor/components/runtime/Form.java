@@ -1945,8 +1945,17 @@ public class Form extends AppInventorCompatActivity
     // This is used by the project and build server.
     // We also use it to adjust sizes
     Log.d(LOG_TAG, "Sizing(" + value + ")");
+    int topinset = 0;
+    int bottominset = 0;
+    // Starting with SDK 35, Android includes status bar and nav bar (if present) in the
+    // screen dimension calculations.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    {
+      topinset = this.getWindow().getDecorView().getPaddingTop();
+      bottominset = this.getWindow().getDecorView().getPaddingBottom();
+    }
     formWidth = (int)((float) this.getResources().getDisplayMetrics().widthPixels / deviceDensity);
-    formHeight = (int)((float) this.getResources().getDisplayMetrics().heightPixels / deviceDensity);
+    formHeight = (int)((float) (this.getResources().getDisplayMetrics().heightPixels - topinset - bottominset )/ deviceDensity);
     if (value.equals("Fixed")) {
       sCompatibilityMode = true;
       formWidth /= compatScalingFactor;
