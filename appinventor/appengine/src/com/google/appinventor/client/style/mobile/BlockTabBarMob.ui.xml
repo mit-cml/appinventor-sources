@@ -11,21 +11,9 @@
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
 
     <g:FlowPanel styleName="design-tab-bar">
-        <g:FocusPanel ui:field="paletteTab" styleName="design-tab-button">
+        <g:FocusPanel ui:field="BlockTab" styleName="design-tab-button">
             <g:FlowPanel styleName="tab-content">
-                <g:Label styleName="tab-label" text="Palette"/>
-            </g:FlowPanel>
-        </g:FocusPanel>
-
-        <g:FocusPanel ui:field="componentsTab" styleName="design-tab-button">
-            <g:FlowPanel styleName="tab-content">
-                <g:Label styleName="tab-label" text="Components"/>
-            </g:FlowPanel>
-        </g:FocusPanel>
-
-        <g:FocusPanel ui:field="propertiesTab" styleName="design-tab-button">
-            <g:FlowPanel styleName="tab-content">
-                <g:Label styleName="tab-label" text="Properties"/>
+                <g:Label styleName="tab-label" text="Blocks"/>
             </g:FlowPanel>
         </g:FocusPanel>
 

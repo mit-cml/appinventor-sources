@@ -16,25 +16,28 @@
             <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
                 <g:FlowPanel width="100%" >
-                    <box:ProjectListBox width="100%" ui:field="projectListbox" />
+                    <box:ProjectListBox width="100%" ui:field="projectListbox" styleName="ode-MobileProjectList" />
                     <mob:ProjectToolbarMob ui:field="projectToolbar" styleName="ode-BottomNavBar" />
                 </g:FlowPanel>
                 <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
                     <mob:DesignToolbarMob ui:field="designToolbar" />
                     <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
-                        <box:PaletteBox width="100%" ui:field="paletteBox" visible="false" addStyleNames="ode-Hidden"/>
+                        <box:PaletteBox width="100%" ui:field="paletteBox"  addStyleNames="ode-Hidden"/>
                         <box:ViewerBox ui:field="viewerBox"/>
                         <g:FlowPanel ui:field="structureAndAssets">
-                            <box:SourceStructureBox ui:field="sourceStructureBox" visible="false"/>
-                            <box:BlockSelectorBox />
-                            <box:AssetListBox ui:field="assetListBox" visible="false"/>
+                            <box:SourceStructureBox ui:field="sourceStructureBox"  addStyleNames="ode-Hidden"/>
+                            <box:BlockSelectorBox  addStyleNames="ode-Hidden" />
+                            <box:AssetListBox ui:field="assetListBox"  addStyleNames="ode-Hidden" />
                         </g:FlowPanel>
                         <box:PropertiesBox ui:field="propertiesBox" width="222px" addStyleNames="ode-Hidden"/>
                     </g:FlowPanel>
-                    <mob:MobileSidebar ui:field="paletteSidebar">
-                        <!--                            content will be added here dynamically-->
-                    </mob:MobileSidebar>
+                    <g:FlowPanel>
+                        <mob:MobileSidebar ui:field="mobileSideBar">
+                            <!--                            content will be added here dynamically-->
+                        </mob:MobileSidebar>
+                    </g:FlowPanel>
                     <mob:DesignTabBarMob ui:field="designTabBar" styleName="ode-BottomNavBar align" />
+                    <mob:BlockTabBarMob ui:field="blockTabBar" styleName="ode-BottomNavBar align" />
                 </g:FlowPanel>
                 <g:FlowPanel width="100%" visible="false">
                     <box:AdminUserListBox />

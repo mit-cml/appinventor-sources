@@ -9,6 +9,7 @@ import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
+import com.google.appinventor.client.style.mobile.MobileSidebar;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
@@ -90,6 +91,13 @@ public final class BlockSelectorBox extends Box {
   private final SourceStructureExplorer sourceStructureExplorer;
 
   private List<BlockDrawerSelectionListener> drawerListeners;
+
+  private MobileSidebar mobileSidebar;
+
+  public void setMobileSidebar(MobileSidebar sidebar) {
+    this.mobileSidebar = sidebar;
+    sourceStructureExplorer.setMobileSidebar(sidebar);
+  }
 
   /**
    * Return the singleton BlockSelectorBox box.
@@ -252,12 +260,21 @@ public final class BlockSelectorBox extends Box {
   }
 
   private void fireBuiltinDrawerSelected(String drawerName) {
+    // Close the mobile sidebar first
+    if (mobileSidebar != null && mobileSidebar.isOpen()) {
+      mobileSidebar.close();
+    }
+
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onBuiltinDrawerSelected(drawerName);
     }
   }
-
   private void fireGenericDrawerSelected(String drawerName) {
+    // Close the mobile sidebar first
+    if (mobileSidebar != null && mobileSidebar.isOpen()) {
+      mobileSidebar.close();
+    }
+
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onGenericDrawerSelected(drawerName);
     }

@@ -16,6 +16,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.FormChangeListener;
@@ -265,14 +266,16 @@ public final class YaBlocksEditor extends FileEditor
       // come back to it.
       updateBlocksTree(form, null);
 
-      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()
-          .getWidget(2));
+//      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()
+//          .getWidget(2));
       Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);
       Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
-      BlockSelectorBox.getBlockSelectorBox().setVisible(true);
-      AssetListBox.getAssetListBox().setVisible(true);
-      blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled());
-      hideComponentBlocks();
+      String layoutType = Ode.getInstance().getLayoutType();
+        BlockSelectorBox.getBlockSelectorBox().setVisible(!"mobile".equals(layoutType));
+        AssetListBox.getAssetListBox().setVisible(true);
+        blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled());
+        hideComponentBlocks();
+
     } else {
       LOG.warning("Can't get form editor for blocks: " + getFileId());
     }
@@ -321,7 +324,7 @@ public final class YaBlocksEditor extends FileEditor
     paletteBox.setVisible(true);
 
     Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets().getWidget(0));
-    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
+//    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
     Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
     BlockSelectorBox.getBlockSelectorBox().setVisible(false);
     AssetListBox.getAssetListBox().setVisible(true);

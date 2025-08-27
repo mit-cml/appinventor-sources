@@ -97,7 +97,8 @@ public class DesignToolbarMob extends DesignToolbar {
     @Override
     public void toggleEditor(boolean blocks) {
         super.toggleEditor(blocks);
-        toggleDesignTabBar(!blocks); // Hide tab bar when in blocks view, show when in design view
+        toggleDesignTabBar(!blocks);
+        toggleBlockTabBar(blocks);
     }
 
     private void toggleDesignTabBar(boolean visible) {
@@ -107,7 +108,7 @@ public class DesignToolbarMob extends DesignToolbar {
                 tabBar.setVisible(visible);
                 // Close sidebar when switching to blocks view
                 if (!visible) {
-                    MobileSidebar sidebar = Ode.getInstance().getPaletteSidebar();
+                    MobileSidebar sidebar = Ode.getInstance().getmobileSideBar();
                     if (sidebar != null) {
                         sidebar.close();
                     }
@@ -115,6 +116,24 @@ public class DesignToolbarMob extends DesignToolbar {
             }
         } catch (Exception e) {
             LOG.warning("Failed to toggle design tab bar visibility: " + e.getMessage());
+        }
+    }
+
+    private void toggleBlockTabBar(boolean visible) {
+        try {
+            BlockTabBarMob tabBar = Ode.getInstance().getBlockTabBar();
+            if (tabBar != null) {
+                tabBar.setVisible(visible);
+                // Close sidebar when switching to design view
+                if (!visible) {
+                    MobileSidebar sidebar = Ode.getInstance().getmobileSideBar();
+                    if (sidebar != null) {
+                        sidebar.close();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.warning("Failed to toggle block tab bar visibility: " + e.getMessage());
         }
     }
 

@@ -3,10 +3,7 @@
 //<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 package com.google.appinventor.client.style.mobile;
 
-import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
-import com.google.appinventor.client.boxes.SourceStructureBox;
-import com.google.appinventor.client.boxes.BlockSelectorBox;
+import com.google.appinventor.client.boxes.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -23,9 +20,9 @@ public class DesignTabBarMob extends Composite {
     FocusPanel paletteTab;
     @UiField FocusPanel componentsTab;
     @UiField FocusPanel propertiesTab;
-
+    @UiField FocusPanel mediaTab;
     public enum TabType {
-        PALETTE, COMPONENTS, PROPERTIES
+        PALETTE, COMPONENTS, PROPERTIES, MEDIA
     }
 
     private MobileSidebar sidebar;
@@ -62,6 +59,11 @@ public class DesignTabBarMob extends Composite {
         handleTabClick(TabType.PROPERTIES);
     }
 
+    @UiHandler("mediaTab")
+    void onMediaTabClick(ClickEvent event) {
+        handleTabClick(TabType.MEDIA);
+    }
+
     private void handleTabClick(TabType tabType) {
         openPanel(tabType);
 
@@ -93,11 +95,20 @@ public class DesignTabBarMob extends Composite {
                 widgetToAdd = PropertiesBox.getPropertiesBox();
                 widgetToAdd.setWidth("100%");
                 break;
+
+            case MEDIA:
+                widgetToAdd = AssetListBox.getAssetListBox();
+                widgetToAdd.setWidth("100%");
+                break;
         }
 
         if (widgetToAdd != null) {
-            if (tabType == TabType.PALETTE || tabType == TabType.PROPERTIES) {
-                widgetToAdd.removeStyleName("ode-Hidden");
+            // Remove hidden style for all tab types
+            widgetToAdd.removeStyleName("ode-Hidden");
+            widgetToAdd.setVisible(true);
+            if (tabType == TabType.COMPONENTS) {
+                SourceStructureBox.getSourceStructureBox().removeStyleName("ode-Hidden");
+                SourceStructureBox.getSourceStructureBox().setVisible(true);
             }
             sidebar.add(widgetToAdd);
             sidebar.open();

@@ -106,54 +106,54 @@ body, html {
     overflow: hidden;
 }
 
-.ode-Box-content {
-    /*all:unset;*/
-    background-image: unset;
-    background-color: unset;
-    border: unset;
-    box-shadow: unset;
-    display: flex;
-    flex-grow: 1;
-    margin:unset;
-    height: 100%;
-}
+/*.ode-Box-content {*/
+/*    !*all:unset;*!*/
+/*    background-image: unset;*/
+/*    background-color: unset;*/
+/*    border: unset;*/
+/*    box-shadow: unset;*/
+/*    display: flex;*/
+/*    flex-grow: 1;*/
+/*    margin:unset;*/
+/*    height: 100%;*/
+/*}*/
 
 
-.ode-Box-body-padding {
-    padding: unset;
-    width: 100%;
-    display: flex;
-    flex-grow: 1;
-}
+/*.ode-Box-body-padding {*/
+/*    padding: unset;*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    flex-grow: 1;*/
+/*}*/
 
-.ode-Box-body-padding>* {
-    display: flex;
-    flex-grow: 1;
-}
+/*.ode-Box-body-padding>* {*/
+/*    display: flex;*/
+/*    flex-grow: 1;*/
+/*}*/
 
 .ode-Box-toolkit {
     /*all: unset;*/
 }
-.ode-Box-header {
-    /* all: unset; */
-    visibility: collapse;
-    display: none;
-}
+/*.ode-Box-header {*/
+/*    !* all: unset; *!*/
+/*    visibility: collapse;*/
+/*    display: none;*/
+/*}*/
 
-.ode-Box-header-caption,
-.ode-Box-header-caption-highlighted {
-    /*all: unset;*/
-}
+/*.ode-Box-header-caption,*/
+/*.ode-Box-header-caption-highlighted {*/
+/*    !*all: unset;*!*/
+/*}*/
 
-.ode-Box-header-caption {
-}
+/*.ode-Box-header-caption {*/
+/*}*/
 
 .ode-Box-body {
 }
 
-.ode-Box-body-padding {
-    padding: unset;
-}
+/*.ode-Box-body-padding {*/
+/*    padding: unset;*/
+/*}*/
 
 .ode-BoxResizeControl {
     background-color: darkgray !important;
@@ -166,31 +166,31 @@ body, html {
     overflow: hidden;
 }
 
-.ode-Box-content {
-    /*all:unset;*/
-    background-image: unset;
-    background-color: unset;
-    border: unset;
-    box-shadow: unset;
-    display: flex;
-    flex-grow: 1;
-    margin:unset;
-    height: 100%;
-    color: gray-700;
-}
+/*.ode-Box-content {*/
+/*    !*all:unset;*!*/
+/*    background-image: unset;*/
+/*    background-color: unset;*/
+/*    border: unset;*/
+/*    box-shadow: unset;*/
+/*    display: flex;*/
+/*    flex-grow: 1;*/
+/*    margin:unset;*/
+/*    height: 100%;*/
+/*    color: gray-700;*/
+/*}*/
 
 
-.ode-Box-body-padding {
-    padding: unset;
-    width: 100%;
-    display: flex;
-    flex-grow: 1;
-}
+/*.ode-Box-body-padding {*/
+/*    padding: unset;*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    flex-grow: 1;*/
+/*}*/
 
-.ode-Box-body-padding>* {
-    display: flex;
-    flex-grow: 1;
-}
+/*.ode-Box-body-padding>* {*/
+/*    display: flex;*/
+/*    flex-grow: 1;*/
+/*}*/
 
 .ode-ProjectTable {
     /*all: unset;*/
@@ -240,7 +240,6 @@ body, html {
 }
 
 
-/* experiment */
 /*ProjectList sortDropDown---------------*/
 
 .ode-ProjectTable {
@@ -499,13 +498,13 @@ body, html {
 
 /*ProjectFolderMob-----------------*/
 
-.ode-Box-content {
-    color: #6c757d;
-}
+/*.ode-Box-content {*/
+/*    color: #6c757d;*/
+/*}*/
 
-.ode-Box-header-caption-highlighted {
-    color: #dc3545;
-}
+/*.ode-Box-header-caption-highlighted {*/
+/*    color: #dc3545;*/
+/*}*/
 
 .ode-ProjectTable {
     border: 1px solid #dee2e6;
@@ -1176,7 +1175,7 @@ body, html {
 /* Mobile Work Columns Layout */
 .ode-WorkColumns {
     display: flex !important;
-    flex-direction: column !important;
+    /*flex-direction: column !important;*/
     width: 100% !important;
     height: 76vh !important;
     position: relative !important;
@@ -1442,4 +1441,32 @@ body, html {
     width: 320px;
     height: 700px;
 }
+
+.ode-Box-body-padding {
+    padding: 6px;
+    flex-grow: 1;
+    display: flex;
+    min-height: 65vh;
+}
+
+.ode-MobileProjectList{
+    flex-grow: 1;
+    display: flex;
+    min-height: 84vh;
+}
+
+.ode-DeckPanel {
+    padding: 0;
+}
+
+.ode-Box-content{
+    min-height: 320px;
+}
+
+/*.blocklyFlyout{*/
+/*    display: block;*/
+/*    transform: translate(0px, 0px);*/
+/*    overflow-x: auto;*/
+/*    white-space: nowrap;*/
+/*}*/
 

@@ -225,8 +225,9 @@ public class Ode implements EntryPoint {
   @UiField protected TopPanel topPanel;
   @UiField protected StatusPanel statusPanel;
   @UiField protected FlowPanel workColumns;
-  @UiField protected MobileSidebar paletteSidebar;
+  @UiField protected MobileSidebar mobileSideBar;
   @UiField protected DesignTabBarMob designTabBar;
+  @UiField protected BlockTabBarMob blockTabBar;
   @UiField protected FlowPanel structureAndAssets;
   @UiField protected ProjectToolbar projectToolbar;
   @UiField (provided = true) protected ProjectListBox projectListbox;
@@ -1052,7 +1053,8 @@ public class Ode implements EntryPoint {
     style.ensureInjected();
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
 
-    designTabBar.setSidebar(paletteSidebar);
+    designTabBar.setSidebar(mobileSideBar);
+    blockTabBar.setSidebar(mobileSideBar);
 
     deckPanel.showWidget(0);
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
@@ -1500,6 +1502,10 @@ public class Ode implements EntryPoint {
 
   private boolean isLandscape() {
     return Window.getClientWidth() > Window.getClientHeight();
+  }
+
+  public String getLayoutType() {
+    return determineLayout();
   }
 
   /**
@@ -2720,8 +2726,12 @@ public class Ode implements EntryPoint {
     return designTabBar;
   }
 
-  public MobileSidebar getPaletteSidebar() {
-    return paletteSidebar;
+  public BlockTabBarMob getBlockTabBar() {
+    return blockTabBar;
+  }
+
+  public MobileSidebar getmobileSideBar() {
+    return mobileSideBar;
   }
 
 

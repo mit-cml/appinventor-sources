@@ -42,8 +42,9 @@
       </g:DeckPanel>
     </g:FlowPanel>
     <ode:StatusPanel ui:field="statusPanel" />
-    <mob:MobileSidebar ui:field="paletteSidebar" styleName="ode-PaletteSidebar" visible="false">
+    <mob:MobileSidebar ui:field="mobileSideBar" styleName="ode-PaletteSidebar" visible="false">
     </mob:MobileSidebar>
     <mob:DesignTabBarMob ui:field="designTabBar" styleName="ode-BottomNavBar" visible="false" />
+    <mob:BlockTabBarMob ui:field="blockTabBar" styleName="ode-BottomNavBar align" visible="false" />
   </g:FlowPanel>
 </ui:UiBinder>
