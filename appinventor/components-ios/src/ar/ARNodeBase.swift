@@ -857,7 +857,7 @@ open class ARNodeBase: NSObject, ARNode {
     }
     
     // Dispatch event to app level
-    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject")
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: otherNode)
   }
 
   
