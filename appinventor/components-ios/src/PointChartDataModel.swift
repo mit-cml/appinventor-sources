@@ -30,7 +30,7 @@ open class PointChartDataModel: Chart2DDataModel {
           let x = PointChartDataModel.asDouble(tuple[0+1]),
           let y = PointChartDataModel.asDouble(tuple[1+1]) else {
       // Handle error for insufficient chart entry values or type mismatch
-      print("Error: Insufficient chart entry values")
+      print("Error: Insufficient or incorrect chart entry values \(tuple) \(tuple.count)")
       return nil
     }
 
