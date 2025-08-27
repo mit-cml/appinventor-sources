@@ -145,20 +145,17 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     super(projectRootNode, styleFactory);
     project.addProjectChangeListener(this);
     COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
-<<<<<<< HEAD
     Ode.getInstance().getTokenAuthService().getCloudDBToken(new OdeAsyncCallback<String>() {
       @Override
       public void onSuccess(String result) {
         defaultCloudDBToken = result;
       }
     });
-=======
     
     // Initialize asset manager panel
     if (assetManagerPanel != null) {
       assetManagerPanel.setVisible(true);
     }
->>>>>>> asset-library
   }
 
   public String getDefaultCloudDBToken() {

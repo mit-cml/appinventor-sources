@@ -23,4 +23,8 @@ public interface GlobalAssetServiceAsync {
   void getProjectsUsingAsset(String assetFileName, AsyncCallback<List<Long>> callback);
   void syncProjectGlobalAsset(String assetFileName, long projectId, AsyncCallback<Boolean> callback);
   void bulkAddAssetsToProject(List<String> assetFileNames, long projectId, boolean trackUsage, AsyncCallback<Void> callback);
+  
+  // Asset conflict detection and impact analysis
+  void assetExists(String fileName, AsyncCallback<Boolean> callback);
+  void getAssetConflictInfo(String fileName, AsyncCallback<AssetConflictInfo> callback);
 }

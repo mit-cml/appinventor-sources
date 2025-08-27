@@ -37,16 +37,13 @@ import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-<<<<<<< HEAD
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.ComponentDefinition;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
-=======
-import com.google.appinventor.shared.rpc.ServerLayout; // Added
->>>>>>> asset-library
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.http.client.URL; // Added
+import com.google.gwt.http.client.URL;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;

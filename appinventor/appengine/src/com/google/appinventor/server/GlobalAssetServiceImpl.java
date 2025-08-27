@@ -11,6 +11,7 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.shared.rpc.globalasset.GlobalAssetService;
+import com.google.appinventor.shared.rpc.globalasset.AssetConflictInfo;
 import com.google.appinventor.shared.rpc.project.GlobalAsset;
 
 import java.util.ArrayList;
@@ -431,6 +432,58 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
     if (errorCount > 0) {
       throw new RuntimeException("Bulk add completed with " + errorCount + " errors. " + successCount + " assets were added successfully.");
     }
+  }
+
+  @Override
+  public boolean assetExists(String fileName) {
+    String userId = userInfoProvider.getUserId();
+    StoredData.GlobalAssetData globalAssetData = storageIo.getGlobalAssetByFileName(userId, fileName);
+    return globalAssetData != null;
+  }
+
+  @Override
+  public AssetConflictInfo getAssetConflictInfo(String fileName) {
+    String userId = userInfoProvider.getUserId();
+    
+    // Get the existing asset
+    StoredData.GlobalAssetData globalAssetData = storageIo.getGlobalAssetByFileName(userId, fileName);
+    if (globalAssetData == null) {
+      return null; // No conflict if asset doesn't exist
+    }
+    
+    // Convert to GlobalAsset DTO
+    GlobalAsset existingAsset = new GlobalAsset(userId, globalAssetData.fileName, 
+                                                globalAssetData.folder, globalAssetData.timestamp, 
+                                                new ArrayList<String>());
+    
+    // Get affected projects
+    List<AssetConflictInfo.ProjectInfo> affectedProjects = new ArrayList<>();
+    List<Long> projectIds = getProjectsUsingAsset(fileName);
+    
+    for (Long projectId : projectIds) {
+      try {
+        // Get project name using the available method
+        String projectName = storageIo.getProjectName(userId, projectId);
+        if (projectName != null) {
+          // Get the relationship info to check if it's tracked
+          StoredData.ProjectGlobalAssetData relationData = 
+              storageIo.getProjectGlobalAssetRelation(projectId, fileName, userId);
+          
+          boolean isTracked = (relationData != null && relationData.trackUsage);
+          long lastSyncTime = (relationData != null) ? relationData.syncedTimestamp : 0;
+          
+          AssetConflictInfo.ProjectInfo projectInfo = new AssetConflictInfo.ProjectInfo(
+              projectId, projectName, isTracked, lastSyncTime);
+          
+          affectedProjects.add(projectInfo);
+        }
+      } catch (Exception e) {
+        LOG.warning("Error getting project info for project " + projectId + ": " + e.getMessage());
+      }
+    }
+    
+    return new AssetConflictInfo(existingAsset, affectedProjects, 
+                                affectedProjects.size(), globalAssetData.timestamp);
   }
 
   @Override

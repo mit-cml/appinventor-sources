@@ -61,7 +61,6 @@ public final class FileExporterImpl implements FileExporter {
 
   @Override
   public ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
-<<<<<<< HEAD
       boolean includeProjectHistory,
       boolean includeAndroidKeystore,
       @Nullable String zipName,
@@ -72,21 +71,9 @@ public final class FileExporterImpl implements FileExporter {
       boolean forAppStore,
       boolean locallyCachedApp) throws IOException {
     // Download project source files as a zip.
-    return storageIo.exportProjectSourceZip(userId, projectId,
+    ProjectSourceZip projectSourceZip = storageIo.exportProjectSourceZip(userId, projectId,
         includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots,
         forGallery, fatalError, forAppStore, locallyCachedApp);
-=======
-    boolean includeProjectHistory,
-    boolean includeAndroidKeystore,
-    @Nullable String zipName,
-    boolean includeYail,
-    boolean includeScreenShots,
-    boolean fatalError,
-    final boolean forGallery) throws IOException {
-    final boolean forBuildserver = includeAndroidKeystore && includeYail;
-    // Download project source files as a zip.
-    ProjectSourceZip projectSourceZip = storageIo.exportProjectSourceZip(userId, projectId,
-      includeProjectHistory, includeAndroidKeystore, zipName, includeYail, includeScreenShots, forGallery, fatalError);
 
     // Add global asset references to metadata
     List<StoredData.ProjectGlobalAsset> linkedGlobalAssets = storageIo.getProjectGlobalAssets(userId, projectId);
@@ -102,7 +89,6 @@ public final class FileExporterImpl implements FileExporter {
     }
 
     return projectSourceZip;
->>>>>>> asset-library
   }
 
   @Override

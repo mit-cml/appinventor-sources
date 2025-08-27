@@ -25,4 +25,8 @@ public interface GlobalAssetService extends RemoteService {
   List<Long> getProjectsUsingAsset(String assetFileName);
   boolean syncProjectGlobalAsset(String assetFileName, long projectId);
   void bulkAddAssetsToProject(List<String> assetFileNames, long projectId, boolean trackUsage);
+  
+  // Asset conflict detection and impact analysis
+  boolean assetExists(String fileName);
+  AssetConflictInfo getAssetConflictInfo(String fileName);
 }
