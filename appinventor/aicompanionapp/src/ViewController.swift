@@ -77,6 +77,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
     self.delegate = self
+    SystemVariables.inConnectedApp = false
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
