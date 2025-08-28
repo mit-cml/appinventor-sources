@@ -124,6 +124,10 @@ class EmailPickerAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDelega
       _field.selectedTextRange = _field.textRange(from: offset, to: offset)
     }
   }
+
+  var responder: UIResponder {
+    _field
+  }
 }
 
 protocol EmailPickerProtocol: UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate {
