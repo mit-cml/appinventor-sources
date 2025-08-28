@@ -27,7 +27,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -111,11 +111,21 @@ public class CreateManifest implements AndroidTask {
 
       final Map<String, Set<String>> featuresNeeded = context.getComponentInfo().getFeaturesNeeded();
       if (!featuresNeeded.isEmpty()) {
-        final Set<String> uniqueFeatures = new HashSet<>();
+        final HashMap<String, String> uniqueFeatures = new HashMap<>();
         for (Map.Entry<String, Set<String>> componentSubElSetPair : featuresNeeded.entrySet()) {
-          uniqueFeatures.addAll(componentSubElSetPair.getValue());
+          for (String feature : componentSubElSetPair.getValue()) {
+            // Extract just the android:name value
+            String name = feature.replaceAll(".*android:name=\"([^\"]+)\".*", "$1");
+            boolean isRequiredTrue = feature.contains("android:required=\"true\"");
+
+            // If new, store it — if existing, only replace if this one has required="true"
+            if (!uniqueFeatures.containsKey(name) || isRequiredTrue) {
+              uniqueFeatures.put(name, feature);
+            }
+          }
         }
-        for (String feature : uniqueFeatures) {
+
+        for (String feature : uniqueFeatures.values()) {
           out.write(feature);
         }
       }

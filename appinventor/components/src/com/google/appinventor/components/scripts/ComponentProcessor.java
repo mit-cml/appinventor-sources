@@ -1874,7 +1874,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     // Gather the required uses-feature elements and build their element strings.
     UsesFeatures usesFeatures = element.getAnnotation(UsesFeatures.class);
     if (usesFeatures != null) {
+      final Map<String, FeatureElement> featureMap = new HashMap<>();
       for (FeatureElement fe : usesFeatures.features()) {
+        if (!featureMap.containsKey(fe.name())) {
+          featureMap.put(fe.name(), fe);
+        } else if (fe.required()){
+          featureMap.put(fe.name(), fe);
+        }
+      }
+      for (FeatureElement fe : featureMap.values()) {
         updateWithNonEmptyValue(componentInfo.features, featureElementToString(fe));
       }
     }
