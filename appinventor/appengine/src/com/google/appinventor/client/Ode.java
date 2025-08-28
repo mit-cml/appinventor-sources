@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -314,6 +314,11 @@ public class Ode implements EntryPoint {
 
   private boolean secondBuildserver = false; // True if we have a second
                                              // buildserver.
+
+  /**
+   * Indicates whether we have an iOS build server available.
+   */
+  private boolean iosBuildServer = false;
 
   // The flags below are used by the Build menus. Because we have two
   // different buildservers, we have two sets of build menu items, one
@@ -932,6 +937,7 @@ public class Ode implements EntryPoint {
 
     splashConfig = config.getSplashConfig();
     secondBuildserver = config.getSecondBuildserver();
+    iosBuildServer = config.getiOSBuildServer();
     // The code below is invoked if we do not have a second buildserver
     // configured. It sets the warnedBuild1 flag to true which inhibits
     // the display of the dialog box used when building. This means that
@@ -1714,7 +1720,9 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(ok);
-    holder.add(noshow);
+    if (splashConfig.version != -2) { // Don't show checkbox if splash is mandatory
+      holder.add(noshow);
+    }
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
@@ -1770,6 +1778,11 @@ public class Ode implements EntryPoint {
     if (splashConfig.version == 0) {   // Never show splash if version is 0
       return false;             // Check first to avoid others unnecessary calls
     }
+
+    if (splashConfig.version == -2) {  // Always show splash if version is -2
+      return true;
+    }
+
     String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
       getPropertyValue(SettingsConstants.SPLASH_SETTINGS_VERSION);
     int uversion;
@@ -2567,6 +2580,15 @@ public class Ode implements EntryPoint {
 
   public boolean hasSecondBuildserver() {
     return secondBuildserver;
+  }
+
+  /**
+   * Checks whether the system has the iOS build server enabled.
+   *
+   * @return true if the server supports iOS builds
+   */
+  public boolean hasIosBuildServer() {
+    return iosBuildServer;
   }
 
   public boolean getWarnBuild(boolean secondBuildserver) {

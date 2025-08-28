@@ -75,6 +75,7 @@ public class ProjectPropertiesDialogBox {
     projectCategories.put("General", MESSAGES.projectPropertyGeneralCategoryTitle());
     projectCategories.put("Theming", MESSAGES.projectPropertyThemingCategoryTitle());
     projectCategories.put("Publishing", MESSAGES.projectPropertyPublishingCategoryTitle());
+    projectCategories.put("iOS Settings", MESSAGES.projectPropertyIosSettingsCategoryTitle());
   }
 
   /**

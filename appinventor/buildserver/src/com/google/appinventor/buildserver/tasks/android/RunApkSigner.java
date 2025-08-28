@@ -5,7 +5,7 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
@@ -42,6 +42,8 @@ public class RunApkSigner implements AndroidTask {
         "sure its password is set to 'android', and the key is set to 'androidkey'.");
       return TaskResult.generateError("Error while running ApkSigner tool");
     }
+
+    context.getOutputFiles().add(context.getPaths().getDeployFile());
 
     return TaskResult.generateSuccess();
   }

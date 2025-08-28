@@ -40,6 +40,7 @@ public class SimpleNonVisibleComponentsPanel<T extends DesignerRootComponent> ex
    * Creates new component design panel for non-visible components.
    */
   public SimpleNonVisibleComponentsPanel() {
+
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
     panel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);

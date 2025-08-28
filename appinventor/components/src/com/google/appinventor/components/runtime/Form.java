@@ -6,7 +6,15 @@
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.BLUETOOTH_ADVERTISE;
+import static android.Manifest.permission.BLUETOOTH_CONNECT;
+import static android.Manifest.permission.BLUETOOTH_SCAN;
 import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
+import static android.Manifest.permission.READ_MEDIA_VIDEO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.google.appinventor.components.runtime.util.PaintUtil.hexStringToInt;
 
 import android.annotation.SuppressLint;
@@ -79,6 +87,7 @@ import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.PermissionRegistry;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -219,6 +228,16 @@ public class Form extends AppInventorCompatActivity
   private static boolean showListsAsJson;
 
   private final Set<String> permissions = new HashSet<String>();
+
+  private final PermissionRegistry permissionRegistry = new PermissionRegistry()
+      .recordMinSdk(BLUETOOTH_ADVERTISE, Build.VERSION_CODES.S)
+      .recordMinSdk(BLUETOOTH_CONNECT, Build.VERSION_CODES.S)
+      .recordMinSdk(BLUETOOTH_SCAN, Build.VERSION_CODES.S)
+      .recordMaxSdk(READ_EXTERNAL_STORAGE, Build.VERSION_CODES.TIRAMISU)
+      .recordMinSdk(READ_MEDIA_AUDIO, Build.VERSION_CODES.TIRAMISU)
+      .recordMinSdk(READ_MEDIA_IMAGES, Build.VERSION_CODES.TIRAMISU)
+      .recordMinSdk(READ_MEDIA_VIDEO, Build.VERSION_CODES.TIRAMISU)
+      .recordMaxSdk(WRITE_EXTERNAL_STORAGE, Build.VERSION_CODES.R);
 
   private FileScope defaultFileScope = FileScope.App;
 
@@ -1906,6 +1925,57 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Specifies the iOS privacy explanation of why the app needs access to
+   * Bluetooth on iOS 13 and later.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSBluetoothAlwaysUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to
+   * Bluetooth peripherals prior to iOS 13.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSBluetoothPeripheralUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to Contacts.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSContactsUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to the microphone.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSMicrophoneUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to the camera.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSCameraUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to speech recognition.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSSpeechRecognitionUsageDescription(String message) {}
+
+  /**
+   * Specifies the iOS privacy explanation of why the app needs access to user location.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void NSLocationWhenInUseUsageDescription(String message) {}
+
+  /**
    * If set to responsive (the default), screen layouts will use the actual resolution of the
    * device. See the [documentation on responsive design](../other/responsiveDesign.html) in App
    * Inventor for more information.
@@ -2786,8 +2856,14 @@ public class Form extends AppInventorCompatActivity
    * @return true if the permission has been denied, otherwise false.
    */
   public boolean isDeniedPermission(String permission) {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return false;  // Do not need to ask permissions before Marshmallow
+    } else if (!permissionRegistry.needsPermission(permission)) {
+      return false;  // Do not need to ask for this permission on this SDK level
+    } else {
+      return ContextCompat.checkSelfPermission(this, permission)
+          == PackageManager.PERMISSION_DENIED;
+    }
   }
 
   /**

@@ -26,6 +26,7 @@
 - (nonnull id<SCMValue>)valueForObject:(nullable id)object;
 - (void)protect:(nonnull id)object;
 - (void)unprotect:(nonnull id)object;
+- (void)markObject:(nonnull NSObject *)object;
 
 /**
  * Run a garbage collection cycle of the Scheme memory.

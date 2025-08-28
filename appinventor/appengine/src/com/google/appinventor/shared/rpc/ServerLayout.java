@@ -128,6 +128,8 @@ public class ServerLayout {
    */
   public static final String DOWNLOAD_USERFILE = "userfile";
 
+  public static final String DOWNLOAD_CSR = "certificate-request";
+
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
    * for downloading a global asset

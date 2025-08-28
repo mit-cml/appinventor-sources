@@ -1284,6 +1284,29 @@ Top-level component containing all other components in the program.
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.
 
+{:id="Screen.NSBluetoothAlwaysUsageDescription" .text .wo .do} *NSBluetoothAlwaysUsageDescription*
+: Specifies the iOS privacy explanation of why the app needs access to
+ Bluetooth on iOS 13 and later.
+
+{:id="Screen.NSBluetoothPeripheralUsageDescription" .text .wo .do} *NSBluetoothPeripheralUsageDescription*
+: Specifies the iOS privacy explanation of why the app needs access to
+ Bluetooth peripherals prior to iOS 13.
+
+{:id="Screen.NSCameraUsageDescription" .text .wo .do} *NSCameraUsageDescription*
+: Specifies the iOS privacy explanation of why the app needs access to the camera.
+
+{:id="Screen.NSContactsUsageDescription" .text .wo .do} *NSContactsUsageDescription*
+: Specifies the iOS privacy explanation of why the app needs access to Contacts.
+
+{:id="Screen.NSLocationWhenInUseUsageDescription" .text .wo .do} *NSLocationWhenInUseUsageDescription*
+: Specifies the iOS privacy explanation of why the app needs access to user location.
+
+{:id="Screen.NSMicrophoneUsageDescription" .text .wo .do} *NSMicrophoneUsageDescription*
+: Specifies the iOS privacy explanation of why the app needs access to the microphone.
+
+{:id="Screen.NSSpeechRecognitionUsageDescription" .text .wo .do} *NSSpeechRecognitionUsageDescription*
+: Specifies the iOS privacy explanation of why the app needs access to speech recognition.
+
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
 : Sets the animation type for the transition of this form opening.
 
@@ -2074,9 +2097,15 @@ Component for viewing Web pages.
 : Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.
 
+{:id="WebViewer.UsesCamera" .boolean .wo .do} *UsesCamera*
+: Specifies whether this `WebViewer` can access the camera.
+
 {:id="WebViewer.UsesLocation" .boolean .wo .do} *UsesLocation*
 : Specifies whether or not this `WebViewer` can access the JavaScript
  geolocation API.
+
+{:id="WebViewer.UsesMicrophone" .boolean .wo .do} *UsesMicrophone*
+: Specifies whether this `WebViewer` can access the microphone.
 
 {:id="WebViewer.Visible" .boolean} *Visible*
 : Specifies whether the `WebViewer` should be visible on the screen.  Value is `true`{:.logic.block}

@@ -67,8 +67,17 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_THEME = "Theme";
   public static final String YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW = "PhonePreview";
   public static final String YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE = "DefaultFileScope";
+  public static final String YOUNG_ANDROID_SETTINGS_PROJECT_COLORS = "ProjectColors";
   public static final String YOUNG_ANDROID_SETTINGS_AIVERSIONING = "AIVersioning";
   public static final String YOUNG_ANDROID_SETTINGS_LAST_OPENED = "LastOpened";
+  public static final String YOUNG_ANDROID_SETTINGS_BUILDNUMBER = "BuildNumber";
+  public static final String YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE = "NSBluetoothAlwaysUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE = "NSBluetoothPeripheralUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE = "NSContactsUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE = "NSMicrophoneUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE = "NSCameraUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE = "NSSpeechRecognitionUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE = "NSLocationWhenInUseUsageDescription";
 
   /**
    * Settings for the Blocks editor.

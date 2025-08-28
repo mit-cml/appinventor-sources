@@ -36,6 +36,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
+  private static final String WIDGET_NAME_DOWNLOAD_CSR = "DownloadCSR";
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
@@ -45,6 +46,8 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_BUILD_ANDROID_AAB = "BuildAab";
   private static final String WIDGET_NAME_BUILD_ANDROID_APK2 = "BuildApk2";
   private static final String WIDGET_NAME_BUILD_ANDROID_AAB2 = "BuildAab2";
+  private static final String WIDGET_NAME_BUILD_IOS_ADHOC = "BuildIPA";
+  private static final String WIDGET_NAME_BUILD_IOS_APPSTORE = "BuildIPAStore";
   private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
   private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
@@ -58,6 +61,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_SETTINGS = "Settings";
   private static final String WIDGET_NAME_AUTOLOAD = "Autoload Last Project";
   private static final String WIDGET_NAME_DYSLEXIC_FONT = "DyslexicFont";
+  private static final String WIDGET_NAME_APP_STORE_SETTINGS = "AppStoreSettings";
   private static final String WIDGET_NAME_NEW_LAYOUT = "NewLayout";
   private static final String WIDGET_NAME_OLD_LAYOUT = "OldLayout";
   private static final String WIDGET_NAME_DARK_THEME_ENABLED = "DarkThemeEnabled";
@@ -119,6 +123,13 @@ public class TopToolbar extends Composite {
       RootPanel.getBodyElement().addClassName("onChromebook");
     }
 
+    if (!AppInventorFeatures.allowIosBuilds() && !AppInventorFeatures.allowAppStoreBuilds()) {
+      fileDropDown.removeItemById(WIDGET_NAME_DOWNLOAD_CSR);
+      settingsDropDown.removeItem(WIDGET_NAME_APP_STORE_SETTINGS);
+    }
+
+    fileDropDown.removeUnneededSeparators();
+
     // Second Buildserver Menu Items
     //
     // We may have a second buildserver which if present permits us to build applications
@@ -136,6 +147,12 @@ public class TopToolbar extends Composite {
     if (!Ode.getInstance().hasSecondBuildserver()) {
       buildDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_APK2);
       buildDropDown.removeItemById(WIDGET_NAME_BUILD_ANDROID_AAB2);
+    }
+    if (!AppInventorFeatures.allowIosBuilds()) {
+      buildDropDown.removeItemById(WIDGET_NAME_BUILD_IOS_ADHOC);
+    }
+    if (!AppInventorFeatures.allowAppStoreBuilds()) {
+      buildDropDown.removeItemById(WIDGET_NAME_BUILD_IOS_APPSTORE);
     }
     if (!AppInventorFeatures.hasYailGenerationOption()
         || !Ode.getInstance().getUser().getIsAdmin()) {
@@ -304,6 +321,7 @@ public class TopToolbar extends Composite {
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
     if (view == Ode.PROJECTS) {  // We are in the Projects view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), false);
       fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
@@ -318,6 +336,14 @@ public class TopToolbar extends Composite {
       if (Ode.getInstance().hasSecondBuildserver()) {
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), false);
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
+      }
+      if (Ode.getInstance().hasIosBuildServer()) {
+        if (AppInventorFeatures.allowIosBuilds()) {
+          buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_IOS_ADHOC, false);
+        }
+        if (AppInventorFeatures.allowAppStoreBuilds()) {
+          buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_IOS_APPSTORE, false);
+        }
       }
     } else { // We have to be in the Designer/Blocks view
       fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
@@ -335,6 +361,14 @@ public class TopToolbar extends Composite {
       if (Ode.getInstance().hasSecondBuildserver()) {
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), true);
         buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), true);
+      }
+      if (Ode.getInstance().hasIosBuildServer()) {
+        if (AppInventorFeatures.allowIosBuilds()) {
+          buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_IOS_ADHOC, true);
+        }
+        if (AppInventorFeatures.allowAppStoreBuilds()) {
+          buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_IOS_APPSTORE, true);
+        }
       }
     }
     updateKeystoreFileMenuButtons(true);

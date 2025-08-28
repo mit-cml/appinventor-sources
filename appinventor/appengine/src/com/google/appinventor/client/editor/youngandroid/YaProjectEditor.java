@@ -7,6 +7,8 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 
 import com.google.appinventor.client.ErrorReporter;
@@ -26,16 +28,18 @@ import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
+import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.properties.json.JSONString;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.SourceNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
@@ -44,9 +48,13 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSource
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.json.client.JSONException;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
@@ -141,6 +149,78 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     propertyDialogBox.showDialog(curScreen);
   }
 
+  /*
+   * Code for handling project specific colors
+   */
+
+  private final HashMap<String, Integer> colorFrequency = new HashMap<>();
+  private final List<String> projectColors = new ArrayList<>();
+  public List<String> getProjectColors() {
+    if (projectColors.isEmpty()) {
+      String projectColorProperty = getProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS, YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
+      if (projectColorProperty != null && !projectColorProperty.isEmpty()) {
+        com.google.gwt.json.client.JSONObject obj = new com.google.gwt.json.client.JSONObject(JsonUtils.safeEval(projectColorProperty));
+        for (String color : obj.keySet()) {
+          final com.google.gwt.json.client.JSONValue value = obj.get(color);
+          int frequency = 0;
+          if (value != null) {
+            frequency = (int) value.isNumber().doubleValue();
+          }
+          colorFrequency.put(color, frequency);
+          this.projectColors.add(color);
+        }
+      }
+    }
+    return this.projectColors;
+  }
+
+  public void addColor(String color) {
+    colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
+    sortColors();
+
+    storeProjectColors();
+  }
+
+  private void storeProjectColors() {
+    com.google.gwt.json.client.JSONObject obj = new com.google.gwt.json.client.JSONObject();
+    for (String colorItem : projectColors) {
+      obj.put(colorItem, new JSONNumber(colorFrequency.getOrDefault(colorItem, 0)));
+    }
+
+    changeProjectSettingsProperty(PROJECT_YOUNG_ANDROID_SETTINGS,
+            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, obj.toString());
+  }
+
+  public void removeColor(String color) {
+    if (colorFrequency.containsKey(color)) {
+      colorFrequency.remove(color);
+      sortColors();
+
+      storeProjectColors();
+    }
+  }
+
+  private void sortColors() {
+    List<Map.Entry<String, Integer>> sortedColors = new ArrayList<>(this.colorFrequency.entrySet());
+
+    sortedColors.sort(new Comparator<Map.Entry<String, Integer>>() {
+      @Override
+      public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+        return o2.getValue().compareTo(o1.getValue());
+      }
+    });
+
+    this.projectColors.clear();
+
+    int n = 12; // storing maximum 12 colors, that might fill 3 rows in color dialog
+    if (n > sortedColors.size()) {
+      n = sortedColors.size();
+    }
+    for (int i = 0; i < n; i++) {
+      this.projectColors.add(sortedColors.get(i).getKey());
+    }
+  }
+
   public YaProjectEditor(ProjectRootNode projectRootNode, UiStyleFactory styleFactory) {
     super(projectRootNode, styleFactory);
     project.addProjectChangeListener(this);
@@ -170,7 +250,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
     final BlocksEditor<?, DesignerEditor<?, ?, ?, ?, ?>> newBlocksEditor =
         (BlocksEditor) editorMap.get(formName).blocksEditor;
-    newBlocksEditor.setDesigner(editorMap.get(formName).formEditor);
     newBlocksEditor.loadFile(new Command() {
         @Override
         public void execute() {
@@ -543,7 +622,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private void addBlocksEditor(String entityName, final BlocksEditor<?, ?> newBlocksEditor) {
     if (editorMap.containsKey(entityName)) {
       // This happens if the form editor was already added.
-      editorMap.get(entityName).blocksEditor = newBlocksEditor;
+      EditorSet pair = editorMap.get(entityName);
+      pair.blocksEditor = newBlocksEditor;
     } else {
       EditorSet editors = new EditorSet();
       editors.blocksEditor = newBlocksEditor;

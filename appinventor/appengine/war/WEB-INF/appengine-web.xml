@@ -89,6 +89,7 @@
 
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
+    <property name="build.server.password" value="" />
 
     <!-- We provide below for a second buildserver. If this field is
          non-empty then the user is presented a choice of two different
@@ -106,6 +107,10 @@
 
     <!-- host[:port] to use for the second build server -->
     <property name="build2.server.host" value="" />
+    <property name="build2.server.password" value="" />
+
+    <!-- host[:port] to use for the iOS build server -->
+    <property name="ios.build.server.host" value="localhost:9990" />
 
     <!-- host[:port] to tell build server the app host url to callback
          when deploy AppInventor on other GAE implementation such as
