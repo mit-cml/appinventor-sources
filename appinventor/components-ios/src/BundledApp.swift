@@ -113,6 +113,7 @@ public class BundledApp : Application, UINavigationControllerDelegate {
       print("\(exception)")
     }
     theme = form.Theme
+    interpreter.evalForm("(ios$start-form)")
   }
 
   @objc open func loadScheme(for screenName: String) -> String? {

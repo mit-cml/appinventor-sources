@@ -31,6 +31,33 @@ class AssetLoadError: Error {
       }
     }
   }
+  
+  @objc public static func fetchCachedProject(_ cookieValue: String, _ projectId: String, _ uri: String, _ projectName: String) {
+    DispatchQueue.main.async {
+      let projectUrl = uri + "/ode/download/project-cached/" + projectId;
+      getProject(projectUrl: projectUrl, cookieValue: cookieValue, projectName: projectName, depth: 0) { success, error in
+        if success {
+          DispatchQueue.main.async {
+            guard let window = UIApplication.shared.keyWindow else {
+              return
+            }
+            let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
+            window.makeToast("Head to your Library to open your downloaded app.", point: center,
+                             title: "Project successfully downloaded!", image: nil, completion: nil)
+          }
+        } else if let error = error {
+          DispatchQueue.main.async {
+            guard let window = UIApplication.shared.keyWindow else {
+              return
+            }
+            let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
+            window.makeToast("Unable to download project with error \(error)", point: center,
+                             title: nil, image: nil, completion: nil)
+          }
+        }
+      }
+    }
+  }
 
   @objc public static func loadExtensions(_ extensionsJson: String) {
     // Loading extensions is not supported on iOS
@@ -78,5 +105,48 @@ class AssetLoadError: Error {
     task.priority = 1.0
     task.resume()
   }
+  
+  @objc static func getProject(projectUrl: String, cookieValue: String, projectName: String, depth: Int, completionHandler: @escaping (Bool, Error?) -> Void) {
+    guard depth <= 1 else {
+      lock.wait()
+      if (!inError) {
+        inError = true
+        DispatchQueue.main.async {
+          completionHandler(false, AssetLoadError())
+        }
+      }
+      AssetFetcher.lock.signal()
+      return
+    }
+    guard let url = URL(string: projectUrl) else {
+      return
+    }
+    var request = URLRequest(url: url)
+    request.setValue("AppInventor = " + cookieValue, forHTTPHeaderField: "Cookie")
+    let task = URLSession.shared.dataTask(with: request) { (data, response, responseerror) in
+      let samplesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+          .appendingPathComponent("samples", isDirectory: true)
+      try? FileManager.default.createDirectory(at: samplesDirectory, withIntermediateDirectories: true)
+      let destination = samplesDirectory.appendingPathComponent(projectName + ".aia")
+      if let data = data {
+        do {
+          try data.write(to: destination)
+          DispatchQueue.main.async {
+            completionHandler(true, nil)
+          }
+          // Unzips the .aia project into the /apps directory to allow for access to the app icon for the Library
+          let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("samples/\(projectName).aia", isDirectory: false))
+        } catch {
+          getProject(projectUrl: projectUrl, cookieValue: cookieValue, projectName: projectName, depth: depth + 1, completionHandler: completionHandler)
+        }
+      } else if let error = responseerror {
+        completionHandler(false, error)
+      }
+    }
+    task.priority = 1.0
+    task.resume()
+  }
+  
 }
 
