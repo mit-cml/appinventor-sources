@@ -20,35 +20,35 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface FeatureElement {
 
-    /**
-     * Specifies a single hardware or software feature used by the application as a descriptor string.
-     * Valid attribute values are listed in the
-     * <a href="https://developer.android.com/guide/topics/manifest/uses-feature-element#hw-features">Hardware features</a>
-     * and <a href="https://developer.android.com/guide/topics/manifest/uses-feature-element#sw-features">Software features</a> sections.
-     * These attribute values are case-sensitive.
-     *
-     * @return the name of the element
-     */
-    String name();
+  /**
+   * Specifies a single hardware or software feature used by the application as a descriptor string.
+   * Valid attribute values are listed in the
+   * <a href="https://developer.android.com/guide/topics/manifest/uses-feature-element#hw-features">Hardware features</a>
+   * and <a href="https://developer.android.com/guide/topics/manifest/uses-feature-element#sw-features">Software features</a> sections.
+   * These attribute values are case-sensitive.
+   *
+   * @return the name of the element
+   */
+  String name();
 
-    /**
-     * Boolean value that indicates whether the application requires the featureContents of the xml file.
-     * Declaring true for a feature indicates that the application can't function,
-     * or isn't designed to function, when the specified feature isn't present on the device.
-     * Declaring false for a feature indicates that the application uses the feature if present on the device,
-     * but that it is designed to function without the specified feature if necessary.
-     *
-     * @return Returns true if required otherwise false
-     */
-    boolean required() default true;
+  /**
+   * Boolean value that indicates whether the application requires the featureContents of the xml file.
+   * Declaring true for a feature indicates that the application can't function,
+   * or isn't designed to function, when the specified feature isn't present on the device.
+   * Declaring false for a feature indicates that the application uses the feature if present on the device,
+   * but that it is designed to function without the specified feature if necessary.
+   *
+   * @return Returns true if required otherwise false
+   */
+  boolean required() default true;
 
-    /**
-     * The OpenGL ES version required by the application. The higher 16 bits represent the major
-     * number and the lower 16 bits represent the minor number. For example, to specify OpenGL
-     * ES version 2.0, you set the value as "0x00020000", or to specify OpenGL ES 3.2,
-     * you set the value as "0x00030002".
-     *
-     * @return the glEs version
-     */
-    int glEsVersion() default -1;
+  /**
+   * The OpenGL ES version required by the application. The higher 16 bits represent the major
+   * number and the lower 16 bits represent the minor number. For example, to specify OpenGL
+   * ES version 2.0, you set the value as "0x00020000", or to specify OpenGL ES 3.2,
+   * you set the value as "0x00030002".
+   *
+   * @return the glEs version
+   */
+  int glEsVersion() default -1;
 }

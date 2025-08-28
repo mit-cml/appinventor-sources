@@ -21,10 +21,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface UsesFeatures {
 
-    /**
-     * The values of the features (as an array)
-     *
-     * @return the array of elements data
-     */
-    FeatureElement[] features();
+  /**
+   * The values of the features (as an array)
+   *
+   * @return the array of elements data
+   */
+  FeatureElement[] features();
 }
