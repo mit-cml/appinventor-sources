@@ -28,10 +28,11 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     
     super.init(parent)
     super.setDelegate(self)
-    
+
     guard let form = parent.form else {
       return
     }
+    
     _viewController = getDateTimePickerController(self, screen: form, isDatePicker: true, isPhone: _isPhone)
     _viewController?.pickerView.setValue(preferredTextColor(form), forKeyPath: "textColor")
     _viewController?.setDateTime(calendar)
