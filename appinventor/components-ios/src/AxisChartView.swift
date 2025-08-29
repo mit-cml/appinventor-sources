@@ -38,7 +38,7 @@ open class AxisChartView : ChartView {
     // chart?.leftAxis.granularity = 1
     (chart as? BarLineChartViewBase)?.leftAxis.granularity = 1
 
-    chart?.xAxis.valueFormatter = AppInventorValueFormatter(chart! as! BarLineChartViewBase, axisLabels)
+    chart?.xAxis.valueFormatter = AppInventorValueFormatter(chart! as! BarLineChartViewBase, axisLabels, valueType: _chartComponent._valueType)
     if _chartComponent.XFromZero {
       chart?.xAxis.axisMinimum = 0
     }
@@ -89,9 +89,12 @@ open class AxisChartView : ChartView {
   public class AppInventorValueFormatter : AxisValueFormatter {
     unowned var _chartView: BarLineChartViewBase
     var _axisLabels: Array<String>
-    public init(_ owner: BarLineChartViewBase, _ axisLabels: Array<String>) {
+    var _vType: Int = 0
+    
+    public init(_ owner: BarLineChartViewBase, _ axisLabels: Array<String>, valueType: Int) {
       _chartView = owner
       _axisLabels = axisLabels
+      _vType = valueType
     }
 
     // this is getFormattedValue(), IOS version
@@ -103,12 +106,38 @@ open class AxisChartView : ChartView {
       if integerValue >= 0 && integerValue < _axisLabels.count {
         return _axisLabels[integerValue]
       } else {
-        return String(value)
+        return parseForFormat(value)
       }
     }
 
     public func stringForValue(_ value: Double, axis: DGCharts.AxisBase?) -> String {
+      if _vType == CHART_VALUE_INTEGER {
+        return String(value);
+      } else {
+        return parseForFormat(value)
+      }
+      return String(value);
+    }
+    
+    
+    public func parseForFormat(_ value: Double) -> String {
+      if _vType == CHART_VALUE_DECIMAL {
+        return String(value);
+      } else if _vType == CHART_VALUE_DATE {
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = Date(timeIntervalSince1970: value)
+        let test = dateFormatter.string(from: date)
+        return test
+      } else if _vType == CHART_VALUE_TIME {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss"
+        let date = Date(timeIntervalSince1970: value)
+        return dateFormatter.string(from: date)
+      }
       return String(value)
     }
   }
+
 }

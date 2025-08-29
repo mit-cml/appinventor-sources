@@ -80,7 +80,7 @@ import DGCharts
   }
 
   
-  @objc open var  ValueFormat: Int {
+  @objc open var ValueFormat: Int {
      get {
        return _valueType;
      }
@@ -326,6 +326,7 @@ import DGCharts
     Labels = _labels
     LegendEnabled = _legendEnabled
     PieRadius = _pieRadius
+    ValueFormat = _valueType
     
     AxesTextColor = colorToArgb(_axesTextColor)
   }
