@@ -38,15 +38,30 @@ open class BarChartDataModel: Chart2DDataModel {
     if x < entries.count {
       _entries.insert(entry, at: x)
     } else {
+      // CSB removing b/c we don't need intermediary entries
       // If x is beyond the current range of entries, fill the gap with placeholder entries
-      while entries.count < x {
-        _entries.append(BarChartDataEntry(x: Double(entries.count), y: 0.0))
-      }
+      //while entries.count < x {
+      //  _entries.append(BarChartDataEntry(x: Double(entries.count), y: 0.0))
+      //}
       // Add the new entry at the end
       _entries.append(entry)
     }
   }
 
+  
+  public func formatDateTime(_ value: String) -> Double? {
+    
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    let date = dateFormatter.date(from: value)
+    if date == nil {
+      dateFormatter.dateFormat = "HH:mm:ss"
+      return dateFormatter.date(from: value)?.timeIntervalSince1970
+    }
+    return date?.timeIntervalSince1970
+
+
+  }
 
   public override func getEntryFromTuple(_ tuple: YailList<AnyObject>) -> ChartDataEntry? {
     guard tuple.count >= 3 else {
@@ -62,8 +77,10 @@ open class BarChartDataModel: Chart2DDataModel {
       let flooredX = Int(floor(x))
       return BarChartDataEntry(x: Double(flooredX), y: y)
     } else {
-      // Handle number format exception
-      return nil
+      let dateX = formatDateTime(rawX) ?? 0.0
+      let y = Double(rawY) ?? 0.0
+      return BarChartDataEntry(x: dateX, y: y)
+    
     }
   }
 
