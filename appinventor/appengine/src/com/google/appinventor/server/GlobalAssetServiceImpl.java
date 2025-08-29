@@ -180,8 +180,16 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
     try {
       // Add the global asset as a source file to the project
       storageIo.addSourceFilesToProject(userId, projectId, true, projectFileName);
+      
       // Upload the content of the global asset to the project file
       byte[] globalAssetContent = storageIo.downloadRawGlobalAsset(userId, assetId);
+      if (globalAssetContent == null || globalAssetContent.length == 0) {
+        LOG.severe("Failed to download global asset content for: " + assetId + " user: " + userId);
+        throw new RuntimeException("Failed to download global asset content: " + assetId);
+      }
+      
+      LOG.info("Importing global asset " + assetId + " to project " + projectId + " as " + projectFileName + 
+               " (size: " + globalAssetContent.length + " bytes)");
       storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetContent);
 
       // Update project metadata

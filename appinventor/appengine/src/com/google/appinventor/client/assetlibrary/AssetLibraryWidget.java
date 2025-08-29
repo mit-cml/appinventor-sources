@@ -1085,7 +1085,17 @@ public class AssetLibraryWidget extends Composite {
           return;
         }
         
-        String lower = filename.toLowerCase();
+        // Extract just the filename, removing any path (including "fakepath")
+        String actualFilename = filename;
+        if (filename.contains("\\")) {
+          // Windows path separator (handles "C:\fakepath\file.png")
+          actualFilename = filename.substring(filename.lastIndexOf("\\") + 1);
+        } else if (filename.contains("/")) {
+          // Unix path separator
+          actualFilename = filename.substring(filename.lastIndexOf("/") + 1);
+        }
+        
+        String lower = actualFilename.toLowerCase();
         if (!(lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || 
               lower.endsWith(".gif") || lower.endsWith(".mp3") || lower.endsWith(".wav") || 
               lower.endsWith(".ogg"))) {
@@ -1093,7 +1103,24 @@ public class AssetLibraryWidget extends Composite {
           return;
         }
         
-        form.setAction(GWT.getModuleBaseURL() + "upload/" + ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + filename);
+        // Get the currently selected folder
+        String targetFolder = "";
+        if (selectedFolderIndex >= 0 && selectedFolderIndex < folders.size()) {
+          String selectedFolder = folders.get(selectedFolderIndex);
+          // Don't use special folders as target folders - use empty string for root
+          if (!isSpecialFolder(selectedFolder)) {
+            targetFolder = selectedFolder;
+          }
+        }
+        
+        // Construct proper upload path: _global_/folder/filename or _global_/filename
+        String uploadPath = "_global_/";
+        if (!targetFolder.isEmpty()) {
+          uploadPath += targetFolder + "/";
+        }
+        uploadPath += actualFilename;
+        
+        form.setAction(GWT.getModuleBaseURL() + "upload/" + ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + uploadPath);
         form.submit();
       }
     });

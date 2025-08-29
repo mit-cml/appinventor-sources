@@ -2015,7 +2015,34 @@ public class AssetLibraryWidgetClassic extends Composite {
   }
 
   private void proceedWithUpload(String filename, FormPanel form) {
-    form.setAction(GWT.getModuleBaseURL() + "upload/" + ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + filename);
+    // Extract just the filename, removing any path (including "fakepath")
+    String actualFilename = filename;
+    if (filename.contains("\\")) {
+      // Windows path separator (handles "C:\fakepath\file.png")
+      actualFilename = filename.substring(filename.lastIndexOf("\\") + 1);
+    } else if (filename.contains("/")) {
+      // Unix path separator
+      actualFilename = filename.substring(filename.lastIndexOf("/") + 1);
+    }
+    
+    // Get the currently selected folder
+    String targetFolder = "";
+    if (selectedFolderIndex >= 0 && selectedFolderIndex < folders.size()) {
+      String selectedFolder = folders.get(selectedFolderIndex);
+      // Don't use special folders as target folders - use empty string for root
+      if (!isSpecialFolder(selectedFolder)) {
+        targetFolder = selectedFolder;
+      }
+    }
+    
+    // Construct proper upload path: _global_/folder/filename or _global_/filename
+    String uploadPath = "_global_/";
+    if (!targetFolder.isEmpty()) {
+      uploadPath += targetFolder + "/";
+    }
+    uploadPath += actualFilename;
+    
+    form.setAction(GWT.getModuleBaseURL() + "upload/" + ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + uploadPath);
     form.submit();
   }
 

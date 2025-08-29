@@ -206,8 +206,8 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
     }
     // If the fileId is not in assetFileIds, it might be a manually entered path or an old value.
     // Display it, possibly formatted if it's a global asset.
-    if (currentFileId.startsWith("_global_/")) {
-      String pathWithoutPrefix = currentFileId.substring("_global_/".length());
+    if (currentFileId.startsWith("assets/_global_/")) {
+      String pathWithoutPrefix = currentFileId.substring("assets/_global_/".length());
       return "[G] " + pathWithoutPrefix + " (missing?)";
     }
     // For project assets, it might be just "asset.png" if it's an old project or manually entered.
@@ -239,11 +239,15 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
       }
 
       if (actualIndexInAssetFileIds >= 0 && actualIndexInAssetFileIds < assetFileIds.size()) {
-        valueToSet = assetFileIds.get(actualIndexInAssetFileIds);
+        // POTENTIAL FIX: Use just the filename instead of full path
+        String fullFileId = assetFileIds.get(actualIndexInAssetFileIds);
+        if (fullFileId.startsWith("assets/")) {
+          valueToSet = fullFileId.substring("assets/".length()); // Strip "assets/" prefix
+        } else {
+          valueToSet = fullFileId;
+        }
       } else {
         Window.alert("Error: Asset selection out of sync. Please try again.");
-        // Consider reloading choices here or providing more specific guidance.
-        // For now, prevent setting an invalid value.
         return false;
       }
     }
@@ -266,33 +270,17 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
         addAssetChoice(node.getName(), node.getFileId());
       }
     }
-    // After adding all real assets, ListWithNone will add "None" if applicable,
-    // based on its initial configuration and whether items were added.
-    // MOVED to finalizeAssetLoading choices.updateNoneItem();
-
-    // Now fetch global assets
-    globalAssetService.getGlobalAssets(new OdeAsyncCallback<List<GlobalAsset>>(
-        MESSAGES.errorFetchingGlobalAssets()) {
-      @Override
-      public void onSuccess(List<GlobalAsset> globalAssets) {
-        for (GlobalAsset globalAsset : globalAssets) {
-          String relativePath = globalAsset.getFolder() + "/" + globalAsset.getFileName();
-          String fullGlobalFileId = "_global_/" + relativePath;
-          addAssetChoice(relativePath, fullGlobalFileId);
-        }
-        finalizeAssetLoading();
-      }
-      @Override
-      public void onFailure(Throwable caught) {
-        super.onFailure(caught);
-        finalizeAssetLoading();
-      }
-    });
+    
+    // Only show global assets that have been explicitly added to this project
+    // These appear as project files with paths like "assets/_global_/folder/asset.png"
+    // No need to fetch all global assets - only show what's actually in the project
+    
+    finalizeAssetLoading();
   }
 
   private void finalizeAssetLoading() {
     // TODO: Implement sorting of assetsList and assetFileIds if desired.
-    // For now, items are project first, then global.
+    // For now, items are added as they appear in the project assets folder.
     // Example of how sorting might be done (complex due to ListWithNone):
     // 1. Collect (displayName, fileId) pairs from assetsList and assetFileIds.
     // 2. Sort pairs by displayName.
@@ -303,14 +291,28 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
 
   private void addAssetChoice(String name, String fileId) {
     String displayName = name;
-    if (fileId.startsWith("_global_/")) {
-      String pathWithoutPrefix = fileId.substring("_global_/".length());
-      if (pathWithoutPrefix.contains("/")) {
-        displayName = "[G] " + pathWithoutPrefix;
-      } else {
-        displayName = "[G] " + pathWithoutPrefix;
+    
+    // Handle old-style global assets that were added to the project
+    if (fileId.startsWith("assets/_global_/")) {
+      String pathWithoutPrefix = fileId.substring("assets/_global_/".length());
+      // Show global assets with a [G] prefix to distinguish them
+      displayName = "[G] " + pathWithoutPrefix;
+    } 
+    // Handle new-style global assets with folder prefix (e.g., "assets/icons_home.png")
+    else if (fileId.startsWith("assets/") && name.contains("_")) {
+      // Check if this might be a folder-prefixed global asset
+      String assetName = fileId.substring("assets/".length());
+      if (assetName.contains("_")) {
+        int underscoreIndex = assetName.indexOf("_");
+        String possibleFolder = assetName.substring(0, underscoreIndex);
+        String possibleFilename = assetName.substring(underscoreIndex + 1);
+        // If it looks like a folder_filename pattern, show with [G] prefix
+        if (possibleFolder.length() > 0 && possibleFilename.length() > 0) {
+          displayName = "[G] " + possibleFolder + "/" + possibleFilename;
+        }
       }
     }
+    
     // choices.addItem will add to assetsList (the UI ListBox)
     choices.addItem(displayName);
     assetFileIds.add(fileId); // Store the actual fileId in parallel
