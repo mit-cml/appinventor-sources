@@ -299,18 +299,50 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
+    let cameraStatus = checkCameraPermission()
+
+    if cameraStatus == .denied || cameraStatus == .notDetermined || cameraStatus == .restricted {
+      showSettingsAlert()
+      return
+    }
+
     form.interpreter.evalForm("(call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '())")
     if let exception = form.interpreter.exception {
       NSLog("Exception: \(exception.name) (\(exception))")
     }
   }
-  
+
   @objc func openLibrary() {
     guard let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as? AppLibraryViewController else {
       return
     }
     libraryVC.form = self.form
     self.pushViewController(libraryVC, animated:true)
+  }
+
+  func checkCameraPermission() -> AVAuthorizationStatus {
+    return AVCaptureDevice.authorizationStatus(for: .video)
+  }
+
+  private func showSettingsAlert() {
+    let alert = UIAlertController(
+        title: "Camera Permission Required",
+        message: "Please enable camera access in Settings to use the barcode scanner.",
+        preferredStyle: .alert
+    )
+
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+    alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+      if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+        UIApplication.shared.open(settingsUrl)
+      }
+    })
+
+    // Present the alert (you'll need access to a view controller)
+    if let viewController = ViewController.controller {
+      viewController.present(alert, animated: true)
+    }
   }
 
   @objc public class func gotText(_ text: String) {
