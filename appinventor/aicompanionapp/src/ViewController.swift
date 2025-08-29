@@ -301,7 +301,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc func showBarcodeScanner(_ sender: UIButton?) {
     let cameraStatus = checkCameraPermission()
 
-    if cameraStatus == .denied || cameraStatus == .notDetermined || cameraStatus == .restricted {
+    if cameraStatus == .denied || cameraStatus == .restricted {
       showSettingsAlert()
       return
     }
@@ -332,17 +332,12 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     )
 
     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-
     alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
       if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
         UIApplication.shared.open(settingsUrl)
       }
     })
-
-    // Present the alert (you'll need access to a view controller)
-    if let viewController = ViewController.controller {
-      viewController.present(alert, animated: true)
-    }
+    ViewController.controller?.present(alert, animated: true)
   }
 
   @objc public class func gotText(_ text: String) {
