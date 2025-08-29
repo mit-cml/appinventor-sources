@@ -139,8 +139,22 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
       menuButton.action = #selector(openMenu(caller:))
       menuButton.target = self
+      if #available(iOS 13.0, *) {
+        menuButton.image = UIImage(systemName: "book")
+      }
     }
     if (form == nil) {
+      
+      if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+        menuButton.action = #selector(goBackToOnboarding(caller:))
+
+        if #available(iOS 13.0, *) {
+          menuButton.image = UIImage(systemName: "questionmark.circle")
+        } else {
+          menuButton.title = "?"
+        }
+        menuButton.title = "?"
+      }
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
       form.makeTopForm()
@@ -188,7 +202,16 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       form.Initialize()
     }
   }
+  
+  @objc func goBackToOnboarding(caller: UIBarButtonItem) {
+      NSLog("goBackToOnboarding called")
+      let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+      vc.modalPresentationStyle = .fullScreen
+      present(vc, animated: true)
 
+    }
+  
+  
   public override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
