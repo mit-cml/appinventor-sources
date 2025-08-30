@@ -59,13 +59,16 @@ public class GalleryToken {
 
 
   private static Crypter getCrypter() throws KeyczarException {
+    if (crypter != null) {
+      return crypter;
+    }
+
     synchronized(crypterSync) {
-      if (crypter != null) {
-        return crypter;
-      } else {
+      if (crypter == null) {
         crypter = new Crypter(galleryKeyFile.get());
-        return crypter;
       }
+
+      return crypter;
     }
   }
 }

@@ -374,13 +374,16 @@ public class OdeAuthFilter implements Filter {
   }
 
   private static Crypter getCrypter() throws KeyczarException {
+    if (crypter != null) {
+      return crypter;
+    }
+
     synchronized(crypterSync) {
-      if (crypter != null) {
-        return crypter;
-      } else {
+      if (crypter == null) {
         crypter = new Crypter(sessionKeyFile.get());
-        return crypter;
       }
+
+      return crypter;
     }
   }
 }
