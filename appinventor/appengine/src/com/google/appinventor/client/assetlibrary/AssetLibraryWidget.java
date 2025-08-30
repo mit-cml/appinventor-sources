@@ -1637,16 +1637,16 @@ public class AssetLibraryWidget extends Composite {
 
   private void renameFolderForAssets(final String oldFolderName, final String newFolderName) {
     statusLabel.setText("Renaming folder...");
-    int assetsToUpdate = 0;
+    final List<GlobalAsset> assetsToUpdate = new ArrayList<GlobalAsset>();
     
-    // Count assets to update
+    // Find assets to update
     for (GlobalAsset asset : globalAssets) {
       if (oldFolderName.equals(asset.getFolder())) {
-        assetsToUpdate++;
+        assetsToUpdate.add(asset);
       }
     }
     
-    if (assetsToUpdate == 0) {
+    if (assetsToUpdate.isEmpty()) {
       // Just update the folder list
       int index = folders.indexOf(oldFolderName);
       if (index >= 0) {
@@ -1657,25 +1657,47 @@ public class AssetLibraryWidget extends Composite {
       return;
     }
 
-    // Update each asset's folder - this would require individual API calls
-    // For now, show a message that this feature needs backend support
-    statusLabel.setText("Folder renaming requires server-side implementation");
-    Window.alert("Folder renaming with assets requires additional server-side implementation. " +
-                "Currently only empty folder operations are supported.");
+    // Update each asset's folder using the existing API
+    final int totalAssets = assetsToUpdate.size();
+    final int[] completedCount = {0};
+    
+    for (final GlobalAsset asset : assetsToUpdate) {
+      globalAssetService.updateGlobalAssetFolder(asset.getFileName(), newFolderName, new AsyncCallback<Void>() {
+        @Override
+        public void onSuccess(Void result) {
+          completedCount[0]++;
+          if (completedCount[0] == totalAssets) {
+            // All assets updated successfully
+            int index = folders.indexOf(oldFolderName);
+            if (index >= 0) {
+              folders.set(index, newFolderName);
+              updateFolderList();
+            }
+            refreshGlobalAssets();
+            statusLabel.setText("Folder renamed to '" + newFolderName + "' (" + totalAssets + " assets updated)");
+          }
+        }
+        
+        @Override
+        public void onFailure(Throwable caught) {
+          statusLabel.setText("Error renaming folder");
+          Window.alert("Failed to rename folder: " + caught.getMessage());
+        }
+      });
+    }
   }
 
   private void deleteFolderAndMoveAssets(final String folderName) {
     statusLabel.setText("Deleting folder...");
     
-    // Count assets in folder
-    int assetsToMove = 0;
+    final List<GlobalAsset> assetsToMove = new ArrayList<GlobalAsset>();
     for (GlobalAsset asset : globalAssets) {
       if (folderName.equals(asset.getFolder())) {
-        assetsToMove++;
+        assetsToMove.add(asset);
       }
     }
     
-    if (assetsToMove == 0) {
+    if (assetsToMove.isEmpty()) {
       // Just remove from folder list
       folders.remove(folderName);
       if (selectedFolderIndex > 0) {
@@ -1685,10 +1707,34 @@ public class AssetLibraryWidget extends Composite {
       refreshAssetList();
       statusLabel.setText("Empty folder '" + folderName + "' deleted");
     } else {
-      // Moving assets requires server-side support
-      statusLabel.setText("Folder deletion with assets requires server-side implementation");
-      Window.alert("Deleting folders with assets requires additional server-side implementation. " +
-                  "Currently only empty folder operations are supported.");
+      // Move all assets to root folder (empty string)
+      final int totalAssets = assetsToMove.size();
+      final int[] completedCount = {0};
+      
+      for (final GlobalAsset asset : assetsToMove) {
+        globalAssetService.updateGlobalAssetFolder(asset.getFileName(), "", new AsyncCallback<Void>() {
+          @Override
+          public void onSuccess(Void result) {
+            completedCount[0]++;
+            if (completedCount[0] == totalAssets) {
+              // All assets moved successfully, now remove folder
+              folders.remove(folderName);
+              if (selectedFolderIndex > 0) {
+                selectedFolderIndex = 0; // Reset to "All Assets"
+              }
+              updateFolderList();
+              refreshGlobalAssets();
+              statusLabel.setText("Folder '" + folderName + "' deleted (" + totalAssets + " assets moved to root)");
+            }
+          }
+          
+          @Override
+          public void onFailure(Throwable caught) {
+            statusLabel.setText("Error deleting folder");
+            Window.alert("Failed to delete folder: " + caught.getMessage());
+          }
+        });
+      }
     }
   }
 
