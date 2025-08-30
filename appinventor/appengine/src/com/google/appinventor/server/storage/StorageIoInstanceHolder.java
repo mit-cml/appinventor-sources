@@ -23,7 +23,8 @@ public class StorageIoInstanceHolder {
 
   public static StorageIo getInstance() {
     if (INSTANCE == null) {
-      INSTANCE = new ObjectifyStorageIo();
+      // INSTANCE = new ObjectifyStorageIo();
+      INSTANCE = new ModularizedStorageIo();
     }
     return INSTANCE;
   }
