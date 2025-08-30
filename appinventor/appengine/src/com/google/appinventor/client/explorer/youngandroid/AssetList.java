@@ -187,6 +187,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
                           @Override
                           public void onSuccess(Void result) {
                             Ode.getInstance().getEditorManager().getOpenProjectEditor(projectId).getFileEditor(itemData.fullPath);
+                            
+                            // Asset has been linked server-side - refresh the asset list to show changes
                             refreshAssetList();
                           }
                         });
@@ -351,4 +353,5 @@ public class AssetList extends Composite implements ProjectChangeListener {
     String downloadUrl = GWT.getModuleBaseURL() + "download/globalasset/" + globalAsset.getFileName();
     Window.open(downloadUrl, "_blank", "");
   }
+
 }

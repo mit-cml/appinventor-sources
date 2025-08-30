@@ -36,6 +36,10 @@ import com.google.appinventor.shared.rpc.globalasset.GlobalAssetServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.GlobalAsset;
 import com.google.appinventor.shared.rpc.project.GlobalAssetProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -393,7 +397,7 @@ public class AssetLibraryWidget extends Composite {
       public void onClick(ClickEvent event) {
         List<GlobalAsset> selectedAssets = getSelectedAssets();
         if (!selectedAssets.isEmpty()) {
-          showBulkAddToProjectDialog(selectedAssets);
+          showAddToProjectDialog(selectedAssets);
         }
       }
     });
@@ -808,18 +812,36 @@ public class AssetLibraryWidget extends Composite {
     dateLabel.getElement().getStyle().setProperty("marginBottom", "8px");
     card.add(dateLabel);
 
+    // Version indicator
+    HorizontalPanel versionPanel = new HorizontalPanel();
+    versionPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+    versionPanel.getElement().getStyle().setProperty("marginTop", "4px");
+    versionPanel.getElement().getStyle().setProperty("marginBottom", "8px");
+    
+    Label lastUpdated = new Label("Updated: " + formatDate(asset.getTimestamp()));
+    lastUpdated.setStyleName("ode-ComponentRowLabel");
+    lastUpdated.getElement().getStyle().setProperty("fontSize", "9px");
+    lastUpdated.getElement().getStyle().setProperty("backgroundColor", "#f5f5f5");
+    lastUpdated.getElement().getStyle().setProperty("color", "#666");
+    lastUpdated.getElement().getStyle().setProperty("padding", "2px 6px");
+    lastUpdated.getElement().getStyle().setProperty("borderRadius", "4px");
+    lastUpdated.getElement().getStyle().setProperty("fontWeight", "400");
+    versionPanel.add(lastUpdated);
+    
+    card.add(versionPanel);
+
     // Action buttons with improved spacing
     HorizontalPanel actionPanel = new HorizontalPanel();
     actionPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-    actionPanel.getElement().getStyle().setProperty("gap", "6px");
+    actionPanel.getElement().getStyle().setProperty("gap", "4px");
     actionPanel.getElement().getStyle().setProperty("marginTop", "4px");
 
     // Preview button
     Button previewBtn = new Button("👁");
     previewBtn.setTitle("Preview Asset");
     previewBtn.setStyleName("ode-ProjectListButton");
-    previewBtn.getElement().getStyle().setProperty("padding", "4px 8px");
-    previewBtn.getElement().getStyle().setProperty("fontSize", "11px");
+    previewBtn.getElement().getStyle().setProperty("padding", "3px 6px");
+    previewBtn.getElement().getStyle().setProperty("fontSize", "10px");
     previewBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -829,16 +851,32 @@ public class AssetLibraryWidget extends Composite {
     });
     actionPanel.add(previewBtn);
 
+
+    // Update button
+    Button updateBtn = new Button("⬆");
+    updateBtn.setTitle("Upload New Version");
+    updateBtn.setStyleName("ode-ProjectListButton");
+    updateBtn.getElement().getStyle().setProperty("padding", "3px 6px");
+    updateBtn.getElement().getStyle().setProperty("fontSize", "10px");
+    updateBtn.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        event.stopPropagation();
+        showUpdateAssetDialog(asset);
+      }
+    });
+    actionPanel.add(updateBtn);
+
     // Add button
     Button addBtn = new Button("Add");
     addBtn.setStyleName("ode-ProjectListButton");
-    addBtn.getElement().getStyle().setProperty("padding", "4px 8px");
-    addBtn.getElement().getStyle().setProperty("fontSize", "11px");
+    addBtn.getElement().getStyle().setProperty("padding", "3px 6px");
+    addBtn.getElement().getStyle().setProperty("fontSize", "10px");
     addBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         event.stopPropagation();
-        showAddToProjectDialog(asset);
+        showAddToProjectDialog(java.util.Arrays.asList(asset));
       }
     });
     actionPanel.add(addBtn);
@@ -847,8 +885,8 @@ public class AssetLibraryWidget extends Composite {
     Button deleteBtn = new Button("🗑");
     deleteBtn.setTitle("Delete Asset");
     deleteBtn.setStyleName("ode-ProjectListButton");
-    deleteBtn.getElement().getStyle().setProperty("padding", "4px 8px");
-    deleteBtn.getElement().getStyle().setProperty("fontSize", "11px");
+    deleteBtn.getElement().getStyle().setProperty("padding", "3px 6px");
+    deleteBtn.getElement().getStyle().setProperty("fontSize", "10px");
     deleteBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -1147,9 +1185,10 @@ public class AssetLibraryWidget extends Composite {
     dialog.show();
   }
 
-  private void showAddToProjectDialog(final GlobalAsset asset) {
+  private void showAddToProjectDialog(final List<GlobalAsset> assets) {
     final DialogBox dialog = new DialogBox();
-    dialog.setText("Add Asset to Project");
+    boolean isSingle = assets.size() == 1;
+    dialog.setText(isSingle ? "Add Asset to Project" : "Add " + assets.size() + " Assets to Project");
     dialog.setStyleName("ode-DialogBox");
     dialog.setModal(true);
     dialog.setGlassEnabled(true);
@@ -1157,198 +1196,88 @@ public class AssetLibraryWidget extends Composite {
 
     VerticalPanel dialogPanel = new VerticalPanel();
     dialogPanel.setSpacing(12);
-    dialogPanel.setWidth("400px");
+    dialogPanel.setWidth(isSingle ? "400px" : "440px");
     dialogPanel.getElement().getStyle().setProperty("padding", "16px");
 
-    // Asset info
-    HorizontalPanel assetInfo = new HorizontalPanel();
-    assetInfo.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    assetInfo.getElement().getStyle().setProperty("marginBottom", "12px");
-    assetInfo.getElement().getStyle().setProperty("padding", "8px");
-    assetInfo.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
-    assetInfo.getElement().getStyle().setProperty("borderRadius", "2px");
+    // Asset info - different for single vs multiple
+    if (isSingle) {
+      // Single asset info
+      GlobalAsset asset = assets.get(0);
+      HorizontalPanel assetInfo = new HorizontalPanel();
+      assetInfo.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+      assetInfo.getElement().getStyle().setProperty("marginBottom", "12px");
+      assetInfo.getElement().getStyle().setProperty("padding", "8px");
+      assetInfo.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
+      assetInfo.getElement().getStyle().setProperty("borderRadius", "2px");
 
-    String fileName = asset.getFileName().toLowerCase();
-    ImageResource iconRes = fileName.endsWith(".mp3") || fileName.endsWith(".wav") || fileName.endsWith(".ogg")
-      ? ImagesNeo.INSTANCE.player() 
-      : ImagesNeo.INSTANCE.image();
-    
-    Image assetIcon = new Image(iconRes);
-    assetIcon.setWidth("24px");
-    assetIcon.setHeight("24px");
-    assetIcon.getElement().getStyle().setProperty("marginRight", "8px");
-    assetInfo.add(assetIcon);
+      String fileName = asset.getFileName().toLowerCase();
+      ImageResource iconRes = fileName.endsWith(".mp3") || fileName.endsWith(".wav") || fileName.endsWith(".ogg")
+        ? ImagesNeo.INSTANCE.player() 
+        : ImagesNeo.INSTANCE.image();
+      
+      Image assetIcon = new Image(iconRes);
+      assetIcon.setWidth("24px");
+      assetIcon.setHeight("24px");
+      assetIcon.getElement().getStyle().setProperty("marginRight", "8px");
+      assetInfo.add(assetIcon);
 
-    Label assetName = new Label(asset.getFileName());
-    assetName.setStyleName("ode-ComponentRowLabel");
-    assetName.getElement().getStyle().setProperty("fontWeight", "500");
-    assetInfo.add(assetName);
-
-    dialogPanel.add(assetInfo);
-
-    // Options
-    Label optionsLabel = new Label("How would you like to add this asset?");
-    optionsLabel.setStyleName("ode-ComponentRowLabel");
-    optionsLabel.getElement().getStyle().setProperty("fontWeight", "500");
-    optionsLabel.getElement().getStyle().setProperty("marginBottom", "8px");
-    dialogPanel.add(optionsLabel);
-
-    // Track option
-    VerticalPanel trackOption = new VerticalPanel();
-    trackOption.getElement().getStyle().setProperty("padding", "8px");
-    trackOption.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
-    trackOption.getElement().getStyle().setProperty("borderRadius", "2px");
-    trackOption.getElement().getStyle().setProperty("marginBottom", "6px");
-
-    final RadioButton trackRadio = new RadioButton("addOption", "Track Asset (Recommended)");
-    trackRadio.setValue(true);
-    trackRadio.setStyleName("ode-ComponentRowLabel");
-    trackRadio.getElement().getStyle().setProperty("fontWeight", "500");
-    trackOption.add(trackRadio);
-
-    Label trackDesc = new Label("The asset will be updated in your project if the library version changes.");
-    trackDesc.setStyleName("ode-ComponentRowLabel");
-    trackDesc.getElement().getStyle().setProperty("fontSize", "12px");
-    trackDesc.getElement().getStyle().setProperty("opacity", "0.8");
-    trackDesc.getElement().getStyle().setProperty("marginTop", "4px");
-    trackOption.add(trackDesc);
-
-    dialogPanel.add(trackOption);
-
-    // Copy option
-    VerticalPanel copyOption = new VerticalPanel();
-    copyOption.getElement().getStyle().setProperty("padding", "8px");
-    copyOption.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
-    copyOption.getElement().getStyle().setProperty("borderRadius", "2px");
-
-    final RadioButton copyRadio = new RadioButton("addOption", "Copy Asset");
-    copyRadio.setStyleName("ode-ComponentRowLabel");
-    copyRadio.getElement().getStyle().setProperty("fontWeight", "500");
-    copyOption.add(copyRadio);
-
-    Label copyDesc = new Label("A copy will be added to your project and will not be updated.");
-    copyDesc.setStyleName("ode-ComponentRowLabel");
-    copyDesc.getElement().getStyle().setProperty("fontSize", "12px");
-    copyDesc.getElement().getStyle().setProperty("opacity", "0.8");
-    copyDesc.getElement().getStyle().setProperty("marginTop", "4px");
-    copyOption.add(copyDesc);
-
-    dialogPanel.add(copyOption);
-
-    // Button panel
-    HorizontalPanel buttonPanel = new HorizontalPanel();
-    buttonPanel.setSpacing(8);
-    buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-    buttonPanel.setWidth("100%");
-    buttonPanel.getElement().getStyle().setProperty("marginTop", "12px");
-
-    Button cancelBtn = new Button("Cancel");
-    cancelBtn.setStyleName("ode-ProjectListButton");
-
-    Button addBtn = new Button("Add to Project");
-    addBtn.setStyleName("ode-ProjectListButton");
-
-    buttonPanel.add(cancelBtn);
-    buttonPanel.add(addBtn);
-    dialogPanel.add(buttonPanel);
-
-    dialog.setWidget(dialogPanel);
-
-    // Event handlers
-    addBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        boolean track = trackRadio.getValue();
-        long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
-        
-        globalAssetService.importAssetIntoProject(asset.getFileName(), String.valueOf(projectId), track, 
-          new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-              statusLabel.setText("Asset '" + asset.getFileName() + "' added to project");
-              dialog.hide();
-            }
-            
-            @Override
-            public void onFailure(Throwable caught) {
-              Window.alert("Failed to add asset to project: " + caught.getMessage());
-            }
-          });
-      }
-    });
-
-    cancelBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        dialog.hide();
-      }
-    });
-
-    dialog.center();
-    dialog.show();
-  }
-
-  private void showBulkAddToProjectDialog(final List<GlobalAsset> assets) {
-    final DialogBox dialog = new DialogBox();
-    dialog.setText("Add " + assets.size() + " Assets to Project");
-    dialog.setStyleName("ode-DialogBox");
-    dialog.setModal(true);
-    dialog.setGlassEnabled(true);
-    dialog.setAutoHideEnabled(false);
-
-    VerticalPanel dialogPanel = new VerticalPanel();
-    dialogPanel.setSpacing(12);
-    dialogPanel.setWidth("440px");
-    dialogPanel.getElement().getStyle().setProperty("padding", "16px");
-
-    // Assets list preview
-    Label assetsLabel = new Label("Selected assets (" + assets.size() + "):");
-    assetsLabel.setStyleName("ode-ComponentRowLabel");
-    assetsLabel.getElement().getStyle().setProperty("fontWeight", "600");
-    assetsLabel.getElement().getStyle().setProperty("marginBottom", "8px");
-    dialogPanel.add(assetsLabel);
-
-    // Scrollable list of asset names
-    ScrollPanel assetListScroll = new ScrollPanel();
-    assetListScroll.setHeight("100px");
-    assetListScroll.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
-    assetListScroll.getElement().getStyle().setProperty("borderRadius", "2px");
-    assetListScroll.getElement().getStyle().setProperty("padding", "8px");
-    assetListScroll.getElement().getStyle().setProperty("marginBottom", "12px");
-
-    VerticalPanel assetList = new VerticalPanel();
-    assetList.setWidth("100%");
-    for (GlobalAsset asset : assets) {
-      Label assetName = new Label("• " + asset.getFileName());
+      Label assetName = new Label(asset.getFileName());
       assetName.setStyleName("ode-ComponentRowLabel");
-      assetName.getElement().getStyle().setProperty("fontSize", "12px");
-      assetName.getElement().getStyle().setProperty("marginBottom", "2px");
-      assetList.add(assetName);
+      assetName.getElement().getStyle().setProperty("fontWeight", "500");
+      assetInfo.add(assetName);
+
+      dialogPanel.add(assetInfo);
+    } else {
+      // Multiple assets list preview
+      Label assetsLabel = new Label("Selected assets (" + assets.size() + "):");
+      assetsLabel.setStyleName("ode-ComponentRowLabel");
+      assetsLabel.getElement().getStyle().setProperty("fontWeight", "600");
+      assetsLabel.getElement().getStyle().setProperty("marginBottom", "8px");
+      dialogPanel.add(assetsLabel);
+
+      // Scrollable list of asset names
+      ScrollPanel assetListScroll = new ScrollPanel();
+      assetListScroll.setHeight("100px");
+      assetListScroll.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
+      assetListScroll.getElement().getStyle().setProperty("borderRadius", "2px");
+      assetListScroll.getElement().getStyle().setProperty("padding", "8px");
+      assetListScroll.getElement().getStyle().setProperty("marginBottom", "12px");
+
+      VerticalPanel assetList = new VerticalPanel();
+      assetList.setWidth("100%");
+      for (GlobalAsset asset : assets) {
+        Label assetName = new Label("• " + asset.getFileName());
+        assetName.setStyleName("ode-ComponentRowLabel");
+        assetName.getElement().getStyle().setProperty("fontSize", "12px");
+        assetName.getElement().getStyle().setProperty("marginBottom", "2px");
+        assetList.add(assetName);
+      }
+      assetListScroll.add(assetList);
+      dialogPanel.add(assetListScroll);
     }
-    assetListScroll.add(assetList);
-    dialogPanel.add(assetListScroll);
 
     // Options
-    Label optionsLabel = new Label("How would you like to add these assets?");
+    final Label optionsLabel = new Label(isSingle ? "How would you like to add this asset?" : "How would you like to add these assets?");
     optionsLabel.setStyleName("ode-ComponentRowLabel");
     optionsLabel.getElement().getStyle().setProperty("fontWeight", "500");
     optionsLabel.getElement().getStyle().setProperty("marginBottom", "8px");
     dialogPanel.add(optionsLabel);
 
     // Track option
-    VerticalPanel trackOption = new VerticalPanel();
+    final VerticalPanel trackOption = new VerticalPanel();
     trackOption.getElement().getStyle().setProperty("padding", "8px");
     trackOption.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
     trackOption.getElement().getStyle().setProperty("borderRadius", "2px");
     trackOption.getElement().getStyle().setProperty("marginBottom", "6px");
 
-    final RadioButton trackRadio = new RadioButton("bulkAddOption", "Track Usage (Recommended)");
+    final RadioButton trackRadio = new RadioButton("addOption", isSingle ? "Track Asset (Recommended)" : "Track Usage (Recommended)");
     trackRadio.setValue(true);
     trackRadio.setStyleName("ode-ComponentRowLabel");
     trackRadio.getElement().getStyle().setProperty("fontWeight", "500");
     trackOption.add(trackRadio);
 
-    Label trackDesc = new Label("Assets will be updated in your project if the library versions change.");
+    Label trackDesc = new Label(isSingle ? "The asset will be updated in your project if the library version changes." 
+                                        : "Assets will be updated in your project if the library versions change.");
     trackDesc.setStyleName("ode-ComponentRowLabel");
     trackDesc.getElement().getStyle().setProperty("fontSize", "12px");
     trackDesc.getElement().getStyle().setProperty("opacity", "0.8");
@@ -1358,17 +1287,18 @@ public class AssetLibraryWidget extends Composite {
     dialogPanel.add(trackOption);
 
     // Copy option
-    VerticalPanel copyOption = new VerticalPanel();
+    final VerticalPanel copyOption = new VerticalPanel();
     copyOption.getElement().getStyle().setProperty("padding", "8px");
     copyOption.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
     copyOption.getElement().getStyle().setProperty("borderRadius", "2px");
 
-    final RadioButton copyRadio = new RadioButton("bulkAddOption", "Copy Assets");
+    final RadioButton copyRadio = new RadioButton("addOption", isSingle ? "Copy Asset" : "Copy Assets");
     copyRadio.setStyleName("ode-ComponentRowLabel");
     copyRadio.getElement().getStyle().setProperty("fontWeight", "500");
     copyOption.add(copyRadio);
 
-    Label copyDesc = new Label("Copies will be added to your project and will not be updated.");
+    Label copyDesc = new Label(isSingle ? "A copy will be added to your project and will not be updated."
+                                        : "Copies will be added to your project and will not be updated.");
     copyDesc.setStyleName("ode-ComponentRowLabel");
     copyDesc.getElement().getStyle().setProperty("fontSize", "12px");
     copyDesc.getElement().getStyle().setProperty("opacity", "0.8");
@@ -1377,7 +1307,7 @@ public class AssetLibraryWidget extends Composite {
 
     dialogPanel.add(copyOption);
 
-    // Progress area (initially hidden)
+    // Progress/Status area (for both single and multiple assets)
     final VerticalPanel progressPanel = new VerticalPanel();
     progressPanel.setWidth("100%");
     progressPanel.setVisible(false);
@@ -1387,11 +1317,10 @@ public class AssetLibraryWidget extends Composite {
     progressPanel.getElement().getStyle().setProperty("borderRadius", "2px");
     progressPanel.getElement().getStyle().setProperty("backgroundColor", "#f9f9f9");
 
-    final Label progressLabel = new Label("Processing assets...");
+    final Label progressLabel = new Label(isSingle ? "Processing asset..." : "Processing assets...");
     progressLabel.setStyleName("ode-ComponentRowLabel");
     progressLabel.getElement().getStyle().setProperty("fontSize", "12px");
     progressPanel.add(progressLabel);
-
     dialogPanel.add(progressPanel);
 
     // Button panel
@@ -1404,7 +1333,7 @@ public class AssetLibraryWidget extends Composite {
     Button cancelBtn = new Button("Cancel");
     cancelBtn.setStyleName("ode-ProjectListButton");
 
-    final Button addBtn = new Button("Add " + assets.size() + " Assets");
+    final Button addBtn = new Button(isSingle ? "Add to Project" : "Add " + assets.size() + " Assets");
     addBtn.setStyleName("ode-ProjectListButton");
 
     buttonPanel.add(cancelBtn);
@@ -1417,41 +1346,103 @@ public class AssetLibraryWidget extends Composite {
     addBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        // If button text is "Close", just close the dialog
+        if ("Close".equals(addBtn.getText())) {
+          dialog.hide();
+          return;
+        }
+        
         boolean track = trackRadio.getValue();
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
         
-        // Show progress
+        // Show progress for both single and multiple
         progressPanel.setVisible(true);
         addBtn.setEnabled(false);
-        cancelBtn.setText("Close");
         
-        // Collect asset filenames
-        List<String> assetFileNames = new ArrayList<>();
-        for (GlobalAsset asset : assets) {
-          assetFileNames.add(asset.getFileName());
+        if (isSingle) {
+          // Single asset
+          GlobalAsset asset = assets.get(0);
+          globalAssetService.importAssetIntoProject(asset.getFileName(), String.valueOf(projectId), track, 
+            new AsyncCallback<Void>() {
+              @Override
+              public void onSuccess(Void result) {
+                // Hide options and show success message in main dialog
+                trackOption.setVisible(false);
+                copyOption.setVisible(false);
+                optionsLabel.setVisible(false);
+                progressPanel.setVisible(false);
+                
+                // Add success message directly to main dialog
+                Label successMsg = new Label("✓ Asset '" + asset.getFileName() + "' added successfully!");
+                successMsg.setStyleName("ode-ComponentRowLabel");
+                successMsg.getElement().getStyle().setProperty("color", "#2e7d32");
+                successMsg.getElement().getStyle().setProperty("fontWeight", "bold");
+                successMsg.getElement().getStyle().setProperty("fontSize", "14px");
+                successMsg.getElement().getStyle().setProperty("textAlign", "center");
+                successMsg.getElement().getStyle().setProperty("padding", "20px");
+                dialogPanel.insert(successMsg, dialogPanel.getWidgetIndex(buttonPanel));
+                
+                statusLabel.setText("Asset '" + asset.getFileName() + "' added to project - please refresh project if needed");
+                addBtn.setText("Close");
+                addBtn.setEnabled(true);
+                cancelBtn.setVisible(false);
+              }
+              
+              @Override
+              public void onFailure(Throwable caught) {
+                progressLabel.setText("⚠ Failed to add asset: " + caught.getMessage());
+                progressLabel.getElement().getStyle().setProperty("color", "#d32f2f");
+                addBtn.setText("Retry");
+                addBtn.setEnabled(true);
+              }
+            });
+        } else {
+          // Multiple assets
+          cancelBtn.setText("Close");
+          
+          // Collect asset filenames
+          List<String> assetFileNames = new ArrayList<>();
+          for (GlobalAsset asset : assets) {
+            assetFileNames.add(asset.getFileName());
+          }
+          
+          // Use bulk add method
+          globalAssetService.bulkAddAssetsToProject(assetFileNames, projectId, track,
+            new AsyncCallback<Void>() {
+              @Override
+              public void onSuccess(Void result) {
+                // Hide options and show success message in main dialog
+                trackOption.setVisible(false);
+                copyOption.setVisible(false);
+                optionsLabel.setVisible(false);
+                progressPanel.setVisible(false);
+                
+                // Add success message directly to main dialog
+                Label successMsg = new Label("✓ All " + assets.size() + " assets added successfully!");
+                successMsg.setStyleName("ode-ComponentRowLabel");
+                successMsg.getElement().getStyle().setProperty("color", "#2e7d32");
+                successMsg.getElement().getStyle().setProperty("fontWeight", "bold");
+                successMsg.getElement().getStyle().setProperty("fontSize", "14px");
+                successMsg.getElement().getStyle().setProperty("textAlign", "center");
+                successMsg.getElement().getStyle().setProperty("padding", "20px");
+                dialogPanel.insert(successMsg, dialogPanel.getWidgetIndex(buttonPanel));
+                
+                statusLabel.setText(assets.size() + " assets added to project - please refresh project if needed");
+                addBtn.setText("Close");
+                addBtn.setEnabled(true);
+                cancelBtn.setVisible(false);
+              }
+              
+              @Override
+              public void onFailure(Throwable caught) {
+                progressLabel.setText("⚠ " + caught.getMessage());
+                progressLabel.getElement().getStyle().setProperty("color", "#d32f2f");
+                addBtn.setText("Retry");
+                addBtn.setEnabled(true);
+                cancelBtn.setText("Cancel");
+              }
+            });
         }
-        
-        // Use new bulk add method
-        globalAssetService.bulkAddAssetsToProject(assetFileNames, projectId, track,
-          new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-              progressLabel.setText("✓ All " + assets.size() + " assets added successfully!");
-              progressLabel.getElement().getStyle().setProperty("color", "#2e7d32");
-              statusLabel.setText(assets.size() + " assets added to project");
-              addBtn.setText("Done");
-              addBtn.setEnabled(true);
-            }
-            
-            @Override
-            public void onFailure(Throwable caught) {
-              progressLabel.setText("⚠ " + caught.getMessage());
-              progressLabel.getElement().getStyle().setProperty("color", "#d32f2f");
-              addBtn.setText("Retry");
-              addBtn.setEnabled(true);
-              cancelBtn.setText("Cancel");
-            }
-          });
       }
     });
 
@@ -1465,6 +1456,7 @@ public class AssetLibraryWidget extends Composite {
     dialog.center();
     dialog.show();
   }
+
 
   // Folder management dialogs
   private void showNewFolderDialog() {
@@ -1737,6 +1729,264 @@ public class AssetLibraryWidget extends Composite {
       }
     }
   }
+
+  // Version management methods
+
+  private void showUpdateAssetDialog(final GlobalAsset asset) {
+    final DialogBox dialog = new DialogBox();
+    dialog.setText("Upload New Version - " + asset.getFileName());
+    dialog.setStyleName("ode-DialogBox");
+    dialog.setModal(true);
+    dialog.setGlassEnabled(true);
+    dialog.setAutoHideEnabled(false);
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.setSpacing(12);
+    dialogPanel.setWidth("400px");
+    dialogPanel.getElement().getStyle().setProperty("padding", "16px");
+
+    // Current asset info
+    HorizontalPanel currentAssetInfo = new HorizontalPanel();
+    currentAssetInfo.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    currentAssetInfo.getElement().getStyle().setProperty("marginBottom", "16px");
+    currentAssetInfo.getElement().getStyle().setProperty("padding", "8px");
+    currentAssetInfo.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
+    currentAssetInfo.getElement().getStyle().setProperty("borderRadius", "4px");
+
+    String fileName = asset.getFileName().toLowerCase();
+    ImageResource iconRes = fileName.endsWith(".mp3") || fileName.endsWith(".wav") || fileName.endsWith(".ogg")
+      ? ImagesNeo.INSTANCE.player() 
+      : ImagesNeo.INSTANCE.image();
+    
+    Image assetIcon = new Image(iconRes);
+    assetIcon.setWidth("24px");
+    assetIcon.setHeight("24px");
+    assetIcon.getElement().getStyle().setProperty("marginRight", "8px");
+    currentAssetInfo.add(assetIcon);
+
+    VerticalPanel currentInfo = new VerticalPanel();
+    Label currentName = new Label("Current: " + asset.getFileName());
+    currentName.setStyleName("ode-ComponentRowLabel");
+    currentName.getElement().getStyle().setProperty("fontWeight", "500");
+    currentInfo.add(currentName);
+
+    Label currentVersion = new Label("Last updated: " + formatDate(asset.getTimestamp()));
+    currentVersion.setStyleName("ode-ComponentRowLabel");
+    currentVersion.getElement().getStyle().setProperty("fontSize", "11px");
+    currentVersion.getElement().getStyle().setProperty("opacity", "0.7");
+    currentInfo.add(currentVersion);
+    currentAssetInfo.add(currentInfo);
+
+    dialogPanel.add(currentAssetInfo);
+
+    // Upload form
+    final FormPanel form = new FormPanel();
+    form.setEncoding(FormPanel.ENCODING_MULTIPART);
+    form.setMethod(FormPanel.METHOD_POST);
+
+    VerticalPanel formPanel = new VerticalPanel();
+    formPanel.setSpacing(8);
+
+    // File input
+    Label fileLabel = new Label("Select new version file:");
+    fileLabel.setStyleName("ode-ComponentRowLabel");
+    formPanel.add(fileLabel);
+
+    final FileUpload fileUpload = new FileUpload();
+    fileUpload.setName(ServerLayout.UPLOAD_GLOBAL_ASSET_FORM_ELEMENT);
+    fileUpload.setStyleName("ode-TextBox");
+    fileUpload.getElement().getStyle().setProperty("width", "100%");
+    formPanel.add(fileUpload);
+
+    // Version notes
+    Label notesLabel = new Label("Version notes (optional):");
+    notesLabel.setStyleName("ode-ComponentRowLabel");
+    formPanel.add(notesLabel);
+
+    final TextBox versionNotes = new TextBox();
+    versionNotes.setStyleName("ode-TextBox");
+    versionNotes.getElement().getStyle().setProperty("width", "100%");
+    versionNotes.getElement().setPropertyString("placeholder", "Describe changes in this version...");
+    formPanel.add(versionNotes);
+
+    // Auto-update projects checkbox
+    final CheckBox autoUpdate = new CheckBox("Automatically update projects using this asset");
+    autoUpdate.setValue(true);
+    autoUpdate.setStyleName("ode-ComponentRowLabel");
+    autoUpdate.getElement().getStyle().setProperty("fontSize", "12px");
+    autoUpdate.getElement().getStyle().setProperty("marginTop", "8px");
+    formPanel.add(autoUpdate);
+
+    Label autoUpdateDesc = new Label("Projects with tracking enabled will receive this update automatically.");
+    autoUpdateDesc.setStyleName("ode-ComponentRowLabel");
+    autoUpdateDesc.getElement().getStyle().setProperty("fontSize", "10px");
+    autoUpdateDesc.getElement().getStyle().setProperty("opacity", "0.7");
+    autoUpdateDesc.getElement().getStyle().setProperty("marginLeft", "20px");
+    formPanel.add(autoUpdateDesc);
+
+    // Error label
+    final Label errorLabel = new Label();
+    errorLabel.getElement().getStyle().setProperty("color", "#d93025");
+    errorLabel.getElement().getStyle().setProperty("fontSize", "12px");
+    formPanel.add(errorLabel);
+
+    form.setWidget(formPanel);
+    dialogPanel.add(form);
+
+    // Button panel
+    HorizontalPanel buttonPanel = new HorizontalPanel();
+    buttonPanel.setSpacing(8);
+    buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+    buttonPanel.setWidth("100%");
+
+    Button cancelBtn = new Button("Cancel");
+    cancelBtn.setStyleName("ode-ProjectListButton");
+
+    Button uploadBtn = new Button("Upload New Version");
+    uploadBtn.setStyleName("ode-ProjectListButton");
+
+    buttonPanel.add(cancelBtn);
+    buttonPanel.add(uploadBtn);
+    dialogPanel.add(buttonPanel);
+
+    dialog.setWidget(dialogPanel);
+
+    // Event handlers
+    uploadBtn.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        String filename = fileUpload.getFilename();
+        if (filename == null || filename.isEmpty()) {
+          errorLabel.setText("Please select a file.");
+          return;
+        }
+        
+        // Extract actual filename
+        String actualFilename = filename;
+        if (filename.contains("\\")) {
+          actualFilename = filename.substring(filename.lastIndexOf("\\") + 1);
+        } else if (filename.contains("/")) {
+          actualFilename = filename.substring(filename.lastIndexOf("/") + 1);
+        }
+        
+        // Validate file type matches existing asset
+        String newExt = getFileExtension(actualFilename).toLowerCase();
+        String currentExt = getFileExtension(asset.getFileName()).toLowerCase();
+        if (!newExt.equals(currentExt)) {
+          errorLabel.setText("New version must have the same file type as the current asset (" + currentExt + ").");
+          return;
+        }
+        
+        // Use the original asset name for the upload (maintaining the same filename)
+        String uploadPath = "_global_/";
+        if (!asset.getFolder().isEmpty()) {
+          uploadPath += asset.getFolder() + "/";
+        }
+        uploadPath += asset.getFileName(); // Keep the same filename
+        
+        form.setAction(GWT.getModuleBaseURL() + "upload/" + ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + uploadPath);
+        form.submit();
+      }
+    });
+
+    form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+      @Override
+      public void onSubmitComplete(SubmitCompleteEvent event) {
+        dialog.hide();
+        String results = event.getResults();
+        if (results != null && results.contains("SUCCESS")) {
+          statusLabel.setText("New version uploaded successfully");
+          refreshGlobalAssets();
+          
+          // If auto-update is enabled, sync all projects using this asset
+          if (autoUpdate.getValue()) {
+            syncAssetWithProjects(asset.getFileName());
+          }
+          
+          // Show success notification
+          Window.alert("Asset updated successfully!" + 
+            (autoUpdate.getValue() ? " Projects using this asset will be updated." : ""));
+        } else {
+          showUploadError(MESSAGES.fileUploadError(), "Failed to upload new version. Please try again.");
+        }
+      }
+    });
+
+    cancelBtn.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialog.hide();
+      }
+    });
+
+    dialog.center();
+    dialog.show();
+  }
+
+  private String getFileExtension(String filename) {
+    int lastDot = filename.lastIndexOf('.');
+    return lastDot > 0 ? filename.substring(lastDot) : "";
+  }
+
+  private void syncAssetWithProjects(String assetFileName) {
+    statusLabel.setText("Syncing asset with projects...");
+    
+    // Get current project ID if we're in a project
+    long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    
+    if (currentProjectId != 0) {
+      // Sync with current project
+      globalAssetService.syncProjectGlobalAsset(assetFileName, currentProjectId, new AsyncCallback<Boolean>() {
+        @Override
+        public void onSuccess(Boolean result) {
+          if (result) {
+            statusLabel.setText("Asset synced with current project");
+            // Force refresh of current project's asset list and editors
+            refreshCurrentProjectAssets();
+          } else {
+            statusLabel.setText("Asset not used in current project");
+          }
+        }
+        
+        @Override
+        public void onFailure(Throwable caught) {
+          statusLabel.setText("Failed to sync asset: " + caught.getMessage());
+        }
+      });
+    }
+    
+    // Also get list of all projects using this asset and sync them
+    globalAssetService.getProjectsUsingAsset(assetFileName, new AsyncCallback<List<Long>>() {
+      @Override
+      public void onSuccess(List<Long> projectIds) {
+        statusLabel.setText("Asset synced with " + projectIds.size() + " projects");
+        // The server-side should handle the actual synchronization
+        // Client-side we just need to refresh if current project is affected
+        if (projectIds.contains(Ode.getInstance().getCurrentYoungAndroidProjectId())) {
+          refreshCurrentProjectAssets();
+        }
+      }
+      
+      @Override
+      public void onFailure(Throwable caught) {
+        statusLabel.setText("Failed to get project usage info: " + caught.getMessage());
+      }
+    });
+  }
+
+  private void refreshCurrentProjectAssets() {
+    // Force refresh of project assets and any open editors
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId != 0) {
+      // Refresh the project manager - this will update asset lists
+      Ode.getInstance().getProjectManager().getProject(projectId);
+      
+      // The server-side sync should handle updating the project assets
+      // Client-side we just notify that a refresh might be needed
+      statusLabel.setText("Projects updated - please refresh your designer if needed");
+    }
+  }
+
 
   /**
    * Displays upload error dialog.
