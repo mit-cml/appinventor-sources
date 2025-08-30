@@ -75,7 +75,7 @@ public final class ProviderDynamoDB extends DatabaseService {
   private static final Random RANDOM = new Random();
 
   private static final Flag<String> ENDPOINT = Flag.createFlag("database.ddb.endpoint", null);
-  private static final Flag<String> TABLES_REGION = Flag.createFlag("filesystem.s3.tablesregion", null);
+  private static final Flag<String> TABLES_REGION = Flag.createFlag("database.ddb.tablesregion", null);
   private static final Flag<String> ACCESS_KEY_ID = Flag.createFlag("database.ddb.accesskeyid", null);
   private static final Flag<String> SECRET_ACCESS_KEY = Flag.createFlag("database.ddb.secretaccesskey", null);
 
