@@ -53,7 +53,7 @@ public class OdeAuthFilter implements Filter {
 
   private static final Logger LOG = Logger.getLogger(OdeAuthFilter.class.getName());
 
-  private static Crypter crypter = null; // accessed through getCrypter only
+  private static volatile Crypter crypter = null; // accessed through getCrypter only
   private static final Object crypterSync = new Object();
 
   private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
