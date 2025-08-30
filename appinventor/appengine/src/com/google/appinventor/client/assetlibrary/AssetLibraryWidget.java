@@ -2,6 +2,7 @@ package com.google.appinventor.client.assetlibrary;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.commands.PreviewFileCommand;
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -910,11 +911,10 @@ public class AssetLibraryWidget extends Composite {
   }
 
   private void previewAsset(GlobalAsset asset) {
-    // Always use the global asset URL for preview
-    // The GlobalAssetServiceImpl.doGet() will handle the download
+    String fileId = asset.getFileName();
     GlobalAssetProjectNode projectNode = new GlobalAssetProjectNode(
         asset.getFileName(),
-        asset.getFileName()
+        fileId
     );
     
     // Use the existing PreviewFileCommand
@@ -1085,13 +1085,10 @@ public class AssetLibraryWidget extends Composite {
           return;
         }
         
-        // Extract just the filename, removing any path (including "fakepath")
         String actualFilename = filename;
         if (filename.contains("\\")) {
-          // Windows path separator (handles "C:\fakepath\file.png")
           actualFilename = filename.substring(filename.lastIndexOf("\\") + 1);
         } else if (filename.contains("/")) {
-          // Unix path separator
           actualFilename = filename.substring(filename.lastIndexOf("/") + 1);
         }
         
@@ -1134,7 +1131,7 @@ public class AssetLibraryWidget extends Composite {
           statusLabel.setText("Asset uploaded successfully");
           refreshGlobalAssets();
         } else {
-          Window.alert("Upload failed: " + (results != null ? results.replaceAll("<[^>]*>", "") : "Unknown error"));
+          showUploadError(MESSAGES.fileUploadError(), "Please check your file and try again.");
         }
       }
     });
@@ -1694,4 +1691,37 @@ public class AssetLibraryWidget extends Composite {
                   "Currently only empty folder operations are supported.");
     }
   }
+
+  /**
+   * Displays upload error dialog.
+   */
+  private void showUploadError(String title, String message) {
+    final DialogBox errorDialog = new DialogBox();
+    errorDialog.setText(title);
+    errorDialog.setStyleName("ode-DialogBox");
+    errorDialog.setModal(true);
+    errorDialog.setGlassEnabled(true);
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.setSpacing(10);
+    dialogPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+
+    Label messageLabel = new Label(message);
+    messageLabel.setStyleName("ode-DialogBodyText");
+    dialogPanel.add(messageLabel);
+
+    Button okButton = new Button("OK");
+    okButton.setStyleName("ode-DialogButton");
+    okButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        errorDialog.hide();
+      }
+    });
+    dialogPanel.add(okButton);
+
+    errorDialog.setWidget(dialogPanel);
+    errorDialog.center();
+  }
+
 }

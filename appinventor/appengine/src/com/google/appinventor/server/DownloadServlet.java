@@ -230,18 +230,7 @@ public class DownloadServlet extends OdeServlet {
         String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
           uriComponents[FILE_PATH_INDEX] : null;
         StorageIoInstanceHolder.getInstance().assertUserHasProject(userId, projectId);
-        LOG.info("DownloadServlet: Attempting to download file: " + filePath + " for project: " + projectId + " user: " + userId);
-        try {
-          downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
-          if (downloadableFile == null || downloadableFile.getContent() == null) {
-            LOG.severe("DownloadServlet: File export returned null for: " + filePath + " project: " + projectId);
-            throw new RuntimeException("File not found or empty: " + filePath);
-          }
-          LOG.info("DownloadServlet: Successfully exported file: " + filePath + " (size: " + downloadableFile.getContent().length + " bytes)");
-        } catch (Exception e) {
-          LOG.severe("DownloadServlet: Failed to export file: " + filePath + " project: " + projectId + " error: " + e.getMessage());
-          throw e;
-        }
+        downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
         byte[] fileContent = downloadableFile.getContent();
 
         MessageDigest md = MessageDigest.getInstance("SHA-1");

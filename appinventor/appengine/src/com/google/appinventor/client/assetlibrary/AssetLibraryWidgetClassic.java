@@ -2,6 +2,8 @@ package com.google.appinventor.client.assetlibrary;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.commands.PreviewFileCommand;
+import com.google.appinventor.client.youngandroid.TextValidators;
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -1635,17 +1637,21 @@ public class AssetLibraryWidgetClassic extends Composite {
       public void onClick(ClickEvent event) {
         String filename = fileUpload.getFilename();
         if (filename == null || filename.isEmpty()) {
-          errorLabel.setText("Please select a file.");
+          showInlineError(errorLabel, "⚠ Please select a file to upload.");
           return;
         }
         
         String lower = filename.toLowerCase();
         if (!(lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || 
               lower.endsWith(".gif") || lower.endsWith(".mp3") || lower.endsWith(".wav") || 
-              lower.endsWith(".ogg"))) {
-          errorLabel.setText("Invalid file type. Supported: PNG, JPG, GIF, MP3, WAV, OGG");
+              lower.endsWith(".ogg") || lower.endsWith(".ttf") || lower.endsWith(".otf") ||
+              lower.endsWith(".mp4") || lower.endsWith(".avi") || lower.endsWith(".webm"))) {
+          showInlineError(errorLabel, "⚠ Unsupported file type. Supported formats: PNG, JPG, GIF, MP3, WAV, OGG, TTF, OTF, MP4, AVI, WebM");
           return;
         }
+        
+        // Clear any previous errors
+        clearInlineError(errorLabel);
         
         // Check if asset already exists and handle conflicts
         handleAssetUploadWithConflictCheck(filename, dialog, form, fileUpload);
@@ -1661,7 +1667,7 @@ public class AssetLibraryWidgetClassic extends Composite {
           statusLabel.setText("Asset uploaded successfully");
           refreshGlobalAssets();
         } else {
-          Window.alert("Upload failed: " + (results != null ? results.replaceAll("<[^>]*>", "") : "Unknown error"));
+          showUploadError(MESSAGES.fileUploadError(), "Please check your file and try again.");
         }
       }
     });
@@ -2015,15 +2021,23 @@ public class AssetLibraryWidgetClassic extends Composite {
   }
 
   private void proceedWithUpload(String filename, FormPanel form) {
-    // Extract just the filename, removing any path (including "fakepath")
     String actualFilename = filename;
     if (filename.contains("\\")) {
-      // Windows path separator (handles "C:\fakepath\file.png")
       actualFilename = filename.substring(filename.lastIndexOf("\\") + 1);
     } else if (filename.contains("/")) {
-      // Unix path separator
       actualFilename = filename.substring(filename.lastIndexOf("/") + 1);
     }
+    
+    final String validatedFilename = makeValidFilename(actualFilename);
+    if (!TextValidators.isValidCharFilename(validatedFilename)) {
+      showUploadError(MESSAGES.malformedFilenameTitle(), MESSAGES.malformedFilename());
+      return;
+    } else if (!TextValidators.isValidLengthFilename(validatedFilename)) {
+      showUploadError(MESSAGES.filenameBadSizeTitle(), MESSAGES.filenameBadSize());
+      return;
+    }
+    
+    actualFilename = validatedFilename;
     
     // Get the currently selected folder
     String targetFolder = "";
@@ -2127,6 +2141,7 @@ public class AssetLibraryWidgetClassic extends Composite {
             public void onSuccess(Void result) {
               statusLabel.setText("Asset '" + asset.getFileName() + "' added to project");
               dialog.hide();
+              
             }
             
             @Override
@@ -2234,6 +2249,9 @@ public class AssetLibraryWidgetClassic extends Composite {
             public void onSuccess(Void result) {
               statusLabel.setText(assets.size() + " assets added to project");
               dialog.hide();
+              
+              // Asset imported successfully - no additional refresh needed
+              // The FileUploadWizard handles project updates automatically
             }
             
             @Override
@@ -2901,4 +2919,102 @@ public class AssetLibraryWidgetClassic extends Composite {
     
     historyDialog.show();
   }
+  
+  /**
+   * Shows an inline error message with consistent styling
+   */
+  private void showInlineError(Label errorLabel, String message) {
+    errorLabel.setText(message);
+    errorLabel.getElement().getStyle().setProperty("color", "#d32f2f");
+    errorLabel.getElement().getStyle().setProperty("fontSize", "13px");
+    errorLabel.getElement().getStyle().setProperty("fontWeight", "500");
+    errorLabel.getElement().getStyle().setProperty("marginTop", "4px");
+  }
+  
+  /**
+   * Clears any inline error styling and message
+   */
+  private void clearInlineError(Label errorLabel) {
+    errorLabel.setText("");
+    errorLabel.getElement().getStyle().setProperty("color", "");
+    errorLabel.getElement().getStyle().setProperty("fontSize", "");
+    errorLabel.getElement().getStyle().setProperty("fontWeight", "");
+    errorLabel.getElement().getStyle().setProperty("marginTop", "");
+  }
+
+  /**
+   * Shows a user-friendly error dialog for upload failures
+   */
+  private void showUploadError(String title, String message) {
+    final DialogBox errorDialog = new DialogBox();
+    errorDialog.setText(title);
+    errorDialog.setModal(true);
+    errorDialog.setGlassEnabled(true);
+    errorDialog.setStyleName("ode-DialogBox");
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.setSpacing(12);
+    dialogPanel.setWidth("400px");
+
+    // Error icon and message
+    HorizontalPanel messagePanel = new HorizontalPanel();
+    messagePanel.setSpacing(8);
+    messagePanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+    
+    Label errorIcon = new Label("⚠");
+    errorIcon.getElement().getStyle().setProperty("fontSize", "24px");
+    errorIcon.getElement().getStyle().setProperty("color", "#d32f2f");
+    messagePanel.add(errorIcon);
+    
+    Label errorMessage = new Label(message);
+    errorMessage.setStyleName("ode-ComponentRowLabel");
+    errorMessage.getElement().getStyle().setProperty("wordWrap", "break-word");
+    errorMessage.setWidth("340px");
+    messagePanel.add(errorMessage);
+    
+    dialogPanel.add(messagePanel);
+
+    // Buttons
+    HorizontalPanel buttonPanel = new HorizontalPanel();
+    buttonPanel.setSpacing(8);
+    buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+
+    Button retryButton = new Button("Try Again");
+    retryButton.setStyleName("ode-DialogButton");
+    retryButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        errorDialog.hide();
+        showUploadDialog(); // Reopen the upload dialog
+      }
+    });
+
+    Button okButton = new Button("OK");
+    okButton.setStyleName("ode-DialogButton");
+    okButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        errorDialog.hide();
+      }
+    });
+
+    buttonPanel.add(retryButton);
+    buttonPanel.add(okButton);
+    dialogPanel.add(buttonPanel);
+
+    errorDialog.setWidget(dialogPanel);
+    errorDialog.center();
+  }
+
+  /**
+   * Creates a valid filename by stripping path and whitespace.
+   */
+  private String makeValidFilename(String uploadFilename) {
+    String filename = uploadFilename.substring(
+        Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
+    filename = filename.replaceAll("\\s", "");
+    return filename;
+  }
+
+
 }

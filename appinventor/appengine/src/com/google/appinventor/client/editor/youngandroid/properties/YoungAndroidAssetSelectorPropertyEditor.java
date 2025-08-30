@@ -115,23 +115,14 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
         FileUploadedCallback callback = new FileUploadedCallback() {
           @Override
           public void onFileUploaded(FolderNode folderNode, FileNode fileNode) {
-            // This callback is invoked after FileUploadWizard completes.
-            // Reload all choices to include any new project or global asset.
             loadAssetChoices();
-            if (fileNode != null) { // It was a project asset
+            if (fileNode != null) {
               choices.selectValue(fileNode.getFileId());
-            } else {
-              // If it was a global asset, we don't have a FileNode.
-              // The list is refreshed, user can manually find it.
-              // TODO: Potentially have FileUploadWizard pass back the name of the uploaded global asset.
             }
             closeAdditionalChoiceDialog(true);
           }
         };
-        new FileUploadWizard(assetsFolder, callback).show(); // Pass null for folderNode if it's a global context?
-                                                          // Or FileUploadWizard needs to handle null folderNode.
-                                                          // For now, assetFolder is project's, which is fine for project uploads.
-                                                          // Global uploads don't use folderNode in FileUploadWizard's new path.
+        new FileUploadWizard(assetsFolder, callback).show();
       }
     });
     selectorPanel.add(addButton);
@@ -239,13 +230,7 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
       }
 
       if (actualIndexInAssetFileIds >= 0 && actualIndexInAssetFileIds < assetFileIds.size()) {
-        // POTENTIAL FIX: Use just the filename instead of full path
-        String fullFileId = assetFileIds.get(actualIndexInAssetFileIds);
-        if (fullFileId.startsWith("assets/")) {
-          valueToSet = fullFileId.substring("assets/".length()); // Strip "assets/" prefix
-        } else {
-          valueToSet = fullFileId;
-        }
+        valueToSet = assetFileIds.get(actualIndexInAssetFileIds);
       } else {
         Window.alert("Error: Asset selection out of sync. Please try again.");
         return false;
@@ -262,8 +247,7 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
     assetsList.clear(); // Directly clear the ListBox
     assetFileIds.clear();
 
-    // Let ListWithNone handle adding the "None" item if applicable
-    choices.clearNoneItem(); // Ensure ListWithNone's internal state for "None" is reset
+    choices.clearNoneItem();
 
     if (assetsFolder != null) {
       for (ProjectNode node : assetsFolder.getChildren()) {
@@ -271,22 +255,11 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
       }
     }
     
-    // Only show global assets that have been explicitly added to this project
-    // These appear as project files with paths like "assets/_global_/folder/asset.png"
-    // No need to fetch all global assets - only show what's actually in the project
-    
     finalizeAssetLoading();
   }
 
   private void finalizeAssetLoading() {
-    // TODO: Implement sorting of assetsList and assetFileIds if desired.
-    // For now, items are added as they appear in the project assets folder.
-    // Example of how sorting might be done (complex due to ListWithNone):
-    // 1. Collect (displayName, fileId) pairs from assetsList and assetFileIds.
-    // 2. Sort pairs by displayName.
-    // 3. assetsList.clear(), assetFileIds.clear(), choices.clearNoneItem().
-    // 4. Re-add sorted items using choices.addItem() and assetFileIds.add().
-    choices.updateNoneItem(); // Crucial: Call this AFTER all items are potentially added/sorted
+    choices.updateNoneItem();
   }
 
   private void addAssetChoice(String name, String fileId) {
@@ -334,7 +307,6 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
           indexInListBox = indexToRemove + 1;
         }
       }
-      // Robust way: reload choices and try to reselect the current property value.
       String currentPropertyValue = property.getValue();
       loadAssetChoices();
       choices.selectValue(currentPropertyValue);
@@ -345,14 +317,7 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
 
   @Override
   public void onProjectLoaded(Project project) {
-    // Assets folder might change if project changes.
-    if (this.assetsFolder.getProjectId() != project.getProjectId()) {
-        // Update assetsFolder reference and reload choices
-        // This assumes the editor is for the project being loaded.
-        // Potentially, this editor instance should be disposed and recreated.
-        // For now, just reload choices if it's the same project ID context.
-    }
-    loadAssetChoices(); // Reload choices on project load.
+    loadAssetChoices();
   }
 
   @Override
@@ -368,8 +333,6 @@ private final List<String> assetFileIds = new ArrayList<String>(); // To store a
       }
       if (!found) {
         addAssetChoice(node.getName(), node.getFileId());
-        // ListWithNone might re-add "None" if choices were empty.
-        // choices.updateNoneItem(); // May not be needed if addAssetChoice is smart
       }
 
       // If this newly added node corresponds to the current property value,

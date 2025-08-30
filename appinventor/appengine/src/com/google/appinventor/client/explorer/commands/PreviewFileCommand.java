@@ -100,7 +100,7 @@ public class PreviewFileCommand extends ChainableCommand {
     String fileUrl;
     if (node instanceof GlobalAssetProjectNode) {
       fileSuffix = node.getFileId();
-      fileUrl = "/download/globalasset/" + node.getFileId();
+      fileUrl = "/ode/download/globalasset/" + node.getFileId();
     } else {
       fileSuffix = node.getProjectId() + "/" + node.getFileId();
       fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
