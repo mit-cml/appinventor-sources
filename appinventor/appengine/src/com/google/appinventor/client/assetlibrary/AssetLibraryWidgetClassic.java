@@ -1556,7 +1556,7 @@ public class AssetLibraryWidgetClassic extends Composite {
       
       @Override
       public void onFailure(Throwable caught) {
-        Window.alert("Failed to delete asset: " + caught.getMessage());
+        showDeleteError("Cannot Delete Asset", caught.getMessage());
       }
     });
   }
@@ -3016,5 +3016,116 @@ public class AssetLibraryWidgetClassic extends Composite {
     return filename;
   }
 
+  /**
+   * Displays deletion error dialog with better formatting for asset usage information.
+   */
+  private void showDeleteError(String title, String message) {
+    final DialogBox errorDialog = new DialogBox();
+    errorDialog.setText(title);
+    errorDialog.setStyleName("ode-DialogBox");
+    errorDialog.setModal(true);
+    errorDialog.setGlassEnabled(true);
+    errorDialog.setAutoHideEnabled(false);
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.setSpacing(16);
+    dialogPanel.setWidth("500px");
+    dialogPanel.getElement().getStyle().setProperty("padding", "16px");
+
+    // Error header with icon
+    HorizontalPanel errorHeader = new HorizontalPanel();
+    errorHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+    errorHeader.setSpacing(12);
+    errorHeader.getElement().getStyle().setProperty("backgroundColor", "#fef7f7");
+    errorHeader.getElement().getStyle().setProperty("padding", "12px");
+    errorHeader.getElement().getStyle().setProperty("borderRadius", "6px");
+    errorHeader.getElement().getStyle().setProperty("border", "1px solid #f5c6cb");
+    errorHeader.getElement().getStyle().setProperty("marginBottom", "12px");
+    
+    Label errorIcon = new Label("⚠");
+    errorIcon.getElement().getStyle().setProperty("fontSize", "24px");
+    errorIcon.getElement().getStyle().setProperty("color", "#721c24");
+    errorIcon.getElement().getStyle().setProperty("marginRight", "8px");
+    errorHeader.add(errorIcon);
+    
+    VerticalPanel errorText = new VerticalPanel();
+    Label errorTitle = new Label("Asset Cannot Be Deleted");
+    errorTitle.setStyleName("ode-ComponentRowLabel");
+    errorTitle.getElement().getStyle().setProperty("fontWeight", "600");
+    errorTitle.getElement().getStyle().setProperty("fontSize", "16px");
+    errorTitle.getElement().getStyle().setProperty("color", "#721c24");
+    errorText.add(errorTitle);
+    
+    // Parse the error message to make it more readable
+    String displayMessage = message;
+    if (message.contains("is currently used by") && message.contains("project(s):")) {
+      // Enhanced error message - display it nicely
+      displayMessage = message.replace("Cannot delete asset", "This asset");
+    }
+    
+    Label errorMsg = new Label(displayMessage);
+    errorMsg.setStyleName("ode-ComponentRowLabel");
+    errorMsg.getElement().getStyle().setProperty("fontSize", "14px");
+    errorMsg.getElement().getStyle().setProperty("color", "#721c24");
+    errorMsg.getElement().getStyle().setProperty("lineHeight", "1.4");
+    errorMsg.getElement().getStyle().setProperty("marginTop", "4px");
+    errorMsg.getElement().getStyle().setProperty("wordWrap", "break-word");
+    errorText.add(errorMsg);
+    
+    errorHeader.add(errorText);
+    dialogPanel.add(errorHeader);
+    
+    // Help text
+    if (message.contains("Please remove the asset from these projects first")) {
+      Label helpText = new Label("To delete this asset:");
+      helpText.setStyleName("ode-ComponentRowLabel");
+      helpText.getElement().getStyle().setProperty("fontWeight", "600");
+      helpText.getElement().getStyle().setProperty("marginBottom", "8px");
+      dialogPanel.add(helpText);
+      
+      VerticalPanel stepsList = new VerticalPanel();
+      stepsList.getElement().getStyle().setProperty("marginLeft", "16px");
+      
+      Label step1 = new Label("1. Open each project listed above");
+      step1.setStyleName("ode-ComponentRowLabel");
+      step1.getElement().getStyle().setProperty("fontSize", "14px");
+      step1.getElement().getStyle().setProperty("marginBottom", "4px");
+      stepsList.add(step1);
+      
+      Label step2 = new Label("2. Remove the asset from the project's assets");
+      step2.setStyleName("ode-ComponentRowLabel");
+      step2.getElement().getStyle().setProperty("fontSize", "14px");
+      step2.getElement().getStyle().setProperty("marginBottom", "4px");
+      stepsList.add(step2);
+      
+      Label step3 = new Label("3. Return here to delete the asset");
+      step3.setStyleName("ode-ComponentRowLabel");
+      step3.getElement().getStyle().setProperty("fontSize", "14px");
+      stepsList.add(step3);
+      
+      dialogPanel.add(stepsList);
+    }
+
+    // Button panel
+    HorizontalPanel buttonPanel = new HorizontalPanel();
+    buttonPanel.setSpacing(8);
+    buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+    buttonPanel.setWidth("100%");
+    buttonPanel.getElement().getStyle().setProperty("marginTop", "16px");
+
+    Button okButton = new Button("OK");
+    okButton.setStyleName("ode-ProjectListButton");
+    okButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        errorDialog.hide();
+      }
+    });
+    buttonPanel.add(okButton);
+    dialogPanel.add(buttonPanel);
+
+    errorDialog.setWidget(dialogPanel);
+    errorDialog.center();
+  }
 
 }

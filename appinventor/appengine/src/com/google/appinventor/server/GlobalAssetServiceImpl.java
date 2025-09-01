@@ -58,10 +58,41 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
       throw new RuntimeException("Global asset not found: " + fileName);
     }
 
-    if (globalAssetData.referencedBy != null && !globalAssetData.referencedBy.isEmpty()) {
-      throw new RuntimeException("Cannot delete asset: " + fileName + " is still used by " + globalAssetData.referencedBy.size() + " projects.");
+    // Check for usage using the new ProjectGlobalAssetData system
+    List<Long> usingProjects = storageIo.getProjectsUsingGlobalAsset(fileName, userId);
+    if (!usingProjects.isEmpty()) {
+      // Get project names for better error messaging
+      StringBuilder projectNames = new StringBuilder();
+      for (int i = 0; i < Math.min(usingProjects.size(), 3); i++) { // Show up to 3 project names
+        try {
+          String projectName = storageIo.getProjectName(userId, usingProjects.get(i));
+          if (projectName != null) {
+            if (projectNames.length() > 0) {
+              projectNames.append(", ");
+            }
+            projectNames.append(projectName);
+          }
+        } catch (Exception e) {
+          // If we can't get project name, just use the ID
+          if (projectNames.length() > 0) {
+            projectNames.append(", ");
+          }
+          projectNames.append("Project #" + usingProjects.get(i));
+        }
+      }
+      
+      if (usingProjects.size() > 3) {
+        projectNames.append(" and " + (usingProjects.size() - 3) + " other project(s)");
+      }
+      
+      String errorMessage = "Cannot delete asset '" + fileName + "' because it is currently used by " + 
+          usingProjects.size() + " project(s): " + projectNames.toString() + 
+          ". Please remove the asset from these projects first.";
+      
+      throw new RuntimeException(errorMessage);
     }
 
+    // Delete the asset - cleanup will be handled when projects remove the asset
     storageIo.deleteGlobalAsset(userId, fileName);
   }
 
@@ -192,23 +223,10 @@ public class GlobalAssetServiceImpl extends OdeRemoteServiceServlet implements G
                " (size: " + globalAssetContent.length + " bytes)");
       storageIo.uploadRawFileForce(projectId, projectFileName, userId, globalAssetContent);
 
-      // Update project metadata
-      String projectSettings = storageIo.loadProjectSettings(userId, projectId);
-      JSONObject projectSettingsJson;
-      if (projectSettings != null && !projectSettings.isEmpty()) {
-        projectSettingsJson = new JSONObject(projectSettings);
-      } else {
-        projectSettingsJson = new JSONObject();
+      // Create the relationship record for tracking (if tracking is enabled)
+      if (trackUsage) {
+        storageIo.addProjectGlobalAssetRelation(projectId, assetId, userId, trackUsage, projectFileName);
       }
-
-      JSONObject globalAssetMetadata = new JSONObject();
-      globalAssetMetadata.put("globalAssetKey", assetId);
-      globalAssetMetadata.put("syncedAtTimestamp", globalAssetData.timestamp);
-      // Assuming localCopyBlobKey is not directly exposed or needed for now, 
-      // but can be added if the storageIo provides it.
-
-      projectSettingsJson.put("globalAsset_" + assetId.replace('.', '_'), globalAssetMetadata);
-      storageIo.storeProjectSettings(userInfoProvider.getSessionId(), projectId, projectSettingsJson.toString());
 
       LOG.info("Successfully imported global asset " + assetId + " into project " + projectId + ", tracked: " + trackUsage);
     } catch (Exception e) {

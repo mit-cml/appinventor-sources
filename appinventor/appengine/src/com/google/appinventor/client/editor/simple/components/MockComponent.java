@@ -959,8 +959,16 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         // The path is already the full path needed by DOWNLOAD_USERFILE.
         // UploadServlet now routes /ode/upload/globalasset/* to use importUserFile,
         // so downloads should also use the userfile path.
+        // Add cache-busting parameter to prevent stale asset display
+        // Uses the same pattern as StorageUtil.getFileUrl() for consistency
         return ServerLayout.ODE_BASEURL + ServerLayout.DOWNLOAD_SERVLET_BASE +
-               ServerLayout.DOWNLOAD_USERFILE + "/" + URL.encodePathSegment(fileIdOrName);
+               ServerLayout.DOWNLOAD_USERFILE + "/" + URL.encodePathSegment(fileIdOrName) +
+               "?t=" + System.currentTimeMillis();
+      } else if (fileIdOrName.startsWith("assets/_global_/")) {
+        // It's a global asset that was imported into the project.
+        // It should be treated as a regular project asset, not a global asset.
+        // Use the same method as regular project assets.
+        return StorageUtil.getFileUrl(projectId, fileIdOrName);
       } else {
         // Assume it's a project asset.
         // It could be a full path like "assets/image.png" or a simple name "image.png".

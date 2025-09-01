@@ -406,6 +406,15 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the asset list box.
+   *
+   * @return  asset list box
+   */
+  public AssetListBox getAssetListBox() {
+    return assetListBox;
+  }
+
+  /**
    * Returns true if we have received the window closing event.
    */
   public static boolean isWindowClosing() {

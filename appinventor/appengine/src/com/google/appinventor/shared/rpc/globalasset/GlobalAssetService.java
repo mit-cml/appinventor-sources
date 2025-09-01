@@ -8,7 +8,7 @@ import java.util.List;
 @RemoteServiceRelativePath("globalassets")
 public interface GlobalAssetService extends RemoteService {
   List<GlobalAsset> getGlobalAssets();
-  void deleteGlobalAsset(String fileName);
+  void deleteGlobalAsset(String fileName) throws RuntimeException;
   void linkGlobalAssetToProject(long projectId, String globalAssetId, long timestamp);
   boolean isGlobalAssetUpdated(String globalAssetId, long currentTimestamp);
   GlobalAsset getGlobalAsset(String fileName);

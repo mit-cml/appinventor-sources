@@ -40,6 +40,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetN
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -384,7 +385,20 @@ public class AssetLibraryWidget extends Composite {
     closeButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        Ode.getInstance().switchToProjectsView();
+        // Get the current project and switch back to the editor
+        long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+        if (currentProjectId != 0) {
+          Project currentProject = Ode.getInstance().getProjectManager().getProject(currentProjectId);
+          if (currentProject != null) {
+            Ode.getInstance().openYoungAndroidProjectInDesigner(currentProject);
+          } else {
+            // Fallback to projects view if project not found
+            Ode.getInstance().switchToProjectsView();
+          }
+        } else {
+          // Fallback to projects view if no current project
+          Ode.getInstance().switchToProjectsView();
+        }
       }
     });
 
@@ -921,7 +935,9 @@ public class AssetLibraryWidget extends Composite {
     
     if (StorageUtil.isImageFile(filePath)) {
       // Create larger image preview for better visibility
-      Image img = new Image("/ode/download/globalasset/" + asset.getFileName());
+      // Add cache-busting timestamp parameter to force refresh when asset is updated
+      String imageUrl = "/ode/download/globalasset/" + asset.getFileName() + "?t=" + asset.getTimestamp();
+      Image img = new Image(imageUrl);
       img.setWidth("100px");
       img.setHeight("100px");
       img.getElement().getStyle().setProperty("objectFit", "cover");
@@ -1023,11 +1039,12 @@ public class AssetLibraryWidget extends Composite {
       @Override
       public void onSuccess(Void result) {
         refreshGlobalAssets();
+        statusLabel.setText("Asset '" + asset.getFileName() + "' deleted successfully");
       }
       
       @Override
       public void onFailure(Throwable caught) {
-        Window.alert("Failed to delete asset: " + caught.getMessage());
+        showDeleteError("Cannot Delete Asset", caught.getMessage());
       }
     });
   }
@@ -1382,7 +1399,27 @@ public class AssetLibraryWidget extends Composite {
                 successMsg.getElement().getStyle().setProperty("padding", "20px");
                 dialogPanel.insert(successMsg, dialogPanel.getWidgetIndex(buttonPanel));
                 
-                statusLabel.setText("Asset '" + asset.getFileName() + "' added to project - please refresh project if needed");
+                // Manually create and add the project node for the imported asset
+                Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+                YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) project.getRootNode();
+                YoungAndroidAssetsFolder assetsFolder = projectNode.getAssetsFolder();
+                
+                // Create the asset node with the full imported path
+                String assetName = asset.getFileName();
+                String fullAssetPath = "assets/_global_/";
+                if (asset.getFolder() != null && !asset.getFolder().isEmpty()) {
+                  fullAssetPath += asset.getFolder() + "/";
+                }
+                fullAssetPath += assetName;
+                
+                YoungAndroidAssetNode assetNode = new YoungAndroidAssetNode(assetName, fullAssetPath);
+                project.addNode(assetsFolder, assetNode);
+                
+                // Refresh the project asset list and asset manager to make the asset visible
+                Ode.getInstance().getAssetListBox().getAssetList().refreshAssetList(projectId);
+                Ode.getInstance().getAssetManager().loadAssets(projectId);
+                
+                statusLabel.setText("Asset '" + asset.getFileName() + "' added successfully!");
                 addBtn.setText("Close");
                 addBtn.setEnabled(true);
                 cancelBtn.setVisible(false);
@@ -1427,7 +1464,29 @@ public class AssetLibraryWidget extends Composite {
                 successMsg.getElement().getStyle().setProperty("padding", "20px");
                 dialogPanel.insert(successMsg, dialogPanel.getWidgetIndex(buttonPanel));
                 
-                statusLabel.setText(assets.size() + " assets added to project - please refresh project if needed");
+                // Manually create and add project nodes for all imported assets
+                Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+                YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) project.getRootNode();
+                YoungAndroidAssetsFolder assetsFolder = projectNode.getAssetsFolder();
+                
+                for (GlobalAsset asset : assets) {
+                  // Create the asset node with the full imported path
+                  String assetName = asset.getFileName();
+                  String fullAssetPath = "assets/_global_/";
+                  if (asset.getFolder() != null && !asset.getFolder().isEmpty()) {
+                    fullAssetPath += asset.getFolder() + "/";
+                  }
+                  fullAssetPath += assetName;
+                  
+                  YoungAndroidAssetNode assetNode = new YoungAndroidAssetNode(assetName, fullAssetPath);
+                  project.addNode(assetsFolder, assetNode);
+                }
+                
+                // Refresh the project asset list and asset manager to make the assets visible
+                Ode.getInstance().getAssetListBox().getAssetList().refreshAssetList(projectId);
+                Ode.getInstance().getAssetManager().loadAssets(projectId);
+                
+                statusLabel.setText(assets.size() + " assets added successfully!");
                 addBtn.setText("Close");
                 addBtn.setEnabled(true);
                 cancelBtn.setVisible(false);
@@ -2015,6 +2074,118 @@ public class AssetLibraryWidget extends Composite {
       }
     });
     dialogPanel.add(okButton);
+
+    errorDialog.setWidget(dialogPanel);
+    errorDialog.center();
+  }
+
+  /**
+   * Displays deletion error dialog with better formatting for asset usage information.
+   */
+  private void showDeleteError(String title, String message) {
+    final DialogBox errorDialog = new DialogBox();
+    errorDialog.setText(title);
+    errorDialog.setStyleName("ode-DialogBox");
+    errorDialog.setModal(true);
+    errorDialog.setGlassEnabled(true);
+    errorDialog.setAutoHideEnabled(false);
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.setSpacing(16);
+    dialogPanel.setWidth("500px");
+    dialogPanel.getElement().getStyle().setProperty("padding", "16px");
+
+    // Error header with icon
+    HorizontalPanel errorHeader = new HorizontalPanel();
+    errorHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+    errorHeader.setSpacing(12);
+    errorHeader.getElement().getStyle().setProperty("backgroundColor", "#fef7f7");
+    errorHeader.getElement().getStyle().setProperty("padding", "12px");
+    errorHeader.getElement().getStyle().setProperty("borderRadius", "6px");
+    errorHeader.getElement().getStyle().setProperty("border", "1px solid #f5c6cb");
+    errorHeader.getElement().getStyle().setProperty("marginBottom", "12px");
+    
+    Label errorIcon = new Label("⚠");
+    errorIcon.getElement().getStyle().setProperty("fontSize", "24px");
+    errorIcon.getElement().getStyle().setProperty("color", "#721c24");
+    errorIcon.getElement().getStyle().setProperty("marginRight", "8px");
+    errorHeader.add(errorIcon);
+    
+    VerticalPanel errorText = new VerticalPanel();
+    Label errorTitle = new Label("Asset Cannot Be Deleted");
+    errorTitle.setStyleName("ode-ComponentRowLabel");
+    errorTitle.getElement().getStyle().setProperty("fontWeight", "600");
+    errorTitle.getElement().getStyle().setProperty("fontSize", "16px");
+    errorTitle.getElement().getStyle().setProperty("color", "#721c24");
+    errorText.add(errorTitle);
+    
+    // Parse the error message to make it more readable
+    String displayMessage = message;
+    if (message.contains("is currently used by") && message.contains("project(s):")) {
+      // Enhanced error message - display it nicely
+      displayMessage = message.replace("Cannot delete asset", "This asset");
+    }
+    
+    Label errorMsg = new Label(displayMessage);
+    errorMsg.setStyleName("ode-ComponentRowLabel");
+    errorMsg.getElement().getStyle().setProperty("fontSize", "14px");
+    errorMsg.getElement().getStyle().setProperty("color", "#721c24");
+    errorMsg.getElement().getStyle().setProperty("lineHeight", "1.4");
+    errorMsg.getElement().getStyle().setProperty("marginTop", "4px");
+    errorMsg.getElement().getStyle().setProperty("wordWrap", "break-word");
+    errorText.add(errorMsg);
+    
+    errorHeader.add(errorText);
+    dialogPanel.add(errorHeader);
+    
+    // Help text
+    if (message.contains("Please remove the asset from these projects first")) {
+      Label helpText = new Label("To delete this asset:");
+      helpText.setStyleName("ode-ComponentRowLabel");
+      helpText.getElement().getStyle().setProperty("fontWeight", "600");
+      helpText.getElement().getStyle().setProperty("marginBottom", "8px");
+      dialogPanel.add(helpText);
+      
+      VerticalPanel stepsList = new VerticalPanel();
+      stepsList.getElement().getStyle().setProperty("marginLeft", "16px");
+      
+      Label step1 = new Label("1. Open each project listed above");
+      step1.setStyleName("ode-ComponentRowLabel");
+      step1.getElement().getStyle().setProperty("fontSize", "14px");
+      step1.getElement().getStyle().setProperty("marginBottom", "4px");
+      stepsList.add(step1);
+      
+      Label step2 = new Label("2. Remove the asset from the project's assets");
+      step2.setStyleName("ode-ComponentRowLabel");
+      step2.getElement().getStyle().setProperty("fontSize", "14px");
+      step2.getElement().getStyle().setProperty("marginBottom", "4px");
+      stepsList.add(step2);
+      
+      Label step3 = new Label("3. Return here to delete the asset");
+      step3.setStyleName("ode-ComponentRowLabel");
+      step3.getElement().getStyle().setProperty("fontSize", "14px");
+      stepsList.add(step3);
+      
+      dialogPanel.add(stepsList);
+    }
+
+    // Button panel
+    HorizontalPanel buttonPanel = new HorizontalPanel();
+    buttonPanel.setSpacing(8);
+    buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+    buttonPanel.setWidth("100%");
+    buttonPanel.getElement().getStyle().setProperty("marginTop", "16px");
+
+    Button okButton = new Button("OK");
+    okButton.setStyleName("ode-ProjectListButton");
+    okButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        errorDialog.hide();
+      }
+    });
+    buttonPanel.add(okButton);
+    dialogPanel.add(buttonPanel);
 
     errorDialog.setWidget(dialogPanel);
     errorDialog.center();
