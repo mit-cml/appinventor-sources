@@ -36,6 +36,9 @@
 		06B2161A1DBC5F1B000B3366 /* Title.png in Resources */ = {isa = PBXBuildFile; fileRef = 06B216151DBC5F1B000B3366 /* Title.png */; };
 		18E5FC598EC2641EE2906982 /* Pods_AICompanionAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C01449183537A983DD2DFCD9 /* Pods_AICompanionAppTests.framework */; };
 		38829AF53FE13FED53595325 /* Pods_AICompanionApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D09BF116318FEDD37A5C99E /* Pods_AICompanionApp.framework */; };
+		471232A82DA5C67F0065B73F /* AppLibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */; };
+		4722B4942DB4412B004C0B91 /* AppTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4722B4932DB44121004C0B91 /* AppTableViewCell.swift */; };
+		47EF49882DCAFCCE00C9E91F /* myAppLibrary.png in Resources */ = {isa = PBXBuildFile; fileRef = 47EF49872DCAFCCE00C9E91F /* myAppLibrary.png */; };
 		7F7E5B7A8803069CB632C0AD /* Pods_AICompanionApp_AICompanionAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6451CBF0DDB708F46262A9A8 /* Pods_AICompanionApp_AICompanionAppUITests.framework */; };
 		C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */; };
 /* End PBXBuildFile section */
@@ -113,6 +116,9 @@
 		0B5F0E886334FD3FB7921E2A /* Pods-AICompanionApp-AICompanionAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		27D9D934728B60311591CBCD /* Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppTests/Pods-AICompanionApp-AICompanionAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3D0329B479305BA955F33EC1 /* Pods-AICompanionAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLibraryViewController.swift; sourceTree = "<group>"; };
+		4722B4932DB44121004C0B91 /* AppTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTableViewCell.swift; sourceTree = "<group>"; };
+		47EF49872DCAFCCE00C9E91F /* myAppLibrary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myAppLibrary.png; sourceTree = "<group>"; };
 		48988B3241F275E69F533B33 /* Pods-AICompanionAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppUITests/Pods-AICompanionAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		508620DE32C8BAF851F5708A /* Pods-AICompanionApp-AICompanionAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionApp-AICompanionAppTests/Pods-AICompanionApp-AICompanionAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		52712EFD54D64AB76B9ABB68 /* Pods-AICompanionAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AICompanionAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -169,9 +175,9 @@
 				066FE95625AC9E7300C6193B /* Settings.bundle */,
 				063D67911FA0CEB1002E907D /* AIComponentKit.framework */,
 				063D678E1FA0CEB1002E907D /* SchemeKit.framework */,
-				06463EFA1D95956800B23DCD /* src */,
-				06463F0F1D95956800B23DCD /* tests */,
-				06463F1A1D95956800B23DCD /* uitests */,
+				06463EFA1D95956800B23DCD /* aicompanionapp/src */,
+				06463F0F1D95956800B23DCD /* aicompanionapp/tests */,
+				06463F1A1D95956800B23DCD /* aicompanionapp/uitests */,
 				06463EF91D95956800B23DCD /* Products */,
 				06EC0A1A1D959648001CD8DC /* Frameworks */,
 				9F048C59E0A8D7BC18969732 /* Pods */,
@@ -190,7 +196,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		06463EFA1D95956800B23DCD /* src */ = {
+		06463EFA1D95956800B23DCD /* aicompanionapp/src */ = {
 			isa = PBXGroup;
 			children = (
 				06B2161D1DBC7B4C000B3366 /* resources */,
@@ -204,13 +210,15 @@
 				06984C3D1DBFE3D100FD4FA7 /* NSString_SHA1.m */,
 				C498B0CE25476E84002FCAC8 /* OnboardViewController.swift */,
 				066FE95A25ACB94C00C6193B /* SystemVariables.swift */,
+				471232A72DA5C66D0065B73F /* AppLibraryViewController.swift */,
 				066FE95E25ACB98100C6193B /* UIFont_Fitting.swift */,
+				4722B4932DB44121004C0B91 /* AppTableViewCell.swift */,
 				06463EFD1D95956800B23DCD /* ViewController.swift */,
 			);
 			path = aicompanionapp/src;
 			sourceTree = "<group>";
 		};
-		06463F0F1D95956800B23DCD /* tests */ = {
+		06463F0F1D95956800B23DCD /* aicompanionapp/tests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F101D95956800B23DCD /* AICompanionTests.swift */,
@@ -219,7 +227,7 @@
 			path = aicompanionapp/tests;
 			sourceTree = "<group>";
 		};
-		06463F1A1D95956800B23DCD /* uitests */ = {
+		06463F1A1D95956800B23DCD /* aicompanionapp/uitests */ = {
 			isa = PBXGroup;
 			children = (
 				06463F1B1D95956800B23DCD /* AICompanionUITests.swift */,
@@ -237,6 +245,7 @@
 				06B216131DBC5F1B000B3366 /* Instructions.png */,
 				06B216141DBC5F1B000B3366 /* mooning.png */,
 				06B216151DBC5F1B000B3366 /* Title.png */,
+				47EF49872DCAFCCE00C9E91F /* myAppLibrary.png */,
 			);
 			name = resources;
 			sourceTree = "<group>";
@@ -352,6 +361,7 @@
 				TargetAttributes = {
 					06463EF71D95956800B23DCD = {
 						CreatedOnToolsVersion = 8.0;
+						DevelopmentTeam = "$(DEVELOPMENT_TEAM)";
 						LastSwiftMigration = 1100;
 						ProvisioningStyle = Manual;
 					};
@@ -394,6 +404,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47EF49882DCAFCCE00C9E91F /* myAppLibrary.png in Resources */,
 				06B216181DBC5F1B000B3366 /* Instructions.png in Resources */,
 				06B216171DBC5F1B000B3366 /* connectwQR.png in Resources */,
 				06463F061D95956800B23DCD /* LaunchScreen.storyboard in Resources */,
@@ -626,10 +637,12 @@
 			files = (
 				06463EFE1D95956800B23DCD /* ViewController.swift in Sources */,
 				06984C3E1DBFE3D100FD4FA7 /* NSString_SHA1.m in Sources */,
+				4722B4942DB4412B004C0B91 /* AppTableViewCell.swift in Sources */,
 				066FE95B25ACB94C00C6193B /* SystemVariables.swift in Sources */,
 				C498B0CF25476E84002FCAC8 /* OnboardViewController.swift in Sources */,
 				066FE95F25ACB98100C6193B /* UIFont_Fitting.swift in Sources */,
 				06463EFC1D95956800B23DCD /* AppDelegate.swift in Sources */,
+				471232A82DA5C67F0065B73F /* AppLibraryViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -815,6 +828,7 @@
 			baseConfigurationReference = 917EBEF8E1E3632C01B06EE1 /* Pods-AICompanionApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "$(DEVELOPMENT_TEAM)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",
@@ -835,6 +849,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "$(DEVELOPMENT_TEAM)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/prebuilts/$(PLATFORM_NAME)",

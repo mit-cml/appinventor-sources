@@ -727,6 +727,7 @@ public class BuildServer {
         for (File file : files) {
           zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
           Files.copy(file, zipOutputStream);
+          file.delete();        // Cleanup
         }
       }
       successfulBuildRequests.getAndIncrement();
