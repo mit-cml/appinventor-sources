@@ -1,0 +1,34 @@
+Google App Engine SDK for Java
+Copyright (c) Google, Inc. 2009.  All rights reserved.
+Visit Google Code (http://code.google.com/appengine/).
+
+This product includes software developed by:
+ - The Apache Software Foundation (http://www.apache.org/).
+   - The servlet specification classes: servlet-api-2.5.jar, jsp-api-2.1.jar, el-api-2.1.jar
+   - Apache Ant (http://ant.apache.org/)
+   - Apache HttpComponents (http://hc.apache.org/index.html)
+   - Jakarta Commons Logging (http://commons.apache.org/logging/)
+   - Jakarta Commons HttpClient (http://jakarta.apache.org/commons/httpclient/)
+   - Jakarta Commons Codec (http://commons.apache.org/codec/)
+   - Jakarta Commons EL (http://commons.apache.org/el/)
+   - Jakarta Jasper (http://tomcat.apache.org/svn.html)
+   - Jakarta Taglibs (http://jakarta.apache.org/taglibs/)
+
+ - The Apache Geronimo Project (http://geronimo.apache.org/)
+   - javax/mail with modifications
+   - javax/activation
+   - geronimo-servlet_2.5_spec-1.2.jar, geronimo-jsp_2.1_spec-1.0.1.jar, geronimo-el_1.0_spec-1.0.1.jar
+
+ - Mort Bay Consulting (http://www.mortbay.org)
+   - Jetty web server
+ 
+ - OpenSymphony (http://www.opensymphony.com/)
+   - Quartz Scheduler
+
+ - DataNucleus (http://www.datanucleus.org/)
+   - DataNucleus Access Platform
+   
+ - MediaUtil (http://mediachest.sourceforge.net/mediautil/)
+   - LLJTran
+
+For source availability and license information see COPYING.

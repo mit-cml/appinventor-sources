@@ -1,0 +1,7 @@
+com.google.appengine.tools
+com.google.appengine.tools.admin
+com.google.appengine.tools.development
+com.google.appengine.tools.development.gwt
+com.google.appengine.tools.enhancer
+com.google.appengine.tools.info
+com.google.appengine.tools.util

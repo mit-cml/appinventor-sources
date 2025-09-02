@@ -1,0 +1,16 @@
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <application>kellegous</application>
+  <version>1</version>
+  <!-- TODO review code for thread-safety. -->
+  <threadsafe>false</threadsafe>
+  <static-files>
+    <!-- Do not serve these files publicly. -->
+    <exclude path="**/*.gwt.rpc" />
+  </static-files>
+
+  <resource-files>
+    <!-- The servlet code needs access to this file so that it can properly -->
+    <!-- deserialize incoming requests.                                     -->
+    <include path="**/*.gwt.rpc" />
+  </resource-files>
+</appengine-web-app>
