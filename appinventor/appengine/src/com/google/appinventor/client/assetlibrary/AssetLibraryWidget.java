@@ -89,7 +89,9 @@ public class AssetLibraryWidget extends Composite {
     rootPanel.getElement().getStyle().setProperty("padding", "0");
     rootPanel.getElement().getStyle().setProperty("display", "flex");
     rootPanel.getElement().getStyle().setProperty("flexDirection", "column");
-    rootPanel.getElement().getStyle().setProperty("height", "100%");
+    rootPanel.getElement().getStyle().setProperty("height", "100vh");
+    rootPanel.getElement().getStyle().setProperty("maxHeight", "100vh");
+    rootPanel.getElement().getStyle().setProperty("overflow", "hidden");
 
     createHeader();
     createMainContent();
@@ -97,13 +99,18 @@ public class AssetLibraryWidget extends Composite {
   }
 
   private void createHeader() {
-    // Header matching neo design
+    // Header matching neo design with fixed positioning
     headerContainer = new HorizontalPanel();
     headerContainer.setWidth("100%");
     headerContainer.setStyleName("ode-TopPanel");
     headerContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    headerContainer.getElement().getStyle().setProperty("padding", "16px 24px");
+    headerContainer.getElement().getStyle().setProperty("padding", "12px 24px");
     headerContainer.getElement().getStyle().setProperty("borderBottom", "1px solid #e0e0e0");
+    headerContainer.getElement().getStyle().setProperty("zIndex", "1000");
+    headerContainer.getElement().getStyle().setProperty("backgroundColor", "white");
+    headerContainer.getElement().getStyle().setProperty("flexShrink", "0");
+    headerContainer.getElement().getStyle().setProperty("minHeight", "60px");
+    headerContainer.getElement().getStyle().setProperty("boxSizing", "border-box");
 
     // Left section: Title and search
     HorizontalPanel leftSection = new HorizontalPanel();
@@ -200,6 +207,9 @@ public class AssetLibraryWidget extends Composite {
     mainContentPanel.getElement().getStyle().setProperty("minHeight", "0");
     mainContentPanel.getElement().getStyle().setProperty("display", "flex");
     mainContentPanel.getElement().getStyle().setProperty("overflow", "hidden");
+    mainContentPanel.getElement().getStyle().setProperty("height", "100%");
+    mainContentPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
+    mainContentPanel.getElement().getStyle().setProperty("backgroundColor", "#f9f9f9");
 
     createSidebar();
     createAssetGrid();
@@ -216,12 +226,27 @@ public class AssetLibraryWidget extends Composite {
     sidebarPanel.getElement().getStyle().setProperty("padding", "20px 16px");
     sidebarPanel.getElement().getStyle().setProperty("borderRight", "1px solid #e0e0e0");
     sidebarPanel.getElement().getStyle().setProperty("flexShrink", "0");
+    sidebarPanel.getElement().getStyle().setProperty("backgroundColor", "white");
+    sidebarPanel.getElement().getStyle().setProperty("height", "100vh");
+    sidebarPanel.getElement().getStyle().setProperty("minHeight", "100vh");
+    sidebarPanel.getElement().getStyle().setProperty("maxHeight", "100vh");
+    sidebarPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
+    sidebarPanel.getElement().getStyle().setProperty("display", "flex");
+    sidebarPanel.getElement().getStyle().setProperty("flexDirection", "column");
+    sidebarPanel.getElement().getStyle().setProperty("alignItems", "stretch");
+    sidebarPanel.getElement().getStyle().setProperty("justifyContent", "flex-start");
+    sidebarPanel.getElement().getStyle().setProperty("overflowY", "auto");
 
     // Folder section header
     HorizontalPanel folderHeader = new HorizontalPanel();
     folderHeader.setWidth("100%");
     folderHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    folderHeader.getElement().getStyle().setProperty("marginBottom", "16px");
+    folderHeader.getElement().getStyle().setProperty("flexShrink", "0");
+    folderHeader.getElement().getStyle().setProperty("marginBottom", "8px");
+    folderHeader.getElement().getStyle().setProperty("display", "flex");
+    folderHeader.getElement().getStyle().setProperty("justifyContent", "space-between");
+    folderHeader.getElement().getStyle().setProperty("alignItems", "center");
+    folderHeader.getElement().getStyle().setProperty("width", "100%");
 
     Label folderTitle = new Label("📁 Folders");
     folderTitle.setStyleName("ode-ComponentRowLabel");
@@ -229,10 +254,10 @@ public class AssetLibraryWidget extends Composite {
     folderTitle.getElement().getStyle().setProperty("fontWeight", "600");
     folderHeader.add(folderTitle);
 
-    // Small action buttons
+    // Small action buttons with proper spacing
     HorizontalPanel folderActions = new HorizontalPanel();
-    folderActions.getElement().getStyle().setProperty("marginLeft", "auto");
-    folderActions.getElement().getStyle().setProperty("gap", "6px");
+    folderActions.setSpacing(6);
+    folderActions.getElement().getStyle().setProperty("marginLeft", "50px");
 
     Button newFolderBtn = createSmallButton("+", "New Folder");
     Button renameFolderBtn = createSmallButton("✎", "Rename Folder");
@@ -251,6 +276,11 @@ public class AssetLibraryWidget extends Composite {
     // Folder list
     folderListPanel = new VerticalPanel();
     folderListPanel.setWidth("100%");
+    folderListPanel.getElement().getStyle().setProperty("flex", "1 1 auto");
+    folderListPanel.getElement().getStyle().setProperty("overflowY", "auto");
+    folderListPanel.getElement().getStyle().setProperty("minHeight", "0");
+    folderListPanel.getElement().getStyle().setProperty("width", "100%");
+    folderListPanel.getElement().getStyle().setProperty("paddingTop", "4px");
     sidebarPanel.add(folderListPanel);
 
     mainContentPanel.add(sidebarPanel);
@@ -274,42 +304,41 @@ public class AssetLibraryWidget extends Composite {
     assetContainer.setHeight("100%");
     assetContainer.setStyleName("ode-Box-body-padding");
     assetContainer.getElement().getStyle().setProperty("flex", "1 1 auto");
-    assetContainer.getElement().getStyle().setProperty("padding", "16px");
-    assetContainer.getElement().getStyle().setProperty("display", "block");
+    assetContainer.getElement().getStyle().setProperty("padding", "0");
+    assetContainer.getElement().getStyle().setProperty("display", "flex");
+    assetContainer.getElement().getStyle().setProperty("flexDirection", "column");
     assetContainer.getElement().getStyle().setProperty("boxSizing", "border-box");
     assetContainer.getElement().getStyle().setProperty("overflow", "hidden");
     assetContainer.getElement().getStyle().setProperty("minWidth", "0");
     assetContainer.getElement().getStyle().setProperty("flexGrow", "1");
+    assetContainer.getElement().getStyle().setProperty("backgroundColor", "#f9f9f9");
 
     // Scrollable grid with optimized full height utilization
     assetScrollPanel = new ScrollPanel();
     assetScrollPanel.setWidth("100%");
-    assetScrollPanel.setHeight("100%");
     assetScrollPanel.getElement().getStyle().setProperty("border", "none");
     assetScrollPanel.getElement().getStyle().setProperty("flex", "1 1 auto");
-    assetScrollPanel.getElement().getStyle().setProperty("minHeight", "0");
-    assetScrollPanel.getElement().getStyle().setProperty("maxHeight", "100%");
     assetScrollPanel.getElement().getStyle().setProperty("overflowY", "auto");
     assetScrollPanel.getElement().getStyle().setProperty("overflowX", "hidden");
-    assetScrollPanel.getElement().getStyle().setProperty("width", "100%");
-    assetScrollPanel.getElement().getStyle().setProperty("minWidth", "0");
+    assetScrollPanel.getElement().getStyle().setProperty("backgroundColor", "#f9f9f9");
+    assetScrollPanel.getElement().getStyle().setProperty("height", "auto");
+    assetScrollPanel.getElement().getStyle().setProperty("maxHeight", "calc(100vh - 140px)");
 
     // Optimized CSS Grid for maximum screen utilization with responsive columns
     assetGridPanel = new FlowPanel();
     assetGridPanel.setWidth("100%");
     assetGridPanel.getElement().getStyle().setProperty("display", "grid");
-    assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(auto-fill, minmax(200px, 1fr))");
+    assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(auto-fill, minmax(280px, 1fr))");
     assetGridPanel.getElement().getStyle().setProperty("gap", "20px");
     assetGridPanel.getElement().getStyle().setProperty("padding", "20px");
     assetGridPanel.getElement().getStyle().setProperty("alignContent", "start");
-    assetGridPanel.getElement().getStyle().setProperty("minHeight", "100%");
     assetGridPanel.getElement().getStyle().setProperty("justifyItems", "stretch");
     assetGridPanel.getElement().getStyle().setProperty("alignItems", "start");
     assetGridPanel.getElement().getStyle().setProperty("backgroundColor", "#f9f9f9");
     assetGridPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
     assetGridPanel.getElement().getStyle().setProperty("gridAutoRows", "max-content");
     assetGridPanel.getElement().getStyle().setProperty("width", "100%");
-    assetGridPanel.getElement().getStyle().setProperty("minWidth", "0");
+    assetGridPanel.getElement().getStyle().setProperty("minHeight", "auto");
     
     // Add responsive behavior for smaller screens
     addResponsiveStyles();
@@ -320,23 +349,27 @@ public class AssetLibraryWidget extends Composite {
   }
 
   private void addResponsiveStyles() {
-    // Add responsive adjustments for different screen sizes
-    // This would ideally be done via CSS media queries, but we can add some dynamic adjustments
+    // Add responsive adjustments for different screen sizes  
     int screenWidth = com.google.gwt.user.client.Window.getClientWidth();
     
     if (screenWidth < 768) {
-      // Smaller screens: reduce minimum card width and sidebar
-      assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(auto-fill, minmax(180px, 1fr))");
+      // Smaller screens: 2 columns
+      assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(2, 1fr)");
       sidebarPanel.setWidth("200px");
       assetGridPanel.getElement().getStyle().setProperty("gap", "16px");
       assetGridPanel.getElement().getStyle().setProperty("padding", "16px");
-    } else if (screenWidth < 1024) {
-      // Medium screens: moderate adjustments
-      assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(auto-fill, minmax(200px, 1fr))");
+    } else if (screenWidth < 1200) {
+      // Medium screens: 3-4 columns
+      assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(3, 1fr)");
       assetGridPanel.getElement().getStyle().setProperty("gap", "20px");
+    } else if (screenWidth < 1600) {
+      // Large screens: 4-5 columns
+      assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(4, 1fr)");
+      assetGridPanel.getElement().getStyle().setProperty("gap", "24px");
     } else {
-      // Large screens: optimal grid layout
-      assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(auto-fill, minmax(220px, 1fr))");
+      // Extra large screens: 5+ columns for maximum utilization
+      assetGridPanel.getElement().getStyle().setProperty("gridTemplateColumns", "repeat(5, 1fr)");
+      assetGridPanel.getElement().getStyle().setProperty("gap", "28px");
     }
   }
 
@@ -346,10 +379,12 @@ public class AssetLibraryWidget extends Composite {
     footerPanel.setWidth("100%");
     footerPanel.setStyleName("ode-StatusPanel");
     footerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    footerPanel.getElement().getStyle().setProperty("padding", "12px 24px");
-    footerPanel.getElement().getStyle().setProperty("minHeight", "40px");
+    footerPanel.getElement().getStyle().setProperty("padding", "8px 24px");
+    footerPanel.getElement().getStyle().setProperty("minHeight", "36px");
     footerPanel.getElement().getStyle().setProperty("borderTop", "1px solid #e0e0e0");
     footerPanel.getElement().getStyle().setProperty("flexShrink", "0");
+    footerPanel.getElement().getStyle().setProperty("backgroundColor", "white");
+    footerPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
 
     statusLabel = new Label("Loading assets...");
     statusLabel.setStyleName("ode-StatusPanelLabel");
@@ -505,7 +540,7 @@ public class AssetLibraryWidget extends Composite {
     HorizontalPanel folderRow = new HorizontalPanel();
     folderRow.setWidth("100%");
     folderRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    folderRow.getElement().getStyle().setProperty("padding", "10px 12px");
+    folderRow.getElement().getStyle().setProperty("padding", "10px 0px");
     folderRow.getElement().getStyle().setProperty("borderRadius", "4px");
     folderRow.getElement().getStyle().setProperty("cursor", "pointer");
     folderRow.getElement().getStyle().setProperty("marginBottom", "6px");
@@ -514,6 +549,7 @@ public class AssetLibraryWidget extends Composite {
 
     // Folder icon
     Label icon = new Label("📁");
+    icon.getElement().getStyle().setProperty("marginLeft", "12px");
     icon.getElement().getStyle().setProperty("marginRight", "10px");
     icon.getElement().getStyle().setProperty("fontSize", "16px");
     folderRow.add(icon);
@@ -713,7 +749,8 @@ public class AssetLibraryWidget extends Composite {
     emptyState.getElement().getStyle().setProperty("display", "flex");
     emptyState.getElement().getStyle().setProperty("flexDirection", "column");
     emptyState.getElement().getStyle().setProperty("justifyContent", "center");
-    emptyState.getElement().getStyle().setProperty("minHeight", "300px");
+    emptyState.getElement().getStyle().setProperty("minHeight", "400px");
+    emptyState.getElement().getStyle().setProperty("alignItems", "center");
 
     // Empty icon
     Label emptyIcon = new Label("📁");
@@ -758,7 +795,8 @@ public class AssetLibraryWidget extends Composite {
     card.getElement().getStyle().setProperty("cursor", "pointer");
     card.getElement().getStyle().setProperty("transition", "all 0.2s ease");
     card.getElement().getStyle().setProperty("textAlign", "center");
-    card.getElement().getStyle().setProperty("minHeight", "260px");
+    card.getElement().getStyle().setProperty("minHeight", "280px");
+    card.getElement().getStyle().setProperty("maxHeight", "320px");
     card.getElement().getStyle().setProperty("width", "100%");
     card.getElement().getStyle().setProperty("boxSizing", "border-box");
     card.getElement().getStyle().setProperty("display", "flex");
@@ -826,7 +864,7 @@ public class AssetLibraryWidget extends Composite {
     dateLabel.getElement().getStyle().setProperty("marginBottom", "8px");
     card.add(dateLabel);
 
-    // Version indicator
+    // Version indicator and project usage
     HorizontalPanel versionPanel = new HorizontalPanel();
     versionPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
     versionPanel.getElement().getStyle().setProperty("marginTop", "4px");
@@ -843,6 +881,38 @@ public class AssetLibraryWidget extends Composite {
     versionPanel.add(lastUpdated);
     
     card.add(versionPanel);
+    
+    // Project usage indicator with async loading
+    final Label usageIndicator = new Label("Checking usage...");
+    usageIndicator.setStyleName("ode-ComponentRowLabel");
+    usageIndicator.getElement().getStyle().setProperty("fontSize", "10px");
+    usageIndicator.getElement().getStyle().setProperty("color", "#6c757d");
+    usageIndicator.getElement().getStyle().setProperty("textAlign", "center");
+    usageIndicator.getElement().getStyle().setProperty("marginBottom", "8px");
+    usageIndicator.getElement().getStyle().setProperty("fontWeight", "400");
+    card.add(usageIndicator);
+    
+    // Load project usage asynchronously
+    globalAssetService.getProjectsUsingAsset(asset.getFileName(), new AsyncCallback<List<Long>>() {
+      @Override
+      public void onSuccess(List<Long> projectIds) {
+        if (projectIds != null && !projectIds.isEmpty()) {
+          usageIndicator.setText("Used by " + projectIds.size() + " project" + (projectIds.size() == 1 ? "" : "s"));
+          usageIndicator.getElement().getStyle().setProperty("color", "#007bff");
+          usageIndicator.setTitle("This asset is linked to " + projectIds.size() + " project(s)");
+        } else {
+          usageIndicator.setText("Not in use");
+          usageIndicator.getElement().getStyle().setProperty("color", "#6c757d");
+          usageIndicator.setTitle("This asset is not currently used by any projects");
+        }
+      }
+      
+      @Override
+      public void onFailure(Throwable caught) {
+        usageIndicator.setText("Unknown usage");
+        usageIndicator.getElement().getStyle().setProperty("color", "#dc3545");
+      }
+    });
 
     // Action buttons with improved spacing
     HorizontalPanel actionPanel = new HorizontalPanel();

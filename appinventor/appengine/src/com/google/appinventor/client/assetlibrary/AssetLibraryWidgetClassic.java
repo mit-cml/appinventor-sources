@@ -40,6 +40,11 @@ import com.google.appinventor.client.assetlibrary.AssetUploadConflictDialog.Conf
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.GlobalAsset;
 import com.google.appinventor.shared.rpc.project.GlobalAssetProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -55,7 +60,6 @@ public class AssetLibraryWidgetClassic extends Composite {
   private ScrollPanel assetScrollPanel;
   private VerticalPanel assetListPanel;
   private HorizontalPanel footerPanel;
-  private Label statusLabel;
 
   // Asset management
   private List<GlobalAsset> globalAssets = new ArrayList<>(); 
@@ -78,148 +82,19 @@ public class AssetLibraryWidgetClassic extends Composite {
     setupEventHandlers();
     loadInitialData();
     initWidget(rootPanel);
-    injectPremiumStyles();
   }
   
-  private void injectPremiumStyles() {
-    // Inject custom CSS for enhanced visual effects
-    String css = 
-      "<style type='text/css'>" +
-      ".asset-library-premium {" +
-      "  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" +
-      "}" +
-      ".asset-library-premium * {" +
-      "  box-sizing: border-box;" +
-      "}" +
-      ".asset-library-premium input:focus {" +
-      "  outline: none;" +
-      "  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.3);" +
-      "  border-color: #1a73e8;" +
-      "}" +
-      ".asset-library-premium select:focus {" +
-      "  outline: none;" +
-      "  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.3);" +
-      "  border-color: #1a73e8;" +
-      "}" +
-      ".asset-library-premium button:hover {" +
-      "  transform: translateY(-1px);" +
-      "  box-shadow: 0 4px 8px rgba(0,0,0,0.15);" +
-      "}" +
-      ".asset-library-premium button:active {" +
-      "  transform: translateY(0px);" +
-      "  box-shadow: 0 2px 4px rgba(0,0,0,0.1);" +
-      "}" +
-      ".asset-library-premium button:disabled {" +
-      "  cursor: not-allowed;" +
-      "  transform: none;" +
-      "}" +
-      "@keyframes fadeIn {" +
-      "  from { opacity: 0; transform: translateY(10px); }" +
-      "  to { opacity: 1; transform: translateY(0px); }" +
-      "}" +
-      ".asset-item-enter {" +
-      "  animation: fadeIn 0.3s ease-out;" +
-      "}" +
-      "/* Version History Dialog Styles */" +
-      ".version-history-dialog {" +
-      "  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" +
-      "}" +
-      ".version-dialog-content {" +
-      "  padding: 20px;" +
-      "  min-width: 500px;" +
-      "}" +
-      ".version-header {" +
-      "  padding: 16px;" +
-      "  background: #f8f9fa;" +
-      "  border-radius: 8px;" +
-      "  border: 1px solid #e9ecef;" +
-      "}" +
-      ".version-asset-name {" +
-      "  font-size: 18px;" +
-      "  font-weight: 600;" +
-      "  color: #333;" +
-      "}" +
-      ".version-asset-folder {" +
-      "  font-size: 14px;" +
-      "  color: #666;" +
-      "  margin-top: 4px;" +
-      "}" +
-      ".version-list-panel {" +
-      "  margin-top: 16px;" +
-      "}" +
-      ".version-list-title {" +
-      "  font-size: 16px;" +
-      "  font-weight: 600;" +
-      "  color: #333;" +
-      "  margin-bottom: 12px;" +
-      "}" +
-      ".version-entry {" +
-      "  padding: 12px 16px;" +
-      "  border: 1px solid #e9ecef;" +
-      "  border-radius: 6px;" +
-      "  margin-bottom: 8px;" +
-      "  background: white;" +
-      "}" +
-      ".version-entry-current {" +
-      "  background: #e8f5e8;" +
-      "  border-color: #4caf50;" +
-      "}" +
-      ".version-status {" +
-      "  font-size: 14px;" +
-      "  font-weight: 600;" +
-      "  color: #333;" +
-      "}" +
-      ".version-date {" +
-      "  font-size: 12px;" +
-      "  color: #666;" +
-      "  margin-top: 4px;" +
-      "}" +
-      ".version-action-button {" +
-      "  padding: 6px 12px;" +
-      "  font-size: 12px;" +
-      "  border-radius: 4px;" +
-      "  cursor: pointer;" +
-      "}" +
-      ".rollback-button {" +
-      "  background: #dc3545;" +
-      "  color: white;" +
-      "  border: 1px solid #dc3545;" +
-      "}" +
-      ".current-version-tag {" +
-      "  background: #28a745;" +
-      "  color: white;" +
-      "  padding: 4px 8px;" +
-      "  border-radius: 12px;" +
-      "  font-size: 12px;" +
-      "  font-weight: 600;" +
-      "}" +
-      ".version-future-note {" +
-      "  font-size: 14px;" +
-      "  color: #666;" +
-      "  font-style: italic;" +
-      "  text-align: center;" +
-      "  padding: 20px;" +
-      "  background: #f8f9fa;" +
-      "  border-radius: 6px;" +
-      "  border: 1px dashed #dee2e6;" +
-      "}" +
-      "</style>";
-    
-    com.google.gwt.dom.client.Document.get().getHead().insertFirst(
-        com.google.gwt.dom.client.Document.get().createStyleElement().cast());
-    com.google.gwt.dom.client.StyleElement styleElement = 
-        com.google.gwt.dom.client.Document.get().getHead().getFirstChild().cast();
-    styleElement.setInnerHTML(css.substring(css.indexOf(">")+1, css.lastIndexOf("<")));
-    
-    // Add premium class to root panel
-    rootPanel.addStyleName("asset-library-premium");
-  }
 
   private void initializeLayout() {
-    // Main root panel - classic table layout
+    // Main root panel - classic table layout with background
     rootPanel = new VerticalPanel();
     rootPanel.setSize("100%", "100%");
     rootPanel.setStyleName("ode-Box");
+    rootPanel.getElement().getStyle().setProperty("backgroundColor", "#f8f9fa");
+    rootPanel.getElement().getStyle().setProperty("display", "flex");
+    rootPanel.getElement().getStyle().setProperty("flexDirection", "column");
+    rootPanel.getElement().getStyle().setProperty("height", "100vh");
+    rootPanel.getElement().getStyle().setProperty("overflow", "hidden");
 
     createHeader();
     createMainContent();
@@ -232,195 +107,89 @@ public class AssetLibraryWidgetClassic extends Composite {
     headerContainer.setWidth("100%");
     headerContainer.setStyleName("ode-TopPanel");
     headerContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    headerContainer.getElement().getStyle().setProperty("padding", "12px 16px");
-    headerContainer.getElement().getStyle().setProperty("borderBottom", "3px solid #1a73e8");
-    headerContainer.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    headerContainer.getElement().getStyle().setProperty("boxShadow", "0 2px 4px rgba(0,0,0,0.1)");
-    headerContainer.getElement().getStyle().setProperty("minHeight", "60px");
+    headerContainer.getElement().getStyle().setProperty("padding", "16px 24px");
+    headerContainer.getElement().getStyle().setProperty("borderBottom", "1px solid #e0e0e0");
 
     // Left section: Title and search
     HorizontalPanel leftSection = new HorizontalPanel();
     leftSection.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     
-    // Premium Asset Library Title with enhanced icon
-    HorizontalPanel titlePanel = new HorizontalPanel();
-    titlePanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    titlePanel.getElement().getStyle().setProperty("backgroundColor", "#f0f7ff");
-    titlePanel.getElement().getStyle().setProperty("padding", "8px 12px");
-    titlePanel.getElement().getStyle().setProperty("borderRadius", "8px");
-    titlePanel.getElement().getStyle().setProperty("border", "1px solid #e3f2fd");
-    
-    // Enhanced library icon with background
-    HorizontalPanel iconContainer = new HorizontalPanel();
-    iconContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    iconContainer.getElement().getStyle().setProperty("backgroundColor", "#1a73e8");
-    iconContainer.getElement().getStyle().setProperty("borderRadius", "6px");
-    iconContainer.getElement().getStyle().setProperty("padding", "4px");
-    iconContainer.getElement().getStyle().setProperty("minWidth", "32px");
-    iconContainer.getElement().getStyle().setProperty("minHeight", "32px");
-    
-    Image libraryIcon = new Image(images.form());
-    libraryIcon.setSize("20px", "20px");
-    libraryIcon.getElement().getStyle().setProperty("filter", "brightness(0) invert(1)");
-    iconContainer.add(libraryIcon);
-    titlePanel.add(iconContainer);
-    
-    // Enhanced title with subtitle
-    VerticalPanel titleTextPanel = new VerticalPanel();
-    titleTextPanel.getElement().getStyle().setProperty("marginLeft", "10px");
-    
+    // Asset Library Title
     Label titleLabel = new Label("Asset Library");
     titleLabel.setStyleName("ode-ProjectNameLabel");
-    titleLabel.getElement().getStyle().setProperty("fontWeight", "600");
     titleLabel.getElement().getStyle().setProperty("fontSize", "18px");
-    titleLabel.getElement().getStyle().setProperty("color", "#1a73e8");
-    titleLabel.getElement().getStyle().setProperty("lineHeight", "1.2");
-    titleTextPanel.add(titleLabel);
-    
-    Label subtitleLabel = new Label("Manage your global assets");
-    subtitleLabel.getElement().getStyle().setProperty("fontSize", "11px");
-    subtitleLabel.getElement().getStyle().setProperty("color", "#666666");
-    subtitleLabel.getElement().getStyle().setProperty("fontWeight", "400");
-    titleTextPanel.add(subtitleLabel);
-    
-    titlePanel.add(titleTextPanel);
-    leftSection.add(titlePanel);
+    titleLabel.getElement().getStyle().setProperty("fontWeight", "600");
+    titleLabel.getElement().getStyle().setProperty("marginRight", "20px");
+    leftSection.add(titleLabel);
 
-    // Add enhanced spacing with separator
-    Label separator = new Label("");
-    separator.getElement().getStyle().setProperty("width", "24px");
-    separator.getElement().getStyle().setProperty("height", "40px");
-    separator.getElement().getStyle().setProperty("borderRight", "1px solid #e0e0e0");
-    separator.getElement().getStyle().setProperty("marginLeft", "16px");
-    separator.getElement().getStyle().setProperty("marginRight", "16px");
-    leftSection.add(separator);
-
-    // Premium search box with enhanced styling
-    HorizontalPanel searchContainer = new HorizontalPanel();
-    searchContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    searchContainer.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    searchContainer.getElement().getStyle().setProperty("border", "2px solid #e3f2fd");
-    searchContainer.getElement().getStyle().setProperty("borderRadius", "8px");
-    searchContainer.getElement().getStyle().setProperty("padding", "2px 4px 2px 8px");
-    searchContainer.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.1)");
-    searchContainer.getElement().getStyle().setProperty("transition", "all 0.2s ease");
-    
-    // Search icon
-    Label searchIcon = new Label("[search]");
-    searchIcon.getElement().getStyle().setProperty("fontSize", "14px");
-    searchIcon.getElement().getStyle().setProperty("marginRight", "6px");
-    searchIcon.getElement().getStyle().setProperty("color", "#666666");
-    searchContainer.add(searchIcon);
-    
+    // Search box matching App Inventor style
     searchBox = new TextBox();
     searchBox.getElement().setPropertyString("placeholder", "Search assets...");
     searchBox.setStyleName("ode-TextBox");
-    searchBox.getElement().getStyle().setProperty("minWidth", "220px");
-    searchBox.getElement().getStyle().setProperty("padding", "8px 4px");
-    searchBox.getElement().getStyle().setProperty("border", "none");
-    searchBox.getElement().getStyle().setProperty("outline", "none");
+    searchBox.getElement().getStyle().setProperty("width", "280px");
+    searchBox.getElement().getStyle().setProperty("height", "36px");
     searchBox.getElement().getStyle().setProperty("fontSize", "14px");
-    searchContainer.add(searchBox);
-    
-    leftSection.add(searchContainer);
+    searchBox.getElement().getStyle().setProperty("marginRight", "16px");
+    leftSection.add(searchBox);
 
-    // Add refined spacing
-    Label spacingLabel = new Label("");
-    spacingLabel.getElement().getStyle().setProperty("width", "12px");
-    leftSection.add(spacingLabel);
-
-    // Premium type filter with enhanced styling
-    HorizontalPanel filterContainer = new HorizontalPanel();
-    filterContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    filterContainer.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    filterContainer.getElement().getStyle().setProperty("border", "2px solid #e3f2fd");
-    filterContainer.getElement().getStyle().setProperty("borderRadius", "8px");
-    filterContainer.getElement().getStyle().setProperty("padding", "2px 4px 2px 8px");
-    filterContainer.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.1)");
-    
-    // Filter icon
-    Label filterIcon = new Label("");
-    filterIcon.getElement().getStyle().setProperty("fontSize", "14px");
-    filterIcon.getElement().getStyle().setProperty("marginRight", "6px");
-    filterContainer.add(filterIcon);
-    
+    // Type filter matching App Inventor dropdown style
     typeFilter = new ListBox();
     typeFilter.addItem("All Types");
-    typeFilter.addItem(" Images");
-    typeFilter.addItem(" Audio");
-    typeFilter.addItem(" Other");
+    typeFilter.addItem("Images");
+    typeFilter.addItem("Sounds");
     typeFilter.setStyleName("ode-ListBox");
-    typeFilter.getElement().getStyle().setProperty("minWidth", "140px");
-    typeFilter.getElement().getStyle().setProperty("padding", "8px 4px");
-    typeFilter.getElement().getStyle().setProperty("border", "none");
-    typeFilter.getElement().getStyle().setProperty("outline", "none");
+    typeFilter.getElement().getStyle().setProperty("height", "36px");
     typeFilter.getElement().getStyle().setProperty("fontSize", "14px");
-    typeFilter.getElement().getStyle().setProperty("backgroundColor", "transparent");
-    filterContainer.add(typeFilter);
-    
-    leftSection.add(filterContainer);
+    typeFilter.getElement().getStyle().setProperty("minWidth", "120px");
+    typeFilter.getElement().getStyle().setProperty("marginRight", "20px");
+    leftSection.add(typeFilter);
 
     headerContainer.add(leftSection);
 
     // Spacer
     Label spacer = new Label("");
-    spacer.setWidth("100%");
+    spacer.getElement().getStyle().setProperty("flex", "1");
     headerContainer.add(spacer);
-    headerContainer.setCellWidth(spacer, "100%");
 
-    // Premium right section with enhanced button styling
+    // Right section: Action buttons using App Inventor button style
     HorizontalPanel rightSection = new HorizontalPanel();
     rightSection.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     rightSection.getElement().getStyle().setProperty("gap", "12px");
+    rightSection.getElement().getStyle().setProperty("display", "flex");
+    rightSection.getElement().getStyle().setProperty("alignItems", "center");
 
-    // Premium bulk action buttons with enhanced icons
-    addSelectedButton = createPremiumButton(" Add Selected", "#34a853", "#2d8c47", true);
+    // Bulk action buttons with improved sizing
+    addSelectedButton = new Button("Add Selected");
+    addSelectedButton.setStyleName("ode-ProjectListButton");
     addSelectedButton.setEnabled(false);
-    addSelectedButton.setTitle("Add selected assets to current project");
+    addSelectedButton.getElement().getStyle().setProperty("height", "36px");
+    addSelectedButton.getElement().getStyle().setProperty("fontSize", "14px");
+    addSelectedButton.getElement().getStyle().setProperty("marginRight", "8px");
     rightSection.add(addSelectedButton);
 
-    Label buttonSpacer1 = new Label("");
-    buttonSpacer1.getElement().getStyle().setProperty("width", "8px");
-    rightSection.add(buttonSpacer1);
-
-    deleteSelectedButton = createPremiumButton(" Delete Selected", "#ea4335", "#d93025", true);
+    deleteSelectedButton = new Button("Delete Selected");
+    deleteSelectedButton.setStyleName("ode-ProjectListButton");
+    deleteSelectedButton.getElement().getStyle().setProperty("height", "36px");
+    deleteSelectedButton.getElement().getStyle().setProperty("fontSize", "14px");
+    deleteSelectedButton.getElement().getStyle().setProperty("marginRight", "8px");
     deleteSelectedButton.setEnabled(false);
-    deleteSelectedButton.setTitle("Delete selected assets permanently");
     rightSection.add(deleteSelectedButton);
 
-    // Separator line
-    Label buttonSeparator = new Label("");
-    buttonSeparator.getElement().getStyle().setProperty("width", "1px");
-    buttonSeparator.getElement().getStyle().setProperty("height", "30px");
-    buttonSeparator.getElement().getStyle().setProperty("backgroundColor", "#e0e0e0");
-    buttonSeparator.getElement().getStyle().setProperty("margin", "0 12px");
-    rightSection.add(buttonSeparator);
-
-    // Premium upload button
-    uploadButton = createPremiumButton(" Upload Asset", "#1a73e8", "#1557b0", false);
-    uploadButton.setTitle("Upload new asset to library");
-    uploadButton.getElement().getStyle().setProperty("fontWeight", "600");
-    uploadButton.getElement().getStyle().setProperty("padding", "10px 16px");
+    // Upload button
+    uploadButton = new Button("⬆ Upload Asset");
+    uploadButton.setStyleName("ode-ProjectListButton");
+    uploadButton.getElement().getStyle().setProperty("height", "36px");
+    uploadButton.getElement().getStyle().setProperty("fontSize", "14px");
+    uploadButton.getElement().getStyle().setProperty("marginRight", "8px");
     rightSection.add(uploadButton);
 
-    Label buttonSpacer2 = new Label("");
-    buttonSpacer2.getElement().getStyle().setProperty("width", "12px");
-    rightSection.add(buttonSpacer2);
-
-    // Premium close button
-    closeButton = new Button("");
+    // Close button
+    closeButton = new Button("✕");
     closeButton.setTitle("Close Asset Library");
     closeButton.setStyleName("ode-ProjectListButton");
-    closeButton.getElement().getStyle().setProperty("backgroundColor", "#f8f9fa");
-    closeButton.getElement().getStyle().setProperty("color", "#666666");
-    closeButton.getElement().getStyle().setProperty("border", "2px solid #e0e0e0");
-    closeButton.getElement().getStyle().setProperty("borderRadius", "50%");
-    closeButton.getElement().getStyle().setProperty("width", "36px");
     closeButton.getElement().getStyle().setProperty("height", "36px");
     closeButton.getElement().getStyle().setProperty("fontSize", "16px");
-    closeButton.getElement().getStyle().setProperty("fontWeight", "bold");
-    closeButton.getElement().getStyle().setProperty("cursor", "pointer");
-    closeButton.getElement().getStyle().setProperty("transition", "all 0.2s ease");
+    closeButton.getElement().getStyle().setProperty("minWidth", "36px");
     rightSection.add(closeButton);
 
     headerContainer.add(rightSection);
@@ -432,6 +201,10 @@ public class AssetLibraryWidgetClassic extends Composite {
     mainContentPanel = new HorizontalPanel();
     mainContentPanel.setSize("100%", "100%");
     mainContentPanel.setStyleName("ode-WorkColumns");
+    mainContentPanel.getElement().getStyle().setProperty("flex", "1 1 auto");
+    mainContentPanel.getElement().getStyle().setProperty("display", "flex");
+    mainContentPanel.getElement().getStyle().setProperty("height", "100%");
+    mainContentPanel.getElement().getStyle().setProperty("overflow", "hidden");
 
     createSidebar();
     createAssetList();
@@ -440,56 +213,50 @@ public class AssetLibraryWidgetClassic extends Composite {
   }
 
   private void createSidebar() {
-    // Premium sidebar with modern classic styling
+    // Sidebar matching App Inventor design with improved spacing and background
     sidebarPanel = new VerticalPanel();
-    sidebarPanel.setWidth("260px");
+    sidebarPanel.setWidth("280px");
     sidebarPanel.setHeight("100%");
     sidebarPanel.setStyleName("ode-Designer-LeftColumn");
-    sidebarPanel.getElement().getStyle().setProperty("backgroundColor", "#fafbfc");
-    sidebarPanel.getElement().getStyle().setProperty("borderRight", "1px solid #e1e4e8");
-    sidebarPanel.getElement().getStyle().setProperty("padding", "16px");
-    sidebarPanel.getElement().getStyle().setProperty("boxShadow", "inset -1px 0 0 rgba(0,0,0,0.05)");
+    sidebarPanel.getElement().getStyle().setProperty("padding", "20px 16px");
+    sidebarPanel.getElement().getStyle().setProperty("borderRight", "1px solid #e0e0e0");
+    sidebarPanel.getElement().getStyle().setProperty("flexShrink", "0");
+    sidebarPanel.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
+    sidebarPanel.getElement().getStyle().setProperty("height", "100vh");
+    sidebarPanel.getElement().getStyle().setProperty("minHeight", "100vh");
+    sidebarPanel.getElement().getStyle().setProperty("maxHeight", "100vh");
+    sidebarPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
+    sidebarPanel.getElement().getStyle().setProperty("display", "flex");
+    sidebarPanel.getElement().getStyle().setProperty("flexDirection", "column");
+    sidebarPanel.getElement().getStyle().setProperty("alignItems", "stretch");
+    sidebarPanel.getElement().getStyle().setProperty("justifyContent", "flex-start");
+    sidebarPanel.getElement().getStyle().setProperty("overflowY", "auto");
 
-    // Premium folder section header with enhanced visual hierarchy
-    VerticalPanel folderHeaderContainer = new VerticalPanel();
-    folderHeaderContainer.setWidth("100%");
-    folderHeaderContainer.getElement().getStyle().setProperty("marginBottom", "16px");
-    
+    // Folder section header
     HorizontalPanel folderHeader = new HorizontalPanel();
     folderHeader.setWidth("100%");
     folderHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    folderHeader.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    folderHeader.getElement().getStyle().setProperty("padding", "12px");
-    folderHeader.getElement().getStyle().setProperty("borderRadius", "8px");
-    folderHeader.getElement().getStyle().setProperty("border", "1px solid #e1e4e8");
-    folderHeader.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.05)");
+    folderHeader.getElement().getStyle().setProperty("flexShrink", "0");
+    folderHeader.getElement().getStyle().setProperty("marginBottom", "8px");
+    folderHeader.getElement().getStyle().setProperty("display", "flex");
+    folderHeader.getElement().getStyle().setProperty("justifyContent", "space-between");
+    folderHeader.getElement().getStyle().setProperty("alignItems", "center");
+    folderHeader.getElement().getStyle().setProperty("width", "100%");
 
-    // Enhanced folder icon and title
-    HorizontalPanel titleSection = new HorizontalPanel();
-    titleSection.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    
-    Label folderIcon = new Label("[folder]");
-    folderIcon.getElement().getStyle().setProperty("fontSize", "16px");
-    folderIcon.getElement().getStyle().setProperty("marginRight", "8px");
-    titleSection.add(folderIcon);
-    
-    Label folderTitle = new Label("Folders");
+    Label folderTitle = new Label("📁 Folders");
     folderTitle.setStyleName("ode-ComponentRowLabel");
+    folderTitle.getElement().getStyle().setProperty("fontSize", "16px");
     folderTitle.getElement().getStyle().setProperty("fontWeight", "600");
-    folderTitle.getElement().getStyle().setProperty("fontSize", "15px");
-    folderTitle.getElement().getStyle().setProperty("color", "#24292e");
-    titleSection.add(folderTitle);
-    
-    folderHeader.add(titleSection);
+    folderHeader.add(folderTitle);
 
-    // Premium action buttons with enhanced styling
+    // Small action buttons with proper spacing
     HorizontalPanel folderActions = new HorizontalPanel();
-    folderActions.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    folderActions.getElement().getStyle().setProperty("gap", "6px");
+    folderActions.setSpacing(6);
+    folderActions.getElement().getStyle().setProperty("marginLeft", "50px");
 
-    Button newFolderBtn = createEnhancedButton("+", "#34a853", "Create new folder");
-    Button renameFolderBtn = createEnhancedButton("", "#ff9800", "Rename selected folder");  
-    Button deleteFolderBtn = createEnhancedButton("", "#f44336", "Delete selected folder");
+    Button newFolderBtn = createSmallButton("+", "New Folder");
+    Button renameFolderBtn = createSmallButton("✎", "Rename Folder");
+    Button deleteFolderBtn = createSmallButton("🗑", "Delete Folder");
 
     // Add event handlers for folder management
     setupFolderManagementHandlers(newFolderBtn, renameFolderBtn, deleteFolderBtn);
@@ -498,148 +265,62 @@ public class AssetLibraryWidgetClassic extends Composite {
     folderActions.add(renameFolderBtn);
     folderActions.add(deleteFolderBtn);
     folderHeader.add(folderActions);
-    folderHeader.setCellHorizontalAlignment(folderActions, HasHorizontalAlignment.ALIGN_RIGHT);
 
-    folderHeaderContainer.add(folderHeader);
-    sidebarPanel.add(folderHeaderContainer);
+    sidebarPanel.add(folderHeader);
 
-    // Premium folder list with enhanced styling
-    ScrollPanel folderScrollContainer = new ScrollPanel();
-    folderScrollContainer.setWidth("100%");
-    folderScrollContainer.setHeight("350px");
-    folderScrollContainer.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    folderScrollContainer.getElement().getStyle().setProperty("border", "1px solid #e1e4e8");
-    folderScrollContainer.getElement().getStyle().setProperty("borderRadius", "8px");
-    folderScrollContainer.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.05)");
-    
+    // Folder list
     folderListPanel = new VerticalPanel();
     folderListPanel.setWidth("100%");
-    folderListPanel.setSpacing(1);
-    folderListPanel.getElement().getStyle().setProperty("padding", "8px");
-    
-    folderScrollContainer.add(folderListPanel);
-    sidebarPanel.add(folderScrollContainer);
+    folderListPanel.getElement().getStyle().setProperty("flex", "1 1 auto");
+    folderListPanel.getElement().getStyle().setProperty("overflowY", "auto");
+    folderListPanel.getElement().getStyle().setProperty("minHeight", "0");
+    folderListPanel.getElement().getStyle().setProperty("width", "100%");
+    folderListPanel.getElement().getStyle().setProperty("paddingTop", "4px");
+    sidebarPanel.add(folderListPanel);
 
     mainContentPanel.add(sidebarPanel);
   }
 
-  private Button createSmallButton(String text) {
+  private Button createSmallButton(String text, String title) {
     Button button = new Button(text);
+    button.setTitle(title);
     button.setStyleName("ode-ProjectListButton");
-    button.getElement().getStyle().setProperty("minWidth", "24px");
-    button.getElement().getStyle().setProperty("height", "24px");
-    button.getElement().getStyle().setProperty("padding", "2px");
-    return button;
-  }
-
-  private Button createPremiumButton(String text, String bgColor, String hoverColor, boolean isSecondary) {
-    Button button = new Button(text);
-    button.setStyleName("ode-ProjectListButton");
-    
-    if (isSecondary) {
-      button.getElement().getStyle().setProperty("padding", "8px 12px");
-      button.getElement().getStyle().setProperty("fontSize", "13px");
-    } else {
-      button.getElement().getStyle().setProperty("padding", "10px 16px");
-      button.getElement().getStyle().setProperty("fontSize", "14px");
-    }
-    
-    button.getElement().getStyle().setProperty("backgroundColor", bgColor);
-    button.getElement().getStyle().setProperty("color", "white");
-    button.getElement().getStyle().setProperty("border", "none");
-    button.getElement().getStyle().setProperty("borderRadius", "8px");
-    button.getElement().getStyle().setProperty("fontWeight", "500");
-    button.getElement().getStyle().setProperty("cursor", "pointer");
-    button.getElement().getStyle().setProperty("transition", "all 0.2s ease");
-    button.getElement().getStyle().setProperty("boxShadow", "0 2px 4px rgba(0,0,0,0.1)");
-    button.getElement().getStyle().setProperty("textAlign", "center");
-    button.getElement().getStyle().setProperty("userSelect", "none");
-    
-    return button;
-  }
-
-  private Button createEnhancedButton(String text, String color, String tooltip) {
-    Button button = new Button(text);
-    button.setStyleName("ode-ProjectListButton");
-    button.setTitle(tooltip);
-    button.getElement().getStyle().setProperty("minWidth", "32px");
-    button.getElement().getStyle().setProperty("height", "32px");
-    button.getElement().getStyle().setProperty("padding", "6px 8px");
-    button.getElement().getStyle().setProperty("backgroundColor", color);
-    button.getElement().getStyle().setProperty("color", "white");
-    button.getElement().getStyle().setProperty("border", "none");
-    button.getElement().getStyle().setProperty("borderRadius", "6px");
+    button.getElement().getStyle().setProperty("padding", "4px 8px");
     button.getElement().getStyle().setProperty("fontSize", "12px");
-    button.getElement().getStyle().setProperty("fontWeight", "500");
-    button.getElement().getStyle().setProperty("cursor", "pointer");
-    button.getElement().getStyle().setProperty("transition", "all 0.2s ease");
-    button.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.1)");
+    button.getElement().getStyle().setProperty("minWidth", "28px");
+    button.getElement().getStyle().setProperty("height", "28px");
     return button;
   }
+
+
 
   private void createAssetList() {
-    // Premium asset list container with modern classic styling
+    // Asset list container
     VerticalPanel assetContainer = new VerticalPanel();
-    assetContainer.setWidth("100%");
+    assetContainer.setWidth("100vw");
     assetContainer.setHeight("100%");
-    assetContainer.setStyleName("ode-Box-body");
-    assetContainer.getElement().getStyle().setProperty("padding", "16px");
-    assetContainer.getElement().getStyle().setProperty("backgroundColor", "#fafbfc");
+    assetContainer.setStyleName("ode-Box-body-padding");
+    assetContainer.getElement().getStyle().setProperty("flex", "1 1 auto");
+    assetContainer.getElement().getStyle().setProperty("display", "flex");
+    assetContainer.getElement().getStyle().setProperty("flexDirection", "column");
+    assetContainer.getElement().getStyle().setProperty("minHeight", "0");
+    assetContainer.getElement().getStyle().setProperty("overflow", "hidden");
 
-    // Premium assets header section
-    HorizontalPanel assetHeader = new HorizontalPanel();
-    assetHeader.setWidth("100%");
-    assetHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    assetHeader.getElement().getStyle().setProperty("marginBottom", "16px");
-    assetHeader.getElement().getStyle().setProperty("padding", "12px 16px");
-    assetHeader.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    assetHeader.getElement().getStyle().setProperty("border", "1px solid #e1e4e8");
-    assetHeader.getElement().getStyle().setProperty("borderRadius", "8px");
-    assetHeader.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.05)");
-    
-    HorizontalPanel headerLeft = new HorizontalPanel();
-    headerLeft.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    
-    Label assetsIcon = new Label("");
-    assetsIcon.getElement().getStyle().setProperty("fontSize", "16px");
-    assetsIcon.getElement().getStyle().setProperty("marginRight", "8px");
-    headerLeft.add(assetsIcon);
-    
-    Label assetsLabel = new Label("Your Assets");
-    assetsLabel.setStyleName("ode-ComponentRowLabel");
-    assetsLabel.getElement().getStyle().setProperty("fontWeight", "600");
-    assetsLabel.getElement().getStyle().setProperty("fontSize", "15px");
-    assetsLabel.getElement().getStyle().setProperty("color", "#24292e");
-    headerLeft.add(assetsLabel);
-    
-    assetHeader.add(headerLeft);
-    
-    // Add asset count indicator (will be populated dynamically)
-    statusLabel = new Label("Loading assets...");
-    statusLabel.setStyleName("ode-ComponentRowLabel");
-    statusLabel.getElement().getStyle().setProperty("fontSize", "12px");
-    statusLabel.getElement().getStyle().setProperty("color", "#586069");
-    statusLabel.getElement().getStyle().setProperty("marginLeft", "auto");
-    assetHeader.add(statusLabel);
-    assetHeader.setCellHorizontalAlignment(statusLabel, HasHorizontalAlignment.ALIGN_RIGHT);
-    
-    assetContainer.add(assetHeader);
 
-    // Premium scrollable list with enhanced styling
+    // Scrollable list
     assetScrollPanel = new ScrollPanel();
     assetScrollPanel.setWidth("100%");
-    assetScrollPanel.setHeight("500px");
     assetScrollPanel.setStyleName("ode-Explorer");
-    assetScrollPanel.getElement().getStyle().setProperty("border", "1px solid #e1e4e8");
-    assetScrollPanel.getElement().getStyle().setProperty("borderRadius", "8px");
-    assetScrollPanel.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    assetScrollPanel.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.05)");
+    assetScrollPanel.getElement().getStyle().setProperty("flex", "1 1 auto");
+    assetScrollPanel.getElement().getStyle().setProperty("height", "calc(100vh - 180px)");
+    assetScrollPanel.getElement().getStyle().setProperty("maxHeight", "calc(100vh - 180px)");
+    assetScrollPanel.getElement().getStyle().setProperty("overflowY", "auto");
+    assetScrollPanel.getElement().getStyle().setProperty("paddingBottom", "60px");
 
-    // Premium asset list panel with refined spacing
+    // Asset list panel
     assetListPanel = new VerticalPanel();
     assetListPanel.setWidth("100%");
     assetListPanel.setSpacing(0);
-    assetListPanel.getElement().getStyle().setProperty("padding", "8px");
 
     assetScrollPanel.add(assetListPanel);
     assetContainer.add(assetScrollPanel);
@@ -649,21 +330,26 @@ public class AssetLibraryWidgetClassic extends Composite {
   }
 
   private void createFooter() {
-    // Premium footer with modern classic styling
+    // Footer matching App Inventor style
     footerPanel = new HorizontalPanel();
     footerPanel.setWidth("100%");
     footerPanel.setStyleName("ode-StatusPanel");
     footerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    footerPanel.getElement().getStyle().setProperty("padding", "12px 16px");
-    footerPanel.getElement().getStyle().setProperty("backgroundColor", "#f6f8fa");
-    footerPanel.getElement().getStyle().setProperty("borderTop", "1px solid #e1e4e8");
-    footerPanel.getElement().getStyle().setProperty("minHeight", "40px");
+    footerPanel.getElement().getStyle().setProperty("padding", "8px 24px");
+    footerPanel.getElement().getStyle().setProperty("minHeight", "36px");
+    footerPanel.getElement().getStyle().setProperty("borderTop", "1px solid #e0e0e0");
+    footerPanel.getElement().getStyle().setProperty("flexShrink", "0");
+    footerPanel.getElement().getStyle().setProperty("backgroundColor", "white");
+    footerPanel.getElement().getStyle().setProperty("position", "fixed");
+    footerPanel.getElement().getStyle().setProperty("bottom", "0");
+    footerPanel.getElement().getStyle().setProperty("left", "0");
+    footerPanel.getElement().getStyle().setProperty("right", "0");
+    footerPanel.getElement().getStyle().setProperty("zIndex", "998");
+    footerPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
 
-    // Move status label creation to asset header section
     Label footerText = new Label("Tip: Drag assets to folders to organize them");
     footerText.setStyleName("ode-StatusPanelLabel");
     footerText.getElement().getStyle().setProperty("fontSize", "12px");
-    footerText.getElement().getStyle().setProperty("color", "#586069");
     footerText.getElement().getStyle().setProperty("fontStyle", "italic");
     footerPanel.add(footerText);
 
@@ -695,7 +381,20 @@ public class AssetLibraryWidgetClassic extends Composite {
     closeButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        Ode.getInstance().switchToProjectsView();
+        // Get the current project and switch back to the editor
+        long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+        if (currentProjectId != 0) {
+          Project project = Ode.getInstance().getProjectManager().getProject(currentProjectId);
+          if (project != null) {
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+          } else {
+            // Fallback to projects view if project not found
+            Ode.getInstance().switchToProjectsView();
+          }
+        } else {
+          // Fallback to projects view if no current project
+          Ode.getInstance().switchToProjectsView();
+        }
       }
     });
 
@@ -788,20 +487,19 @@ public class AssetLibraryWidgetClassic extends Composite {
     HorizontalPanel folderRow = new HorizontalPanel();
     folderRow.setWidth("100%");
     folderRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    folderRow.getElement().getStyle().setProperty("padding", "10px 12px");
-    folderRow.getElement().getStyle().setProperty("borderRadius", "6px");
+    folderRow.getElement().getStyle().setProperty("padding", "10px 0px");
+    folderRow.getElement().getStyle().setProperty("borderRadius", "4px");
     folderRow.getElement().getStyle().setProperty("cursor", "pointer");
-    folderRow.getElement().getStyle().setProperty("transition", "all 0.2s ease");
-    folderRow.getElement().getStyle().setProperty("margin", "2px 0");
+    folderRow.getElement().getStyle().setProperty("marginBottom", "6px");
+    folderRow.getElement().getStyle().setProperty("minHeight", "36px");
+    folderRow.getElement().getStyle().setProperty("boxSizing", "border-box");
 
     // Folder icon
-    String iconText = "All Assets".equals(folderName) ? "" : 
-                     "Recent".equals(folderName) ? "[recent]" : "[folder]";
-    Label folderIcon = new Label(iconText);
-    folderIcon.getElement().getStyle().setProperty("fontSize", "14px");
-    folderIcon.getElement().getStyle().setProperty("marginRight", "8px");
-    folderIcon.getElement().getStyle().setProperty("minWidth", "20px");
-    folderRow.add(folderIcon);
+    Label icon = new Label("📁");
+    icon.getElement().getStyle().setProperty("marginLeft", "12px");
+    icon.getElement().getStyle().setProperty("marginRight", "10px");
+    icon.getElement().getStyle().setProperty("fontSize", "16px");
+    folderRow.add(icon);
 
     // Folder name
     Label nameLabel = new Label(folderName);
@@ -814,39 +512,16 @@ public class AssetLibraryWidgetClassic extends Composite {
     folderRow.add(nameLabel);
     folderRow.setCellWidth(nameLabel, "100%");
 
-    // Apply premium selection styling
+    // Apply selection styling matching App Inventor
     if (index == selectedFolderIndex) {
-      folderRow.getElement().getStyle().setProperty("backgroundColor", "#e3f2fd");
-      folderRow.getElement().getStyle().setProperty("border", "1px solid #1a73e8");
-      nameLabel.getElement().getStyle().setProperty("color", "#1a73e8");
-      nameLabel.getElement().getStyle().setProperty("fontWeight", "600");
+      folderRow.setStyleName("ode-ComponentRowHighlighted");
+      nameLabel.setStyleName("ode-ComponentRowLabel");
     } else {
-      folderRow.getElement().getStyle().setProperty("backgroundColor", "transparent");
-      folderRow.getElement().getStyle().setProperty("border", "1px solid transparent");
-      nameLabel.getElement().getStyle().setProperty("color", "#586069");
+      folderRow.setStyleName("ode-ComponentRowUnHighlighted");
+      nameLabel.setStyleName("ode-ComponentRowLabel");
     }
 
-    // Premium click handler with hover effects
-    folderRow.addDomHandler(new com.google.gwt.event.dom.client.MouseOverHandler() {
-      @Override
-      public void onMouseOver(com.google.gwt.event.dom.client.MouseOverEvent event) {
-        if (index != selectedFolderIndex) {
-          folderRow.getElement().getStyle().setProperty("backgroundColor", "#f0f7ff");
-          folderRow.getElement().getStyle().setProperty("transform", "translateX(2px)");
-        }
-      }
-    }, com.google.gwt.event.dom.client.MouseOverEvent.getType());
-    
-    folderRow.addDomHandler(new com.google.gwt.event.dom.client.MouseOutHandler() {
-      @Override
-      public void onMouseOut(com.google.gwt.event.dom.client.MouseOutEvent event) {
-        if (index != selectedFolderIndex) {
-          folderRow.getElement().getStyle().setProperty("backgroundColor", "transparent");
-          folderRow.getElement().getStyle().setProperty("transform", "translateX(0px)");
-        }
-      }
-    }, com.google.gwt.event.dom.client.MouseOutEvent.getType());
-    
+    // Click handler
     folderRow.addDomHandler(new com.google.gwt.event.dom.client.ClickHandler() {
       @Override
       public void onClick(com.google.gwt.event.dom.client.ClickEvent event) {
@@ -889,7 +564,6 @@ public class AssetLibraryWidgetClassic extends Composite {
   }
 
   private void refreshGlobalAssets() {
-    statusLabel.setText("Loading assets...");
     globalAssetService.getGlobalAssets(new AsyncCallback<List<GlobalAsset>>() {
       @Override
       public void onSuccess(List<GlobalAsset> assets) {
@@ -897,14 +571,12 @@ public class AssetLibraryWidgetClassic extends Composite {
         if (assets != null) {
           globalAssets.addAll(assets);
         }
-        statusLabel.setText("Assets loaded successfully");
         updateFoldersFromAssets();
         refreshAssetList();
       }
 
       @Override
       public void onFailure(Throwable caught) {
-        statusLabel.setText("Failed to load assets: " + caught.getMessage());
         globalAssets.clear();
         refreshAssetList();
       }
@@ -966,7 +638,6 @@ public class AssetLibraryWidgetClassic extends Composite {
     }
 
     updateBulkActionButtons();
-    updateStatusLabel(filteredAssets.size());
   }
 
   private List<GlobalAsset> filterAssets(String searchText, String typeFilter, String folderFilter) {
@@ -1021,28 +692,26 @@ public class AssetLibraryWidgetClassic extends Composite {
     emptyState.getElement().getStyle().setProperty("padding", "60px 20px");
     emptyState.getElement().getStyle().setProperty("textAlign", "center");
 
-    // Premium empty state icon
-    Label emptyIcon = new Label("");
-    emptyIcon.getElement().getStyle().setProperty("fontSize", "48px");
+    // Empty icon
+    Label emptyIcon = new Label("📁");
+    emptyIcon.getElement().getStyle().setProperty("fontSize", "64px");
+    emptyIcon.getElement().getStyle().setProperty("opacity", "0.4");
     emptyIcon.getElement().getStyle().setProperty("marginBottom", "16px");
-    emptyIcon.getElement().getStyle().setProperty("opacity", "0.5");
     emptyState.add(emptyIcon);
 
-    // Premium empty message
+    // Message
     Label emptyMessage = new Label("No assets found");
     emptyMessage.setStyleName("ode-ComponentRowLabel");
     emptyMessage.getElement().getStyle().setProperty("fontSize", "18px");
-    emptyMessage.getElement().getStyle().setProperty("fontWeight", "600");
-    emptyMessage.getElement().getStyle().setProperty("color", "#586069");
+    emptyMessage.getElement().getStyle().setProperty("fontWeight", "500");
     emptyMessage.getElement().getStyle().setProperty("marginBottom", "8px");
     emptyState.add(emptyMessage);
 
-    // Premium sub message
-    Label emptySubMessage = new Label("Try adjusting your search or upload new assets to get started");
+    // Sub message
+    Label emptySubMessage = new Label("Try adjusting your search or upload new assets");
     emptySubMessage.setStyleName("ode-ComponentRowLabel");
     emptySubMessage.getElement().getStyle().setProperty("fontSize", "14px");
-    emptySubMessage.getElement().getStyle().setProperty("color", "#959da5");
-    emptySubMessage.getElement().getStyle().setProperty("lineHeight", "1.5");
+    emptySubMessage.getElement().getStyle().setProperty("opacity", "0.7");
     emptyState.add(emptySubMessage);
 
     assetListPanel.add(emptyState);
@@ -1051,7 +720,6 @@ public class AssetLibraryWidgetClassic extends Composite {
   private void displayAssets(List<GlobalAsset> assets) {
     for (final GlobalAsset asset : assets) {
       HorizontalPanel assetRow = createAssetRow(asset);
-      assetRow.addStyleName("asset-item-enter");
       assetListPanel.add(assetRow);
     }
   }
@@ -1064,28 +732,21 @@ public class AssetLibraryWidgetClassic extends Composite {
     row.getElement().getStyle().setProperty("minHeight", "60px");
     row.getElement().getStyle().setProperty("padding", "12px 16px");
     row.getElement().getStyle().setProperty("margin", "4px 0");
-    row.getElement().getStyle().setProperty("borderRadius", "8px");
-    row.getElement().getStyle().setProperty("border", "1px solid #e1e4e8");
-    row.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    row.getElement().getStyle().setProperty("transition", "all 0.2s ease");
+    row.getElement().getStyle().setProperty("borderRadius", "4px");
     row.getElement().getStyle().setProperty("cursor", "pointer");
-    
-    // Add hover effect styling
-    row.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.05)");
 
-    // Premium checkbox for selection
+    // Checkbox for selection
     HorizontalPanel checkboxContainer = new HorizontalPanel();
     checkboxContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     checkboxContainer.getElement().getStyle().setProperty("marginRight", "12px");
     
     final CheckBox checkBox = new CheckBox();
-    checkBox.getElement().getStyle().setProperty("transform", "scale(1.2)");
     checkBox.getElement().getStyle().setProperty("cursor", "pointer");
     assetCheckBoxes.add(checkBox);
     checkboxContainer.add(checkBox);
     row.add(checkboxContainer);
 
-    // Premium asset preview/icon with container
+    // Asset preview/icon with container
     HorizontalPanel previewContainer = new HorizontalPanel();
     previewContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     previewContainer.getElement().getStyle().setProperty("marginRight", "12px");
@@ -1094,7 +755,7 @@ public class AssetLibraryWidgetClassic extends Composite {
     previewContainer.add(previewWidget);
     row.add(previewContainer);
 
-    // Premium asset name and details
+    // Asset name and details
     VerticalPanel detailsPanel = new VerticalPanel();
     detailsPanel.getElement().getStyle().setProperty("flex", "1");
     detailsPanel.setSpacing(2);
@@ -1107,7 +768,6 @@ public class AssetLibraryWidgetClassic extends Composite {
     nameLabel.setStyleName("ode-ComponentRowLabel");
     nameLabel.getElement().getStyle().setProperty("fontSize", "15px");
     nameLabel.getElement().getStyle().setProperty("fontWeight", "500");
-    nameLabel.getElement().getStyle().setProperty("color", "#24292e");
     nameLabel.getElement().getStyle().setProperty("marginRight", "8px");
     nameRow.add(nameLabel);
     
@@ -1198,13 +858,17 @@ public class AssetLibraryWidgetClassic extends Composite {
     row.add(detailsPanel);
     row.setCellWidth(detailsPanel, "100%");
 
-    // Premium action buttons with enhanced styling
+    // Action buttons with improved styling
     HorizontalPanel actionPanel = new HorizontalPanel();
     actionPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    actionPanel.getElement().getStyle().setProperty("gap", "4px");
+    actionPanel.setSpacing(4);
 
-    // Premium preview button
-    Button previewBtn = createActionButton(" Preview", "#6c757d", "#5a6268");
+    // Preview button
+    Button previewBtn = new Button("Preview");
+    previewBtn.setStyleName("ode-ProjectListButton");
+    previewBtn.getElement().getStyle().setProperty("padding", "4px 8px");
+    previewBtn.getElement().getStyle().setProperty("fontSize", "12px");
+    previewBtn.getElement().getStyle().setProperty("minWidth", "60px");
     previewBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -1214,59 +878,28 @@ public class AssetLibraryWidgetClassic extends Composite {
     });
     actionPanel.add(previewBtn);
 
-    Label actionSpacer1 = new Label("");
-    actionSpacer1.getElement().getStyle().setProperty("width", "4px");
-    actionPanel.add(actionSpacer1);
-
-    // Version history button
-    Button historyBtn = createActionButton(" History", "#17a2b8", "#138496");
-    historyBtn.addClickHandler(new ClickHandler() {
+    // Update version button
+    Button updateBtn = new Button("Update");
+    updateBtn.setTitle("Upload New Version");
+    updateBtn.setStyleName("ode-ProjectListButton");
+    updateBtn.getElement().getStyle().setProperty("padding", "4px 8px");
+    updateBtn.getElement().getStyle().setProperty("fontSize", "12px");
+    updateBtn.getElement().getStyle().setProperty("minWidth", "60px");
+    updateBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         event.stopPropagation();
-        showVersionHistory(asset);
+        showUpdateAssetDialog(asset);
       }
     });
-    actionPanel.add(historyBtn);
+    actionPanel.add(updateBtn);
 
-    Label actionSpacerHistory = new Label("");
-    actionSpacerHistory.getElement().getStyle().setProperty("width", "4px");
-    actionPanel.add(actionSpacerHistory);
-
-    // Project Management button (conditional)
-    final Button manageBtn = createActionButton(" Manage", "#007bff", "#0056b3");
-    manageBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        event.stopPropagation();
-        showProjectManagementDialog(asset);
-      }
-    });
-    manageBtn.setVisible(false); // Will be shown if asset is used by projects
-    actionPanel.add(manageBtn);
-
-    // Check if asset is used by projects and show manage button
-    globalAssetService.getProjectsUsingAsset(asset.getFileName(), new AsyncCallback<List<Long>>() {
-      @Override
-      public void onSuccess(List<Long> projectIds) {
-        if (projectIds != null && !projectIds.isEmpty()) {
-          manageBtn.setVisible(true);
-          manageBtn.setTitle("Manage usage in " + projectIds.size() + " project(s)");
-        }
-      }
-      
-      @Override
-      public void onFailure(Throwable caught) {
-        // Keep button hidden on failure
-      }
-    });
-
-    Label actionSpacer2 = new Label("");
-    actionSpacer2.getElement().getStyle().setProperty("width", "4px");
-    actionPanel.add(actionSpacer2);
-
-    // Premium add button
-    Button addBtn = createActionButton(" Add", "#28a745", "#218838");
+    // Add button
+    Button addBtn = new Button("Add");
+    addBtn.setStyleName("ode-ProjectListButton");
+    addBtn.getElement().getStyle().setProperty("padding", "4px 8px");
+    addBtn.getElement().getStyle().setProperty("fontSize", "12px");
+    addBtn.getElement().getStyle().setProperty("minWidth", "50px");
     addBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -1276,17 +909,19 @@ public class AssetLibraryWidgetClassic extends Composite {
     });
     actionPanel.add(addBtn);
 
-    Label actionSpacer3 = new Label("");
-    actionSpacer3.getElement().getStyle().setProperty("width", "4px");
-    actionPanel.add(actionSpacer3);
-
-    // Premium delete button
-    Button deleteBtn = createActionButton(" Delete", "#dc3545", "#c82333");
+    // Delete button
+    Button deleteBtn = new Button("Delete");
+    deleteBtn.setStyleName("ode-ProjectListButton");
+    deleteBtn.getElement().getStyle().setProperty("padding", "4px 8px");
+    deleteBtn.getElement().getStyle().setProperty("fontSize", "12px");
+    deleteBtn.getElement().getStyle().setProperty("minWidth", "60px");
     deleteBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         event.stopPropagation();
-        showEnhancedDeleteConfirmation(asset);
+        if (Window.confirm("Are you sure you want to delete '" + asset.getFileName() + "'?")) {
+          deleteAsset(asset);
+        }
       }
     });
     actionPanel.add(deleteBtn);
@@ -1296,26 +931,6 @@ public class AssetLibraryWidgetClassic extends Composite {
     // Drag and drop support
     setupAssetDragDrop(row, asset);
 
-    // Premium hover effects for asset rows
-    row.addDomHandler(new com.google.gwt.event.dom.client.MouseOverHandler() {
-      @Override
-      public void onMouseOver(com.google.gwt.event.dom.client.MouseOverEvent event) {
-        row.getElement().getStyle().setProperty("backgroundColor", "#f8f9ff");
-        row.getElement().getStyle().setProperty("borderColor", "#c6e2ff");
-        row.getElement().getStyle().setProperty("boxShadow", "0 2px 8px rgba(0,0,0,0.1)");
-        row.getElement().getStyle().setProperty("transform", "translateY(-1px)");
-      }
-    }, com.google.gwt.event.dom.client.MouseOverEvent.getType());
-    
-    row.addDomHandler(new com.google.gwt.event.dom.client.MouseOutHandler() {
-      @Override
-      public void onMouseOut(com.google.gwt.event.dom.client.MouseOutEvent event) {
-        row.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-        row.getElement().getStyle().setProperty("borderColor", "#e1e4e8");
-        row.getElement().getStyle().setProperty("boxShadow", "0 1px 3px rgba(0,0,0,0.05)");
-        row.getElement().getStyle().setProperty("transform", "translateY(0px)");
-      }
-    }, com.google.gwt.event.dom.client.MouseOutEvent.getType());
 
     // Checkbox change handler
     checkBox.addClickHandler(new ClickHandler() {
@@ -1329,23 +944,6 @@ public class AssetLibraryWidgetClassic extends Composite {
     return row;
   }
 
-  private Button createActionButton(String text, String bgColor, String hoverColor) {
-    Button button = new Button(text);
-    button.setStyleName("ode-ProjectListButton");
-    button.getElement().getStyle().setProperty("padding", "6px 10px");
-    button.getElement().getStyle().setProperty("fontSize", "12px");
-    button.getElement().getStyle().setProperty("fontWeight", "500");
-    button.getElement().getStyle().setProperty("backgroundColor", bgColor);
-    button.getElement().getStyle().setProperty("color", "white");
-    button.getElement().getStyle().setProperty("border", "none");
-    button.getElement().getStyle().setProperty("borderRadius", "5px");
-    button.getElement().getStyle().setProperty("cursor", "pointer");
-    button.getElement().getStyle().setProperty("transition", "all 0.2s ease");
-    button.getElement().getStyle().setProperty("boxShadow", "0 1px 2px rgba(0,0,0,0.1)");
-    button.getElement().getStyle().setProperty("minWidth", "80px");
-    button.getElement().getStyle().setProperty("textAlign", "center");
-    return button;
-  }
   
   private String getFileExtension(String fileName) {
     int lastDot = fileName.lastIndexOf('.');
@@ -1372,43 +970,40 @@ public class AssetLibraryWidgetClassic extends Composite {
     String fileName = asset.getFileName().toLowerCase();
     String filePath = asset.getFolder() != null ? asset.getFolder() + "/" + asset.getFileName() : asset.getFileName();
     
-    // Premium preview container
+    // Preview container
     HorizontalPanel previewContainer = new HorizontalPanel();
     previewContainer.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     previewContainer.getElement().getStyle().setProperty("width", "48px");
     previewContainer.getElement().getStyle().setProperty("height", "48px");
-    previewContainer.getElement().getStyle().setProperty("borderRadius", "8px");
-    previewContainer.getElement().getStyle().setProperty("border", "2px solid #e1e4e8");
-    previewContainer.getElement().getStyle().setProperty("backgroundColor", "#f6f8fa");
+    previewContainer.getElement().getStyle().setProperty("borderRadius", "4px");
+    previewContainer.getElement().getStyle().setProperty("border", "1px solid #ddd");
     previewContainer.getElement().getStyle().setProperty("justifyContent", "center");
     previewContainer.getElement().getStyle().setProperty("alignItems", "center");
     previewContainer.getElement().getStyle().setProperty("overflow", "hidden");
     
     if (StorageUtil.isImageFile(filePath)) {
-      // Create premium image preview
-      Image img = new Image("/ode/download/globalasset/" + asset.getFileName());
+      // Create image preview with cache-busting parameter
+      String imageUrl = "/ode/download/globalasset/" + asset.getFileName() + "?t=" + asset.getTimestamp();
+      Image img = new Image(imageUrl);
       img.setWidth("44px");
       img.setHeight("44px");
       img.getElement().getStyle().setProperty("objectFit", "cover");
-      img.getElement().getStyle().setProperty("borderRadius", "6px");
+      img.getElement().getStyle().setProperty("borderRadius", "3px");
       previewContainer.add(img);
     } else {
-      // Premium icon for non-image files
-      String iconText;
-      String iconColor;
+      // Use icon for non-image files
+      Image iconImg;
       if (StorageUtil.isAudioFile(filePath)) {
-        iconText = "";
-        iconColor = "#007bff";
+        iconImg = new Image(images.player());
+      } else if (StorageUtil.isVideoFile(filePath)) {
+        iconImg = new Image(images.image()); // Use image icon for video for now
       } else {
-        iconText = "";
-        iconColor = "#6c757d";
+        iconImg = new Image(images.image());
       }
       
-      Label iconLabel = new Label(iconText);
-      iconLabel.getElement().getStyle().setProperty("fontSize", "24px");
-      iconLabel.getElement().getStyle().setProperty("color", iconColor);
-      iconLabel.getElement().getStyle().setProperty("textAlign", "center");
-      previewContainer.add(iconLabel);
+      iconImg.setWidth("32px");
+      iconImg.setHeight("32px");
+      previewContainer.add(iconImg);
     }
     
     return previewContainer;
@@ -1517,34 +1112,14 @@ public class AssetLibraryWidgetClassic extends Composite {
     
     // Update button text with count
     if (hasSelection) {
-      addSelectedButton.setText(" Add " + selectedCount + " Selected");
-      deleteSelectedButton.setText(" Delete " + selectedCount + " Selected");
-      
-      // Enhanced styling for enabled state
-      addSelectedButton.getElement().getStyle().setProperty("opacity", "1.0");
-      deleteSelectedButton.getElement().getStyle().setProperty("opacity", "1.0");
+      addSelectedButton.setText("Add " + selectedCount + " Selected");
+      deleteSelectedButton.setText("Delete " + selectedCount + " Selected");
     } else {
-      addSelectedButton.setText(" Add Selected");
-      deleteSelectedButton.setText(" Delete Selected");
-      
-      // Dimmed styling for disabled state
-      addSelectedButton.getElement().getStyle().setProperty("opacity", "0.6");
-      deleteSelectedButton.getElement().getStyle().setProperty("opacity", "0.6");
+      addSelectedButton.setText("Add Selected");
+      deleteSelectedButton.setText("Delete Selected");
     }
   }
 
-  private void updateStatusLabel(int assetCount) {
-    String statusText;
-    if (assetCount == 0) {
-      statusText = "No assets";
-    } else if (assetCount == 1) {
-      statusText = "1 asset";
-    } else {
-      statusText = assetCount + " assets";
-    }
-    statusLabel.setText(statusText);
-    statusLabel.getElement().getStyle().setProperty("color", assetCount > 0 ? "#28a745" : "#6c757d");
-  }
 
   // Asset operations
   private void deleteAsset(GlobalAsset asset) {
@@ -1654,7 +1229,7 @@ public class AssetLibraryWidgetClassic extends Composite {
         clearInlineError(errorLabel);
         
         // Check if asset already exists and handle conflicts
-        handleAssetUploadWithConflictCheck(filename, dialog, form, fileUpload);
+        checkAssetExistsAndProceed(filename, dialog, form, fileUpload);
       }
     });
 
@@ -1664,7 +1239,6 @@ public class AssetLibraryWidgetClassic extends Composite {
         dialog.hide();
         String results = event.getResults();
         if (results != null && results.contains("SUCCESS")) {
-          statusLabel.setText("Asset uploaded successfully");
           refreshGlobalAssets();
         } else {
           showUploadError(MESSAGES.fileUploadError(), "Please check your file and try again.");
@@ -2139,9 +1713,27 @@ public class AssetLibraryWidgetClassic extends Composite {
           new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-              statusLabel.setText("Asset '" + asset.getFileName() + "' added to project");
               dialog.hide();
               
+              // Manually create and add the project node for the imported asset
+              Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+              YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) project.getRootNode();
+              YoungAndroidAssetsFolder assetsFolder = projectNode.getAssetsFolder();
+              
+              // Create the asset node with the full imported path
+              String assetName = asset.getFileName();
+              String fullAssetPath = "assets/_global_/";
+              if (asset.getFolder() != null && !asset.getFolder().isEmpty()) {
+                fullAssetPath += asset.getFolder() + "/";
+              }
+              fullAssetPath += assetName;
+              
+              YoungAndroidAssetNode assetNode = new YoungAndroidAssetNode(assetName, fullAssetPath);
+              project.addNode(assetsFolder, assetNode);
+              
+              // Refresh the project asset list and asset manager to make the asset visible
+              Ode.getInstance().getAssetListBox().getAssetList().refreshAssetList(projectId);
+              Ode.getInstance().getAssetManager().loadAssets(projectId);
             }
             
             @Override
@@ -2247,11 +1839,29 @@ public class AssetLibraryWidgetClassic extends Composite {
           new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-              statusLabel.setText(assets.size() + " assets added to project");
               dialog.hide();
               
-              // Asset imported successfully - no additional refresh needed
-              // The FileUploadWizard handles project updates automatically
+              // Manually create and add project nodes for all imported assets
+              Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+              YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode) project.getRootNode();
+              YoungAndroidAssetsFolder assetsFolder = projectNode.getAssetsFolder();
+              
+              for (GlobalAsset asset : assets) {
+                // Create the asset node with the full imported path
+                String assetName = asset.getFileName();
+                String fullAssetPath = "assets/_global_/";
+                if (asset.getFolder() != null && !asset.getFolder().isEmpty()) {
+                  fullAssetPath += asset.getFolder() + "/";
+                }
+                fullAssetPath += assetName;
+                
+                YoungAndroidAssetNode assetNode = new YoungAndroidAssetNode(assetName, fullAssetPath);
+                project.addNode(assetsFolder, assetNode);
+              }
+              
+              // Refresh the project asset list and asset manager to make the assets visible
+              Ode.getInstance().getAssetListBox().getAssetList().refreshAssetList(projectId);
+              Ode.getInstance().getAssetManager().loadAssets(projectId);
             }
             
             @Override
@@ -2273,338 +1883,7 @@ public class AssetLibraryWidgetClassic extends Composite {
     dialog.show();
   }
 
-  private void showProjectManagementDialog(final GlobalAsset asset) {
-    final DialogBox dialog = new DialogBox();
-    dialog.setText("Manage Asset in Projects");
-    dialog.setStyleName("ode-DialogBox");
-    dialog.setModal(true);
-    dialog.setGlassEnabled(true);
 
-    VerticalPanel dialogPanel = new VerticalPanel();
-    dialogPanel.setSpacing(12);
-    dialogPanel.getElement().getStyle().setProperty("minWidth", "500px");
-
-    // Asset header
-    HorizontalPanel assetHeader = new HorizontalPanel();
-    assetHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    assetHeader.getElement().getStyle().setProperty("backgroundColor", "#f8f9fa");
-    assetHeader.getElement().getStyle().setProperty("padding", "12px");
-    assetHeader.getElement().getStyle().setProperty("borderRadius", "6px");
-    assetHeader.getElement().getStyle().setProperty("border", "1px solid #e9ecef");
-    
-    Widget previewWidget = createPreviewWidget(asset);
-    assetHeader.add(previewWidget);
-    
-    VerticalPanel headerDetails = new VerticalPanel();
-    headerDetails.getElement().getStyle().setProperty("marginLeft", "12px");
-    
-    Label assetName = new Label(asset.getFileName());
-    assetName.setStyleName("ode-ComponentRowLabel");
-    assetName.getElement().getStyle().setProperty("fontWeight", "600");
-    assetName.getElement().getStyle().setProperty("fontSize", "16px");
-    headerDetails.add(assetName);
-    
-    Label assetInfo = new Label("Version: " + getVersionText(asset.getTimestamp()));
-    assetInfo.setStyleName("ode-ComponentRowLabel");
-    assetInfo.getElement().getStyle().setProperty("fontSize", "12px");
-    assetInfo.getElement().getStyle().setProperty("color", "#6c757d");
-    headerDetails.add(assetInfo);
-    
-    assetHeader.add(headerDetails);
-    dialogPanel.add(assetHeader);
-
-    // Project usage section
-    Label usageTitle = new Label(" Project Usage");
-    usageTitle.setStyleName("ode-ComponentRowLabel");
-    usageTitle.getElement().getStyle().setProperty("fontWeight", "600");
-    usageTitle.getElement().getStyle().setProperty("fontSize", "15px");
-    usageTitle.getElement().getStyle().setProperty("marginTop", "8px");
-    dialogPanel.add(usageTitle);
-
-    final VerticalPanel projectList = new VerticalPanel();
-    projectList.setWidth("100%");
-    projectList.getElement().getStyle().setProperty("backgroundColor", "#ffffff");
-    projectList.getElement().getStyle().setProperty("border", "1px solid #e9ecef");
-    projectList.getElement().getStyle().setProperty("borderRadius", "6px");
-    projectList.getElement().getStyle().setProperty("maxHeight", "300px");
-    projectList.getElement().getStyle().setProperty("overflowY", "auto");
-    
-    Label loadingLabel = new Label("Loading project information...");
-    loadingLabel.setStyleName("ode-ComponentRowLabel");
-    loadingLabel.getElement().getStyle().setProperty("padding", "20px");
-    loadingLabel.getElement().getStyle().setProperty("textAlign", "center");
-    loadingLabel.getElement().getStyle().setProperty("color", "#6c757d");
-    projectList.add(loadingLabel);
-    
-    dialogPanel.add(projectList);
-
-    // Load projects using this asset
-    globalAssetService.getProjectsUsingAsset(asset.getFileName(), new AsyncCallback<List<Long>>() {
-      @Override
-      public void onSuccess(List<Long> projectIds) {
-        projectList.clear();
-        
-        if (projectIds == null || projectIds.isEmpty()) {
-          Label noProjectsLabel = new Label("This asset is not currently used by any projects.");
-          noProjectsLabel.setStyleName("ode-ComponentRowLabel");
-          noProjectsLabel.getElement().getStyle().setProperty("padding", "20px");
-          noProjectsLabel.getElement().getStyle().setProperty("textAlign", "center");
-          noProjectsLabel.getElement().getStyle().setProperty("color", "#6c757d");
-          noProjectsLabel.getElement().getStyle().setProperty("fontStyle", "italic");
-          projectList.add(noProjectsLabel);
-          return;
-        }
-
-        for (final Long projectId : projectIds) {
-          HorizontalPanel projectRow = new HorizontalPanel();
-          projectRow.setWidth("100%");
-          projectRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-          projectRow.getElement().getStyle().setProperty("padding", "12px");
-          projectRow.getElement().getStyle().setProperty("borderBottom", "1px solid #f8f9fa");
-          
-          // Project info
-          VerticalPanel projectInfo = new VerticalPanel();
-          
-          Label projectName = new Label("Project #" + projectId);
-          projectName.setStyleName("ode-ComponentRowLabel");
-          projectName.getElement().getStyle().setProperty("fontWeight", "500");
-          projectInfo.add(projectName);
-          
-          Label statusLabel = new Label(" Linked and tracking updates");
-          statusLabel.setStyleName("ode-ComponentRowLabel");
-          statusLabel.getElement().getStyle().setProperty("fontSize", "12px");
-          statusLabel.getElement().getStyle().setProperty("color", "#28a745");
-          projectInfo.add(statusLabel);
-          
-          projectRow.add(projectInfo);
-          projectRow.setCellWidth(projectInfo, "100%");
-          
-          // Action buttons
-          HorizontalPanel actionButtons = new HorizontalPanel();
-          actionButtons.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-          actionButtons.getElement().getStyle().setProperty("gap", "8px");
-          
-          Button syncBtn = createActionButton(" Sync", "#17a2b8", "#117a8b");
-          syncBtn.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              syncAssetInProject(asset.getFileName(), projectId);
-            }
-          });
-          actionButtons.add(syncBtn);
-          
-          Button unlinkBtn = createActionButton(" Unlink", "#ffc107", "#e0a800");
-          unlinkBtn.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              if (Window.confirm("Remove '" + asset.getFileName() + "' from Project #" + projectId + "?")) {
-                unlinkAssetFromProject(asset.getFileName(), projectId, projectRow);
-              }
-            }
-          });
-          actionButtons.add(unlinkBtn);
-          
-          projectRow.add(actionButtons);
-          projectList.add(projectRow);
-        }
-      }
-      
-      @Override
-      public void onFailure(Throwable caught) {
-        projectList.clear();
-        Label errorLabel = new Label("Failed to load project information: " + caught.getMessage());
-        errorLabel.setStyleName("ode-ComponentRowLabel");
-        errorLabel.getElement().getStyle().setProperty("padding", "20px");
-        errorLabel.getElement().getStyle().setProperty("textAlign", "center");
-        errorLabel.getElement().getStyle().setProperty("color", "#dc3545");
-        projectList.add(errorLabel);
-      }
-    });
-
-    // Control buttons
-    HorizontalPanel buttonPanel = new HorizontalPanel();
-    buttonPanel.setSpacing(8);
-    buttonPanel.getElement().getStyle().setProperty("marginTop", "16px");
-
-    Button closeBtn = new Button("Close");
-    closeBtn.setStyleName("ode-ProjectListButton");
-    closeBtn.getElement().getStyle().setProperty("backgroundColor", "#6c757d");
-    closeBtn.getElement().getStyle().setProperty("color", "white");
-
-    Button syncAllBtn = new Button(" Sync All Projects");
-    syncAllBtn.setStyleName("ode-ProjectListButton");
-    syncAllBtn.getElement().getStyle().setProperty("backgroundColor", "#17a2b8");
-    syncAllBtn.getElement().getStyle().setProperty("color", "white");
-
-    buttonPanel.add(closeBtn);
-    buttonPanel.add(syncAllBtn);
-    dialogPanel.add(buttonPanel);
-
-    dialog.setWidget(dialogPanel);
-
-    // Event handlers
-    closeBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        dialog.hide();
-      }
-    });
-
-    syncAllBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        // TODO: Implement sync all functionality
-        Window.alert("Sync all functionality coming soon!");
-      }
-    });
-
-    dialog.center();
-    dialog.show();
-  }
-
-  private void showEnhancedDeleteConfirmation(final GlobalAsset asset) {
-    // First check if asset is used by projects
-    globalAssetService.getProjectsUsingAsset(asset.getFileName(), new AsyncCallback<List<Long>>() {
-      @Override
-      public void onSuccess(List<Long> projectIds) {
-        if (projectIds != null && !projectIds.isEmpty()) {
-          showDeleteConfirmationWithProjects(asset, projectIds);
-        } else {
-          showSimpleDeleteConfirmation(asset);
-        }
-      }
-      
-      @Override
-      public void onFailure(Throwable caught) {
-        // Fallback to simple confirmation
-        showSimpleDeleteConfirmation(asset);
-      }
-    });
-  }
-
-  private void showDeleteConfirmationWithProjects(final GlobalAsset asset, List<Long> projectIds) {
-    final DialogBox dialog = new DialogBox();
-    dialog.setText("Cannot Delete Asset");
-    dialog.setStyleName("ode-DialogBox");
-    dialog.setModal(true);
-    dialog.setGlassEnabled(true);
-
-    VerticalPanel dialogPanel = new VerticalPanel();
-    dialogPanel.setSpacing(12);
-
-    // Error header
-    HorizontalPanel errorHeader = new HorizontalPanel();
-    errorHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    errorHeader.getElement().getStyle().setProperty("backgroundColor", "#f8d7da");
-    errorHeader.getElement().getStyle().setProperty("padding", "12px");
-    errorHeader.getElement().getStyle().setProperty("borderRadius", "6px");
-    errorHeader.getElement().getStyle().setProperty("border", "1px solid #f5c6cb");
-    
-    Label errorIcon = new Label("[error]");
-    errorIcon.getElement().getStyle().setProperty("fontSize", "24px");
-    errorIcon.getElement().getStyle().setProperty("marginRight", "10px");
-    errorHeader.add(errorIcon);
-    
-    VerticalPanel errorText = new VerticalPanel();
-    Label errorTitle = new Label("Asset is in use");
-    errorTitle.setStyleName("ode-ComponentRowLabel");
-    errorTitle.getElement().getStyle().setProperty("fontWeight", "600");
-    errorTitle.getElement().getStyle().setProperty("fontSize", "16px");
-    errorTitle.getElement().getStyle().setProperty("color", "#721c24");
-    errorText.add(errorTitle);
-    
-    Label errorSubtitle = new Label("'" + asset.getFileName() + "' is used by " + projectIds.size() + " project(s)");
-    errorSubtitle.setStyleName("ode-ComponentRowLabel");
-    errorSubtitle.getElement().getStyle().setProperty("fontSize", "14px");
-    errorSubtitle.getElement().getStyle().setProperty("color", "#721c24");
-    errorText.add(errorSubtitle);
-    
-    errorHeader.add(errorText);
-    dialogPanel.add(errorHeader);
-
-    // Instructions
-    Label instructions = new Label("To delete this asset, you must first remove it from all projects using it.");
-    instructions.setStyleName("ode-ComponentRowLabel");
-    instructions.getElement().getStyle().setProperty("fontSize", "14px");
-    instructions.getElement().getStyle().setProperty("color", "#495057");
-    dialogPanel.add(instructions);
-
-    // Action buttons
-    HorizontalPanel buttonPanel = new HorizontalPanel();
-    buttonPanel.setSpacing(8);
-
-    Button closeBtn = new Button("Cancel");
-    closeBtn.setStyleName("ode-ProjectListButton");
-
-    Button manageBtn = new Button(" Manage Projects");
-    manageBtn.setStyleName("ode-ProjectListButton");
-    manageBtn.getElement().getStyle().setProperty("backgroundColor", "#007bff");
-    manageBtn.getElement().getStyle().setProperty("color", "white");
-
-    buttonPanel.add(closeBtn);
-    buttonPanel.add(manageBtn);
-    dialogPanel.add(buttonPanel);
-
-    dialog.setWidget(dialogPanel);
-
-    closeBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        dialog.hide();
-      }
-    });
-
-    manageBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        dialog.hide();
-        showProjectManagementDialog(asset);
-      }
-    });
-
-    dialog.center();
-    dialog.show();
-  }
-
-  private void showSimpleDeleteConfirmation(final GlobalAsset asset) {
-    if (Window.confirm("Are you sure you want to delete '" + asset.getFileName() + "'?\n\nThis action cannot be undone.")) {
-      deleteAsset(asset);
-    }
-  }
-
-  private void syncAssetInProject(String assetFileName, Long projectId) {
-    globalAssetService.syncProjectGlobalAsset(assetFileName, projectId, new AsyncCallback<Boolean>() {
-      @Override
-      public void onSuccess(Boolean updated) {
-        if (updated) {
-          statusLabel.setText("Asset synced successfully in project #" + projectId);
-        } else {
-          statusLabel.setText("Asset in project #" + projectId + " is already up-to-date");
-        }
-      }
-      
-      @Override
-      public void onFailure(Throwable caught) {
-        Window.alert("Failed to sync asset: " + caught.getMessage());
-      }
-    });
-  }
-
-  private void unlinkAssetFromProject(String assetFileName, Long projectId, HorizontalPanel projectRow) {
-    globalAssetService.removeAssetFromProject(assetFileName, projectId, new AsyncCallback<Void>() {
-      @Override
-      public void onSuccess(Void result) {
-        projectRow.removeFromParent();
-        statusLabel.setText("Asset unlinked from project #" + projectId);
-        refreshAssetList(); // Refresh to update usage indicators
-      }
-      
-      @Override
-      public void onFailure(Throwable caught) {
-        Window.alert("Failed to unlink asset: " + caught.getMessage());
-      }
-    });
-  }
 
   // Folder management dialogs
   private void showNewFolderDialog() {
@@ -2655,7 +1934,6 @@ public class AssetLibraryWidgetClassic extends Composite {
         
         folders.add(folders.size() - 1, folderName); // Insert before "Recent"
         updateFolderList();
-        statusLabel.setText("Folder '" + folderName + "' created");
         dialog.hide();
       }
     });
@@ -2678,9 +1956,12 @@ public class AssetLibraryWidgetClassic extends Composite {
     dialog.setStyleName("ode-DialogBox");
     dialog.setModal(true);
     dialog.setGlassEnabled(true);
+    dialog.setAutoHideEnabled(false);
 
     VerticalPanel dialogPanel = new VerticalPanel();
-    dialogPanel.setSpacing(8);
+    dialogPanel.setSpacing(12);
+    dialogPanel.setWidth("300px");
+    dialogPanel.getElement().getStyle().setProperty("padding", "16px");
 
     Label nameLabel = new Label("New folder name:");
     nameLabel.setStyleName("ode-ComponentRowLabel");
@@ -2689,10 +1970,14 @@ public class AssetLibraryWidgetClassic extends Composite {
     final TextBox nameBox = new TextBox();
     nameBox.setText(oldFolderName);
     nameBox.setStyleName("ode-TextBox");
+    nameBox.getElement().getStyle().setProperty("width", "100%");
     dialogPanel.add(nameBox);
 
     HorizontalPanel buttonPanel = new HorizontalPanel();
-    buttonPanel.setSpacing(4);
+    buttonPanel.setSpacing(8);
+    buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+    buttonPanel.setWidth("100%");
+    buttonPanel.getElement().getStyle().setProperty("marginTop", "12px");
 
     Button cancelBtn = new Button("Cancel");
     cancelBtn.setStyleName("ode-ProjectListButton");
@@ -2723,13 +2008,8 @@ public class AssetLibraryWidgetClassic extends Composite {
           return;
         }
 
-        // Update folder list
-        int index = folders.indexOf(oldFolderName);
-        if (index >= 0) {
-          folders.set(index, newFolderName);
-          updateFolderList();
-          statusLabel.setText("Folder renamed to '" + newFolderName + "'");
-        }
+        // Update all assets in this folder
+        renameFolderForAssets(oldFolderName, newFolderName);
         dialog.hide();
       }
     });
@@ -2748,14 +2028,115 @@ public class AssetLibraryWidgetClassic extends Composite {
   }
 
   private void showDeleteFolderDialog(final String folderName) {
-    if (Window.confirm("Delete folder '" + folderName + "'?")) {
+    // Count assets in this folder
+    int assetCount = 0;
+    for (GlobalAsset asset : globalAssets) {
+      if (folderName.equals(asset.getFolder())) {
+        assetCount++;
+      }
+    }
+
+    String message = assetCount > 0 
+        ? "Delete folder '" + folderName + "' and move " + assetCount + " asset(s) to root folder?"
+        : "Delete empty folder '" + folderName + "'?";
+
+    if (Window.confirm(message)) {
+      deleteFolderAndMoveAssets(folderName);
+    }
+  }
+
+  private void renameFolderForAssets(final String oldFolderName, final String newFolderName) {
+    final List<GlobalAsset> assetsToUpdate = new ArrayList<GlobalAsset>();
+    
+    // Find assets to update
+    for (GlobalAsset asset : globalAssets) {
+      if (oldFolderName.equals(asset.getFolder())) {
+        assetsToUpdate.add(asset);
+      }
+    }
+    
+    if (assetsToUpdate.isEmpty()) {
+      // Just update the folder list
+      int index = folders.indexOf(oldFolderName);
+      if (index >= 0) {
+        folders.set(index, newFolderName);
+        updateFolderList();
+      }
+      return;
+    }
+
+    // Update each asset's folder using the existing API
+    final int totalAssets = assetsToUpdate.size();
+    final int[] completedCount = {0};
+    
+    for (final GlobalAsset asset : assetsToUpdate) {
+      globalAssetService.updateGlobalAssetFolder(asset.getFileName(), newFolderName, new AsyncCallback<Void>() {
+        @Override
+        public void onSuccess(Void result) {
+          completedCount[0]++;
+          if (completedCount[0] == totalAssets) {
+            // All assets updated successfully
+            int index = folders.indexOf(oldFolderName);
+            if (index >= 0) {
+              folders.set(index, newFolderName);
+              updateFolderList();
+            }
+            refreshGlobalAssets();
+          }
+        }
+        
+        @Override
+        public void onFailure(Throwable caught) {
+          Window.alert("Failed to rename folder: " + caught.getMessage());
+        }
+      });
+    }
+  }
+
+  private void deleteFolderAndMoveAssets(final String folderName) {
+    
+    final List<GlobalAsset> assetsToMove = new ArrayList<GlobalAsset>();
+    for (GlobalAsset asset : globalAssets) {
+      if (folderName.equals(asset.getFolder())) {
+        assetsToMove.add(asset);
+      }
+    }
+    
+    if (assetsToMove.isEmpty()) {
+      // Just remove from folder list
       folders.remove(folderName);
       if (selectedFolderIndex > 0) {
         selectedFolderIndex = 0; // Reset to "All Assets"
       }
       updateFolderList();
       refreshAssetList();
-      statusLabel.setText("Folder '" + folderName + "' deleted");
+    } else {
+      // Move all assets to root folder (empty string)
+      final int totalAssets = assetsToMove.size();
+      final int[] completedCount = {0};
+      
+      for (final GlobalAsset asset : assetsToMove) {
+        globalAssetService.updateGlobalAssetFolder(asset.getFileName(), "", new AsyncCallback<Void>() {
+          @Override
+          public void onSuccess(Void result) {
+            completedCount[0]++;
+            if (completedCount[0] == totalAssets) {
+              // All assets moved successfully, now remove folder
+              folders.remove(folderName);
+              if (selectedFolderIndex > 0) {
+                selectedFolderIndex = 0; // Reset to "All Assets"
+              }
+              updateFolderList();
+              refreshGlobalAssets();
+            }
+          }
+          
+          @Override
+          public void onFailure(Throwable caught) {
+            Window.alert("Failed to delete folder: " + caught.getMessage());
+          }
+        });
+      }
     }
   }
   /**
@@ -2856,13 +2237,11 @@ public class AssetLibraryWidgetClassic extends Composite {
       case REPLACE_EXISTING:
         // TODO: If notifyProjects is true, could send notifications
         proceedWithUpload(originalFilename, form);
-        statusLabel.setText("Replacing existing asset...");
         break;
         
       case CREATE_NEW_ASSET:
         if (newAssetName != null && !newAssetName.trim().isEmpty()) {
           proceedWithUpload(newAssetName.trim(), form);
-          statusLabel.setText("Uploading new asset as '" + newAssetName + "'...");
         } else {
           Window.alert("Invalid new asset name provided.");
         }
@@ -3126,6 +2505,249 @@ public class AssetLibraryWidgetClassic extends Composite {
 
     errorDialog.setWidget(dialogPanel);
     errorDialog.center();
+  }
+
+  // Version management methods from Neo version
+  private void showUpdateAssetDialog(final GlobalAsset asset) {
+    final DialogBox dialog = new DialogBox();
+    dialog.setText("Upload New Version - " + asset.getFileName());
+    dialog.setStyleName("ode-DialogBox");
+    dialog.setModal(true);
+    dialog.setGlassEnabled(true);
+
+    VerticalPanel dialogPanel = new VerticalPanel();
+    dialogPanel.setSpacing(12);
+    dialogPanel.setWidth("400px");
+
+    // Current asset info
+    HorizontalPanel currentAssetInfo = new HorizontalPanel();
+    currentAssetInfo.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    currentAssetInfo.getElement().getStyle().setProperty("marginBottom", "16px");
+    currentAssetInfo.getElement().getStyle().setProperty("padding", "8px");
+    currentAssetInfo.getElement().getStyle().setProperty("border", "1px solid #e0e0e0");
+    currentAssetInfo.getElement().getStyle().setProperty("borderRadius", "4px");
+
+    String fileName = asset.getFileName().toLowerCase();
+    Image assetIcon;
+    if (fileName.endsWith(".mp3") || fileName.endsWith(".wav") || fileName.endsWith(".ogg")) {
+      assetIcon = new Image(images.player());
+    } else {
+      assetIcon = new Image(images.image());
+    }
+    assetIcon.setWidth("24px");
+    assetIcon.setHeight("24px");
+    assetIcon.getElement().getStyle().setProperty("marginRight", "8px");
+    currentAssetInfo.add(assetIcon);
+
+    VerticalPanel currentInfo = new VerticalPanel();
+    Label currentName = new Label("Current: " + asset.getFileName());
+    currentName.setStyleName("ode-ComponentRowLabel");
+    currentName.getElement().getStyle().setProperty("fontWeight", "500");
+    currentInfo.add(currentName);
+
+    Label currentVersion = new Label("Last updated: " + formatDate(asset.getTimestamp()));
+    currentVersion.setStyleName("ode-ComponentRowLabel");
+    currentVersion.getElement().getStyle().setProperty("fontSize", "11px");
+    currentVersion.getElement().getStyle().setProperty("opacity", "0.7");
+    currentInfo.add(currentVersion);
+    currentAssetInfo.add(currentInfo);
+
+    dialogPanel.add(currentAssetInfo);
+
+    // Upload form
+    final FormPanel form = new FormPanel();
+    form.setEncoding(FormPanel.ENCODING_MULTIPART);
+    form.setMethod(FormPanel.METHOD_POST);
+
+    VerticalPanel formPanel = new VerticalPanel();
+    formPanel.setSpacing(8);
+
+    // File input
+    Label fileLabel = new Label("Select new version file:");
+    fileLabel.setStyleName("ode-ComponentRowLabel");
+    formPanel.add(fileLabel);
+
+    final FileUpload fileUpload = new FileUpload();
+    fileUpload.setName(ServerLayout.UPLOAD_GLOBAL_ASSET_FORM_ELEMENT);
+    fileUpload.setStyleName("ode-TextBox");
+    fileUpload.getElement().getStyle().setProperty("width", "100%");
+    formPanel.add(fileUpload);
+
+    // Version notes
+    Label notesLabel = new Label("Version notes (optional):");
+    notesLabel.setStyleName("ode-ComponentRowLabel");
+    formPanel.add(notesLabel);
+
+    final TextBox versionNotes = new TextBox();
+    versionNotes.setStyleName("ode-TextBox");
+    versionNotes.getElement().getStyle().setProperty("width", "100%");
+    versionNotes.getElement().setPropertyString("placeholder", "Describe changes in this version...");
+    formPanel.add(versionNotes);
+
+    // Auto-update projects checkbox
+    final CheckBox autoUpdate = new CheckBox("Automatically update projects using this asset");
+    autoUpdate.setValue(true);
+    autoUpdate.setStyleName("ode-ComponentRowLabel");
+    autoUpdate.getElement().getStyle().setProperty("fontSize", "12px");
+    autoUpdate.getElement().getStyle().setProperty("marginTop", "8px");
+    formPanel.add(autoUpdate);
+
+    Label autoUpdateDesc = new Label("Projects with tracking enabled will receive this update automatically.");
+    autoUpdateDesc.setStyleName("ode-ComponentRowLabel");
+    autoUpdateDesc.getElement().getStyle().setProperty("fontSize", "10px");
+    autoUpdateDesc.getElement().getStyle().setProperty("opacity", "0.7");
+    autoUpdateDesc.getElement().getStyle().setProperty("marginLeft", "20px");
+    formPanel.add(autoUpdateDesc);
+
+    // Error label
+    final Label errorLabel = new Label();
+    errorLabel.getElement().getStyle().setProperty("color", "#d93025");
+    errorLabel.getElement().getStyle().setProperty("fontSize", "12px");
+    formPanel.add(errorLabel);
+
+    form.setWidget(formPanel);
+    dialogPanel.add(form);
+
+    // Button panel
+    HorizontalPanel buttonPanel = new HorizontalPanel();
+    buttonPanel.setSpacing(8);
+    buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+    buttonPanel.setWidth("100%");
+
+    Button cancelBtn = new Button("Cancel");
+    cancelBtn.setStyleName("ode-ProjectListButton");
+
+    Button uploadBtn = new Button("Upload New Version");
+    uploadBtn.setStyleName("ode-ProjectListButton");
+
+    buttonPanel.add(cancelBtn);
+    buttonPanel.add(uploadBtn);
+    dialogPanel.add(buttonPanel);
+
+    dialog.setWidget(dialogPanel);
+
+    // Event handlers
+    uploadBtn.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        String filename = fileUpload.getFilename();
+        if (filename == null || filename.isEmpty()) {
+          errorLabel.setText("Please select a file.");
+          return;
+        }
+        
+        // Extract actual filename
+        String actualFilename = filename;
+        if (filename.contains("\\")) {
+          actualFilename = filename.substring(filename.lastIndexOf("\\") + 1);
+        } else if (filename.contains("/")) {
+          actualFilename = filename.substring(filename.lastIndexOf("/") + 1);
+        }
+        
+        // Validate file type matches existing asset
+        String newExt = getFileExtension(actualFilename).toLowerCase();
+        String currentExt = getFileExtension(asset.getFileName()).toLowerCase();
+        if (!newExt.equals(currentExt)) {
+          errorLabel.setText("New version must have the same file type as the current asset (" + currentExt + ").");
+          return;
+        }
+        
+        // Use the original asset name for the upload (maintaining the same filename)
+        String uploadPath = "_global_/";
+        if (asset.getFolder() != null && !asset.getFolder().isEmpty()) {
+          uploadPath += asset.getFolder() + "/";
+        }
+        uploadPath += asset.getFileName(); // Keep the same filename
+        
+        form.setAction(GWT.getModuleBaseURL() + "upload/" + ServerLayout.UPLOAD_GLOBAL_ASSET + "/" + uploadPath);
+        form.submit();
+      }
+    });
+
+    form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+      @Override
+      public void onSubmitComplete(SubmitCompleteEvent event) {
+        dialog.hide();
+        String results = event.getResults();
+        if (results != null && results.contains("SUCCESS")) {
+          refreshGlobalAssets();
+          
+          // If auto-update is enabled, sync all projects using this asset
+          if (autoUpdate.getValue()) {
+            syncAssetWithProjects(asset.getFileName());
+          }
+          
+          // Show success notification
+          Window.alert("Asset updated successfully!" + 
+            (autoUpdate.getValue() ? " Projects using this asset will be updated." : ""));
+        } else {
+          showUploadError(MESSAGES.fileUploadError(), "Failed to upload new version. Please try again.");
+        }
+      }
+    });
+
+    cancelBtn.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialog.hide();
+      }
+    });
+
+    dialog.center();
+    dialog.show();
+  }
+
+
+  private void syncAssetWithProjects(String assetFileName) {
+    
+    // Get current project ID if we're in a project
+    long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    
+    if (currentProjectId != 0) {
+      // Sync with current project
+      globalAssetService.syncProjectGlobalAsset(assetFileName, currentProjectId, new AsyncCallback<Boolean>() {
+        @Override
+        public void onSuccess(Boolean result) {
+          if (result) {
+            // Force refresh of current project's asset list and editors
+            refreshCurrentProjectAssets();
+          } else {
+          }
+        }
+        
+        @Override
+        public void onFailure(Throwable caught) {
+        }
+      });
+    }
+    
+    // Also get list of all projects using this asset and sync them
+    globalAssetService.getProjectsUsingAsset(assetFileName, new AsyncCallback<List<Long>>() {
+      @Override
+      public void onSuccess(List<Long> projectIds) {
+        // The server-side should handle the actual synchronization
+        // Client-side we just need to refresh if current project is affected
+        if (projectIds.contains(Ode.getInstance().getCurrentYoungAndroidProjectId())) {
+          refreshCurrentProjectAssets();
+        }
+      }
+      
+      @Override
+      public void onFailure(Throwable caught) {
+      }
+    });
+  }
+
+  private void refreshCurrentProjectAssets() {
+    // Force refresh of project assets and any open editors
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId != 0) {
+      // Refresh the project manager - this will update asset lists
+      Ode.getInstance().getProjectManager().getProject(projectId);
+      
+      // The server-side sync should handle updating the project assets
+      // Client-side we just notify that a refresh might be needed
+    }
   }
 
 }
