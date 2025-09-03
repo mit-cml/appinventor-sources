@@ -74,4 +74,9 @@ public class LocalUserInfoService implements UserInfoServiceAsync {
   public void deleteAccount(AsyncCallback<String> callback) {
 
   }
+
+  @Override
+  public void storeAppStoreSettings(String content, AsyncCallback<Void> callback) {
+
+  }
 }

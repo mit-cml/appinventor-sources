@@ -7,7 +7,7 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import static java.nio.file.Files.newInputStream;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.context.AndroidPaths;
@@ -104,6 +104,7 @@ public class RunBundletool implements AndroidTask {
         "sure its password is set to 'android', and the key is set to 'androidkey'.");
       return TaskResult.generateError("Could not sign bundle");
     }
+    context.getOutputFiles().add(context.getPaths().getDeployFile());
     return TaskResult.generateSuccess();
   }
 

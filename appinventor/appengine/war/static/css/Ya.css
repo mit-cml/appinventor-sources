@@ -235,6 +235,14 @@ div.StatusPanel {
   background: #99CC00;
 }
 
+.ode-ContextMenuItem .ode-BetaLabel {
+  color: red;
+  font-size: 60%;
+  line-height: 60%;
+  padding-left: 1ex;
+  vertical-align: super;
+}
+
 .ode-ContextMenuItem-disabled {
   color: #999;
 }
@@ -307,16 +315,6 @@ div.StatusPanel {
 .ode-MessagesOutput {
   background-color: white;
   font-size: small;
-}
-
-/*
- * MotdBox
- */
-
-.ode-Motd {
-  background-color: #f7f9f2;
-  font-size: small;
-  color: #555;
 }
 
 /*
@@ -3443,6 +3441,52 @@ div.dropdiv p {
   }
 }
 
+.popup {
+  background-color: transparent;
+  position: absolute;
+}
+
+.popup .popup-triangle {
+  position: absolute;
+  top: -8px;
+  left: calc(50% - 8px);
+  height: 0;
+  width: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #128BA8;
+  border-top: 0 solid transparent;
+}
+
+.popup .popup-content {
+  background-color: #128BA8;
+  color: #fff;
+  padding: 8px 16px;
+  max-width: 300px;
+  text-align: justify;
+  border-radius: 8px;
+}
+
+.popup a {
+  color: #fff;
+  text-decoration: underline;
+}
 .ode-DialogBox-light .dark, .ode-DialogBox-dark .light {
   display: none;
+}
+
+#aiConsolePanel {
+  height: 100%;
+  background-color: white;
+  overflow-y: scroll;
+}
+
+#aiConsolePanel .Warning {
+  color: rgb(255, 153, 0);
+  font-weight: bold;
+}
+
+#aiConsolePanel .Error {
+  color: red;
+  font-weight: bolder;
 }

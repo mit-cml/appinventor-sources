@@ -38,6 +38,7 @@
               </g:FlowPanel>
             </g:FlowPanel>
             <box:PropertiesBox ui:field="propertiesBox"  styleName="ode-Designer-RightColumns" />
+            <ed:ConsolePanel ui:field="consolePanel" height="100%" visible="false" />
           </g:FlowPanel>
         </g:FlowPanel>
         <g:FlowPanel width="100%">

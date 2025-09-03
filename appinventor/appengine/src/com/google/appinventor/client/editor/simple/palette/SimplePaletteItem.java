@@ -1,12 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
+
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockComponentsUtil;
 import com.google.appinventor.client.editor.simple.components.MockContainer;
@@ -37,15 +39,11 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class SimplePaletteItem extends DragSourcePanel {
-  // Queried to determine the set of UI elements that accept drops of palette items
-  private DropTargetProvider dropTargetProvider;
+  // The editor that will receive instances of the component represented by this item.
+  private SimpleEditor activeEditor;
 
   // Component descriptor (needed for mock component instantiation)
   private SimpleComponentDescriptor scd;
-
-  // Cached prototype of the component that this palette item creates.
-  // Properties of the prototype may be queried by accessors.
-  private MockComponent componentPrototype;
 
   //It is here to keep the selected panel item
   private static Widget selectedPaletteItemWidget;
@@ -54,19 +52,15 @@ public class SimplePaletteItem extends DragSourcePanel {
    * Creates a new palette item.
    *
    * @param scd component descriptor for palette item
-   * @param dropTargetProvider provider of targets that palette items can be dropped on
    */
-  public SimplePaletteItem(SimpleComponentDescriptor scd, DropTargetProvider dropTargetProvider) {
-    this.dropTargetProvider = dropTargetProvider;
+  public SimplePaletteItem(SimpleComponentDescriptor scd) {
     this.scd = scd;
-
-    componentPrototype = null;
 
     // Initialize palette item UI
     HorizontalPanel panel = new HorizontalPanel();
     panel.setStylePrimaryName("ode-SimplePaletteItem");
 
-    Image image = scd.getImage();
+    Image image = new Image(scd.getImage().getUrl());
     image.setStylePrimaryName("ode-SimplePaletteItem-icon");
     panel.add(image);
     panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
@@ -164,7 +158,7 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   private void addComponent() {
     MockComponent component = createMockComponent();
-    MockVisibleComponent mockVisibleComponent = (MockVisibleComponent) dropTargetProvider.getDropTargets()[0];
+    MockVisibleComponent mockVisibleComponent = (MockVisibleComponent) activeEditor.getDropTargetProvider().getDropTargets()[0];
     MockForm form = mockVisibleComponent.getForm();
     MockComponent selectedComponent = form.getLastSelectedComponent();
     if (selectedComponent instanceof MockContainer && ((MockContainer) selectedComponent).willAcceptComponentType(component.getType()) && component.isVisibleComponent()) {
@@ -179,31 +173,20 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   /**
    * Returns a new mock component for the palette item.
-   * <p>
-   * The caller is assumed to take ownership of the returned component.
+   *
+   * <p>The caller is assumed to take ownership of the returned component.
    *
    * @return mock component
    */
   public MockComponent createMockComponent() {
-    cacheInternalComponentPrototype();
-
-    MockComponent returnedComponentPrototype = componentPrototype;
-    componentPrototype = null;
-    return returnedComponentPrototype;
+    return scd.createMockComponentFromPalette();
   }
 
   /**
    * Returns whether this palette item creates components with a visual representation.
    */
   public boolean isVisibleComponent() {
-    cacheInternalComponentPrototype();
-    return componentPrototype.isVisibleComponent();
-  }
-
-  private void cacheInternalComponentPrototype() {
-    if (componentPrototype == null) {
-      componentPrototype = scd.createMockComponentFromPalette();
-    }
+    return !scd.getNonVisible();
   }
 
   // DragSource implementation
@@ -247,7 +230,7 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   @Override
   public DropTarget[] getDropTargets() {
-    return dropTargetProvider.getDropTargets();
+    return activeEditor.getDropTargetProvider().getDropTargets();
   }
 
   @Override
@@ -259,5 +242,9 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   public String getName() {
     return scd.getName();
+  }
+
+  public void setActiveEditor(SimpleEditor editor) {
+    this.activeEditor = editor;
   }
 }

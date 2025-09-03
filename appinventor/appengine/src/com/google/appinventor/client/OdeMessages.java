@@ -196,6 +196,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button for removing a screen")
   String removeFormButton();
 
+  @DefaultMessage("Toggle Console")
+  @Description("Label of the button for toggling the console panel")
+  String toggleConsoleButton();
+
   @DefaultMessage("Connect")
   @Description("Label of the button for selecting phone connection")
   String connectButton();
@@ -419,13 +423,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("error message when fail to send to user from moderator")
   String moderationErrorFailToSendEmail();
 
-
-  // Used in MotdFetcher.java
-
-  @DefaultMessage("Failed to contact server to get the MOTD.")
-  @Description("Message displayed when cannot get a MOTD from the server.")
-  String getMotdFailed();
-
   // Used in Ode.java
 
   @DefaultMessage("MIT App Inventor")
@@ -595,6 +592,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button for import keystore")
   String uploadKeystoreMenuItem();
 
+  @DefaultMessage("Download Certificate Request")
+  @Description("Label of the button for downloading a certificate request")
+  String downloadCertificateRequestItem();
+
   @DefaultMessage("Delete keystore")
   @Description("Label of the button for delete keystore")
   String deleteKeystoreMenuItem();
@@ -718,6 +719,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("[2] Android App (.apk)")
   @Description("Label of item for building a project as apk and showing the qr+download dialog")
   String showExportAndroidApk2();
+
+  @DefaultMessage("iOS Ad Hoc (.ipa)")
+  @Description("Menu item text for initiating an iOS build for ad hoc distribution")
+  String showExportiOSAdHoc();
+
+  @DefaultMessage("Upload to iOS App Store")
+  @Description("Menu item text for initiating an iOS build to upload to the App Store")
+  String showExportiOSAppStore();
 
   @DefaultMessage("Android App Bundle (.aab)")
   @Description("Label of item for building a project as aab and showing the qr+download dialog")
@@ -860,6 +869,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Open wizard for user interface settings")
   String uiSettings();
 
+  @DefaultMessage("App Store Settings")
+  @Description("Title for the App Store Settings menu item")
+  String appStoreSettingsMenuTitle();
+
   //Admin
   @DefaultMessage("Admin")
   @Description("Label of the button leading to admin functionality")
@@ -957,12 +970,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Messages")
   @Description("Caption for message output box.")
   String messagesOutputBoxCaption();
-
-  // Used in boxes/MotdBox.java
-
-  @DefaultMessage("Welcome to App Inventor!")
-  @Description("Initial caption for MOTD box.")
-  String motdBoxCaption();
 
   // Used in boxes/OdeLogBox.java
 
@@ -1761,6 +1768,16 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Title of download aab dialog.")
   String downloadAabDialogTitle(String projectName);
 
+  @DefaultMessage("iOS App for {0}")
+  @Description("Title of the download ipa dialog.")
+  String downloadIpaDialogTitle(String projectName);
+
+  @DefaultMessage("Your app has been successfully uploaded to App Store Connect. Click "
+      + "<a href='https://appstoreconnect.apple.com/' target='_blank'>here</a> to monitor "
+      + "progress.")
+  @Description("")
+  String continueOnAppStore();
+
   @DefaultMessage("Download .apk now")
   @Description("Download button shown in barcode dialog")
   String barcodeDownloadApk();
@@ -1772,6 +1789,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Note: this barcode is only valid for 2 hours. See {0} the FAQ {1} for info " +
       "on how to share your app with others.")
   String barcodeWarning(String aTagStart, String aTagEnd);
+
+  @DefaultMessage("Download .ipa now")
+  @Description("Download button shown in barcode dialog for iPhone apps")
+  String barcodeDownloadIpa();
 
   @DefaultMessage("<b>Click the button to download the app, right-click on it to copy a download link, or scan the " +
           "code with a barcode scanner to install.</b><br>" +
@@ -2580,6 +2601,16 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Building APK")
   @Description("")
   String buildingApk();
+
+  @DefaultMessage("Error During iOS Build")
+  @Description("The title shown in iOS related error dialogs")
+  String iosBuildError();
+
+  @DefaultMessage("Your project lacks a mobileprovision profile, which is necessary to compile "
+      + "your project. Please <a href=\"/reference/other/build-ios-apps.html\" target=\"_blank\">"
+      + "read more</a> about how to build iOS apps with App Inventor.")
+  @Description("Error message shown when the user fails to include a mobileprovision file.")
+  String provisioningProfileNeeded();
 
   @DefaultMessage("Math")
   @Description("Label on built-in-Math-blocks branch of block selector tree")
@@ -5740,6 +5771,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text to Display Publishing Project Property Category in Project Property Dialog")
   String projectPropertyPublishingCategoryTitle();
 
+  @DefaultMessage("iOS Settings")
+  @Description("Text to display for the iOS settings category in the Project Property Dialog")
+  String projectPropertyIosSettingsCategoryTitle();
+
   // Best Fit Model names
 
   @DefaultMessage("Linear")
@@ -5813,4 +5848,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Time")
   @Description("Set x-axis label values Type as Time")
   String labelTime();
+
+  @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
+  @Description("Message shown in the info popup when the user first opens the Neo UI.")
+  String neoWelcomeMessage();
 }

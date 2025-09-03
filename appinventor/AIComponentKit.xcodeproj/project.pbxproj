@@ -2243,7 +2243,7 @@
 					"\"Zip\"",
 					"-framework",
 					"\"geos\"",
-					"-framework",
+					"-weak_framework",
 					"\"WebRTC\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKit;
@@ -2330,7 +2330,7 @@
 					"\"Zip\"",
 					"-framework",
 					"\"geos\"",
-					"-framework",
+					"-weak_framework",
 					"\"WebRTC\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKit;

@@ -1873,6 +1873,8 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The ConverseWithImage method was added
     3: "noUpgrade",
+    // Added CreateImage and GotResponseWithImage
+    4: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
@@ -3512,7 +3514,10 @@ Blockly.Versioning.AllUpgradeMaps =
     9: "noUpgrade",
 
     // AI2: Added ErrorOccurred event and RunJavaScript method
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // AI2: Added UsesCamera and UsesMicrophone properties
+    11: "noUpgrade"
 
   }, // End WebViewer upgraders
 
