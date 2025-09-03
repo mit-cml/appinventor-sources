@@ -16,7 +16,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.FormChangeListener;
@@ -148,7 +148,8 @@ public final class YaBlocksEditor extends FileEditor
 
     // Listen for selection events for built-in drawers
     BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
-
+    Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+    BlockSelectorBox.getBlockSelectorBox().setVisible(false);
     project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
     project.addProjectChangeListener(this);
     onProjectLoaded(project);
@@ -265,14 +266,11 @@ public final class YaBlocksEditor extends FileEditor
       // don't want a component drawer open in the blocks editor when we
       // come back to it.
       updateBlocksTree(form, null);
-      String layoutType = Ode.getInstance().getLayoutType();
-      // Only perform widget removal for desktop version
-      if (!"mobile".equals(layoutType)) {
-        Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()
-                .getWidget(2));
-      }
+
+      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets());
       Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);
-      Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+      SourceStructureBox.getSourceStructureBox().setVisible(false);
+      String layoutType = Ode.getInstance().getLayoutType();
       BlockSelectorBox.getBlockSelectorBox().setVisible(!"mobile".equals(layoutType));
       AssetListBox.getAssetListBox().setVisible(true);
       blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled());
@@ -325,12 +323,9 @@ public final class YaBlocksEditor extends FileEditor
     paletteBox.clear();
     paletteBox.setVisible(true);
 
-    String layoutType = Ode.getInstance().getLayoutType();
-    Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets().getWidget(0));
-    if (!"mobile".equals(layoutType)) {
-      Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
-    }
-    Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+    Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets());
+    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 2);
+    SourceStructureBox.getSourceStructureBox().setVisible(true);
     BlockSelectorBox.getBlockSelectorBox().setVisible(false);
     AssetListBox.getAssetListBox().setVisible(true);
 
