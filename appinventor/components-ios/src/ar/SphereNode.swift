@@ -78,7 +78,7 @@ open class SphereNode: ARNodeBase, ARSphere {
   
   private func updateSphereMesh() {
     // Generate new sphere mesh with current radius
-    let mesh = MeshResource.generateSphere(radius: _radius * Scale)
+    let mesh = MeshResource.generateSphere(radius: _radius)
     
     // Preserve existing materials when updating mesh
     let existingMaterials = _modelEntity.model?.materials ?? []
@@ -261,24 +261,33 @@ open class SphereNode: ARNodeBase, ARSphere {
   
   /* these are default setttings. they can be overridden by setting these values individually */
   private func updateBehaviorSettings() {
-      // ✅ Start with base sphere defaults
-      var mass: Float = 0.2
-      var staticFriction: Float = 0.5
-      var dynamicFriction: Float = 0.3
-      var restitution: Float = 0.6
-      var gravityScale: Float = 1.0
-      var dragSensitivity: Float = 1.0
-      
-      // ✅ Apply behavior-specific defaults (last behavior wins if multiple)
+    
+    
+    var baseMass: Float = 0.2
+    let massRatio = Mass / baseMass
+    
+
+    var staticFriction: Float = 0.5
+    var dynamicFriction: Float = 0.3
+    var restitution: Float = 0.6
+    var gravityScale: Float = 1.0
+    var dragSensitivity: Float = 1.0
+    
+    // MASS EFFECTS on both friction and damping
+    let massEffect = calculateMassEffect(massRatio: massRatio)
+
+      // ✅ Apply behavior-specific defaults (last behavior wins if multiple) CSB we don't currently support multiple
       if _behaviorFlags.contains(.heavy) {
-        mass = 1.0  // Heavy default
+        Mass = 1.0  // Heavy default
         dragSensitivity = 1.0  // Harder to drag
         staticFriction = 0.7
+        restitution = 0.3
       }
       
       if _behaviorFlags.contains(.light) {
-          mass = 0.04  // Light default
+          Mass = 0.04  // Light default
           dragSensitivity = 1.6  // Easier to drag
+          restitution = 0.7
       }
       
       if _behaviorFlags.contains(.bouncy) {
@@ -313,15 +322,20 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       if _behaviorFlags.contains(.floating) {
           // Floating defaults - light with reduced gravity
-          mass = 0.02  // Very light
+          Mass = 0.02  // Very light
           gravityScale = 0.05  // Almost no gravity
           staticFriction = 0.1  // Low friction for floating
           dynamicFriction = 0.06
           dragSensitivity = 1.8  // Very easy to move
       }
       
+      // apply friction and damping
+      staticFriction *= massEffect.friction
+      dynamicFriction *= massEffect.friction
+      _linearDamping *= massEffect.damping
+      _angularDamping *= massEffect.damping
+    
       // ✅ Set the defaults - user can override these afterward
-      Mass = mass
       StaticFriction = staticFriction
       DynamicFriction = dynamicFriction
       Restitution = restitution
@@ -329,7 +343,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       DragSensitivity = dragSensitivity
       
       let behaviorNames = getBehaviorNames()
-      print("Applied \(behaviorNames.joined(separator: "+")) defaults - Mass: \(mass), Friction: \(staticFriction), Restitution: \(restitution), DragSensitivity: \(dragSensitivity)")
+      print("Applied \(behaviorNames.joined(separator: "+")) defaults - Mass: \(Mass), Friction: \(staticFriction), Restitution: \(restitution), DragSensitivity: \(dragSensitivity)")
   }
   
   
@@ -345,189 +359,136 @@ open class SphereNode: ARNodeBase, ARSphere {
       if _behaviorFlags.contains(.light) { names.append("light") }
       return names
   }
+  
+  private func calculateMassEffect(massRatio: Float) -> (friction: Float, damping: Float) {
+      // Mass affects friction and damping differently
+      
+      // FRICTION: Heavier objects have more contact pressure
+      let frictionEffect = sqrt(massRatio)  // Square root for realistic scaling
+      
+      // Lighter objects affected more by air resistance
+      let dampingEffect = 1.0 / sqrt(massRatio)  // Inverse relationship
+      
+      return (frictionEffect, dampingEffect)
+  }
+
 
   override open func ScaleBy(_ scalar: Float) {
       print("🔄 Scaling sphere \(Name) by \(scalar)")
       
-      let currentPos = _modelEntity.transform.translation
       let oldScale = Scale
       let oldActualRadius = _radius * oldScale
-      
-      // ✅ Calculate where the bottom of the sphere currently is
-      let currentBottomY = currentPos.y - oldActualRadius
-      
-      // ✅ Keep physics enabled during scaling
+          
       let hadPhysics = _modelEntity.physicsBody != nil
       
-      // ✅ Update scale
       let newScale = oldScale * abs(scalar)
-      _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
-      
-      // ✅ Calculate new radius and maintain bottom position
-      let newActualRadius = _radius * newScale
-      let newCenterY = currentBottomY + newActualRadius
-      
-      print("🔄 Scaling sphere center y from \(currentPos.y) to \(newCenterY)")
-      print("🔄 Bottom Y stays at: \(currentBottomY), oldRadius: \(oldActualRadius), newRadius: \(newActualRadius)")
-      
-      // ✅ Apply new position
-      let newPosition = SIMD3<Float>(currentPos.x, newCenterY, currentPos.z)
-      _modelEntity.transform.translation = newPosition
-
-      // ✅ Update physics immediately if it was enabled
+      // ✅ Update physics immediately if it was enabled before we change the scale
       if hadPhysics {
-          updatePhysicsCollisionShape()
+        let previousSize = _radius * Scale
+        _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_radius * newScale)
+  
       }
+    
+      Scale = newScale
       
       print("🎾 Scale complete - bottom position maintained")
   }
 
   override open func scaleByPinch(scalar: Float) {
-          print("🤏 Pinch scaling sphere \(Name) by \(scalar)")
-          
-          let oldScale = Scale
-          let newScale = oldScale * scalar
-          
-          // Validate bounds
-          let newActualRadius = _radius * newScale
-          let minRadius: Float = 0.01
-          let maxRadius: Float = 3.0
-          
-          guard newActualRadius >= minRadius && newActualRadius <= maxRadius else {
-              print("🚫 Pinch scale rejected - radius would be \(newActualRadius)m")
-              return
-          }
-          
-          // ✅ CRITICAL: Update collision shape BEFORE and AFTER scaling
-          let hadPhysics = _modelEntity.physicsBody != nil
-          
-          if hadPhysics {
-              // Temporarily disable physics to avoid conflicts
-              let savedMass = Mass
-              let savedFriction = StaticFriction
-              let savedRestitution = Restitution
-              
-              _modelEntity.physicsBody = nil
-              _modelEntity.collision = nil
-              
-              // Apply visual scaling
-              _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
-              
-              // Recreate physics with NEW collision shape
-              createFreshCollisionShape(newScale: newScale)
-              
-              // Restore physics properties
-              Mass = savedMass
-              StaticFriction = savedFriction
-              Restitution = savedRestitution
-              EnablePhysics(true)
-              
-              print("🎾 Physics recreated with correct collision shape")
-          } else {
-              // No physics - just scale visually
-              _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
-          }
-          
-          print("🎾 Pinch scale complete: \(oldScale) → \(newScale), collision radius: \(newActualRadius)m")
-          
-          // Debug collision shape
-          debugCollisionShape()
+      print("🤏 Pinch scaling sphere \(Name) by \(scalar)")
+      
+      let oldScale = Scale
+      let newScale = oldScale * abs(scalar) // however big it was before times the new scale change
+      
+
+      let newActualRadius = _radius * scalar
+      let minRadius: Float = 0.01
+      let maxRadius: Float = 4.0 // CSB maybe we don't want this?
+      
+      guard newActualRadius >= minRadius && newActualRadius <= maxRadius else {
+          print("🚫 Pinch scale rejected - radius would be \(newActualRadius)m")
+          return
       }
+
+
+      // ✅ CRITICAL: Update collision shape BEFORE and AFTER scaling
+      let hadPhysics = _modelEntity.physicsBody != nil
+      
+      if hadPhysics {
+          // Temporarily disable physics to avoid conflicts
+          let savedMass = Mass
+          let savedFriction = StaticFriction
+          let savedRestitution = Restitution
+          
+          _modelEntity.physicsBody = nil
+          _modelEntity.collision = nil
+          
+          let previousSize = _radius * Scale
+          _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_radius * newScale)
+        
+        
+          // Apply visual scaling
+          Scale = newScale
+          
+
+          
+          // Restore physics properties
+          Mass = savedMass
+          StaticFriction = savedFriction
+          Restitution = savedRestitution
+          EnablePhysics(true)
+          
+          print("🎾 Physics recreated with correct collision shape")
+      } else {
+          // No physics - just scale visually
+          _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
+      }
+      
+      print("🎾 Pinch scale complete: \(oldScale) → \(newScale), collision radius: \(newActualRadius)m")
+      
+      // Debug collision shape
+      debugCollisionShape()
+  }
   
   @objc open func debugCollisionShape() {
-         let visualScale = _modelEntity.transform.scale.x
-         let calculatedRadius = _radius * visualScale
-         
-         print("=== COLLISION SHAPE DEBUG ===")
-         print("Internal radius: \(_radius)m")
-         print("Visual scale: \(visualScale), and Scale is \(Scale)")
-         print("Calculated collision radius: \(calculatedRadius)m")
-         print("Has collision: \(_modelEntity.collision != nil)")
-         print("Has physics: \(_modelEntity.physicsBody != nil)")
-         
-         if let collision = _modelEntity.collision {
-             print("Collision shapes count: \(collision.shapes.count)")
-             
-             // Try to extract actual collision radius (this is tricky in RealityKit)
-             if let shape = collision.shapes.first {
-                 print("Collision shape type: \(type(of: shape))")
-                 // Note: RealityKit doesn't easily expose collision shape dimensions
-             }
-         }
-         
-         // Visual bounds check
-         let bounds = _modelEntity.visualBounds(relativeTo: nil)
-         let visualBoundRadius = (bounds.max.x - bounds.min.x) / 2.0
-         print("Visual bounds radius: \(visualBoundRadius)m")
-         
-         if abs(visualBoundRadius - calculatedRadius) > 0.01 {
-             print("⚠️ WARNING: Visual and calculated radius mismatch!")
-             print("  Visual: \(visualBoundRadius)m")
-             print("  Calculated: \(calculatedRadius)m")
-         }
-         
-         print("==========================")
+       let visualScale = _modelEntity.transform.scale.x
+       let calculatedRadius = _radius * visualScale
+       
+       print("=== COLLISION SHAPE DEBUG ===")
+       print("Internal radius: \(_radius)m")
+       print("Visual scale: \(visualScale), and Scale is \(Scale)")
+       print("Calculated collision radius: \(calculatedRadius)m")
+       print("Has collision: \(_modelEntity.collision != nil)")
+       print("Has physics: \(_modelEntity.physicsBody != nil)")
+       
+       if let collision = _modelEntity.collision {
+           print("Collision shapes count: \(collision.shapes.count)")
+           
+           // Try to extract actual collision radius (this is tricky in RealityKit)
+           if let shape = collision.shapes.first {
+               print("Collision shape type: \(type(of: shape))")
+               // Note: RealityKit doesn't easily expose collision shape dimensions
+           }
+       }
+       
+       // Visual bounds check
+       let bounds = _modelEntity.visualBounds(relativeTo: nil)
+       let visualBoundRadius = (bounds.max.x - bounds.min.x) / 2.0
+       print("Visual bounds radius: \(visualBoundRadius)m")
+       
+       if abs(visualBoundRadius - calculatedRadius) > 0.01 {
+           print("⚠️ WARNING: Visual and calculated radius mismatch!")
+           print("  Visual: \(visualBoundRadius)m")
+           print("  Calculated: \(calculatedRadius)m")
+       }
+       
+       print("==========================")
      }
       
-      // MARK: - Create Fresh Collision Shape (No Cached Issues)
-      
-      private func createFreshCollisionShape(newScale: Float) {
-          // ✅ Calculate the EXACT collision radius we want
-          let preciseRadius = _radius * newScale
-          
-          // ✅ Generate a completely new collision shape
-          let freshCollisionShape = ShapeResource.generateSphere(radius: preciseRadius)
-          
-          // ✅ Create new collision component (don't update existing)
-          _modelEntity.collision = CollisionComponent(
-              shapes: [freshCollisionShape],
-              filter: CollisionFilter(
-                  group: ARView3D.CollisionGroups.arObjects,
-                  mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
-              )
-          )
-          
-          print("🔄 Created fresh collision shape with radius: \(preciseRadius)m")
-      }
-      
-      // MARK: - Enhanced updatePhysicsCollisionShape Method
-      
-      private func updatePhysicsCollisionShape() {
-          guard _modelEntity.physicsBody != nil else {
-              print("⚠️ No physics body to update collision shape for")
-              return
-          }
-          
-          // ✅ Get the current visual scale
-          let currentScale = _modelEntity.transform.scale.x  // Uniform scaling
-          let preciseRadius = _radius * currentScale
-          
-          print("🔍 Updating collision: visual scale=\(currentScale), calculated radius=\(preciseRadius)")
-          
-          // ✅ Force recreation of collision shape
-          let newShape = ShapeResource.generateSphere(radius: preciseRadius)
-          
-          // ✅ Completely replace collision component
-          _modelEntity.collision = CollisionComponent(
-              shapes: [newShape],
-              filter: _modelEntity.collision?.filter ?? CollisionFilter(
-                  group: ARView3D.CollisionGroups.arObjects,
-                  mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
-              )
-          )
-          
-          // ✅ Update mass properties to match
-          if var physicsBody = _modelEntity.physicsBody {
-              physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
-              _modelEntity.physicsBody = physicsBody
-          }
-          
-          print("✅ Collision shape updated: radius=\(preciseRadius)m, mass=\(Mass)kg")
-      }
   
 
+      
 
-       
     
   @available(iOS 15.0, *)
   private func showDragEffect() {
@@ -773,39 +734,28 @@ open class SphereNode: ARNodeBase, ARSphere {
   private func applyReleaseVelocityIOS18(physicsBody: inout PhysicsBodyComponent, releaseVelocity: CGPoint) {
       let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
       
-    if releaseSpeed > NORMAL_ROLLING_SPEED {
-          // Calculate object properties
-          let objectMass = Mass
-        //bounds or scale??
-          let bounds = _modelEntity.visualBounds(relativeTo: nil)
-          let avgSize = ((bounds.max.x - bounds.min.x) + (bounds.max.y - bounds.min.y) + (bounds.max.z - bounds.min.z)) / 3.0
-          let scaledSize = avgSize * Scale
+      if releaseSpeed > NORMAL_ROLLING_SPEED {
+ 
+        let throwForce: Float = 3.0  // Base throwing force
+        let realisticMass = Mass * (Scale * Scale * Scale)  // Volume = scale³
+        let velocity = throwForce / realisticMass // F = ma, so a = F/m
           
-          // Mass-based velocity scaling (lighter objects move faster for same finger motion)
-          let massScale = 2.0 / max(objectMass, 0.1)  // Inverse relationship
-          
-          // Size-based air resistance simulation (larger objects have more drag)
-          let sizeScale = 1.0 / max(scaledSize, 0.05)
-          
-          // Combined scaling
-          let physicsScale = massScale * sizeScale * 0.005
-          
-          let fingerX = Float(releaseVelocity.x) * physicsScale
-          let fingerY = Float(releaseVelocity.y) * physicsScale
-          
-          let releaseVel = SIMD3<Float>(fingerX, 0, fingerY)
-          
-          // Apply momentum considering mass
-          if var physicsMotion = _modelEntity.physicsMotion {
-              physicsMotion.linearVelocity = SIMD3<Float>(
-                  physicsMotion.linearVelocity.x + releaseVel.x,
-                  physicsMotion.linearVelocity.y,
-                  physicsMotion.linearVelocity.z + releaseVel.z
-              )
-              _modelEntity.physicsMotion = physicsMotion
-              
-              print("Physics-accurate release: mass=\(objectMass)kg, size=\(scaledSize)m, velocity=\(releaseVel)")
-          }
+        let releaseVel = SIMD3<Float>(
+            Float(releaseVelocity.x) * velocity * 0.005,
+            0,
+            Float(releaseVelocity.y) * velocity * 0.005
+        )
+        // Apply momentum considering mass
+        if var physicsMotion = _modelEntity.physicsMotion {
+            physicsMotion.linearVelocity = SIMD3<Float>(
+                physicsMotion.linearVelocity.x + releaseVel.x,
+                physicsMotion.linearVelocity.y,
+                physicsMotion.linearVelocity.z + releaseVel.z
+            )
+            _modelEntity.physicsMotion = physicsMotion
+            
+            print("Physics-accurate release: mass=\(Mass)kg, size=\(Scale)m, velocity=\(releaseVel)")
+        }
       }
   }
 
@@ -979,8 +929,8 @@ open class SphereNode: ARNodeBase, ARSphere {
       }
       
       // ✅ SPHERE COLLISION: Use precise sphere collision
-      let radius = _radius * Scale
-      let shape = ShapeResource.generateSphere(radius: radius)
+
+      let shape = ShapeResource.generateSphere(radius: _radius)
       
       _enablePhysics = isDynamic
       _modelEntity.collision = CollisionComponent(shapes: [shape])
@@ -1009,7 +959,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
       debugPhysicsState()
-      print("🎾 Sphere radius: \(radius), mass: \(Mass)")
+      print("🎾 Sphere radius: \(_radius), mass: \(Mass)")
   }
 
   // 6. ✅ REMOVE ground level constraints entirely
@@ -1019,14 +969,14 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("=== PHYSICS STATE DEBUG ===")
       print("Position: \(currentPos)")
       print("Has physics: \(_modelEntity.physicsBody != nil)")
-     print("enabled physics?: \(EnablePhysics)")
+      print("enabled physics?: \(EnablePhysics)")
       
       if let physicsBody = _modelEntity.physicsBody {
 
           print("Mass: \(physicsBody.massProperties.mass)")
       }
-      
-      print("Ball radius: \(_radius * Scale)")
+      print("Ball radius: \(_radius)")
+      print("Ball radius * scale: \(_radius * Scale)")
       print("Scale: \(Scale)")
       print("==========================")
   }

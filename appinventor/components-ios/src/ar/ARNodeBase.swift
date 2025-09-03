@@ -57,8 +57,8 @@ open class ARNodeBase: NSObject, ARNode {
   private var _isCurrentlyColliding = false
   private var _collisionEffectTask: Task<Void, Never>?
   
-  private var _linearDamping  = Float(0.0)
-  private var _angularDamping  = Float(0.0)
+  public var _linearDamping  = Float(0.0)
+  public var _angularDamping  = Float(0.0)
   private var _rollingForce = Float(0.0)
   private var _impulseScale = Float(0.0)
   private var _dampingTask = Task {}
@@ -800,9 +800,9 @@ open class ARNodeBase: NSObject, ARNode {
     
     // Ensure minimum size and make slightly larger for stability
     let safeSize = SIMD3<Float>(
-        max(size.x, 0.05) * 1.01,  // 10% larger for stability
-        max(size.y, 0.05) * 1.01,
-        max(size.z, 0.05) * 1.01
+        max(size.x, 0.05) * 1.001,
+        max(size.y, 0.05) * 1.001,
+        max(size.z, 0.05) * 1.001
     )
     
     // For round objects, use sphere collision (more stable)
@@ -843,6 +843,7 @@ open class ARNodeBase: NSObject, ARNode {
   // MARK: - Collision Handling Methods
   
   @objc open func CollisionDetected() {}
+  
   @objc open func ObjectCollidedWithScene(_ node: ARNodeBase) {
     EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: node)
   }
@@ -984,25 +985,7 @@ extension ARNodeBase {
       physicsBody.material = newMaterial
       print("🎾 Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
   }
-  
-  private func ensureAboveFloor(_ position: SIMD3<Float>, for node: ARNodeBase) -> SIMD3<Float> {
-      let groundLevel: Float = ARView3D.SHARED_GROUND_LEVEL
-      
-      // Get object bounds to calculate its radius/height
-      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
-      let objectRadius = max((bounds.max.y - bounds.min.y) / 2.0, 0.025) // Minimum 2.5cm radius
-      
-      // Calculate minimum Y position (object bottom should be at ground level)
-      let minY = groundLevel + objectRadius + 0.05  // Extra 5cm buffer for safety
-      
-      let safeY = max(position.y, minY)
-      
-      if position.y != safeY {
-          print("🏠 Adjusted object placement from Y=\(position.y) to Y=\(safeY) to stay above floor")
-      }
-      
-      return SIMD3<Float>(position.x, safeY, position.z)
-  }
+
   
   private func updateMassProperties() {
       guard var physicsBody = _modelEntity.physicsBody else { return }
@@ -1016,9 +999,9 @@ extension ARNodeBase {
       let bounds = _modelEntity.visualBounds(relativeTo: nil)
       let autoSize = bounds.max - bounds.min
       let safeSize = SIMD3<Float>(
-          max(autoSize.x, 0.05) * 1.1,
-          max(autoSize.y, 0.05) * 1.1,
-          max(autoSize.z, 0.05) * 1.1
+          max(autoSize.x, 0.05) + 0.001,
+          max(autoSize.y, 0.05) + 0.001,
+          max(autoSize.z, 0.05) + 0.001
       )
     
     let exactRadius = (bounds.max.x - bounds.min.x) / 2.0 * Scale
