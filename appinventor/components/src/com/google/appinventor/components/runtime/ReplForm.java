@@ -527,7 +527,19 @@ public class ReplForm extends Form {
 
   @Override
   public String getAssetPath(String asset) {
-    return "file://" + replAssetDir + asset;
+    // replAssetDir already ends with "/assets/", so we need to avoid duplication
+    android.util.Log.d("ReplForm", "*** ASSET PATH DEBUG *** getAssetPath called with asset: " + asset);
+    android.util.Log.d("ReplForm", "replAssetDir: " + replAssetDir);
+    
+    String adjustedAsset = asset;
+    if (asset.startsWith("assets/")) {
+      adjustedAsset = asset.substring(7); // Remove "assets/" prefix
+      android.util.Log.d("ReplForm", "Stripped assets/ prefix, adjusted asset: " + adjustedAsset);
+    }
+    
+    String finalPath = "file://" + replAssetDir + adjustedAsset;
+    android.util.Log.d("ReplForm", "Final asset path: " + finalPath + " ***");
+    return finalPath;
   }
 
   @Override

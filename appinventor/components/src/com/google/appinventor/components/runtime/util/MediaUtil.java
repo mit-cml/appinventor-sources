@@ -108,16 +108,23 @@ public class MediaUtil {
    */
   @SuppressLint("SdCardPath")
   private static MediaSource determineMediaSource(Form form, String mediaPath) {
+    Log.d(LOG_TAG, "*** MEDIA SOURCE DEBUG *** mediaPath: " + mediaPath);
+    Log.d(LOG_TAG, "Form type: " + form.getClass().getSimpleName());
+    
     if (mediaPath.startsWith(QUtil.getExternalStoragePath(form))
         || mediaPath.startsWith("/sdcard/")) {
+      Log.d(LOG_TAG, "Determined source: SDCARD");
       return MediaSource.SDCARD;
 
     } else if (mediaPath.startsWith("content://contacts/")) {
+      Log.d(LOG_TAG, "Determined source: CONTACT_URI");
       return MediaSource.CONTACT_URI;
 
     } else if (mediaPath.startsWith("content://")) {
+      Log.d(LOG_TAG, "Determined source: CONTENT_URI");
       return MediaSource.CONTENT_URI;
     } else if (mediaPath.startsWith("/data/")) {
+      Log.d(LOG_TAG, "Determined source: PRIVATE_DATA");
       return MediaSource.PRIVATE_DATA;
     }
 
@@ -126,11 +133,14 @@ public class MediaUtil {
       // It's a well formed URL.
       if (mediaPath.startsWith("file:")) {
         if (url.getPath().startsWith("/android_asset/")) {
+          Log.d(LOG_TAG, "Determined source: ASSET");
           return MediaSource.ASSET;
         }
+        Log.d(LOG_TAG, "Determined source: FILE_URL");
         return MediaSource.FILE_URL;
       }
 
+      Log.d(LOG_TAG, "Determined source: URL");
       return MediaSource.URL;
 
     } catch (MalformedURLException e) {
@@ -138,12 +148,16 @@ public class MediaUtil {
     }
 
     if (form instanceof ReplForm) {
-      if (((ReplForm)form).isAssetsLoaded())
+      if (((ReplForm)form).isAssetsLoaded()) {
+        Log.d(LOG_TAG, "Determined source: REPL_ASSET (assets loaded) ***");
         return MediaSource.REPL_ASSET;
-      else
+      } else {
+        Log.d(LOG_TAG, "Determined source: ASSET (assets not loaded) ***");
         return MediaSource.ASSET;
+      }
     }
 
+    Log.d(LOG_TAG, "Determined source: ASSET (default) ***");
     return MediaSource.ASSET;
   }
 
