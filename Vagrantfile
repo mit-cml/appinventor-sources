@@ -8,18 +8,25 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "generic/ubuntu2204"
 
   config.vm.boot_timeout = 400
 
   config.vm.provider "virtualbox" do |v|
-    v.name = "ForAppinventor2-bionic64"
+    v.name = "ForAppinventor2-jammy64"
     v.memory = "4096"
     v.customize ["modifyvm", :id, "--usb", "on"]
     # fix for slow network
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
     v.customize ["modifyvm", :id, "--nictype1", "virtio"]
+  end
+  
+  config.vm.provider "libvirt" do |v|
+    # By default, './' is synced onto '/vagrant' with NFS, which does not work for debian family images for some reason;
+    # hence we use rsync. There are a few broken links in the source tree that will fail the default rsync syncing sche-
+    # me, so we give explicit rsync args and omit "--copy-links".
+    config.vm.synced_folder './', '/vagrant', type: 'rsync', rsync__args: ["--verbose", "--archive", "--update"]
   end
 
   config.vm.provision :shell, path: "bootstrap.sh"
