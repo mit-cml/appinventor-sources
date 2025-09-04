@@ -7,6 +7,8 @@ import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.resources.client.ClientBundle;
@@ -37,57 +39,7 @@ public class TopToolbarMob extends TopToolbar {
   @UiField DropDownButton adminDropDown;
   @UiField(provided = true) Boolean hasWriteAccess;
 
-  @UiField TextButton myProjectsButton;
-  @UiField TextButton newButton;
-  @UiField TextButton importProjectButton;
-  @UiField TextButton importTemplateButton;
-  @UiField TextButton deleteButton;
-  @UiField TextButton saveButton;
-  @UiField TextButton saveAsButton;
-  @UiField TextButton checkpointButton;
-  @UiField TextButton ExportProjectButton;
-  @UiField TextButton ExportAllProjectsButton;
-
-  @UiField TextButton wirelessButton;
-  @UiField TextButton emulatorButton;
-  @UiField TextButton usbButton;
-  @UiField TextButton chromebookButton;
-  @UiField TextButton refreshCompanionButton;
-  @UiField TextButton resetButton;
-  @UiField TextButton hardResetButton;
-  @UiField TextButton CompanionInformationButton;
-  @UiField TextButton CompanionUpdateButton;
-
-  @UiField TextButton buildApkButton;
-  @UiField TextButton buildAabButton;
-  @UiField TextButton buildApk2Button;
-  @UiField TextButton buildAab2Button;
-  @UiField TextButton generateYailButton;
-
-  @UiField TextButton uiSettingsButton;
-  @UiField TextButton autoloadLastProjectButton;
-  @UiField TextButton dyslexicFontButton;
-  @UiField TextButton uploadKeyStoreButton;
-  @UiField TextButton downloadKeyStoreButton;
-  @UiField TextButton deleteKeyStoreButton;
-
-  @UiField TextButton downloadUserSourceButton;
-  @UiField TextButton userAdminButton;
-
-  @UiField TextButton aboutButton;
-  @UiField TextButton guideButton;
-  @UiField TextButton feedbackButton;
-  @UiField TextButton libraryButton;
-  @UiField TextButton getStartedButton;
-  @UiField TextButton extensionsButton;
-  @UiField TextButton tutorialsButton;
-  @UiField TextButton troubleshootingButton;
-  @UiField TextButton forumsButton;
-  @UiField TextButton showSplashButton;
-  @UiField TextButton showShortcutsButton;
-  @UiField TextButton signOutButton;
-  @UiField TextButton deleteAccountItem;
-  @UiField TextButton languageButton;
+//  @UiField TextButton languageButton;
 
 
   @UiField  VerticalPanel menuContent;
@@ -118,8 +70,9 @@ public class TopToolbarMob extends TopToolbar {
 
     menuContent.setStyleName("mobile-MenuContainer");
     menuPopup = new PopupPanel(true);
+    menuPopup.addCloseHandler(event -> menuContent.setVisible(false));
 
-    languageButton.setText("Language: " + getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
+//    languageButton.setText("Language: " + getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
 
 
     settingsDropDown.addClickHandler(new ClickHandler() {
@@ -132,375 +85,14 @@ public class TopToolbarMob extends TopToolbar {
       }
     });
 
-    languageButton.addClickHandler(new ClickHandler() {
-
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        showLanguagePopup();
-        menuPopup.hide();
-      }
-    });
-
-    // Add click handlers for buttons
-    myProjectsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new SwitchToProjectAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    newButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new NewProjectAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    importProjectButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ImportProjectAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    importTemplateButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ImportTemplateAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    deleteButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new DeleteAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    saveButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new SaveAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    saveAsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new SaveAsAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    checkpointButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new CheckpointAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    ExportProjectButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ExportProjectAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    ExportAllProjectsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ExportAllProjectsAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    wirelessButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new WirelessAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    emulatorButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new EmulatorAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    usbButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new UsbAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    chromebookButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ChromebookAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    refreshCompanionButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new RefreshCompanionAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    resetButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ResetAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    hardResetButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new HardResetAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    CompanionInformationButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new AboutCompanionAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    CompanionUpdateButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new CompanionUpdateAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    buildApkButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new BarcodeAction( false, false).execute();
-        menuPopup.hide();
-      }
-    });
-
-    buildAabButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new BarcodeAction( false, true).execute();
-        menuPopup.hide();
-      }
-    });
-
-    buildApk2Button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new BarcodeAction( true, false).execute();
-        menuPopup.hide();
-      }
-    });
-
-    buildAab2Button.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new BarcodeAction( true, true).execute();
-        menuPopup.hide();
-      }
-    });
-
-    generateYailButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new GenerateYailAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    uiSettingsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new UISettingsAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    autoloadLastProjectButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new DisableAutoloadAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    dyslexicFontButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new SetFontRegularAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    uploadKeyStoreButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new UploadKeystoreAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    downloadKeyStoreButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new DownloadKeystoreAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    deleteKeyStoreButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new DeleteKeystoreAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    downloadUserSourceButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new DownloadUserSourceAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    userAdminButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new SwitchToUserAdminAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    aboutButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new AboutAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    guideButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenGuideAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    feedbackButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenFeedbackAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    libraryButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenLinkAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    getStartedButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenLinkAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    extensionsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenLinkAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    tutorialsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenLinkAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    troubleshootingButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenLinkAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    forumsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new OpenLinkAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    showSplashButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ShowSplashAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    showShortcutsButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new ShowShortcutsAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    signOutButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new SignOutAction().execute();
-        menuPopup.hide();
-      }
-    });
-
-    deleteAccountItem.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        new DeleteAccountAction().execute();
-        menuPopup.hide();
-      }
-    });
+//    languageButton.addClickHandler(new ClickHandler() {
+//
+//      @Override
+//      public void onClick(ClickEvent clickEvent) {
+//        showLanguagePopup();
+//        menuPopup.hide();
+//      }
+//    });
   }
 
   private void showLanguagePopup() {
@@ -528,7 +120,7 @@ public class TopToolbarMob extends TopToolbar {
   }
 
   private void selectLanguage(String localeName) {
-    languageButton.setText("Language: " + getDisplayName(localeName));
+//    languageButton.setText("Language: " + getDisplayName(localeName));
     String url = Window.Location.createUrlBuilder()
             .setParameter("locale", localeName)
             .buildString();

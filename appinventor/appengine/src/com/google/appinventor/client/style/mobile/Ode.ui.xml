@@ -34,7 +34,7 @@
                     </g:FlowPanel>
                     <g:FlowPanel>
                         <mob:MobileSidebar ui:field="mobileSideBar">
-                            <!--                            content will be added here dynamically-->
+                            <!-- content will be added here dynamically-->
                         </mob:MobileSidebar>
                     </g:FlowPanel>
                     <mob:DesignTabBarMob ui:field="designTabBar" styleName="ode-BottomNavBar align" />

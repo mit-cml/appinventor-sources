@@ -40,6 +40,27 @@ body, html {
     padding-right: 0;
 }
 
+.ode-TopToolbar .left {
+    float: left;
+    flex-direction: column;
+    display: flex;
+    gap: 4px;
+}
+
+.ode-TopToolbar .center {
+    flex-direction: column;
+    display: flex;
+    gap: 4px;
+}
+
+.ode-TopToolbar .right {
+    float: right;
+    flex-direction: column;
+    display: flex;
+    gap: 4px;
+}
+
+
 /*Pop-Up Panel*/
 
 .mobile-MenuContainer {
