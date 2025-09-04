@@ -1762,7 +1762,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // AI2: The UseFront property was removed
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // ToggleLight, HasFlash methods were added.
+    4: "noUpgrade"
 
   }, // End Camera upgraders
 
