@@ -287,9 +287,15 @@ public abstract class FileOperation implements Runnable, PermissionResultHandler
           && file.getScope() == FileScope.Shared && accessMode == FileAccessMode.READ) {
         // READ_EXTERNAL_STORAGE was migrated into finer-grained permissions in SDK 33
         neededPermissions.remove(READ_EXTERNAL_STORAGE);
-        neededPermissions.add(READ_MEDIA_AUDIO);
-        neededPermissions.add(READ_MEDIA_IMAGES);
-        neededPermissions.add(READ_MEDIA_VIDEO);
+        if (form.doesAppDeclarePermission(READ_MEDIA_AUDIO)) {
+          neededPermissions.add(READ_MEDIA_AUDIO);
+        }
+        if (form.doesAppDeclarePermission(READ_MEDIA_IMAGES)) {
+          neededPermissions.add(READ_MEDIA_IMAGES);
+        }
+        if (form.doesAppDeclarePermission(READ_MEDIA_VIDEO)) {
+          neededPermissions.add(READ_MEDIA_VIDEO);
+        }
       }
       return this;
     }
