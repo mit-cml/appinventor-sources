@@ -1,0 +1,126 @@
+<!-- This is a template Ant file for a very basic Google AppEngine project -->
+
+<project name="myproject" default="war">
+
+  <!-- When you copy this template to your working directories, change the
+       value of appengine.sdk accordingly.  You may also want to use Ant's
+       property file feature, allowing each developer to have their own
+       local property file with the path to the SDK from that workspace. -->
+  <property name="appengine.sdk" location="../.."/>
+
+  <!-- Check that the SDK value is set and seems sane, so we can give a nicer
+       error if not.  -->
+  <fail message="Please define the appengine.sdk property to point to your SDK directory">
+    <condition>
+      <not> <and>
+          <isset property="appengine.sdk"/>
+          <available file="${appengine.sdk}/config/user/ant-macros.xml"/>
+      </and> </not>
+    </condition>
+  </fail>
+
+  <!-- Pick up the Ant macros and taskdefs for App Engine -->
+  <import file="${appengine.sdk}/config/user/ant-macros.xml"/>
+
+
+  <!-- Remote debug port for dev_appserver -->
+  <property name="debug.port" value="5005"/>
+
+  <!-- HTTP port for dev_appserver -->
+  <property name="http.port" value="8080"/>
+
+  <!-- Name of log file to write logs to -->
+  <property name="log.file" value="app.log"/>
+
+  <!-- Number of days worth of logs to retrieve -->
+  <property name="log.days" value="2"/>
+
+
+  <property name="war.dir" location="war"/>
+
+  <target name="war" depends="enhance" 
+          description="Assemble the application directory">
+    <enhance_war war="${war.dir}"/>
+  </target>
+
+  <target name="enhance" depends="compile"
+          description="Enhance the classes after compilation">
+    <enhance_war war="${war.dir}"/>
+  </target>
+
+  <target name="compile"
+          description="Compile the application servlet code">
+    <mkdir dir="${war.dir}/WEB-INF/classes"/>
+    <mkdir dir="${war.dir}/WEB-INF/lib"/>
+    <javac srcdir="src" destdir="${war.dir}/WEB-INF/classes">
+      <classpath>
+        <fileset dir="${appengine.sdk}/lib/user">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${appengine.sdk}/lib/shared">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+    <copy todir="${war.dir}/WEB-INF/lib"
+          flatten="true">
+      <fileset dir="${appengine.sdk}/lib/user">
+        <include name="**/*.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="clean"
+          description="Force a clean slate to rebuild">
+    <delete dir="${war.dir}/WEB-INF/classes"/>
+    <delete dir="${war.dir}/WEB-INF/lib"/>
+  </target>
+
+  <target name="runserver" depends="war"
+          description="Run the dev_appserver">
+    <dev_appserver war="${war.dir}" port="${http.port}"/>
+  </target>
+
+  <target name="dev_appserver" depends="runserver"/>
+
+  <target name="debug" depends="war" 
+          description="Launches dev_appserver with remote debugging enabled">
+    <echo message="Launching dev_appserver on Web port ${http.port}, Java remote debug port ${debug.port}"/>
+    <dev_appserver war="${war.dir}" port="${http.port}">
+      <options>
+        <arg value="--jvm_flag=-Xdebug"/>
+        <arg value="--jvm_flag=-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${debug.port}"/>
+      </options>
+    </dev_appserver>
+  </target>
+
+
+
+  <target name="update" depends="war" 
+          description="Uploads the application, including indexes">
+    <appcfg action="update" war="${war.dir}"/>
+  </target>
+
+  <target name="update_indexes" depends="war" 
+          description="Uploads only the application's indexes">
+    <appcfg action="update_indexes" war="${war.dir}"/>
+  </target>
+
+  <target name="rollback" depends="war" 
+          description="Rolls back any in-progress application update">
+    <appcfg action="rollback" war="${war.dir}"/>
+  </target>
+
+  <target name="request_logs" 
+          description="Downloads the application's logs">
+    <appcfg action="request_logs" war="${war.dir}">
+      <options>
+        <arg value="--num_days=${log.days}"/>
+      </options>
+      <args>
+        <arg value="${log.file}"/>
+      </args>
+    </appcfg>
+  </target>
+
+</project>

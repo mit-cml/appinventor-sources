@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+
+
+<!-- =============================================================== -->
+<!-- Configure stderr and stdout to Jetty rollover log files         -->
+<!-- this configuration file should be used in combination with      -->
+<!-- other configuration files.  e.g.                                -->
+<!--    java -jar start.jar etc/jetty-logging.xml                    -->
+<!-- =============================================================== -->
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+  <New id="StdoutLog" class="java.io.PrintStream">
+    <Arg>
+      <New class="org.eclipse.jetty.util.RolloverFileOutputStream">
+        <Arg><Property name="jetty.logs" default="/var/log/app_engine"/>/STDOUT.yyyy_mm_dd.log</Arg>
+        <!-- Append to existing logs. -->
+        <Arg type="boolean">true</Arg>
+        <!-- Retain for n days. -->
+        <Arg type="int">2</Arg>
+        <Arg><Call class="java.util.TimeZone" name="getTimeZone"><Arg>GMT</Arg></Call></Arg>
+        <Get id="StdoutLogName" name="datedFilename"/>
+      </New>
+    </Arg>
+  </New>
+
+  <New id="StderrLog" class="java.io.PrintStream">
+    <Arg>
+      <New class="org.eclipse.jetty.util.RolloverFileOutputStream">
+        <Arg><Property name="jetty.logs" default="/var/log/app_engine"/>/STDERR.yyyy_mm_dd.log</Arg>
+        <!-- Append to existing logs. -->
+        <Arg type="boolean">true</Arg>
+        <!-- Retain for n days. -->
+        <Arg type="int">2</Arg>
+        <Arg><Call class="java.util.TimeZone" name="getTimeZone"><Arg>GMT</Arg></Call></Arg>
+        <Get id="StderrLogName" name="datedFilename"/>
+      </New>
+    </Arg>
+  </New>
+
+  <Get class="org.eclipse.jetty.util.log.Log" name="rootLogger">
+    <Call name="info"><Arg>Redirecting stderr/stdout to <Ref refid="StderrLogName"/>/<Ref refid="StdoutLogName"/></Arg></Call>
+  </Get>
+  <Call class="java.lang.System" name="setErr"><Arg><Ref refid="StdoutLog"/></Arg></Call>
+  <Call class="java.lang.System" name="setOut"><Arg><Ref refid="StderrLog"/></Arg></Call>
+</Configure>

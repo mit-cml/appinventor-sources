@@ -1,0 +1,151 @@
+<project name="taskengine" default="compile" basedir=".">
+  <property file="build.properties"/>
+  <property name="project.dir" location="." />
+
+  <!-- taskengine specifics configuration; edit these for a new project -->
+  <property name="gwt.module" value="com.google.appengine.demos.taskengine.Tasks" />
+  <property name="gwt.moduleDeploy" value="tasks" />
+  <property name="gwt.startupUrl" value="Tasks.html" />
+  <!-- ............................................................ -->
+
+  <!-- Computed variables -->
+  <property name="appengine.lib" location="${appengine.sdk}/lib" />
+  <property name="orm.lib" location="${appengine.sdk}/lib/tools/orm" />
+  <fail message="Cannot find AppEngine SDK; please reconfigure this build file">
+    <condition><not><and>
+      <available file="${appengine.lib}" type="dir"/>
+      <available file="${orm.lib}" type="dir"/>
+    </and></not></condition>
+  </fail>
+
+  <condition property="jdo.enable">
+    <available file="src/META-INF/jdoconfig.xml" />
+  </condition>
+
+  <property name="out.webinf" location="war/WEB-INF" />
+  <property name="out.lib" location="${out.webinf}/lib" />
+  <property name="out.bin" location="${out.webinf}/classes" />
+
+  <import file="${appengine.sdk}/config/user/ant-macros.xml" />
+
+  <!-- Public build targets -->
+  <target name="compile" depends="_gwtc, _serverCode, _libs" description="Builds server code and runs a GWT compile." />
+  
+  <target name="runserver" depends="compile">
+    <dev_appserver war="war" />
+  </target>
+
+  <target name="server" depends="_serverCode" description="Run the AppEngine development server (does not run a GWT compile)">
+    <echo message="PLEASE BROWSE TO: http://localhost:8080/${gwt.startupUrl}"/>
+    <dev_appserver war="${project.dir}/war" />
+  </target>
+
+  <path id="enhancer.classpath">
+    <fileset dir="${orm.lib}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <pathelement location="${gwt.sdk}/gwt-servlet.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-user.jar" />
+    <pathelement location="${out.bin}"/>
+  </path>
+
+  <target name="clean" description="Cleans this project's intermediate and output files">
+    <delete dir="${out.bin}" failonerror="false" />
+    <delete dir="${out.lib}" failonerror="false" />
+    <delete dir="war/gwt" failonerror="false" />
+    <delete dir="war/${gwt.moduleDeploy}" failonerror="false" />
+  </target>
+
+  <!-- Private build targets -->
+  <macrodef name="compile.gwtc">
+    <attribute name="module" />
+    <attribute name="srcdir" default="src" />
+    <attribute name="wardir" />
+    <attribute name="classpathref" />
+    <sequential>
+      <java dir="@{srcdir}"
+          classname="com.google.gwt.dev.Compiler"
+          classpathref="@{classpathref}"
+          fork="yes"
+          failonerror="true">
+        <jvmarg value="-Xmx512M"/>
+        <arg value="-war" />
+        <arg file="@{wardir}" />
+        <arg value="@{module}" />
+      </java>
+    </sequential>
+  </macrodef>
+
+  <target name="_serverCode" depends="_enhance" />
+  
+  <target name="_enhance" depends="_javac" if="jdo.enable" > 
+    <taskdef name="datanucleusenhancer" classpathref="enhancer.classpath"
+        classname="org.datanucleus.enhancer.tools.EnhancerTask"/>
+    <datanucleusenhancer classpathref="enhancer.classpath" failonerror="true">
+      <fileset dir="${out.bin}">        
+        <include name="**/*.class"/>
+      </fileset>
+    </datanucleusenhancer>
+  </target>
+
+  <target name="_javac">
+    <mkdir dir="${out.bin}" />
+    <javac srcdir="src" destdir="${out.bin}" debug="true" debuglevel="lines,vars,source"
+        source="1.5" nowarn="true" encoding="utf-8">
+      <classpath>
+        <fileset dir="${orm.lib}">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${appengine.lib}/user">
+          <include name="*.jar" />
+        </fileset>
+        <pathelement location="${gwt.sdk}/gwt-user.jar" />
+      </classpath>
+    </javac>
+    <copy todir="${out.bin}">
+      <fileset dir="src">
+        <include name="**/*.properties" />
+        <include name="**/jdoconfig.xml" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="_libs" depends="_jdoLibs">
+    <!-- Copy libs to lib directory -->
+    <mkdir dir="${out.lib}" />
+    <copy todir="${out.lib}">
+      <fileset dir="${appengine.lib}/user">
+        <include name="*.jar" /> 
+      </fileset>
+    </copy>
+    <copy todir="${out.lib}" file="${gwt.sdk}/gwt-servlet.jar" />
+  </target>
+
+  <target name="_jdoLibs" if="jdo.enable">
+    <!-- Copy datanuclues libs to lib directory -->
+    <mkdir dir="${out.lib}" />
+    <copy todir="${out.lib}">
+      <fileset dir="${appengine.lib}/user/orm">
+        <include name="**/*.jar" /> 
+      </fileset>
+    </copy>
+  </target>
+
+  <path id="frontend.classpath">
+    <fileset dir="${orm.lib}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <pathelement path="src" />
+    <pathelement location="${out.bin}" />
+    <fileset file="${gwt.sdk}/gwt-user.jar" />
+    <fileset file="${gwt.sdk}/gwt-dev.jar" />
+  </path>
+
+  <target name="_gwtc">
+    <compile.gwtc module="${gwt.module}"
+        srcdir="src"
+        wardir="war"
+        classpathref="frontend.classpath" />
+  </target>
+
+</project>
