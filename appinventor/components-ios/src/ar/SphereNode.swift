@@ -8,18 +8,12 @@ import RealityKit
 open class SphereNode: ARNodeBase, ARSphere {
   private var _radius: Float = 0.05 // stored in meters
   private var _storedPhysicsSettings: PhysicsSettings?
-  private var _accumulatedRoll: Float = 0.0
-  private var _rollDirection: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
-  private var _totalRolling: SIMD3<Float> = SIMD3<Float>(0, 0, 0)  // Track total rotation
   private var _behaviorName: String = "default"
   
   private var _currentDragMode: DragMode = .rolling
   private var _dragStartPosition: SIMD3<Float>?
   private var _dragStartTime: Date?
   private var _lastFingerPosition: SIMD3<Float>? = nil
-  private var _fingerTrajectory: [CGPoint] = []
-  private var _rollingPath: [SIMD3<Float>] = []
-  private var _pickupStartHeight: Float = 0.0
 
   private var _dragStartDamping: Float = 0.1
   private var _dragStartAngularDamping: Float = 0.01
@@ -934,7 +928,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       
       _enablePhysics = isDynamic
       _modelEntity.collision = CollisionComponent(shapes: [shape])
-      
+
       // ✅ REALISTIC PHYSICS: Let RealityKit handle all collisions
       let massProperties = PhysicsMassProperties(mass: Mass)
       

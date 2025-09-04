@@ -135,7 +135,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
-    _arView.environment.sceneUnderstanding.options = [.physics, .collision]
+    _arView.environment.sceneUnderstanding.options = [.physics, .collision, .occlusion]
 
     
     if (_enableOcclusion){
@@ -294,7 +294,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   @available(iOS 14.0, *)
   private func setupConfiguration() {
-    guard _trackingSet && _planeDetectionSet && _lightingEstimationSet else { return }
+    guard _trackingSet && _planeDetectionSet else { return }
     
     // Check geo tracking support only when needed
     if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported {
@@ -505,10 +505,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     startOptions = []
     
     ensureFloorExists()
+    if (_enableOcclusion){
+      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+    } else {
+      _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+      
+    }
     
     if _requiresAddNodes {
       for (node, anchorEntity) in _nodeToAnchorDict {
         
+        
+
         node.EnablePhysics(node.EnablePhysics)
         
         if node.IsGeoAnchored {
@@ -1112,7 +1120,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                         let groundLevel = GROUND_LEVEL
                         let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
      
-                        node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+                        node.setPosition(x: xMeters, y: safeY, z: zMeters)
                         print("create sphere node at y  \(yMeters) and safe is \(safeY)")
                         node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
                         node._creatorSessionStart = anchorLocation
@@ -1142,8 +1150,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node = CapsuleNode(self)
       node.Name = "GeoCapsuleNode"
       
-      
-      
+    
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
       
@@ -1180,8 +1187,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         return nil
       }
       
-      optimizeFloorSetup()
-      
       let node:ModelNode = ModelNode(self)
       node.Name = "GeoModelNode"
       node.Model = modelObjString
@@ -1196,7 +1201,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         _container?.form?.dispatchErrorOccurredEvent(self, "CreateSphereNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
         return nil
       }
-     // optimizeFloorSetup()
+
       let node = SphereNode(self)
       node.Name = "GeoSphereNode"
       node.Initialize()
@@ -1489,7 +1494,6 @@ extension ARView3D: UIGestureRecognizerDelegate {
         if let sphereNode = node as? SphereNode {
           let sphereRadiusInCM = sphereNode.RadiusInCentimeters
           let sphereRadiusInMeters = sphereRadiusInCM / 100.0  // Simple conversion
-        
             worldThreshold = sphereRadiusInMeters * 0.05  // 50% buffer around actual sphere
         }
         
@@ -2465,136 +2469,6 @@ extension ARView3D {
 
 @available(iOS 14.0, *)
 extension ARView3D {
-  
-  private func optimizeFloorSetup() {
-      if let realFloorLevel = findMostAccurateFloorLevel() {
-          let currentLevel = Float(GROUND_LEVEL)
-          let change = abs(realFloorLevel - currentLevel)
-          
-          // Only update if the change is significant AND we have confidence
-          if change > 0.1 && hasStableFloorDetection() {
-              print("🏠 Significant floor change detected: \(currentLevel) → \(realFloorLevel)")
-              GROUND_LEVEL = realFloorLevel
-              createInvisibleFloor(at: realFloorLevel)
-          } else {
-              print("🏠 Floor change too small (\(change)m) or not stable enough - keeping current level")
-          }
-      }
-  }
-
-  private func hasStableFloorDetection() -> Bool {
-      // Only update floor if we have large, confident floor planes
-      for (anchor, _) in _detectedPlanesDict {
-          if let planeAnchor = anchor as? ARPlaneAnchor,
-             planeAnchor.alignment == .horizontal {
-              
-              if #available(iOS 16.0, *) {
-                  let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
-                  
-                  // Require large floor planes (at least 2 square meters) for updates
-                  if planeAnchor.classification == .floor && planeSize > 2.0 {
-                      return true
-                  }
-              }
-          }
-      }
-      return false
-  }
-  
-  
-  // STEP 2: Find the most accurate floor level from multiple sources
-  private func findMostAccurateFloorLevel() -> Float? {
-    var floorCandidates: [(Float, String, Float)] = []  // (Y level, source, confidence)
-    
-    // Check detected planes (high confidence)
-    for (anchor, _) in _detectedPlanesDict {
-      if let planeAnchor = anchor as? ARPlaneAnchor,
-         planeAnchor.alignment == .horizontal {
-        let planeY = planeAnchor.transform.translation.y
-        
-        if #available(iOS 16.0, *) {
-          let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
-          let confidence = min(planeSize * 10.0, 100.0)  // Larger planes = higher confidence
-          
-          if planeY < 0.1 { // Below camera level = likely floor
-            floorCandidates.append((planeY, "DetectedPlane", confidence))
-            print("📏 Detected plane floor candidate: Y=\(planeY), confidence=\(confidence)")
-          }
-        } else {
-          // Fallback on earlier versions
-        }
-        
-      }
-    }
-    
-    // Check scene understanding meshes (medium confidence)
-    for anchor in _arView.scene.anchors {
-      for child in anchor.children {
-        let entityType = String(describing: type(of: child))
-        if entityType.contains("RKSceneUnderstanding") || entityType.contains("MeshEntity") {
-          let meshY = child.transform.translation.y
-          
-          if meshY < 0.1 { // Below camera = likely floor
-            floorCandidates.append((meshY, "SceneUnderstanding", 50.0))
-            print("📏 Scene understanding floor candidate: Y=\(meshY)")
-          }
-        }
-      }
-    }
-    
-    // Return the most confident floor level
-    if let bestCandidate = floorCandidates.max(by: { $0.2 < $1.2 }) {
-      print("✅ Best floor candidate: Y=\(bestCandidate.0) from \(bestCandidate.1) (confidence: \(bestCandidate.2))")
-      return bestCandidate.0
-    }
-    
-    return nil
-  }
-  
-  private func moveInvisibleFloorToRealFloor(realFloorLevel: Float) {
-    let currentLevel = Float(GROUND_LEVEL)
-    
-    // ✅ ONLY CHANGE: Stop if floor hasn't moved
-    if abs(realFloorLevel - currentLevel) <= ARView3D.VERTICAL_OFFSET { return }
-    
-    // Keep ALL your existing code exactly as it was
-    guard let invisibleFloor = _invisibleFloor else {
-      print("❌ No invisible floor to move")
-      return
-    }
-    
-    let oldLevel = invisibleFloor.transform.translation.y
-    let newLevel = realFloorLevel
-    
-    GROUND_LEVEL = newLevel
-    invisibleFloor.transform.translation.y = newLevel
-    _floorAnchor?.transform.translation.y = newLevel
-    
-    print("🔄 Moved invisible floor: \(oldLevel)m → \(newLevel)m")
-    
-    // Keep your original adjustAllObjectsToNewFloorLevel code
-    adjustAllObjectsToNewFloorLevel(oldLevel: oldLevel, newLevel: newLevel)
-  }
-  
-  
-  private func adjustAllObjectsToNewFloorLevel(oldLevel: Float, newLevel: Float) {
-    let levelChange = newLevel - oldLevel
-    
-    for (node, _) in _nodeToAnchorDict {
-      let currentPos = node._modelEntity.transform.translation
-      
-      // Only adjust objects that were sitting on the old floor
-      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
-      let objectBottom = currentPos.y - (bounds.max.y - bounds.min.y) / 2.0 * node.Scale
-      
-      // If object was sitting on old floor (within 10cm), move it to new floor
-      if abs(objectBottom - oldLevel) < 0.1 {
-        let newY = currentPos.y + levelChange
-        node._modelEntity.transform.translation.y = newY
-        print("📦 Adjusted \(node.Name): Y=\(currentPos.y) → Y=\(newY)")
-      }
-    }
-  }
   
   @objc func createInvisibleFloor(at height: Float = SHARED_GROUND_LEVEL) {
     print("Creating simple invisible floor at: \(height)m")
