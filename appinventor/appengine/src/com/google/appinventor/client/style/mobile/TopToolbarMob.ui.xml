@@ -40,11 +40,183 @@
             <ai:ToolbarItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}">
               <actions:DeleteAction/>
             </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
+              <actions:SaveAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
+              <actions:SaveAsAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
+              <actions:CheckpointAction/>
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="ExportProject" caption="{messages.exportButton}">
+              <actions:ExportProjectAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}" visible="false">
+              <actions:ExportAllProjectsAction/>
+            </ai:ToolbarItem>
           </ai:Toolbar>
         </g:VerticalPanel>
       </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.connectTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="Wireless" caption="{messages.AICompanionMenuItem}">
+              <yaactions:WirelessAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Emulator" caption="{messages.emulatorMenuItem}">
+              <yaactions:EmulatorAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Usb" caption="{messages.usbMenuItem}">
+              <yaactions:UsbAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Chromebook" caption="{messages.chromebookMenuItem}"
+                           >
+              <yaactions:ChromebookAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
+              <yaactions:RefreshCompanionAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
+              <yaactions:ResetAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
+              <yaactions:HardResetAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="CompanionInformation" caption="{messages.companionInformation}">
+              <actions:AboutCompanionAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="CompanionUpdate" caption="{messages.companionUpdate}">
+              <actions:CompanionUpdateAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.buildTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="BuildApk" caption="{messages.showExportAndroidApk}">
+              <actions:BarcodeAction second="false" isAab="false"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="BuildAab" caption="{messages.showExportAndroidAab}">
+              <actions:BarcodeAction second="false" isAab="true"/>
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="BuildApk2" caption="{messages.showExportAndroidApk2}" visible="false">
+              <actions:BarcodeAction second="true" isAab="false"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="BuildAab2" caption="{messages.showExportAndroidAab2}" visible="false">
+              <actions:BarcodeAction second="true" isAab="true"/>
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="BuildIPA" caption="{messages.showExportiOSAdHoc}"
+                  visible="false"     >
+              <actions:BarcodeAction foriOS="true" forAppStore="false" />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="BuildIPAStore" caption="{messages.showExportiOSAppStore}"
+                      visible="false"    >
+              <actions:BarcodeAction foriOS="true" forAppStore="true" />
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="Yail" caption="{messages.generateYailMenuItem}" visible="false">
+              <actions:GenerateYailAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.settingsTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="UISettings" caption="{messages.uiSettings}">
+              <actions:UISettingsAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="AutoloadLastProject" caption="{messages.disableAutoload}"
+                            visible="{hasWriteAccess}">
+              <actions:DisableAutoloadAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}"
+                            visible="{hasWriteAccess}">
+              <actions:SetFontRegularAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="AppStoreSettings" caption="{messages.appStoreSettingsMenuTitle}">
+              <actions:ShowAppStoreSettingsDialog />
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="DownloadCSR" caption="{messages.downloadCertificateRequestItem}">
+              <actions:DownloadCsrAction />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
+              <actions:UploadKeystoreAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}" visible="{hasWriteAccess}">
+              <actions:DownloadKeystoreAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}">
+              <actions:DeleteKeystoreAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.helpTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="About" caption="{messages.aboutMenuItem}">
+              <actions:AboutAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Guide" caption="{messages.guideTabName}">
+              <actions:OpenGuideAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Feedback" caption="{messages.feedbackTabName}">
+              <actions:OpenFeedbackAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Library" caption="{messages.libraryMenuItem}">
+              <actions:OpenLinkAction link_name="Library"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="GetStarted" caption="{messages.getStartedMenuItem}">
+              <actions:OpenLinkAction link_name="GetStarted"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Extensions" caption="{messages.extensionsMenuItem}">
+              <actions:OpenLinkAction link_name="Extensions"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Tutorials" caption="{messages.tutorialsMenuItem}">
+              <actions:OpenLinkAction link_name="Tutorials"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}">
+              <actions:OpenLinkAction link_name="Troubleshooting"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Forums" caption="{messages.forumsMenuItem}">
+              <actions:OpenLinkAction link_name="Forums"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ShowSplash" caption="{messages.showSplashMenuItem}">
+              <actions:ShowSplashAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ShowShortcuts" caption="{messages.showShortcuts}">
+              <actions:ShowShortcutsAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
     </g:VerticalPanel>
-    <!-- Projects Menu -->
+
 
     <ai:DropDownButton name="Projects" caption="{messages.projectsTabName}" icon="inventory_2"
         styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left" visible="false">
@@ -96,7 +268,7 @@
         <yaactions:UsbAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
-          dependentStyleName="needsChromebook">
+          dependentStyleName="needsChromebook" visible="false">
         <yaactions:ChromebookAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
@@ -135,11 +307,11 @@
       </ai:DropDownItem>
       <hr/>
       <ai:DropDownItem name="BuildIPA" caption="{messages.showExportiOSAdHoc}"
-          beta="true">
+          >
         <actions:BarcodeAction foriOS="true" forAppStore="false" />
       </ai:DropDownItem>
       <ai:DropDownItem name="BuildIPAStore" caption="{messages.showExportiOSAppStore}"
-          beta="true">
+          >
         <actions:BarcodeAction foriOS="true" forAppStore="true" />
       </ai:DropDownItem>
       <hr/>
