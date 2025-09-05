@@ -1069,6 +1069,91 @@ Blockly.Drawer.defaultBlockXMLStrings = {
         '</block>' +
         '</xml>'
       );
-    }}
+    }},
+   // ModelNode.SetFillColorForNode has opacity default to 100 and shouldColorChildNodes to true
+   {matchingMutatorAttributes:{component_type:"ModelNode", method_name:"SetFillColorForNode"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG2"><block type="math_number"><title name="NUM">100</title></block></value>' +
+        '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+        '</block>' +
+        '</xml>';}},
+
+    // ModelNode.SetFillColorAllNodes has opacity default to 100
+    {matchingMutatorAttributes:{component_type:"ModelNode", method_name:"SetFillColorForAllNodes"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+           Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+         '<value name="ARG1"><block type="math_number"><title name="NUM">100</title></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+   // ModelNode.SetTextureForNode has opacity default to 100 and shouldTexturizeChildNodes to true
+   {matchingMutatorAttributes:{component_type:"ModelNode", method_name:"SetTextureForNode"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+        '<value name="ARG2"><block type="math_number"><title name="NUM">100</title></block></value>' +
+        '<value name="ARG3"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+        '</block>' +
+        '</xml>';}},
+
+    // ModelNode.SetTextureAllNodes has opacity default to 100
+    {matchingMutatorAttributes:{component_type:"ModelNode", method_name:"SetTextureForAllNodes"},
+     mutatorXMLStringFunction: function(mutatorAttributes) {
+       return '' +
+         '<xml>' +
+         '<block type="component_method">' +
+         //mutator generator
+           Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes)+
+         '<value name="ARG1"><block type="math_number"><title name="NUM">100</title></block></value>' +
+         '</block>' +
+         '</xml>';}},
+
+   // ModelNode.PlayAnimationsForNode has shouldPlayChildNodes default to true
+   {matchingMutatorAttributes:{component_type:"ModelNode", method_name:"PlayAnimationsForNode"},
+    mutatorXMLStringFunction: function(mutatorAttributes) {
+      return '' +
+        '<xml>' +
+        '<block type="component_method">' +
+        //mutator generator
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes)+
+        '<value name="ARG1"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+        '</block>' +
+        '</xml>';}},
+
+  // ModelNode.StopAnimationsForNode has shouldStopChildNodes default to true
+  {matchingMutatorAttributes:{component_type:"ModelNode", method_name:"StopAnimationsForNode"},
+   mutatorXMLStringFunction: function(mutatorAttributes) {
+     return '' +
+       '<xml>' +
+       '<block type="component_method">' +
+       //mutator generator
+         Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes)+
+       '<value name="ARG1"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+       '</block>' +
+       '</xml>';}},
+
+ // ModelNode.SetShowShadowForNode has shouldShadowChildNodes default to true
+ {matchingMutatorAttributes:{component_type:"ModelNode", method_name:"SetShowShadowForNode"},
+  mutatorXMLStringFunction: function(mutatorAttributes) {
+    return '' +
+      '<xml>' +
+      '<block type="component_method">' +
+      //mutator generator
+        Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+      '<value name="ARG2"><block type="logic_boolean"><title name="BOOL">TRUE</title></block></value>' +
+      '</block>' +
+      '</xml>';}}
   ]
 };

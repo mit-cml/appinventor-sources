@@ -125,6 +125,9 @@
     <property name="support.dir" location="${lib.dir}/android/support" />
     <copy toFile="${public.deps.dir}/osmdroid.aar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.aar" />
     <copy toFile="${public.deps.dir}/osmdroid.jar" file="${lib.dir}/osmdroid/osmdroid-5.6.6.jar" />
+    <copy toFile="${public.deps.dir}/filament-v1.9.11-android.jar" file="${lib.dir}/ar-core/filament-v1.9.11-android.jar" />
+    <copy toFile="${public.deps.dir}/gltfio-v1.9.11-android.jar" file="${lib.dir}/ar-core/gltfio-v1.9.11-android.jar" />
+
     <copy toFile="${public.deps.dir}/webrtc.jar"
           file="${lib.dir}/webrtc/webrtc.jar" />
     <copy toFile="${public.deps.dir}/armeabi-v7a/libjingle_peerconnection_so.so"
@@ -167,6 +170,33 @@
     <copy toFile="${public.deps.dir}/guava.jar" file="${lib.dir}/guava/guava-27.1-android.jar" />
     <copy toFile="${public.deps.dir}/QRGenerator.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${public.deps.dir}/physicaloid.jar" file="${lib.dir}/physicaloid/physicaloid-library.jar" />
+    <copy toFile="${public.deps.dir}/ar-core.aar" file="${lib.dir}/ar-core/ar-core-1.33.0.aar" />
+    <copy toFile="${public.deps.dir}/ar-core.jar" file="${lib.dir}/ar-core/ar-core-1.33.0.jar" />
+    <copy toFile="${public.deps.dir}/obj-0.3.0.jar" file="${lib.dir}/ar-core/obj-0.3.0.jar" />
+    <copy todir="${public.deps.dir}">
+      <fileset dir="${lib.dir}/ar-core">
+        <include name="**/*.so" />
+      </fileset>
+    </copy>
+    <copy todir="${public.deps.dir}/armeabi-v7a">
+      <fileset dir="${lib.dir}/ar-core/armeabi-v7a">
+        <include name="libfilament-jni.so" />
+        <include name="libgltfio-jni.so" />
+      </fileset>
+    </copy>
+    <copy todir="${public.deps.dir}/arm64-v8a">
+      <fileset dir="${lib.dir}/ar-core/arm64-v8a">
+        <include name="libfilament-jni.so" />
+        <include name="libgltfio-jni.so" />
+      </fileset>
+    </copy>
+    <copy todir="${public.deps.dir}/x86_64">
+      <fileset dir="${lib.dir}/ar-core/x86_64">
+        <include name="libfilament-jni.so" />
+        <include name="libgltfio-jni.so" />
+      </fileset>
+    </copy>
+
     <!-- Protocol Buf Support (used by the Translation Component) -->
     <copy toFile="${public.deps.dir}/protobuf-java-3.0.0.jar" file="${lib.dir}/protobuf/protobuf-java-3.0.0.jar" />    
     <copy toFile="${public.deps.dir}/mpandroidchart.jar" file="${lib.dir}/mpandroidchart/mpandroidchart.jar" />
