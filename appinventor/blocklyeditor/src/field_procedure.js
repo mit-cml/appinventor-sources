@@ -38,7 +38,6 @@ AI.Blockly.FieldProcedure.onChange = function(procedureId) {
       // return;
     }
   }
-  this.doValueUpdate_(text);
   // If we're just in the midst of renaming the procedure, we don't have (or want) to
   // add the new arguments
   if (!this.block.isRenaming) {
