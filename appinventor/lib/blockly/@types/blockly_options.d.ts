@@ -3,9 +3,9 @@
  * Copyright 2016 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { Theme, ITheme } from './theme.js';
-import type { WorkspaceSvg } from './workspace_svg.js';
+import type { ITheme, Theme } from './theme.js';
 import type { ToolboxDefinition } from './utils/toolbox.js';
+import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Blockly options.
  */

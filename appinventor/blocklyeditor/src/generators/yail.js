@@ -665,7 +665,7 @@ AI.Yail.scrub_ = function(block, code, thisOnly) {
     // Collect comments for all value arguments.
     // Don't collect comments for nested statements.
     for (var x = 0; x < block.inputList.length; x++) {
-      if (block.inputList[x].type == Blockly.INPUT_VALUE) {
+      if (block.inputList[x].type == Blockly.inputs.inputTypes.VALUE) {
         var childBlock = block.inputList[x].targetBlock();
         if (childBlock) {
           var comment = Blockly.Generator.allNestedComments(childBlock);
@@ -713,12 +713,12 @@ AI.Yail.blockToCode1 = function(block) {
   if (!block) {
     return '';
   }
-  var func = this[block.type];
+  var func = this.forBlock && this.forBlock[block.type];
   if (!func) {
     throw 'Language "' + name + '" does not know how to generate code ' +
         'for block type "' + block.type + '".';
   }
-  var code = func.call(block);
+  var code = func(block, this);
   if (code instanceof Array) {
     // Value blocks return tuples of code and operator order.
     if (block.disabled || block.isBadBlock()) {
@@ -731,6 +731,16 @@ AI.Yail.blockToCode1 = function(block) {
     }
     return this.scrub_(block, code, true);
   }
+};
+
+/**
+ * Standard blockToCode method that delegates to blockToCode1.
+ * This provides compatibility for both static and instance method calls.
+ * @param {Blockly.Block} block The block to generate code for.
+ * @return {string|!Array} Generated code.
+ */
+AI.Yail.blockToCode = function(block) {
+  return AI.Yail.blockToCode1.call(AI.Yail, block);
 };
 
 /**
