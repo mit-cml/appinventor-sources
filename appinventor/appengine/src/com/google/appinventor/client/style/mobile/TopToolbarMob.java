@@ -39,7 +39,7 @@ public class TopToolbarMob extends TopToolbar {
   @UiField DropDownButton adminDropDown;
   @UiField(provided = true) Boolean hasWriteAccess;
 
-//  @UiField TextButton languageButton;
+  @UiField TextButton languageButton;
 
 
   @UiField  VerticalPanel menuContent;
@@ -72,9 +72,8 @@ public class TopToolbarMob extends TopToolbar {
     menuPopup = new PopupPanel(true);
     menuPopup.addCloseHandler(event -> menuContent.setVisible(false));
 
-//    languageButton.setText("Language: " + getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
-
-
+    languageButton.setText(getMessages().switchLanguageButton() + ": " + getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
+    
     settingsDropDown.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -85,14 +84,14 @@ public class TopToolbarMob extends TopToolbar {
       }
     });
 
-//    languageButton.addClickHandler(new ClickHandler() {
-//
-//      @Override
-//      public void onClick(ClickEvent clickEvent) {
-//        showLanguagePopup();
-//        menuPopup.hide();
-//      }
-//    });
+    languageButton.addClickHandler(new ClickHandler() {
+
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        showLanguagePopup();
+        menuPopup.hide();
+      }
+    });
   }
 
   private void showLanguagePopup() {

@@ -19,6 +19,7 @@
     </ai:DropDownButton>
 
     <g:VerticalPanel ui:field="menuContent" visible="false" spacing="10">
+      <ai:TextButton ui:field="languageButton" text="Language" styleName="mobile-MenuItem"/>
       <g:DisclosurePanel>
         <g:header styleName="mobile-SectionHeader">
           <ui:text from="{messages.projectsTabName}"/>
