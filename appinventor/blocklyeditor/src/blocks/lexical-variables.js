@@ -404,13 +404,7 @@ Blockly.Blocks['local_declaration_statement'] = {
     // Keep existing body at end of input list.
     // [lyn, 03/04/13] As of change to, Blockly 1636, there is no longer a collapsed input at end.
 
-    // Remember last (= body) input
-    var bodyInput = this.inputList[this.inputList.length - 1]; // Body input for local declaration
     var numDecls = this.inputList.length - 1;
-
-    // [lyn, 07/03/14] stop rendering until block is recreated
-    var savedRendered = this.rendered;
-    this.rendered = false;
 
     // Modify this local-in-do block according to arrangement of name blocks in mutator editor.
     // Remove all the local declaration inputs ...
@@ -424,8 +418,7 @@ Blockly.Blocks['local_declaration_statement'] = {
         }
     );
 
-    // Empty the inputList and recreate it, building local initializers from mutator
-    this.inputList = [];
+    // Build local initializers from mutator
     this.localNames_ = names;
 
     for (var i = 0; i < names.length; i++) {
@@ -448,13 +441,7 @@ Blockly.Blocks['local_declaration_statement'] = {
     }
 
     // Now put back last (= body) input
-    this.inputList = this.inputList.concat(bodyInput);
-
-    this.rendered = savedRendered;
-    if (this.rendered) {
-      this.initSvg();
-      this.render();
-    }
+    this.moveInputBefore(this.bodyInputName);
   },
   // [lyn, 10/27/13] Introduced this to correctly handle renaming of mutatorarg in open mutator
   // when procedure parameter flydown name is edited.
@@ -524,18 +511,7 @@ Blockly.Blocks['local_declaration_statement'] = {
 
     // Reconstruct inputs only if local list has changed
     if (!Blockly.LexicalVariable.stringListsEqual(this.localNames_, newLocalNames)) {
-
-      // Switch off rendering while the block is rebuilt.
-      // var savedRendered = this.rendered;
-      // this.rendered = false;
-
       this.updateDeclarationInputs_(newLocalNames, initializers);
-
-      // Restore rendering and show the changes.
-      // this.rendered = savedRendered;
-      // if (this.rendered) {
-      //  this.render();
-      // }
     }
   },
   dispose: function() {
