@@ -105,13 +105,7 @@ Blockly.WarningHandler.prototype.toggleWarning = function() {
 Blockly.WarningHandler.prototype.hideWarnings = function() {
   var blockArray = this.workspace.getAllBlocks();
   for(var i=0;i<blockArray.length;i++) {
-    var block = blockArray[i];
-    if(block.warning) {
-      block.setWarningText(null);
-    } else if(block.hasWarning) {
-      // Check hasWarning flag even when warning object is undefined
-      block.setWarningText(null);
-    }
+    blockArray[i].setWarningText(null);
   }
 };
 
