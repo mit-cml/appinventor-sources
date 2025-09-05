@@ -22,7 +22,7 @@ import java.util.Map;
 
 /** Renders an object loaded from an OBJ file in OpenGL. */
 @UsesAssets(fileNames = "ar_object.vert, ar_object.frag," +
-        "pawn_albedo.png, pawn.obj, cube.obj")
+        "pawn_albedo.png, pawn.obj, cube.obj, sphere.obj, Palette.png")
 public class ObjectRenderer {
   private static final String TAG = ObjectRenderer.class.getSimpleName();
 
@@ -39,7 +39,7 @@ public class ObjectRenderer {
   }
 
   // Default model and texture if none specified
-  private static final String DEFAULT_MODEL_NAME = Form.ASSETS_PREFIX +"cube.obj";
+  private static final String DEFAULT_MODEL_NAME = Form.ASSETS_PREFIX +"sphere.obj";
   private static final String DEFAULT_TEXTURE_NAME = Form.ASSETS_PREFIX +"Palette.png";
 
   // Shader names.
@@ -111,7 +111,7 @@ public class ObjectRenderer {
       meshCache.put(modelName, newMesh);
       return newMesh;
     } catch (IOException e) {
-      Log.e(TAG, "Failed to load model: " + modelName + ", using default", e);
+      Log.e(TAG, "FAILED TO LOAD MODEL " + modelName + ", using default", e);
       // Try to load default model instead
       if (!modelName.equals(DEFAULT_MODEL_NAME)) {
         return createOrGetMesh(render, DEFAULT_MODEL_NAME);
@@ -199,18 +199,16 @@ public class ObjectRenderer {
         return;
       }
 
-
-      // Get mesh and texture
       Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
       Texture nodeTexture = createOrGetTexture(render, arNode.Texture());
-      shader.setTexture("u_Texture", nodeTexture);
+
+      if (nodeMesh == null || nodeTexture == null) {
+        return;
+      }
 
       // Calculate matrices
       float[] anchorMatrix = new float[16];
       anchor.getPose().toMatrix(anchorMatrix, 0);
-
-      Log.e(TAG, "scale for node " + arNode.Model() + " " + arNode.Scale());
-
       float[] modelMatrix = updateModelMatrix(anchorMatrix, arNode.Scale());
       float[] localModelViewMatrix = new float[16];
       float[] localModelViewProjectionMatrix = new float[16];
@@ -218,8 +216,15 @@ public class ObjectRenderer {
       Matrix.multiplyMM(localModelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
       Matrix.multiplyMM(localModelViewProjectionMatrix, 0, cameraProjection, 0, localModelViewMatrix, 0);
 
-     // shader.setMat4("u_ModelView", localModelViewMatrix);
-     // shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
+      // Set shader uniforms
+      shader.setTexture("u_Texture", nodeTexture);
+     // shader.setVec4("u_ObjColor", defaultObjectColor);
+
+      // CRITICAL: Set the transformation matrices
+      //Log.d(TAG, "Setting matrices for " + arNode.Model());
+      //shader.setMat4("u_ModelView", localModelViewMatrix);
+      shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
+      //Log.d(TAG, "Matrices set successfully");
 
       render.draw(nodeMesh, shader, virtualFrameBuffer);
 

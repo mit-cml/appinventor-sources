@@ -39,7 +39,7 @@ import java.util.Locale;
 
   @SimpleObject
 
-@UsesAssets(fileNames = "pawn.obj, Palette.png")
+@UsesAssets(fileNames = "pawn.obj, sphere.obj, Palette.png")
   public final class CapsuleNode extends ARNodeBase implements ARCapsule {
 
   public CapsuleNode(final ARNodeContainer container) {

@@ -140,6 +140,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
     private boolean enableOcclusion = false;
 
+    private boolean useSimulatedDepth = false;
+
     // Rendering components
     private ARFilamentRenderer arFilamentRenderer;
     private QuadRenderer quadRenderer;
@@ -400,7 +402,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             " to framebuffer " + virtualSceneFramebuffer.getFramebufferId());
 
 
-        objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, virtualSceneFramebuffer);
+        objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, null); //virtualSceneFramebuffer);
     }
 
 
@@ -607,6 +609,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 && (depthSettings.useDepthForOcclusion()
                 || depthSettings.depthColorVisualizationEnabled())) {
                 try (android.media.Image depthImage = frame.acquireDepthImage16Bits()) {
+                    useSimulatedDepth = false;
                     backgroundRenderer.updateCameraDepthTexture(depthImage);
                     if (arFilamentRenderer != null) {
                         updateFilamentWithARCoreDepth(frame, depthImage);
@@ -614,6 +617,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 } catch (NotYetAvailableException e) {
                     // This normally means that depth data is not available yet. This is normal so we will not
                     // spam the logcat with this.
+                } catch (IllegalStateException ie) {
+                    // if we can't acquire depth data, that is ok
+                    useSimulatedDepth = true;
+                    Log.i(LOG_TAG," no depth camera");
                 }
             }
 
@@ -660,18 +667,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
             //Framebuffer B
-            if (virtualSceneFramebuffer != null) {
+           // if (virtualSceneFramebuffer != null) {
                 if (objRenderer != null && objectNodes.size() > 0) {
                     Log.d(LOG_TAG, "objects " + objectNodes);
                     drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
                 }
-            }
+           // }
             GLES30.glFinish();
 
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
 
-            backgroundRenderer.drawVirtualSceneComposite(render, filamentFramebuffer, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+            //backgroundRenderer.drawVirtualSceneComposite(render, filamentFramebuffer, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             error = GLES30.glGetError();
             if (error != GLES30.GL_NO_ERROR) {
@@ -746,6 +753,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             hitResultList = frame.hitTest(tap);
             Log.i(LOG_TAG, "how many hits? " + hitResultList.size());
 
+
+
             for (HitResult hit : hitResultList) {
 
                 Trackable mostRecentTrackable = hit.getTrackable();
@@ -772,6 +781,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 }
                 else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
+                    TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
+                }
+                else if (mostRecentTrackable instanceof Point && useSimulatedDepth){
+                    Log.i("point hit",  a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1]+ " " +a.getPose().getTranslation()[2]);
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
                 }
                 else if ((mostRecentTrackable instanceof InstantPlacementPoint)
@@ -826,15 +839,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
 
+
+
 // Check whether the user's device supports the Depth API.
         boolean isDepthSupported = session.isDepthModeSupported(Config.DepthMode.AUTOMATIC);
         boolean isGeospatialSupported =
             session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
         Log.i(LOG_TAG, "geosaption supported ? " + isGeospatialSupported);
 
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+        if (isDepthSupported) {
             config.setDepthMode(Config.DepthMode.AUTOMATIC);
         } else {
+
             config.setDepthMode(Config.DepthMode.DISABLED);
         }
         /*if (isDepthSupported && isGeospatialSupported) {
@@ -1132,7 +1148,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         "at that point and false otherwise.")
     public void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint) {
         Log.i("TAPPED at ARVIEW3D point", "");
-        EventDispatcher.dispatchEvent(this, "TapAtPoint", x, y, z);
+        EventDispatcher.dispatchEvent(this, "TapAtPoint", x, y, z, isANodeAtPoint);
     }
 
 
