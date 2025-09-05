@@ -20,7 +20,7 @@ AI.Blockly.FieldProcedure.defaultValue = ["",""];
 
 AI.Blockly.FieldProcedure.onChange = function(procedureId) {
   const workspace = this.block.getTopWorkspace();
-  if(!this.block.editable_){ // [lyn, 10/14/13] .editable is undefined on blocks. Changed to .editable_
+  if(!this.block.isOwnEditable()){
     return;
   }
 
