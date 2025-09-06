@@ -216,7 +216,7 @@
         </g:VerticalPanel>
       </g:DisclosurePanel>
 
-      <g:DisclosurePanel>
+      <g:DisclosurePanel ui:field="accountPanel">
         <g:customHeader>
           <g:FlowPanel styleName="mobile-SectionHeader">
             <g:Label ui:field="accountButton" />

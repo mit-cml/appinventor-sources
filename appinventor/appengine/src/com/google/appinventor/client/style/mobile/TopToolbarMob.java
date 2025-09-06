@@ -17,13 +17,10 @@ import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.appinventor.client.actions.*;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Label;
 
 import java.util.MissingResourceException;
 import java.util.logging.Logger;
@@ -43,7 +40,8 @@ public class TopToolbarMob extends TopToolbar {
 
   @UiField TextButton languageButton;
   @UiField
-  static Label accountButton;
+  DisclosurePanel accountPanel;
+  @UiField static Label accountButton;
   @UiField ToolbarItem deleteAccountItem;
 
   @UiField VerticalPanel menuContent;
@@ -85,6 +83,8 @@ public class TopToolbarMob extends TopToolbar {
       deleteAccountItem.setVisible(false);
     }
 
+    setupAccountPanelToggle();
+
     settingsDropDown.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -113,8 +113,29 @@ public class TopToolbarMob extends TopToolbar {
    */
   public static void showUserEmail(String email) {
     if (accountButton != null) {
-      accountButton.setText(email);
+      // Set initial state with closed arrow and email
+      accountButton.setText("▶ " + email);
     }
+  }
+
+  /**
+   * Sets up the disclosure panel event handlers to manage arrow state.
+   */
+  private void setupAccountPanelToggle() {
+    accountPanel.addOpenHandler(event -> {
+      String currentText = accountButton.getText();
+      if (currentText.startsWith("▶ ")) {
+        // Replace right arrow with down arrow when opened
+        accountButton.setText("▼ " + currentText.substring(2));
+      }
+    });
+
+    accountPanel.addCloseHandler(event -> {
+      String currentText = accountButton.getText();
+      if (currentText.startsWith("▼ ")) {
+        accountButton.setText("▶ " + currentText.substring(2));
+      }
+    });
   }
 
   private void showLanguagePopup() {
