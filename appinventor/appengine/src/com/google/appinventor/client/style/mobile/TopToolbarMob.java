@@ -6,6 +6,7 @@ import com.google.appinventor.client.editor.youngandroid.actions.*;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -22,6 +23,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.appinventor.client.actions.*;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.MissingResourceException;
 import java.util.logging.Logger;
@@ -40,21 +42,22 @@ public class TopToolbarMob extends TopToolbar {
   @UiField(provided = true) Boolean hasWriteAccess;
 
   @UiField TextButton languageButton;
+  @UiField
+  static Label accountButton;
+  @UiField ToolbarItem deleteAccountItem;
 
-
-  @UiField  VerticalPanel menuContent;
+  @UiField VerticalPanel menuContent;
 
   private PopupPanel menuPopup;
 
   private static final Dictionary LANGUAGES = Dictionary.getDictionary("LANGUAGES");
 
-  interface  Translations extends ClientBundle {
+  interface Translations extends ClientBundle {
     Translations INSTANCE = GWT.create(Translations.class);
 
     @Source("languages.json")
     TextResource languages();
   }
-
 
   @Override
   public void bindUI() {
@@ -73,7 +76,15 @@ public class TopToolbarMob extends TopToolbar {
     menuPopup.addCloseHandler(event -> menuContent.setVisible(false));
 
     languageButton.setText(getMessages().switchLanguageButton() + ": " + getDisplayName(LocaleInfo.getCurrentLocale().getLocaleName()));
-    
+
+    // Default text, will be updated with email
+    accountButton.setText(getMessages().signOutLink());
+
+    // Handle delete account visibility based on read-only mode
+    if (Ode.getInstance().isReadOnly()) {
+      deleteAccountItem.setVisible(false);
+    }
+
     settingsDropDown.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -92,6 +103,18 @@ public class TopToolbarMob extends TopToolbar {
         menuPopup.hide();
       }
     });
+  }
+
+  /**
+   * Updates the UI to show the user's email address in the account section.
+   * This method should be called from the main application when the user info is available.
+   *
+   * @param email the user's email address
+   */
+  public static void showUserEmail(String email) {
+    if (accountButton != null) {
+      accountButton.setText(email);
+    }
   }
 
   private void showLanguagePopup() {
@@ -119,7 +142,6 @@ public class TopToolbarMob extends TopToolbar {
   }
 
   private void selectLanguage(String localeName) {
-//    languageButton.setText("Language: " + getDisplayName(localeName));
     String url = Window.Location.createUrlBuilder()
             .setParameter("locale", localeName)
             .buildString();

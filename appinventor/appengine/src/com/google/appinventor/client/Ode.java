@@ -1116,6 +1116,7 @@ public class Ode implements EntryPoint {
 
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
+    TopToolbarMob.showUserEmail(user.getUserEmail());
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
       showSplashScreens();
     }

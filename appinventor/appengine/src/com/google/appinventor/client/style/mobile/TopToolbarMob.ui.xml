@@ -216,6 +216,28 @@
         </g:VerticalPanel>
       </g:DisclosurePanel>
 
+      <g:DisclosurePanel>
+        <g:customHeader>
+          <g:FlowPanel styleName="mobile-SectionHeader">
+            <g:Label ui:field="accountButton" />
+          </g:FlowPanel>
+        </g:customHeader>
+
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="Signout" caption="{messages.signOutLink}">
+              <actions:SignOutAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DeleteAccount" ui:field="deleteAccountItem"
+                            caption="{messages.deleteAccountLink}"
+                            styleName="ode-ContextMenuItem-Red"
+                            visible="{hasWriteAccess}">
+              <actions:DeleteAccountAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
     </g:VerticalPanel>
 
 
