@@ -83,6 +83,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float[] previewPlacementSurface = null;
   protected boolean hasPreviewSurface = false;
 
+  protected long dragStartTime;
+
+
+
   @SuppressWarnings("WeakerAccess")
   protected ARNodeBase(ARNodeContainer container) {
     // Enhanced initialization
@@ -240,7 +244,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleFunction(description = "Handle pinch scaling if enabled")
   public void HandlePinchScale(float scaleFactor) {
     if (pinchToScale) {
-      ScaleBy(scaleFactor);
+      ScaleByPinch(scaleFactor);
       Log.d("ARNodeBase", "Pinch scaled by " + scaleFactor);
     }
   }
@@ -1278,6 +1282,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     Scale(Scale() * Math.abs(scalar));
   }
 
+
+  @SimpleFunction(description = "Changes the node's scale by the given scalar.")
+  public void ScaleByPinch(float scalar) {
+    Log.i("arnodebase","scale by pinch");
+    Scale(Scale() * Math.abs(scalar));
+  }
+
+
   @Override
   @SimpleFunction(description = "Changes the node's position by (x,y,z) in centimeters.")
   public void MoveBy(float x, float y, float z) {
@@ -1384,71 +1396,100 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
 // MARK: - Enhanced Drag System Methods
 
-  @SimpleFunction(description = "Start dragging the node")
-  public void StartDrag() {
-    startDrag();
+
+  // Primary gesture system - all camera info comes from ARView3D
+  public void handleAdvancedGestureUpdate(PointF fingerLocation, PointF fingerMovement,
+                                          PointF fingerVelocity, float[] groundProjection,
+                                          float[] camera3DProjection, String gesturePhase) {
+    if ("began".equals(gesturePhase)) {
+      startDrag(fingerLocation);
+    } else if ("changed".equals(gesturePhase)) {
+      updateDrag(fingerLocation, fingerMovement, groundProjection, camera3DProjection);
+    } else if ("ended".equals(gesturePhase)) {
+      endDrag(fingerVelocity, groundProjection);
+    }
   }
 
-  protected void startDrag() {
+  @Override
+  public void startDrag(PointF fingerLocation) {
     isBeingDragged = true;
+    dragStartLocation.set(fingerLocation.x, fingerLocation.y);
+    dragStartTime = System.currentTimeMillis();
     if (originalMaterial == null) {
       originalMaterial = getCurrentMaterial();
     }
     showDragEffect();
-    Log.i("ARNodeBase", name + " started being dragged");
-  }
-
-  @SimpleFunction(description = "Update drag with movement vector and velocity")
-  public void UpdateDrag(String dragVector, String velocity, String worldDirection) {
-    if (!isBeingDragged) return;
-
-    PointF dragVec = parsePointF(dragVector);
-    PointF vel = parsePointF(velocity);
-    float[] worldDir = parseVector3(worldDirection);
-
-    updateDrag(dragVec, vel, worldDir);
-  }
-
-  protected void updateDrag(PointF dragVector, PointF velocity, float[] worldDirection) {
-    // Override in subclasses for specific drag behavior
-    Log.d("ARNodeBase", name + " drag update - override in subclass");
+    Log.d("ARNodeBase", "Started advanced drag for " + NodeType());
   }
 
   @Override
-  @SimpleFunction(description = "Allow user to additionally add behavior to the end of the drag/pan movement")
-  public void endDrag(String dragVelocity, String worldDirection) {
-    if (!isBeingDragged) return;
-
-    PointF releaseVel = parsePointF(dragVelocity);
-    float[] worldDir = parseVector3(worldDirection);
-
-    endDrag(releaseVel, worldDir);
-  }
-
-  protected void endDrag(PointF releaseVelocity, float[] worldDirection) {
-    isBeingDragged = false;
-    restoreOriginalMaterial();
-    Log.i("ARNodeBase", name + " drag ended - override in subclass for specific behavior");
-  }
-
-  protected void showDragEffect() {
-    // Override in subclasses to implement drag visual effects
-    Log.d("ARNodeBase", "Show drag effect - override in subclass");
-  }
-
-  protected void restoreOriginalMaterial() {
-    if (originalMaterial != null) {
-      // Override in subclasses to restore material
-      Log.d("ARNodeBase", "Restore material - override in subclass");
-      originalMaterial = null;
+  public void updateDrag(PointF fingerLocation, PointF fingerMovement,
+                                    float[] groundProjection, float[] camera3DProjection) {
+    // Default implementation - override in subclasses
+    if (groundProjection != null) {
+      // Convert meters to centimeters for MoveTo
+      MoveTo(groundProjection[0] * 100, groundProjection[1] * 100, groundProjection[2] * 100);
     }
   }
 
-  protected Object getCurrentMaterial() {
-    // Override in subclasses to return current material
-    return null;
+  @Override
+  public void endDrag(PointF fingerVelocity, float[] finalPosition) {
+    isBeingDragged = false;
+    restoreOriginalMaterial();
+
+    // Apply momentum if velocity is high enough
+    float velocityMagnitude = (float) Math.sqrt(
+        fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y
+    );
+
+    if (velocityMagnitude > 100 && EnablePhysics()) {
+      applyReleaseForce(fingerVelocity.x, fingerVelocity.y);
+    }
+
+    Log.d("ARNodeBase", "Ended advanced drag for " + NodeType());
+  }
+  // Fix the method signature to match usage
+  protected void applyReleaseForce(PointF fingerVelocity) {
+    // Convert PointF to individual components for consistency
+    applyReleaseForce(fingerVelocity.x, fingerVelocity.y);
   }
 
+  protected void applyReleaseForce(float velocityX, float velocityY) {
+    // Override in physics-enabled subclasses
+    Log.d("ARNodeBase", "Apply release force - override in subclass");
+  }
+
+
+
+  protected Object getCurrentMaterial() {
+    // Just store the opacity since that's what most drag effects change
+    return getCurrentOpacity();
+  }
+
+  protected void setMaterial(Object material) {
+    if (material instanceof Float) {
+      setOpacity((Float) material);
+    }
+  }
+
+  protected void restoreOriginalMaterial() {
+      setOpacity(1.0f);
+  }
+
+  protected void showDragEffect() {
+    if (originalMaterial == null) {
+      originalMaterial = getCurrentOpacity();
+    }
+    setOpacity(0.7f);
+  }
+
+  private float getCurrentOpacity() {
+    return Opacity() / 100.0f; // Convert from 0-100 to 0.0-1.0
+  }
+
+  private void setOpacity(float opacity) {
+    Opacity((int)(opacity * 100)); // Convert back to 0-100 range
+  }
 // MARK: - Enhanced Image Marker Following
 
   @Override

@@ -596,11 +596,12 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   @SimpleFunction(description = "Start dragging the sphere with enhanced physics control")
   public void StartDrag() {
-    startDrag();
+    startDrag(new PointF());
   }
 
-  @Override
-  protected void startDrag() {
+   @Override
+  public void startDrag(PointF fingerLocation) {
+    super.startDrag(fingerLocation);
     Log.i("SphereNode", "Starting optimized drag for " + name);
 
     isBeingDragged = true;
@@ -673,20 +674,28 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     }
   }
 
-  @Override
+
   @SimpleFunction(description = "End drag with release velocity for momentum")
-  public void endDrag(String dragVelocity, String worldDirection) {
+  public void endDrag(String pos) {
+    PointF velocity = parsePointF(pos);
+    //CSB todo
+    endDrag(velocity, null);
+
+  }
+
+  @Override
+  public void endDrag(PointF fingerVelocity, float[] finalPosition) {
     if (!isBeingDragged) return;
 
     Log.i("SphereNode", "Ending optimized drag for " + name);
     isBeingDragged = false;
 
     // Parse release velocity
-    PointF releaseVelocity = parsePointF(dragVelocity);
+   // PointF releaseVelocity = parsePointF(fingerVelocity);
 
     // Apply release momentum
     if (EnablePhysics()) {
-      applyReleaseForce(releaseVelocity);
+      applyReleaseForce(fingerVelocity);
     }
 
     // Restore physics settings
@@ -696,7 +705,8 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     restoreOriginalAppearance();
   }
 
-  private void applyReleaseForce(PointF releaseVelocity) {
+  @Override
+  protected void applyReleaseForce(PointF releaseVelocity) {
     float releaseSpeed = (float) Math.sqrt(
         releaseVelocity.x * releaseVelocity.x +
             releaseVelocity.y * releaseVelocity.y
@@ -874,6 +884,8 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   private void setCurrentPosition(float[] position) {
     // Set position via anchor system
+
+    Log.i("SphereNode", "setting position " + position);
     if (trackable != null) {
       float[] rotation = {0, 0, 0, 1};
       Pose newPose = new Pose(position, rotation);
@@ -924,13 +936,25 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   @Override
   @SimpleFunction(description = "Move sphere to absolute position")
   public void MoveTo(float x, float y, float z) {
-    float[] position = {x, y, z};
+
+    float xMeters = x / 100.0f;
+    float yMeters = y / 100.0f;
+    float zMeters = z / 100.0f;
+
+    float[] position = {xMeters, yMeters, zMeters};
     float[] rotation = {0, 0, 0, 1};
+
+    TrackingState trackingState = null;
+    if (this.Anchor() != null) {
+      float[] translations = this.Anchor().getPose().getTranslation();
+      position = new float[]{translations[0] + xMeters, translations[1] + yMeters, translations[2] + zMeters};
+      trackingState = this.Anchor().getTrackingState();
+    }
 
     // Maintain physics constraints
     if (EnablePhysics()) {
-      float ballRadius = radius * Scale();
-      position[1] = Math.max(position[1], ballRadius); // Don't go below ground
+      //float ballRadius = radius * Scale();
+      //position[1] = Math.max(position[1], ballRadius); // Don't go below ground
     }
 
     Pose newPose = new Pose(position, rotation);
@@ -938,7 +962,12 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
       Anchor(this.trackable.createAnchor(newPose));
       Log.i("SphereNode", "Moved anchor to pose: " + newPose + " with physics correction");
     } else {
-      Log.i("SphereNode", "Tried to move anchor to pose");
+      if (trackingState == TrackingState.TRACKING) {
+        if (session != null) {
+          Log.i("SphereNode", "Moved anchor to with SESSION " + xMeters +" "  + yMeters + " " +zMeters);
+          Anchor(session.createAnchor(newPose));
+        }
+      }
     }
   }
 

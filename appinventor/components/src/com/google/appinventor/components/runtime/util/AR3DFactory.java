@@ -9,6 +9,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 
+import android.graphics.PointF;
+
 import java.util.List;
 
 import com.google.appinventor.components.runtime.util.YailList;
@@ -162,15 +164,21 @@ public final class AR3DFactory {
      float DistanceToPointLight(ARPointLight light);
      float DistanceToDetectedPlane(ARDetectedPlane detectedPlane);
 
+     // scaleToPinch
+    // pan
+    //rotate
+
     // Events
      void Click();
      void LongClick();
+     void CollisionDetection();
+     void ObjectCollidedWithScene();
+     void ObjectCollidedWithObject(ARNode otherNode);
 
-    void CollisionDetection();
-    void ObjectCollidedWithScene();
-    void ObjectCollidedWithObject(ARNode otherNode);
-
-    void endDrag(String dragVelocity, String worldDirection);
+     void startDrag(PointF fingerLocation);
+     void updateDrag(PointF fingerLocation, PointF fingerMovement,
+                    float[] groundProjection, float[] camera3DProjection);
+     void endDrag(PointF fingerVelocity, float[] finalPosition);
 
   }
 

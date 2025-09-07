@@ -13,6 +13,13 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector;
+import android.view.ScaleGestureDetector;
+//import android.view.RotationGestureDetector;
+import android.content.Context;
+import android.graphics.PointF;
+
+
 
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.ar.core.*;
@@ -170,6 +177,19 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private int currentViewportWidth = 0;
     private int currentViewportHeight = 0;
 
+    private GestureDetector gestureDetector;
+    private ScaleGestureDetector scaleGestureDetector;
+    //private RotationGestureDetector rotationGestureDetector;
+
+    // Track dragging state
+    private ARNode currentlyDraggedNode = null;
+    private Frame lastFrame = null;
+    private Camera lastCamera = null;
+    private final float[] lastViewMatrix = new float[16];
+    private final float[] lastProjMatrix = new float[16];
+
+
+
     // AR content
     private List<ARNode> arNodes = Nodes();
 
@@ -184,7 +204,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         this.glview.setPreserveEGLContextOnPause(true);
         this.glview.setEGLContextClientVersion(3);
         this.glview.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-        this.glview.setOnTouchListener(tapHelper);
 
         // glSurfaceView.setEGLContextClientVersion(3);
         // glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -217,6 +236,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
         });
 
+
+        setupGestureDetectors(container.$context());
+
         //arViewRender = new ARViewRender(this.view, this, container.$form());
         arViewRender = new ARViewRender(this.glview, this, container.$form());
 
@@ -238,6 +260,117 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void Initialize() {
         onResume();
     }
+
+
+    private void setupGestureDetectors(Context context) {
+        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return handleTap(e.getX(), e.getY());
+            }
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                // Check if we're starting a potential drag
+                ARNode targetNode = findClosestNode(e.getX(), e.getY());
+                Log.i(LOG_TAG, "on Down " + targetNode);
+                if (targetNode != null && targetNode.PanToMove()) {
+                    currentlyDraggedNode = targetNode;
+                    // Start drag immediately
+                    if (currentlyDraggedNode instanceof ARNodeBase) {
+                        ((ARNodeBase) currentlyDraggedNode).handleAdvancedGestureUpdate(
+                            new PointF(e.getX(), e.getY()),
+                            new PointF(0, 0),
+                            new PointF(0, 0),
+                            null,
+                            null,
+                            "began"
+                        );
+                    }
+                }
+                return true; // required
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                Log.i(LOG_TAG, "=== GestureDetector.onScroll() CALLED ===");
+                Log.i(LOG_TAG, "currentlyDraggedNode: " + (currentlyDraggedNode != null ? currentlyDraggedNode.NodeType() : "null"));
+
+                if (currentlyDraggedNode != null) {
+                    Log.i(LOG_TAG, "Processing scroll for drag movement");
+                    PointF fingerLocation = new PointF(e2.getX(), e2.getY());
+                    float[] groundProjection = getProjectionForNode(
+                        currentlyDraggedNode,
+                        fingerLocation,
+                        new PointF(0, 0),
+                        "changed"
+                    );
+
+                    if (currentlyDraggedNode instanceof ARNodeBase) {
+                        Log.i(LOG_TAG, "Calling handleAdvancedGestureUpdate with 'changed'");
+                        ((ARNodeBase) currentlyDraggedNode).handleAdvancedGestureUpdate(
+                            fingerLocation,
+                            new PointF(0, 0),
+                            new PointF(0, 0),
+                            groundProjection,
+                            null,
+                            "changed"
+                        );
+                    }
+                    return true;
+                }
+                Log.i(LOG_TAG, "onScroll returning false - no drag node");
+                return false;
+            }
+        });
+
+        scaleGestureDetector = new ScaleGestureDetector(context, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                return handlePinch(detector);
+
+            }
+        });
+
+        this.glview.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                boolean handled = false;
+                Log.i(LOG_TAG, "on touch");
+                // Process in priority order
+                handled |= scaleGestureDetector.onTouchEvent(event);
+                if (!scaleGestureDetector.isInProgress()) {
+                    Log.i(LOG_TAG, "pass to gestureDetector");
+                    handled |= gestureDetector.onTouchEvent(event);
+                }
+
+                // Handle drag end
+                if (event.getAction() == MotionEvent.ACTION_UP ||
+                    event.getAction() == MotionEvent.ACTION_CANCEL) {
+
+                    if (currentlyDraggedNode != null) {
+                        Log.i(LOG_TAG, "stopping DRAG");
+                        if (currentlyDraggedNode instanceof ARNodeBase) {
+                            ((ARNodeBase) currentlyDraggedNode).handleAdvancedGestureUpdate(
+                                new PointF(event.getX(), event.getY()),
+                                new PointF(0, 0),
+                                new PointF(0, 0),
+                                null,
+                                null,
+                                "ended"
+                            );
+                        }
+                        currentlyDraggedNode = null;
+                        handled = true;
+                    }
+                }
+
+                return handled || tapHelper.onTouch(v, event);
+            }
+        });
+    }
+
+
 
     // Shader compilation utility
     private int compileShader(int type, String shaderCode) {
@@ -544,8 +677,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
         try {
-            Frame frame;
-            Camera camera;
+
 
             try {
 
@@ -569,8 +701,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 }
 
                 // Update ARCore frame and camera
-                frame = session.update();
-                camera = frame.getCamera();
+
+                lastFrame = session.update();
+                lastCamera = lastFrame.getCamera();
+
+                lastCamera.getViewMatrix(lastViewMatrix, 0);
+                lastCamera.getProjectionMatrix(lastProjMatrix, 0, Z_NEAR, Z_FAR);
+
             } catch (CameraNotAvailableException e) {
                 Log.e(LOG_TAG, "onDrawframe Camera not available: " + e.getMessage(), e);
                 return;
@@ -588,7 +725,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
             if (backgroundRenderer != null) {
-                backgroundRenderer.updateDisplayGeometry(frame);
+                backgroundRenderer.updateDisplayGeometry(lastFrame);
                 try {
                     backgroundRenderer.setUseDepthVisualization(render, false);
                     backgroundRenderer.setUseOcclusion(render, depthSettings.useDepthForOcclusion());
@@ -596,23 +733,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     Log.e(LOG_TAG, "Failed to read a required asset file", e);
                     return;
                 }
-                if (frame.getTimestamp() != 0) {
+                if (lastFrame.getTimestamp() != 0) {
                     backgroundRenderer.drawBackground(render, 0, currentViewportWidth, currentViewportHeight);
                 }
             }
 
-            if (camera.getTrackingState() == TrackingState.PAUSED) {
+            if (lastCamera.getTrackingState() == TrackingState.PAUSED) {
                 return;
             }
 
-            if (camera.getTrackingState() == TrackingState.TRACKING
+            if (lastCamera.getTrackingState() == TrackingState.TRACKING
                 && (depthSettings.useDepthForOcclusion()
                 || depthSettings.depthColorVisualizationEnabled())) {
-                try (android.media.Image depthImage = frame.acquireDepthImage16Bits()) {
+                try (android.media.Image depthImage = lastFrame.acquireDepthImage16Bits()) {
                     useSimulatedDepth = false;
                     backgroundRenderer.updateCameraDepthTexture(depthImage);
                     if (arFilamentRenderer != null) {
-                        updateFilamentWithARCoreDepth(frame, depthImage);
+                        updateFilamentWithARCoreDepth(lastFrame, depthImage);
                     }
                 } catch (NotYetAvailableException e) {
                     // This normally means that depth data is not available yet. This is normal so we will not
@@ -629,8 +766,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Log.e(LOG_TAG, "GL error after [draw bakcground]: 0x" + Integer.toHexString(error));
             }
             // Get camera matrices for 3D rendering
-            camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
-            camera.getViewMatrix(viewMatrix, 0);
+            lastCamera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
+            lastCamera.getViewMatrix(viewMatrix, 0);
 
             setDefaultPositions(arNodes);
 
@@ -640,7 +777,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             //Framebuffer A
             if (arFilamentRenderer != null && modelNodes.size() > 0) {
-                drawAnimatedObjects(render, camera, modelNodes, viewMatrix, projectionMatrix);
+                drawAnimatedObjects(render, lastCamera, modelNodes, viewMatrix, projectionMatrix);
             }
 
 
@@ -659,7 +796,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             GLES30.glEnable(GLES30.GL_BLEND);
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
-            drawPlanesAndPoints(render, camera, frame, viewMatrix, projectionMatrix);
+            drawPlanesAndPoints(render, lastCamera, lastFrame, viewMatrix, projectionMatrix);
             //emitPlaneDetectedEvent();
 
 
@@ -685,8 +822,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Log.e(LOG_TAG, "GL error afger [draw objects]: 0x" + Integer.toHexString(error));
             }
 
-
-            handleTap(frame, camera);
 
             GLES30.glDisable(GLES30.GL_BLEND);
             GLES30.glFinish();
@@ -735,30 +870,29 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return defaultAnchor;
     }
 
-    private void handleTap(Frame frame, Camera camera) {
+    private boolean handleTap(float screenX, float screenY) {
+        if (session == null) return false;
 
-        MotionEvent tap = tapHelper.poll();
-        if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
-            Log.i(LOG_TAG, "inside handle tap2 ");
-            List<HitResult> hitResultList;
-            /*if (instantPlacementSettings.isInstantPlacementEnabled()) {
-                hitResultList =
-                        frame.hitTestInstantPlacement(tap.getX(), tap.getY(), APPROXIMATE_DISTANCE_METERS);
-            } else {
-                hitResultList = frame.hitTest(tap);
-            }*/
+        try {
+            Frame frame = lastFrame;
+            Camera camera = lastCamera;
 
-            //TBD node tapped?
+            if (camera.getTrackingState() != TrackingState.TRACKING) {
+                return false;
+            }
 
-            hitResultList = frame.hitTest(tap);
-            Log.i(LOG_TAG, "how many hits? " + hitResultList.size());
+            ARNode hitNode = findClosestNode(screenX, screenY);
+            if (hitNode != null) {
+                NodeClick(hitNode);
+                return true;
+            }
 
-
-
+            List<HitResult> hitResultList = frame.hitTest(screenX, screenY);
             for (HitResult hit : hitResultList) {
 
                 Trackable mostRecentTrackable = hit.getTrackable();
                 Anchor a = hit.createAnchor();
+
 
                 /*Pose worldPose = hit.getHitPose();
                 float[] worldPosition = worldPose.getTranslation();
@@ -772,23 +906,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 */
 
-                Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
-                if (mostRecentTrackable instanceof Plane){
-                    ARDetectedPlane arplane = new DetectedPlane((Plane)mostRecentTrackable);
+                Log.i("hit is, pose is, trackable is ", hit.toString() + " " + a.getPose() + " " + mostRecentTrackable);
+                if (mostRecentTrackable instanceof Plane) {
+                    ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
 
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
 
 
-                }
-                else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)){
+                } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
-                }
-                else if (mostRecentTrackable instanceof Point && useSimulatedDepth){
-                    Log.i("point hit",  a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1]+ " " +a.getPose().getTranslation()[2]);
+                } else if (mostRecentTrackable instanceof Point && useSimulatedDepth) {
+                    Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
-                }
-                else if ((mostRecentTrackable instanceof InstantPlacementPoint)
-                    || (mostRecentTrackable instanceof DepthPoint)){
+                } else if ((mostRecentTrackable instanceof InstantPlacementPoint)
+                    || (mostRecentTrackable instanceof DepthPoint)) {
 
 
                     //ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
@@ -804,7 +935,212 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     // are there hooks for this?
                 }*/
             }
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
+    }
+
+
+    private ARNode findClosestNode(float screenX, float screenY) {
+        Log.i(LOG_TAG, "=== findClosestNode START ===");
+        Log.i(LOG_TAG, "Touch coordinates: (" + screenX + ", " + screenY + ")");
+        Log.i(LOG_TAG, "Screen dimensions: " + currentViewportWidth + "x" + currentViewportHeight);
+        Log.i(LOG_TAG, "lastCamera null: " + (lastCamera == null));
+        Log.i(LOG_TAG, "arNodes size: " + arNodes.size());
+
+        if (lastCamera == null || arNodes.isEmpty()) {
+            Log.i(LOG_TAG, "Returning null - no camera or nodes");
+            return null;
+        }
+
+        ARNode closestNode = null;
+        float closestDistance = Float.MAX_VALUE;
+
+        // Combine view-projection matrix
+        float[] vpMatrix = new float[16];
+        Matrix.multiplyMM(vpMatrix, 0, lastProjMatrix, 0, lastViewMatrix, 0);
+        Log.i(LOG_TAG, "VP matrix calculated");
+
+        for (ARNode node : arNodes) {
+            Log.i(LOG_TAG, "--- Checking node: " + node.NodeType() + " ---");
+            Log.i(LOG_TAG, "Has anchor: " + (node.Anchor() != null));
+
+            if (node.Anchor() == null) {
+                Log.i(LOG_TAG, "Skipping - no anchor");
+                continue;
+            }
+
+            // Project node center to screen space
+            float[] worldPos = node.Anchor().getPose().getTranslation();
+            Log.i(LOG_TAG, "World position: (" + worldPos[0] + ", " + worldPos[1] + ", " + worldPos[2] + ")");
+
+            float[] screenPos = worldToScreen(worldPos, vpMatrix);
+
+            if (screenPos != null) {
+                Log.i(LOG_TAG, "Screen position: (" + screenPos[0] + ", " + screenPos[1] + ")");
+
+                // Calculate screen distance
+                float dx = screenX - screenPos[0];
+                float dy = screenY - screenPos[1];
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+                Log.i(LOG_TAG, "Delta: dx=" + dx + ", dy=" + dy);
+
+                // Check against node's screen radius
+                float nodeRadius = getNodeScreenRadius(node, worldPos);
+                Log.i(LOG_TAG, "Distance: " + distance + " pixels");
+                Log.i(LOG_TAG, "Node radius: " + nodeRadius + " pixels");
+                Log.i(LOG_TAG, "PanToMove: " + node.PanToMove());
+
+                float touchTolerance = 50f;
+                float totalRadius = nodeRadius + touchTolerance;
+                Log.i(LOG_TAG, "Total radius (including tolerance): " + totalRadius + " pixels");
+
+                boolean withinRadius = distance <= totalRadius;
+                boolean closerThanPrevious = distance < closestDistance;
+                boolean canMove = node.PanToMove();
+
+                Log.i(LOG_TAG, "Within radius: " + withinRadius);
+                Log.i(LOG_TAG, "Closer than previous: " + closerThanPrevious);
+                Log.i(LOG_TAG, "Can move: " + canMove);
+
+                if (withinRadius && closerThanPrevious && canMove) {
+                    Log.i(LOG_TAG, "*** FOUND CLOSER DRAGGABLE NODE: " + node.NodeType() + " ***");
+                    closestDistance = distance;
+                    closestNode = node;
+                } else {
+                    Log.i(LOG_TAG, "Node rejected - not within criteria");
+                }
+            } else {
+                Log.i(LOG_TAG, "worldToScreen returned null - node behind camera or projection failed");
+            }
+        }
+
+        Log.i(LOG_TAG, "=== findClosestNode RESULT ===");
+        Log.i(LOG_TAG, "Returning: " + (closestNode != null ? closestNode.NodeType() : "null"));
+        Log.i(LOG_TAG, "Final closest distance: " + (closestNode != null ? closestDistance : "N/A"));
+        return closestNode;
+    }
+
+    // Enhanced worldToScreen logging
+    private float[] worldToScreen(float[] worldPos, float[] vpMatrix) {
+        Log.i(LOG_TAG, "worldToScreen input: (" + worldPos[0] + ", " + worldPos[1] + ", " + worldPos[2] + ")");
+
+        float[] clipPos = new float[4];
+        float[] worldPos4 = {worldPos[0], worldPos[1], worldPos[2], 1.0f};
+
+        Matrix.multiplyMV(clipPos, 0, vpMatrix, 0, worldPos4, 0);
+        Log.i(LOG_TAG, "Clip coordinates: (" + clipPos[0] + ", " + clipPos[1] + ", " + clipPos[2] + ", " + clipPos[3] + ")");
+
+        if (clipPos[3] <= 0) {
+            Log.i(LOG_TAG, "worldToScreen returning null - behind camera (w=" + clipPos[3] + ")");
+            return null;
+        }
+
+        // Perspective divide
+        float ndcX = clipPos[0] / clipPos[3];
+        float ndcY = clipPos[1] / clipPos[3];
+        Log.i(LOG_TAG, "NDC coordinates: (" + ndcX + ", " + ndcY + ")");
+
+        // Convert to screen coordinates
+        float screenX = (ndcX + 1.0f) * 0.5f * currentViewportWidth;
+        float screenY = (1.0f - ndcY) * 0.5f * currentViewportHeight;
+        Log.i(LOG_TAG, "Final screen coordinates: (" + screenX + ", " + screenY + ")");
+
+        return new float[]{screenX, screenY};
+    }
+
+    // Enhanced getNodeScreenRadius logging
+    private float getNodeScreenRadius(ARNode node, float[] worldPos) {
+        float baseRadius = 80f;
+        Log.i(LOG_TAG, "Base radius: " + baseRadius);
+
+        if (node instanceof SphereNode) {
+            SphereNode sphere = (SphereNode) node;
+            float worldRadius = sphere.RadiusInCentimeters() * sphere.Scale();
+            Log.i(LOG_TAG, "Sphere world radius: " + worldRadius + " cm");
+
+            float approximateScreenRadius = worldRadius * 10;
+            Log.i(LOG_TAG, "Approximate screen radius: " + approximateScreenRadius);
+
+            baseRadius = Math.max(baseRadius, approximateScreenRadius);
+            Log.i(LOG_TAG, "Max of base and sphere radius: " + baseRadius);
+        }
+
+        Log.i(LOG_TAG, "Final node radius: " + baseRadius + " pixels");
+        return baseRadius;
+    }
+    protected float vectorDistance(float[] a, float[] b) {
+        float dx = a[0] - b[0];
+        float dy = a[1] - b[1];
+        float dz = a[2] - b[2];
+        return (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    private float[] getProjectionForNode(ARNode node, PointF fingerLocation,
+                                         PointF fingerMovement, String gesturePhase) {
+        if (session == null) return null;
+
+        try {
+            Frame frame = lastFrame;
+
+            // Primary: Plane-based positioning
+            List<HitResult> hitResults = frame.hitTest(fingerLocation.x, fingerLocation.y);
+            for (HitResult hit : hitResults) {
+                if (hit.getTrackable() instanceof Plane &&
+                    ((Plane) hit.getTrackable()).isPoseInPolygon(hit.getHitPose())) {
+
+                    float[] position = hit.getHitPose().getTranslation();
+                    return adjustPositionForNodeType(node, position);
+                }
+            }
+
+            // Fallback: Instant placement
+            List<HitResult> instantHits = frame.hitTestInstantPlacement(
+                fingerLocation.x, fingerLocation.y, 1.0f
+            );
+
+            if (!instantHits.isEmpty()) {
+                float[] position = instantHits.get(0).getHitPose().getTranslation();
+                return adjustPositionForNodeType(node, position);
+            }
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Something wrong with lastFrame or hit testing", e);
+        }
+
+        // Final fallback: Keep current position
+        if (node.Anchor() != null) {
+            return node.Anchor().getPose().getTranslation();
+        }
+
+        return null;
+    }
+
+
+    private float[] adjustPositionForNodeType(ARNode node, float[] position) {
+        /*if (node instanceof SphereNode) {
+            return new float[]{position[0], Math.max(position[1], GROUND_LEVEL), position[2]};
+        } else {
+            float constrainedY = Math.max(position[1], GROUND_LEVEL + 0.005f);
+            return new float[]{position[0], constrainedY, position[2]};
+        }*/
+        return new float[]{position[0],position[1], position[2]};
+    }
+
+    // Helper: Check if hit result is near an anchor
+    private boolean isHitNearAnchor(HitResult hit, Anchor anchor) {
+        float[] hitPos = hit.getHitPose().getTranslation();
+        float[] anchorPos = anchor.getPose().getTranslation();
+
+        float distance = (float) Math.sqrt(
+            Math.pow(hitPos[0] - anchorPos[0], 2) +
+                Math.pow(hitPos[1] - anchorPos[1], 2) +
+                Math.pow(hitPos[2] - anchorPos[2], 2)
+        );
+
+        return distance < 0.1f; // 10cm threshold
     }
 
     // Check if there are any tracking planes
@@ -1113,9 +1449,31 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i("ADDED ARNODE", node.NodeType() + " and session is null? " + (session == null));
     }
 
+    public boolean handlePinch(ScaleGestureDetector detector) {
+        // Get the focus point of the pinch gesture
+        float focusX = detector.getFocusX();
+        float focusY = detector.getFocusY();
+
+        ARNode nodeEntity = findClosestNode(focusX, focusY);
+        if (nodeEntity != null && nodeEntity.PinchToScale()) {
+            Log.d(LOG_TAG, "Found closest node for scaling: " + nodeEntity.NodeType());
+
+            float scaleFactor = detector.getScaleFactor();
+            // Clamp scale factor to prevent extreme values
+            scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
+
+            nodeEntity.ScaleBy(scaleFactor);
+            return true; // We handled the pinch
+        } else {
+            Log.d(LOG_TAG, "No scalable nodes close to pinch location");
+            return false; // We didn't handle it
+        }
+    }
+
     // @Override
     @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
     public void NodeClick(ARNode node) {
+        EventDispatcher.dispatchEvent(this, "Click");
     }
 
     // @Override
