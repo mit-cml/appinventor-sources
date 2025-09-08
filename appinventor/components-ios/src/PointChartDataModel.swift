@@ -7,6 +7,9 @@ import Foundation
 import DGCharts
 
 open class PointChartDataModel: Chart2DDataModel {
+  
+  public static var dateFormatter = DateFormatter()
+  
   init(data: DGCharts.ChartData, view: PointChartView) {
     super.init(data: data, view: view)
   }
@@ -49,12 +52,11 @@ open class PointChartDataModel: Chart2DDataModel {
     } else if let value = o as? String {
       let retVal = Double(value)
       if retVal == nil {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let date = dateFormatter.date(from: value)
+        self.dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = self.dateFormatter.date(from: value)
         if date == nil {
-          dateFormatter.dateFormat = "HH:mm:ss"
-          return dateFormatter.date(from: value)?.timeIntervalSince1970
+          self.dateFormatter.dateFormat = "HH:mm:ss"
+          return self.dateFormatter.date(from: value)?.timeIntervalSince1970
         }
         return date?.timeIntervalSince1970
       }

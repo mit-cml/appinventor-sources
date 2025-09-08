@@ -98,10 +98,15 @@ open class ChartView {
     self.chart?.setNeedsDisplay()
   }
 
-  public func setValueType(valueType: Int){
-    _valueType = valueType;
-  }
   
+  public var ValueType: Int{
+    get {
+      return _valueType
+    }
+    set(valueType){
+      _valueType = valueType;
+    }
+  }
   
   // make RefreshTask
   private class RefreshTask {

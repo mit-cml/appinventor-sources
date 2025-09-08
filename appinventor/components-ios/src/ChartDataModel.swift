@@ -228,12 +228,15 @@ open class ChartDataModel: DataModel {
     return _entries as? [DGCharts.ChartDataEntry] ?? []
   }
   
-  public func setValueType(valueType: Int){
-    _valueType = valueType;
-    
-    dataset?.valueFormatter = DefaultValueFormatter(formatter: NumberFormatter())
-    
-    view.setValueType(valueType: valueType)
+  public var ValueType: Int{
+    get {
+      return _valueType
+    }
+    set(valueType){
+      _valueType = valueType;
+      dataset?.valueFormatter = DefaultValueFormatter(formatter: NumberFormatter())
+      view.ValueType = valueType
+    }
   }
 
 }

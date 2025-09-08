@@ -85,17 +85,17 @@ import DGCharts
        return _valueType;
      }
     set{
-      _valueType = newValue;
-      _chartView?.setValueType(valueType: newValue);
+      _valueType = newValue
+      _chartView?.ValueType = newValue
       
       for c in _dataComponents {
-        if let dc: ChartDataModel = c.dispatchDelegate as? ChartDataModel{
-          dc.setValueType(valueType:newValue)
+        if let dc = c.dispatchDelegate as? ChartDataModel{
+          dc.ValueType = newValue
         }
         
       }
     }
-   }
+  }
   @objc open override var view: UIView {
     return _view
   }
