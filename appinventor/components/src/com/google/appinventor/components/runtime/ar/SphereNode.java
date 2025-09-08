@@ -959,8 +959,8 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
     Pose newPose = new Pose(position, rotation);
     if (this.trackable != null) {
+      og.i("SphereNode", "Moving anchor to pose: " + newPose + " with physics correction");
       Anchor(this.trackable.createAnchor(newPose));
-      Log.i("SphereNode", "Moved anchor to pose: " + newPose + " with physics correction");
     } else {
       if (trackingState == TrackingState.TRACKING) {
         if (session != null) {
