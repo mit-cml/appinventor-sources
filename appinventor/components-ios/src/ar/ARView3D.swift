@@ -1626,47 +1626,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
     // Basic collision check - make sure we're not going below floor
     return position.y > GROUND_LEVEL
   }
-  
-  
-  func screenDragToWorldDirection(_ screenVector: CGPoint) -> SIMD3<Float> {
-    let cameraTransform = _arView.cameraTransform
-    
-    let rightVector = simd_normalize(SIMD3<Float>(
-      cameraTransform.matrix.columns.0.x,
-      cameraTransform.matrix.columns.0.y,
-      cameraTransform.matrix.columns.0.z
-    ))
-    
-    // ✅ Choose forward vs up vector based on camera angle
-    let cameraUpComponent = cameraTransform.matrix.columns.1.y  // How "up" is the camera?
-    
-    if abs(cameraUpComponent) > 0.7 {  // Camera mostly level
-      // Use up vector for lifting
-      let upVector = simd_normalize(SIMD3<Float>(
-        cameraTransform.matrix.columns.1.x,
-        cameraTransform.matrix.columns.1.y,
-        cameraTransform.matrix.columns.1.z
-      ))
-      
-      return rightVector * Float(screenVector.x) * 0.001 +
-      upVector * Float(-screenVector.y) * 0.001
-      
-    } else {  // Camera angled down (looking at floor)
-      // Use forward vector for ground movement
-      let forwardVector = simd_normalize(SIMD3<Float>(
-        -cameraTransform.matrix.columns.2.x,
-         0,  // Keep on ground plane
-         -cameraTransform.matrix.columns.2.z
-      ))
-      
-      return rightVector * Float(screenVector.x) * 0.001 +
-      forwardVector * Float(-screenVector.y) * 0.001
-    }
-    
-    
-  }
-  
-  
+
   
   
   @objc fileprivate func handleLongPress(sender: UILongPressGestureRecognizer) {
