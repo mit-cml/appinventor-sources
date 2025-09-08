@@ -16,7 +16,7 @@ package com.google.appinventor.components.common;
 public class PropertyTypeConstants {
   private PropertyTypeConstants() {}
 
-  /**
+   /**
    * User-uploaded assets.
    * @see
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAssetSelectorPropertyEditor

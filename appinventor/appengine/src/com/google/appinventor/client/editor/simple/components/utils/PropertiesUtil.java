@@ -16,6 +16,7 @@ import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPal
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAccelerometerSensitivityChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAssetSelectorPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAudioClassifierPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBestFitModelPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBooleanPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
@@ -35,6 +36,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGeoJSONPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidGeographicPointPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidImageClassifierPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidIntegerRangePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3ColorSensorModeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoEv3GyroSensorModeChoicePropertyEditor;
@@ -350,6 +352,10 @@ public class PropertiesUtil {
       return new YoungAndroidChatbotProviderPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_MODEL)) {
       return new YoungAndroidChatbotModelPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_IMAGE_CLASSIFIER)) {
+      return new YoungAndroidImageClassifierPropertyEditor(editor);
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AUDIO_CLASSIFIER)){
+      return new YoungAndroidAudioClassifierPropertyEditor();
     } else {
       return new TextPropertyEditor();
     }

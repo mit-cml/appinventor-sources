@@ -11,6 +11,7 @@ Table of Contents:
 * [Button](#Button)
 * [CheckBox](#CheckBox)
 * [CircularProgress](#CircularProgress)
+* [ClassifierModelsTest](#ClassifierModelsTest)
 * [DatePicker](#DatePicker)
 * [Image](#Image)
 * [Label](#Label)
@@ -283,6 +284,31 @@ None
 
 
 ### Methods  {#CircularProgress-Methods}
+
+{:.methods}
+None
+
+
+## ClassifierModelsTest  {#ClassifierModelsTest}
+
+Component for ClassifierModelsTest
+
+
+
+### Properties  {#ClassifierModelsTest-Properties}
+
+{:.properties}
+
+{:id="ClassifierModelsTest.Model" .text .wo .do} *Model*
+: Property for Model
+
+### Events  {#ClassifierModelsTest-Events}
+
+{:.events}
+None
+
+
+### Methods  {#ClassifierModelsTest-Methods}
 
 {:.methods}
 None

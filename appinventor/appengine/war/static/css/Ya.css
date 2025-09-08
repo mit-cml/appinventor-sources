@@ -3451,3 +3451,198 @@ div.dropdiv p {
     flex-direction: column;
   }
 }
+
+/*
+* image classifier dialog styles
+*/
+
+.ode-ImageClassifierDialog * {
+  padding: 0;
+  margin: 0;
+}
+
+.ode-ImageClassifierDialog {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ode-ImageClassifierDialog input {
+  padding: 12px 0;
+  font-size: 11px;
+}
+
+.ode-ImageClassifierDialogScrollPanel {
+  overflow: auto;
+  width: 500px;
+  max-height: 400px;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  overflow-x: hidden;
+}
+
+.ode-ImageClassifierDialogBody {
+  margin: 0;
+  width: 100%;
+}
+
+.ode-ImageClassifierDialogTabsListBox {
+  width: 160px;
+  border: 0px;
+  overflow: auto;
+  outline: none;
+  height: 450px;
+  border-right: 1px solid #ddd;
+}
+
+.ode-ImageClassifierDialogTabsListBox:focus {
+  outline: none;
+}
+
+.ode-ImageClassifierDialog option {
+  padding: 16px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  border-radius: 4px;
+}
+
+.ode-ImageClassifierDialog .active {
+  background-color: #a4cf476c;
+  border-left: 4px solid #a5cf47;
+  color: #a5cf47;
+}
+
+.ode-ImageClassifierDialog.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.ode-ImageClassifierDialogTab-content {
+  display: none;
+}
+
+.ode-ImageClassifierDialogTab-content.active {
+  display: block;
+}
+
+.ode-ImageClassifierDialogClassification-name {
+  font-weight: 500;
+}
+
+.ode-ImageClassifierDialog button {
+  background-color: #a5cf47;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.ode-ImageClassifierDialog .secondary {
+  background-color: #f0f0f0;
+  color: black;
+  border: 1px solid #ddd;
+}
+
+.ode-ImageClassifierDialogLabelsList {
+  flex-grow: 1;
+}
+
+.ode-ImageClassifierDialogClassificationPanel {
+  display: flex;
+  padding: 12px 0;
+  gap: 15px;
+}
+
+.ode-ImageClassifierDialogLabelsListRow {
+  border-radius: 6px;
+  margin: 0 0 10px 0;
+  border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.ode-ImageClassifierDialogLabelItemFirstRow {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+}
+
+.ode-ImageClassifierDialog .className {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.ode-ImageClassifierDialog .secondRow {
+  display: flex;
+  flex-direction: column;
+  justify-self: flex-start;
+}
+
+.ode-ImageClassifierDialog .ImageContentContainer {
+  gap: 7px;
+  display: flex;
+  overflow-x: auto;
+  flex-direction: column;
+  flex-wrap: wrap;
+  height: 70px;
+  overflow-y: hidden;
+}
+
+.ode-ImageClassifierDialog .ImageContainerScrollPanel {
+  display: flex;
+  gap: 7px;
+  padding: 8px 0 0 0;
+}
+
+.ode-ImageClassifierDialogActionButtonContainer {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  flex-direction: row;
+}
+
+.ode-ImageClassifierDialog input {
+  padding: 3px 3px;
+}
+
+.ode-ImageClassifierDialogLabelsActionButton {
+  display: flex;
+  gap: 5px;
+}
+
+.ode-ImageClassifierDialog .webcam-holder {
+  gap: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ode-ImageClassifierDialog .dropdown-holder {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ode-ImageClassifierDialog .SecondRow {
+  padding: 8px;
+}
+
+.ode-ImageClassifierDialog .image-count {
+  font-size: 12px;
+  color: #666;
+}
+
+.ode-ImageClassifierDialog .Thumbnail {
+  border-radius: 4px;
+}
