@@ -42,7 +42,7 @@ public class Length: Equatable {
     view = other.view
   }
 
-  public init(_ fixed: Int32) {
+  private init(_ fixed: Int32) {
     rawValue = fixed
     self.view = nil
   }
@@ -395,9 +395,9 @@ public class LinearView: UIView {
         length.constraint = view.widthAnchor.constraint(equalTo: self.widthAnchor)
       }
     } else if length == .Automatic {
-      view.setContentHuggingPriority(UILayoutPriority(900), for: .horizontal)
-      view.setContentCompressionResistancePriority(UILayoutPriority(900), for: .horizontal)
-      length.constraint = nil
+      length.constraint = _inner.widthAnchor.constraint(greaterThanOrEqualTo: view.widthAnchor)
+
+
     } else if length.isPercent {
       length.constraint = view.widthAnchor.constraint(equalTo: length.view.widthAnchor, multiplier: length.cgFloat)
     } else {
@@ -602,31 +602,31 @@ public class LinearView: UIView {
     // Dynamic horizontal control
     horizontalHead.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
     horizontalTail.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
-    // In updatePriorities(), for the horizontal case:
+
     if widthFillParent == 0 {
-      let hasAutomaticChildren = widthConstraints.values.contains(.Automatic)
-      
-      if hasAutomaticChildren {
-        // When we have automatic children, make helper views zero-sized
-        horizontalHead.setContentHuggingPriority(UILayoutPriority(999), for: .horizontal)
-        horizontalTail.setContentHuggingPriority(UILayoutPriority(999), for: .horizontal)
-        // And add zero-width constraints if they don't exist
-        if horizontalHead.constraints.isEmpty {
-          horizontalHead.widthAnchor.constraint(equalToConstant: 0).isActive = true
-        }
-        if horizontalTail.constraints.isEmpty {
-          horizontalTail.widthAnchor.constraint(equalToConstant: 0).isActive = true
-        }
-      } else {
-        // Original alignment logic for non-automatic cases
-        switch _horizontalAlign {
-        case .left:
-          horizontalHead.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
-        case .center:
-          break
-        case .right:
-          horizontalTail.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
-        }
+      switch _horizontalAlign {
+      case .left:
+        horizontalHead.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
+      case .center:
+        break
+      case .right:
+        horizontalTail.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       }
     }
 
