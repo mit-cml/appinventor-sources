@@ -878,6 +878,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             Camera camera = lastCamera;
 
             if (camera.getTrackingState() != TrackingState.TRACKING) {
+                Log.i(LOG_TAG, "get tracking isn't tracking ");
                 return false;
             }
 
@@ -910,7 +911,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 if (mostRecentTrackable instanceof Plane) {
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
 
-                    ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
+                    ClickOnDetectedPlaneAt(arplane, a.getPose(), false, true);
 
 
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
@@ -937,8 +938,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
             return true;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Log.i(LOG_TAG, "catching exception " + e);
+           // throw new RuntimeException(e);
         }
+        return false;
 
     }
 
@@ -1080,49 +1083,107 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     private float[] getProjectionForNode(ARNode node, PointF fingerLocation,
                                          PointF fingerMovement, String gesturePhase) {
-        if (session == null) return null;
-
         try {
-            Frame frame = lastFrame;
-
-            // Primary: Plane-based positioning
-            List<HitResult> hitResults = frame.hitTest(fingerLocation.x, fingerLocation.y);
+            List<HitResult> hitResults = lastFrame.hitTest(fingerLocation.x, fingerLocation.y);
+            Log.i(LOG_TAG, "Hit test found " + hitResults.size() + " results");
             for (HitResult hit : hitResults) {
                 if (hit.getTrackable() instanceof Plane &&
                     ((Plane) hit.getTrackable()).isPoseInPolygon(hit.getHitPose())) {
 
                     float[] position = hit.getHitPose().getTranslation();
+                    Log.i(LOG_TAG, "Using PLANE hit: (" + position[0] + ", " + position[1] + ", " + position[2] + ")");
                     return adjustPositionForNodeType(node, position);
                 }
             }
 
-            // Fallback: Instant placement
-            List<HitResult> instantHits = frame.hitTestInstantPlacement(
-                fingerLocation.x, fingerLocation.y, 1.0f
+            // Fallback: Instant placement with closer distance
+            List<HitResult> instantHits = lastFrame.hitTestInstantPlacement(
+                fingerLocation.x, fingerLocation.y, 0.5f  // Try closer distance
             );
 
             if (!instantHits.isEmpty()) {
                 float[] position = instantHits.get(0).getHitPose().getTranslation();
+                Log.i(LOG_TAG, "Using INSTANT placement: (" + position[0] + ", " + position[1] + ", " + position[2] + ")");
                 return adjustPositionForNodeType(node, position);
             }
 
+            if (node.Anchor() != null) {
+                Log.i(LOG_TAG, "no plane or placement we can use, Using incremental movement");
+                return projectFingerIncrementally(
+                    node.Anchor().getPose().getTranslation(),
+                    fingerMovement
+                );
+            }
+
+
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Something wrong with lastFrame or hit testing", e);
+            Log.e(LOG_TAG, "Error in projection", e);
         }
 
-        // Final fallback: Keep current position
+        // Keep current position as fallback
         if (node.Anchor() != null) {
-            return node.Anchor().getPose().getTranslation();
+            float[] currentPos = node.Anchor().getPose().getTranslation();
+            Log.i(LOG_TAG, "Using CURRENT position: (" + currentPos[0] + ", " + currentPos[1] + ", " + currentPos[2] + ")");
+            return currentPos;
         }
 
         return null;
     }
 
 
+    private float[] projectFingerIncrementally(float[] currentPos, PointF fingerMovement) {
+        if (lastCamera == null) {
+            // Basic fallback
+            float scale = 0.002f;
+            return new float[]{
+                currentPos[0] + fingerMovement.x * scale,
+                currentPos[1],
+                currentPos[2] //+ fingerMovement.y * scale
+            };
+        }
+
+        try {
+            // Get camera transform (matching iOS logic)
+            float[] cameraMatrix = new float[16];
+            lastCamera.getPose().toMatrix(cameraMatrix, 0);
+
+            // Extract camera forward vector (ignoring Y for ground movement)
+            float[] cameraForward = {
+                -cameraMatrix[8], 0, -cameraMatrix[10]
+            };
+            float cameraYaw = (float) Math.atan2(cameraForward[0], cameraForward[2]);
+
+            // Scale movement based on distance (matching iOS)
+            float[] cameraPos = lastCamera.getPose().getTranslation();
+            float distance = vectorDistance(currentPos, cameraPos);
+            float scale = 0.004f * Math.max(distance * 0.5f, 0.5f);
+
+            // Apply camera rotation to movement (this is what was missing!)
+            float fingerX = -fingerMovement.x * scale;
+            float fingerZ = -fingerMovement.y * scale;
+
+            float rotatedX = fingerX * (float) Math.cos(-cameraYaw) - fingerZ * (float) Math.sin(-cameraYaw);
+            float rotatedZ = fingerX * (float) Math.sin(-cameraYaw) + fingerZ * (float) Math.cos(-cameraYaw);
+
+            float newZ = currentPos[2] + rotatedZ;
+            newZ = Math.max(-4.0f, Math.min(-1.0f, newZ)); // Keep between 1-4 meters
+
+            return new float[]{
+                currentPos[0] + rotatedX,
+                currentPos[1], // Maintain current Y during drag
+               newZ
+            };
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error in incremental projection", e);
+            return currentPos;
+        }
+    }
+
     private float[] adjustPositionForNodeType(ARNode node, float[] position) {
-        /*if (node instanceof SphereNode) {
-            return new float[]{position[0], Math.max(position[1], GROUND_LEVEL), position[2]};
-        } else {
+        if (node instanceof SphereNode) {
+            return new float[]{position[0], Math.max(position[1], 0.0f), position[2]};
+        } /*else {
             float constrainedY = Math.max(position[1], GROUND_LEVEL + 0.005f);
             return new float[]{position[0], constrainedY, position[2]};
         }*/
@@ -1564,11 +1625,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
         "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
         "None, and the TrackingType is WorldTracking.")
-    public void ClickOnDetectedPlaneAt(ARDetectedPlane targetPlane, Object p, boolean isANodeAtPoint) {
+    public void ClickOnDetectedPlaneAt(ARDetectedPlane targetPlane, Object p, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         container.$form().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", targetPlane, p, isANodeAtPoint);
+                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", targetPlane, p, hasGeoCoordinates, isANodeAtPoint);
                 Log.i("dispatching Click On Detected Plane", "");
             }
         });
@@ -1803,6 +1864,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         SphereNode sphereNode = new SphereNode(this);
 
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+
         sphereNode.Anchor(geoAnchor);
 
         Log.i("created Capsule node, geo anchor is", sphereNode.Anchor().toString());
@@ -1811,7 +1873,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     @SimpleFunction(description = "Create a new SphereNode with default properties at the detected plane position.")
-    public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+    public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object p, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         Log.i("creating Sphere node", "with detected plane and pose");
         Pose pose = (Pose) p;
         SphereNode sphereNode = new SphereNode(this);
