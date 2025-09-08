@@ -112,11 +112,11 @@ open class AxisChartView : ChartView {
 
     public func stringForValue(_ value: Double, axis: DGCharts.AxisBase?) -> String {
       if _vType == CHART_VALUE_INTEGER {
-        return String(value);
+        return String(Int(value));
       } else {
         return parseForFormat(value)
       }
-      return String(value);
+
     }
     
     
