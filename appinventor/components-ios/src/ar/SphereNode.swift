@@ -10,6 +10,8 @@ open class SphereNode: ARNodeBase, ARSphere {
   private var _storedPhysicsSettings: PhysicsSettings?
   private var _behaviorName: String = "default"
   
+  private var _showShadow: Bool = true
+  
   private var _currentDragMode: DragMode = .rolling
   private var _dragStartPosition: SIMD3<Float>?
   private var _dragStartTime: Date?
@@ -80,6 +82,10 @@ open class SphereNode: ARNodeBase, ARSphere {
       mesh: mesh,
       materials: existingMaterials.isEmpty ? [SimpleMaterial()] : existingMaterials
     )
+    
+    if #available(iOS 15.0, *) {
+        updateShadowSettings()
+    }
   }
   
   @objc open var RadiusInCentimeters: Float {
@@ -951,6 +957,10 @@ open class SphereNode: ARNodeBase, ARSphere {
     
       _modelEntity.physicsMotion = PhysicsMotionComponent()
       
+      if #available(iOS 15.0, *) {
+          updateShadowSettings()
+      }
+    
       print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
       debugPhysicsState()
       print("🎾 Sphere radius: \(_radius), mass: \(Mass)")
@@ -977,67 +987,92 @@ open class SphereNode: ARNodeBase, ARSphere {
 
 
 
-    
-    private func applyVisualRolling(movement: SIMD3<Float>) {
-        let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
-        let distance = simd_length(horizontalMovement)
-        
-        guard distance > 0.0001 else { return }
-        
-        // Perfect rolling physics: distance = radius × angle
-        let ballRadius = _radius * Scale
-        let rollAngle = distance / ballRadius
-        
-        // Calculate rotation axis perpendicular to movement
-        let direction = simd_normalize(horizontalMovement)
-        let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
-        
-        // Apply rolling rotation
-        let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
-        _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-    }
-    
 
-    
-    // MARK: - Visual Effects
-    
-    @available(iOS 15.0, *)
-    private func showAngryBirdsDragEffect() {
-        var material = SimpleMaterial()
-        
-        // Color based on mass for visual feedback
-        if Mass > 0.4 {
-            material.color = .init(tint: .blue.withAlphaComponent(0.7))  // Heavy = blue
-        } else if Mass < 0.1 {
-            material.color = .init(tint: .orange.withAlphaComponent(0.7)) // Light = orange
-        } else {
-            material.color = .init(tint: .yellow.withAlphaComponent(0.7))  // Normal = green
-        }
-        
-        // Store original for restoration
-        if OriginalMaterial == nil {
-            OriginalMaterial = _modelEntity.model?.materials.first
-        }
-        
-        _modelEntity.model?.materials = [material]
+
+
+  // Add this computed property to SphereNode
+  @objc open override var ShowShadow: Bool {
+      get {
+          return _showShadow
+      }
+      set(showShadow) {
+          _showShadow = showShadow
+          updateShadowSettings()
+      }
+  }
+
+  // Add these methods to SphereNode class
+
+  /// Updates shadow casting and receiving for the sphere
+  private func updateShadowSettings() {
+      guard #available(iOS 15.0, *) else {
+          print("⚠️ Shadow control requires iOS 15.0+")
+          return
+      }
+      
+      // Enable/disable shadow casting and receiving
+      if _showShadow {
+          enableShadows()
+      } else {
+          disableShadows()
+      }
+  }
+
+  @available(iOS 15.0, *)
+  private func enableShadows() {
+      // Enable shadow casting
+    if #available(iOS 18.0, *) {
+      _modelEntity.components.set(GroundingShadowComponent(castsShadow: true))
+    } else {
+      // TODO Fallback on earlier versions
     }
-    
-   
-    
-    // MARK: - Configuration for Angry Birds Demo
-    
-    @objc open func configureForAngryBirdsDemo() {
-        // Set up physics for clear mass demonstration
-        DragSensitivity = 1.0  // Neutral base sensitivity
-        StaticFriction = 0.4
-        DynamicFriction = 0.3
-        Restitution = 0.5
-        GravityScale = 1.0
-        
-        IsRolling = true
-        
-        print("🎯 Configured for Angry Birds style physics demo")
-        print("🎯 Mass effects: Heavy balls = slower response, Light balls = quick response")
-        print("🎯 Current mass: \(Mass)kg")
+      
+      // For more control over shadow properties, you can also modify materials
+      if var material = _modelEntity.model?.materials.first as? SimpleMaterial {
+          // Ensure the material can cast shadows
+          _modelEntity.model?.materials = [material]
+      }
+      
+      print("🌘 Shadows enabled for sphere \(Name)")
+  }
+
+  @available(iOS 15.0, *)
+  private func disableShadows() {
+      // Disable shadow casting
+    if #available(iOS 18.0, *) {
+      _modelEntity.components.set(GroundingShadowComponent(castsShadow: false))
+    } else {
+      // TODO Fallback on earlier versions
     }
+      
+      print("☀️ Shadows disabled for sphere \(Name)")
+  }
+
+
+  // Add convenience methods for shadow control
+  @objc open func enableShadowCasting() {
+      ShowShadow = true
+  }
+
+  @objc open func disableShadowCasting() {
+      ShowShadow = false
+  }
+
+  // Add shadow-specific behavior methods
+  @objc open func setShadowIntensity(_ intensity: Float) {
+      guard #available(iOS 15.0, *) else { return }
+      
+      // Note: RealityKit doesn't have direct shadow intensity control per object
+      // This would typically be controlled at the scene lighting level
+      print("⚠️ Shadow intensity is controlled by scene lighting in RealityKit")
+  }
+
+  @objc open func setShadowColor(_ color: Int32) {
+      guard #available(iOS 15.0, *) else { return }
+      
+      // Note: RealityKit doesn't have direct shadow color control per object
+      // This would typically be controlled at the scene lighting level
+      print("⚠️ Shadow color is controlled by scene lighting in RealityKit")
+  }
+  
 }

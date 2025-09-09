@@ -887,21 +887,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
   }
-  
   public func session(_ session: ARSession, didUpdate frame: ARFrame) {
     guard _lightingEstimationEnabled else { return }
     
+    // Extract values immediately and don't capture the frame
     if let lightingEstimate = frame.lightEstimate {
-        let ambientIntensity = Float(lightingEstimate.ambientIntensity)
-        let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
-        
-        // ✅ Dispatch on main queue if needed, but don't capture frame
-        DispatchQueue.main.async { [weak self] in
-            self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
-        }
+      let ambientIntensity = Float(lightingEstimate.ambientIntensity)
+      let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
+      
+      // Don't capture frame in the closure - use the extracted values
+      DispatchQueue.main.async { [weak self] in
+        self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
+      }
     }
-        
   }
+  
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
     print("🔥 handleGeoAnchorAdded called!")
@@ -1465,6 +1465,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
       for (node, _) in _nodeToAnchorDict {
           // Screen space check (always works, accounts for camera movement)
           let nodeScreenPos = _arView.project(node._modelEntity.position)
+          if nodeScreenPos == nil { continue }
           let screenDistance = sqrt(
             pow(tapLocation.x - nodeScreenPos!.x, 2) +
             pow(tapLocation.y - nodeScreenPos!.y, 2)
