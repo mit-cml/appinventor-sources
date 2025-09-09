@@ -111,8 +111,8 @@ public final class AR3DFactory {
     float Restitution();
     void Restitution(float restitution);
 
-    float RollingForce();
-    void RollingForce(float mass);
+   /* float RollingForce();
+    void RollingForce(float mass);*/
 
     float Mass();
     void Mass(float mass);

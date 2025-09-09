@@ -923,6 +923,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     return mass;
   }
 
+  /*
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.5")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
@@ -932,7 +933,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   public float RollingForce() {
     return rollingForce;
-  }
+  }*/
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "2.0")
@@ -947,7 +948,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
 // New enhanced physics properties
 
-  @SimpleProperty(description = "The gravity scale affecting this node. 1.0 = normal gravity, 0.0 = no gravity")
+  /*@SimpleProperty(description = "The gravity scale affecting this node. 1.0 = normal gravity, 0.0 = no gravity")
   public float GravityScale() {
     return gravityScale;
   }
@@ -957,9 +958,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void GravityScale(float gravityScale) {
     this.gravityScale = Math.max(0.0f, gravityScale);
     updatePhysicsBody();
-  }
+  }*/
 
-  @SimpleProperty(description = "Multiplier for release force when drag ends")
+  /* @SimpleProperty(description = "Multiplier for release force when drag ends")
   public float ReleaseForceMultiplier() {
     return releaseForceMultiplier;
   }
@@ -969,6 +970,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void ReleaseForceMultiplier(float multiplier) {
     this.releaseForceMultiplier = multiplier;
   }
+  */
+
 
   @SimpleProperty(description = "Linear damping for physics body (air resistance)")
   public float LinearDamping() {
