@@ -8,16 +8,13 @@ import AIComponentKit
 import AVKit
 import Zip
 
-protocol MenuDelegate: AnyObject {
-    func reset()
-}
 /**
  * Menu for the iPad REPL.
  */
 
-class MenuViewController: UITableViewController {
+class NeoMenuViewController: UITableViewController {
 
-  weak var delegate: ViewController?
+  weak var delegate: MenuDelegate?
 
   public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return 1
@@ -42,10 +39,10 @@ class MenuViewController: UITableViewController {
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
-public class ViewController: UINavigationController, UITextFieldDelegate {
+public class NeoViewController: UINavigationController, UITextFieldDelegate {
   @objc public var Height: Int32 = 0
   @objc public var Width: Int32 = 0
-  private static var controller: ViewController?
+  private static var controller: NeoViewController?
   private var connectProgressDialog: UIAlertController?
   private var connectProgressView: UIProgressView?
 
@@ -66,68 +63,31 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var barcodeButton: UIButton?
   @IBOutlet weak var libraryButton: UIButton?
   @IBOutlet weak var legacyCheckbox: CheckBoxView!
+  @IBOutlet weak var goBackButton: UIButton?
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
   @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
   private var didWifiCheck = false
-  
-  
 
   private static var _interpreterInitialized = false
 
   public override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
-    
     SCMInterpreter.shared.protect(self)
-    ViewController.controller = self
+    NeoViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
-    self.delegate = self
     SystemVariables.inConnectedApp = false
-}
-  private func setupPanels() {
-    guard let form = form else { return }
-    guard let legacyView = form.view.viewWithTag(100) else { return  }
-    guard let neoView = form.view.viewWithTag(101) else { return  }
-
-    // Add both views to the form
-    //form.view.addSubview(legacyView)
-    //form.view.addSubview(neoView)
-      
-    configureActivePanel()
   }
 
-
-private func configureActivePanel() {
-  let legacyView = form?.view?.viewWithTag(100)
-  let neoView = form?.view?.viewWithTag(101)
-
-    if !SystemVariables.showNeo {
-      legacyView?.isHidden = true
-      neoView?.isHidden = false
-    } else {
-      neoView?.isHidden = true
-      legacyView?.isHidden = false
-    }
-  
-  form?.view?.setNeedsUpdateConstraints()
-  form?.view?.layoutIfNeeded()
-}
-
   @objc func settingsChanged(_ sender: AnyObject?) {
-   // maybeShowOnboardingScreen()
+    maybeShowOnboardingScreen()
   }
 
   public override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    
-    if form != nil {
-        setupPanels()
-    }
-    DispatchQueue.main.async {
-        self.maybeShowOnboardingScreen()
-    }
+    maybeShowOnboardingScreen()
   }
 
   // We override this function to handle the Form's ScreenOrientation setting.
@@ -150,7 +110,7 @@ private func configureActivePanel() {
   }
 
   private func initializeInterpreter() -> SCMInterpreter {
-    guard !ViewController._interpreterInitialized else {
+    guard !NeoViewController._interpreterInitialized else {
       return SCMInterpreter.shared
     }
     let interpreter = SCMInterpreter.shared
@@ -169,7 +129,7 @@ private func configureActivePanel() {
           }
           return interpreter
         }
-        ViewController._interpreterInitialized = true
+        NeoViewController._interpreterInitialized = true
       }
     }
     return interpreter
@@ -185,10 +145,7 @@ private func configureActivePanel() {
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
       form.makeTopForm()
-      
-
       interpreter.setCurrentForm(form!)
-
       form.AccentColor = Int32(bitPattern: 0xFF128BA8)
       if let mooning = UIImage(named: "Mooning") {
         form.view.backgroundColor = UIColor(patternImage: mooning)
@@ -216,6 +173,7 @@ private func configureActivePanel() {
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
       libraryButton = form.view.viewWithTag(7) as! UIButton?
+      goBackButton = form.view.viewWithTag(12) as! UIButton?
       legacyCheckbox.Text = "Use Legacy Connection"
       let ipaddr: String! = NetworkUtils.getIPAddress()
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
@@ -226,12 +184,11 @@ private func configureActivePanel() {
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
       libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
+      goBackButton?.addTarget(self, action: #selector(goBackToOnboarding(_:)), for: UIControl.Event.primaryActionTriggered)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
-      
-      
     }
   }
 
@@ -344,41 +301,15 @@ private func configureActivePanel() {
     task.resume()
   }
   
+  @objc func enableConnectCodeButton(_ sender: UITextField?) {
+     connectButton?.isEnabled = (connectCode?.text ?? "").count == 6
+   }
+  
   @objc func showBarcodeScanner(_ sender: UIButton?) {
-    let cameraStatus = checkCameraPermission()
-
-    if cameraStatus == .denied || cameraStatus == .notDetermined || cameraStatus == .restricted {
-      showSettingsAlert()
-      return
-    }
-    
     form.interpreter.evalForm("(call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '())")
     if let exception = form.interpreter.exception {
       NSLog("Exception: \(exception.name) (\(exception))")
     }
-  }
-  
-  func checkCameraPermission() -> AVAuthorizationStatus {
-    return AVCaptureDevice.authorizationStatus(for: .video)
-  }
-
-  private func showSettingsAlert() {
-    let alert = UIAlertController(
-        title: "Camera Permission Required",
-        message: "Please enable camera access in Settings to use the barcode scanner.",
-        preferredStyle: .alert
-    )
-
-    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-
-    alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
-      if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
-        UIApplication.shared.open(settingsUrl)
-      }
-    })
-
-    self.present(alert, animated: true)
-  
   }
   
   @objc func openLibrary() {
@@ -390,13 +321,13 @@ private func configureActivePanel() {
   }
 
   @objc public class func gotText(_ text: String) {
-    ViewController.controller?.connectCode?.text = text
+    NeoViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
       if let first = text.first, Character("a") <= first && first <= Character("z") {
-        ViewController.controller?.connect(nil)
+        NeoViewController.controller?.connect(nil)
       } else if text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}") {
         let code = String(text[text.index(after: text.startIndex)..<text.index(before: text.endIndex)])
-        ViewController.controller?.openProject(named: code)
+        NeoViewController.controller?.openProject(named: code)
       }
     }
   }
@@ -406,6 +337,7 @@ private func configureActivePanel() {
   }
 
   @objc func openMenu(caller: UIBarButtonItem) {
+
     if UIDevice.current.userInterfaceIdiom == .phone {
       let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
       controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { [weak self] (UIAlertAction) in
@@ -424,7 +356,7 @@ private func configureActivePanel() {
       })
       present(controller, animated: true)
     } else {
-      let menu = MenuViewController()
+      let menu = NeoMenuViewController()
       menu.modalPresentationStyle = .popover
       menu.delegate = self
       menu.preferredContentSize = UITableViewCell().frame.size
@@ -521,6 +453,13 @@ private func configureActivePanel() {
     }
   }
   
+  @objc func goBackToOnboarding(_ sender: UIButton?) {
+     NSLog("goBackToOnboarding called")
+     let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+     vc.modalPresentationStyle = .fullScreen
+     present(vc, animated: true)
+     
+   }
 
   // Implemented in Swift based on aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail
   private func checkWifi() {
@@ -535,7 +474,7 @@ private func configureActivePanel() {
   }
 }
 
-extension ViewController: UINavigationControllerDelegate {
+extension NeoViewController: UINavigationControllerDelegate {
   public func navigationController(_ navigationController: UINavigationController,
       animationControllerFor operation: UINavigationController.Operation,
       from fromVC: UIViewController,
@@ -552,7 +491,7 @@ extension ViewController: UINavigationControllerDelegate {
   }
 }
 
-extension ViewController: WebRTCConnectionDelegate {
+extension NeoViewController: WebRTCConnectionDelegate {
   public func webRTCDidGetLocalOffer() {
     connectProgressView?.progress = 0.4
     connectProgressDialog?.message = "Generating routes..."
@@ -575,4 +514,8 @@ extension ViewController: WebRTCConnectionDelegate {
     connectProgressView = nil
     connectProgressDialog = nil
   }
+}
+
+extension NeoViewController: MenuDelegate {
+    // No need to implement reset() - it already exists
 }
