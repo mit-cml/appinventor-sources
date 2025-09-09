@@ -7,6 +7,9 @@ import Foundation
 import DGCharts
 
 open class PointChartDataModel: Chart2DDataModel {
+  
+  public static var dateFormatter = DateFormatter()
+  
   init(data: DGCharts.ChartData, view: PointChartView) {
     super.init(data: data, view: view)
   }
@@ -30,7 +33,7 @@ open class PointChartDataModel: Chart2DDataModel {
           let x = PointChartDataModel.asDouble(tuple[0+1]),
           let y = PointChartDataModel.asDouble(tuple[1+1]) else {
       // Handle error for insufficient chart entry values or type mismatch
-      print("Error: Insufficient chart entry values")
+      print("Error: Insufficient or incorrect chart entry values \(tuple) \(tuple.count)")
       return nil
     }
 
@@ -47,7 +50,18 @@ open class PointChartDataModel: Chart2DDataModel {
     if let value = o as? Double {
       return value
     } else if let value = o as? String {
-      return Double(value)
+      let retVal = Double(value)
+      if retVal == nil {
+        self.dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = self.dateFormatter.date(from: value)
+        if date == nil {
+          self.dateFormatter.dateFormat = "HH:mm:ss"
+          return self.dateFormatter.date(from: value)?.timeIntervalSince1970
+        }
+        return date?.timeIntervalSince1970
+      }
+      return retVal
+      
     } else {
       return nil
     }
