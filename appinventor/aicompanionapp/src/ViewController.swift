@@ -80,6 +80,17 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
     
+    
+    // Set up keyboard notifications
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    
+    
+
+    // Add tap gesture to dismiss keyboard
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+    view.addGestureRecognizer(tapGesture)
+    
     SCMInterpreter.shared.protect(self)
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
@@ -88,28 +99,52 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
 }
   private func setupPanels() {
     guard let form = form else { return }
-    guard let legacyView = form.view.viewWithTag(100) else { return  }
-    guard let neoView = form.view.viewWithTag(101) else { return  }
 
-    // Add both views to the form
-    //form.view.addSubview(legacyView)
-    //form.view.addSubview(neoView)
-      
     configureActivePanel()
   }
 
 
+  private func connectUIElementsInActiveView() {
+      // Determine which view is active
+      let activeView: UIView?
+      if SystemVariables.showNeo {
+          activeView = form?.view?.viewWithTag(101) // NeoView
+      } else {
+          activeView = form?.view?.viewWithTag(100) // LegacyView
+      }
+      
+      // Look for elements inside the active view
+      connectCode = activeView?.viewWithTag(3) as? UITextField
+      connectButton = activeView?.viewWithTag(4) as? UIButton
+      barcodeButton = activeView?.viewWithTag(5) as? UIButton
+      libraryButton = activeView?.viewWithTag(7) as? UIButton
+      
+      // Connect the actions
+      connectCode?.delegate = self
+      connectButton?.addTarget(self, action: #selector(connect(_:)), for: .primaryActionTriggered)
+      barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: .primaryActionTriggered)
+      libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
+  }
+  
 private func configureActivePanel() {
   let legacyView = form?.view?.viewWithTag(100)
   let neoView = form?.view?.viewWithTag(101)
 
-    if !SystemVariables.showNeo {
-      legacyView?.isHidden = true
-      neoView?.isHidden = false
-    } else {
-      neoView?.isHidden = true
-      legacyView?.isHidden = false
-    }
+  
+  // Disable autoresizing masks - this prevents the conflicting constraints
+  //legacyView?.translatesAutoresizingMaskIntoConstraints = false
+  neoView?.translatesAutoresizingMaskIntoConstraints = false
+  
+  
+  if SystemVariables.showNeo {
+    legacyView?.isHidden = true
+    neoView?.isHidden = false
+  } else {
+    neoView?.isHidden = true
+    legacyView?.isHidden = false
+  }
+  
+  connectUIElementsInActiveView()
   
   form?.view?.setNeedsUpdateConstraints()
   form?.view?.layoutIfNeeded()
@@ -182,11 +217,14 @@ private func configureActivePanel() {
       menuButton.target = self
     }
     if (form == nil) {
+      
+      if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+        menuButton.action = #selector(goBackToOnboarding)
+      }
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
       form.makeTopForm()
-      
-
+   
       interpreter.setCurrentForm(form!)
 
       form.AccentColor = Int32(bitPattern: 0xFF128BA8)
@@ -226,6 +264,7 @@ private func configureActivePanel() {
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
       libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
+      connectCode?.addTarget(self, action: #selector(enableConnectCodeButton(_:)), for: UIControl.Event.editingChanged)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
@@ -234,6 +273,29 @@ private func configureActivePanel() {
       
     }
   }
+  
+  @objc func keyboardWillShow(notification: NSNotification) {
+      // Do nothing - prevent automatic adjustments
+      NSLog("Keyboard showing - preventing layout changes")
+  }
+
+  @objc func keyboardWillHide(notification: NSNotification) {
+      // Do nothing - prevent automatic adjustments
+      NSLog("Keyboard hiding - preventing layout changes")
+  }
+
+   @objc func dismissKeyboard() {
+       view.endEditing(true)
+   }
+
+   // Clean up observers
+   deinit {
+       NotificationCenter.default.removeObserver(self)
+   }
+   
+  @objc func enableConnectCodeButton(_ sender: UITextField?) {
+      connectButton?.isEnabled = (connectCode?.text ?? "").count == 6
+    }
 
   public override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -451,6 +513,15 @@ private func configureActivePanel() {
       }
     }
   }
+  
+  @objc func goBackToOnboarding(_ sender: UIButton?) {
+      NSLog("goBackToOnboarding called")
+      let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+      vc.modalPresentationStyle = .fullScreen
+      present(vc, animated: true)
+      
+  }
+  
 
   @objc public func reset() {
     form.stopHTTPD()
@@ -521,6 +592,7 @@ private func configureActivePanel() {
     }
   }
   
+
 
   // Implemented in Swift based on aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail
   private func checkWifi() {
