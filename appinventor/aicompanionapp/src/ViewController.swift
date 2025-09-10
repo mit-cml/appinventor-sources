@@ -16,18 +16,28 @@ class MenuViewController: UITableViewController {
   weak var delegate: ViewController?
 
   public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 1
+    return SystemVariables.inConnectedApp ? 2 : 1
   }
 
   public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = UITableViewCell()
-    cell.textLabel?.text = "Close Project"
-    cell.textLabel?.textColor = UIColor.red
+    if indexPath.row == 0 {
+      cell.textLabel?.text = "Close Project"
+      cell.textLabel?.textColor = UIColor.red
+    } else {
+      cell.textLabel?.text = "Download Project"
+      cell.textLabel?.textColor = UIColor.blue
+    }
     return cell
   }
 
   public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    delegate?.reset()
+    if indexPath.row == 0 {
+      delegate?.reset()
+    } else {
+      RetValManager.shared().startCache()
+      dismiss(animated: true)
+    }
   }
 }
 
@@ -351,7 +361,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let menu = MenuViewController()
       menu.modalPresentationStyle = .popover
       menu.delegate = self
-      menu.preferredContentSize = UITableViewCell().frame.size
+      var size = UITableViewCell().frame.size
+      if SystemVariables.inConnectedApp {
+        size.height = size.height * 2.0 + 1.0
+      }
+      menu.preferredContentSize = size
       menu.popoverPresentationController?.barButtonItem = caller
       self.present(menu, animated: true)
     }
