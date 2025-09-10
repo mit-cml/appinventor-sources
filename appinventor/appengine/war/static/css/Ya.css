@@ -431,6 +431,56 @@ div.StatusPanel {
 }
 
 /*
+* AdminUserList css
+*/
+
+.ode-AdminUserListNameLabel {
+  font-weight: bold;
+  font-size: small;
+  color: #555;
+  cursor: pointer;
+  vertical-align: top;
+  text-align: left;
+  flex-grow: 1;
+  min-width: 100px;
+}
+
+.ode-AdminUserListTable {
+  padding: 0;
+  margin: 0;
+  border: 1px;
+  overflow: auto;
+  border-radius: 4px;
+  height: auto;
+  width: 100%;
+}
+
+.ode-AdminUserListHeaderRow {
+  background: url(../images/toolbarBG.png) repeat;
+  align-items: center;
+  grid-gap: 10px;
+
+  border: 1px;
+  border-bottom: 1px solid #bbccff;
+  position: relative;
+  flex-direction: row;
+  width: 100%;
+}
+
+.ode-AdminUserListLabel {
+  text-indent: initial;
+  color: black;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: left;
+  padding-right: 10px;
+  display: inline-flex;
+
+  align-items: center;
+}
+
+/*
  * ComponentList
  */
 .ode-ComponentNameLabel {
