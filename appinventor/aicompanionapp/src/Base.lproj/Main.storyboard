@@ -95,7 +95,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="MIT AI Companion" id="XB1-Iu-yvL">
                         <barButtonItem key="backBarButtonItem" title="Home" id="0d1-LQ-6vU"/>
-                        <barButtonItem key="rightBarButtonItem" image="questionmark.circle" catalog="system" id="09b-cf-LSH"/>
+                        <barButtonItem key="rightBarButtonItem" image="book" catalog="system" id="09b-cf-LSH"/>
                     </navigationItem>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
@@ -279,16 +279,16 @@
     </scenes>
     <resources>
         <image name="Instructions.png" width="800" height="200"/>
+        <image name="book" catalog="system" width="128" height="99"/>
         <image name="connectwCode.png" width="300" height="49"/>
         <image name="connectwQR.png" width="300" height="49"/>
         <image name="myAppLibrary.png" width="300" height="49"/>
-        <image name="questionmark.circle" catalog="system" width="128" height="123"/>
         <image name="sortBtn" width="80" height="32"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

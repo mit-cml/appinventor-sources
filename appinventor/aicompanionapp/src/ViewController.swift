@@ -67,6 +67,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
   private var didWifiCheck = false
+  private var menuButton: UIBarButtonItem?
 
   private static var _interpreterInitialized = false
 
@@ -78,6 +79,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
     self.delegate = self
     SystemVariables.inConnectedApp = false
+    menuButton = viewControllers.first?.navigationItem.rightBarButtonItem
+    showHelpButton()
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
@@ -134,27 +137,20 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     return interpreter
   }
 
-  public override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+  public override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+    super.pushViewController(viewController, animated: animated)
+    if let menuButton = viewController.navigationItem.leftBarButtonItem {
       menuButton.action = #selector(openMenu(caller:))
       menuButton.target = self
       if #available(iOS 13.0, *) {
         menuButton.image = UIImage(systemName: "book")
       }
     }
-    if (form == nil) {
-      
-      if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
-        menuButton.action = #selector(goBackToOnboarding(caller:))
+  }
 
-        if #available(iOS 13.0, *) {
-          menuButton.image = UIImage(systemName: "questionmark.circle")
-        } else {
-          menuButton.title = "?"
-        }
-        menuButton.title = "?"
-      }
+  public override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    if (form == nil) {
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
       form.makeTopForm()
@@ -200,6 +196,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
+    } else {
+      showMenuButton()
     }
   }
   
@@ -208,10 +206,31 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
       vc.modalPresentationStyle = .fullScreen
       present(vc, animated: true)
-
     }
   
-  
+  func showHelpButton() {
+    guard let menuButton = menuButton else {
+      return
+    }
+    menuButton.action = #selector(goBackToOnboarding(caller:))
+    if #available(iOS 13.0, *) {
+      menuButton.image = UIImage(systemName: "questionmark.circle")
+    } else {
+      menuButton.title = "?"
+    }
+  }
+
+  func showMenuButton() {
+    guard let menuButton = menuButton else {
+      return
+    }
+    menuButton.action = #selector(openMenu(caller:))
+    menuButton.target = self
+    if #available(iOS 13.0, *) {
+      menuButton.image = UIImage(systemName: "book")
+    }
+  }
+
   public override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -242,6 +261,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       notifier1.ShowAlert("Invalid code: Code must be 6 characters")
       return
     }
+    showMenuButton()
     phoneStatus.WebRTC = !(legacyCheckbox?.Checked ?? true)
     RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
     form.startHTTPD(false)
@@ -446,6 +466,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let newapp = BundledApp(named: name, at: "samples/\(name)/")
       newapp.makeCurrent()
       newapp.loadScreen1(form)
+      showMenuButton()
     } else {
       view.makeToast("Unable to locate project \(name)")
     }
