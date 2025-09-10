@@ -401,7 +401,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     self.viewControllers = []
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     if let newRoot = storyboard.instantiateInitialViewController() {
-      UIApplication.shared.delegate?.window??.rootViewController = newRoot
+      if #available(iOS 13, *) {
+        UIApplication.shared.connectedScenes.forEach { UIScene in
+          if let windowScene = UIScene as? UIWindowScene {
+            windowScene.windows.first?.rootViewController = newRoot
+          }
+        }
+      } else {
+        UIApplication.shared.delegate?.window??.rootViewController = newRoot
+      }
     }
   }
 
