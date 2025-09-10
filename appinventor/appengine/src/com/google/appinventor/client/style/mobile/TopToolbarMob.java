@@ -1,15 +1,15 @@
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
-import com.google.appinventor.client.editor.youngandroid.actions.*;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.resources.client.ClientBundle;
@@ -20,7 +20,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.appinventor.client.actions.*;
 
 import java.util.MissingResourceException;
 import java.util.logging.Logger;

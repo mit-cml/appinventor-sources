@@ -1,6 +1,6 @@
-//<!-- Copyright 2025 MIT, All rights reserved -->
-//<!-- Released under the Apache License, Version 2.0 -->
-//<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.UiStyleFactory;
@@ -79,7 +79,11 @@ public class ProjectFolderMob extends ProjectFolder {
         });
     }
 
-
+    /**
+     * Configures the date dropdown menu with folder creation and modification timestamps.
+     * Creates dropdown items displaying formatted dates for when the folder was created
+     * and last modified.
+     */
     private void setupDateDropdown() {
         try {
             DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);

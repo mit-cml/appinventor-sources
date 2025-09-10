@@ -1,6 +1,6 @@
-//<!-- Copyright 2025 MIT, All rights reserved -->
-//<!-- Released under the Apache License, Version 2.0 -->
-//<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.explorer.project.Project;
@@ -64,6 +64,11 @@ public class ProjectListItemMob extends ProjectListItem {
         });
     }
 
+    /**
+     * Configures the date dropdown menu with project creation and modification timestamps.
+     * Creates dropdown items displaying formatted dates for when the folder was created
+     * and last modified.
+     */
     private void setupDateDropdown() {
         Project project = getProject();
         if (project == null) {

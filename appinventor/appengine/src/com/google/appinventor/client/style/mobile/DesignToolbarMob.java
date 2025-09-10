@@ -1,3 +1,6 @@
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.Ode;
@@ -24,6 +27,14 @@ import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+/**
+ * Mobile-specific implementation of the Design Toolbar for MIT App Inventor.
+ * This class provides a responsive toolbar interface optimized for mobile devices,
+ * including dropdown menus and touch-friendly navigation between design and blocks editors.
+ *
+ * @author Divyanshu kumar Nayak, kumardivyanshu118@gmail.com
+ * @since 2025
+ */
 public class DesignToolbarMob extends DesignToolbar {
 
     private static final Logger LOG = Logger.getLogger(DesignToolbarMob.class.getName());
@@ -62,6 +73,7 @@ public class DesignToolbarMob extends DesignToolbar {
         populateMobileDropdown();
     }
 
+    // we need to refactor this method to use a more efficient method
     private void addPopupStyling() {
         NodeList<Element> allElements = Document.get().getElementsByTagName("div");
         for (int i = 0; i < allElements.getLength(); i++) {
@@ -75,6 +87,11 @@ public class DesignToolbarMob extends DesignToolbar {
         }
     }
 
+    /**
+     * Populates the mobile designer action dropdown menu with various actions
+     * including editor switching, project management, and tutorial controls.
+     * Groups related actions together with visual separators for better UX.
+     */
     private void populateMobileDropdown() {
 
         addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
@@ -94,6 +111,13 @@ public class DesignToolbarMob extends DesignToolbar {
 
     }
 
+    /**
+     * Toggles between design and blocks editor views with mobile-specific behavior.
+     * Manages the visibility of tab bars and automatically closes sidebars
+     * when switching between editors to optimize mobile screen space.
+     *
+     * @param blocks true to switch to blocks editor, false for design editor
+     */
     @Override
     public void toggleEditor(boolean blocks) {
         super.toggleEditor(blocks);
@@ -101,6 +125,13 @@ public class DesignToolbarMob extends DesignToolbar {
         toggleBlockTabBar(blocks);
     }
 
+    /**
+     * Controls the visibility of the design tab bar and manages sidebar state.
+     * Automatically closes the mobile sidebar when hiding the design tab bar
+     * to prevent UI conflicts and optimize screen real estate.
+     *
+     * @param visible true to show the design tab bar, false to hide it
+     */
     private void toggleDesignTabBar(boolean visible) {
         try {
             DesignTabBarMob tabBar = Ode.getInstance().getDesignTabBar();
@@ -119,6 +150,13 @@ public class DesignToolbarMob extends DesignToolbar {
         }
     }
 
+    /**
+     * Controls the visibility of the blocks tab bar and manages sidebar state.
+     * Automatically closes the mobile sidebar when hiding the blocks tab bar
+     * to prevent UI conflicts and optimize screen real estate.
+     *
+     * @param visible true to show the blocks tab bar, false to hide it
+     */
     private void toggleBlockTabBar(boolean visible) {
         try {
             BlockTabBarMob tabBar = Ode.getInstance().getBlockTabBar();

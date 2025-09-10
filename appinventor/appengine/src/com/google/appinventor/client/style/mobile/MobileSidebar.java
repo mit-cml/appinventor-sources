@@ -1,6 +1,6 @@
-//<!-- Copyright 2025 MIT, All rights reserved -->
-//<!-- Released under the Apache License, Version 2.0 -->
-//<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.boxes.BlockSelectorBox;
@@ -16,6 +16,19 @@ import com.google.gwt.user.client.ui.*;
 
 import java.util.Iterator;
 
+/**
+ * A mobile-friendly sidebar component that can slide in and out from the side of the screen.
+ * This component implements both Composite (for GWT widget composition) and HasWidgets
+ * (to allow adding child widgets to the sidebar content area).
+ *
+ * The sidebar consists of:
+ * - An overlay that covers the screen when open (clicking it closes the sidebar)
+ * - The actual sidebar panel that slides in from the side
+ * - A content area within the sidebar where widgets can be added
+ *
+ * The open/close state is managed via CSS classes and boolean state tracking.
+ */
+
 public class MobileSidebar extends Composite implements HasWidgets {
 
     interface MobileSidebarUiBinder extends UiBinder<FlowPanel, MobileSidebar> {}
@@ -26,7 +39,6 @@ public class MobileSidebar extends Composite implements HasWidgets {
     @UiField SimplePanel content;
 
     private boolean isOpen = false;
-    private Runnable syncCallback;
 
     public MobileSidebar() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -34,7 +46,9 @@ public class MobileSidebar extends Composite implements HasWidgets {
 
     @Override
     public void add(Widget w) {
-        content.add(w);
+        if (w != null) {
+            content.add(w);
+        }
     }
 
     @Override
@@ -63,7 +77,6 @@ public class MobileSidebar extends Composite implements HasWidgets {
         if (isOpen) {
             isOpen = false;
             getWidget().removeStyleName("open");
-            if (syncCallback != null) syncCallback.run();
         }
     }
 

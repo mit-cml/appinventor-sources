@@ -1,6 +1,6 @@
-//<!-- Copyright 2025 MIT, All rights reserved -->
-//<!-- Released under the Apache License, Version 2.0 -->
-//<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.boxes.*;
@@ -11,6 +11,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 
+/**
+ * Mobile design tab bar component for App Inventor's design view.
+ * Provides navigation tabs for Palette, Components, Properties, and Media panels.
+ * Each tab opens its corresponding content in a mobile sidebar when clicked.
+ */
 public class DesignTabBarMob extends Composite {
 
     interface DesignTabBarMobUiBinder extends UiBinder<FlowPanel, DesignTabBarMob> {}
@@ -64,6 +69,11 @@ public class DesignTabBarMob extends Composite {
         handleTabClick(TabType.MEDIA);
     }
 
+    /**
+     * Common handler for all tab clicks.
+     * Opens the appropriate panel and notifies listeners.
+     * @param tabType The type of tab that was clicked
+     */
     private void handleTabClick(TabType tabType) {
         openPanel(tabType);
 
@@ -73,7 +83,12 @@ public class DesignTabBarMob extends Composite {
         }
     }
 
-
+    /**
+     * Opens the content panel corresponding to the selected tab type.
+     * Clears the sidebar and loads the appropriate content widget.
+     *
+     * @param tabType The type of content to display in the sidebar
+     */
     private void openPanel(TabType tabType) {
         if (sidebar == null) return;
 

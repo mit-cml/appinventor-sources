@@ -1,3 +1,6 @@
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.boxes.*;
@@ -11,6 +14,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Mobile block editor tab bar component for App Inventor's blocks view.
+ * Provides navigation tabs for Blocks and Media panels in the blocks editor.
+ * Each tab opens its corresponding content in a mobile sidebar when clicked.
+ */
 public class BlockTabBarMob extends Composite {
 
     interface BlockTabBarMobUiBinder extends UiBinder<FlowPanel, BlockTabBarMob> {}
@@ -52,6 +60,11 @@ public class BlockTabBarMob extends Composite {
         handleTabClick(BlockTabBarMob.TabType.MEDIA);
     }
 
+    /**
+     * Common handler for all tab clicks.
+     * Opens the appropriate panel and notifies listeners.
+     * @param tabType The type of tab that was clicked
+     */
     private void handleTabClick(BlockTabBarMob.TabType tabType) {
         openPanel(tabType);
 
@@ -61,7 +74,12 @@ public class BlockTabBarMob extends Composite {
         }
     }
 
-
+    /**
+     * Opens the content panel corresponding to the selected tab type.
+     * Clears the sidebar and loads the appropriate content widget.
+     *
+     * @param tabType The type of content to display in the sidebar
+     */
     private void openPanel(BlockTabBarMob.TabType tabType) {
         if (sidebar == null) return;
 

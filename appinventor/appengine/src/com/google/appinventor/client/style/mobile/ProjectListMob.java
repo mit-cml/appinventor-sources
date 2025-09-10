@@ -1,6 +1,6 @@
-//<!-- Copyright 2025 MIT, All rights reserved -->
-//<!-- Released under the Apache License, Version 2.0 -->
-//<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.Ode;
@@ -57,6 +57,13 @@ public class ProjectListMob extends ProjectList {
         Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
     }
 
+    /**
+     * Initializes the sort dropdown menu with project sorting options.
+     *
+     * Creates dropdown items that allow users to sort projects by creation date
+     * or modification date. Each item triggers a sort order change when selected.
+     * The dropdown displays localized headers for the sorting options.
+     */
     private void setupSortDropdown() {
         DropDownItem dateCreatedItem = new DropDownItem("sortByDateCreated",
                 Ode.MESSAGES.projectDateCreatedHeader(),

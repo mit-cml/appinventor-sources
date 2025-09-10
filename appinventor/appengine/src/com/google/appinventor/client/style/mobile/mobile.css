@@ -4,7 +4,6 @@
 
 @external .*;
 
-
 body, html {
     min-width: unset;
     min-height: unset;
@@ -98,28 +97,6 @@ body, html {
     text-align: left;
 }
 
-
-/* stop scrolling for the project List*/
-
-/*.ode-Box-body-padding {*/
-/*    flex-wrap: wrap;*/
-/*    overflow-x: hidden; !* Keep this to prevent scrolling, but the wrapping should handle most cases *!*/
-/*}*/
-
-/*.ode-Box-body-padding > div { !* Target the direct child div *!*/
-/*    flex-wrap: wrap;*/
-/*}*/
-
-/*.ode-Box-body-padding {*/
-/*    overflow-x: hidden; !* Keep this as a safeguard *!*/
-/*}*/
-
-/*element.style {*/
-/*    overflow: clip;*/
-/*    position: relative;*/
-/*    zoom: 3;*/
-/*}*/
-
 .ode-Box-projectlist {
     flex-grow: 1;
     flex-shrink: 0;
@@ -127,54 +104,12 @@ body, html {
     overflow: hidden;
 }
 
-/*.ode-Box-content {*/
-/*    !*all:unset;*!*/
-/*    background-image: unset;*/
-/*    background-color: unset;*/
-/*    border: unset;*/
-/*    box-shadow: unset;*/
-/*    display: flex;*/
-/*    flex-grow: 1;*/
-/*    margin:unset;*/
-/*    height: 100%;*/
-/*}*/
-
-
-/*.ode-Box-body-padding {*/
-/*    padding: unset;*/
-/*    width: 100%;*/
-/*    display: flex;*/
-/*    flex-grow: 1;*/
-/*}*/
-
-/*.ode-Box-body-padding>* {*/
-/*    display: flex;*/
-/*    flex-grow: 1;*/
-/*}*/
-
 .ode-Box-toolkit {
     /*all: unset;*/
 }
-/*.ode-Box-header {*/
-/*    !* all: unset; *!*/
-/*    visibility: collapse;*/
-/*    display: none;*/
-/*}*/
-
-/*.ode-Box-header-caption,*/
-/*.ode-Box-header-caption-highlighted {*/
-/*    !*all: unset;*!*/
-/*}*/
-
-/*.ode-Box-header-caption {*/
-/*}*/
 
 .ode-Box-body {
 }
-
-/*.ode-Box-body-padding {*/
-/*    padding: unset;*/
-/*}*/
 
 .ode-BoxResizeControl {
     background-color: darkgray !important;
@@ -186,32 +121,6 @@ body, html {
     height: 40px;
     overflow: hidden;
 }
-
-/*.ode-Box-content {*/
-/*    !*all:unset;*!*/
-/*    background-image: unset;*/
-/*    background-color: unset;*/
-/*    border: unset;*/
-/*    box-shadow: unset;*/
-/*    display: flex;*/
-/*    flex-grow: 1;*/
-/*    margin:unset;*/
-/*    height: 100%;*/
-/*    color: gray-700;*/
-/*}*/
-
-
-/*.ode-Box-body-padding {*/
-/*    padding: unset;*/
-/*    width: 100%;*/
-/*    display: flex;*/
-/*    flex-grow: 1;*/
-/*}*/
-
-/*.ode-Box-body-padding>* {*/
-/*    display: flex;*/
-/*    flex-grow: 1;*/
-/*}*/
 
 .ode-ProjectTable {
     /*all: unset;*/
@@ -518,14 +427,6 @@ body, html {
 }
 
 /*ProjectFolderMob-----------------*/
-
-/*.ode-Box-content {*/
-/*    color: #6c757d;*/
-/*}*/
-
-/*.ode-Box-header-caption-highlighted {*/
-/*    color: #dc3545;*/
-/*}*/
 
 .ode-ProjectTable {
     border: 1px solid #dee2e6;
@@ -1423,7 +1324,7 @@ body, html {
     display: flex;
 }
 
-/*dragging issue*/
+/*dragging issue palette side panel */
 
 .mobile-sidebar {
     width: 100%;
