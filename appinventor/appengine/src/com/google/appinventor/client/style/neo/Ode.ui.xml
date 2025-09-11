@@ -9,6 +9,7 @@
              xmlns:neo="urn:import:com.google.appinventor.client.style.neo"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
              xmlns:widgets="urn:import:com.google.appinventor.client.widgets"
+             xmlns:assetlib="urn:import:com.google.appinventor.client.assetlibrary"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -43,6 +44,8 @@
         <g:FlowPanel width="100%">
           <box:AdminUserListBox />
         </g:FlowPanel>
+        <g:FlowPanel width="100%" />
+        <assetlib:AssetLibraryWidget width="100%" height="100%" />
       </g:DeckPanel>
     </g:FlowPanel>
     <neo:StatusPanelNeo ui:field="statusPanel" />
