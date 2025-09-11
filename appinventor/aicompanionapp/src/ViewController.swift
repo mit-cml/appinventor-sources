@@ -187,44 +187,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
     if (form == nil) {
       
-      if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
-        menuButton.action = #selector(goBackToOnboarding)
-        if #available(iOS 13.0, *) {
-          menuButton.image = UIImage(systemName: "questionmark.circle")
-        } else {
-          menuButton.title = "?"
-          menuButton.image = UIImage(contentsOfFile: "questionmark.circle")
-        }
-      }
-      let interpreter = initializeInterpreter()
+
+
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
       form.makeTopForm()
-   
-      interpreter.setCurrentForm(form!)
 
-      form.AccentColor = Int32(bitPattern: 0xFF128BA8)
-      if !SystemVariables.showNeo {
-        if let mooning = UIImage(named: "Mooning") {
-          form.view.backgroundColor = UIColor(patternImage: mooning)
-        }
-      }
-      form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
-      form.PrimaryColorDark = Int32(bitPattern: 0xFF516623)
-      form.title = "MIT App Inventor 2"
-      interpreter.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
-      interpreter.evalForm("(define-event BarcodeScanner1 AfterScan(result) (yail:invoke AICompanionApp.ViewController 'gotText result))")
-      if let exception = interpreter.exception {
-        NSLog("Exception: \(exception.name) (\(exception))")
-      }
-      interpreter.evalForm("(add-component Screen1 AIComponentKit.PhoneStatus PhoneStatus1)")
-      interpreter.evalForm("(add-component Screen1 AIComponentKit.Notifier Notifier1)")
-      interpreter.evalForm("""
-        (define-event Notifier1 AfterChoosing($choice)(set-this-form)
-          (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $choice) "Exit") '(any any) "=") (begin   (call-component-method 'PhoneStatus1 'shutdown (*list-for-runtime*) '()))))
-        """)
-     
-      
+
+
       setupCurrentForm()
+      
       form.updateNavbar()
       form.Initialize()
 
@@ -235,7 +206,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   private func setupCurrentForm() {
       // Move all the button setup code here
     form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
-      
+    let interpreter = initializeInterpreter()
+
+    form.makeTopForm()
+ 
+    interpreter.setCurrentForm(form!)
     phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
     notifier1 = form.environment["Notifier1"] as? Notifier
     ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
@@ -261,6 +236,39 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     
     self.automaticallyAdjustsScrollViewInsets = false
     self.extendedLayoutIncludesOpaqueBars = true
+    
+    if let menuButton = form.navigationItem.rightBarButtonItem {
+      menuButton.action = #selector(goBackToOnboarding)
+      if #available(iOS 13.0, *) {
+        menuButton.image = UIImage(systemName: "questionmark.circle")
+      } else {
+        menuButton.title = "?"
+        menuButton.image = UIImage(contentsOfFile: "questionmark.circle")
+      }
+    }
+    
+    form.AccentColor = Int32(bitPattern: 0xFF128BA8)
+    if !SystemVariables.showNeo {
+      if let mooning = UIImage(named: "Mooning") {
+        form.view.backgroundColor = UIColor(patternImage: mooning)
+      }
+    }
+    form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
+    form.PrimaryColorDark = Int32(bitPattern: 0xFF516623)
+    form.title = "MIT App Inventor 2"
+    interpreter.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
+    interpreter.evalForm("(define-event BarcodeScanner1 AfterScan(result) (yail:invoke AICompanionApp.ViewController 'gotText result))")
+    if let exception = interpreter.exception {
+      NSLog("Exception: \(exception.name) (\(exception))")
+    }
+    interpreter.evalForm("(add-component Screen1 AIComponentKit.PhoneStatus PhoneStatus1)")
+    interpreter.evalForm("(add-component Screen1 AIComponentKit.Notifier Notifier1)")
+    interpreter.evalForm("""
+      (define-event Notifier1 AfterChoosing($choice)(set-this-form)
+        (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $choice) "Exit") '(any any) "=") (begin   (call-component-method 'PhoneStatus1 'shutdown (*list-for-runtime*) '()))))
+      """)
+   
+    
     
     if #available(iOS 15.0, *) {
       view.keyboardLayoutGuide.followsUndockedKeyboard = false
@@ -322,6 +330,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     guard text.count == 6 else {
       notifier1.ShowAlert("Invalid code: Code must be 6 characters")
       return
+    }
+    if (phoneStatus == nil) {
+      phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
     }
     phoneStatus.WebRTC = !(legacyCheckbox?.Checked ?? true)
     RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
@@ -405,7 +416,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc func showBarcodeScanner(_ sender: UIButton?) {
     let cameraStatus = checkCameraPermission()
 
-    if cameraStatus == .denied || cameraStatus == .notDetermined || cameraStatus == .restricted {
+    if cameraStatus == .denied || cameraStatus == .restricted {
       showSettingsAlert()
       return
     }
