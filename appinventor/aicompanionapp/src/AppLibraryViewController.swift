@@ -388,7 +388,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
       .appendingPathComponent("samples/\(app.title).aia", isDirectory: false))
     newapp.makeCurrent()
     newapp.loadScreen1(self.form)
-    self.navigationController?.popViewController(animated: true)
+    self.navigationController?.popViewController(animated: false)
     (self.navigationController as? ViewController)?.showMenuButton()
   }
   
