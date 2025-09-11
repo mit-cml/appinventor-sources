@@ -87,9 +87,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   public override func viewDidLoad() {
     super.viewDidLoad()
     
-    //let main = self.storyboard?.instantiateViewController(withIdentifier: "Main") as! ViewController
     loadIfNeo()
-    // Set up keyboard notifications
+
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     
@@ -104,16 +103,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
     self.delegate = self
     SystemVariables.inConnectedApp = false
-    
-
+  
 }
+  
   private func setupPanels() {
-
     configureActivePanel()
   }
 
 
-private func configureActivePanel() {
+  private func configureActivePanel() {
   
   loadIfNeo()
   
@@ -133,8 +131,6 @@ private func configureActivePanel() {
     }
     DispatchQueue.main.async {
         self.maybeShowOnboardingScreen()
-      
-
     }
   }
 
@@ -231,16 +227,7 @@ private func configureActivePanel() {
       setupCurrentForm()
       form.updateNavbar()
       form.Initialize()
-      form.view.subviews.forEach { subview in
-          if let scrollView = subview as? UIScrollView {
-              scrollView.contentInsetAdjustmentBehavior = .never
-            if #available(iOS 13.0, *) {
-              scrollView.automaticallyAdjustsScrollIndicatorInsets = false
-            } else {
-              // Fallback on earlier versions
-            }
-          }
-      }
+
 
     }
   }
