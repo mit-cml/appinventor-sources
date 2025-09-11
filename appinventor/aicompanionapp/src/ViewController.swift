@@ -8,9 +8,13 @@ import AIComponentKit
 import AVKit
 import Zip
 
+protocol MenuDelegate: AnyObject {
+    func reset()
+}
 /**
  * Menu for the iPad REPL.
  */
+
 class MenuViewController: UITableViewController {
 
   weak var delegate: ViewController?
@@ -67,26 +71,71 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
   private var didWifiCheck = false
+  
+  
 
   private static var _interpreterInitialized = false
 
+  private func loadIfNeo() {
+    let test = SystemVariables.showNeo
+    guard SystemVariables.showNeo else { return }
+    if let vc = self.storyboard?.instantiateViewController(withIdentifier: "showNeo"){
+      self.viewControllers = [vc]
+      setupCurrentForm()
+    }
+  }
   public override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    //let main = self.storyboard?.instantiateViewController(withIdentifier: "Main") as! ViewController
+    loadIfNeo()
+    // Set up keyboard notifications
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    
+    
+
+    // Add tap gesture to dismiss keyboard
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+    view.addGestureRecognizer(tapGesture)
+    
     SCMInterpreter.shared.protect(self)
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
     self.delegate = self
     SystemVariables.inConnectedApp = false
+    
+
+}
+  private func setupPanels() {
+
+    configureActivePanel()
   }
 
+
+private func configureActivePanel() {
+  
+  loadIfNeo()
+  
+  form?.view?.setNeedsUpdateConstraints()
+  form?.view?.layoutIfNeeded()
+}
+
   @objc func settingsChanged(_ sender: AnyObject?) {
-    maybeShowOnboardingScreen()
+   // maybeShowOnboardingScreen()
   }
 
   public override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    maybeShowOnboardingScreen()
+    
+    if form != nil {
+        setupPanels()
+    }
+    DispatchQueue.main.async {
+        self.maybeShowOnboardingScreen()
+      
+
+    }
   }
 
   // We override this function to handle the Form's ScreenOrientation setting.
@@ -141,13 +190,27 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       menuButton.target = self
     }
     if (form == nil) {
+      
+      if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+        menuButton.action = #selector(goBackToOnboarding)
+        if #available(iOS 13.0, *) {
+          menuButton.image = UIImage(systemName: "questionmark.circle")
+        } else {
+          menuButton.title = "?"
+          menuButton.image = UIImage(contentsOfFile: "questionmark.circle")
+        }
+      }
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
       form.makeTopForm()
+   
       interpreter.setCurrentForm(form!)
+
       form.AccentColor = Int32(bitPattern: 0xFF128BA8)
-      if let mooning = UIImage(named: "Mooning") {
-        form.view.backgroundColor = UIColor(patternImage: mooning)
+      if !SystemVariables.showNeo {
+        if let mooning = UIImage(named: "Mooning") {
+          form.view.backgroundColor = UIColor(patternImage: mooning)
+        }
       }
       form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
       form.PrimaryColorDark = Int32(bitPattern: 0xFF516623)
@@ -163,31 +226,85 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         (define-event Notifier1 AfterChoosing($choice)(set-this-form)
           (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $choice) "Exit") '(any any) "=") (begin   (call-component-method 'PhoneStatus1 'shutdown (*list-for-runtime*) '()))))
         """)
-      phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
-      notifier1 = form.environment["Notifier1"] as? Notifier
-      ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
-      versionNumber = form.view.viewWithTag(2) as! UILabel?
-      connectCode = form.view.viewWithTag(3) as! UITextField?
-      connectButton = form.view.viewWithTag(4) as! UIButton?
-      barcodeButton = form.view.viewWithTag(5) as! UIButton?
-      legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
-      libraryButton = form.view.viewWithTag(7) as! UIButton?
-      legacyCheckbox.Text = "Use Legacy Connection"
-      let ipaddr: String! = NetworkUtils.getIPAddress()
-      let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
-      let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
-      ipAddrLabel?.text = "IP Address: \(ipaddr!)"
-      versionNumber?.text = "Version: \(version) (build \(build))"
-      connectCode?.delegate = self
-      connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
-      barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
-      libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
-      navigationBar.barTintColor = argbToColor(form.PrimaryColor)
-      navigationBar.isTranslucent = false
+     
+      
+      setupCurrentForm()
       form.updateNavbar()
       form.Initialize()
+      form.view.subviews.forEach { subview in
+          if let scrollView = subview as? UIScrollView {
+              scrollView.contentInsetAdjustmentBehavior = .never
+            if #available(iOS 13.0, *) {
+              scrollView.automaticallyAdjustsScrollIndicatorInsets = false
+            } else {
+              // Fallback on earlier versions
+            }
+          }
+      }
+
     }
   }
+  
+  private func setupCurrentForm() {
+      // Move all the button setup code here
+    form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
+      
+    phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
+    notifier1 = form.environment["Notifier1"] as? Notifier
+    ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
+    versionNumber = form.view.viewWithTag(2) as! UILabel?
+    connectCode = form.view.viewWithTag(3) as! UITextField?
+    connectButton = form.view.viewWithTag(4) as! UIButton?
+    barcodeButton = form.view.viewWithTag(5) as! UIButton?
+    legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
+    libraryButton = form.view.viewWithTag(7) as! UIButton?
+    legacyCheckbox.Text = "Use Legacy Connection"
+    let ipaddr: String! = NetworkUtils.getIPAddress()
+    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
+    let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
+    ipAddrLabel?.text = "IP Address: \(ipaddr!)"
+    versionNumber?.text = "Version: \(version) (build \(build))"
+    connectCode?.delegate = self
+    connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
+    barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
+    libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
+    connectCode?.addTarget(self, action: #selector(enableConnectCodeButton(_:)), for: UIControl.Event.editingChanged)
+    navigationBar.barTintColor = argbToColor(form.PrimaryColor)
+    navigationBar.isTranslucent = false
+    
+    self.automaticallyAdjustsScrollViewInsets = false
+    self.extendedLayoutIncludesOpaqueBars = true
+    
+    if #available(iOS 15.0, *) {
+      view.keyboardLayoutGuide.followsUndockedKeyboard = false
+      
+    } else {
+      
+    }
+  }
+  
+  @objc func keyboardWillShow(notification: NSNotification) {
+      // Do nothing - prevent automatic adjustments
+      NSLog("Keyboard showing - preventing layout changes")
+  }
+
+  @objc func keyboardWillHide(notification: NSNotification) {
+      // Do nothing - prevent automatic adjustments
+      NSLog("Keyboard hiding - preventing layout changes")
+  }
+
+   @objc func dismissKeyboard() {
+       view.endEditing(true)
+   }
+
+   // Clean up observers
+   deinit {
+       NotificationCenter.default.removeObserver(self)
+   }
+   
+  @objc func enableConnectCodeButton(_ sender: UITextField?) {
+      connectButton?.isEnabled = (connectCode?.text ?? "").count == 6
+    }
 
   public override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
@@ -299,10 +416,40 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
+    let cameraStatus = checkCameraPermission()
+
+    if cameraStatus == .denied || cameraStatus == .notDetermined || cameraStatus == .restricted {
+      showSettingsAlert()
+      return
+    }
+    
     form.interpreter.evalForm("(call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '())")
     if let exception = form.interpreter.exception {
       NSLog("Exception: \(exception.name) (\(exception))")
     }
+  }
+  
+  func checkCameraPermission() -> AVAuthorizationStatus {
+    return AVCaptureDevice.authorizationStatus(for: .video)
+  }
+
+  private func showSettingsAlert() {
+    let alert = UIAlertController(
+        title: "Camera Permission Required",
+        message: "Please enable camera access in Settings to use the barcode scanner.",
+        preferredStyle: .alert
+    )
+
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+    alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+      if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+        UIApplication.shared.open(settingsUrl)
+      }
+    })
+
+    self.present(alert, animated: true)
+  
   }
   
   @objc func openLibrary() {
@@ -375,6 +522,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       }
     }
   }
+  
+  @objc func goBackToOnboarding(_ sender: UIButton?) {
+      NSLog("goBackToOnboarding called")
+      let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+      vc.modalPresentationStyle = .fullScreen
+      present(vc, animated: true)
+      
+  }
+  
 
   @objc public func reset() {
     form.stopHTTPD()
@@ -389,6 +545,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     if let newRoot = storyboard.instantiateInitialViewController() {
       UIApplication.shared.delegate?.window??.rootViewController = newRoot
     }
+    loadIfNeo()
   }
 
   private func openProject(named name: String) {
@@ -444,6 +601,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       }
     }
   }
+  
+
 
   // Implemented in Swift based on aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail
   private func checkWifi() {

@@ -48,6 +48,16 @@ class SystemVariables {
     }
   }
   
+  static var showNeo: Bool {
+    get {
+      return UserDefaults.standard.bool(forKey: "showNeo")
+    }
+    
+    set(value) {
+      UserDefaults.standard.set(value, forKey: "showNeo")
+    }
+  }
+  
   enum sortMode: String {
     case mostRecent, AZ, ZA
   }

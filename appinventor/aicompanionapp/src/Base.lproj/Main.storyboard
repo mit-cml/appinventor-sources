@@ -102,7 +102,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fAb-e3-7Fr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="544.79999999999995" y="689.5052473763119"/>
+            <point key="canvasLocation" x="565" y="690"/>
         </scene>
         <!--Onboard View Controller-->
         <scene sceneID="0zS-WV-goK">
@@ -276,12 +276,116 @@
             </objects>
             <point key="canvasLocation" x="1889.8550724637682" y="689.73214285714278"/>
         </scene>
+        <!--MIT AI Companion-->
+        <scene sceneID="3Oc-Ma-h8u">
+            <objects>
+                <viewController storyboardIdentifier="showNeo" id="616-IB-3Of" customClass="ReplForm" customModule="AIComponentKit" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="o8k-Fc-7rg"/>
+                        <viewControllerLayoutGuide type="bottom" id="176-hz-nLl"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="0dd-Fh-nxC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Six Character Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8em-SB-epN">
+                                <rect key="frame" x="130.30110734279788" y="105.33333333333348" width="150" height="34"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                            </textField>
+                            <button opaque="NO" tag="4" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cwi-Di-rwh">
+                                <rect key="frame" x="82" y="142.33333333333334" width="250" height="50"/>
+                                <state key="normal" image="neoConnectWithCode"/>
+                            </button>
+                            <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pjM-js-Yri">
+                                <rect key="frame" x="82" y="290" width="250" height="50"/>
+                                <state key="normal" image="neoScanQR"/>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version: Unknown" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ytu-bz-Wc2">
+                                <rect key="frame" x="36" y="745.33333333333337" width="342" height="20.666666666666629"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your IP Address is: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IdI-uO-IZD">
+                                <rect key="frame" x="36" y="725" width="342" height="20.333333333333371"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view tag="6" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GrZ-hp-55j" customClass="CheckBoxView" customModule="AIComponentKit">
+                                <rect key="frame" x="87" y="411" width="240" height="30"/>
+                                <accessibility key="accessibilityConfiguration" label="Use Legacy Connection">
+                                    <accessibilityTraits key="traits" button="YES"/>
+                                    <bool key="isElement" value="YES"/>
+                                </accessibility>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="dcZ-z9-1lH"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OR" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a8X-ig-H3b">
+                                <rect key="frame" x="191" y="230" width="28" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="28" id="ZxT-0w-Kcc"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" tag="7" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WuT-Kg-NbO">
+                                <rect key="frame" x="82" y="545" width="250" height="49"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="49" id="afd-x7-Hgo"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="neoMySavedApps"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="IdI-uO-IZD" firstAttribute="leading" secondItem="0dd-Fh-nxC" secondAttribute="leadingMargin" constant="16" id="0JZ-Nw-d4t"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ytu-bz-Wc2" secondAttribute="trailing" constant="16" id="6Om-cf-gZs"/>
+                            <constraint firstItem="Cwi-Di-rwh" firstAttribute="centerX" secondItem="0dd-Fh-nxC" secondAttribute="centerX" id="FH4-2o-6xO"/>
+                            <constraint firstItem="a8X-ig-H3b" firstAttribute="leading" secondItem="0dd-Fh-nxC" secondAttribute="leading" constant="191" id="P5v-0g-6Vs"/>
+                            <constraint firstItem="a8X-ig-H3b" firstAttribute="centerX" secondItem="8em-SB-epN" secondAttribute="centerX" id="TAF-WZ-tGI"/>
+                            <constraint firstItem="pjM-js-Yri" firstAttribute="top" secondItem="Cwi-Di-rwh" secondAttribute="bottom" constant="97.666666666666657" id="Zo1-Z2-adF"/>
+                            <constraint firstItem="GrZ-hp-55j" firstAttribute="centerX" secondItem="0dd-Fh-nxC" secondAttribute="centerX" id="bR0-CX-5Jo"/>
+                            <constraint firstItem="ytu-bz-Wc2" firstAttribute="top" secondItem="IdI-uO-IZD" secondAttribute="bottom" id="cuE-WN-zMl"/>
+                            <constraint firstItem="pjM-js-Yri" firstAttribute="centerX" secondItem="0dd-Fh-nxC" secondAttribute="centerX" id="fMA-XD-QKn"/>
+                            <constraint firstItem="176-hz-nLl" firstAttribute="top" secondItem="ytu-bz-Wc2" secondAttribute="bottom" constant="8" id="fXE-Vd-48U"/>
+                            <constraint firstItem="a8X-ig-H3b" firstAttribute="top" secondItem="Cwi-Di-rwh" secondAttribute="bottom" constant="37.666666666666657" id="gfw-DI-GMo"/>
+                            <constraint firstItem="ytu-bz-Wc2" firstAttribute="leading" secondItem="0dd-Fh-nxC" secondAttribute="leadingMargin" constant="16" id="hAi-Pc-4Rm"/>
+                            <constraint firstItem="GrZ-hp-55j" firstAttribute="top" secondItem="pjM-js-Yri" secondAttribute="bottom" constant="71" id="kXD-o2-jex"/>
+                            <constraint firstAttribute="bottom" secondItem="WuT-Kg-NbO" secondAttribute="bottom" constant="212" id="kgK-VM-Tlm"/>
+                            <constraint firstItem="Cwi-Di-rwh" firstAttribute="top" secondItem="8em-SB-epN" secondAttribute="bottom" constant="4" id="l1d-mI-YUs"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="IdI-uO-IZD" secondAttribute="trailing" constant="16" id="l20-kv-dZi"/>
+                            <constraint firstItem="8em-SB-epN" firstAttribute="leading" secondItem="0dd-Fh-nxC" secondAttribute="leadingMargin" constant="110.30110734279788" id="pXQ-Hu-B8B"/>
+                            <constraint firstItem="a8X-ig-H3b" firstAttribute="top" secondItem="0dd-Fh-nxC" secondAttribute="top" constant="230" id="wHd-m4-rmv"/>
+                            <constraint firstItem="WuT-Kg-NbO" firstAttribute="centerX" secondItem="0dd-Fh-nxC" secondAttribute="centerX" id="xoa-fa-R6Q"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <navigationItem key="navigationItem" title="MIT AI Companion" id="doP-wg-pR4">
+                        <barButtonItem key="backBarButtonItem" title="Home" id="8of-mA-TGW"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="bookmarks" id="GF9-LQ-Lka"/>
+                    </navigationItem>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GAk-ub-hm7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="564" y="1400"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Instructions.png" width="800" height="200"/>
         <image name="connectwCode.png" width="300" height="49"/>
         <image name="connectwQR.png" width="300" height="49"/>
         <image name="myAppLibrary.png" width="300" height="49"/>
+        <image name="neoConnectWithCode" width="250" height="50"/>
+        <image name="neoMySavedApps" width="250" height="50"/>
+        <image name="neoScanQR" width="250" height="50"/>
         <image name="sortBtn" width="80" height="32"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
