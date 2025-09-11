@@ -90,6 +90,8 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     self.delegate = self
     SystemVariables.inConnectedApp = false
     menuButton = viewControllers.first?.navigationItem.rightBarButtonItem
+    menuButton?.target = self
+    menuButton?.action = #selector(openMenu(caller:))
     showHelpButton()
   }
 
@@ -149,7 +151,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
 
   public override func pushViewController(_ viewController: UIViewController, animated: Bool) {
     super.pushViewController(viewController, animated: animated)
-    if let menuButton = viewController.navigationItem.leftBarButtonItem {
+    if let menuButton = viewController.navigationItem.rightBarButtonItem {
       menuButton.action = #selector(openMenu(caller:))
       menuButton.target = self
       if #available(iOS 13.0, *) {
@@ -206,8 +208,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
-    } else {
-      showMenuButton()
+      showHelpButton()
     }
   }
   
@@ -222,23 +223,20 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     guard let menuButton = menuButton else {
       return
     }
-    menuButton.action = #selector(goBackToOnboarding(caller:))
-    if #available(iOS 13.0, *) {
-      menuButton.image = UIImage(systemName: "questionmark.circle")
+    let helpMenuButton: UIBarButtonItem
+    if #available(iOS 13, *) {
+      helpMenuButton = UIBarButtonItem(image: UIImage(systemName: "questionmark.circle"), style: .plain, target: self, action: #selector(goBackToOnboarding(caller:)))
     } else {
-      menuButton.title = "?"
+      helpMenuButton = UIBarButtonItem(title: "?", style: .plain, target: self, action: #selector(goBackToOnboarding(caller:)))
     }
+    self.topViewController?.navigationItem.rightBarButtonItem = helpMenuButton
   }
 
   func showMenuButton() {
     guard let menuButton = menuButton else {
       return
     }
-    menuButton.action = #selector(openMenu(caller:))
-    menuButton.target = self
-    if #available(iOS 13.0, *) {
-      menuButton.image = UIImage(systemName: "book")
-    }
+    self.topViewController?.navigationItem.rightBarButtonItem = menuButton
   }
 
   public override func didReceiveMemoryWarning() {
