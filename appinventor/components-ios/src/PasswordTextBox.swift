@@ -155,6 +155,10 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
       _field.selectedTextRange = _field.textRange(from: offset, to: offset)
     }
   }
+
+  var responder: UIResponder {
+    _field
+  }
 }
 
 open class PasswordTextBox: TextBoxBase {
