@@ -32,6 +32,16 @@ open class SphereNode: ARNodeBase, ARSphere {
   private var _lastUpdateTime: Date = Date()
   private var _isActivelyRolling: Bool = false
   
+  private var _isInCollision: Bool = false
+  private var _lastCollisionTime: Date?
+  private var _collisionCount: Int = 0
+  
+  
+  enum CollisionType {
+      case wall
+      case object
+  }
+  
   enum DragMode {
       case rolling      // Rolling ball along the floor
       case pickup       // Ball lifted off the floor
@@ -43,6 +53,96 @@ open class SphereNode: ARNodeBase, ARSphere {
        let material: PhysicsMaterialResource
        let mode: PhysicsBodyMode
    }
+  
+
+  private var _collisionAnalyzer = CollisionAnalyzer()
+
+  struct CollisionData {
+      let preCollisionVelocity: SIMD3<Float>
+      let postCollisionVelocity: SIMD3<Float>
+      let collisionNormal: SIMD3<Float>
+      let expectedReflection: SIMD3<Float>
+      let actualReflection: SIMD3<Float>
+      let angleError: Float
+      let energyLoss: Float
+      let timestamp: Date
+  }
+
+  class CollisionAnalyzer {
+      private var collisionHistory: [CollisionData] = []
+      
+      func analyzeCollision(
+          preVel: SIMD3<Float>,
+          postVel: SIMD3<Float>,
+          normal: SIMD3<Float>,
+          restitution: Float
+      ) -> CollisionData {
+          
+          // Calculate expected reflection using physics formula
+          let expectedReflection = calculatePerfectReflection(
+              incident: preVel,
+              normal: normal,
+              restitution: restitution
+          )
+          
+          // Calculate angle error
+          let expectedDirection = simd_normalize(expectedReflection)
+          let actualDirection = simd_normalize(postVel)
+          let angleError = acos(simd_dot(expectedDirection, actualDirection)) * 180.0 / Float.pi
+          
+          // Calculate energy loss
+          let preEnergy = simd_length_squared(preVel)
+          let postEnergy = simd_length_squared(postVel)
+          let expectedEnergy = simd_length_squared(expectedReflection)
+          let energyLoss = (preEnergy - postEnergy) / preEnergy
+          
+          let data = CollisionData(
+              preCollisionVelocity: preVel,
+              postCollisionVelocity: postVel,
+              collisionNormal: normal,
+              expectedReflection: expectedReflection,
+              actualReflection: postVel,
+              angleError: angleError,
+              energyLoss: energyLoss,
+              timestamp: Date()
+          )
+          
+          collisionHistory.append(data)
+          printAnalysis(data)
+          
+          return data
+      }
+      
+      private func calculatePerfectReflection(
+          incident: SIMD3<Float>,
+          normal: SIMD3<Float>,
+          restitution: Float
+      ) -> SIMD3<Float> {
+          // Physics formula: R = I - 2(I·N)N, scaled by restitution
+          let dotProduct = simd_dot(incident, normal)
+          return incident - 2.0 * dotProduct * normal * restitution
+      }
+      
+      private func printAnalysis(_ data: CollisionData) {
+          print("=== COLLISION ANALYSIS ===")
+          print("Pre-collision velocity: \(data.preCollisionVelocity)")
+          print("Expected reflection: \(data.expectedReflection)")
+          print("Actual post-collision: \(data.postCollisionVelocity)")
+          print("Angle error: \(String(format: "%.1f", data.angleError))°")
+          print("Energy loss: \(String(format: "%.1f", data.energyLoss * 100))%")
+          print("Surface normal: \(data.collisionNormal)")
+          
+          if data.angleError > 10.0 {
+              print("⚠️ TRAJECTORY ERROR: Expected vs actual differs by \(data.angleError)°")
+          }
+          
+          if data.energyLoss > 0.8 {
+              print("⚠️ EXCESSIVE ENERGY LOSS: \(data.energyLoss * 100)% energy lost")
+          }
+          
+          print("========================")
+      }
+  }
    
   // MARK: - Surface Behavior Flags
   public struct SurfaceBehaviorFlags: OptionSet {
@@ -72,6 +172,15 @@ open class SphereNode: ARNodeBase, ARSphere {
     fatalError("init(coder:) has not been implemented")
   }
   
+  private func updateCollisionShape() {
+      let actualRadius = _radius * Scale
+      let shape = ShapeResource.generateSphere(radius: actualRadius)
+      _modelEntity.collision = CollisionComponent(shapes: [shape])
+    
+    
+    debugVisualState()
+  }
+  
   private func updateSphereMesh() {
     // Generate new sphere mesh with current radius
     let mesh = MeshResource.generateSphere(radius: _radius)
@@ -82,6 +191,10 @@ open class SphereNode: ARNodeBase, ARSphere {
       mesh: mesh,
       materials: existingMaterials.isEmpty ? [SimpleMaterial()] : existingMaterials
     )
+    
+    
+    updateCollisionShape()
+    
     
     if #available(iOS 15.0, *) {
         updateShadowSettings()
@@ -225,40 +338,204 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("🎾 Sphere reset to default behavior")
   }
   
+  private func debugVisualState() {
+      print("=== VISUAL STATE DEBUG ===")
+      print("Model materials count: \(_modelEntity.model?.materials.count ?? 0)")
+    if #available(iOS 18.0, *) {
+      print("Entity opacity: \(_modelEntity.components[OpacityComponent.self]?.opacity ?? 1.0)")
+    } else {
+      // Fallback on earlier versions
+    }
+      print("Transform scale: \(_modelEntity.transform.scale)")
+      print("==========================")
+  }
+  
+  private func estimateVelocity3D() -> SIMD3<Float> {
+      // For older iOS versions, estimate velocity from position changes
+      // You'd need to track position over time to calculate this
+      // For now, return zero as fallback
+      return SIMD3<Float>(0, 0, 0)
+  }
+  
+  private func getCurrentVelocity() -> SIMD3<Float> {
+      if #available(iOS 18.0, *) {
+          if let physicsMotion = _modelEntity.physicsMotion {
+              return physicsMotion.linearVelocity
+          }
+      }
+      
+      // Fallback: estimate velocity
+      return estimateVelocity3D()
+  }
+  
+  override open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
+      // Capture pre-collision velocity
+      let preVelocity = getCurrentVelocity()
+      let preSpeed = simd_length(preVelocity)
+      
+      // Your existing collision handling
+      let speed = getCollisionSpeed()
+      let force = calculateCollisionForce(with: otherNode)
+     // applyCollisionEffects(force: force, velocity: speed)
+    if #available(iOS 15.0, *) {
+      showCollisionFlash(intensity: speed, collisionType: .object)
+    } else {
+      // Fallback on earlier versions
+    }
+      
+      // Analyze trajectory after collision response
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+          guard let self = self else { return }
+          let postVelocity = self.getCurrentVelocity()
+          
+          self.analyzeCollisionTrajectory(
+              preVel: preVelocity,
+              postVel: postVelocity,
+              otherNode: otherNode
+          )
+      }
+  }
 
-  @objc open override func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
-    var collidedMaterial = SimpleMaterial()
+  private func analyzeCollisionTrajectory(preVel: SIMD3<Float>, postVel: SIMD3<Float>, otherNode: ARNodeBase) {
+      let myPos = _modelEntity.transform.translation
+      let otherPos = otherNode._modelEntity.transform.translation
+      
+      // Calculate collision normal (from other object to this one)
+      let collisionNormal = simd_normalize(myPos - otherPos)
+      
+      // Calculate expected reflection
+      let dotProduct = simd_dot(preVel, collisionNormal)
+      let expectedReflection = preVel - 2.0 * dotProduct * collisionNormal * Restitution
+      
+      // Calculate angle error
+      let expectedDirection = simd_normalize(expectedReflection)
+      let actualDirection = simd_normalize(postVel)
+      let angleError = acos(simd_dot(expectedDirection, actualDirection)) * 180.0 / Float.pi
+      
+      print("=== COLLISION TRAJECTORY ANALYSIS ===")
+      print("Pre-collision: \(preVel) (speed: \(simd_length(preVel)))")
+      print("Expected bounce: \(expectedReflection)")
+      print("Actual result: \(postVel)")
+      print("Angle error: \(String(format: "%.1f", angleError))°")
+      print("Collision normal: \(collisionNormal)")
+      
+      if angleError > 15.0 {
+          print("⚠️ TRAJECTORY PROBLEM: \(angleError)° off expected path")
+      }
+      
+      print("=====================================")
+  }
+
+  
+
+private func monitorPostCollisionState() {
+    for i in 1...5 {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.2) { [weak self] in
+            guard let self = self else { return }
+            
+            let pos = self._modelEntity.transform.translation
+            let isEnabled = self._modelEntity.isEnabled
+            
+          print("   +\(Double(i) * 0.2)s: pos=\(pos), enabled=\(isEnabled)")
+            
+            // Check if ball suddenly teleported or got disabled
+            if !isEnabled {
+                print("🚨 BALL DISABLED after collision!")
+            }
+            
+            if abs(pos.y) > 10 || abs(pos.x) > 50 || abs(pos.z) > 50 {
+                print("🚨 BALL FLEW OUT OF REASONABLE BOUNDS!")
+            }
+        }
+    }
+    
+    // Clear collision flag after a moment
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        self._isInCollision = false
+    }
+}
+  
+  private func calculateCollisionForce(with otherNode: ARNodeBase) -> Float {
+      let speed = getCollisionSpeed()
+      return Mass * speed // Simple F = ma
+  }
+
+  private func getCollisionSpeed() -> Float {
+      // Get current speed from physics
+      if #available(iOS 18.0, *) {
+          if let motion = _modelEntity.physicsMotion {
+              return simd_length(motion.linearVelocity)
+          }
+      }
+      return 2.0 // Default fallback
+  }
+
+  private func applyBounceEffect(speed: Float) {
+      guard speed > 0.5 else { return } // Only bounce if moving fast enough
+      
+      // Calculate bounce strength based on material
+      var bounceForce: Float = speed * Restitution * 5.0
+      
+      // Adjust for different behaviors
+      if _behaviorFlags.contains(.bouncy) {
+          bounceForce *= 2.0
+      } else if _behaviorFlags.contains(.wet) {
+          bounceForce *= 0.3
+      } else if _behaviorFlags.contains(.sticky) {
+          bounceForce *= 0.1
+      }
+      
+      // Apply upward bounce
+      let bounce = SIMD3<Float>(0, bounceForce, 0)
+      _modelEntity.addForce(bounce, relativeTo: nil as Entity?)
+  }
+  
+  
+  @available(iOS 15.0, *)
+  func showCollisionFlash(intensity: Float, collisionType: CollisionType) {
+    guard intensity > 1.0 else { return }
+    
+    var flashMaterial = SimpleMaterial()
+    
     if OriginalMaterial == nil {
         OriginalMaterial = _modelEntity.model?.materials.first
     }
-    if #available(iOS 15.0, *) {
-      collidedMaterial.color = .init(tint: .green.withAlphaComponent(0.7))
-      self._modelEntity.model?.materials = [collidedMaterial]
-      restoreColorAfterCollision()
-    } else {
-      // Fallback on earlier versions
-    }  // Green for default
-    
-    
-  }
-  
-  private func restoreColorAfterCollision() {
-      // Cancel any existing restore timer
-      // (You might want to add a property to track this if you need to cancel)
+
       
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { // 200ms flash
-          guard !self.isBeingDragged else {
-              // Don't restore if currently being dragged (drag has its own color)
-              return
+      // Different colors based on collision type
+      switch collisionType {
+      case .wall:
+          // Wall collision - bright white/cyan flash
+          flashMaterial.color = .init(tint: UIColor.cyan.withAlphaComponent(0.9))
+          
+      case .object:
+          // Object collision - color based on behavior
+          if _behaviorFlags.contains(.bouncy) {
+              flashMaterial.color = .init(tint: .white.withAlphaComponent(0.8))
+          } else if _behaviorFlags.contains(.wet) {
+              flashMaterial.color = .init(tint: .blue.withAlphaComponent(0.8))
+          } else if _behaviorFlags.contains(.heavy) {
+              flashMaterial.color = .init(tint: .purple.withAlphaComponent(0.8))
+          } else {
+              flashMaterial.color = .init(tint: .red.withAlphaComponent(0.8))
           }
+      }
+      
+      _modelEntity.model?.materials = [flashMaterial]
+      
+      // Flash duration - walls get longer flash
+      let flashDuration = collisionType == .wall ? 0.3 : 0.2
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + flashDuration) { [weak self] in
+          guard let self = self, !self.isBeingDragged else { return }
           
           if let original = self.OriginalMaterial {
               self._modelEntity.model?.materials = [original]
-              print("🎾 Color restored after collision")
           }
       }
   }
-  
+
+
   /* these are default setttings. they can be overridden by setting these values individually */
   private func updateBehaviorSettings() {
     
@@ -280,7 +557,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       if _behaviorFlags.contains(.heavy) {
         Mass = 1.0  // Heavy default
         dragSensitivity = 1.0  // Harder to drag
-        staticFriction = 0.7
+        staticFriction = 0.4
         restitution = 0.3
       }
       
@@ -299,7 +576,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       if _behaviorFlags.contains(.wet) {
           // Wet ball defaults - high friction, low bounce
           staticFriction = 0.8
-          dynamicFriction = 0.65
+          dynamicFriction = 0.55
           restitution = 0.15  // Wet balls absorb energy
           dragSensitivity = 0.7  // Harder to drag when wet
       }
@@ -401,7 +678,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       let newScale = oldScale * abs(scalar) // however big it was before times the new scale change
       
 
-      let newActualRadius = _radius * scalar
+      let newActualRadius = _radius * newScale
       let minRadius: Float = 0.01
       let maxRadius: Float = 4.0 // CSB maybe we don't want this?
       
@@ -429,9 +706,7 @@ open class SphereNode: ARNodeBase, ARSphere {
         
           // Apply visual scaling
           Scale = newScale
-          
 
-          
           // Restore physics properties
           Mass = savedMass
           StaticFriction = savedFriction
@@ -507,6 +782,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       } else {
           dragMaterial.color = .init(tint: .yellow.withAlphaComponent(0.7))  // Green for default
       }
+    
       
       _modelEntity.model?.materials = [dragMaterial]
     
@@ -572,190 +848,111 @@ open class SphereNode: ARNodeBase, ARSphere {
   // MARK: - iOS Version-Optimized Drag Methods for SphereNode
   // Optimized for iOS 16+ with iOS 18+ enhancements
 
-
   override open func startDrag() {
-      print("🎾 Starting optimized drag for \(Name) (iOS \(ProcessInfo.processInfo.operatingSystemVersion.majorVersion))")
-      
       _isBeingDragged = true
-      _lastFingerPosition = nil
       
-      // ✅ PHYSICS OPTIMIZATION: Use best available APIs per iOS version
+      // Switch to kinematic - position controlled manually
       if var physicsBody = _modelEntity.physicsBody {
-          if #available(iOS 18.0, *) {
-              // ✅ iOS 18+: Full damping control for optimal responsiveness
-              _dragStartDamping = physicsBody.linearDamping
-              _dragStartAngularDamping = physicsBody.angularDamping
-              
-              physicsBody.linearDamping = 0.85    // Higher control for smooth dragging
-              physicsBody.angularDamping = 0.9     // Reduce unwanted spinning during drag
-              
-              _modelEntity.physicsBody = physicsBody
-              print("🎾 iOS 18+: Enhanced damping control enabled")
-          } else {
-              // ✅ iOS 16-17: No damping control available, use alternative approach
-              print("🎾 iOS 16-17: Using alternative control method (no damping APIs)")
-          }
-      }
-      
-      isBeingDragged = true
-      
-      // Visual feedback
-      if #available(iOS 15.0, *) {
-          showDragEffect()
+          physicsBody.mode = .kinematic
+          _modelEntity.physicsBody = physicsBody
       }
   }
 
   func updateDrag(fingerWorldPosition: SIMD3<Float>) {
-    guard _isBeingDragged else { return }
+      guard _isBeingDragged else { return }
+      let constrainedPosition = SIMD3<Float>(
+          fingerWorldPosition.x,
+          max(fingerWorldPosition.y, Float(ARView3D.SHARED_GROUND_LEVEL) + _radius * Scale + 0.01),
+          fingerWorldPosition.z
+      )
+      // Direct position control
+      _modelEntity.transform.translation = constrainedPosition
       
-      let currentPos = _modelEntity.transform.translation
-      
+      // Calculate rolling rotation based on movement
       if let lastPos = _lastFingerPosition {
           let movement = fingerWorldPosition - lastPos
-          let distance = simd_length(movement)
-          
-          // ✅ MOVEMENT OPTIMIZATION: Choose best approach per iOS version
-          if #available(iOS 18.0, *) {
-              // ✅ iOS 18+: Hybrid approach with velocity control
-              updateDragIOS18(currentPos: currentPos, targetPos: fingerWorldPosition, movement: movement)
-          } else {
-              // ✅ iOS 16-17: Direct position with force assistance
-              updateDragIOS16(currentPos: currentPos, targetPos: fingerWorldPosition, movement: movement)
-          }
-          
-          // ✅ VISUAL ROLLING: Apply rotation based on movement (all iOS versions)
-          applyDragRotation(movement: movement)
-          
-          print("🎾 Applied movement: \(movement) (distance: \(String(format: "%.4f", distance)))")
-          
-      } else {
-          print("🎾 DRAG START: Initial position \(fingerWorldPosition)")
+          applyRealisticRolling(movement: movement)
       }
       
       _lastFingerPosition = fingerWorldPosition
   }
-
-  // ✅ iOS 18+ Optimized Update (direct position + enhanced physics)
-  @available(iOS 18.0, *)
-  private func updateDragIOS18(currentPos: SIMD3<Float>, targetPos: SIMD3<Float>, movement: SIMD3<Float>) {
-      // ✅ DIRECT POSITION for immediate visual feedback (same as iOS 16)
-      let constrainedPos = SIMD3<Float>(
-          targetPos.x,
-          currentPos.y, // Maintain current Y
-          targetPos.z
-      )
+  
+  override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+      guard _isBeingDragged else { return }
       
-      _modelEntity.transform.translation = constrainedPos
-      
-      // ✅ iOS 18+ ENHANCEMENT: Also set velocity for smoother physics integration
-      if var physicsMotion = _modelEntity.physicsMotion {
-          
-          let responsiveness = getResponsivenessForMass() * DragSensitivity
-          let velocityScale: Float = 1.5
-          
-          // Calculate target velocity from movement
-          let targetVelocity = movement * responsiveness * velocityScale
-          
-          // Get current velocity and preserve Y component
-          let currentVel = physicsMotion.linearVelocity
-          
-          // Set horizontal velocity while preserving Y physics
-          physicsMotion.linearVelocity = SIMD3<Float>(
-              targetVelocity.x,
-              currentVel.y, // Keep physics-controlled Y
-              targetVelocity.z
-          )
-          
-          _modelEntity.physicsMotion = physicsMotion
-          print("🎾 iOS 18+: Position \(constrainedPos) + velocity \(targetVelocity)")
-      } else {
-          print("🎾 iOS 18+: Position only \(constrainedPos)")
-      }
-  }
-
-  // ✅ iOS 16-17 Optimized Update (direct position with force assistance)
-  private func updateDragIOS16(currentPos: SIMD3<Float>, targetPos: SIMD3<Float>, movement: SIMD3<Float>) {
-      // Direct position control for immediate feedback
-      let constrainedPos = SIMD3<Float>(
-          targetPos.x,
-          currentPos.y, // Maintain current Y
-          targetPos.z
-      )
-      
-      _modelEntity.transform.translation = constrainedPos
-      
-      // Add subtle force to help with physics interactions
-      if _modelEntity.physicsBody != nil {
-          let responsiveness = getResponsivenessForMass() * DragSensitivity
-          let forceScale: Float = 5.0 // Gentle assistance
-          let assistForce = movement * responsiveness * forceScale
-          
-          _modelEntity.addForce(SIMD3<Float>(assistForce.x, 0, assistForce.z), relativeTo: nil as Entity?)
-      }
-      
-      print("🎾 iOS 16-17: Direct position \(constrainedPos)")
-  }
-
-  open override func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {  //fingervelocity
-    guard _isBeingDragged else { return }
-      
-      print("🎾 Ending optimized drag for \(Name)")
-    _isBeingDragged = false
-      
-      // ✅ RESTORE PHYSICS: Use appropriate method per iOS version
+      // Switch back to dynamic mode
       if var physicsBody = _modelEntity.physicsBody {
-          if #available(iOS 18.0, *) {
-
-              applyReleaseVelocityIOS18(physicsBody: &physicsBody, releaseVelocity: releaseVelocity)
-            
-            // Restore damping after a delay to allow momentum to take effect
-              DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                  guard let self = self else { return }
-                  if var delayedPhysicsBody = self._modelEntity.physicsBody {
-                      delayedPhysicsBody.linearDamping = self._dragStartDamping
-                      delayedPhysicsBody.angularDamping = self._dragStartAngularDamping
-                      self._modelEntity.physicsBody = delayedPhysicsBody
-                  }
-              }
-          } else {
-              // ✅ iOS 16-17: No damping to restore, just apply release force
-              applyReleaseForceIOS16(releaseVelocity: releaseVelocity)
-          }
+          physicsBody.mode = .dynamic
+          _modelEntity.physicsBody = physicsBody
+          
+          // NOW apply release velocity (only once, at release)
+        if #available(iOS 18.0, *) {
+          applyReleaseVelocityIOS18(releaseVelocity: releaseVelocity)
+        } else {
+          applyReleaseForceIOS16(releaseVelocity: releaseVelocity)
+        }
       }
       
-      // Restore visual appearance
-      if let original = OriginalMaterial {
-          _modelEntity.model?.materials = [original]
-          OriginalMaterial = nil
-      }
+      _isBeingDragged = false
   }
 
+  private func applyRealisticRolling(movement: SIMD3<Float>) {
+      let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
+      let distance = simd_length(horizontalMovement)
+      
+      guard distance > 0.0001 else { return }
+      
+      // Physics-accurate rolling: distance = radius × angle
+      let ballRadius = _radius * Scale
+      let rollAngle = distance / ballRadius
+      
+      // Rotation axis perpendicular to movement
+      let direction = simd_normalize(horizontalMovement)
+      let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
+      
+      // Apply incremental rotation
+      let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
+      _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
+      print("🎾 Rolling: distance=\(String(format: "%.4f", distance)), angle=\(String(format: "%.4f", rollAngle))")
+  }
+  
+
   @available(iOS 18.0, *)
-  private func applyReleaseVelocityIOS18(physicsBody: inout PhysicsBodyComponent, releaseVelocity: CGPoint) {
+  private func applyReleaseVelocityIOS18(releaseVelocity: CGPoint) {
       let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
       
       if releaseSpeed > NORMAL_ROLLING_SPEED {
- 
-        let throwForce: Float = 3.0  // Base throwing force
-        let realisticMass = Mass * (Scale * Scale * Scale)  // Volume = scale³
-        let velocity = throwForce / realisticMass // F = ma, so a = F/m
+          // Direct velocity calculation instead of force-based
+          let baseVelocityScale: Float = 0.002  // Much smaller base scale
+          let massMultiplier = max(0.2, min(2.0, Mass))  // Clamp mass effect
           
-        let releaseVel = SIMD3<Float>(
-            Float(releaseVelocity.x) * velocity * 0.005,
-            0,
-            Float(releaseVelocity.y) * velocity * 0.005
-        )
-        // Apply momentum considering mass
-        if var physicsMotion = _modelEntity.physicsMotion {
-            physicsMotion.linearVelocity = SIMD3<Float>(
-                physicsMotion.linearVelocity.x + releaseVel.x,
-                physicsMotion.linearVelocity.y,
-                physicsMotion.linearVelocity.z + releaseVel.z
-            )
-            _modelEntity.physicsMotion = physicsMotion
-            
-            print("Physics-accurate release: mass=\(Mass)kg, size=\(Scale)m, velocity=\(releaseVel)")
-        }
+          let targetVelocity = SIMD3<Float>(
+              Float(releaseVelocity.x) * baseVelocityScale / massMultiplier,
+              0,
+              Float(releaseVelocity.y) * baseVelocityScale / massMultiplier
+          )
+          
+          // Absolute maximum velocity regardless of calculation
+          let maxSpeed: Float = 8.0  // 8 m/s maximum
+          let currentSpeed = simd_length(targetVelocity)
+          
+          let finalVelocity: SIMD3<Float>
+          if currentSpeed > maxSpeed {
+              finalVelocity = simd_normalize(targetVelocity) * maxSpeed
+          } else {
+              finalVelocity = targetVelocity
+          }
+          
+          if var physicsMotion = _modelEntity.physicsMotion {
+              physicsMotion.linearVelocity = SIMD3<Float>(
+                  finalVelocity.x,
+                  physicsMotion.linearVelocity.y,
+                  finalVelocity.z
+              )
+              _modelEntity.physicsMotion = physicsMotion
+              
+              print("Fixed velocity calculation: \(finalVelocity)")
+          }
       }
   }
 
@@ -783,26 +980,6 @@ open class SphereNode: ARNodeBase, ARSphere {
       }
   }
 
-  // ✅ Enhanced visual rolling (all iOS versions)
-  private func applyDragRotation(movement: SIMD3<Float>) {
-      let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
-      let distance = simd_length(horizontalMovement)
-      
-      guard distance > 0.0001 else { return }
-      
-      // Realistic rolling physics
-      let ballRadius = _radius * Scale
-      let rollAngle = distance / ballRadius
-      
-      // Rotation axis perpendicular to movement
-      let direction = simd_normalize(horizontalMovement)
-      let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
-      
-      let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
-      _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-      
-      print("🎾 Rolling: distance=\(String(format: "%.4f", distance)), angle=\(String(format: "%.4f", rollAngle))")
-  }
 
   // ✅ Updated gesture handler
   override open func handleAdvancedGestureUpdate(
@@ -944,8 +1121,10 @@ open class SphereNode: ARNodeBase, ARSphere {
           restitution: Restitution
       )
     
+    
+    
     if _modelEntity.transform.translation.y < ARView3D.SHARED_GROUND_LEVEL{
-      print("Warning, sphere is below ground level \(_modelEntity.transform.translation.y) groundlevel: \(ARView3D.SHARED_GROUND_LEVEL)")
+      print("Warning, sphere is BELOW ground level \(_modelEntity.transform.translation.y) groundlevel: \(ARView3D.SHARED_GROUND_LEVEL)")
       
     }
       
@@ -954,7 +1133,13 @@ open class SphereNode: ARNodeBase, ARSphere {
           material: material,
           mode: isDynamic ? .dynamic : .static
       )
-    
+   
+      // Enable continuous collision detection for fast-moving objects
+      if #available(iOS 16.0, *) {
+                // Use swept collision detection
+        _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = true
+      }
+     
       _modelEntity.physicsMotion = PhysicsMotionComponent()
       
       if #available(iOS 15.0, *) {
@@ -1030,6 +1215,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       // For more control over shadow properties, you can also modify materials
       if var material = _modelEntity.model?.materials.first as? SimpleMaterial {
           // Ensure the material can cast shadows
+        
           _modelEntity.model?.materials = [material]
       }
       

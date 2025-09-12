@@ -108,6 +108,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   struct CollisionGroups {
       static let arObjects: CollisionGroup = CollisionGroup(rawValue: 1 << 0)
       static let environment: CollisionGroup = CollisionGroup(rawValue: 1 << 1)
+    static let manualWalls: CollisionGroup = CollisionGroup(rawValue: 1 << 2)
   }
   
   
@@ -135,7 +136,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
-    _arView.environment.sceneUnderstanding.options = [.physics, .collision, .occlusion]
+    _arView.environment.sceneUnderstanding.options = [.physics, .occlusion]
 
     
     if (_enableOcclusion){
@@ -379,7 +380,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           shapes: shapes,
           filter: CollisionFilter(
               group: CollisionGroups.arObjects,
-              mask: [CollisionGroups.arObjects, CollisionGroups.environment]
+              mask: [CollisionGroups.arObjects, CollisionGroups.manualWalls]
           )
       )
       
@@ -448,9 +449,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         } else {
           
         }
-        
-        // Apply collision effects on a delay to avoid interfering with drag
-
+        if event.entityA.name == "Mesh Entity 0 1" || event.entityB.name == "Mesh Entity 0 1" {
+          let mysteryEntity = event.entityA.name == "Mesh Entity 0 1" ? event.entityA : event.entityB
+          
+          print("🔍 MYSTERY ENTITY DEBUG:")
+          print("Position: \(mysteryEntity.transform.translation)")
+          print("Rotation: \(mysteryEntity.transform.rotation)")
+          print("Scale: \(mysteryEntity.transform.scale)")
+         // print("Has collision: \(mysteryEntity.collision != nil)")
+          //print("Has physics: \(mysteryEntity.physicsBody != nil)")
+          print("Parent: \(mysteryEntity.parent?.name ?? "none")")
+          // Apply collision effects on a delay to avoid interfering with drag
+        }
       }
       
       print("✅ Simplified collision observer set up")
@@ -761,8 +771,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               _detectedPlanesDict[anchor] = detectedPlane
               PlaneDetected(detectedPlane)
             
-              //createReliablePlaneCollision(for: planeAnchor)
-            
+              
+            // for the floor
               if !_hasSetGroundLevel &&
                planeAnchor.alignment == .horizontal &&
                planeAnchor.transform.translation.y < 0.1 {
@@ -771,7 +781,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                     let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
                     
                     // Only use large, confident planes (at least 1 square meter)
-                    if planeAnchor.classification == .floor && planeSize > 1.0 {
+                    if planeAnchor.classification == .floor && planeSize > 1.5 {
                       
                       let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
                       print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
@@ -782,7 +792,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                       createInvisibleFloor(at: invisibleFloorLevel)
                     }
                 }
-            }
+              } else {
+                if #available(iOS 16.0, *) {
+                  if planeAnchor.alignment == .vertical {
+                    createSimplifiedCollisionForDetectedWall(planeAnchor)
+                  }
+                }
+              }
           } else if let imageAnchor = anchor as? ARImageAnchor {
               guard let name = imageAnchor.referenceImage.name else { return }
               let imageMarker = _imageMarkers[name]
@@ -792,63 +808,53 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
   }
 
-  private func createReliablePlaneCollision(for planeAnchor: ARPlaneAnchor) {
-          // ✅ Create THICK collision shape for detected plane
-   
-    
-    if #available(iOS 16.0, *) {
-      let planeWidth = planeAnchor.planeExtent.width
-      let planeHeight = planeAnchor.planeExtent.height
+  @available(iOS 16.0, *)
+  private func createSimplifiedCollisionForDetectedWall(_ planeAnchor: ARPlaneAnchor) {
+      // Use the real detected position
+      let realPosition = planeAnchor.transform.translation
       
+      // But create simplified, expanded geometry
+      let expandedWidth = max(planeAnchor.planeExtent.width, 1.0)  // At least 1m wide
+      let expandedHeight = max(planeAnchor.planeExtent.height, 2.0) // At least 2m tall
       
-      let collisionThickness: Float = 0.1  // 10cm thick instead of paper-thin
-      
-      // Create collision shape
-      let reliableCollisionShape = ShapeResource.generateBox(
-        width: planeWidth,
-        height: collisionThickness,
-        depth: planeHeight
+      let wallShape = ShapeResource.generateBox(
+          width: expandedWidth,
+          height: expandedHeight,
+          depth: 0.1
       )
       
-      // Create invisible collision entity
-      let collisionEntity = ModelEntity()
-      collisionEntity.collision = CollisionComponent(
-        shapes: [reliableCollisionShape],
-        filter: CollisionFilter(
-          group: CollisionGroups.environment,
-          mask: [CollisionGroups.arObjects]
-        )
+      // Create the wall entity
+      let wallEntity = ModelEntity()
+      wallEntity.collision = CollisionComponent(
+          shapes: [wallShape],
+          filter: CollisionFilter(
+              group: CollisionGroups.manualWalls,
+              mask: [CollisionGroups.arObjects]
+          )
       )
       
-      // Position collision box so TOP is at plane level
-      let planePosition = planeAnchor.transform.translation
-      let collisionY = planePosition.y - (collisionThickness / 2)
-      collisionEntity.transform.translation = SIMD3<Float>(
-        planePosition.x,
-        collisionY,
-        planePosition.z
+      // Perfect wall physics material for clean bounces
+      wallEntity.physicsBody = PhysicsBodyComponent(
+          massProperties: PhysicsMassProperties(mass: 1000.0),
+          material: PhysicsMaterialResource.generate(
+              staticFriction: 0.1,    // Low friction for clean bounces
+              dynamicFriction: 0.05,
+              restitution: 0.85       // High bounce retention
+          ),
+          mode: .static
       )
       
-      // Heavy static physics
-      collisionEntity.physicsBody = PhysicsBodyComponent(
-        massProperties: PhysicsMassProperties(mass: 1000.0),
-        material: PhysicsMaterialResource.generate(
-          staticFriction: 0.7,
-          dynamicFriction: 0.5,
-          restitution: 0.3
-        ),
-        mode: .static
-      )
+      // Position at the real detected location
+      wallEntity.transform.translation = realPosition
+      wallEntity.transform.rotation = simd_quatf(planeAnchor.transform)
       
       // Add to scene
       let anchor = AnchorEntity(world: planeAnchor.transform)
-      anchor.addChild(collisionEntity)
+      anchor.addChild(wallEntity)
       _arView.scene.addAnchor(anchor)
       
-      print("🛡️ Created reliable collision for detected plane: \(planeWidth)x\(planeHeight)m, thickness=\(collisionThickness)m")
-    }
+      print("Created simplified wall collision: \(expandedWidth)x\(expandedHeight)m at \(realPosition)")
   }
-  
   
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
       for anchor in anchors {
@@ -2470,7 +2476,7 @@ extension ARView3D {
       material: PhysicsMaterialResource.generate(
         staticFriction: 0.6,
         dynamicFriction: 0.4,
-        restitution: 0.3
+        restitution: 0.5
       ),
       mode: .static
     )
