@@ -82,6 +82,7 @@
                                     </label>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstItem="AjB-36-hkl" firstAttribute="height" relation="lessThanOrEqual" secondItem="tYG-vD-XkI" secondAttribute="height" id="X9H-9v-jsQ"/>
                                     <constraint firstItem="AjB-36-hkl" firstAttribute="centerX" secondItem="tYG-vD-XkI" secondAttribute="centerX" id="fMk-Ro-joC"/>
                                     <constraint firstItem="AjB-36-hkl" firstAttribute="centerY" secondItem="tYG-vD-XkI" secondAttribute="centerY" id="kC5-Ag-KRI"/>
                                 </constraints>
@@ -103,7 +104,7 @@
                             <constraint firstItem="QmI-n4-yhD" firstAttribute="top" secondItem="vZO-ch-Rin" secondAttribute="bottom" constant="8" id="SOw-1N-yfn"/>
                             <constraint firstItem="aRs-fg-c7M" firstAttribute="centerX" secondItem="8pV-NU-cQS" secondAttribute="centerX" id="TTR-4r-utg"/>
                             <constraint firstItem="QmI-n4-yhD" firstAttribute="centerX" secondItem="8pV-NU-cQS" secondAttribute="centerX" id="V6J-uB-GXA"/>
-                            <constraint firstItem="l9f-hn-Uz9" firstAttribute="top" secondItem="aXu-gl-0yY" secondAttribute="bottom" constant="8" id="Wca-oI-W4I"/>
+                            <constraint firstItem="l9f-hn-Uz9" firstAttribute="top" secondItem="aXu-gl-0yY" secondAttribute="bottom" priority="500" constant="8" id="Wca-oI-W4I"/>
                             <constraint firstItem="gxM-wq-OQv" firstAttribute="leading" secondItem="8pV-NU-cQS" secondAttribute="leadingMargin" constant="16" id="Z08-jF-MP0"/>
                             <constraint firstItem="aRs-fg-c7M" firstAttribute="top" secondItem="Bp2-QU-Qf6" secondAttribute="bottom" constant="50" id="anh-LN-6Uc"/>
                             <constraint firstItem="Bp2-QU-Qf6" firstAttribute="top" secondItem="QmI-n4-yhD" secondAttribute="bottom" constant="8" id="dB4-e0-lRx"/>
@@ -113,7 +114,6 @@
                             <constraint firstItem="tYG-vD-XkI" firstAttribute="firstBaseline" secondItem="aRs-fg-c7M" secondAttribute="baseline" constant="8" symbolType="layoutAnchor" id="p6z-zk-P9a"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Ste-Nv-ksy" secondAttribute="trailing" constant="16" id="qMb-TK-qVD"/>
                             <constraint firstAttribute="trailingMargin" secondItem="aXu-gl-0yY" secondAttribute="trailing" constant="16" id="uiA-T0-V0i"/>
-                            <constraint firstItem="l9f-hn-Uz9" firstAttribute="top" secondItem="aXu-gl-0yY" secondAttribute="bottom" constant="8" symbolic="YES" id="yxg-DH-QWz"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
@@ -311,7 +311,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

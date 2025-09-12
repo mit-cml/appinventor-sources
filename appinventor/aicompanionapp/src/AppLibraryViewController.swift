@@ -389,6 +389,7 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     newapp.makeCurrent()
     newapp.loadScreen1(self.form)
     self.navigationController?.popViewController(animated: true)
+    (self.navigationController as? ViewController)?.showMenuButton()
   }
   
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
