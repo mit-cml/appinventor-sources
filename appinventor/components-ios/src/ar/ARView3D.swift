@@ -87,6 +87,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var sessionStartTime: Date?
   
   internal var collisionBeganObserver: Cancellable!
+  private var wallCollisionCache: [UUID: ModelEntity] = [:]
+  private var lastWallCleanup: Date = Date()
   
   enum State {
     case none,
@@ -795,7 +797,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               } else {
                 if #available(iOS 16.0, *) {
                   if planeAnchor.alignment == .vertical {
-                    createSimplifiedCollisionForDetectedWall(planeAnchor)
+                    createOptimizedWallCollision(planeAnchor)
                   }
                 }
               }
@@ -808,23 +810,59 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
   }
 
+  private func cleanupDistantWalls() {
+      guard let camera = _arView.session.currentFrame?.camera else { return }
+      let cameraPos = camera.transform.translation
+      
+      var wallsToRemove: [UUID] = []
+      
+      for (id, wallEntity) in wallCollisionCache {
+          let wallPos = wallEntity.transform.translation
+          let distance = simd_distance(cameraPos, wallPos)
+          
+          // Remove walls more than 10m away
+          if distance > 10.0 {
+              wallsToRemove.append(id)
+              wallEntity.parent?.removeFromParent()
+          }
+      }
+      
+      for id in wallsToRemove {
+          wallCollisionCache.removeValue(forKey: id)
+      }
+      
+      lastWallCleanup = Date()
+      print("Cleaned up \(wallsToRemove.count) distant walls")
+  }
+
   @available(iOS 16.0, *)
-  private func createSimplifiedCollisionForDetectedWall(_ planeAnchor: ARPlaneAnchor) {
-      // Use the real detected position
-      let realPosition = planeAnchor.transform.translation
+  private func createOptimizedWallCollision(_ planeAnchor: ARPlaneAnchor) {
+      // Clean up old walls periodically
+      if Date().timeIntervalSince(lastWallCleanup) > 5.0 {
+          cleanupDistantWalls()
+      }
       
-      // But create simplified, expanded geometry
-      let expandedWidth = max(planeAnchor.planeExtent.width, 1.0)  // At least 1m wide
-      let expandedHeight = max(planeAnchor.planeExtent.height, 2.0) // At least 2m tall
+      // Check if we already have a wall for this area
+      if wallCollisionCache[planeAnchor.identifier] != nil {
+          return // Already exists
+      }
       
+      // Only create walls for significant surfaces
+      let wallArea = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+      guard wallArea > 1.0 else { return }
+      
+      // Use minimal collision geometry - just the essential boundary
+      let boundaryThickness: Float = 0.02 // Very thin
       let wallShape = ShapeResource.generateBox(
-          width: expandedWidth,
-          height: expandedHeight,
-          depth: 0.1
+          width: planeAnchor.planeExtent.width,
+          height: max(planeAnchor.planeExtent.height, 2.0),
+          depth: boundaryThickness
       )
       
-      // Create the wall entity
       let wallEntity = ModelEntity()
+      wallEntity.name = "OptimizedWall_\(planeAnchor.identifier)"
+      
+      // Optimized collision with perfect physics properties
       wallEntity.collision = CollisionComponent(
           shapes: [wallShape],
           filter: CollisionFilter(
@@ -833,27 +871,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           )
       )
       
-      // Perfect wall physics material for clean bounces
+      // Perfect wall physics - no energy loss, predictable bounces
       wallEntity.physicsBody = PhysicsBodyComponent(
           massProperties: PhysicsMassProperties(mass: 1000.0),
           material: PhysicsMaterialResource.generate(
-              staticFriction: 0.1,    // Low friction for clean bounces
-              dynamicFriction: 0.05,
-              restitution: 0.85       // High bounce retention
+              staticFriction: 0.0,      // No friction for clean bounces
+              dynamicFriction: 0.0,
+              restitution: 0.95         // Near-perfect bounce
           ),
           mode: .static
       )
       
-      // Position at the real detected location
-      wallEntity.transform.translation = realPosition
+      wallEntity.transform.translation = planeAnchor.transform.translation
       wallEntity.transform.rotation = simd_quatf(planeAnchor.transform)
       
-      // Add to scene
       let anchor = AnchorEntity(world: planeAnchor.transform)
       anchor.addChild(wallEntity)
       _arView.scene.addAnchor(anchor)
       
-      print("Created simplified wall collision: \(expandedWidth)x\(expandedHeight)m at \(realPosition)")
+      wallCollisionCache[planeAnchor.identifier] = wallEntity
   }
   
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {

@@ -376,13 +376,12 @@ open class SphereNode: ARNodeBase, ARSphere {
       // Your existing collision handling
       let speed = getCollisionSpeed()
       let force = calculateCollisionForce(with: otherNode)
-     // applyCollisionEffects(force: force, velocity: speed)
-    if #available(iOS 15.0, *) {
-      showCollisionFlash(intensity: speed, collisionType: .object)
-    } else {
-      // Fallback on earlier versions
-    }
-      
+
+    
+      if #available(iOS 15.0, *) {
+        showCollisionFlash(intensity: speed, collisionType: .object)
+      }
+    
       // Analyze trajectory after collision response
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
           guard let self = self else { return }
