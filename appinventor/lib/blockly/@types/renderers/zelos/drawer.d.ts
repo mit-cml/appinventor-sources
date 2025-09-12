@@ -5,6 +5,7 @@
  */
 import type { BlockSvg } from '../../block_svg.js';
 import { Drawer as BaseDrawer } from '../common/drawer.js';
+import { Connection } from '../measurables/connection.js';
 import type { InlineInput } from '../measurables/inline_input.js';
 import type { Row } from '../measurables/row.js';
 import type { RenderInfo } from './info.js';
@@ -42,6 +43,9 @@ export declare class Drawer extends BaseDrawer {
     /** Add steps to draw a flat bottom row. */
     protected drawFlatBottom_(): void;
     drawInlineInput_(input: InlineInput): void;
+    private getInlineInputPath;
     drawStatementInput_(row: Row): void;
+    /** Returns a path to highlight the given connection. */
+    drawConnectionHighlightPath(measurable: Connection): void;
 }
 //# sourceMappingURL=drawer.d.ts.map

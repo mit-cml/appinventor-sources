@@ -1,0 +1,44 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_test.test.Screen1 Screen1 #f)
+(require <com.google.youngandroid.runtime>)
+
+(def g$counter 0)
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'ActionBar #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'AppName "test" 'text)
+ (set-and-coerce-property! 'Screen1 'ScreenOrientation "unspecified" 'text)
+ (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; Button1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1
+(set-and-coerce-property! 'Button1 'Text "Text for Button1" 'text)
+
+)
+
+(define-event Button1 Click()(set-this-form)
+  (let ( ($inner_counter 2)  ) (forrange $number (begin (set-lexical! $inner_counter 1)(set-var! g$counter (call-yail-primitive + (*list-for-runtime* (get-var g$counter) (lexical-value $inner_counter) ) '(number number ) "+"))(set-and-coerce-property! 'Label1 'Text (call-yail-primitive string-append (*list-for-runtime* "yo" "  " (get-var g$counter) ) '(text text text ) "join") 'text)) 1 5 1) ))
+;;; Label1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Label Label1
+(set-and-coerce-property! 'Label1 'Text "Text for Label1" 'text)
+
+)
+
+;;; Button2
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button2
+(set-and-coerce-property! 'Button2 'Text "CLEAR" 'text)
+
+)
+
+(define-event Button2 Click()(set-this-form)
+  (set-var! g$counter 0)(set-and-coerce-property! 'Label1 'Text "..." 'text))
+(init-runtime)
