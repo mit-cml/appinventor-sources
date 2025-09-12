@@ -12,7 +12,6 @@ import GoogleAPIClientForREST
   private var _service = GTLRSheetsService()
   fileprivate var _columns: NSArray = []
   private let _workQueue = DispatchQueue(label: "Spreadsheet", qos: .userInitiated)
-  private var _initialized = false
   private var _spreadsheetId = ""
   // This gets changed to the name of the project by MockSpreadsheet by default
   private var _sheetIdDict: [String: Int] = [:]
@@ -43,7 +42,6 @@ import GoogleAPIClientForREST
   // MARK: Methods
   
   @objc func Initialize() {
-    _initialized = true
     authorize()
   }
   
@@ -1422,9 +1420,6 @@ import GoogleAPIClientForREST
   
   // process credentials and authorize user
   private func authorize() {
-    guard _initialized else {
-      return
-    }
     guard !CredentialsJson.isEmpty else {
       _service.authorizer = nil
       return

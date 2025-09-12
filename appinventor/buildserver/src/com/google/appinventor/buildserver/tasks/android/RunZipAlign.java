@@ -5,7 +5,7 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
@@ -34,13 +34,13 @@ public class RunZipAlign implements AndroidTask {
     };
 
     if (!Execution.execute(null, zipAlignCommandLine,
-        System.out, System.err)) {
-      TaskResult.generateError("Error while running ZipAlign tool");
+        System.out, System.err, Execution.Timeout.SHORT)) {
+      return TaskResult.generateError("Error while running ZipAlign tool");
     }
 
     if (!ExecutorUtils.copyFile(zipAlignedApk.getAbsolutePath(),
         context.getPaths().getDeployFile().getAbsolutePath())) {
-      TaskResult.generateError("Error while copying ZipAlign'ed APK");
+      return TaskResult.generateError("Error while copying ZipAlign'ed APK");
     }
 
     return TaskResult.generateSuccess();

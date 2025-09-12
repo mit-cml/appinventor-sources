@@ -105,6 +105,15 @@
         <actions:BarcodeAction second="true" isAab="true"/>
       </ai:DropDownItem>
       <hr/>
+      <ai:DropDownItem name="BuildIPA" caption="{messages.showExportiOSAdHoc}"
+                       beta="true">
+        <actions:BarcodeAction foriOS="true" forAppStore="false" />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="BuildIPAStore" caption="{messages.showExportiOSAppStore}"
+                       beta="true">
+        <actions:BarcodeAction foriOS="true" forAppStore="true" />
+      </ai:DropDownItem>
+      <hr/>
       <ai:DropDownItem name="Yail" caption="{messages.generateYailMenuItem}">
         <actions:GenerateYailAction/>
       </ai:DropDownItem>
@@ -124,7 +133,13 @@
           visible="{hasWriteAccess}" >
         <actions:SetFontRegularAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="AppStoreSettings" caption="{messages.appStoreSettingsMenuTitle}">
+        <actions:ShowAppStoreSettingsDialog />
+      </ai:DropDownItem>
       <hr/>
+      <ai:DropDownItem name="DownloadCSR" caption="{messages.downloadCertificateRequestItem}">
+        <actions:DownloadCsrAction />
+      </ai:DropDownItem>
       <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">
         <actions:UploadKeystoreAction/>
       </ai:DropDownItem>

@@ -70,6 +70,7 @@
 		0653CBDA1F971BA70052065A /* TestFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0653CBD91F971BA70052065A /* TestFailure.swift */; };
 		0655BED82614CCD000EBE3F6 /* Form+Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0655BED72614CCD000EBE3F6 /* Form+Debugging.swift */; };
 		0655BEFB261E4BE600EBE3F6 /* Dictionary+Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */; };
+		0657DF192E700267007E2FBF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0657DF182E700267007E2FBF /* SceneDelegate.swift */; };
 		0658E9BD20126FFA009D6A15 /* control.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BB20126FFA009D6A15 /* control.yail */; };
 		0658E9BE20126FFA009D6A15 /* logic.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BC20126FFA009D6A15 /* logic.yail */; };
 		0658E9C1201399FA009D6A15 /* math.yail in Resources */ = {isa = PBXBuildFile; fileRef = 0658E9BF201399F9009D6A15 /* math.yail */; };
@@ -470,6 +471,7 @@
 		0653CBD91F971BA70052065A /* TestFailure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestFailure.swift; sourceTree = "<group>"; };
 		0655BED72614CCD000EBE3F6 /* Form+Debugging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Form+Debugging.swift"; sourceTree = "<group>"; };
 		0655BEFA261E4BE600EBE3F6 /* Dictionary+Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Json.swift"; sourceTree = "<group>"; };
+		0657DF182E700267007E2FBF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		0658E9BB20126FFA009D6A15 /* control.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = control.yail; sourceTree = "<group>"; };
 		0658E9BC20126FFA009D6A15 /* logic.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = logic.yail; sourceTree = "<group>"; };
 		0658E9BF201399F9009D6A15 /* math.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = math.yail; sourceTree = "<group>"; };
@@ -916,6 +918,7 @@
 				0618A2871D8CF4EE0013A191 /* Info.plist */,
 				DED066B11FE0846F009C8165 /* webview-error.html */,
 				DE5CBD271FE36C8B00F5EDDE /* webviewer.js */,
+				0657DF182E700267007E2FBF /* SceneDelegate.swift */,
 				06678E31233956EE00BD3F19 /* main.swift */,
 			);
 			path = "components-ios/src";
@@ -1918,6 +1921,7 @@
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
 				06678E32233956EE00BD3F19 /* main.swift in Sources */,
 				CBC78690202BA119005363A3 /* Marker.swift in Sources */,
+				0657DF192E700267007E2FBF /* SceneDelegate.swift in Sources */,
 				DE4075E520126DA7000F4C3E /* SpeechRecognizer.swift in Sources */,
 				15C9E0232C2B11650080EE9D /* LineWithTrendlineRenderer.swift in Sources */,
 				0685B5B32003C931005153ED /* ThemeEnum.swift in Sources */,
@@ -2243,7 +2247,7 @@
 					"\"Zip\"",
 					"-framework",
 					"\"geos\"",
-					"-framework",
+					"-weak_framework",
 					"\"WebRTC\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKit;
@@ -2330,7 +2334,7 @@
 					"\"Zip\"",
 					"-framework",
 					"\"geos\"",
-					"-framework",
+					"-weak_framework",
 					"\"WebRTC\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = edu.mit.appinventor.AIComponentKit;

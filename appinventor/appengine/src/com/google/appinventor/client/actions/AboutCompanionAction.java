@@ -8,7 +8,7 @@ package com.google.appinventor.client.actions;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.blocks.BlocklyPanel;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;

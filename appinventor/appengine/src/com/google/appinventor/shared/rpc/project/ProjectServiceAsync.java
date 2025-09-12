@@ -7,7 +7,6 @@
 package com.google.appinventor.shared.rpc.project;
 
 import com.google.appinventor.shared.rpc.RpcResult;
-import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.HashMap;
@@ -203,7 +202,8 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#build(long, String, String, boolean)
    */
-  void build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab, AsyncCallback<RpcResult> callback);
+  void build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab,
+      boolean foriOS, boolean forAppStore, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#getBuildResult(long, String)
