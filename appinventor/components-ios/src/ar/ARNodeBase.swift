@@ -957,7 +957,8 @@ open class ARNodeBase: NSObject, ARNode {
       print("🎯 \(Name) drag update - override in subclass")
   }
   
-  @objc open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+  @objc open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
+    let cameraVectors = camera3DProjection as? ARView3D.CameraVectors
       isBeingDragged = false
       if let original = _originalMaterial {
           _modelEntity.model?.materials = [original]

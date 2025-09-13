@@ -2125,7 +2125,27 @@ extension ARView3D {
     }
   }
 
+  private func getCurrentCameraVectors() -> CameraVectors? {
+      guard let frame = _arView.session.currentFrame else { return nil }
+      
+      let transform = frame.camera.transform
+      
+      let right = simd_normalize(SIMD3<Float>(
+          transform.columns.0.x, 0, transform.columns.0.z
+      ))
+      
+      let forward = simd_normalize(SIMD3<Float>(
+          -transform.columns.2.x, 0, -transform.columns.2.z
+      ))
+      
+      return CameraVectors(right: right, forward: forward)
+  }
 
+  // Define a simple struct to hold camera vectors
+  struct CameraVectors {
+      let right: SIMD3<Float>
+      let forward: SIMD3<Float>
+  }
 
   
   @objc private func handlePanComplete(_ gesture: UIPanGestureRecognizer) {
@@ -2151,24 +2171,27 @@ extension ARView3D {
     let fingerMovement = gesture.translation(in: _arView)   // ✅ How finger MOVED
     let fingerVelocity = gesture.velocity(in: _arView)
     
-    if let node = targetNode as? ARNodeBase {
-      // ✅ Get appropriate projection based on node type and drag phase
-      let groundProjection = getProjectionForNode(
-        node: node,
-        fingerLocation: fingerLocation,
-        fingerMovement: fingerMovement,
-        gesturePhase: gesture.state
-      )
+
       
-      node.handleAdvancedGestureUpdate(
-        fingerLocation: fingerLocation,
-        fingerMovement: fingerMovement,
-        fingerVelocity: fingerVelocity,
-        groundProjection: groundProjection,
-        camera3DProjection: projectFingerToPlane(fingerLocation: fingerLocation, planeY: nodeY), //using?
-        gesturePhase: gesture.state
-      )
-    }
+      if let node = targetNode as? ARNodeBase {
+        let groundProjection = getProjectionForNode(
+          node: node,
+          fingerLocation: fingerLocation,
+          fingerMovement: fingerMovement,
+          gesturePhase: gesture.state
+        )
+        let cameraVectors = getCurrentCameraVectors() // New method
+          
+          node.handleAdvancedGestureUpdate(
+              fingerLocation: fingerLocation,
+              fingerMovement: fingerMovement,
+              fingerVelocity: fingerVelocity,
+              groundProjection: groundProjection,
+              camera3DProjection: cameraVectors,
+              gesturePhase: gesture.state
+          )
+      }
+      
     
     if gesture.state == .changed {
       // Reset translation to get relative movements
@@ -2248,7 +2271,6 @@ extension ARView3D {
     )
   }
   
-
   private func projectFingerIncrementally(_ currentPos: SIMD3<Float>, fingerMovement: CGPoint) -> SIMD3<Float> {
       guard let frame = _arView.session.currentFrame else {
           // Basic fallback without camera info

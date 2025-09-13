@@ -285,7 +285,7 @@ open class ModelNode: ARNodeBase, ARModel {
 
   /// Ends the drag with Pokémon GO style throwing or placement
 
-  override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+  override open func endDrag(releaseVelocity: CGPoint, camera3DProjection worldDirection: Any) {
     guard _isDragging else { return }
     
     print("🎯 Ending drag with release velocity: \(releaseVelocity)")
@@ -611,7 +611,7 @@ open class ModelNode: ARNodeBase, ARModel {
       }
       
     case .ended, .cancelled:
-      endDrag(releaseVelocity: fingerVelocity, worldDirection: worldPos ?? SIMD3<Float>(0, 0, 0))
+      endDrag(releaseVelocity: fingerVelocity, camera3DProjection: camera3DProjection) //worldPos ?? SIMD3<Float>(0, 0, 0))
       
     default:
       break

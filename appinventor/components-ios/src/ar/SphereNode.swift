@@ -876,9 +876,10 @@ private func monitorPostCollisionState() {
       _lastFingerPosition = fingerWorldPosition
   }
   
-  override open func endDrag(releaseVelocity: CGPoint, worldDirection: SIMD3<Float>) {
+  override open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
       guard _isBeingDragged else { return }
-      
+    
+      let cameraVectors = camera3DProjection as? ARView3D.CameraVectors
       // Switch back to dynamic mode
       if var physicsBody = _modelEntity.physicsBody {
           physicsBody.mode = .dynamic
@@ -886,9 +887,9 @@ private func monitorPostCollisionState() {
           
           // NOW apply release velocity (only once, at release)
         if #available(iOS 18.0, *) {
-          applyReleaseVelocityIOS18(releaseVelocity: releaseVelocity)
+          applyReleaseVelocityIOS18(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
         } else {
-          applyReleaseForceIOS16(releaseVelocity: releaseVelocity)
+          applyReleaseForceIOS16(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
         }
       }
       
@@ -915,71 +916,71 @@ private func monitorPostCollisionState() {
       print("🎾 Rolling: distance=\(String(format: "%.4f", distance)), angle=\(String(format: "%.4f", rollAngle))")
   }
   
+  private func debugReleaseDirection(screenVelocity: CGPoint, cameraVectors: ARView3D.CameraVectors){
+     
+      
+      print("=== RELEASE DEBUG ===")
+      print("Screen velocity: \(screenVelocity)")
+      print("Camera vectors: \(cameraVectors)")
 
+
+      print("Ball position: \(_modelEntity.transform.translation)")
+      print("==================")
+  }
+  
   @available(iOS 18.0, *)
-  private func applyReleaseVelocityIOS18(releaseVelocity: CGPoint) {
+  private func applyReleaseVelocityIOS18(releaseVelocity: CGPoint, cameraVectors: ARView3D.CameraVectors?) {
       let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
+      guard releaseSpeed > NORMAL_ROLLING_SPEED else { return }
       
-      if releaseSpeed > NORMAL_ROLLING_SPEED {
-          // Direct velocity calculation instead of force-based
-          let baseVelocityScale: Float = 0.002  // Much smaller base scale
-          let massMultiplier = max(0.2, min(2.0, Mass))  // Clamp mass effect
-          
-          let targetVelocity = SIMD3<Float>(
-              Float(releaseVelocity.x) * baseVelocityScale / massMultiplier,
-              0,
-              Float(releaseVelocity.y) * baseVelocityScale / massMultiplier
+      let right = cameraVectors?.right ?? SIMD3<Float>(1, 0, 0)
+      let forward = cameraVectors?.forward ?? SIMD3<Float>(0, 0, -1)
+      
+      let baseScale: Float = 0.002
+      
+      // CONSISTENT mapping: screen X → camera right, screen Y → camera forward
+      // Screen Y is negative because screen coordinates have Y=0 at top, but we want up=forward
+      let screenX = Float(releaseVelocity.x) * baseScale
+      let screenY = Float(-releaseVelocity.y) * baseScale  // Negative to flip screen Y
+      
+      let worldVelocity = (right * screenX) + (forward * screenY)
+      
+      print("Screen: (\(releaseVelocity.x), \(releaseVelocity.y)) → World: \(worldVelocity)")
+      print("Camera right: \(right), forward: \(forward)")
+      
+      if var physicsMotion = _modelEntity.physicsMotion {
+          physicsMotion.linearVelocity = SIMD3<Float>(
+              worldVelocity.x,
+              physicsMotion.linearVelocity.y,
+              worldVelocity.z
           )
-          
-          // Absolute maximum velocity regardless of calculation
-          let maxSpeed: Float = 8.0  // 8 m/s maximum
-          let currentSpeed = simd_length(targetVelocity)
-          
-          let finalVelocity: SIMD3<Float>
-          if currentSpeed > maxSpeed {
-              finalVelocity = simd_normalize(targetVelocity) * maxSpeed
-          } else {
-              finalVelocity = targetVelocity
-          }
-          
-          if var physicsMotion = _modelEntity.physicsMotion {
-              physicsMotion.linearVelocity = SIMD3<Float>(
-                  finalVelocity.x,
-                  physicsMotion.linearVelocity.y,
-                  finalVelocity.z
-              )
-              _modelEntity.physicsMotion = physicsMotion
-              
-              print("Fixed velocity calculation: \(finalVelocity)")
-          }
+          _modelEntity.physicsMotion = physicsMotion
       }
   }
 
-  // ✅ iOS 16-17 Release (with force)
-  private func applyReleaseForceIOS16(releaseVelocity: CGPoint) {
+  @available(iOS 14.0, *)
+  private func applyReleaseForceIOS16(releaseVelocity: CGPoint, cameraVectors: ARView3D.CameraVectors) {
       let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
+      guard releaseSpeed > 100 else { return }
       
-      print("🎾 iOS 16-17 Release analysis: finger velocity (\(releaseVelocity.x), \(releaseVelocity.y)), speed: \(releaseSpeed)")
+      let right = cameraVectors.right
+      let forward = cameraVectors.forward
       
-      if releaseSpeed > 100 {
-          let behaviorMultiplier = getBehaviorMomentumMultiplier()
-        let forceScale: Float = 2.0 * behaviorMultiplier // Increased for better momentum
-          
-          let releaseForce = SIMD3<Float>(
-              Float(releaseVelocity.x) * forceScale,
-              0,
-              Float(releaseVelocity.y) * forceScale
-          )
-          
-          _modelEntity.addForce(releaseForce, relativeTo: nil as Entity?)
-          
-          print("🎾 iOS 16-17: Applied release force \(releaseForce)")
-      } else {
-          print("🎾 iOS 16-17: Release speed too low (\(releaseSpeed)), no momentum applied")
-      }
+      let forceScale: Float = 3.0
+      
+      // SAME mapping as iOS 18 version for consistency
+      let screenX = Float(releaseVelocity.x) * forceScale
+      let screenY = Float(-releaseVelocity.y) * forceScale  // Same negative flip
+      
+      let worldForce = (right * screenX) + (forward * screenY)
+      
+      _modelEntity.addForce(worldForce, relativeTo: nil as Entity?)
+      
+      print("Applied transformed force: \(worldForce)")
+      print("Screen velocity: \(releaseVelocity)")
   }
-
-
+  
+  
   // ✅ Updated gesture handler
   override open func handleAdvancedGestureUpdate(
       fingerLocation: CGPoint,
@@ -991,6 +992,7 @@ private func monitorPostCollisionState() {
   ) {
       var groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
       print("sphereNode, handling drag gesture \(groundPos)")
+  
     
       switch gesturePhase {
       case .began:
@@ -1004,7 +1006,7 @@ private func monitorPostCollisionState() {
           }
           
       case .ended, .cancelled:
-        endDrag(releaseVelocity: fingerVelocity, worldDirection: groundPos ?? SIMD3<Float>(0, 0, 0))
+        endDrag(releaseVelocity: fingerVelocity, camera3DProjection: camera3DProjection!)
           
       default:
           break
