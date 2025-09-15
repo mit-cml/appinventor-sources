@@ -14,6 +14,11 @@ goog.provide('AI.Blockly.TypeBlock');
 goog.require('goog.events.KeyHandler');
 goog.require('goog.style');
 
+goog.require('goog.ui.ac.ArrayMatcher');
+goog.require('goog.ui.ac.AutoComplete');
+goog.require('goog.ui.ac.InputHandler');
+goog.require('goog.ui.ac.Renderer');
+
 /**
  * Main Type Block function for configuration.
  * @param {Object} htmlConfig an object of the type:

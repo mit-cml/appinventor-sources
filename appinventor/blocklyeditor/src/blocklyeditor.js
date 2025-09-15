@@ -1059,7 +1059,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     // build dom for typeblock (adapted from blocklyframe.html)
     goog.style.setElementShown(ai_type_block, false);
     ai_type_block.classList.add("ai_type_block");
-    parent.insertBefore(ai_type_block, container[0] || null);
+    container.insertBefore(ai_type_block, container.childNodes[0] || null);
     ai_type_block.appendChild(p);
     p.appendChild(ac_input_text);
     workspace.typeBlock_ = new AI.Blockly.TypeBlock(typeblockOpts, workspace);
