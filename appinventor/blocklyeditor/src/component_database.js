@@ -192,32 +192,6 @@ Blockly.ComponentDatabase = function() {
  */
 Blockly.ComponentDatabase.prototype.SUFFIX_REGEX = new RegExp('^(.*?)([0-9]*)$')
 
-// Copied from goog.object.removeDuplicates
-Blockly.ComponentDatabase.removeDuplicates(arr, opt_rv, opt_hashFn) {
-  const returnArray = opt_rv || arr;
-  const defaultHashFn = function(item) {
-    // Prefix each type with a single character representing the type to
-    // prevent conflicting keys (e.g. true and 'true').
-    return (item != null && typeof item === 'object') ? 'o' + goog.getUid(item) :
-        (typeof item).charAt(0) + item;
-  };
-  const hashFn = opt_hashFn || defaultHashFn;
-
-  let cursorInsert = 0;
-  let cursorRead = 0;
-  const seen = {};
-
-  while (cursorRead < arr.length) {
-    const current = arr[cursorRead++];
-    const key = hashFn(current);
-    if (!Object.prototype.hasOwnProperty.call(seen, key)) {
-      seen[key] = true;
-      returnArray[cursorInsert++] = current;
-    }
-  }
-  returnArray.length = cursorInsert;
-}
-
 /**
  * Add a new instance to the ComponentDatabase.
  * @param {!string} uid UUID of the component instance
@@ -308,7 +282,7 @@ Blockly.ComponentDatabase.prototype.removeInstance = function(uid) {
  * @param {function(!ComponentInstanceDescriptor, !string)} callback
  */
 Blockly.ComponentDatabase.prototype.forEachInstance = function(callback) {
-  for (const key in obj) {
+  for (const key in this.instances_) {
     if (this.instances_.hasOwnProperty(key)) {
       callback(this.instances_[key], key);
     }
@@ -426,15 +400,14 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
  */
 Blockly.ComponentDatabase.prototype.getComponentTypes = function() {
   var componentTypeArray = [];
+  const seenTypes = new Set();
   for (var uid in this.instances_) {
     var typeName = this.instances_[uid].typeName;
-    if (typeName != "Form")
+    if (typeName != "Form" && !seenTypes.has(typeName)) {
+      seenTypes.add(typeName);
       componentTypeArray.push([this.i18nComponentTypes_[typeName], typeName]);
+    }
   }
-
-  Blockly.ComponentDatabase.removeDuplicates(componentTypeArray, null, function(type) {
-    return type[1];
-  });
 
   if (componentTypeArray.length == 0) {
     return [[' ', 'none']]
@@ -806,9 +779,11 @@ Blockly.ComponentDatabase.prototype.getEventForType = function(typeName, eventNa
 Blockly.ComponentDatabase.prototype.forEventInType = function(typeName, callback) {
   if (typeName in this.types_) {
     var eventDict = this.types_[typeName].eventDictionary;
-    var filterDeprecated = Object.entries(eventDict)
-        .filter(function([_, event]) { return !event.deprecated; });
-    filterDeprecated.forEach(callback);
+    for (const [eventName, event] of Object.entries(eventDict)) {
+      if (!event.deprecated) {
+        callback(event, eventName);
+      }
+    }
   }
 };
 
@@ -841,9 +816,11 @@ Blockly.ComponentDatabase.prototype.getMethodForType = function(typeName, method
 Blockly.ComponentDatabase.prototype.forMethodInType = function(typeName, callback) {
   if (typeName in this.types_) {
     var methodDict = this.types_[typeName].methodDictionary;
-    var filterDeprecated = Object.entries(methodDict)
-        .filter(function([_, method]) { return !method.deprecated; });
-    filterDeprecated.forEach(callback);
+    for (const [methodName, method] of Object.entries(methodDict)) {
+      if (!method.deprecated) {
+        callback(method, methodName);
+      }
+    }
   }
 };
 

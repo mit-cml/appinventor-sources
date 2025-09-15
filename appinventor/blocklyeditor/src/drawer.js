@@ -505,7 +505,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }, this);
 
   //for each property
-  Object.entries(componentInfo.properties).forEach(function(property, name) {
+  for (const [name, property] of Object.entries(componentInfo.properties)) {
     if (!property.deprecated) {
       var params = {component_type: typeName, property_name: name};
       if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
@@ -530,7 +530,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
       // be added to the bottom of the drawer.
       getHelper(property);
     }
-  }, this);
+  }
 
   // Create helper blocks at the bottom of the drawer.
   helperKeys.forEach(function(helper) {
