@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.ar;
 
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import com.google.appinventor.components.runtime.util.CameraVectors;
 import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -25,6 +26,8 @@ import android.view.MotionEvent;
 
 import java.util.List;
 import java.util.Collection;
+
+
 
 @SimpleObject
 public abstract class ARNodeBase implements ARNode, FollowsMarker {
@@ -61,14 +64,20 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected PointF dragStartLocation = new PointF(0, 0);
   protected PointF lastDragLocation = new PointF(0, 0);
   protected Object originalMaterial = null;
-
+  protected float[] lastFingerPosition ;
   // Enhanced Physics Simulation Properties
   protected float[] currentVelocity = {0, 0, 0};
+
+
+  private boolean onGround = false;
+  private float GROUND_LEVEL = 0.0f; // Default ground level
+  private static final float GRAVITY = -9.81f; // m/s²
+
+
   protected boolean isCurrentlyColliding = false;
   protected float linearDamping = 0.0f;
   protected float angularDamping = 0.0f;
-  protected float rollingForce = 0.0f;
-  protected float impulseScale = 0.0f;
+
 
   // Enhanced Collision Properties
   protected float collisionWidth = 0.0f;
@@ -87,6 +96,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
 
 
+
   @SuppressWarnings("WeakerAccess")
   protected ARNodeBase(ARNodeContainer container) {
     // Enhanced initialization
@@ -102,7 +112,83 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     isCurrentlyColliding = false;
   }
 
+
   // MARK: - Enhanced Basic Properties
+
+  /* if the node has EnablePhysics, then make node must be on the ground and is subject to gravity
+  except when being dragged
+   */
+  public void updateSimplePhysics(float deltaTime) {
+    if (!enablePhysics || isBeingDragged) return;
+
+    currentVelocity[1] += GRAVITY * deltaTime;
+
+    float[] currentPos = getCurrentPosition();
+    currentPos[0] += currentVelocity[0] * deltaTime;
+    currentPos[1] += currentVelocity[1] * deltaTime;
+    currentPos[2] += currentVelocity[2] * deltaTime;
+
+    // Check ground collision
+    float objectBottom = currentPos[1];
+    if (this instanceof SphereNode) {
+      SphereNode sphere = (SphereNode) this;
+      objectBottom -= sphere.RadiusInCentimeters() * sphere.Scale(); // Bottom of sphere
+    }
+
+    //  Handle ground collision
+    if (objectBottom <= GROUND_LEVEL) {
+      // Position correction - place on ground
+      if (this instanceof SphereNode) {
+        SphereNode sphere = (SphereNode) this;
+        currentPos[1] = GROUND_LEVEL + (sphere.RadiusInCentimeters() * sphere.Scale());
+      } else {
+        currentPos[1] = GROUND_LEVEL;
+      }
+
+      // Stop downward velocity and bounce
+      if (currentVelocity[1] < 0) {
+        currentVelocity[1] = -currentVelocity[1] * Restitution();
+
+        // Stop tiny bounces
+        if (Math.abs(currentVelocity[1]) < 0.1f) {
+          currentVelocity[1] = 0;
+          onGround = true;
+        }
+      }
+
+      // Apply friction to horizontal movement
+      currentVelocity[0] *= (1.0f - StaticFriction() * 0.1f);
+      currentVelocity[2] *= (1.0f - StaticFriction() * 0.1f);
+    } else {
+      onGround = false;
+    }
+
+    // 5. Update AR position
+    setCurrentPosition(currentPos);
+  }
+
+  public float[] getCurrentPosition() {
+    // Get current position from anchor or trackable
+    if (anchor != null) {
+      return anchor.getPose().getTranslation();
+    }
+    return new float[]{0, 0, 0};
+  }
+
+  public void setCurrentPosition(float[] position) {
+    // Set position via anchor system
+
+    Log.i("SphereNode", "setting position " + arrayToString(position));
+    if (trackable != null) {
+      float[] rotation = {0, 0, 0, 1};
+      Pose newPose = new Pose(position, rotation);
+      Anchor(trackable.createAnchor(newPose));
+    } else if (session != null) {
+      float[] rotation = {0, 0, 0, 1};
+      Pose newPose = new Pose(position, rotation);
+      Anchor(session.createAnchor(newPose));
+    }
+  }
 
   @Override
   @SimpleFunction(description = "Rotates the node to look at the DetectedPlane.")
@@ -1288,7 +1374,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @SimpleFunction(description = "Changes the node's scale by the given scalar.")
   public void ScaleByPinch(float scalar) {
-    Log.i("arnodebase","scale by pinch");
+    Log.i("arnodebase", "scale by pinch");
     Scale(Scale() * Math.abs(scalar));
   }
 
@@ -1403,13 +1489,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   // Primary gesture system - all camera info comes from ARView3D
   public void handleAdvancedGestureUpdate(PointF fingerLocation, PointF fingerMovement,
                                           PointF fingerVelocity, float[] groundProjection,
-                                          float[] camera3DProjection, String gesturePhase) {
+                                          CameraVectors camera3DProjection, String gesturePhase) {
     if ("began".equals(gesturePhase)) {
       startDrag(fingerLocation);
     } else if ("changed".equals(gesturePhase)) {
-      updateDrag(fingerLocation, fingerMovement, groundProjection, camera3DProjection);
+      updateDrag(groundProjection);
     } else if ("ended".equals(gesturePhase)) {
-      endDrag(fingerVelocity, groundProjection);
+      endDrag(fingerVelocity, camera3DProjection);
     }
   }
 
@@ -1425,44 +1511,38 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     Log.d("ARNodeBase", "Started advanced drag for " + NodeType());
   }
 
+
   @Override
-  public void updateDrag(PointF fingerLocation, PointF fingerMovement,
-                                    float[] groundProjection, float[] camera3DProjection) {
-    // Default implementation - override in subclasses
+  public void updateDrag(float[] groundProjection) {
+    if (!isBeingDragged) return;
+
     if (groundProjection != null) {
-      // Convert meters to centimeters for MoveTo
-      MoveTo(groundProjection[0] * 100, groundProjection[1] * 100, groundProjection[2] * 100);
+      // Constrain Y position to keep sphere above ground
+
+      lastFingerPosition = groundProjection.clone();
     }
   }
 
   @Override
-  public void endDrag(PointF fingerVelocity, float[] finalPosition) {
+  public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
+    if (!isBeingDragged) return;
+
+    Log.i("ARNodeBase", "Ending drag with velocity: " + fingerVelocity);
+
+    // Re-enable physics mode
+    if (enablePhysics) {
+      // Calculate camera vectors from current AR camera
+
+      applyReleaseVelocity(fingerVelocity, cameraVectors);
+    }
     isBeingDragged = false;
     restoreOriginalMaterial();
-
-    // Apply momentum if velocity is high enough
-    float velocityMagnitude = (float) Math.sqrt(
-        fingerVelocity.x * fingerVelocity.x + fingerVelocity.y * fingerVelocity.y
-    );
-
-    if (velocityMagnitude > 100 && EnablePhysics()) {
-      applyReleaseForce(fingerVelocity.x, fingerVelocity.y);
-    }
-
-    Log.d("ARNodeBase", "Ended advanced drag for " + NodeType());
-  }
-  // Fix the method signature to match usage
-  protected void applyReleaseForce(PointF fingerVelocity) {
-    // Convert PointF to individual components for consistency
-    applyReleaseForce(fingerVelocity.x, fingerVelocity.y);
-  }
-
-  protected void applyReleaseForce(float velocityX, float velocityY) {
-    // Override in physics-enabled subclasses
-    Log.d("ARNodeBase", "Apply release force - override in subclass");
   }
 
 
+  public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
+
+  }
 
   protected Object getCurrentMaterial() {
     // Just store the opacity since that's what most drag effects change
@@ -1476,7 +1556,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   protected void restoreOriginalMaterial() {
-      setOpacity(1.0f);
+    setOpacity(1.0f);
   }
 
   protected void showDragEffect() {
@@ -1491,7 +1571,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   private void setOpacity(float opacity) {
-    Opacity((int)(opacity * 100)); // Convert back to 0-100 range
+    Opacity((int) (opacity * 100)); // Convert back to 0-100 range
   }
 // MARK: - Enhanced Image Marker Following
 

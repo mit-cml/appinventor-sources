@@ -46,7 +46,7 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARLight;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARLightContainer;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNodeContainer;
-
+import com.google.appinventor.components.runtime.util.CameraVectors;
 
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -188,9 +188,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final float[] lastViewMatrix = new float[16];
     private final float[] lastProjMatrix = new float[16];
 
+    private float GROUND_LEVEL = 0.0f;
+    private boolean groundDetected = false;
+    private float lastPhysicsUpdateTime = 0.0f;
 
-
-    // AR content
     private List<ARNode> arNodes = Nodes();
 
     public ARView3D(final ComponentContainer container) {
@@ -261,6 +262,25 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         onResume();
     }
 
+    /**
+     * Initialize physics system for the AR view
+     */
+
+    /**
+     * Get current camera vectors for physics calculations
+     */
+    public CameraVectors getCurrentCameraVectors() {
+        if (lastCamera == null) {
+            Log.w("ARView3D", "No AR camera available, using default vectors");
+            return null;
+        }
+
+        // Get camera's view matrix
+        float[] viewMatrix = new float[16];
+        lastCamera.getViewMatrix(viewMatrix, 0);
+
+        return new CameraVectors(viewMatrix);
+    }
 
     private void setupGestureDetectors(Context context) {
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
@@ -356,7 +376,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                                 new PointF(0, 0),
                                 new PointF(0, 0),
                                 null,
-                                null,
+                                getCurrentCameraVectors(),
                                 "ended"
                             );
                         }
@@ -534,6 +554,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.d(LOG_TAG, "Drawing virtualSceneFramebuffer texture " + virtualSceneFramebuffer.getColorTexture().getTextureId() +
             " to framebuffer " + virtualSceneFramebuffer.getFramebufferId());
 
+        updatePhysics();
 
         objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, null); //virtualSceneFramebuffer);
     }
@@ -668,6 +689,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         transform[13] = offsetV;  // V offset
 
         return transform;
+    }
+
+
+    public void updatePhysics() {
+        float currentTime = System.currentTimeMillis();
+        float deltaTime = (currentTime - lastPhysicsUpdateTime) / 1000.0f;
+        lastPhysicsUpdateTime = currentTime;
+
+        // Cap delta time
+        deltaTime = Math.min(deltaTime, 1.0f / 30.0f);
+
+        // Update each node's physics
+        for (ARNode node : arNodes) {
+            if (((ARNodeBase)node).enablePhysics) {
+                ((ARNodeBase)node).updateSimplePhysics(deltaTime);
+            }
+        }
     }
 
     @Override
@@ -1242,7 +1280,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         boolean isDepthSupported = session.isDepthModeSupported(Config.DepthMode.AUTOMATIC);
         boolean isGeospatialSupported =
             session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
-        Log.i(LOG_TAG, "geosaption supported ? " + isGeospatialSupported);
+        Log.i(LOG_TAG, "ARCore: geospatial supported ? " + isGeospatialSupported);
 
         if (isDepthSupported) {
             config.setDepthMode(Config.DepthMode.AUTOMATIC);
@@ -1407,10 +1445,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @Override
     public void onClear() {
         onPause();
+
+        for (ARNode node : arNodes) {
+            ((ARNodeBase)node).Anchor(null);
+            node = null;
+            node = null;
+        }
+
         if (session != null) {
             session.close();
             session = null;
         }
+
     }
 
     @Override
@@ -1801,6 +1847,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         "If this is called while tracking is not paused, then this resets and restarts tracking.  If tracking is paused " +
         "and this is called, this will reset the ARView3D once StartTracking is called again.")
     public void ResetTracking() {
+        onClear();
     }
 
     @SimpleFunction(description = "Removed DetectedPlanes and resets detection for ImageMarkers.")

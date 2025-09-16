@@ -10,6 +10,7 @@ import com.google.appinventor.components.common.ARComponentConstants;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import com.google.appinventor.components.runtime.util.CameraVectors;
 import com.google.appinventor.components.runtime.*;
 
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -69,6 +70,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   // Collision effect tracking
   private boolean isCurrentlyColliding = false;
   private static final String LOG_TAG = "SphereNode";
+
   // Enums and inner classes
   public enum DragMode {
     ROLLING,    // Rolling ball along the floor
@@ -567,7 +569,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
       Log.i("SphereNode", "Physics recreated with correct collision shape");
     } else {
-          Scale(newScale);
+      Scale(newScale);
     }
 
     Log.i("SphereNode", "Pinch scale complete: " + oldScale + " → " + newScale +
@@ -599,7 +601,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     startDrag(new PointF());
   }
 
-   @Override
+  @Override
   public void startDrag(PointF fingerLocation) {
     super.startDrag(fingerLocation);
     Log.i("SphereNode", "Starting optimized drag for " + name);
@@ -622,35 +624,37 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     dragStartAngularDamping = 0.9f;
   }
 
-  @SimpleFunction(description = "Update drag position based on finger world position")
+ /* @SimpleFunction(description = "Update drag position based on finger world position")
   public void UpdateDrag(String fingerWorldPositionStr) {
     if (!isBeingDragged) return;
 
     float[] fingerWorldPosition = parseVector3(fingerWorldPositionStr);
     updateDrag(fingerWorldPosition);
-  }
+  }*/
 
-  private void updateDrag(float[] fingerWorldPosition) {
+  @Override
+  public void updateDrag(float[] groundProjection){
     if (!isBeingDragged) return;
 
-    float[] currentPos = getCurrentPosition();
+    float[] currentAnchorPos = getCurrentPosition();
+    Log.i("SphereNode", "Current anchor pos: " + arrayToString(currentAnchorPos));
 
     if (lastFingerPosition != null) {
-      float[] movement = subtractVectors(fingerWorldPosition, lastFingerPosition);
+      float[] movement = subtractVectors(groundProjection, lastFingerPosition);
       float distance = vectorLength(movement);
 
       // Apply movement based on behavior
-      updateDragPosition(currentPos, fingerWorldPosition, movement);
+      updateDragPosition(currentAnchorPos, groundProjection, movement);
 
       // Apply visual rolling
-      applyDragRotation(movement);
+      applyRealisticRolling(movement);
 
       Log.i("SphereNode", "Applied movement: " + arrayToString(movement) + " (distance: " + distance + ")");
     } else {
-      Log.i("SphereNode", "DRAG START: Initial position " + arrayToString(fingerWorldPosition));
+      Log.i("SphereNode", "DRAG START: Initial position " + arrayToString(groundProjection));
     }
 
-    lastFingerPosition = fingerWorldPosition.clone();
+    lastFingerPosition = groundProjection.clone();
   }
 
   private void updateDragPosition(float[] currentPos, float[] targetPos, float[] movement) {
@@ -660,6 +664,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
         currentPos[1], // Maintain current Y
         targetPos[2]
     };
+    Log.i("SphereNode", "Current constrainedPos pos: " + arrayToString(constrainedPos));
 
     setCurrentPosition(constrainedPos);
 
@@ -670,7 +675,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
       float[] assistForce = multiplyVector(movement, responsiveness * forceScale);
 
       // Apply horizontal force only
-      applyForce(new float[]{assistForce[0], 0, assistForce[2]});
+      applyForce(assistForce[0], 0, assistForce[2]);
     }
   }
 
@@ -684,18 +689,18 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   }
 
   @Override
-  public void endDrag(PointF fingerVelocity, float[] finalPosition) {
+  public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
     if (!isBeingDragged) return;
 
     Log.i("SphereNode", "Ending optimized drag for " + name);
     isBeingDragged = false;
 
     // Parse release velocity
-   // PointF releaseVelocity = parsePointF(fingerVelocity);
+    // PointF releaseVelocity = parsePointF(fingerVelocity);
 
     // Apply release momentum
     if (EnablePhysics()) {
-      applyReleaseForce(fingerVelocity);
+      applyReleaseVelocity(fingerVelocity, cameraVectors);
     }
 
     // Restore physics settings
@@ -705,36 +710,94 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     restoreOriginalAppearance();
   }
 
+
+  public void applyRealisticRolling(float[] movement) {
+    // Only apply horizontal movement for rolling
+    float[] horizontalMovement = {movement[0], 0, movement[2]};
+    float distance = vectorLength(horizontalMovement);
+
+    if (distance <= 0.0001f) return;
+
+    // Physics-accurate rolling: distance = radius × angle
+    float ballRadius = radius * Scale();
+    float rollAngle = distance / ballRadius;
+
+    // Rotation axis perpendicular to movement direction
+    float[] direction = vectorNormalize(horizontalMovement);
+    float[] rollAxis = {direction[2], 0, -direction[0]}; // Perpendicular to movement
+
+    // Apply incremental rotation (simplified - would need full quaternion math for production)
+    // For now, just log the rotation for debugging
+    Log.d("SphereNode", "Rolling: distance=" + String.format("%.4f", distance) +
+        ", angle=" + String.format("%.4f", rollAngle) +
+        ", axis=(" + rollAxis[0] + ", " + rollAxis[1] + ", " + rollAxis[2] + ")");
+
+    XRotation(rollAxis[0]);
+    YRotation(rollAxis[1]);
+    ZRotation(rollAxis[2]);
+  }
+
+  /**
+   * Apply camera-aware release velocity
+   */
   @Override
-  protected void applyReleaseForce(PointF releaseVelocity) {
+  public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
     float releaseSpeed = (float) Math.sqrt(
-        releaseVelocity.x * releaseVelocity.x +
-            releaseVelocity.y * releaseVelocity.y
+        releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y
     );
 
-    Log.i("SphereNode", "Release analysis: finger velocity (" +
-        releaseVelocity.x + ", " + releaseVelocity.y + "), speed: " + releaseSpeed);
+    if (releaseSpeed <= NORMAL_ROLLING_SPEED) {
+      Log.d("SphereNode", "Release speed too low: " + releaseSpeed);
+      return;
+    }
 
-    if (releaseSpeed > 100) {
+    //debugReleaseDirection(releaseVelocity, cameraVectors);
+
+    // Use default camera vectors if none provided
+    float[] right = (cameraVectors != null) ? cameraVectors.right : new float[]{1, 0, 0};
+    float[] forward = (cameraVectors != null) ? cameraVectors.forward : new float[]{0, 0, -1};
+
+    float baseScale = 0.002f;
+
+    // CONSISTENT mapping: screen X → camera right, screen Y → camera forward
+    // Screen Y is negative because screen coordinates have Y=0 at top
+    float screenX = releaseVelocity.x * baseScale;
+    float screenY = -releaseVelocity.y * baseScale; // Flip screen Y
+    // let worldVelocity = (right * screenX) + (forward * screenY)
+    // Calculate world velocity from camera-relative movement
+    float[] worldVelocity = {
+        (right[0] * screenX) + (forward[0] * screenY),
+        0, // Keep Y velocity as is (no vertical component from horizontal drag)
+        (right[2] * screenX) + (forward[2] * screenY)
+    };
+
+    Log.d("SphereNode", "Screen: (" + releaseVelocity.x + ", " + releaseVelocity.y +
+        ") → World: (" + worldVelocity[0] + ", " + worldVelocity[1] + ", " + worldVelocity[2] + ")");
+    Log.d("SphereNode", "Camera right: (" + right[0] + ", " + right[1] + ", " + right[2] +
+        "), forward: (" + forward[0] + ", " + forward[1] + ", " + forward[2] + ")");
+
+    // Apply the world velocity as impulse, preserving any existing Y velocity
+    if (enablePhysics) {
+      // Get current Y velocity to preserve it
+      float currentYVelocity = 0;
+
+
+      // Apply behavior-modified impulse
       float behaviorMultiplier = getBehaviorMomentumMultiplier();
-      float forceScale = 2.0f * behaviorMultiplier;
 
-      float[] releaseForce = {
-          releaseVelocity.x * forceScale,
-          0,
-          releaseVelocity.y * forceScale
-      };
-
-      applyForce(releaseForce);
-      Log.i("SphereNode", "Applied release force " + arrayToString(releaseForce));
-    } else {
-      Log.i("SphereNode", "Release speed too low (" + releaseSpeed + "), no momentum applied");
+      applyForce(
+          UnitHelper.metersToCentimeters(worldVelocity[0] * behaviorMultiplier),
+          UnitHelper.metersToCentimeters(currentYVelocity), // Keep existing Y velocity
+          UnitHelper.metersToCentimeters(worldVelocity[2] * behaviorMultiplier)
+      );
     }
   }
-  private void applyForce(float[] force) {
+
+  private void applyForce(float x, float y, float z) {
     // Apply physics force - implementation depends on physics system
-    Log.i("SphereNode", "Applying force: " + arrayToString(force));
+    Log.i("SphereNode", "Applying force: " + arrayToString(new float[]{x, y, z}));
   }
+
   private float[] subtractVectors(float[] a, float[] b) {
     return new float[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
   }
@@ -752,20 +815,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     }, 100);
   }
 
-  private void applyDragRotation(float[] movement) {
-    float[] horizontalMovement = {movement[0], 0, movement[2]};
-    float distance = vectorLength(horizontalMovement);
-
-    if (distance <= 0.0001f) return;
-
-    // Realistic rolling physics
-    float ballRadius = radius * Scale();
-    float rollAngle = distance / ballRadius;
-
-    // Apply rolling rotation (simplified for Android)
-    // Implementation would depend on your rotation system
-    Log.i("SphereNode", "Rolling: distance=" + distance + ", angle=" + rollAngle);
-  }
 
   @Override
   protected void showDragEffect() {
@@ -819,10 +868,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   // MARK: - Preset Sphere Configurations
 
-
-
-
-
   // MARK: - Enhanced Physics Methods
 
   @Override
@@ -871,30 +916,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     Log.i("SphereNode", "Drag Sensitivity: " + DragSensitivity());
     Log.i("SphereNode", "Behaviors: " + getBehaviorNames());
     Log.i("SphereNode", "==========================");
-  }
-
-
-  private float[] getCurrentPosition() {
-    // Get current position from anchor or trackable
-    if (anchor != null) {
-      return anchor.getPose().getTranslation();
-    }
-    return new float[]{0, 0, 0};
-  }
-
-  private void setCurrentPosition(float[] position) {
-    // Set position via anchor system
-
-    Log.i("SphereNode", "setting position " + position);
-    if (trackable != null) {
-      float[] rotation = {0, 0, 0, 1};
-      Pose newPose = new Pose(position, rotation);
-      Anchor(trackable.createAnchor(newPose));
-    } else if (session != null) {
-      float[] rotation = {0, 0, 0, 1};
-      Pose newPose = new Pose(position, rotation);
-      Anchor(session.createAnchor(newPose));
-    }
   }
 
 
@@ -964,7 +985,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     } else {
       if (trackingState == TrackingState.TRACKING) {
         if (session != null) {
-          Log.i("SphereNode", "Moved anchor to with SESSION " + xMeters +" "  + yMeters + " " +zMeters);
+          Log.i("SphereNode", "Moved anchor to with SESSION " + xMeters + " " + yMeters + " " + zMeters);
           Anchor(session.createAnchor(newPose));
         }
       }

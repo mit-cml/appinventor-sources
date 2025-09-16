@@ -35,7 +35,10 @@ public final class AR3DFactory {
    * @author niclarke@mit.edu (Nichole I. Clarke)
    */
 
-   public interface ARNode extends FollowsMarker, Component, CanLook {
+
+
+
+  public interface ARNode extends FollowsMarker, Component, CanLook {
 
        // Properties
      int Height();
@@ -176,10 +179,9 @@ public final class AR3DFactory {
      void ObjectCollidedWithObject(ARNode otherNode);
 
      void startDrag(PointF fingerLocation);
-     void updateDrag(PointF fingerLocation, PointF fingerMovement,
-                    float[] groundProjection, float[] camera3DProjection);
-     void endDrag(PointF fingerVelocity, float[] finalPosition);
-
+     void updateDrag(float[] groundProjection);
+     void endDrag(PointF fingerVelocity, CameraVectors cameraVectors);
+     void applyReleaseVelocity(PointF fingerVelocity, CameraVectors cameraVectors);
   }
 
    public interface FollowsMarker {
