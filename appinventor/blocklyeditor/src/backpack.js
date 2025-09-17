@@ -414,7 +414,7 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
             Blockly.Events.setGroup(false);
           }
           if (lastPastedBlock) {
-            lastPastedBlock.select();
+            Blockly.common.setSelected(lastPastedBlock);
           }
         });
   }
