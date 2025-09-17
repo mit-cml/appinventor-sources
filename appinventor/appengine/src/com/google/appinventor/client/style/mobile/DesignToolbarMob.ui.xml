@@ -13,11 +13,12 @@
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
     <ai:Toolbar styleName="Ode-designerToolbar">
         <!-- Left button items -->
-        <ai:ToolbarItem name="myProjects" icon="arrow_back" align="left" styleName="ode-ProjectListButton right-spacer"
+        <ai:ToolbarItem name="myProjects" icon="arrow_back" align="left" styleName="ode-ProjectListButton DesignerBackButton"
                         tooltip="{messages.myProjectsButton}" >
             <ca:SwitchToProjectAction/>
         </ai:ToolbarItem>
-        <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName"/>
+
+        <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName" horizontalAlignment="center"/>
 
         <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false" visible="false"/>
         <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"

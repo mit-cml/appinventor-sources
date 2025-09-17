@@ -545,17 +545,6 @@ body {
     flex-shrink: 0;
   }
 
-.ode-WorkColumns {
-  overflow: auto;
-  border-top: 1px solid gray-400;
-  /*border-radius: 4px*/
-}
-
-.ode-WorkColumns > * {
-  overflow: auto;
-  border-right: 1px solid gray-400;
-}
-
 /* StatusPanel */ .ode-StatusPanel {
   color: gray-550;
   background: url(../images/toolbarBG.png) repeat;
@@ -1990,6 +1979,11 @@ display: contents;
   border-top: 1px solid gray-400;
   height: 50vh;
   /*border-radius: 4px;*/
+}
+
+.ode-WorkColumns > * {
+    overflow: auto;
+    border-right: 1px solid gray-400;
 }
 
 .ViewerBox {

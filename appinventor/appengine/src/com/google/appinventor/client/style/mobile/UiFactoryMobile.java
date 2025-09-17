@@ -4,8 +4,12 @@
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.UiStyleFactory;
+import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.youngandroid.YaNonVisibleComponentsPanel;
+import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
+import com.google.appinventor.client.style.neo.YaVisibleComponentsPanelNeo;
 import com.google.gwt.json.client.JSONObject;
 
 
@@ -31,5 +35,10 @@ public class UiFactoryMobile extends UiStyleFactory {
         return new ProjectFolderMob(json, parent, this);
     }
 
+  @Override
+  public YaVisibleComponentsPanel createSimpleVisibleComponentsPanel
+      (ProjectEditor editor, YaNonVisibleComponentsPanel nonVisPanel) {
+    return new YaVisibleComponentsPanelMobile(editor, nonVisPanel);
+  }
 
 }

@@ -19,7 +19,7 @@
                     <box:ProjectListBox width="100%" ui:field="projectListbox" styleName="ode-MobileProjectList" />
                     <mob:ProjectToolbarMob ui:field="projectToolbar" styleName="ode-BottomNavBar" />
                 </g:FlowPanel>
-                <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
+                <g:FlowPanel styleName="ode-ProjectEditor" >
                     <mob:DesignToolbarMob ui:field="designToolbar" />
                     <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
                         <box:PaletteBox width="100%" ui:field="paletteBox"  addStyleNames="ode-Hidden"/>
