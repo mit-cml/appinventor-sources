@@ -604,13 +604,13 @@ AI.Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
             block.moveBy(Blockly.common.getSelected().getRelativeToSurfaceXY().x + 110,
                 Blockly.common.getSelected().getRelativeToSurfaceXY().y + 50);
           }
-          block.select();
+          Blockly.common.setSelected(block);
         } else {
           //calculate positions relative to the view and the latest click
           var left = self.workspace_.latestClick.x;
           var top = self.workspace_.latestClick.y;
           block.moveBy(left, top);
-          block.select();
+          Blockly.common.setSelected(block);
         }
         self.workspace_.requestErrorChecking(block);
         self.hide();

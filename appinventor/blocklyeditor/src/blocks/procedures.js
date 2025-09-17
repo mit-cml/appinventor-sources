@@ -832,7 +832,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     option.callback = function() {
       var def = Blockly.Procedures.getDefinition(name, workspace);
       if (def) {
-        def.select();
+        Blockly.common.setSelected(def);
         const event = new AI.Events.WorkspaceMove(workspace.id);
         workspace.centerOnBlock(def.id);
         event.recordNew();
