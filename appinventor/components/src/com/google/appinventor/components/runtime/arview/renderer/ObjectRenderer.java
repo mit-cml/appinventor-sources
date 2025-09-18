@@ -79,15 +79,69 @@ public class ObjectRenderer {
    * @param scaleFactor A separate scaling factor to apply before the {@code modelMatrix}.
    * @see android.opengl.Matrix
    */
-  public float[] updateModelMatrix(float[] modelMatrix, float scaleFactor) {
+  public float[] updateModelMatrix(float[] modelMatrix, float scaleFactor, float[] rotation) {
+
+    float[] result = new float[16];
+    Matrix.setIdentityM(result, 0);
+    System.arraycopy(modelMatrix, 0, result, 0, 16);
+
+    // Apply visual rotation if it exists
+    //float[] rotationMatrix = new float[16];
+    //Matrix.multiplyMM(result, 0, result, 0, rotationMatrix, 0);
+    // Convert quaternion to full 4x4 rotation matrix
+    float[] rotationMatrix = new float[16];
+    quaternionToMatrix(rotation, rotationMatrix);
+    Matrix.multiplyMM(result, 0, result, 0, rotationMatrix, 0);
+
     float[] scaleMatrix = new float[16];
     Matrix.setIdentityM(scaleMatrix, 0);
     scaleMatrix[0] = scaleFactor;
     scaleMatrix[5] = scaleFactor;
     scaleMatrix[10] = scaleFactor;
-    float[] result = new float[16];
-    Matrix.multiplyMM(result, 0, modelMatrix, 0, scaleMatrix, 0);
+    Matrix.multiplyMM(result, 0, result, 0, scaleMatrix, 0);
     return result;
+  }
+
+
+  // Helper method to convert quaternion to 4x4 matrix
+  private void quaternionToMatrix(float[] quaternion, float[] matrix) {
+    float x = quaternion[0];
+    float y = quaternion[1];
+    float z = quaternion[2];
+    float w = quaternion[3];
+
+    float x2 = x + x;
+    float y2 = y + y;
+    float z2 = z + z;
+    float xx = x * x2;
+    float xy = x * y2;
+    float xz = x * z2;
+    float yy = y * y2;
+    float yz = y * z2;
+    float zz = z * z2;
+    float wx = w * x2;
+    float wy = w * y2;
+    float wz = w * z2;
+
+    matrix[0] = 1f - (yy + zz);
+    matrix[1] = xy + wz;
+    matrix[2] = xz - wy;
+    matrix[3] = 0f;
+
+    matrix[4] = xy - wz;
+    matrix[5] = 1f - (xx + zz);
+    matrix[6] = yz + wx;
+    matrix[7] = 0f;
+
+    matrix[8] = xz + wy;
+    matrix[9] = yz - wx;
+    matrix[10] = 1f - (xx + yy);
+    matrix[11] = 0f;
+
+    matrix[12] = 0f;
+    matrix[13] = 0f;
+    matrix[14] = 0f;
+    matrix[15] = 1f;
   }
 
   /**
@@ -209,7 +263,7 @@ public class ObjectRenderer {
       // Calculate matrices
       float[] anchorMatrix = new float[16];
       anchor.getPose().toMatrix(anchorMatrix, 0);
-      float[] modelMatrix = updateModelMatrix(anchorMatrix, arNode.Scale());
+      float[] modelMatrix = updateModelMatrix(anchorMatrix, arNode.Scale(), arNode.Rotation());
       float[] localModelViewMatrix = new float[16];
       float[] localModelViewProjectionMatrix = new float[16];
 

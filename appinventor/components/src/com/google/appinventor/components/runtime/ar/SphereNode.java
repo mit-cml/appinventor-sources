@@ -607,7 +607,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     Log.i("SphereNode", "Starting optimized drag for " + name);
 
     isBeingDragged = true;
-    lastFingerPosition = null;
+    //lastFingerPosition = null;
 
     // Store physics settings for restoration
     if (EnablePhysics()) {
@@ -643,15 +643,18 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
       float[] movement = subtractVectors(groundProjection, lastFingerPosition);
       float distance = vectorLength(movement);
 
+      if (distance > 0.5f) { // 50cm threshold
+        Log.w("SphereNode", "Rejecting extreme jump: " + distance + "m - using previous position");
+        return; // Skip this frame entirely
+      }
+
       // Apply movement based on behavior
       updateDragPosition(currentAnchorPos, groundProjection, movement);
 
-      // Apply visual rolling
-      applyRealisticRolling(movement);
 
       Log.i("SphereNode", "Applied movement: " + arrayToString(movement) + " (distance: " + distance + ")");
     } else {
-      Log.i("SphereNode", "DRAG START: Initial position " + arrayToString(groundProjection));
+      Log.i("SphereNode", "DRAG UPDATE: Initial position " + arrayToString(groundProjection));
     }
 
     lastFingerPosition = groundProjection.clone();
@@ -661,11 +664,12 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     // Direct position control for immediate feedback
     float[] constrainedPos = {
         targetPos[0],
-        currentPos[1], // Maintain current Y
+        currentPos[1],
         targetPos[2]
     };
     Log.i("SphereNode", "Current constrainedPos pos: " + arrayToString(constrainedPos));
 
+    applyRealisticRolling(movement);
     setCurrentPosition(constrainedPos);
 
     // Add physics assistance if enabled
@@ -695,10 +699,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     Log.i("SphereNode", "Ending optimized drag for " + name);
     isBeingDragged = false;
 
-    // Parse release velocity
-    // PointF releaseVelocity = parsePointF(fingerVelocity);
-
-    // Apply release momentum
     if (EnablePhysics()) {
       applyReleaseVelocity(fingerVelocity, cameraVectors);
     }
@@ -710,33 +710,59 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     restoreOriginalAppearance();
   }
 
-
-  public void applyRealisticRolling(float[] movement) {
-    // Only apply horizontal movement for rolling
+  private void applyRealisticRolling(float[] movement) {
     float[] horizontalMovement = {movement[0], 0, movement[2]};
     float distance = vectorLength(horizontalMovement);
 
     if (distance <= 0.0001f) return;
 
     // Physics-accurate rolling: distance = radius × angle
-    float ballRadius = radius * Scale();
+    float ballRadius = RadiusInCentimeters() * Scale();
     float rollAngle = distance / ballRadius;
 
-    // Rotation axis perpendicular to movement direction
-    float[] direction = vectorNormalize(horizontalMovement);
-    float[] rollAxis = {direction[2], 0, -direction[0]}; // Perpendicular to movement
+    // Rotation axis perpendicular to movement
+    float[] direction = normalizeVector(horizontalMovement);
+    float[] rollAxis = {direction[2], 0, -direction[0]};
 
-    // Apply incremental rotation (simplified - would need full quaternion math for production)
-    // For now, just log the rotation for debugging
-    Log.d("SphereNode", "Rolling: distance=" + String.format("%.4f", distance) +
-        ", angle=" + String.format("%.4f", rollAngle) +
-        ", axis=(" + rollAxis[0] + ", " + rollAxis[1] + ", " + rollAxis[2] + ")");
+    // Apply incremental rotation
+    float[] rollRotation = createQuaternionFromAxisAngle(rollAxis, rollAngle);
+    rotation = Anchor().getPose().getRotationQuaternion();
 
-    XRotation(rollAxis[0]);
-    YRotation(rollAxis[1]);
-    ZRotation(rollAxis[2]);
+    Log.d("SphereNode", String.format("Rolling: distance=%.4f, angle=%.4f, axis=%s",
+        distance, rollAngle, arrayToString(rollAxis)));
+    rotation = multiplyQuaternions(rollRotation, rotation);
+
+
   }
 
+
+  private float[] normalizeVector(float[] vector) {
+    float length = vectorLength(vector);
+    if (length == 0) return new float[]{0, 0, 0};
+    return new float[]{vector[0] / length, vector[1] / length, vector[2] / length};
+  }
+
+  private float[] createQuaternionFromAxisAngle(float[] axis, float angle) {
+    float halfAngle = angle * 0.5f;
+    float sin = (float) Math.sin(halfAngle);
+    float cos = (float) Math.cos(halfAngle);
+
+    return new float[]{
+        axis[0] * sin,  // x
+        axis[1] * sin,  // y
+        axis[2] * sin,  // z
+        cos             // w
+    };
+  }
+
+  private float[] multiplyQuaternions(float[] q1, float[] q2) {
+    return new float[]{
+        q1[3] * q2[0] + q1[0] * q2[3] + q1[1] * q2[2] - q1[2] * q2[1], // x
+        q1[3] * q2[1] - q1[0] * q2[2] + q1[1] * q2[3] + q1[2] * q2[0], // y
+        q1[3] * q2[2] + q1[0] * q2[1] - q1[1] * q2[0] + q1[2] * q2[3], // z
+        q1[3] * q2[3] - q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2]  // w
+    };
+  }
   /**
    * Apply camera-aware release velocity
    */

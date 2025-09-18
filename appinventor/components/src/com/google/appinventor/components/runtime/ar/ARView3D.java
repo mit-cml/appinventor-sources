@@ -188,7 +188,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final float[] lastViewMatrix = new float[16];
     private final float[] lastProjMatrix = new float[16];
 
-    private float GROUND_LEVEL = 0.0f;
+    private float GROUND_LEVEL = 1.0f;
     private boolean groundDetected = false;
     private float lastPhysicsUpdateTime = 0.0f;
 
@@ -319,10 +319,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 if (currentlyDraggedNode != null) {
                     Log.i(LOG_TAG, "Processing scroll for drag movement");
                     PointF fingerLocation = new PointF(e2.getX(), e2.getY());
+                    PointF fingerMovement = new PointF(-distanceX, -distanceY);
                     float[] groundProjection = getProjectionForNode(
                         currentlyDraggedNode,
                         fingerLocation,
-                        new PointF(0, 0),
+                        fingerMovement,
                         "changed"
                     );
 
@@ -554,7 +555,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.d(LOG_TAG, "Drawing virtualSceneFramebuffer texture " + virtualSceneFramebuffer.getColorTexture().getTextureId() +
             " to framebuffer " + virtualSceneFramebuffer.getFramebufferId());
 
-        updatePhysics();
+       // updatePhysics();
 
         objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, null); //virtualSceneFramebuffer);
     }
@@ -695,10 +696,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void updatePhysics() {
         float currentTime = System.currentTimeMillis();
         float deltaTime = (currentTime - lastPhysicsUpdateTime) / 1000.0f;
+        deltaTime = Math.max(deltaTime, 1.0f / 60.0f); //
         lastPhysicsUpdateTime = currentTime;
-
-        // Cap delta time
-        deltaTime = Math.min(deltaTime, 1.0f / 30.0f);
 
         // Update each node's physics
         for (ARNode node : arNodes) {
@@ -1122,6 +1121,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private float[] getProjectionForNode(ARNode node, PointF fingerLocation,
                                          PointF fingerMovement, String gesturePhase) {
         try {
+
+            // ALWAYS use incremental movement during drag - avoid hit testing chaos
+            if ("changed".equals(gesturePhase) && node.Anchor() != null) {
+                Log.i(LOG_TAG, "Using stable incremental movement during drag");
+                return projectFingerIncrementally(
+                    node.Anchor().getPose().getTranslation(),
+                    fingerMovement
+                );
+            }
+
+
             List<HitResult> hitResults = lastFrame.hitTest(fingerLocation.x, fingerLocation.y);
             Log.i(LOG_TAG, "Hit test found " + hitResults.size() + " results");
             for (HitResult hit : hitResults) {
@@ -1145,13 +1155,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 return adjustPositionForNodeType(node, position);
             }
 
-            if (node.Anchor() != null) {
-                Log.i(LOG_TAG, "no plane or placement we can use, Using incremental movement");
-                return projectFingerIncrementally(
-                    node.Anchor().getPose().getTranslation(),
-                    fingerMovement
-                );
-            }
 
 
         } catch (Exception e) {
@@ -1168,35 +1171,38 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return null;
     }
 
-
     private float[] projectFingerIncrementally(float[] currentPos, PointF fingerMovement) {
+        Log.d(LOG_TAG, "projectFingerIncrementally: fingerMovement=(" + fingerMovement.x + ", " + fingerMovement.y + ")");
+
         if (lastCamera == null) {
-            // Basic fallback
+            Log.w(LOG_TAG, "lastCamera is null - using basic fallback");
             float scale = 0.002f;
             return new float[]{
                 currentPos[0] + fingerMovement.x * scale,
                 currentPos[1],
-                currentPos[2] //+ fingerMovement.y * scale
+                currentPos[2]
             };
         }
 
         try {
-            // Get camera transform (matching iOS logic)
+            // Get camera transform
             float[] cameraMatrix = new float[16];
             lastCamera.getPose().toMatrix(cameraMatrix, 0);
 
-            // Extract camera forward vector (ignoring Y for ground movement)
+            // Extract camera forward vector
             float[] cameraForward = {
                 -cameraMatrix[8], 0, -cameraMatrix[10]
             };
             float cameraYaw = (float) Math.atan2(cameraForward[0], cameraForward[2]);
 
-            // Scale movement based on distance (matching iOS)
+            // Scale movement based on distance
             float[] cameraPos = lastCamera.getPose().getTranslation();
             float distance = vectorDistance(currentPos, cameraPos);
             float scale = 0.004f * Math.max(distance * 0.5f, 0.5f);
 
-            // Apply camera rotation to movement (this is what was missing!)
+            Log.d(LOG_TAG, "Camera distance: " + distance + ", scale: " + scale + ", cameraYaw: " + cameraYaw);
+
+            // Apply camera rotation to movement
             float fingerX = -fingerMovement.x * scale;
             float fingerZ = -fingerMovement.y * scale;
 
@@ -1204,13 +1210,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             float rotatedZ = fingerX * (float) Math.sin(-cameraYaw) + fingerZ * (float) Math.cos(-cameraYaw);
 
             float newZ = currentPos[2] + rotatedZ;
-            newZ = Math.max(-4.0f, Math.min(-1.0f, newZ)); // Keep between 1-4 meters
+            newZ = Math.max(-4.0f, Math.min(-1.0f, newZ));
 
-            return new float[]{
+            float[] result = new float[]{
                 currentPos[0] + rotatedX,
-                currentPos[1], // Maintain current Y during drag
-               newZ
+                currentPos[1],
+                newZ
             };
+
+            Log.d(LOG_TAG, "Calculated movement: (" + rotatedX + ", 0, " + rotatedZ + ")");
+            Log.d(LOG_TAG, "New position: (" + result[0] + ", " + result[1] + ", " + result[2] + ")");
+
+            return result;
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error in incremental projection", e);

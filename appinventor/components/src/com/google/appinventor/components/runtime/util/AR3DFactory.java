@@ -144,6 +144,9 @@ public final class AR3DFactory {
      float ZRotation();
      void ZRotation(float zRotation);
 
+     float[] Rotation();
+     void Rotation(String r);
+
      float Scale();
      void Scale(float scalar);
 
