@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="blacklistentries" type="blacklistentries-Type"/>
+
+  <xs:complexType name="blacklistentries-Type">
+    <xs:sequence>
+      <xs:element type="blacklist-Type" name="blacklist" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="blacklist-Type">
+    <xs:all>
+      <xs:element type="xs:string" name="subnet"/>
+      <xs:element type="xs:string" name="description" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+</xs:schema>
