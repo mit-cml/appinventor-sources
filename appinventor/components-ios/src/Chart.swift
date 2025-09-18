@@ -257,6 +257,15 @@ import DGCharts
                                   arguments: series, x, y as AnyObject)
   }
 
+  // MARK: Chart methods
+
+  @objc open func ResetAxes() {
+    if let chartView = _chartView as? AxisChartView {
+      chartView.resetAxes()
+      refresh()
+    }
+  }
+
   @objc open func SetDomain(_ minimum: Double, _ maximum: Double) {
     self.XFromZero = minimum == 0.0
   }

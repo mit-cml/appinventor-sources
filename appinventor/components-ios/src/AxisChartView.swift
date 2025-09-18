@@ -86,6 +86,14 @@ open class AxisChartView : ChartView {
     self.axisLabels = labels
   }
 
+  public func resetAxes() {
+    chart?.xAxis.resetCustomAxisMin()
+    chart?.xAxis.resetCustomAxisMax()
+    (chart as? BarLineChartViewBase)?.leftAxis.resetCustomAxisMin()
+    (chart as? BarLineChartViewBase)?.leftAxis.resetCustomAxisMax()
+    chart?.setNeedsDisplay()
+  }
+
   public class AppInventorValueFormatter : AxisValueFormatter {
     unowned var _chartView: BarLineChartViewBase
     var _axisLabels: Array<String>
