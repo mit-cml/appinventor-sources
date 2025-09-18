@@ -713,7 +713,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   private void applyRealisticRolling(float[] movement) {
     float[] horizontalMovement = {movement[0], 0, movement[2]};
     float distance = vectorLength(horizontalMovement);
-
+    Log.d("SphereNode", "Going to roll: " + arrayToString(rotation));
     if (distance <= 0.0001f) return;
 
     // Physics-accurate rolling: distance = radius × angle
@@ -726,11 +726,11 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
     // Apply incremental rotation
     float[] rollRotation = createQuaternionFromAxisAngle(rollAxis, rollAngle);
-    rotation = Anchor().getPose().getRotationQuaternion();
 
-    Log.d("SphereNode", String.format("Rolling: distance=%.4f, angle=%.4f, axis=%s",
-        distance, rollAngle, arrayToString(rollAxis)));
+    Log.d("SphereNode", "Before rolling: " + arrayToString(rotation));
     rotation = multiplyQuaternions(rollRotation, rotation);
+    Log.d("SphereNode", "After rolling: " + arrayToString(rotation));;
+
 
 
   }
