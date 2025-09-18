@@ -401,7 +401,8 @@ public class LinearView: UIView {
     } else {
       length.constraint = view.widthAnchor.constraint(equalToConstant: length.cgFloat)
     }
-    length.constraint?.isActive = true
+    let shouldActivate = self.superview != nil
+    length.constraint?.isActive = shouldActivate
     widthConstraints[view] = length
     invalidateIntrinsicContentSize()
   }
@@ -458,7 +459,8 @@ public class LinearView: UIView {
     } else {
       length.constraint = view.heightAnchor.constraint(equalToConstant: length.cgFloat)
     }
-    length.constraint?.isActive = true
+    let shouldActivate = self.superview != nil
+    length.constraint?.isActive = shouldActivate
     heightConstraints[view] = length
     invalidateIntrinsicContentSize()
   }
