@@ -5,7 +5,7 @@
 
 package com.google.appinventor.client.style.mobile;
 
-import com.google.appinventor.client.Images;
+import com.google.appinventor.client.style.neo.ImagesNeo;
 
-public interface ImagesMobile extends  Images{
+public interface ImagesMobile extends ImagesNeo {
 }
