@@ -14,6 +14,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel.BlocklyWorkspaceChangeListener;
@@ -134,6 +135,8 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     // Listen for selection events for built-in drawers
     BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
 
+    Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+    BlockSelectorBox.getBlockSelectorBox().setVisible(false);
     designer = (T) projectEditor.getFileEditor(blocksNode.getEntityName(), DesignerEditor.EDITOR_TYPE);
     formToBlocksEditor.put(entityName, this);
   }
@@ -621,11 +624,10 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
       // come back to it.
       updateBlocksTree(root, null);
 
-      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()
-          .getWidget(2));
+      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets());
       Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);
-      Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
-      BlockSelectorBox.getBlockSelectorBox().setVisible(true);
+      SourceStructureBox.getSourceStructureBox().setVisible(false);
+      BlockSelectorBox.getBlockSelectorBox().setVisible(!"mobile".equals(Ode.getInstance().getLayoutType()));
       AssetListBox.getAssetListBox().setVisible(true);
       blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled());
       hideBlocksDrawer();
@@ -642,9 +644,9 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     paletteBox.clear();
     paletteBox.setVisible(true);
 
-    Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets().getWidget(0));
-    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
-    Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+    Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets());
+    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 2);
+    SourceStructureBox.getSourceStructureBox().setVisible(true);
     BlockSelectorBox.getBlockSelectorBox().setVisible(false);
     AssetListBox.getAssetListBox().setVisible(true);
 

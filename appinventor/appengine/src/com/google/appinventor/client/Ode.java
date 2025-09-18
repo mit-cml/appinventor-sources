@@ -13,12 +13,7 @@ import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
 import static com.google.appinventor.client.wizards.TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY;
 
-import com.google.appinventor.client.boxes.AssetListBox;
-import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
-import com.google.appinventor.client.boxes.SourceStructureBox;
-import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.boxes.*;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
@@ -40,10 +35,9 @@ import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.local.LocalProjectService;
-import com.google.appinventor.client.local.LocalTokenAuthService;
-import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
+import com.google.appinventor.client.style.mobile.*;
 import com.google.appinventor.client.style.neo.ImagesNeo;
 import com.google.appinventor.client.style.neo.DarkModeImagesNeo;
 import com.google.appinventor.client.style.neo.UiFactoryNeo;
@@ -231,6 +225,9 @@ public class Ode implements EntryPoint {
   @UiField protected TopPanel topPanel;
   @UiField protected StatusPanel statusPanel;
   @UiField protected FlowPanel workColumns;
+  @UiField protected MobileSidebar mobileSideBar;
+  @UiField protected DesignTabBarMob designTabBar;
+  @UiField protected BlockTabBarMob blockTabBar;
   @UiField protected FlowPanel structureAndAssets;
   @UiField protected ProjectToolbar projectToolbar;
   @UiField (provided = true) protected ProjectListBox projectListbox;
@@ -243,6 +240,7 @@ public class Ode implements EntryPoint {
 
   // mode
   @UiField(provided = true) static Resources.Style style;
+
 
   // Is the tutorial toolbar currently displayed?
   private boolean tutorialVisible = false;
@@ -659,6 +657,8 @@ public class Ode implements EntryPoint {
     getTopToolbar().updateFileMenuButtons(1);
   }
 
+  private String currentLayout;
+
   /**
    * Returns i18n compatible messages
    * @return messages
@@ -769,7 +769,15 @@ public class Ode implements EntryPoint {
         ))
         .then0(this::handleUiPreference)
         .then(this::initializeUi)
-        .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
+            .then0(() -> {
+              Window.addResizeHandler(event -> {
+                String newLayout = determineLayout();
+                if (!newLayout.equals(currentLayout)) {
+                  Window.Location.reload();
+                }
+              });
+              return projectManager.ensureProjectsLoadedFromServer(projectService);
+            })
         .then(projects -> {
           folderManager.loadFolders();
           ProjectListBox.getProjectListBox().getProjectList().onProjectsLoaded();
@@ -930,9 +938,24 @@ public class Ode implements EntryPoint {
 
   private Promise<Void> handleUiPreference() {
     return new Promise<>((ResolveCallback<Void> res, RejectCallback rej) -> {
-      useNeoStyle = Ode.getUserNewLayout();
-      useDarkMode = Ode.getUserDarkThemeEnabled();
-      if (useNeoStyle) {
+
+      String layout = determineLayout();
+      if (layout.equals("mobile")) {
+        GWT.runAsync(new RunAsyncCallback() {
+
+          @Override
+          public void onFailure(Throwable reason) {
+            rej.apply(new Promise.WrappedException(reason));
+          }
+          @Override
+          public void onSuccess() {
+            IMAGES = GWT.create(ImagesMobile.class);
+            RootPanel.get().addStyleName("mobile");
+            uiFactory = new UiFactoryMobile();
+            res.apply(null);
+          }
+        });
+      }else if (layout.equals("modern")) {
         GWT.runAsync(new RunAsyncCallback() {
           @Override
           public void onFailure(Throwable reason) {
@@ -974,7 +997,9 @@ public class Ode implements EntryPoint {
     });
   }
 
-  /*
+
+
+    /*
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
@@ -1012,28 +1037,26 @@ public class Ode implements EntryPoint {
       }
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
-
     // TODO: Tidy up user preference variable
     projectListbox = ProjectListBox.create(uiFactory);
-    String layout;
-    if (Ode.getUserNewLayout()) {
-      layout = "modern";
-      if (Ode.getUserDarkThemeEnabled()) {
-        style = Resources.INSTANCE.stylemodernDark();
-      } else {
-        style = Resources.INSTANCE.stylemodernLight();
-      }
+    String layout = determineLayout();
+    currentLayout = layout;
+    LOG.info("Current layout: " + currentLayout);
+    Resources.Style style;
+    if (layout.equals("mobile")) {
+      style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.stylemobileDark() : Resources.INSTANCE.stylemobileLight();
+    } else if (layout.equals("modern")) {
+      style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.stylemodernDark() : Resources.INSTANCE.stylemodernLight();
     } else {
-      layout = "classic";
-      if (Ode.getUserDarkThemeEnabled()) {
-        style = Resources.INSTANCE.styleclassicDark();
-      } else {
-        style = Resources.INSTANCE.styleclassicLight();
-      }
+      style = Ode.getUserDarkThemeEnabled() ? Resources.INSTANCE.styleclassicDark() : Resources.INSTANCE.styleclassicLight();
     }
 
+    Ode.style = style;
     style.ensureInjected();
     FlowPanel mainPanel = uiFactory.createOde(this, layout);
+
+    designTabBar.setSidebar(mobileSideBar);
+    blockTabBar.setSidebar(mobileSideBar);
 
     deckPanel.showWidget(0);
 
@@ -1091,6 +1114,7 @@ public class Ode implements EntryPoint {
 
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
+    TopToolbarMob.showUserEmail(user.getUserEmail());
     if ((mayNeedSplash || shouldShowWelcomeDialog()) && !didShowSplash) {
       showSplashScreens();
     }
@@ -1432,6 +1456,39 @@ public class Ode implements EntryPoint {
             .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
     return Boolean.parseBoolean(value);
     // return true;
+  }
+
+  /**
+   * Determines the mobile layout based on the current screen width.
+   */
+  private String determineLayout() {
+    int screenWidth = Window.getClientWidth();
+
+    if (screenWidth <= 768) {
+      return "mobile";
+    }
+    else if (screenWidth <= 1024 && isMobileDevice() && isLandscape()) {
+      return "mobile";
+    }
+    else if (Ode.getUserNewLayout()) {
+      return "modern";
+    } else {
+      return "classic";
+    }
+  }
+
+  private boolean isMobileDevice() {
+    String ua = Window.Navigator.getUserAgent().toLowerCase();
+    return ua.contains("iphone") || ua.contains("ipod") ||
+            (ua.contains("android") && ua.contains("mobile"));
+  }
+
+  private boolean isLandscape() {
+    return Window.getClientWidth() > Window.getClientHeight();
+  }
+
+  public String getLayoutType() {
+    return determineLayout();
   }
 
   /**
@@ -2685,6 +2742,19 @@ public class Ode implements EntryPoint {
     }
   }-*/;
 
+  public DesignTabBarMob getDesignTabBar() {
+    return designTabBar;
+  }
+
+  public BlockTabBarMob getBlockTabBar() {
+    return blockTabBar;
+  }
+
+  public MobileSidebar getmobileSideBar() {
+    return mobileSideBar;
+  }
+
+
   public interface Resources extends ClientBundle {
 
     public static final Resources INSTANCE =  GWT.create(Resources.class);
@@ -2712,6 +2782,18 @@ public class Ode implements EntryPoint {
       "com/google/appinventor/client/style/neo/neo.css"
     })
     Style stylemodernDark();
+
+    @Source({
+      "com/google/appinventor/client/style/mobile/mobileDark.css",
+      "com/google/appinventor/client/style/mobile/mobile.css"
+    })
+    Style stylemobileDark();
+
+    @Source({
+      "com/google/appinventor/client/style/mobile/mobileLight.css",
+      "com/google/appinventor/client/style/mobile/mobile.css"
+    })
+    Style stylemobileLight();
 
     public interface Style extends CssResource {
     }

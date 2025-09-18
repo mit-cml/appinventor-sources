@@ -10,6 +10,12 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.BlockSelectorBox;
+import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
+import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
 import com.google.appinventor.client.editor.blocks.BlocksCategory;
 import com.google.appinventor.client.editor.blocks.BlocksCodeGenerationException;
@@ -98,12 +104,12 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
     sendComponentData();  // Send Blockly the component information for generating Yail
   }
 
+
   @Override
   public void onClose() {
     super.onClose();
     project.removeProjectChangeListener(this);
   }
-
 
   @Override
   public String getEntityName() {

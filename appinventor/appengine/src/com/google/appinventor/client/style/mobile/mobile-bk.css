@@ -1,0 +1,1394 @@
+/*Copyright 2025 MIT, All rights reserved*/
+/* Released under the Apache License, Version 2.0*/
+/* http://www.apache.org/licenses/LICENSE-2.0*/
+
+@external .*;
+
+body, html {
+    min-width: unset;
+    min-height: unset;
+}
+
+/*Top -Panel*/
+.ode-TopPanel {
+    height: 60px;
+    padding: 8px;
+    overflow: hidden;
+    box-shadow: 4px 4px 24px 0px rgba(0, 0, 0, 0.15);
+}
+
+.ode-TopPanel img {
+    height: 40px;
+    width: 290px;
+    margin-left: -75px;
+}
+
+.ode-TopPanelButton
+ {
+    height: 50px;
+    font-size: 16px;
+    padding: 0;
+    float: right;
+}
+
+.ode-TopPanelButton .material-icons {
+    font-size: xxx-large;
+}
+
+.ode-TopPanelAccount {
+    padding-right: 0;
+}
+
+.ode-TopToolbar .left {
+    float: left;
+    flex-direction: column;
+    display: flex;
+    gap: 4px;
+}
+
+.ode-TopToolbar .center {
+    flex-direction: column;
+    display: flex;
+    gap: 4px;
+}
+
+.ode-TopToolbar .right {
+    float: right;
+    flex-direction: column;
+    display: flex;
+    gap: 4px;
+}
+
+
+/*Pop-Up Panel*/
+
+.mobile-MenuContainer {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 320px;
+    max-height: 80vh;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.mobile-SectionHeader {
+    font-weight: bold;
+    margin: 10px 0 5px;
+}
+.mobile-SectionPanel {
+    margin-bottom: 10px;
+}
+
+.mobile-MenuItem,
+.mobile-SectionPanel .ode-TextButton {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin: 5px 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+.ode-Box-projectlist {
+    flex-grow: 1;
+    flex-shrink: 0;
+    height: 40px;
+    overflow: hidden;
+}
+
+.ode-Box-toolkit {
+    /*all: unset;*/
+}
+
+.ode-Box-body {
+}
+
+.ode-BoxResizeControl {
+    background-color: darkgray !important;
+}
+
+.ode-Box-projectlist {
+    flex-grow: 1;
+    flex-shrink: 0;
+    height: 40px;
+    overflow: hidden;
+}
+
+.ode-ProjectTable {
+    /*all: unset;*/
+    border: 1px solid gray-300;
+    border-radius: 4px;
+    overflow: auto;
+    height: auto;
+    width: auto;
+}
+
+.ode-ProjectCheckBox {
+    padding-right: 5px;
+    padding-left: 20px;
+    align-self: center;
+}
+
+.ode-ProjectHeaderLabel {
+    /*display: flex;*/
+    /* all: unset; */
+    align-items: center;
+    height: 40px;
+    display: inline-flex;
+    font-size: unset !important;
+    color: gray-900;
+}
+
+.ode-ProjectListName {
+    min-width: unset;
+    white-space: nowrap;
+    width: max-content;
+    height: 40px;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.ode-ProjectListDate {
+    width: 200px;
+}
+
+.ode-ProjectRowList {
+    display: contents;
+}
+
+.ode-Project-FlexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/*ProjectList sortDropDown---------------*/
+
+.ode-ProjectTable {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ode-ProjectHeaderRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ode-ProjectHeaderRow .ode-ProjectCheckBox {
+    flex-shrink: 0;
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.ode-NameFocusPanel {
+    flex: 1;
+    min-width: 0;
+    margin-right: 16px;
+    outline: none !important;
+}
+
+.ode-ProjectListName {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 40px;
+}
+
+.ode-ProjectListName .gwt-Label {
+    font-weight: 600;
+    font-size: 16px;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
+}
+
+.ode-ProjectListName .gwt-InlineLabel {
+    font-size: 14px;
+    color: #6c757d;
+    flex-shrink: 0;
+}
+
+.ode-SortDropdown {
+    flex-shrink: 0;
+    background: #fff;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.15);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 22px;
+    margin-right: 10px;
+}
+
+.ode-SortDropdown:hover {
+    background: #007bff;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.25);
+}
+
+.ode-SortDropdown .material-icons {
+    font-size: 20px;
+    color: inherit;
+}
+
+.ode-CreateDateFocusPanel,
+.ode-ModifiedDateFocusPanel {
+    display: none !important;
+}
+
+.ode-ProjectRowList {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+.ode-Project-FlexColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: #f8f9fa;
+}
+
+@media (max-width: 320px) {
+    .ode-ProjectHeaderRow {
+        padding: 0 8px;
+        height: 52px;
+    }
+
+    .ode-ProjectCheckBox {
+        margin-right: 8px;
+    }
+
+    .ode-ProjectListName .gwt-Label {
+        font-size: 14px;
+    }
+
+    .ode-SortDropdown {
+        min-width: 44px;
+        height: 36px;
+        padding: 6px 10px;
+    }
+
+    .ode-SortDropdown .material-icons {
+        font-size: 18px;
+    }
+}
+
+.ode-NameFocusPanel:focus,
+.ode-SortDropdown:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.ode-ProjectHeaderRow * {
+    transition: all 0.2s ease;
+}
+
+.ode-ProjectHeaderRow {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+
+/*ProjectListItem*/
+
+.ode-ProjectItemMobile {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin: 8px 0;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.ode-ProjectItemMobile:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #007bff;
+}
+
+.ode-ProjectItemContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.ode-ProjectItemLeft {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.ode-ProjectItemRight {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.ode-ProjectItemMobile .ode-ProjectCheckBox {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.ode-ProjectItemMobile .ode-ProjectNameFocusPanel {
+    flex: 1;
+    min-width: 0;
+    outline: none;
+}
+
+.ode-ProjectItemMobile .ode-ProjectNameLabel {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.ode-ProjectDateDropdown {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    min-width: 48px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ode-ProjectDateDropdown:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+.ode-ProjectDateDropdown .material-icons {
+    font-size: 20px;
+    color: #6c757d;
+}
+
+/* Highlighted state */
+.ode-ProjectRowHighlighted.ode-ProjectItemMobile {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 320px) {
+    .ode-ProjectItemMobile {
+        padding: 12px;
+        margin: 6px 0;
+    }
+
+    .ode-ProjectItemMobile .ode-ProjectNameLabel {
+        font-size: 14px;
+    }
+
+    .ode-ProjectDateDropdown {
+        min-width: 44px;
+        height: 36px;
+        padding: 6px 10px;
+    }
+}
+
+/*ProjectFolderMob-----------------*/
+
+.ode-ProjectTable {
+    border: 1px solid #dee2e6;
+}
+
+.ode-ProjectHeaderRow {
+    border-bottom: 1px solid #dee2e6;
+    background: #ffffff;
+}
+
+.ode-ProjectHeaderLabel {
+    color: #212529;
+}
+
+.ode-ProjectFolderMobile {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin: 8px 0;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.ode-ProjectFolderMobile:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #007bff;
+}
+
+.ode-FolderNameContainer {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+}
+
+.ode-FolderIcon {
+    color: #ffc107;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+
+.ode-ExpandIcon {
+    transition: transform 0.25s ease;
+    transform-origin: center;
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.ode-ProjectRowExpanded .ode-ExpandIcon {
+    transform: rotate(90deg);
+}
+
+.ode-ProjectFolderMobile .ode-ProjectNameLabel {
+    font-weight: 600;
+    font-size: 16px;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+}
+
+.ode-ProjectRowExpanded {
+    border-color: #28a745;
+    background: #f8fff9;
+}
+
+.ode-ProjectRowExpanded .ode-FolderIcon {
+    color: #28a745;
+}
+
+.ode-ProjectFolderList {
+    margin-left: 20px;
+    margin-top: 12px;
+    border-left: 2px solid #e9ecef;
+    padding-left: 16px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(90deg, rgba(0, 123, 255, 0.02) 0%, transparent 30%);
+}
+
+.ode-ProjectFolderList.ode-ProjectRowHidden {
+    display: none;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile,
+.ode-ProjectFolderList .ode-ProjectItem {
+    background: #f8f9ff !important;
+    border: 1px solid #e0e6ff !important;
+    border-left: 3px solid #007bff !important;
+    border-radius: 8px 12px 12px 8px !important;
+    margin: 6px 0 !important;
+    padding: 14px 16px !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.2s ease !important;
+    position: relative;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile:hover,
+.ode-ProjectFolderList .ode-ProjectItem:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12) !important;
+    border-color: #0056b3 !important;
+    transform: translateX(2px);
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile::before,
+.ode-ProjectFolderList .ode-ProjectItem::before {
+    content: '';
+    position: absolute;
+    left: -19px;
+    top: 50%;
+    width: 12px;
+    height: 1px;
+    background: #dee2e6;
+    transform: translateY(-50%);
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectItemContent,
+.ode-ProjectFolderList .ode-ProjectItem {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectItemLeft {
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectItemRight {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    margin-left: 12px !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectCheckBox,
+.ode-ProjectFolderList .ode-ProjectItem .ode-ProjectCheckBox {
+    margin-right: 12px !important;
+    transform: scale(1.1) !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectNameLabel,
+.ode-ProjectFolderList .ode-ProjectItem .ode-ProjectNameLabel {
+    font-weight: 500 !important;
+    font-size: 15px !important;
+    color: #495057 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectDateDropdown {
+    background: #e3f2fd !important;
+    border: 1px solid #bbdefb !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    min-width: 48px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectDateDropdown:hover {
+    background: #2196f3 !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3) !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectDateDropdown .material-icons {
+    font-size: 18px !important;
+    color: inherit !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectRowHighlighted.ode-ProjectItemMobile,
+.ode-ProjectFolderList .ode-ProjectRowHighlighted {
+    background: #fff3cd !important;
+    border-color: #ffc107 !important;
+}
+
+.ode-ProjectFolderList .ode-ProjectNameFocusPanel:focus {
+    outline: 2px solid #007bff !important;
+    outline-offset: 2px !important;
+    border-radius: 4px !important;
+}
+
+.ode-ProjectFolderList::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #007bff 0%, #28a745 100%);
+    opacity: 0.6;
+}
+
+@media (max-width: 320px) {
+    .ode-ProjectFolderMobile {
+        padding: 12px;
+        margin: 6px 0;
+    }
+
+    .ode-ProjectFolderMobile .ode-ProjectNameLabel {
+        font-size: 14px;
+    }
+
+    .ode-FolderNameContainer {
+        gap: 6px;
+    }
+
+    .ode-FolderIcon {
+        font-size: 18px;
+    }
+
+    .ode-ExpandIcon {
+        font-size: 16px;
+    }
+
+    .ode-ProjectFolderList {
+        margin-left: 16px;
+        padding-left: 12px;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectItemMobile,
+    .ode-ProjectFolderList .ode-ProjectItem {
+        padding: 12px 14px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectItemMobile .ode-ProjectNameLabel,
+    .ode-ProjectFolderList .ode-ProjectItem .ode-ProjectNameLabel {
+        font-size: 14px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectDateDropdown {
+        min-width: 42px !important;
+        height: 32px !important;
+        padding: 6px 10px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectDateDropdown .material-icons {
+        font-size: 16px !important;
+    }
+}
+
+.ode-ProjectFolderList {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-contrast: high) {
+    .ode-ProjectFolderList .ode-ProjectItemMobile,
+    .ode-ProjectFolderList .ode-ProjectItem {
+        border-width: 2px !important;
+    }
+
+    .ode-ProjectFolderList .ode-ProjectDateDropdown {
+        border-width: 2px !important;
+    }
+}
+
+/* Mobile Root Layout */
+.ode-MobileRoot {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important;
+    position: relative !important;
+}
+
+.ode-MainContent {
+    flex: 1 !important;
+    padding-bottom: 80px !important;
+    overflow-y: auto !important;
+}
+
+/* Bottom Navigation Bar */
+.ode-BottomNavBar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border-top: 1px solid #e9ecef !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    height: 80px !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ode-BottomNavBar > * > *  {
+    display: flex;
+    width: 65px;
+    height: 60px;
+    padding: 10px 0px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    background: #FFF;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.15);
+}
+
+  .ode-BottomNavBar .left,
+  .ode-BottomNavBar .center,
+  .ode-BottomNavBar .right {
+      display: none;
+  }
+
+  .ode-BottomNavBar .center {
+      display: flex;
+      justify-content: space-around;
+  }
+
+.ode-designer-action-button {
+    background: #007bff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+    transition: all 0.2s ease !important;
+    color: white !important;
+    min-width: 8px !important;
+    height: 40px !important;
+}
+
+.ode-designer-action-button:hover {
+    background: #0056b3 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+}
+
+.ode-designer-action-button .material-icons {
+    font-size: 20px !important;
+    color: white !important;
+}
+
+/* Mobile dropdown menu styling */
+.ode-designer-action-button .gwt-MenuBar {
+    background: white !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 0 !important;
+    min-width: 200px !important;
+    max-width: 280px !important;
+}
+
+.ode-designer-action-button .gwt-MenuItem {
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    color: #333 !important;
+    border-bottom: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.ode-designer-action-button .gwt-MenuItem:hover {
+    background: #f8f9fa !important;
+    color: #007bff !important;
+}
+
+.ode-designer-action-button .gwt-MenuItem-disabled {
+    color: #ccc !important;
+    background: transparent !important;
+}
+
+/* Separator styling */
+.ode-designer-action-button .gwt-MenuItem[data-name$="Separator"] {
+    padding: 4px 16px !important;
+    color: #ccc !important;
+    font-size: 12px !important;
+    pointer-events: none !important;
+    text-align: center !important;
+}
+
+/* Screen items styling */
+.ode-designer-action-button .gwt-MenuItem[data-name^="Screen_"] {
+    padding-left: 32px !important;
+    font-style: italic !important;
+    background: #f8f9ff !important;
+}
+
+.ode-designer-action-button .gwt-MenuItem[data-name^="Screen_"]:hover {
+    background: #e3f2fd !important;
+}
+
+@media (max-width: 320px) {
+    .ode-designer-action-button {
+        min-width: 44px !important;
+        height: 36px !important;
+        padding: 6px 10px !important;
+    }
+
+    .ode-designer-action-button .material-icons {
+        font-size: 18px !important;
+    }
+
+    .ode-designer-action-button .gwt-MenuBar {
+        min-width: 180px !important;
+        max-width: 260px !important;
+    }
+
+    .ode-designer-action-button .gwt-MenuItem {
+        padding: 10px 14px !important;
+        font-size: 13px !important;
+    }
+}
+
+.mobile-designer-popup {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 100vw;
+    box-sizing: border-box;
+
+}
+
+.ya-Toolbar .left {
+    min-width: 100px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    /*gap: 8px;*/
+}
+
+.mobile-designer-button {
+    border: solid greenyellow 5px;
+}
+
+/* DesignerToolbarMob - Button-style dropdown items - contained within parent */
+.mobile-dropdown-button {
+    display: block !important;
+    width: calc(100% - 8px) !important;
+    max-width: calc(100% - 8px) !important;
+    padding: 10px 12px !important;
+    margin: 3px 4px !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 6px !important;
+    color: #495057 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+}
+
+.mobile-dropdown-button:hover {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    color: white !important;
+    border-color: #0056b3 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.25) !important;
+}
+
+.mobile-dropdown-button:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 3px rgba(0, 123, 255, 0.3) !important;
+}
+
+/* Screen items styling - contained within parent */
+.mobile-dropdown-screen {
+    display: block !important;
+    width: calc(100% - 8px) !important;
+    max-width: calc(100% - 8px) !important;
+    padding: 8px 12px 8px 20px !important;
+    margin: 2px 4px !important;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f8f9ff 100%) !important;
+    border: 1px solid #bbdefb !important;
+    border-left: 3px solid #2196f3 !important;
+    border-radius: 4px !important;
+    color: #1565c0 !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    box-shadow: 0 1px 2px rgba(33, 150, 243, 0.1) !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+}
+
+.mobile-dropdown-screen:hover {
+    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%) !important;
+    color: white !important;
+    border-color: #1976d2 !important;
+    border-left-color: #0d47a1 !important;
+    transform: translateX(1px) !important;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3) !important;
+}
+
+/* Separator styling - non-clickable and contained */
+.mobile-dropdown-separator {
+    display: block !important;
+    width: calc(100% - 16px) !important;
+    max-width: calc(100% - 16px) !important;
+    padding: 4px 0 !important;
+    margin: 6px 8px !important;
+    color: #dee2e6 !important;
+    font-size: 12px !important;
+    text-align: center !important;
+    pointer-events: none !important;
+    cursor: default !important;
+    background: transparent !important;
+    border: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Label styling - non-clickable and contained */
+.mobile-dropdown-label {
+    display: block !important;
+    width: calc(100% - 8px) !important;
+    max-width: calc(100% - 8px) !important;
+    padding: 8px 12px !important;
+    margin: 4px 4px 2px 4px !important;
+    background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%) !important;
+    border: 1px solid #dadce0 !important;
+    border-radius: 4px !important;
+    color: #5f6368 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    pointer-events: none !important;
+    cursor: default !important;
+    text-decoration: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Ensure dropdown button itself is styled properly */
+.ode-designer-action-button {
+    background: #007bff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+    transition: all 0.2s ease !important;
+    color: white !important;
+    min-width: 8px !important;
+    height: 40px !important;
+    position: relative !important;
+}
+
+.ode-designer-action-button:hover {
+    background: #0056b3 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+}
+
+.ode-designer-action-button .material-icons {
+    font-size: 20px !important;
+    color: white !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 320px) {
+    .ode-designer-action-button .gwt-MenuBar {
+        min-width: 200px !important;
+        max-width: 280px !important;
+        padding: 10px !important;
+    }
+
+    .mobile-dropdown-button {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+        margin: 2px 4px !important;
+        background-color: #0b2e13;
+    }
+
+    .mobile-dropdown-screen {
+        padding: 6px 10px 6px 16px !important;
+        font-size: 11px !important;
+        margin: 1px 4px !important;
+    }
+
+    .mobile-dropdown-label {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        margin: 3px 4px 1px 4px !important;
+    }
+
+    .mobile-dropdown-separator {
+        margin: 4px 6px !important;
+        font-size: 11px !important;
+    }
+}
+
+/* Focus states for accessibility */
+.mobile-dropdown-button:focus,
+.mobile-dropdown-screen:focus {
+    outline: 2px solid #007bff !important;
+    outline-offset: 1px !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .mobile-dropdown-button,
+    .mobile-dropdown-screen {
+        border-width: 2px !important;
+    }
+
+    .ode-designer-action-button .gwt-MenuBar {
+        border-width: 2px !important;
+    }
+}
+
+/* Ensure no elements escape the dropdown container */
+.ode-designer-action-button .gwt-MenuBar * {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+}
+
+/* Mobile Work Columns Layout */
+.ode-WorkColumns {
+    display: flex !important;
+    /*flex-direction: column !important;*/
+    width: 100% !important;
+    height: 76vh !important;
+    position: relative !important;
+    border: solid darkred 5px;
+}
+
+.ode-Hidden {
+    display: none !important;
+}
+
+/* Mobile Sidebar Styles */
+.container {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.container.open {
+    display: block;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
+}
+
+.container.open .overlay {
+    opacity: 1;
+}
+
+.sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 320px;
+    background-color: white;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+.container.open .sidebar {
+    transform: translateX(0);
+}
+
+.content {
+    width: 100%;
+    height: 89%;
+    overflow: auto;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 90vw;
+        max-width: 320px;
+    }
+}
+
+.ya-Toolbar .ya-ProjectName {
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-top: 2px;
+    padding-left: 0px;
+    /* padding-left: 8px; */
+    text-shadow: 0 0 1px #404040;
+    overflow: hidden;
+    max-width: 285px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.ode-ProjectListButton {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, opacity 0.1s;
+    color: gray-800;
+    font-family: "Poppins", Helvetica, sans-serif;
+    font-weight: 500;
+    font-size: 1.06em;
+    white-space: nowrap;
+    background-color: clr-primary;
+    border-color: gray-800;
+    box-shadow: 1px 1px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.bleft {
+    border-radius: 4px 0 0 4px;
+    flex-basis: 0;
+}
+
+.inline {
+    background-color: v-white;
+    border-color: gray-300;
+    box-shadow: 1px 1px gray-300;
+}
+
+.inline:hover {
+    background-color: gray-200;
+    color: text-highlight;
+}
+
+.action {
+    background-color: v-white;
+    border-color: gray-300;
+}
+
+.bcenter {
+    border-radius: 0;
+    border-width: 1px 0;
+}
+
+.bcenter + .bcenter {
+    border-left-width: 1px;
+}
+.bright {
+    border-radius: 0 4px 4px 0;
+}
+
+.ya-Toolbar .right {
+    flex-shrink: 0;
+    text-align: right;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+.ya-Toolbar .center {
+    text-align: center;
+    min-width: fit-content;
+    display: flex;
+    width: 100%;
+    order: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ya-Toolbar .left {
+    min-width: 100px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+.ya-Toolbar {
+    flex-wrap: wrap;
+}
+
+/* Design Tab Bar Styles */
+.design-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    z-index: 1000;
+    height: 60px;
+}
+
+.design-tab-button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.design-tab-button:hover {
+    background-color: #e9ecef;
+}
+
+.tab-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.tab-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.tab-label {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.align {
+    display: flex;
+}
+
+/*dragging issue palette side panel */
+
+.mobile-sidebar {
+    width: 100%;
+    background-color: #f5f5f5;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar-buttons {
+    display: flex;
+    justify-content: space-around;
+    background-color: #e0e0e0;
+    padding: 10px 0;
+}
+
+.sidebar-button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.sidebar-button.active {
+    background-color: #007cba;
+    color: white;
+}
+
+.sidebar-content {
+    min-height: 300px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.ode-SourceScrollPanel {
+    width: 320px;
+    height: 700px;
+}
+
+.ode-Box-body-padding {
+    padding: 6px;
+    flex-grow: 1;
+    display: flex;
+    min-height: 65vh;
+}
+
+.ode-MobileProjectList{
+    flex-grow: 1;
+    display: flex;
+    min-height: 84vh;
+}
+
+.ode-DeckPanel {
+    padding: 0;
+}
+
+.ode-Box-content{
+    min-height: 320px;
+}
+
+/*.blocklyFlyout{*/
+/*    display: block;*/
+/*    transform: translate(0px, 0px);*/
+/*    overflow-x: auto;*/
+/*    white-space: nowrap;*/
+/*}*/
+
