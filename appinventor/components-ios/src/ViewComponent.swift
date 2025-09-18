@@ -55,11 +55,18 @@ import Foundation
         return
       }
       container.setVisible(component: self, to: visibility)
-      if attachedToWindow {
-        container.setChildWidth(of: self, to: _lastSetWidth)
-        container.setChildHeight(of: self, to: _lastSetHeight)
-      }
     }
+  }
+
+  open func onAttach() {
+    guard attachedToWindow else {
+      return
+    }
+    guard let container = _container else {
+      return
+    }
+    container.setChildWidth(of: self, to: _lastSetWidth)
+    container.setChildHeight(of: self, to: _lastSetHeight)
   }
 
   @objc open var Width: Int32 {

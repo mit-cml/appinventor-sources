@@ -263,14 +263,12 @@ let kMinimumToastWait = 10.0
 
   open func setVisible(component: ViewComponent, to visibility: Bool) {
     let visible = isVisible(component: component)
-    if visible == visibility {
+    if visibility == visible {
       return
     }
     if visibility {
       _linearView.setVisibility(of: component.view, to: true)
-      // Replay width/height properties
-      setChildHeight(of: component, to: component._lastSetHeight)
-      setChildWidth(of: component, to: component._lastSetWidth)
+      component.onAttach()
     } else {
       _linearView.setVisibility(of: component.view, to: false)
     }
