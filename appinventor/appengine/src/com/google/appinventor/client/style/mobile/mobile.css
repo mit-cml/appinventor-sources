@@ -14,7 +14,7 @@ they get cut off in Windows.
 
 @external .*;
 
-body {
+body, html {
   background: v-white;
   font-family: Poppins, Helvetica, Arial, sans-serif;
     min-width: unset;
@@ -671,7 +671,7 @@ body {
 
 .ode-ProjectEditor {
     height: unset;
-    overflow-y: hidden;
+    overflow: hidden !important;
 }
 
 /* StatusPanel */
@@ -749,10 +749,10 @@ body {
 
 .ya-Toolbar {
   background-color: v-white;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 15px;
-  padding-right: 20px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 2px;
+    padding-right: 20px;
 }
 
 .ya-Toolbar-minimal .ode-ProjectListButton {
@@ -2687,6 +2687,8 @@ input[type="checkbox"]:focus {
     border-radius: 6px;
     background: #FFF;
     box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.15);
+    white-space: wrap;
+    text-align: center;
 }
 
 .ode-BottomNavBar .left,
@@ -3106,8 +3108,8 @@ input[type="checkbox"]:focus {
 }
 
 .ya-Toolbar .ya-ProjectName {
-    padding-left: 0px;
-    /* padding-left: 8px; */
+    padding-right: 0px;
+    padding-left: 40px;
     overflow: hidden;
     white-space: nowrap;
     font-family: "Poppins", Helvetica, sans-serif;
@@ -3311,6 +3313,7 @@ input[type="checkbox"]:focus {
     flex-grow: 1;
     display: flex;
     min-height: 84vh;
+    overflow-x: hidden;
 }
 
 .ode-DeckPanel {
@@ -3320,4 +3323,8 @@ input[type="checkbox"]:focus {
 
 .ode-Box-content{
     min-height: 320px;
+}
+
+.ode-DeckPanel>div {
+    overflow-x: hidden !important;
 }
