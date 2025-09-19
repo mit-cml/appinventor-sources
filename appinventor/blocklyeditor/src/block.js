@@ -85,7 +85,7 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
   var tokens = msg.split(this.interpolateMsg.SPLIT_REGEX_);
   var fields = [];
   for (var i = 0; i < tokens.length; i += 2) {
-    var text = goog.string.trim(tokens[i]);
+    var text = tokens[i].trim();
     var input = undefined;
     if (text) {
       fields.push(new Blockly.FieldLabel(text));
@@ -213,11 +213,11 @@ Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
       }
     }
   }
-  text = goog.string.trim(text) || '???';
+  text = text.trim() || '???';
   if (opt_maxLength) {
     // TODO (Blockly): Improve truncation so that text from this block is
     //  given priority.
-    text = goog.string.truncate(text, opt_maxLength);
+    text = text.length > opt_maxLength ? text.substring(0, opt_maxLength - 3) + '...' : text;
   }
   return text;
 };
