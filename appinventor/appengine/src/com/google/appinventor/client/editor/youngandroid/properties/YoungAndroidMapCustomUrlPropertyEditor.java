@@ -10,10 +10,13 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.Window;
 
+import java.util.logging.Logger;
+
 /**
  * Property editor for Map custom URL matching a particular format.
  */
 public class YoungAndroidMapCustomUrlPropertyEditor extends TextPropertyEditor {
+  private static final Logger LOG = Logger.getLogger(YoungAndroidMapCustomUrlPropertyEditor.class.getName());
 
   public YoungAndroidMapCustomUrlPropertyEditor() {
   }

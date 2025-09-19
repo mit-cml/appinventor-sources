@@ -5,10 +5,10 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import com.google.appinventor.buildserver.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
 import java.io.File;
@@ -216,7 +216,7 @@ public class RunD8 extends DexTask implements AndroidTask {
     arguments.add("@" + javaArgsFile.getAbsolutePath());
     synchronized (context.getResources().getSyncKawaOrDx()) {
       boolean result = Execution.execute(context.getPaths().getTmpDir(),
-          arguments.toArray(new String[0]), System.out, System.err);
+          arguments.toArray(new String[0]), System.out, System.err, Execution.Timeout.LONG);
       if (!result) {
         return false;
       }

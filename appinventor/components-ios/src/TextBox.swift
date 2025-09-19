@@ -41,7 +41,11 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     // we want to be able to force unwrap
     text = ""
   }
-  
+
+  public var responder: UIResponder {
+    _multiLine ? _view : _field
+  }
+
   private func setupView() {
     // Set up the minimum size constraint for the UITextView
     let heightConstraint = _view.heightAnchor.constraint(greaterThanOrEqualToConstant: 20)
@@ -325,10 +329,5 @@ open class TextBox: TextBoxBase {
     set(multiLine) {
       _adapter.multiLine = multiLine
     }
-  }
-
-  // MARK: TextBox Methods
-  @objc public func HideKeyboard() {
-    _adapter._view.resignFirstResponder()
   }
 }

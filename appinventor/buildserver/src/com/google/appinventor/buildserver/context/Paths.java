@@ -30,6 +30,10 @@ public class Paths {
     return projectRootDir;
   }
 
+  public File getAndroidKeystore() {
+    return new File(projectRootDir, "android.keystore");
+  }
+
   public void setOutputFileName(String outputFileName) {
     this.outputFileName = outputFileName;
   }
@@ -81,6 +85,7 @@ public class Paths {
   public void mkdirs(File buildDir) {
     setBuildDir(ExecutorUtils.createDir(buildDir));
     setTmpDir(ExecutorUtils.createDir(buildDir, "tmp"));
+    setDeployDir(ExecutorUtils.createDir(buildDir, "deploy"));
   }
 
   @Override

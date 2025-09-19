@@ -1,21 +1,24 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
+import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
+
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.ios.CredentialsEncryptor;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.survey.Survey;
+import com.google.appinventor.server.tokens.Token;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.server.tokens.Token;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -98,6 +101,10 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setSecondBuildserver(true);
     }
 
+    if (!Flag.createFlag("ios.build.server.host", "").get().isEmpty()) {
+      config.setiOSBuildServer(true);
+    }
+
     String expirationDate = Flag.createFlag("service.expires.time", "").get();
     if (!expirationDate.isEmpty()) {
       try {
@@ -129,27 +136,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     } else {
       return storageIo.downloadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, "UTF-8");
     }
-  }
-
-  /**
-   * Returns user information.
-   *
-   * (obsoleted by getSystemConfig())
-   *
-   * @return  user information record
-   */
-
-  @Override
-  public User getUserInformation(String sessionId) {
-    // This is a little evil here. We are fetching the User object
-    // *and* side effecting it by storing the sessionId
-    // A more pedagotically correct way would be to do the store
-    // in a separate RPC. But that would add another round trip.
-    User user = userInfoProvider.getUser();
-    user.setSessionId(sessionId); // Store local copy
-    // Store it in the data store
-    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
-    return user;
   }
 
   /**
@@ -209,7 +195,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   /**
    * fetch the contents of a shared backpack.
    *
-   * @param BackPackId the uuid of the backpack
+   * @param backPackId the uuid of the backpack
    * @return the backpack's content as an XML string
    */
 
@@ -224,8 +210,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
    * Note: We overwrite any existing backpack. If merging of contents
    * is desired, our caller has to take care of it.
    *
-   * @param BackPackId the uuid of the shared backpack
-   * @param the new contents of the backpack
+   * @param backPackId the uuid of the shared backpack
+   * @param content the new contents of the backpack
    */
 
   @Override
@@ -252,4 +238,12 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     }
   }
 
+  @Override
+  public void storeAppStoreSettings(String content) {
+    byte[] encrypted = CredentialsEncryptor.encrypt(content);
+    if (encrypted == null) {
+      throw new IllegalStateException("Unable to securely encrypt credential information.");
+    }
+      storageIo.uploadRawUserFile(userInfoProvider.getUserId(), APPSTORE_CREDENTIALS_FILENAME, encrypted);
+  }
 }

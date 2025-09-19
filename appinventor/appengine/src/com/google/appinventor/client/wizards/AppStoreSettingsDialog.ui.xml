@@ -1,0 +1,30 @@
+<!-- Copyright 2023-2025 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:w="urn:import:com.google.appinventor.client.widgets"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <wiz:Dialog ui:field="settingsDialog" caption="{messages.settingsTabName}"
+              styleName="ode-DialogBox" width="400px">
+    <g:FlowPanel>
+      <g:HTML>
+        Please provide your Apple ID and App Specific Password for MIT App Inventor below. These
+        values will be encrypted on the server and only read when deploying your app to App Store
+        Connect.<br />
+        <a href="/reference/other/build-ios-apps.html" target="_blank">More information</a>
+      </g:HTML>
+      <w:LabeledTextBox ui:field="appleIdTextbox" caption="Apple ID*: " />
+      <w:LabeledTextBox ui:field="passwordTextbox" caption="App Specific Password*:" />
+      <w:LabeledTextBox ui:field="shortNameTextbox" caption="ASC Short Name:" />
+      <g:FlowPanel styleName="buttonRow">
+        <g:Button ui:field="cancelButton" text="{messages.cancelButton}" />
+        <g:Button ui:field="okButton" text="{messages.okButton}" />
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

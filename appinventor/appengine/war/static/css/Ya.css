@@ -235,6 +235,14 @@ div.StatusPanel {
   background: #99CC00;
 }
 
+.ode-ContextMenuItem .ode-BetaLabel {
+  color: red;
+  font-size: 60%;
+  line-height: 60%;
+  padding-left: 1ex;
+  vertical-align: super;
+}
+
 .ode-ContextMenuItem-disabled {
   color: #999;
 }
@@ -307,16 +315,6 @@ div.StatusPanel {
 .ode-MessagesOutput {
   background-color: white;
   font-size: small;
-}
-
-/*
- * MotdBox
- */
-
-.ode-Motd {
-  background-color: #f7f9f2;
-  font-size: small;
-  color: #555;
 }
 
 /*
@@ -433,6 +431,56 @@ div.StatusPanel {
 }
 
 /*
+* AdminUserList css
+*/
+
+.ode-AdminUserListNameLabel {
+  font-weight: bold;
+  font-size: small;
+  color: #555;
+  cursor: pointer;
+  vertical-align: top;
+  text-align: left;
+  flex-grow: 1;
+  min-width: 100px;
+}
+
+.ode-AdminUserListTable {
+  padding: 0;
+  margin: 0;
+  border: 1px;
+  overflow: auto;
+  border-radius: 4px;
+  height: auto;
+  width: 100%;
+}
+
+.ode-AdminUserListHeaderRow {
+  background: url(../images/toolbarBG.png) repeat;
+  align-items: center;
+  grid-gap: 10px;
+
+  border: 1px;
+  border-bottom: 1px solid #bbccff;
+  position: relative;
+  flex-direction: row;
+  width: 100%;
+}
+
+.ode-AdminUserListLabel {
+  text-indent: initial;
+  color: black;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: left;
+  padding-right: 10px;
+  display: inline-flex;
+
+  align-items: center;
+}
+
+/*
  * ComponentList
  */
 .ode-ComponentNameLabel {
@@ -510,16 +558,7 @@ div.StatusPanel {
 
 .ode-Logo {
   margin: 0 0 4px 4px;
-/*  -webkit-filter: drop-shadow(0px 0px 1px #222);
-  filter:         drop-shadow(0px 0px 1px #222); */
 }
-
-/*
-.ode-Logo:hover {
-  -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
-}
-*/
 
 .ode-LogoText {
   font-size: 16px;
@@ -921,13 +960,12 @@ div.StatusPanel {
   box-shadow: none;
 }
 
-.ode-TextButton:hover,
-.gwt-Button:hover {
+.ode-TextButton-up-hovering,
+.gwt-Button-up-hovering:hover {
   color: #333333;
   border-color: #e6e6e6 #e6e6e6 #bfbfbf;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   background-color: #e6e6e6;
-  *background-color: #d9d9d9;
   text-decoration: none;
   background-position: 0 -15px;
   -webkit-transition: background-position 0.1s linear;
@@ -1298,7 +1336,7 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 11px 43px 7px 48px;
+  padding: 11px 70px 10px 48px;
 }
 
 .ode-SimpleMockFormPhonePortrait {
@@ -3269,6 +3307,7 @@ textarea::-webkit-input-placeholder {
 .ac-active {
   background-color: #b2b4bf;
 }
+
 .ai_type_block {
   position: absolute;
   z-index: 2000;
@@ -3424,7 +3463,7 @@ div.dropdiv p {
   transition: border-color 0.2s ease-in-out;
 }
 
-.hidden-radio:checked + img {
+.hidden-radio:checked + div img {
   border-color: #7D9D36;
 }
 
@@ -3432,7 +3471,7 @@ div.dropdiv p {
   border-color: #b3c833;
 }
 
-.hidden-radio:focus + img {
+.hidden-radio:focus div + img {
   box-shadow: 0 0 0 2px rgba(186, 238, 86, 0.6);
 }
 
@@ -3450,4 +3489,54 @@ div.dropdiv p {
   .image-radio-group {
     flex-direction: column;
   }
+}
+
+.popup {
+  background-color: transparent;
+  position: absolute;
+}
+
+.popup .popup-triangle {
+  position: absolute;
+  top: -8px;
+  left: calc(50% - 8px);
+  height: 0;
+  width: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #128BA8;
+  border-top: 0 solid transparent;
+}
+
+.popup .popup-content {
+  background-color: #128BA8;
+  color: #fff;
+  padding: 8px 16px;
+  max-width: 300px;
+  text-align: justify;
+  border-radius: 8px;
+}
+
+.popup a {
+  color: #fff;
+  text-decoration: underline;
+}
+.ode-DialogBox-light .dark, .ode-DialogBox-dark .light {
+  display: none;
+}
+
+#aiConsolePanel {
+  height: 100%;
+  background-color: white;
+  overflow-y: scroll;
+}
+
+#aiConsolePanel .Warning {
+  color: rgb(255, 153, 0);
+  font-weight: bold;
+}
+
+#aiConsolePanel .Error {
+  color: red;
+  font-weight: bolder;
 }

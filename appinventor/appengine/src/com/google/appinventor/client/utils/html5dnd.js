@@ -24,7 +24,7 @@ top.HTML5DragDrop_handleUploadResponse = function(_projectId, type, name, respon
 top.HTML5DragDrop_reportError = function(errorCode) {};
 top.HTML5DragDrop_confirmOverwriteKey = function(callback) {};
 top.HTML5DragDrop_getNewProjectName = function(filename, callback) {};
-top.HTML5DragDrop_confirmOverwriteAsset = function(proejctId, name, callback) {};
+top.HTML5DragDrop_confirmOverwriteAsset = function(projectId, name, callback) {};
 top.HTML5DragDrop_checkProjectNameForCollision = function(name) {};
 top.HTML5DragDrop_shouldShowDropTarget = function(target) {};
 

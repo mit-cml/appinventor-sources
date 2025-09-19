@@ -705,9 +705,9 @@ public class YaVersion {
 
   // ................................. Target SDK Version Number ..................................
 
-  public static final int TARGET_SDK_VERSION = 34;
+  public static final int TARGET_SDK_VERSION = 35;
 
-  public static final String TARGET_ANDROID_VERSION = "Android 14.0";
+  public static final String TARGET_ANDROID_VERSION = "Android 15.0";
 
   // ................................. Component Version Numbers ..................................
 
@@ -1621,7 +1621,10 @@ public class YaVersion {
   // For WEBVIEWER_COMPONENT_VERSION 10:
   // - Added ErrorOccurred event
   // - Added RunJavaScript method
-  public static final int WEBVIEWER_COMPONENT_VERSION = 10;
+  // Form WEBVIEWER_COMPONENT_VERSION 11:
+  // - Added the UsesCamera property
+  // - Added the UsesMicrophone property
+  public static final int WEBVIEWER_COMPONENT_VERSION = 11;
 
   // For MEDIASTORE_COMPONENT_VERSION 1:
   // - Initial Version.
@@ -1699,12 +1702,14 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.74";
+
+  public static final String PREFERRED_COMPANION = "2.76";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
   public static final String [] ACCEPTABLE_COMPANIONS = { "2.74", "2.74u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.76", "2.76u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

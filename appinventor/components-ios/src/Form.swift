@@ -20,7 +20,7 @@ let kMinimumToastWait = 10.0
   fileprivate var deviceDensity: Float = 1.0
   fileprivate var compatScalingFactor: Float?
   fileprivate var applicationIsBeingClosed = false
-  @objc var formName: String = ""
+  @objc public internal(set) var formName: String = ""
   fileprivate var _components: [Component] = []
   fileprivate var _aboutScreen: String?
   fileprivate var _appName: String?
@@ -29,7 +29,7 @@ let kMinimumToastWait = 10.0
   fileprivate var _primaryColor: Int32 = Int32(bitPattern: 0xFF3F51B5)
   fileprivate var _primaryColorDark: Int32 = Int32(bitPattern: 0xFF303F9F)
   fileprivate var _scrollable = false
-  fileprivate var _theme = AIComponentKit.Theme.Classic
+  fileprivate var _theme = AIComponentKit.Theme.DeviceDefault
   fileprivate var _title = "Screen1"
   fileprivate var _horizontalAlignment = HorizontalGravity.left.rawValue
   fileprivate var _verticalAlignment = VerticalGravity.top.rawValue
@@ -38,7 +38,7 @@ let kMinimumToastWait = 10.0
   fileprivate var _screenInitialized = false
   fileprivate var _startText = ""
   fileprivate var _compatibilityMode = true
-  @objc internal var _componentWithActiveEvent: Component?
+  @objc public var _componentWithActiveEvent: Component?
   fileprivate var _statusBarHidden: Bool = true
   fileprivate var _linearView = LinearView()
   fileprivate var _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
@@ -55,6 +55,8 @@ let kMinimumToastWait = 10.0
   private var _lastToastTime = 0.0
   private var _bigDefaultText = false
   private var _highContrast = false
+  private var _backGesture: UIGestureRecognizer? = nil
+  private var _tapGesture: UITapGestureRecognizer? = nil
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -63,9 +65,10 @@ let kMinimumToastWait = 10.0
     return _theme == .Dark
   }
 
-  public init(application: Application) {
+  public init(application: Application, screen name: String) {
     super.init(nibName: nil, bundle: nil)
     self.application = application
+    self.formName = name
     defaultPropertyValues()
   }
 
@@ -105,11 +108,20 @@ let kMinimumToastWait = 10.0
     NotificationCenter.default.addObserver(self, selector: #selector(ScreenOrientationChanged), name: UIDevice.orientationDidChangeNotification, object: nil)
   }
 
+  open override func viewDidAppear(_ animated: Bool) {
+    _backGesture = navigationController?.interactivePopGestureRecognizer
+    _backGesture?.addTarget(self, action: #selector(reportScreenClosed))
+    super.viewDidAppear(animated)
+    onResume()
+  }
+
   open override func viewWillDisappear(_ animated: Bool) {
+    _backGesture?.removeTarget(self, action: nil)
     super.viewWillDisappear(animated)
     NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
     NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+    onPause()
     if isMovingFromParent {
       if let vcs = navigationController?.viewControllers, let parent = vcs.last as? Form {
         parent.lastFormName = formName
@@ -127,7 +139,7 @@ let kMinimumToastWait = 10.0
       // Don't dispatch unless the current form is the dispatch delegate of the component
       return (component.dispatchDelegate as? Form) == self
     } else {
-      NSLog("Attempted to dispatch event \(eventName) to \(component) but screen is not initialized");
+      NSLog("Attempted to dispatch event \(eventName) to \(component) but screen is not initialized")
     }
     return canDispatch
   }
@@ -166,13 +178,16 @@ let kMinimumToastWait = 10.0
     return false
   }
 
-  @objc(isInitialized) var initialized: Bool {
+  @objc(isInitialized) public var initialized: Bool {
     return _screenInitialized
   }
 
   open override func viewDidLoad() {
     super.viewDidLoad()
     view.accessibilityIdentifier = String(describing: type(of: self))
+    _tapGesture = UITapGestureRecognizer(target: self, action: #selector(HideKeyboard))
+    _tapGesture?.cancelsTouchesInView = false
+    view.addGestureRecognizer(_tapGesture!)
   }
 
   open func add(_ component: NonvisibleComponent) {
@@ -274,7 +289,6 @@ let kMinimumToastWait = 10.0
     _linearView.removeAllItems()
     clearComponents()
     defaultPropertyValues()
-    SCMInterpreter.shared.runGC()
   }
 
   private func recomputeLayout() {
@@ -371,11 +385,11 @@ let kMinimumToastWait = 10.0
     }
   }
 
-  fileprivate func defaultPropertyValues() {
+  func defaultPropertyValues() {
     AccentColor = Int32(bitPattern: 0xFFFF4081)
     PrimaryColor = Int32(bitPattern: 0xFF3F51B5)
     PrimaryColorDark = Int32(bitPattern: 0xFF303F9F)
-    Theme = "Classic"
+    Theme = "AppTheme.Light.DarkActionBar"
     Scrollable = false
     Sizing = "Responsive"
     BackgroundImage = ""
@@ -389,7 +403,6 @@ let kMinimumToastWait = 10.0
     ShowStatusBar = true
     TitleVisible = true
     ShowListsAsJson = true
-    ScreenOrientation = "unspecified"
   }
   
   // MARK: Form Properties
@@ -655,7 +668,15 @@ let kMinimumToastWait = 10.0
           UIDevice.current.setValue(UIDeviceOrientation.landscapeLeft.rawValue, forKey: "orientation")
         }
       } else {
-        UIDevice.current.setValue(UIDeviceOrientation.unknown.rawValue, forKey: "orientation")
+        if #available(iOS 16, *) {
+          for scene in UIApplication.shared.connectedScenes {
+            if let windowScene = scene as? UIWindowScene {
+              windowScene.requestGeometryUpdate(UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .all))
+            }
+          }
+        } else {
+          UIDevice.current.setValue(UIDeviceOrientation.unknown.rawValue, forKey: "orientation")
+        }
       }
       UINavigationController.attemptRotationToDeviceOrientation()
     }
@@ -716,6 +737,15 @@ let kMinimumToastWait = 10.0
       let newTheme = AIComponentKit.Theme.fromString(value)
       if _theme != newTheme {
         _theme = newTheme
+        if #available(iOS 13, *) {
+          if _theme == .Dark {
+            view.window?.overrideUserInterfaceStyle = .dark
+          } else if _theme != .DeviceDefault {
+            view.window?.overrideUserInterfaceStyle = .light
+          } else {
+            view.window?.overrideUserInterfaceStyle = .unspecified
+          }
+        }
       }
       if _backgroundColor == Color.default.int32 {
         view.backgroundColor = preferredBackgroundColor(self)
@@ -912,6 +942,7 @@ let kMinimumToastWait = 10.0
   }
 
   @objc open func OtherScreenClosed(_ otherScreenName: String, _ result: AnyObject) {
+    Form.activeForm = self
     EventDispatcher.dispatchEvent(of: self, called: "OtherScreenClosed", arguments: otherScreenName as NSString, result)
   }
 
@@ -935,6 +966,10 @@ let kMinimumToastWait = 10.0
     return Form.activeForm
   }
 
+  public func makeActive() {
+    Form.activeForm = self
+  }
+
   @objc open func runtimeFormErrorOccurredEvent(_ functionName: String, _ errorNumber: Int32, _ message: String) {
     dispatchErrorOccurredEvent(self, functionName, errorNumber, message as NSString)
   }
@@ -955,7 +990,7 @@ let kMinimumToastWait = 10.0
     activeForm?.doCloseScreen()
   }
 
-  @objc func doCloseScreen(withValue value: AnyObject? = nil) {
+  @objc open func doCloseScreen(withValue value: AnyObject? = nil) {
     if let nc = self.navigationController, nc.viewControllers.count > 1 {
       navigationController?.popViewController(animated: true)
     }
@@ -966,7 +1001,15 @@ let kMinimumToastWait = 10.0
     EventDispatcher.removeDispatchDelegate(self)
   }
 
-  @objc func doCloseScreen(withPlainText text: String) {
+  @objc open func reportScreenClosed() {
+    if let vcs = navigationController?.viewControllers, let parentForm = vcs.last as? Form {
+      parentForm.lastFormName = self.formName
+      parentForm.formResult = "" as AnyObject
+    }
+    EventDispatcher.removeDispatchDelegate(self)
+  }
+
+  @objc open func doCloseScreen(withPlainText text: String) {
     if let nc = self.navigationController, nc.viewControllers.count > 1 {
       navigationController?.popViewController(animated: true)
     }
@@ -1057,6 +1100,7 @@ let kMinimumToastWait = 10.0
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = argbToColor(_primaryColor)
+        appearance.titleTextAttributes = convertToOptionalNSAttributedStringKeyDictionary([NSAttributedString.Key.foregroundColor.rawValue: _theme == .BlackText ? UIColor.black : UIColor.white])!
         navbar.standardAppearance = appearance
         navbar.scrollEdgeAppearance = navbar.standardAppearance
       }
@@ -1064,6 +1108,8 @@ let kMinimumToastWait = 10.0
       switch _theme {
       case .Classic, .DeviceDefault:
         navbar.barTintColor = argbToColor(_primaryColor)
+        navbar.tintColor = UIColor.white
+        navbar.titleTextAttributes = convertToOptionalNSAttributedStringKeyDictionary([NSAttributedString.Key.foregroundColor.rawValue:UIColor.white])
         break
       case .BlackText:
         navbar.barTintColor = argbToColor(_primaryColor)
@@ -1137,8 +1183,9 @@ let kMinimumToastWait = 10.0
     }
     marked = true
   #if MEMDEBUG
-    NSLog("Form.mark")
+    NSLog("Form.mark %@ %@", self.formName, self)
   #endif
+    SCMInterpreter.shared.mark(self)
     environment.mark()
     initThunks.mark()
   }

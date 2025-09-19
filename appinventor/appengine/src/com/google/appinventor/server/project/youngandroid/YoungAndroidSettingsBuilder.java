@@ -1,19 +1,32 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2021 MIT, All rights reserved
+// Copyright © 2021-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server.project.youngandroid;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
 import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BUILDNUMBER;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME;
@@ -21,14 +34,14 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
-import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.ASSETS_FOLDER;
-import static com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer.SRC_FOLDER;
 
 import com.google.appinventor.shared.settings.Settings;
 import com.google.common.base.Strings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 public class YoungAndroidSettingsBuilder {
@@ -49,6 +62,17 @@ public class YoungAndroidSettingsBuilder {
   private String primaryColorDark = "0";
   private String accentColor = "0";
   private String defaultFileScope = "App";
+  private String projectColors = "{}";
+  private String aiVersioning = "";
+  private String lastOpened = "Screen1";
+  private String buildNumber = "1";
+  private String nsBluetoothAlwaysUsage = "";
+  private String nsBluetoothPeripheralUsage = "";
+  private String nsContactsUsage = "";
+  private String nsMicrophoneUsage = "";
+  private String nsCameraUsage = "";
+  private String nsSpeechRecognitionUsage = "";
+  private String nsLocationUsage = "";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -89,6 +113,32 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_ACCENT_COLOR));
     defaultFileScope = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE));
+    String projectColorsProperty = settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+            YOUNG_ANDROID_SETTINGS_PROJECT_COLORS);
+    projectColors = projectColorsProperty == null ? "{}" : projectColorsProperty;
+    aiVersioning = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_AIVERSIONING));
+    lastOpened = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_LAST_OPENED));
+    buildNumber = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_BUILDNUMBER));
+    nsBluetoothAlwaysUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE));
+    nsBluetoothPeripheralUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE));
+    nsContactsUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE));
+    nsMicrophoneUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE));
+    nsCameraUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE));
+    nsSpeechRecognitionUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE));
+    nsLocationUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE));
+    if (buildNumber.isEmpty()) {
+      buildNumber = "1";
+    }
   }
 
   /**
@@ -114,6 +164,17 @@ public class YoungAndroidSettingsBuilder {
     primaryColorDark = properties.getProperty("color.primary.dark", "");
     accentColor = properties.getProperty("color.accent", "");
     defaultFileScope = properties.getProperty("defaultfilescope", "");
+    projectColors = properties.getProperty("projectcolors", "{}");
+    aiVersioning = properties.getProperty("aiversioning", "");
+    lastOpened = properties.getProperty("lastopened", "");
+    buildNumber = properties.getProperty("buildnumber", "1");
+    nsBluetoothAlwaysUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, "");
+    nsBluetoothPeripheralUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, "");
+    nsContactsUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, "");
+    nsMicrophoneUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE, "");
+    nsCameraUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, "");
+    nsSpeechRecognitionUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, "");
+    nsLocationUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -128,6 +189,11 @@ public class YoungAndroidSettingsBuilder {
 
   public YoungAndroidSettingsBuilder setIcon(String icon) {
     this.icon = icon;
+    return this;
+  }
+
+  public YoungAndroidSettingsBuilder setProjectColors(String projectColors) {
+    this.projectColors = projectColors;
     return this;
   }
 
@@ -201,6 +267,21 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setAIVersioning(String aiVersioning) {
+    this.aiVersioning = aiVersioning;
+    return this;
+  }
+
+  public YoungAndroidSettingsBuilder setDefaultLastOpened(String lastOpened) {
+    this.lastOpened = lastOpened;
+    return this;
+  }
+
+  public YoungAndroidSettingsBuilder setBuildNumber(String buildNumber) {
+    this.buildNumber = buildNumber;
+    return this;
+  }
+
   /**
    * Convert the internal settings into a JSON structure.
    *
@@ -223,6 +304,17 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK, primaryColorDark);
     object.put(YOUNG_ANDROID_SETTINGS_ACCENT_COLOR, accentColor);
     object.put(YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
+    object.put(YOUNG_ANDROID_SETTINGS_PROJECT_COLORS, projectColors);
+    object.put(YOUNG_ANDROID_SETTINGS_AIVERSIONING, aiVersioning);
+    object.put(YOUNG_ANDROID_SETTINGS_LAST_OPENED, lastOpened);
+    object.put(YOUNG_ANDROID_SETTINGS_BUILDNUMBER, buildNumber);
+    object.put(YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, nsContactsUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE, nsMicrophoneUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -255,13 +347,25 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, "color.primary.dark", primaryColorDark);
     addPropertyIfSet(result, "color.accent", accentColor);
     addPropertyIfSet(result, "defaultfilescope", defaultFileScope);
+    addPropertyIfSet(result, "aiversioning", aiVersioning);
+    addPropertyIfSet(result, "lastopened", lastOpened);
+    addPropertyIfSet(result, "buildnumber", buildNumber);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE, nsBluetoothAlwaysUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE, nsBluetoothPeripheralUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE, nsContactsUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE, nsMicrophoneUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
     } catch (IOException e) {
       throw new RuntimeException("Unexpected IOException writing to byte buffer", e);
     }
-    return out.toString();
+    StringBuilder builder = new StringBuilder(out.toString());
+    builder.append("projectcolors=").append(projectColors); // ByteArrayOutputStream corrupts the projectColors JSON string because of escape character
+    return builder.toString();
   }
 
   private static void addPropertyIfSet(Properties properties, String key, String value) {
@@ -299,6 +403,17 @@ public class YoungAndroidSettingsBuilder {
       result &= other.primaryColorDark.equals(primaryColorDark);
       result &= other.accentColor.equals(accentColor);
       result &= other.defaultFileScope.equals(defaultFileScope);
+      result &= other.projectColors.equals(projectColors);
+      result &= other.aiVersioning.equals(aiVersioning);
+      result &= other.lastOpened.equals(lastOpened);
+      result &= other.buildNumber.equals(buildNumber);
+      result &= other.nsBluetoothAlwaysUsage.equals(nsBluetoothAlwaysUsage);
+      result &= other.nsBluetoothPeripheralUsage.equals(nsBluetoothPeripheralUsage);
+      result &= other.nsContactsUsage.equals(nsContactsUsage);
+      result &= other.nsMicrophoneUsage.equals(nsMicrophoneUsage);
+      result &= other.nsCameraUsage.equals(nsCameraUsage);
+      result &= other.nsSpeechRecognitionUsage.equals(nsSpeechRecognitionUsage);
+      result &= other.nsLocationUsage.equals(nsLocationUsage);
       return result;
     }
     return false;
