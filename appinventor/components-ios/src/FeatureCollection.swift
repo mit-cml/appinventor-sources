@@ -37,7 +37,6 @@ import GEOSwift
       }
     }
   }
-  
 
   @objc open var Source: String {
     get {

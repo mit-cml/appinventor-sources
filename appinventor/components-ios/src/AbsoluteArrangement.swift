@@ -1,10 +1,7 @@
-//
-//  AbsoluteArrangement.swift
-//  AIComponentKit
-//
-//  Created by Cindy Bishop on 2/21/25.
-//  Copyright © 2025 Massachusetts Institute of Technology. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright 2016-2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
 import UIKit
@@ -58,7 +55,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   // MARK: - Initialization
   public override init(_ parent: ComponentContainer) {
     _view = AbsoluteView(frame: .zero)
-    viewLayout = RelativeLayout(preferredEmptyWidth: nil, preferredEmptyHeight: nil)
+    viewLayout = RelativeLayout(preferredEmptyWidth: 0, preferredEmptyHeight: 0)
     
     super.init(parent)
     super.setDelegate(self)
@@ -125,8 +122,8 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   
   // MARK: - Position Management
   private func updatePosition(component: ViewComponent) {
-    let x = component.left()
-    let y = component.top()
+    let x = component.Left
+    let y = component.Top
     
     if x != NOT_VALID && y != NOT_VALID {
         viewLayout.updateComponentPosition(component: component)
