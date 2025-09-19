@@ -302,7 +302,7 @@ AI.Blockly.TypeBlock.matchNumberOrTextBlock = function(blockName) {
       canonicName: 'text',
       dropDown: {
         titleName: 'TEXT',
-        value: goog.string.endsWith(blockName, '"') ? blockName.substring(1, blockName.length - 1) : blockName.substring(1)
+        value: blockName.endsWith('"') ? blockName.substring(1, blockName.length - 1) : blockName.substring(1)
       }
     };
   }
@@ -380,8 +380,6 @@ AI.Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, creat
 // A custom matcher for the auto-complete widget that can handle numbers as well as the default
 // functionality of goog.ui.ac.ArrayMatcher
 goog.provide('AI.Blockly.TypeBlock.ac.AIArrayMatcher');
-
-goog.require('goog.string');
 
 /**
  * Extension of goog.ui.ac.ArrayMatcher so that it can handle any number typed in.
