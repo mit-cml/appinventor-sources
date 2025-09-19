@@ -15,7 +15,7 @@ export declare class ScrollbarPair {
     vScroll: Scrollbar | null;
     corner_: SVGRectElement | null;
     /** Previously recorded metrics from the workspace. */
-    private oldHostMetrics_;
+    private oldHostMetrics;
     /**
      * @param workspace Workspace to bind the scrollbars to.
      * @param addHorizontal Whether to add a horizontal scrollbar.

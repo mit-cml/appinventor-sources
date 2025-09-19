@@ -75,9 +75,9 @@ Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
 Blockly.WorkspaceSvg.prototype.chromeHidden = false;
 
 /**
- * Wrap the onMouseClick_ event to handle additional behaviors.
+ * Wrap the onMouseDown event to handle additional behaviors.
  */
-Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
+Blockly.WorkspaceSvg.prototype.onMouseDown = (function(func) {
   if (func.isWrapped) {
     return func;
   } else {
@@ -92,7 +92,7 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
     f.isWrapper = true;
     return f;
   }
-})(Blockly.WorkspaceSvg.prototype.onMouseDown_);
+})(Blockly.WorkspaceSvg.prototype.onMouseDown);
 
 Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
   if (func.isWrapped) {

@@ -4,16 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 /**
- * Fast prefix-checker.
- * Copied from Closure's goog.string.startsWith.
- *
- * @param str The string to check.
- * @param prefix A string to look for at the start of `str`.
- * @returns True if `str` begins with `prefix`.
- * @deprecated Use built-in **string.startsWith** instead.
- */
-export declare function startsWith(str: string, prefix: string): boolean;
-/**
  * Given an array of strings, return the length of the shortest one.
  *
  * @param array Array of strings.

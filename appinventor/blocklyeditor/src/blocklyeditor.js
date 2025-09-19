@@ -590,7 +590,7 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
         case AI.Blockly.BLKS_HORIZONTAL:
           if (x < wsRight) {
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             x = snap(x + blkWidth + SPACER);
             if (blkHgt > maxHgt) // Remember highest block
               maxHgt = blkHgt;
@@ -599,14 +599,14 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
             maxHgt = blkHgt;
             x = viewLeft;
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             x = snap(x + blkWidth + SPACER);
           }
           break;
         case AI.Blockly.BLKS_VERTICAL:
           if (y < wsBottom) {
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             y = snap(y + blkHgt + SPACER);
             if (blkWidth > maxWidth)  // Remember widest block
               maxWidth = blkWidth;
@@ -615,7 +615,7 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
             maxWidth = blkWidth;
             y = viewTop;
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             y = snap(y + blkHgt + SPACER);
           }
           break;
@@ -999,7 +999,6 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
     plugins: {
-      blockDragger: MultiselectBlockDragger,
       metricsManager: ScrollMetricsManager,
       connectionPreviewer: decoratePreviewer(Blockly.InsertionMarkerPreviewer),
       [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',

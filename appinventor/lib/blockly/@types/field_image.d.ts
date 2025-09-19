@@ -134,7 +134,7 @@ export interface FieldImageConfig extends FieldConfig {
     alt?: string;
 }
 /**
- * fromJson config options for the colour field.
+ * fromJson config options for the image field.
  */
 export interface FieldImageFromJsonConfig extends FieldImageConfig {
     src?: string;

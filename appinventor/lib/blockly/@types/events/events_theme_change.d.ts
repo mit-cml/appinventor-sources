@@ -3,16 +3,17 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { Workspace } from '../workspace.js';
 import { AbstractEventJson } from './events_abstract.js';
 import { UiBase } from './events_ui_base.js';
-import type { Workspace } from '../workspace.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners that the workspace theme has changed.
  */
 export declare class ThemeChange extends UiBase {
     /** The name of the new theme that has been set. */
     themeName?: string;
-    type: string;
+    type: EventType;
     /**
      * @param opt_themeName The theme name. Undefined for a blank event.
      * @param opt_workspaceId The workspace identifier for this event.
