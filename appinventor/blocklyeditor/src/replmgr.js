@@ -15,8 +15,6 @@ goog.provide('AI.Blockly.ReplStateObj');
 
 goog.require('goog.net.XmlHttp');
 goog.require('goog.Uri.QueryData');
-goog.require('goog.events');
-goog.require('goog.events.EventType');
 goog.require('goog.crypt.Hash');
 goog.require('goog.crypt.Sha1');
 goog.require('goog.crypt.Hmac');
