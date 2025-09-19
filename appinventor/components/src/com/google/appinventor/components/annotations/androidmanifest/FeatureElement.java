@@ -40,7 +40,7 @@ public @interface FeatureElement {
    *
    * @return Returns true if required otherwise false
    */
-  boolean required() default true;
+  boolean required() default false;
 
   /**
    * The OpenGL ES version required by the application. The higher 16 bits represent the major
