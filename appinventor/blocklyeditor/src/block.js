@@ -85,7 +85,7 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
   var tokens = msg.split(this.interpolateMsg.SPLIT_REGEX_);
   var fields = [];
   for (var i = 0; i < tokens.length; i += 2) {
-    var text = goog.string.trim(tokens[i]);
+    var text = tokens[i].trim();
     var input = undefined;
     if (text) {
       fields.push(new Blockly.FieldLabel(text));
