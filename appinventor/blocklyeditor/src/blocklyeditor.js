@@ -1167,7 +1167,7 @@ AI.inject = function(container, workspace, isDarkMode=false) {
   workspace.setGridSettings(gridEnabled, gridSnap);
   // Update the workspace size in case the window was resized while we were hidden
   setTimeout(function() {
-    goog.array.forEach(workspace.blocksNeedingRendering, function(block) {
+    workspace.blocksNeedingRendering.forEach(function(block) {
       workspace.getWarningHandler().checkErrors(block);
       block.render();
     });
