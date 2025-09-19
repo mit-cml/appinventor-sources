@@ -227,7 +227,7 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
   }
 
   var changedState = false;
-  if (goog.isString(text)) {
+  if (typeof text === 'string') {
     if (!this.error) {
       this.error = new AI.ErrorIcon(this);
       changedState = true;
