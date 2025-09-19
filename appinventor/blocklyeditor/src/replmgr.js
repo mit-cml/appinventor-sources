@@ -14,7 +14,6 @@ goog.provide('AI.Blockly.ReplMgr');
 goog.provide('AI.Blockly.ReplStateObj');
 
 goog.require('goog.net.XmlHttp');
-goog.require('goog.json');
 goog.require('goog.Uri.QueryData');
 goog.require('goog.events');
 goog.require('goog.events.EventType');
@@ -525,7 +524,7 @@ Blockly.ReplMgr.putYail = (function() {
                 console.log('webrtc data connection open!');
                 webrtcdata.onmessage = function(ev) {
                     console.log("webrtc(onmessage): " + ev.data);
-                    var json = goog.json.parse(ev.data);
+                    var json = JSON.parse(ev.data);
                     if (json.status == 'OK') {
                         context.processRetvals(json.values);
                     }
@@ -760,7 +759,7 @@ Blockly.ReplMgr.putYail = (function() {
                 conn.open('POST', rs.url, true);
                 conn.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
-                        var json = goog.json.parse(this.response);
+                        var json = JSON.parse(this.response);
                         if (json.status != 'OK') {
                             if (work.failure)
                                 work.failure(Blockly.Msg.REPL_ERROR_FROM_COMPANION);
@@ -803,7 +802,7 @@ Blockly.ReplMgr.putYail = (function() {
                     if (this.readyState != 4) return;
                     console.log("receivefromphone returned.");
                     if (this.status == 200) {
-                        var json = goog.json.parse(this.response);
+                        var json = JSON.parse(this.response);
                         if (json.status == 'OK') {
                             context.processRetvals(json.values);
                         }
@@ -1238,7 +1237,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
             xhr = goog.net.XmlHttp();
             xhr.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    var result = goog.json.parse(this.response);
+                    var result = JSON.parse(this.response);
                     if (result.status == "OK") { // We're running!
                         device = result.device;    // the device we are going to talk to
                         console.log("ReplMgr: set device = " + device);
@@ -1492,7 +1491,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 if (rs.dialog) {      // Dialog won't be present when we connect via chromebook
                     rs.dialog.hide(); // Take down the QRCode dialog
                 }
-                var json = goog.json.parse(xmlhttp.response);
+                var json = JSON.parse(xmlhttp.response);
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
