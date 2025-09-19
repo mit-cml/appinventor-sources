@@ -106,9 +106,7 @@
     (add-to-current-form-environment component-name component-to-add)
     (add-init-thunk component-name
                     (lambda ()
-                      (when init-props-thunk (init-props-thunk))
-                      (when existing-component
-                            (copyComponentProperties existing-component component-to-add))))))
+                      (when init-props-thunk (init-props-thunk))))))
 
 (define-syntax add-component
   (syntax-rules ()
@@ -1926,7 +1924,7 @@ Dictionary implementation.
     (if (not (eq? *this-form* #!null))
         (add-to-current-form-environment name object)
         ;; The following is really for testing.  In normal situations *this-form* should be non-null
-	(set! *test-global-var-environment* (cons (list name object) *test-global-var-environment*)))
+  (set! *test-global-var-environment* (cons (list name object) *test-global-var-environment*)))
     ;; return *the-null-value* rather than #!void, which would show as a blank in the repl balloon
     *the-null-value*))
 

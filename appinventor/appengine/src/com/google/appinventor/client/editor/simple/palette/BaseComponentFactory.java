@@ -8,6 +8,11 @@ package com.google.appinventor.client.editor.simple.palette;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
+import com.google.appinventor.client.editor.simple.components.MockARView3D;
+import com.google.appinventor.client.editor.simple.components.MockCapsuleNode;
+import com.google.appinventor.client.editor.simple.components.MockModelNode;
+import com.google.appinventor.client.editor.simple.components.MockSphereNode;
+import com.google.appinventor.client.editor.simple.components.MockTextNode;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
@@ -216,6 +221,16 @@ public class BaseComponentFactory implements ComponentFactory {
       return new MockLinearProgress(editor);
     } else if (name.equals(MockTrendline.TYPE)) {
       return new MockTrendline(editor);
+    } else if (name.equals(MockARView3D.TYPE)) {
+      return new MockARView3D(editor);
+    } else if (name.equals(MockCapsuleNode.TYPE)) {
+      return new MockCapsuleNode(editor);
+    } else if (name.equals(MockModelNode.TYPE)) {
+      return new MockModelNode(editor);
+    } else if (name.equals(MockSphereNode.TYPE)) {
+      return new MockSphereNode(editor);
+    } else if (name.equals(MockTextNode.TYPE)) {
+      return new MockTextNode(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);
