@@ -151,7 +151,7 @@ import android.util.Log;
   //CSB: this needs to be set up in Android, but this is for blockly interp
   @Override
   @SimpleEvent(description = "Collision event detected")
-  public void CollisionDetection() {}
+  public void CollisionDetected() {}
 
   @Override
   @SimpleEvent(description = "Collision event detected between object and scene")

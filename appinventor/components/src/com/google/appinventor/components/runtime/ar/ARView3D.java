@@ -837,6 +837,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             //emitPlaneDetectedEvent();
 
 
+            updateCollisions();
             String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"};
             List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
@@ -986,9 +987,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private ARNode findClosestNode(float screenX, float screenY) {
         Log.i(LOG_TAG, "=== findClosestNode START ===");
         Log.i(LOG_TAG, "Touch coordinates: (" + screenX + ", " + screenY + ")");
-        Log.i(LOG_TAG, "Screen dimensions: " + currentViewportWidth + "x" + currentViewportHeight);
-        Log.i(LOG_TAG, "lastCamera null: " + (lastCamera == null));
-        Log.i(LOG_TAG, "arNodes size: " + arNodes.size());
 
         if (lastCamera == null || arNodes.isEmpty()) {
             Log.i(LOG_TAG, "Returning null - no camera or nodes");
@@ -1005,7 +1003,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         for (ARNode node : arNodes) {
             Log.i(LOG_TAG, "--- Checking node: " + node.NodeType() + " ---");
-            Log.i(LOG_TAG, "Has anchor: " + (node.Anchor() != null));
+
 
             if (node.Anchor() == null) {
                 Log.i(LOG_TAG, "Skipping - no anchor");
@@ -1031,7 +1029,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 float nodeRadius = getNodeScreenRadius(node, worldPos);
                 Log.i(LOG_TAG, "Distance: " + distance + " pixels");
                 Log.i(LOG_TAG, "Node radius: " + nodeRadius + " pixels");
-                Log.i(LOG_TAG, "PanToMove: " + node.PanToMove());
 
                 float touchTolerance = 50f;
                 float totalRadius = nodeRadius + touchTolerance;
@@ -1043,7 +1040,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i(LOG_TAG, "Within radius: " + withinRadius);
                 Log.i(LOG_TAG, "Closer than previous: " + closerThanPrevious);
-                Log.i(LOG_TAG, "Can move: " + canMove);
+
 
                 if (withinRadius && closerThanPrevious && canMove) {
                     Log.i(LOG_TAG, "*** FOUND CLOSER DRAGGABLE NODE: " + node.NodeType() + " ***");
@@ -1058,7 +1055,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
         Log.i(LOG_TAG, "=== findClosestNode RESULT ===");
-        Log.i(LOG_TAG, "Returning: " + (closestNode != null ? closestNode.NodeType() : "null"));
+        Log.i(LOG_TAG, "RETURNING: " + (closestNode != null ? closestNode.NodeType() : "null"));
         Log.i(LOG_TAG, "Final closest distance: " + (closestNode != null ? closestDistance : "N/A"));
         return closestNode;
     }
@@ -1176,7 +1173,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         if (lastCamera == null) {
             Log.w(LOG_TAG, "lastCamera is null - using basic fallback");
-            float scale = 0.002f;
+            float scale = 0.0002f;
             return new float[]{
                 currentPos[0] + fingerMovement.x * scale,
                 currentPos[1],
@@ -1239,32 +1236,94 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return new float[]{position[0],position[1], position[2]};
     }
 
-    // Helper: Check if hit result is near an anchor
-    private boolean isHitNearAnchor(HitResult hit, Anchor anchor) {
-        float[] hitPos = hit.getHitPose().getTranslation();
-        float[] anchorPos = anchor.getPose().getTranslation();
 
-        float distance = (float) Math.sqrt(
-            Math.pow(hitPos[0] - anchorPos[0], 2) +
-                Math.pow(hitPos[1] - anchorPos[1], 2) +
-                Math.pow(hitPos[2] - anchorPos[2], 2)
-        );
 
-        return distance < 0.1f; // 10cm threshold
-    }
+    // In ARView3D update loop
+    private void updateCollisions() {
+        List<ARNode> nodes = arNodes;
 
-    // Check if there are any tracking planes
-    private boolean hasTrackingPlane() {
-        if (session == null) return false;
+        for (int i = 0; i < arNodes.size(); i++) {
+            for (int j = i + 1; j < nodes.size(); j++) {
+                ARNode nodeA = nodes.get(i);
+                ARNode nodeB = nodes.get(j);
 
-        for (Plane plane : session.getAllTrackables(Plane.class)) {
-            if (plane.getTrackingState() == TrackingState.TRACKING) {
-                return true;
+                if (checkCollision(nodeA, nodeB)) {
+                    handleCollision(nodeA, nodeB);
+                }
             }
         }
-
-        return false;
     }
+
+    private boolean checkCollision(ARNode nodeA, ARNode nodeB) {
+        float[] posA = ((ARNodeBase)nodeA).getCurrentPosition();
+        float[] posB = ((ARNodeBase)nodeB).getCurrentPosition();
+
+        //vectorDistance alone won't work correctly for objects because it only gives you the straight-line distance between the centers of the objects, not whether their boundaries overlap.
+        float distance = vectorDistance(posA, posB);
+        float[] minDist = ((ARNodeBase)nodeA).vectorAdd(nodeA.getModelBounds(), nodeB.getModelBounds());
+
+
+        boolean xOverlap = Math.abs(posA[0] - posB[0]) < minDist[0] / 2;
+        boolean yOverlap = Math.abs(posA[1] - posB[1]) < minDist[1] / 2;
+        boolean zOverlap = Math.abs(posA[2] - posB[2]) < minDist[2]/ 2;
+        boolean eval = xOverlap && yOverlap && zOverlap;
+        Log.i(LOG_TAG, "checking collision " + distance + " " + minDist + ", collision? " + eval);
+        return eval;
+
+    }
+
+    private void handleCollision(ARNode nodeA, ARNode nodeB) {
+        // Separate objects first
+        separateCollidingNodes(nodeA, nodeB);
+
+        // Delayed notification to avoid physics interference
+         nodeA.ObjectCollidedWithObject(nodeB);
+         nodeB.ObjectCollidedWithObject(nodeA);
+
+           // dispatchCollisionEvent(nodeA, nodeB);
+    }
+
+    private void separateCollidingNodes(ARNode nodeA, ARNode nodeB) {
+        float[] posA = ((ARNodeBase)nodeA).getCurrentPosition();
+        float[] posB = ((ARNodeBase)nodeB).getCurrentPosition();
+
+        // Get the bounding box dimensions for both nodes
+        float[] boundsA = nodeA.getModelBounds();
+        float[] boundsB = nodeB.getModelBounds();
+
+        // Calculate overlap in each axis
+        float[] overlap = new float[3];
+        overlap[0] = (boundsA[0] + boundsB[0]) / 2 - Math.abs(posA[0] - posB[0]);
+        overlap[1] = (boundsA[1] + boundsB[1]) / 2 - Math.abs(posA[1] - posB[1]);
+        overlap[2] = (boundsA[2] + boundsB[2]) / 2 - Math.abs(posA[2] - posB[2]);
+
+        // Find the axis with minimum overlap (shortest separation distance)
+        int minAxis = 0;
+        if (overlap[1] < overlap[minAxis]) minAxis = 1;
+        if (overlap[2] < overlap[minAxis]) minAxis = 2;
+
+        // Calculate separation vector
+        float[] separation = new float[3];
+        float separationDistance = overlap[minAxis] * 0.5f;
+
+        // Determine separation direction based on relative positions
+        if (posA[minAxis] < posB[minAxis]) {
+            separation[minAxis] = -separationDistance;  // Move A in negative direction
+        } else {
+            separation[minAxis] = separationDistance;   // Move A in positive direction
+        }
+
+        // Apply separation (move objects apart equally)
+        float[] newPosA = ((ARNodeBase)nodeA).vectorAdd(posA, separation);
+        float[] newPosB = ((ARNodeBase)nodeB).vectorSubtract(posB, separation);
+
+        ((ARNodeBase)nodeA).setCurrentPosition(newPosA);
+        ((ARNodeBase)nodeB).setCurrentPosition(newPosB);
+
+        Log.i(LOG_TAG, "Separated nodes on axis " + minAxis + " by distance " + separationDistance);
+    }
+
+
 
     // Configure ARCore session
     private void configureSession() {
@@ -1344,18 +1403,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         cubeMapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
     }*/
 
-    // Update spherical harmonics coefficients for lighting
-    private void updateSphericalHarmonicsCoefficients(float[] coefficients) {
-        if (coefficients.length != 9 * 3) {
-            throw new IllegalArgumentException("The given coefficients array must be of length 27 (3 components per 9 coefficients)");
-        }
 
-        for (int i = 0; i < 9 * 3; ++i) {
-            sphericalHarmonicsCoefficients[i] = coefficients[i] * sphericalHarmonicFactors[i / 3];
-        }
-
-        virtualObjectShader.setVec3Array("u_SphericalHarmonicsCoefficients", sphericalHarmonicsCoefficients);
-    }
 
     // LIFECYCLE METHODS
 
@@ -1598,6 +1646,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleEvent(description = "The user long-pressed a node in the ARView3D.")
     public void NodeLongClick(ARNode node) {
     }
+
 
 
     @SimpleEvent(description = " Collision detected")

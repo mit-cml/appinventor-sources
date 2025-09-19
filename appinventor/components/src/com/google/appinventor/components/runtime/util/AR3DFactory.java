@@ -150,6 +150,8 @@ public final class AR3DFactory {
      float Scale();
      void Scale(float scalar);
 
+     float[] getVisualBounds();
+     float[] getModelBounds();
      // NOTE: uncomment should we want to allow nonuniform scaling
      // float XScale();
      //
@@ -177,9 +179,10 @@ public final class AR3DFactory {
     // Events
      void Click();
      void LongClick();
-     void CollisionDetection();
+     void CollisionDetected();
      void ObjectCollidedWithScene();
      void ObjectCollidedWithObject(ARNode otherNode);
+
 
      void startDrag(PointF fingerLocation);
      void updateDrag(float[] groundProjection);

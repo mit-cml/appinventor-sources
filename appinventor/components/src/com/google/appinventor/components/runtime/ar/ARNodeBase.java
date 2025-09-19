@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.ar;
 
+import android.os.Looper;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 import com.google.appinventor.components.runtime.util.CameraVectors;
 import com.google.appinventor.components.runtime.*;
@@ -51,8 +52,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float mass = 0.1f;
   protected float force = 0.1f;
   protected float dragSensitivity = 2.0f;  // Better default for responsiveness
-  protected float gravityScale = 0.5f;
-  protected float releaseForceMultiplier = 0.0f;
   protected boolean enablePhysics = false;
 
   // Enhanced Gesture Properties
@@ -315,14 +314,36 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     // Event dispatching handled by container
   }
 
-  // MARK: - Enhanced Collision System
+  @Override
+  public float[] getVisualBounds() {
+    // Get the model's bounding box - this depends on your 3D model system
+    float[] modelBounds = getModelBounds(); // You'll need to implement this
+
+    // Apply scale to bounds
+    float scale = Scale();
+    return new float[]{
+        modelBounds[0] * scale, // width
+        modelBounds[1] * scale, // height
+        modelBounds[2] * scale  // depth
+    };
+  }
+
+  @Override
+  public float[] getModelBounds() {
+    // TODO Return default dimension
+    return new float[]{1,1,1};
+  }
+
+
 
   @Override
   @SimpleEvent(description = "Collision event detected")
-  public void CollisionDetection() {
+  public void CollisionDetected() {
     Log.i("ARNodeBase", name + " collision detected");
     // Event dispatching handled by container
   }
+
+
 
   @Override
   @SimpleEvent(description = "Collision event detected between object and scene")
@@ -344,7 +365,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     showCollisionEffect("scene");
 
     // Restore appearance after delay
-    new android.os.Handler().postDelayed(() -> {
+    new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
       if (!isBeingDragged) {
         restoreOriginalMaterial();
       }
@@ -355,9 +376,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     showCollisionEffect("object");
 
     // Restore appearance after delay
-    new android.os.Handler().postDelayed(() -> {
+    new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
       if (!isBeingDragged) {
-        restoreOriginalMaterial();
+        //restoreOriginalAppearance();
       }
     }, 800);
   }

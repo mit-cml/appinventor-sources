@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.runtime.ar;
 
+import android.os.Looper;
 import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ARComponentConstants;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -477,15 +478,14 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     showCollisionEffect();
 
     // Restore color after delay
-    new android.os.Handler().postDelayed(() -> {
+    new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
       if (!isBeingDragged) {
         restoreOriginalAppearance();
       }
     }, 800);
-
-    // Dispatch event to app level
-    super.ObjectCollidedWithObject(otherNode);
     Log.i("SphereNode", name + " collided with " + otherNode.getClass().getSimpleName());
+    // Dispatch event to app level
+
   }
 
   private void showCollisionEffect() {
@@ -499,7 +499,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   private void restoreOriginalAppearance() {
     isCurrentlyColliding = false;
     // Restore original material
-    Log.i("SphereNode", "Restored original appearance after collision");
+    Log.i("SphereNode", "Restored original appearance after dragging or collision");
   }
 
   // MARK: - Enhanced Scaling with Physics Correction
@@ -643,7 +643,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
       float[] movement = subtractVectors(groundProjection, lastFingerPosition);
       float distance = vectorLength(movement);
 
-      if (distance > 0.5f) { // 50cm threshold
+      if (distance > 0.75f) { // 50cm threshold
         Log.w("SphereNode", "Rejecting extreme jump: " + distance + "m - using previous position");
         return; // Skip this frame entirely
       }
