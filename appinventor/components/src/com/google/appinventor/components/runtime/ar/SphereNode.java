@@ -505,6 +505,13 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   // MARK: - Enhanced Scaling with Physics Correction
 
   @Override
+  public float[] getModelBounds() {
+    float radiusInMeters = RadiusInCentimeters() * 0.01f; // Convert cm to meters
+    float diameter = 2 * radiusInMeters * 10;  //try this
+    return new float[]{diameter, diameter, diameter};
+  }
+
+  @Override
   @SimpleFunction(description = "Changes the sphere's scale by the given scalar, maintaining bottom position if physics enabled.")
   public void ScaleBy(float scalar) {
     Log.i("SphereNode", "Scaling sphere " + name + " by " + scalar);

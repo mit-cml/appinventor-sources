@@ -330,8 +330,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   public float[] getModelBounds() {
-    // TODO Return default dimension
-    return new float[]{1,1,1};
+      float radiusInMeters = 0.025f; // 2.5cm radius
+      float heightInMeters = 0.1f;   // 10cm height
+      return new float[]{radiusInMeters * 2, heightInMeters, radiusInMeters * 2};
   }
 
 
