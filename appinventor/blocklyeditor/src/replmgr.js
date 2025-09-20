@@ -13,7 +13,6 @@
 goog.provide('AI.Blockly.ReplMgr');
 goog.provide('AI.Blockly.ReplStateObj');
 
-goog.require('goog.Uri.QueryData');
 goog.require('goog.crypt.Hash');
 goog.require('goog.crypt.Sha1');
 goog.require('goog.crypt.Hmac');
@@ -737,12 +736,12 @@ Blockly.ReplMgr.putYail = (function() {
                     blockid = "-1";
                 }
             }
-            var encoder = new goog.Uri.QueryData();
+            var encoder = new URLSearchParams();
             console.log('Low Level Sending: ' + work.code)
-            encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
-            encoder.add('seq', rs.seq_count);
-            encoder.add('code', work.code);
-            encoder.add('blockid', blockid);
+            encoder.append('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
+            encoder.append('seq', rs.seq_count);
+            encoder.append('code', work.code);
+            encoder.append('blockid', blockid);
             var stuff = encoder.toString();
             if (rs.proxy) {
                 rs.proxy.postMessage(['blocks', stuff], rs.proxy_origin);
@@ -897,7 +896,7 @@ Blockly.ReplMgr.putYail = (function() {
 Blockly.ReplMgr.triggerUpdate = function() {
     var rs = top.ReplState;
     var fetchconn = new XMLHttpRequest();
-    var encoder = new goog.Uri.QueryData();
+    var encoder = new URLSearchParams();
     var context = this;
 
     // Setup Dialog management code
@@ -974,7 +973,7 @@ Blockly.ReplMgr.triggerUpdate = function() {
         console.log("CompanionUpgrade Yail = " + yail);
         this.putYail.putAsset(yail);
     } else {
-        encoder.add('package', 'update.apk');
+        encoder.append('package', 'update.apk');
         var qs = encoder.toString();
         fetchconn.open("GET", top.COMPANION_UPDATE_EMULATOR_URL, true);
         fetchconn.onreadystatechange = function() {
@@ -1759,8 +1758,8 @@ Blockly.ReplMgr.loadExtensions = function() {
     } else if (rs.extensionurl) {
         rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
         var xmlhttp = new XMLHttpRequest();
-        var encoder = new goog.Uri.QueryData();
-        encoder.add('extensions', JSON.stringify(top.AssetManager_getExtensions()));
+        var encoder = new URLSearchParams();
+        encoder.append('extensions', JSON.stringify(top.AssetManager_getExtensions()));
         xmlhttp.open('POST', rs.extensionurl, true);
         xmlhttp.onreadystatechange = function() {
             /* Older companions do not support ReplMgr providing an extension list. This check below
@@ -1924,11 +1923,11 @@ Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, fo
         arrayview[i] = blob[i];
     }
     var rs = top.ReplState;
-    var encoder = new goog.Uri.QueryData();
+    var encoder = new URLSearchParams();
     //var z = filename.split('/'); // Remove any directory components
-    //encoder.add('filename', z[z.length-1]); // remove directory structure
+    //encoder.append('filename', z[z.length-1]); // remove directory structure
     var z = filename.slice(filename.indexOf('/') + 1, filename.length); // remove the asset directory
-    encoder.add('filename', z); // keep directory structure
+    encoder.append('filename', z); // keep directory structure
 
 
     if (rs.proxy) {
