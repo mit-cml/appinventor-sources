@@ -497,12 +497,17 @@ AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
   }.bind(this));
 };
 
+AI.Blockly.TypeBlock.defaultCompare = function(a, b) {
+  return a > b ? 1 : a < b ? -1 : 0;
+};
+
 /**
  * Creates the auto-complete panel, powered by Google Closure's ac widget
  * @private
  */
 AI.Blockly.TypeBlock.prototype.createAutoComplete_ = function(inputText){
   this.TBOptionsNames_ = goog.object.getKeys( this.TBOptions_ );
+  this.TBOptionsNames_.sort(AI.Blockly.TypeBlock.defaultCompare);
   goog.array.sort(this.TBOptionsNames_);
   goog.events.unlistenByKey(this.currentListener_); //if there is a key, unlisten
   if (this.ac_)

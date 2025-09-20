@@ -282,7 +282,11 @@ Blockly.ComponentDatabase.prototype.removeInstance = function(uid) {
  * @param {function(!ComponentInstanceDescriptor, !string)} callback
  */
 Blockly.ComponentDatabase.prototype.forEachInstance = function(callback) {
-  goog.object.forEach(this.instances_, callback);
+  for (const key in this.instances_) {
+    if (this.instances_.hasOwnProperty(key)) {
+      callback(this.instances_[key], key);
+    }
+  }
 };
 
 /**
@@ -396,15 +400,14 @@ Blockly.ComponentDatabase.prototype.getComponentNamesByType = function(component
  */
 Blockly.ComponentDatabase.prototype.getComponentTypes = function() {
   var componentTypeArray = [];
+  const seenTypes = new Set();
   for (var uid in this.instances_) {
     var typeName = this.instances_[uid].typeName;
-    if (typeName != "Form")
+    if (typeName != "Form" && !seenTypes.has(typeName)) {
+      seenTypes.add(typeName);
       componentTypeArray.push([this.i18nComponentTypes_[typeName], typeName]);
+    }
   }
-
-  goog.array.removeDuplicates(componentTypeArray, null, function(type) {
-    return type[1];
-  });
 
   if (componentTypeArray.length == 0) {
     return [[' ', 'none']]
@@ -775,8 +778,10 @@ Blockly.ComponentDatabase.prototype.getEventForType = function(typeName, eventNa
  */
 Blockly.ComponentDatabase.prototype.forEventInType = function(typeName, callback) {
   if (typeName in this.types_) {
-    var filterDeprecated = goog.object.filter(this.types_[typeName].eventDictionary, function(event) { return !event.deprecated; });
-    goog.object.map(filterDeprecated, callback);
+    var eventDict = this.types_[typeName].eventDictionary;
+    var filterDeprecated = Object.entries(eventDict)
+        .filter(function([_, event]) { return !event.deprecated; });
+    filterDeprecated.forEach(callback);
   }
 };
 
@@ -808,8 +813,10 @@ Blockly.ComponentDatabase.prototype.getMethodForType = function(typeName, method
  */
 Blockly.ComponentDatabase.prototype.forMethodInType = function(typeName, callback) {
   if (typeName in this.types_) {
-    var filterDeprecated = goog.object.filter(this.types_[typeName].methodDictionary, function(method) { return !method.deprecated; });
-    goog.object.map(filterDeprecated, callback);
+    var methodDict = this.types_[typeName].methodDictionary;
+    var filterDeprecated = Object.entries(methodDict)
+        .filter(function([_, method]) { return !method.deprecated; });
+    filterDeprecated.forEach(callback);
   }
 };
 
@@ -872,7 +879,11 @@ Blockly.ComponentDatabase.prototype.getOptionList = function(key) {
  * @param {function(!OptionList)} callback
  */
 Blockly.ComponentDatabase.prototype.forEachOptionList = function(callback) {
-  goog.object.forEach(this.optionLists_, callback);
+  for (const key in this.optionLists_) {
+    if (this.optionLists_.hasOwnProperty(key)) {
+      callback(this.optionLists_[key], key);
+    }
+  }
 }
 
 /**
