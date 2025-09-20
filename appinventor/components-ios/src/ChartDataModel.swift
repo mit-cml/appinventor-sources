@@ -15,6 +15,9 @@ public enum EntryCriterion {
 open class ChartDataModel: DataModel {
   let data: DGCharts.ChartData
   var dataset: DGCharts.ChartDataSet?
+  var color: Int32 = AIComponentKit.Color.black.int32
+  var highlights = [NSUIColor]()
+  var highlightColor: NSUIColor = .black
   let view: ChartView
 
   init(data: DGCharts.ChartData, view: ChartView) {
@@ -31,7 +34,13 @@ open class ChartDataModel: DataModel {
   }
 
   func setColor(_ argb: UIColor) {
+    self.color = colorToArgb(argb)
     dataset?.setColor(argb)
+  }
+
+  func highlightPoints(_ points: [AnyObject], _ color: Int32) -> Bool {
+    highlightColor = argbToColor(color)
+    return false
   }
 
   func setColors(_ argb: [UIColor]) {
@@ -124,6 +133,10 @@ open class ChartDataModel: DataModel {
   func removeEntry(_ index: Int) {
     if index >= 0 {
       _entries.remove(at: index)
+      if !highlights.isEmpty {
+        highlights.remove(at: index)
+        (dataset as? LineChartDataSet)?.circleColors = highlights
+      }
     }
   }
 
