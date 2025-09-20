@@ -13,7 +13,6 @@
 goog.provide('AI.Blockly.ReplMgr');
 goog.provide('AI.Blockly.ReplStateObj');
 
-goog.require('goog.net.XmlHttp');
 goog.require('goog.Uri.QueryData');
 goog.require('goog.crypt.Hash');
 goog.require('goog.crypt.Sha1');
@@ -753,7 +752,7 @@ Blockly.ReplMgr.putYail = (function() {
                     engine.pollphone(); // And on to the next!
                 }
             } else {
-                conn = goog.net.XmlHttp();
+                conn = new XMLHttpRequest();
                 conn.open('POST', rs.url, true);
                 conn.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
@@ -794,7 +793,7 @@ Blockly.ReplMgr.putYail = (function() {
             phonereceiving = true;
             console.log("receivefromphone called.");
             if (!rs.proxy) {    // proxy return values are handled differently
-                rxhr = goog.net.XmlHttp();
+                rxhr = new XMLHttpRequest();
                 rxhr.open('POST', rs.rurl, true); // We post to avoid caching issues
                 rxhr.onreadystatechange = function() {
                     if (this.readyState != 4) return;
@@ -897,7 +896,7 @@ Blockly.ReplMgr.putYail = (function() {
 // is out of date.
 Blockly.ReplMgr.triggerUpdate = function() {
     var rs = top.ReplState;
-    var fetchconn = goog.net.XmlHttp();
+    var fetchconn = new XMLHttpRequest();
     var encoder = new goog.Uri.QueryData();
     var context = this;
 
@@ -986,7 +985,7 @@ Blockly.ReplMgr.triggerUpdate = function() {
                                              function() {
                                                  // Trigger Update Here
                                                  console.log("Update: Downloaded");
-                                                 var conn = goog.net.XmlHttp();
+                                                 var conn = new XMLHttpRequest();
                                                  conn.open("POST", rs.baseurl + "_package", true);
                                                  conn.onreadystatechange = function() {
                                                      if (this.readyState == 4 && this.status == 200) {
@@ -1232,7 +1231,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
         var RefreshAssets = top.AssetManager_refreshAssets;
         switch(pc) {
         case 0:
-            xhr = goog.net.XmlHttp();
+            xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var result = JSON.parse(this.response);
@@ -1251,7 +1250,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
                         }
                     } else {
                         if (first && !usb) { // Need to actually start the thing!
-                            var xhr = goog.net.XmlHttp();
+                            var xhr = new XMLHttpRequest();
                             xhr.open("GET", "http://localhost:8004/start/", true); // We don't look at the response
                             xhr.send();
                             first = false;
@@ -1304,7 +1303,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
                 pc = 2;
                 counter = 10;
                 ubercounter = 0;
-                xhr = goog.net.XmlHttp();
+                xhr = new XMLHttpRequest();
                 xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
                 xhr.send();
             }
@@ -1315,7 +1314,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
                 progdialog.setContent(Blockly.Msg.REPL_COMPANION_STARTED_WAITING + counter + Blockly.Msg.REPL_SECONDS_ENSURE_RUNNING);
             } else {
                 progdialog.setContent(Blockly.Msg.REPL_VERIFYING_COMPANION);
-                xhr = goog.net.XmlHttp();
+                xhr = new XMLHttpRequest();
                 xhr.timeout = 4000; // 4 seconds
                 xhr.open("GET", rs.versionurl, true);
                 xhr.onreadystatechange = function() {
@@ -1329,7 +1328,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
                                 timeout();
                             } else {
                                 // We didn't work yet, kick it again and add some time and go back to state 2
-                                xhr = goog.net.XmlHttp();
+                                xhr = new XMLHttpRequest();
                                 xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
                                 xhr.send();
                                 counter = 10; // Wait 10 more seconds
@@ -1467,7 +1466,7 @@ Blockly.ReplMgr.genCode = function() {
 Blockly.ReplMgr.getFromRendezvous = function() {
     var me = this;
 
-    var xmlhttp = goog.net.XmlHttp();
+    var xmlhttp = new XMLHttpRequest();
     if (top.ReplState === undefined || top.ReplState === null) {
         console.log('getFromRendezvous: replState not set yet.');
         return;
@@ -1759,7 +1758,7 @@ Blockly.ReplMgr.loadExtensions = function() {
         this.putYail.putAsset(yailstring);
     } else if (rs.extensionurl) {
         rs.state = Blockly.ReplMgr.rsState.EXTENSIONS;
-        var xmlhttp = goog.net.XmlHttp();
+        var xmlhttp = new XMLHttpRequest();
         var encoder = new goog.Uri.QueryData();
         encoder.add('extensions', JSON.stringify(top.AssetManager_getExtensions()));
         xmlhttp.open('POST', rs.extensionurl, true);
@@ -1918,7 +1917,7 @@ Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, fo
     // using the old "Stuff it in there" approach. TODO(jis) Fix this to
     // use more modern approach
 
-    var conn = goog.net.XmlHttp();
+    var conn = new XMLHttpRequest();
     var arraybuf = new ArrayBuffer(blob.length);
     var arrayview = new Uint8Array(arraybuf);
     for (var i = 0; i < blob.length; i++) {
@@ -1936,7 +1935,7 @@ Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, fo
         rs.proxy.postMessage(['asset', encoder.toString(), arraybuf], rs.proxy_origin);
         success();              // What happens if we fail?
     } else {
-        var conn = goog.net.XmlHttp();
+        var conn = new XMLHttpRequest();
         conn.retries = 3;
         conn.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
         conn.onreadystatechange = function() {
@@ -1963,7 +1962,7 @@ Blockly.ReplMgr.putAsset = function(projectid, filename, blob, success, fail, fo
 Blockly.ReplMgr.hardreset = function(formName, callback) {
     top.AssetManager_reset(formName); // Reset the notion of what assets
                                                 // are loaded.
-    var xhr = goog.net.XmlHttp();
+    var xhr = new XMLHttpRequest();
     xhr.open("GET", "http://localhost:8004/reset/", true);
     xhr.onreadystatechange = function() {
         if (this.readyState == 4) {
@@ -1985,7 +1984,7 @@ Blockly.ReplMgr.ehardreset = function(formName) {
         dialog.hide();
         if (response == Blockly.Msg.REPL_RESET) {
             context.hardreset(formName, function() {
-                var xhr = goog.net.XmlHttp();
+                var xhr = new XMLHttpRequest();
                 xhr.open("GET", "http://localhost:8004/emulatorreset/", true);
                 xhr.onreadystatchange = function() {}; // Ignore errors
                 xhr.send();
