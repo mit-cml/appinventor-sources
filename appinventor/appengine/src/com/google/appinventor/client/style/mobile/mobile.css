@@ -2294,7 +2294,7 @@ input[type="checkbox"]:focus {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    margin-left: 12px;
+    margin-left: -30px;
 }
 
 .ode-ProjectItemMobile .ode-ProjectCheckBox {
