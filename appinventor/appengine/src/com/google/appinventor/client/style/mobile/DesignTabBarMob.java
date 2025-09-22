@@ -3,7 +3,10 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
-import com.google.appinventor.client.boxes.*;
+import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.PropertiesBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -32,6 +35,7 @@ public class DesignTabBarMob extends Composite {
 
     private MobileSidebar sidebar;
     private TabClickListener tabClickListener;
+    private TabType currentActiveTab = null;
 
     public interface TabClickListener {
         void onTabClick(TabType tabType);
@@ -75,7 +79,15 @@ public class DesignTabBarMob extends Composite {
      * @param tabType The type of tab that was clicked
      */
     private void handleTabClick(TabType tabType) {
-        openPanel(tabType);
+        // If clicking the same tab that's already active, close the sidebar
+        if (currentActiveTab == tabType && sidebar != null && sidebar.isOpen()) {
+            sidebar.close();
+            currentActiveTab = null;
+        } else {
+            // Open the new panel
+            openPanel(tabType);
+            currentActiveTab = tabType;
+        }
 
         // Notify listener if set
         if (tabClickListener != null) {

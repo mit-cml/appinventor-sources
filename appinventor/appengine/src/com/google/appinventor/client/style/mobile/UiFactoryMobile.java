@@ -9,7 +9,6 @@ import com.google.appinventor.client.editor.youngandroid.YaNonVisibleComponentsP
 import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
-import com.google.appinventor.client.style.neo.YaVisibleComponentsPanelNeo;
 import com.google.gwt.json.client.JSONObject;
 
 

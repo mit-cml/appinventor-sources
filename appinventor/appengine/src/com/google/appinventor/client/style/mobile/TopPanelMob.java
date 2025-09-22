@@ -5,7 +5,6 @@
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.TopPanel;
-import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.gwt.core.client.GWT;
@@ -14,7 +13,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
 public class TopPanelMob extends TopPanel {

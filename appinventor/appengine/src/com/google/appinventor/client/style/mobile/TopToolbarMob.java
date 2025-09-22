@@ -17,10 +17,13 @@ import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-
+import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com. google. gwt. user. client. ui. Button;
 import java.util.MissingResourceException;
 import java.util.logging.Logger;
 
@@ -95,7 +98,6 @@ public class TopToolbarMob extends TopToolbar {
     });
 
     languageButton.addClickHandler(new ClickHandler() {
-
       @Override
       public void onClick(ClickEvent clickEvent) {
         showLanguagePopup();

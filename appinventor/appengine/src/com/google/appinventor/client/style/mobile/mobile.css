@@ -482,6 +482,9 @@ body, html {
     flex-direction: column;
     display: flex;
     gap: 4px;
+    position: absolute;
+    top: 12px;
+    right: 3px;
 }
 
 .ode-TopToolbar .left {
@@ -583,6 +586,17 @@ body, html {
 
 .ode-TopPanelButton .material-icons {
     font-size: xxx-large;
+    background: #27710f !important;
+    border: none !important;
+    border-radius: 8px !important;
+    /* padding: 8px 12px !important; */
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+    transition: all 0.2s ease !important;
+    color: white !important;
+    min-width: 8px !important;
+    height: 40px !important;
+    position: relative !important;
+    padding: 2px;
 }
 
 .ode-TopPanelButton .html-face {
@@ -3185,7 +3199,7 @@ input[type="checkbox"]:focus {
     text-align: right;
     position: absolute;
     top: 4px;
-    right: 4px;
+    right: 20px;
 }
 
 .ya-Toolbar .center {
@@ -3327,4 +3341,12 @@ input[type="checkbox"]:focus {
 
 .ode-DeckPanel>div {
     overflow-x: hidden !important;
+}
+
+.mobile-date-dropdown-popup{
+    left: 160px !important;
+}
+
+.mobile-sort-dropdown-popup{
+    margin-left: -50px !important;
 }

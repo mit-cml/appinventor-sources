@@ -4,11 +4,11 @@
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.boxes.BlockSelectorBox;
-import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
-import com.google.appinventor.client.editor.youngandroid.actions.*;
+import com.google.appinventor.client.editor.youngandroid.actions.ProjectPropertiesAction;
+import com.google.appinventor.client.editor.youngandroid.actions.SwitchToBlocksEditorAction;
+import com.google.appinventor.client.editor.youngandroid.actions.SwitchToFormEditorAction;
+import com.google.appinventor.client.editor.youngandroid.actions.ToggleTutorialAction;
 import com.google.appinventor.client.actions.SendToGalleryAction;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
@@ -80,8 +80,16 @@ public class DesignToolbarMob extends DesignToolbar {
             Element element = allElements.getItem(i);
             if (element.getClassName().contains("gwt-PopupPanel")) {
                 String display = element.getStyle().getDisplay();
-                if (display == null || !display.equals("none")) {
+
+                // Toggle popup visibility
+                if (display == null || display.equals("none")) {
+                    // Show popup
                     element.addClassName("mobile-designer-popup");
+                    element.getStyle().setProperty("display", "block");
+                } else {
+                    // Hide popup
+                    element.removeClassName("mobile-designer-popup");
+                    element.getStyle().setProperty("display", "none");
                 }
             }
         }

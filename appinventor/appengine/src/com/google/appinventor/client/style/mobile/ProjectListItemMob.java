@@ -9,7 +9,11 @@ import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -55,6 +59,14 @@ public class ProjectListItemMob extends ProjectListItem {
         super.nameLabel = nameLabel;
         super.projectnameFocusPanel = projectnameFocusPanel;
 
+        // Add click handler for dropdown styling
+        dateDropdown.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                addPopupStyling();
+            }
+        }, ClickEvent.getType());
+
         // Setup date dropdown after all initialization is complete
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
@@ -62,6 +74,27 @@ public class ProjectListItemMob extends ProjectListItem {
                 setupDateDropdown();
             }
         });
+    }
+
+    private void addPopupStyling() {
+        NodeList<Element> allElements = Document.get().getElementsByTagName("div");
+        for (int i = 0; i < allElements.getLength(); i++) {
+            Element element = allElements.getItem(i);
+            if (element.getClassName().contains("gwt-PopupPanel")) {
+                String display = element.getStyle().getDisplay();
+
+                // Toggle popup visibility
+                if (display == null || display.equals("none")) {
+                    // Show popup
+                    element.addClassName("mobile-date-dropdown-popup");
+                    element.getStyle().setProperty("display", "block");
+                } else {
+                    // Hide popup
+                    element.removeClassName("mobile-date-dropdown-popup");
+                    element.getStyle().setProperty("display", "none");
+                }
+            }
+        }
     }
 
     /**

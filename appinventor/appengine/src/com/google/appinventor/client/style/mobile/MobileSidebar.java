@@ -3,16 +3,18 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.style.mobile;
 
-import com.google.appinventor.client.boxes.BlockSelectorBox;
-import com.google.appinventor.client.boxes.PaletteBox;
-import com.google.appinventor.client.boxes.PropertiesBox;
-import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
+
 
 import java.util.Iterator;
 
