@@ -351,7 +351,7 @@ open class ARNodeBase: NSObject, ARNode {
     set(rotate) { _rotateWithGesture = rotate }
   }
   
-  @objc open var CollisionShape: String = "sphere" {
+  @objc open var CollisionShape: String = "box" {
     didSet { updateCollisionShape() }
   }
   
@@ -807,7 +807,8 @@ open class ARNodeBase: NSObject, ARNode {
     
     // For round objects, use sphere collision (more stable)
     let shape: ShapeResource
-    if abs(safeSize.x - safeSize.y) < 0.01 && abs(safeSize.y - safeSize.z) < 0.01 {
+    //if abs(safeSize.x - safeSize.y) < 0.01 && abs(safeSize.y - safeSize.z) < 0.01 {
+    if CollisionShape == "sphere" {
         // Nearly cubic - use sphere for stability
         let radius = (safeSize.x + safeSize.y + safeSize.z) / 6.0
         shape = ShapeResource.generateSphere(radius: radius)
@@ -911,60 +912,169 @@ open class ARNodeBase: NSObject, ARNode {
   @available(iOS 15.0, *)
   private func showCollisionEffect(type: CollisionType) {
 
-      if OriginalMaterial == nil {
-          OriginalMaterial = _modelEntity.model?.materials.first
-      }
+    if OriginalMaterial == nil {
+        OriginalMaterial = _modelEntity.model?.materials.first
+    }
     _isCurrentlyColliding = true
-      
-      var collidedMaterial = SimpleMaterial()
-      
-      // Different colors for different collision types
-      switch type {
-      case .object:
-          collidedMaterial.color = .init(tint: .red.withAlphaComponent(0.5))
-      case .floor:
-          collidedMaterial.color = .init(tint: .blue.withAlphaComponent(0.6))
-      case .wall:
-          collidedMaterial.color = .init(tint: .orange.withAlphaComponent(0.7))
-      case .none:
-          collidedMaterial.color = .init(tint: .white.withAlphaComponent(0.5))
-      }
+    
+    var collidedMaterial = SimpleMaterial()
+    
+    // Different colors for different collision types
+    switch type {
+    case .object:
+        collidedMaterial.color = .init(tint: .red.withAlphaComponent(0.7))
+    case .floor:
+        collidedMaterial.color = .init(tint: .blue.withAlphaComponent(0.6))
+    case .wall:
+        collidedMaterial.color = .init(tint: .orange.withAlphaComponent(0.7))
+    case .none:
+        collidedMaterial.color = .init(tint: .white.withAlphaComponent(0.5))
+    }
       
       // Apply collision color
-      _modelEntity.model?.materials = [collidedMaterial]
+    _modelEntity.model?.materials = [collidedMaterial]
     
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
         if let original = self?.OriginalMaterial {
             self?._modelEntity.model?.materials = [original]
-            print("🎨 Collision effect restored")
+            //print("🎨 Collision effect restored")
         }
     }
-     
   }
-  
-
   
   // MARK: - Drag Methods
   
   @objc open func startDrag() {
-      isBeingDragged = true
-      _originalMaterial = _modelEntity.model?.materials.first
-      print("🎯 \(Name) started being dragged")
+    isBeingDragged = true
+    _originalMaterial = _modelEntity.model?.materials.first
+    if var physicsBody = _modelEntity.physicsBody {
+      physicsBody.mode = .kinematic
+      _modelEntity.physicsBody = physicsBody
+    }
+    print("🎯 \(Name) started being dragged")
   }
   
-  @objc open func updateDrag(dragVector: CGPoint, velocity: CGPoint, worldDirection: SIMD3<Float>) {
-      // Override in subclasses
-      print("🎯 \(Name) drag update - override in subclass")
-  }
-  
+  @objc open func updateDrag(fingerWorldPosition: SIMD3<Float>) {
+      guard _isBeingDragged else { return }
+      let constrainedPosition = SIMD3<Float>(
+        fingerWorldPosition.x,
+        max(fingerWorldPosition.y, Float(ARView3D.SHARED_GROUND_LEVEL) + 0.01), // always higher than ground level
+        fingerWorldPosition.z
+      )
+      // Direct position control
+      _modelEntity.transform.translation = constrainedPosition
+
+    }
   @objc open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
     let cameraVectors = camera3DProjection as? ARView3D.CameraVectors
-      isBeingDragged = false
-      if let original = _originalMaterial {
-          _modelEntity.model?.materials = [original]
-          _originalMaterial = nil
+    isBeingDragged = false
+    if let original = _originalMaterial {
+      _modelEntity.model?.materials = [original]
+      _originalMaterial = nil
+    }
+    if var physicsBody = _modelEntity.physicsBody {
+      physicsBody.mode = .dynamic
+      _modelEntity.physicsBody = physicsBody
+    }
+    
+    if #available(iOS 15.0, *) {
+      placeOnNearestSurface()
+    } else {
+      // will follow finger
+    }
+    print("🎯 \(Name) drag ended - override in subclass")
+  }
+  
+  @available(iOS 15.0, *)
+  private func placeOnNearestSurface() {
+    print("Placing on nearest surface")
+    
+    // Use the cached preview surface if available
+    if let cachedSurface = getPreviewPlacementSurface() {
+      print("Using cached preview surface: \(cachedSurface)")
+      
+      // Disable physics completely during placement
+      _modelEntity.physicsBody = nil
+      
+      animateToPosition(cachedSurface) {
+          self.finalizeModelPlacement()
+          self.clearPreviewPlacementSurface()
       }
-      print("🎯 \(Name) drag ended - override in subclass")
+      return
+    }
+    
+    // Fallback: find surface from current position
+    let currentPos = _modelEntity.transform.translation
+    if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
+      animateToPosition(placementPosition) {
+          self.finalizeModelPlacement()
+      }
+    } else {
+      // Final fallback to ground level
+      let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
+      animateToPosition(groundPosition) {
+          self.finalizeModelPlacement()
+      }
+    }
+  }
+  
+  private func finalizeModelPlacement() {
+    print("Finalizing node placement")
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+        self?.EnablePhysics(true)
+    }
+    
+    if let container = _container {
+      container.hidePlacementPreview()
+    }
+    
+    // Clear local preview data
+    _previewPlacementSurface = nil
+    
+    print("node placement complete at: \(_modelEntity.transform.translation)")
+  }
+  
+  /// Animates the node to a target position smoothly
+  @available(iOS 15.0, *)
+  private func animateToPosition(_ targetPosition: SIMD3<Float>, completion: @escaping () -> Void) {
+    print("📍 Animating to position: \(targetPosition)")
+    
+    // Disable physics during animation
+    _modelEntity.physicsBody = nil
+    
+    // Create smooth animation to target position
+    let currentTransform = _modelEntity.transform
+    var targetTransform = currentTransform
+    targetTransform.translation = targetPosition
+    
+    // Use RealityKit's animation system
+    let animation = FromToByAnimation<Transform>(
+      name: "placeAnimation",
+      from: currentTransform,
+      to: targetTransform,
+      duration: 0.3,
+      timing: .easeOut,
+      bindTarget: .transform
+    )
+    
+    if let animationResource = try? AnimationResource.generate(with: animation) {
+      _modelEntity.playAnimation(animationResource, transitionDuration: 0.1, startsPaused: false)
+      
+      // Completion handler
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+        completion()
+      }
+    } else {
+      // Fallback - direct position set
+      _modelEntity.transform.translation = targetPosition
+      completion()
+    }
+  }
+
+  private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
+    guard let container = _container else { return nil }
+    return container.getARView().checkAndUpdateSurfacePreview(for: self, at: position)
   }
 
 } // end ARNodeBase class
@@ -995,6 +1105,7 @@ extension ARNodeBase {
       print("🎾 Updated mass to: \(Mass)")
   }
   
+  //assume sphere shape. can be overriden to be more accurate
   private func updateCollisionShape() {
       let shape: ShapeResource
       let bounds = _modelEntity.visualBounds(relativeTo: nil)
@@ -1005,48 +1116,45 @@ extension ARNodeBase {
           max(autoSize.z, 0.05) + 0.001
       )
     
-    let exactRadius = (bounds.max.x - bounds.min.x) / 2.0 * Scale
-    shape = ShapeResource.generateSphere(radius: exactRadius)
-      _modelEntity.collision = CollisionComponent(shapes: [shape])
+    shape = ShapeResource.generateBox(size: safeSize)
+    _modelEntity.collision = CollisionComponent(shapes: [shape])
       
-      // Update physics body if it exists
-      if _modelEntity.physicsBody != nil {
-          // Update mass based on new volume (realistic)
-          let volumeScale = Scale
-          let newMass = Mass * volumeScale
-          
-          let material = PhysicsMaterialResource.generate(
-              staticFriction: StaticFriction,
-              dynamicFriction: DynamicFriction,
-              restitution: Restitution
-          )
-          
-          _modelEntity.physicsBody = PhysicsBodyComponent(
-              massProperties: PhysicsMassProperties(mass: newMass),
-              material: material,
-              mode: .dynamic
-          )
-          
-          print("🎾 Collision updated: mass=\(newMass)")
-      }
+    // Update physics body if it exists
+    if _modelEntity.physicsBody != nil {
+        // Update mass based on new volume (realistic)
+        let volumeScale = Scale
+        let newMass = Mass * volumeScale
+        
+        let material = PhysicsMaterialResource.generate(
+            staticFriction: StaticFriction,
+            dynamicFriction: DynamicFriction,
+            restitution: Restitution
+        )
+        
+        _modelEntity.physicsBody = PhysicsBodyComponent(
+            massProperties: PhysicsMassProperties(mass: newMass),
+            material: material,
+            mode: .dynamic
+        )
+        
+        print("🎾 Collision updated: mass=\(newMass)")
+    }
   }
 
-  private func generateCollisionShape(size: SIMD3<Float>) -> ShapeResource {
-      // Determine best collision shape based on object type and proportions
-      let avgSize = (size.x + size.y + size.z) / 3.0
-      let variance = max(abs(size.x - avgSize), abs(size.y - avgSize), abs(size.z - avgSize))
-      
-      if variance < 0.02 {
-          let radius = avgSize / 2.0
-          return ShapeResource.generateSphere(radius: radius)
-      } else if abs(size.x - size.z) < 0.02 && size.y > size.x * 1.5 {
-          let radius = min(size.x, size.z) / 2.0
-          return ShapeResource.generateCapsule(height: size.y, radius: radius)
-      } else {
-          // Use box for everything else
-          return ShapeResource.generateBox(size: size)
-      }
+
+  
+  public func debugVisualState() {
+      print("=== VISUAL STATE DEBUG ===")
+      print("Model materials count: \(_modelEntity.model?.materials.count ?? 0)")
+    if #available(iOS 18.0, *) {
+      print("Entity opacity: \(_modelEntity.components[OpacityComponent.self]?.opacity ?? 1.0)")
+    } else {
+      // Fallback on earlier versions
+    }
+      print("Transform scale: \(_modelEntity.transform.scale)")
+      print("==========================")
   }
+  
 
   @objc open func handleAdvancedGestureUpdate(
     fingerLocation: CGPoint,
@@ -1055,7 +1163,28 @@ extension ARNodeBase {
     groundProjection: Any?,
     camera3DProjection: Any?,
     gesturePhase: UIGestureRecognizer.State
-  ) {}
+  ) {
+    var groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
+    print("any node, handling drag gesture \(groundPos)")
+  
+    switch gesturePhase {
+    case .began:
+      startDrag()
+        
+    case .changed:
+      if let worldPos = groundPos {
+        updateDrag(fingerWorldPosition:worldPos)
+      } else {
+        print("⚠️ No groundProjection available during drag")
+      }
+        
+    case .ended, .cancelled:
+      endDrag(releaseVelocity: fingerVelocity, camera3DProjection: camera3DProjection!)
+        
+    default:
+        break
+    }
+  }
   
   // Add these methods to ModelNode class
   @objc public func setPreviewPlacementSurface(_ surface: SIMD3<Float>) {

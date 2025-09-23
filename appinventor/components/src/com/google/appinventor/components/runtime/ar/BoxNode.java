@@ -27,13 +27,10 @@ import com.google.ar.core.Trackable;
     category = ComponentCategory.AR)
 @SimpleObject public final class BoxNode extends ARNodeBase implements ARBox {
 
-    private float[] fromPropertyPosition = {0f,0f,0f};
-    private Anchor anchor = null;
-    private Trackable trackable = null;
-    private String texture = "";
-    private String objectModel = Form.ASSETS_PREFIX + "cube.obj";
-    private float scale = 1.0f;
-
+    private float width = 1.0f;
+    private float height = 1.0f;
+    private float length = 1.0f;
+    private float cornerRadius = 0;
 
     public BoxNode(final ARNodeContainer container) {
       super(container);
@@ -41,23 +38,25 @@ import com.google.ar.core.Trackable;
       container.addNode(this);
     }
 
-    @Override // wht is the significance?
-    public Anchor Anchor() { return this.anchor; }
 
     @Override
-    public void Anchor(Anchor a) { this.anchor = a;}
+    @SimpleFunction(description = "Changes the capsules's scale by the given scalar, maintaining bottom position if physics enabled.")
+    public void ScaleBy(float scalar) {
+        Log.i("BoxNode", "Scaling box " + name + " by " + scalar);
 
-    @Override
-    public Trackable Trackable() { return this.trackable; }
+        float oldScale = Scale();
+        float newScale = oldScale * Math.abs(scalar);
 
-    @Override
-    public void Trackable(Trackable t) { this.trackable = t;}
+        // Update physics immediately if enabled to maintain bottom position
+        if (EnablePhysics()) {
+            float previousSize = width * Scale();
+            // Adjust Y position to maintain ground contact
+            float[] currentPos = getCurrentPosition();
+            currentPos[1] = currentPos[1] - previousSize + (width * newScale);
+            setCurrentPosition(currentPos);
+        }
+    }
 
-    @Override
-    public float Scale() { return this.scale; }
-
-    @Override
-    public void Scale(float t) { this.scale = t;}
 
     @Override
     @SimpleProperty(description = "The 3D model file to be loaded.",

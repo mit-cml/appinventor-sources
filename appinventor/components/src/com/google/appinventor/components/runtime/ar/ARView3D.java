@@ -2007,6 +2007,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i("cannot create boxNode ", " since there is no session");
         return null;
     }
+    @SimpleFunction(description = "Create a new CapsuleNode with geo coords")
+    public BoxNode CreateBoxNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating Sphere node", "with geo location");
+
+        BoxNode boxNode = new BoxNode(this);
+
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+
+        boxNode.Anchor(geoAnchor);
+
+        Log.i("created Box node, geo anchor is", boxNode.Anchor().toString());
+        return boxNode;
+    }
+
 
     @SimpleFunction(description = "Create a new CapsuleNode with geo coords")
     public SphereNode CreateSphereNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {

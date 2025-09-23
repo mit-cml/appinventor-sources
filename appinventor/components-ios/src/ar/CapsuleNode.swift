@@ -57,5 +57,24 @@
         updateCapsuleMesh()
       }
     }
+    
+    override open func ScaleBy(_ scalar: Float) {
+        print("🔄 Scaling sphere \(Name) by \(scalar)")
+        
+        let oldScale = Scale
+        let oldActualRadius = _capRadius * oldScale
+            
+        let hadPhysics = _modelEntity.physicsBody != nil
+        
+        let newScale = oldScale * abs(scalar)
+        // ✅ Update physics immediately if it was enabled before we change the scale
+        if hadPhysics {
+          let previousSize = _capRadius * Scale
+          _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_capRadius * newScale)
+        }
+      
+        Scale = newScale
+        print("Scale complete - bottom position maintained")
+    }
 
   }

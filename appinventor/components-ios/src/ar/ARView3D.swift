@@ -105,6 +105,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _currentDraggedObject: ARNodeBase? = nil
   
   private var _placementIndicator: AnchorEntity?
+  private var _lastSurfaceCheck = Date()
 
   
   struct CollisionGroups {
@@ -703,7 +704,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     ensureFloorExists()
     if node.IsGeoAnchored {
-      print("✅ Taking GEO ANCHOR branch - calling addGeoAnchoredNode")
       addGeoAnchoredNode(node)
     } else {
       var anchorEntity = node.Anchor
@@ -711,14 +711,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         anchorEntity = node.createAnchor()
       }
       let nodeId = ObjectIdentifier(node)
-      print("adding the node")
+      print("adding non-geo node")
       _nodeToAnchorDict[node] = anchorEntity
       _containsModelNodes = node is ModelNode ? true : _containsModelNodes
       
       if _sessionRunning {
         _arView.scene.addAnchor(anchorEntity!)
         
-        print("adding anchor and setting position \(anchorEntity?.position.x) \(anchorEntity?.position.y) \(anchorEntity?.position.z)")
         if !node._fromPropertyPosition.isEmpty {
           let position = node._fromPropertyPosition.split(separator: ",")
             .prefix(3)
@@ -950,6 +949,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
   }
+  
+  public func session(_ session: ARSession, didFailWithError error: Error) {
+       print("AR Session failed: \(error.localizedDescription)")
+       
+       DispatchQueue.main.async {
+         print("AR Session failed. Restarting...")
+         self.clearView()
+       }
+   }
   
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
@@ -1542,19 +1550,10 @@ extension ARView3D: UIGestureRecognizerDelegate {
         let normalizedScreenDistance = screenDistance / 100.0  // Normalize to 0-1
         var worldThreshold: Float = 0.1  // Default 10cm
 
-        // Use actual sphere radius if it's a sphere
-        if let sphereNode = node as? SphereNode {
-          let sphereRadiusInCM = sphereNode.RadiusInCentimeters
-          let sphereRadiusInMeters = sphereRadiusInCM / 100.0  // Simple conversion
-            worldThreshold = sphereRadiusInMeters * 0.05  // 50% buffer around actual sphere
-        }
+        let bounds = node._modelEntity.visualBounds(relativeTo: nil as Entity?)
+        let currentSize = bounds.max - bounds.min
+        worldThreshold = currentSize.max()
         
-        if let modelNode = node as? ModelNode {
-          let bounds = modelNode._modelEntity.visualBounds(relativeTo: nil as Entity?)
-          let currentSize = bounds.max - bounds.min
-          worldThreshold = currentSize.max()
-          print("Selected model node size is \(currentSize) and \(node.Scale)")
-        }
 
         let normalizedWorldDistance = min(worldDistance / worldThreshold, 1.0)  // Normalize to 0-1
           
@@ -2101,31 +2100,56 @@ extension ARView3D {
   
 
   
-  /// Shows a visual indicator at the predicted placement location
   private func showPlacementPreview(at position: SIMD3<Float>) {
     guard #available(iOS 15.0, *) else { return }
     
-    // Remove existing indicator
     hidePlacementPreview()
     
-    // Create a simple placement indicator (small translucent disc)
     let indicatorEntity = ModelEntity()
+    let geometry = MeshResource.generatePlane(width: 0.12, depth: 0.12)
+    var material = SimpleMaterial()
     
-    let indicatorGeometry = MeshResource.generatePlane(width: 0.1, depth: 0.1)
-    var indicatorMaterial = SimpleMaterial()
-    indicatorMaterial.color = .init(tint: UIColor.systemGreen.withAlphaComponent(0.8))
-    indicatorMaterial.baseColor = MaterialColorParameter.color(UIColor.systemGreen.withAlphaComponent(0.8))
+    // Different color if placing on a node vs floor/plane
+    let isOnNode = isPositionOnNode(position)
+    material.color = .init(tint: isOnNode ?
+        UIColor.systemBlue.withAlphaComponent(0.8) :
+        UIColor.systemGreen.withAlphaComponent(0.8)
+    )
     
-    indicatorEntity.model = ModelComponent(mesh: indicatorGeometry, materials: [indicatorMaterial])
+    indicatorEntity.model = ModelComponent(mesh: geometry, materials: [material])
     indicatorEntity.transform.translation = position
     
-    let aEntity = AnchorEntity()
     
-    aEntity.addChild(indicatorEntity)
-    addPlacementIndicator(aEntity)
-    _placementIndicator = aEntity
+    let anchor = AnchorEntity()
+    anchor.addChild(indicatorEntity)
+    _arView.scene.addAnchor(anchor)
+    _placementIndicator = anchor
+    
+    print(isOnNode ? "Preview: Stacking on node" : "Preview: Placing on surface")
   }
   
+  // Check if a position is on top of another node
+  private func isPositionOnNode(_ position: SIMD3<Float>) -> Bool {
+    let floorLevel = Float(GROUND_LEVEL)
+    
+    for (node, _) in _nodeToAnchorDict {
+      let nodePos = node._modelEntity.transform.translation
+      let topSurface = calculateNodeTopSurface(node)
+      
+      let distance2D = sqrt(
+          pow(position.x - nodePos.x, 2) +
+          pow(position.z - nodePos.z, 2)
+      )
+      
+      // If close horizontally and at roughly the right height
+      if distance2D < 0.4 && abs(position.y - topSurface.y) < 0.1 {
+          return true
+      }
+    }
+    
+    return false
+  }
+
   /// Hides the placement preview indicator
   public func hidePlacementPreview() {
     if let indicator = _placementIndicator {
@@ -2174,33 +2198,34 @@ extension ARView3D {
       targetNode = _currentDraggedObject
     }
     
+    if targetNode == nil || ((targetNode?.moveByPan) != nil) == false {
+      return
+    }
+    
     let nodeY = targetNode?._modelEntity.transform.translation.y ?? Float(GROUND_LEVEL)
     
     let fingerLocation = gesture.location(in: _arView)      // ✅ Where finger IS now
     let fingerMovement = gesture.translation(in: _arView)   // ✅ How finger MOVED
     let fingerVelocity = gesture.velocity(in: _arView)
-    
 
-      
-      if let node = targetNode as? ARNodeBase {
-        let groundProjection = getProjectionForNode(
-          node: node,
-          fingerLocation: fingerLocation,
-          fingerMovement: fingerMovement,
-          gesturePhase: gesture.state
+    if let node = targetNode as? ARNodeBase {
+      let groundProjection = getProjectionForNode(
+        node: node,
+        fingerLocation: fingerLocation,
+        fingerMovement: fingerMovement,
+        gesturePhase: gesture.state
+      )
+      let cameraVectors = getCurrentCameraVectors() // New method
+        
+      node.handleAdvancedGestureUpdate(
+            fingerLocation: fingerLocation,
+            fingerMovement: fingerMovement,
+            fingerVelocity: fingerVelocity,
+            groundProjection: groundProjection,
+            camera3DProjection: cameraVectors,
+            gesturePhase: gesture.state
         )
-        let cameraVectors = getCurrentCameraVectors() // New method
-          
-          node.handleAdvancedGestureUpdate(
-              fingerLocation: fingerLocation,
-              fingerMovement: fingerMovement,
-              fingerVelocity: fingerVelocity,
-              groundProjection: groundProjection,
-              camera3DProjection: cameraVectors,
-              gesturePhase: gesture.state
-          )
       }
-      
     
     if gesture.state == .changed {
       // Reset translation to get relative movements
@@ -2222,24 +2247,19 @@ extension ARView3D {
     return SIMD3<Float>(currentPos.x, planeY, currentPos.z)
   }
   
-  
-  // per node, different dragging behavior
   func getProjectionForNode(node: ARNodeBase, fingerLocation: CGPoint, fingerMovement: CGPoint, gesturePhase: UIGestureRecognizer.State) -> SIMD3<Float>? {
     
     if let sphereNode = node as? SphereNode {
       // Spheres use ground projection for rolling behavior
       return projectFingerToGround(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
       
-    } else if let modelNode = node as? ModelNode {
-      // ✅ Pokemon GO style: different behavior for different phases
-
+    } else { //if let modelNode = node as? ModelNode {
+      // ✅ Pokemon GO style
       return projectFingerTo3DSpace(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
-      
-      
-    } else {
+    } /*else {
       // Default behavior for other node types
       return projectFingerRaycast(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
-    }
+    }*/
   }
   
   // ✅ NEW: Project finger to smooth 3D space for Pokemon GO style dragging
@@ -2253,26 +2273,13 @@ extension ARView3D {
     let newPosition = projectFingerIncrementally(currentPos, fingerMovement: fingerMovement)
     
     // ✅ Allow Y movement but with constraints for better UX
-    let constrainedY = max(newPosition.y, Float(GROUND_LEVEL) + 0.005) // Stay above ground
+    let constrainedY = max(newPosition.y, Float(GROUND_LEVEL) + 0.5) // Stay above ground
     
     
-    if let modelNode = draggedNode as? ModelNode {
-        if let nearestSurface = findNearestHorizontalSurface(from: newPosition) {
-          print("DEBUG: Found surface at: \(nearestSurface)")
-          print("DEBUG: Current finger position: \(newPosition)")
-          print("DEBUG: Surface Y vs Floor: \(nearestSurface.y) vs \(Float(GROUND_LEVEL))")
-          
-            modelNode.setPreviewPlacementSurface(nearestSurface)  // Store data in ModelNode
-            showPlacementPreview(at: nearestSurface)              // Show visual in ARView3D
-        } else {
-            modelNode.clearPreviewPlacementSurface()             // Clear data in ModelNode
-            hidePlacementPreview()                                // Hide visual in ARView3D
-        }
-      
+    if shouldCheckSurfaces() {
+        checkAndUpdateSurfacePreview(for: draggedNode, at: newPosition)
     }
-    
-    
-    
+
     return SIMD3<Float>(
       newPosition.x,
       constrainedY,
@@ -2280,47 +2287,78 @@ extension ARView3D {
     )
   }
   
-  private func projectFingerIncrementally(_ currentPos: SIMD3<Float>, fingerMovement: CGPoint) -> SIMD3<Float> {
-      guard let frame = _arView.session.currentFrame else {
-          // Basic fallback without camera info
-          let scale: Float = 0.002
-          return SIMD3<Float>(
-              currentPos.x + Float(fingerMovement.x) * scale,
-              currentPos.y,
-              currentPos.z + Float(fingerMovement.y) * scale
-          )
+  public func checkAndUpdateSurfacePreview(for node: ARNodeBase, at position: SIMD3<Float>) -> SIMD3<Float>? {
+      
+    if let surface = findNodeSurface(from: position, excludeNode: node) {
+      node.setPreviewPlacementSurface(surface)
+      showPlacementPreview(at: surface)
+      return surface
+    } else if let surface = findSurfaceByDetectedPlanes(from: position) {
+      node.setPreviewPlacementSurface(surface)
+      showPlacementPreview(at: surface)
+      return surface
+    }else if let surface = findSurfaceByRaycast(from: position) {
+      node.setPreviewPlacementSurface(surface)
+      showPlacementPreview(at: surface)
+      return surface
+    } else {
+      node.clearPreviewPlacementSurface()
+      hidePlacementPreview()
+      return SIMD3<Float>(0,0,0)
+    }
+
+  }
+
+  private func shouldCheckSurfaces() -> Bool {
+      let now = Date()
+      if now.timeIntervalSince(_lastSurfaceCheck) > 0.2 {
+          _lastSurfaceCheck = now
+          return true
       }
-      
-      // Camera-compensated movement (restored from original working code)
-      let cameraTransform = frame.camera.transform
-      let cameraForward = -SIMD3<Float>(
-          cameraTransform.columns.2.x,
-          0,
-          cameraTransform.columns.2.z
-      )
-      let cameraYaw = atan2(cameraForward.x, cameraForward.z)
-      
-      // Scale movement based on distance
-      let cameraPosition = SIMD3<Float>(
-          cameraTransform.columns.3.x,
-          cameraTransform.columns.3.y,
-          cameraTransform.columns.3.z
-      )
-      let distance = simd_distance(currentPos, cameraPosition)
-      let scale: Float = 0.004 * max(distance * 0.5, 0.5)
-      
-      // Apply camera rotation to movement (this is what was missing!)
-      let fingerX = -Float(fingerMovement.x) * scale
-      let fingerZ = -Float(fingerMovement.y) * scale
-      
-      let rotatedX = fingerX * cos(-cameraYaw) - fingerZ * sin(-cameraYaw)
-      let rotatedZ = fingerX * sin(-cameraYaw) + fingerZ * cos(-cameraYaw)
-      
+      return false
+  }
+  
+  private func projectFingerIncrementally(_ currentPos: SIMD3<Float>, fingerMovement: CGPoint) -> SIMD3<Float> {
+    guard let frame = _arView.session.currentFrame else {
+      // Basic fallback without camera info
+      let scale: Float = 0.002
       return SIMD3<Float>(
-          currentPos.x + rotatedX,
-          currentPos.y, // Maintain current Y during drag
-          currentPos.z + rotatedZ
+        currentPos.x + Float(fingerMovement.x) * scale,
+        currentPos.y,
+        currentPos.z + Float(fingerMovement.y) * scale
       )
+    }
+    
+    // Camera-compensated movement (restored from original working code)
+    let cameraTransform = frame.camera.transform
+    let cameraForward = -SIMD3<Float>(
+        cameraTransform.columns.2.x,
+        0,
+        cameraTransform.columns.2.z
+    )
+    let cameraYaw = atan2(cameraForward.x, cameraForward.z)
+    
+    // Scale movement based on distance
+    let cameraPosition = SIMD3<Float>(
+        cameraTransform.columns.3.x,
+        cameraTransform.columns.3.y,
+        cameraTransform.columns.3.z
+    )
+    let distance = simd_distance(currentPos, cameraPosition)
+    let scale: Float = 0.004 * max(distance * 0.5, 0.5)
+    
+    // Apply camera rotation to movement (this is what was missing!)
+    let fingerX = -Float(fingerMovement.x) * scale
+    let fingerZ = -Float(fingerMovement.y) * scale
+    
+    let rotatedX = fingerX * cos(-cameraYaw) - fingerZ * sin(-cameraYaw)
+    let rotatedZ = fingerX * sin(-cameraYaw) + fingerZ * cos(-cameraYaw)
+    
+    return SIMD3<Float>(
+        currentPos.x + rotatedX,
+        currentPos.y, // Maintain current Y during drag
+        currentPos.z + rotatedZ
+    )
   }
   
   // ✅ Fallback incremental projection using current frame
@@ -2403,56 +2441,124 @@ extension ARView3D {
     return newPosition
   }
   
-  
-  public func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
-      let floorLevel = Float(GROUND_LEVEL)
+  // Simple downward raycast for surface detection
+  private func findSurfaceByRaycast(from position: SIMD3<Float>) -> SIMD3<Float>? {
       
-      // First check detected planes ABOVE the floor
-      for (anchor, detectedPlane) in _detectedPlanesDict {
-          if let planeAnchor = anchor as? ARPlaneAnchor,
-             planeAnchor.alignment == .horizontal {
-              
-              let planeY = planeAnchor.transform.translation.y
-              let planeCenter = planeAnchor.transform.translation
-              let distance = simd_distance(position, planeCenter)
-              
-              // Only use planes that are ABOVE the invisible floor
-              if planeY > floorLevel + 0.1 && distance < 2.0 {
-                  let surfaceY = planeY + 0.01 // Small offset above plane
-                  let surfacePosition = SIMD3<Float>(position.x, surfaceY, position.z)
-                  print("📍 Found detected plane surface ABOVE floor at: \(surfacePosition)")
-                  return surfacePosition
-              }
-          }
-      }
+      let rayOrigin = position + SIMD3<Float>(0, 0.3, 0) // Start 30cm above
+      let rayDirection = SIMD3<Float>(0, -1, 0) // Straight down
       
-      // Fallback to raycast, but ensure result is above floor
-      let raycastQuery = ARRaycastQuery(
-          origin: position,
-          direction: SIMD3<Float>(0, -1, 0),
+      let query = ARRaycastQuery(
+          origin: rayOrigin,
+          direction: rayDirection,
           allowing: .existingPlaneGeometry,
           alignment: .horizontal
       )
       
-      let raycastResults = _arView.session.raycast(raycastQuery)
-      
-      if let firstResult = raycastResults.first {
-          let hitY = firstResult.worldTransform.columns.3.y
+      if let result = _arView.session.raycast(query).first {
+          let hitY = result.worldTransform.columns.3.y
+          let floorLevel = Float(GROUND_LEVEL)
           
-          // Only use raycast result if it's above the floor
+          // Only accept surfaces significantly above floor
           if hitY > floorLevel + 0.1 {
-              let surfacePosition = SIMD3<Float>(
-                  firstResult.worldTransform.columns.3.x,
-                  hitY + 0.01,
-                  firstResult.worldTransform.columns.3.z
-              )
-              return surfacePosition
+              return SIMD3<Float>(position.x, hitY + 0.002, position.z)
           }
       }
       
-      // No valid surface found above floor
-      print("⚠️ No surface found above floor level (\(floorLevel))")
       return nil
+  }
+  
+  // Check detected planes as backup
+  private func findSurfaceByDetectedPlanes(from position: SIMD3<Float>) -> SIMD3<Float>? {
+      let floorLevel = Float(GROUND_LEVEL)
+      let maxDistance: Float = 1.5 // Only consider nearby planes
+      
+      var bestSurface: SIMD3<Float>?
+      var bestDistance: Float = Float.greatestFiniteMagnitude
+      
+      for (anchor, _) in _detectedPlanesDict {
+          guard let planeAnchor = anchor as? ARPlaneAnchor,
+                planeAnchor.alignment == .horizontal else { continue }
+          
+          let planeY = planeAnchor.transform.translation.y
+          let planeCenter = planeAnchor.transform.translation
+          
+          // Only planes above floor level
+          guard planeY > floorLevel + 0.1 else { continue }
+          
+          // 2D distance check
+          let distance = sqrt(
+              pow(position.x - planeCenter.x, 2) +
+              pow(position.z - planeCenter.z, 2)
+          )
+          
+          if distance < maxDistance && distance < bestDistance {
+              bestDistance = distance
+              bestSurface = SIMD3<Float>(position.x, planeY + 0.002, position.z)
+          }
+      }
+      
+      return bestSurface
+  }
+  
+  private func findNodeSurface(from position: SIMD3<Float>, excludeNode: ARNodeBase) -> SIMD3<Float>? {
+      
+      var bestSurface: SIMD3<Float>?
+      var bestDistance: Float = Float.greatestFiniteMagnitude
+      let maxDistance: Float = 0.8 // Only consider nodes within 80cm
+      
+      for (candidateNode, _) in _nodeToAnchorDict {
+          // Don't place on self or nodes being dragged
+          guard candidateNode != excludeNode,
+                !candidateNode.isBeingDragged else { continue }
+          
+          let nodePos = candidateNode._modelEntity.transform.translation
+         
+          // Calculate distance in 2D (X,Z plane)
+          let distance2D = sqrt(
+              pow(position.x - nodePos.x, 2) +
+              pow(position.z - nodePos.z, 2)
+          )
+          
+          // Only consider nearby nodes
+          guard distance2D < maxDistance else { continue }
+          
+          // Calculate the top surface of the node
+          let topSurface = calculateNodeTopSurface(candidateNode)
+          
+          // Check if this position would be reasonable for stacking
+          if isValidStackingPosition(position, on: topSurface, nodeDistance: distance2D) &&
+             distance2D < bestDistance {
+              bestDistance = distance2D
+              bestSurface = SIMD3<Float>(position.x, topSurface.y, position.z)
+          }
+      }
+      
+      return bestSurface
+  }
+  
+  // Calculate the top surface Y position of a node
+  private func calculateNodeTopSurface(_ node: ARNodeBase) -> SIMD3<Float> {
+      let nodePos = node._modelEntity.transform.translation
+
+      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+      let nodeScale = node.Scale
+      let visualHeight = (bounds.max.y - bounds.min.y) * nodeScale
+      let topY = nodePos.y + (visualHeight / 2) + 0.005
+      
+      return SIMD3<Float>(nodePos.x, topY, nodePos.z)
+  }
+  
+  // Validate if a position is good for stacking
+  private func isValidStackingPosition(_ dragPos: SIMD3<Float>, on surface: SIMD3<Float>, nodeDistance: Float) -> Bool {
+      
+      // Must be reasonably close horizontally
+      guard nodeDistance < 0.5 else { return false }
+      
+      // Drag position should be roughly at or above the surface level
+      let heightDifference = dragPos.y - surface.y
+      print("ok to stack? \(heightDifference)")
+      // Allow some tolerance - user might be dragging below the calculated surface
+      return heightDifference > -0.2 && heightDifference < 1.0
   }
   
   

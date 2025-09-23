@@ -338,18 +338,7 @@ open class SphereNode: ARNodeBase, ARSphere {
       print("🎾 Sphere reset to default behavior")
   }
   
-  private func debugVisualState() {
-      print("=== VISUAL STATE DEBUG ===")
-      print("Model materials count: \(_modelEntity.model?.materials.count ?? 0)")
-    if #available(iOS 18.0, *) {
-      print("Entity opacity: \(_modelEntity.components[OpacityComponent.self]?.opacity ?? 1.0)")
-    } else {
-      // Fallback on earlier versions
-    }
-      print("Transform scale: \(_modelEntity.transform.scale)")
-      print("==========================")
-  }
-  
+
   private func estimateVelocity3D() -> SIMD3<Float> {
       // For older iOS versions, estimate velocity from position changes
       // You'd need to track position over time to calculate this
@@ -376,7 +365,6 @@ open class SphereNode: ARNodeBase, ARSphere {
       // Your existing collision handling
       let speed = getCollisionSpeed()
       let force = calculateCollisionForce(with: otherNode)
-
     
       if #available(iOS 15.0, *) {
         showCollisionFlash(intensity: speed, collisionType: .object)
@@ -387,11 +375,12 @@ open class SphereNode: ARNodeBase, ARSphere {
           guard let self = self else { return }
           let postVelocity = self.getCurrentVelocity()
           
-          self.analyzeCollisionTrajectory(
+          /* helpful debugging
+           self.analyzeCollisionTrajectory(
               preVel: preVelocity,
               postVel: postVelocity,
               otherNode: otherNode
-          )
+          )*/
       }
   }
 
@@ -500,7 +489,6 @@ private func monitorPostCollisionState() {
         OriginalMaterial = _modelEntity.model?.materials.first
     }
 
-      
       // Different colors based on collision type
       switch collisionType {
       case .wall:
@@ -662,12 +650,10 @@ private func monitorPostCollisionState() {
       if hadPhysics {
         let previousSize = _radius * Scale
         _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_radius * newScale)
-  
       }
     
       Scale = newScale
-      
-      print("🎾 Scale complete - bottom position maintained")
+      print("Scale complete - bottom position maintained")
   }
 
   override open func scaleByPinch(scalar: Float) {
@@ -848,52 +834,51 @@ private func monitorPostCollisionState() {
   // Optimized for iOS 16+ with iOS 18+ enhancements
 
   override open func startDrag() {
-      _isBeingDragged = true
-      
-      // Switch to kinematic - position controlled manually
-      if var physicsBody = _modelEntity.physicsBody {
-          physicsBody.mode = .kinematic
-          _modelEntity.physicsBody = physicsBody
-      }
+    _isBeingDragged = true
+    
+    // Switch to kinematic - position controlled manually
+    if var physicsBody = _modelEntity.physicsBody {
+      physicsBody.mode = .kinematic
+      _modelEntity.physicsBody = physicsBody
+    }
   }
 
-  func updateDrag(fingerWorldPosition: SIMD3<Float>) {
-      guard _isBeingDragged else { return }
-      let constrainedPosition = SIMD3<Float>(
-          fingerWorldPosition.x,
-          max(fingerWorldPosition.y, Float(ARView3D.SHARED_GROUND_LEVEL) + _radius * Scale + 0.01),
-          fingerWorldPosition.z
-      )
-      // Direct position control
-      _modelEntity.transform.translation = constrainedPosition
-      
-      // Calculate rolling rotation based on movement
-      if let lastPos = _lastFingerPosition {
-          let movement = fingerWorldPosition - lastPos
-          applyRealisticRolling(movement: movement)
-      }
-      
-      _lastFingerPosition = fingerWorldPosition
+  open override func updateDrag(fingerWorldPosition: SIMD3<Float>) {
+    guard _isBeingDragged else { return }
+    let constrainedPosition = SIMD3<Float>(
+      fingerWorldPosition.x,
+      max(fingerWorldPosition.y, Float(ARView3D.SHARED_GROUND_LEVEL) + _radius * Scale + 0.01),
+      fingerWorldPosition.z
+    )
+    // Direct position control
+    _modelEntity.transform.translation = constrainedPosition
+    
+    // Calculate rolling rotation based on movement
+    if let lastPos = _lastFingerPosition {
+      let movement = fingerWorldPosition - lastPos
+      applyRealisticRolling(movement: movement)
+    }
+    
+    _lastFingerPosition = fingerWorldPosition
   }
   
   override open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
-      guard _isBeingDragged else { return }
-    
-      let cameraVectors = camera3DProjection as? ARView3D.CameraVectors
-      // Switch back to dynamic mode
-      if var physicsBody = _modelEntity.physicsBody {
-          physicsBody.mode = .dynamic
-          _modelEntity.physicsBody = physicsBody
-          
-          // NOW apply release velocity (only once, at release)
-        if #available(iOS 18.0, *) {
-          applyReleaseVelocityIOS18(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
-        } else {
-          applyReleaseForceIOS16(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
-        }
+    guard _isBeingDragged else { return }
+  
+    let cameraVectors = camera3DProjection as? ARView3D.CameraVectors
+    // Switch back to dynamic mode
+    if var physicsBody = _modelEntity.physicsBody {
+      physicsBody.mode = .dynamic
+      _modelEntity.physicsBody = physicsBody
+        
+      if #available(iOS 18.0, *) {
+        applyReleaseVelocityIOS18(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
+      } else {
+        applyReleaseForceIOS16(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
       }
-      
-      _isBeingDragged = false
+    }
+    
+    _isBeingDragged = false
   }
 
   private func applyRealisticRolling(movement: SIMD3<Float>) {

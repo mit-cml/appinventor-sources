@@ -52,7 +52,7 @@ open class TextNode: ARNodeBase, ARText {
   }
   
   
-  private func calculateTextBounds() -> (width: Float, height: Float) {
+  public func calculateTextBounds() -> (width: Float, height: Float) {
     let font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
     let textSize = _text.size(withAttributes: [.font: font])
     

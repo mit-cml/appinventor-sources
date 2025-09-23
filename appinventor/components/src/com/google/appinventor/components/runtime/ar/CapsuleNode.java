@@ -42,6 +42,10 @@ import java.util.Locale;
 @UsesAssets(fileNames = "pawn.obj, sphere.obj, Palette.png")
   public final class CapsuleNode extends ARNodeBase implements ARCapsule {
 
+  private float capRadius = 0.02f;// stored in meters
+  private float height = 0.07f; // stored in meters
+  private float width = 0.05f;
+
   public CapsuleNode(final ARNodeContainer container) {
     super(container);
     Model( Form.ASSETS_PREFIX + "pawn.obj");
@@ -178,6 +182,27 @@ import java.util.Locale;
     Log.i("created Capsule Anchor!", " ");
   }
 
+
+  @Override
+  @SimpleFunction(description = "Changes the capsules's scale by the given scalar, maintaining bottom position if physics enabled.")
+  public void ScaleBy(float scalar) {
+    Log.i("CapsuleNode", "Scaling cap " + name + " by " + scalar);
+
+    float oldScale = Scale();
+    float newScale = oldScale * Math.abs(scalar);
+
+    // Update physics immediately if enabled to maintain bottom position
+    if (EnablePhysics()) {
+      float previousSize = capRadius * Scale();
+      // Adjust Y position to maintain ground contact
+      float[] currentPos = getCurrentPosition();
+      currentPos[1] = currentPos[1] - previousSize + (capRadius * newScale);
+      setCurrentPosition(currentPos);
+    }
+
+    Scale(newScale);
+    Log.i("CapsuleNode", "Scale complete - bottom position maintained");
+  }
 
   @Override
   @SimpleProperty(description = "How far, in centimeters, the CapsuleNode extends along the y-axis.  " +

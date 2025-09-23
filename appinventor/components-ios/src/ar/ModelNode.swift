@@ -248,7 +248,7 @@ open class ModelNode: ARNodeBase, ARModel {
   }
 
   /// Updates the model position during drag with Pokémon GO style behavior
-  func updateDrag(fingerWorldPosition: SIMD3<Float>) {
+  override open func updateDrag(fingerWorldPosition: SIMD3<Float>) {
     guard _isDragging && !_isFlying else { return }
     
     let currentTime = Date()
@@ -419,7 +419,7 @@ open class ModelNode: ARNodeBase, ARModel {
 
   private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
     guard let container = _container else { return nil }
-    return container.getARView().findNearestHorizontalSurface(from: position)
+    return container.getARView().checkAndUpdateSurfacePreview(for: self, at: position)
   }
 
   /// Sets up physics for trajectory throwing
