@@ -508,10 +508,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   // MARK: Functions
   
   @objc open func StartTracking() {
-    startTracking(startOptions)
+    startTrackingWithOptions(startOptions)
   }
   
-  @objc open func startTracking(_ options: ARSession.RunOptions = []) {
+  @objc open func startTrackingWithOptions(_ options: ARSession.RunOptions = []) {
     _arView.session.run(_configuration, options: options)
     _sessionRunning = true
     startOptions = []
@@ -604,7 +604,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     pauseTracking(!_shouldRestartSession)
     startOptions = [.resetTracking, .removeExistingAnchors]
     if _shouldRestartSession {
-      startTracking(startOptions)
+      startTrackingWithOptions(startOptions)
     }
   }
   
@@ -612,7 +612,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     let _shouldRestartSession = _sessionRunning
     pauseTracking(!_shouldRestartSession)
     if _shouldRestartSession {
-      startTracking([.removeExistingAnchors])
+      startTrackingWithOptions([.removeExistingAnchors])
     } else if startOptions.isEmpty {
       startOptions = [.removeExistingAnchors]
     }
@@ -777,22 +777,29 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             // for the floor
               if !_hasSetGroundLevel &&
                planeAnchor.alignment == .horizontal &&
-               planeAnchor.transform.translation.y < 0.1 {
-               let detectedRealFloorLevel = planeAnchor.transform.translation.y
-               if #available(iOS 16.0, *) {
-                    let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+                  planeAnchor.transform.translation.y < 0.1 {
+                let detectedRealFloorLevel = planeAnchor.transform.translation.y
+                
+                // optimize if we can, whether plane is large
+                if #available(iOS 16.0, *) {
+                  let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
+                  
+                  // Only use large, confident planes (at least 1 square meter)
+                  if planeAnchor.classification == .floor && planeSize > 1.5 {
                     
-                    // Only use large, confident planes (at least 1 square meter)
-                    if planeAnchor.classification == .floor && planeSize > 1.5 {
-                      
-                      let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
-                      print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
-                      
-                      GROUND_LEVEL = invisibleFloorLevel
-                      
-                      // ✅ RECREATE invisible floor at correct position
-                      createInvisibleFloor(at: invisibleFloorLevel)
-                    }
+                    let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
+                    print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
+                    
+                    GROUND_LEVEL = invisibleFloorLevel
+                    
+                    // ✅ RECREATE invisible floor at correct position
+                    createInvisibleFloor(at: invisibleFloorLevel)
+                  }
+                } else {
+                  let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
+                  print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
+                  GROUND_LEVEL = invisibleFloorLevel
+                  createInvisibleFloor(at: invisibleFloorLevel)
                 }
               } else {
                 if #available(iOS 16.0, *) {
@@ -1138,49 +1145,64 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     
     private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double, node: ARNodeBase, hasGeoCoordinates: Bool) {
-        
-        // Create geo anchor if we can
-        if hasGeoCoordinates {
-            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            if CLLocationCoordinate2DIsValid(coordinate) {
-                let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
-                node.setGeoAnchor(geoAnchor)
-                print("setup node's geoanchor \(String(describing: geoAnchor))")
-                
-                // Check distance from session start
-                if let sessionStart = sessionStartLocation {
-                    let anchorLocation = CLLocation(latitude: latitude, longitude: longitude)
-                    let distance = sessionStart.distance(from: anchorLocation)
-                    
-                    if distance < 10.0 {
-                        // Close anchor: Use the EXACT tap position - let physics drop it
-                        let xMeters: Float = UnitHelper.centimetersToMeters(x)
-                        let yMeters: Float = UnitHelper.centimetersToMeters(y)
-                        let zMeters: Float = UnitHelper.centimetersToMeters(z)
-                        
-             
-                        let groundLevel = GROUND_LEVEL
-                        let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
-     
-                        node.setPosition(x: xMeters, y: safeY, z: zMeters)
-                        print("create sphere node at y  \(yMeters) and safe is \(safeY)")
-                        node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
-                        node._creatorSessionStart = anchorLocation
-                        print("saved world coords for offset \(String(describing: node._worldOffset))")
-                    }
-                    return
-                }
-            } else {
-                print("setting up location error: Invalid Coordinates", ErrorMessage.ERROR_INVALID_COORDINATES.code)
+      
+      // Create geo anchor if we can
+      if hasGeoCoordinates {
+        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        if CLLocationCoordinate2DIsValid(coordinate) {
+          let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
+          node.setGeoAnchor(geoAnchor)
+          print("setup node's geoanchor \(String(describing: geoAnchor))")
+          
+          // Check distance from session start
+          if let sessionStart = sessionStartLocation {
+            let anchorLocation = CLLocation(latitude: latitude, longitude: longitude)
+            let distance = sessionStart.distance(from: anchorLocation)
+            
+            if distance < 10.0 {
+              // Close anchor: Use the EXACT tap position - let physics drop it
+              let xMeters: Float = UnitHelper.centimetersToMeters(x)
+              let yMeters: Float = UnitHelper.centimetersToMeters(y)
+              let zMeters: Float = UnitHelper.centimetersToMeters(z)
+              
+              
+              let groundLevel = GROUND_LEVEL
+              let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
+              
+              node.setPosition(x: xMeters, y: safeY, z: zMeters)
+              print("create sphere node at y  \(yMeters) and safe is \(safeY)")
+              node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
+              node._creatorSessionStart = anchorLocation
+              print("saved world coords for offset \(String(describing: node._worldOffset))")
             }
+            return
+          }
+        } else {
+          print("setting up location error: Invalid Coordinates", ErrorMessage.ERROR_INVALID_COORDINATES.code)
         }
-        
-        // For non-geo coordinates, use exact position and let physics handle floor collision
-        let xMeters: Float = UnitHelper.centimetersToMeters(x)
-        let yMeters: Float = UnitHelper.centimetersToMeters(y)
-        let zMeters: Float = UnitHelper.centimetersToMeters(z)
-        node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-        print("set up anchor and setting position \(xMeters) \(yMeters) \(zMeters)")
+      }
+      
+      // For non-geo coordinates, use exact position and let physics handle floor collision
+      let xMeters: Float = UnitHelper.centimetersToMeters(x)
+      let yMeters: Float = UnitHelper.centimetersToMeters(y)
+      let zMeters: Float = UnitHelper.centimetersToMeters(z)
+      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+      print("set up anchor and setting position \(xMeters) \(yMeters) \(zMeters)")
+    }
+    
+    @objc open func CreateBoxNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> BoxNode? {
+      guard ARGeoTrackingConfiguration.isSupported else {
+        _container?.form?.dispatchErrorOccurredEvent(self, "CreateBoxNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+        return nil
+      }
+      
+      let node = BoxNode(self)
+      node.Name = "GeoBoxNode"
+      node.Initialize()
+      
+      setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+
+      return node
     }
     
     @objc open func CreateCapsuleNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> CapsuleNode? {
@@ -1191,21 +1213,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       let node = CapsuleNode(self)
       node.Name = "GeoCapsuleNode"
-      
-    
+      node.Initialize()
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
-      
-      node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
-      
-      //which collisions to pay attention to
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-          self.setupCollisionGroups(for: node)
-      }
-      
-      if let geoAnchor = node.getGeoAnchor() {
-        print("📍 Geo anchor coordinates: \(geoAnchor.coordinate)")
-      }
+
       return node
     }
     
@@ -1514,23 +1525,21 @@ extension ARView3D: UIGestureRecognizerDelegate {
           )
           
         var SCREEN_THRESHOLD: CGFloat = 30.0
-          // Skip if too far in screen space
-          if screenDistance > SCREEN_THRESHOLD { continue }  // 100 pixel max
-          
-          // World space check (more accurate for close objects)
-          var worldDistance: Float = Float.greatestFiniteMagnitude
-          if let hitPoint = worldHitPoint {
-              let nodePosition = node._modelEntity.transform.translation
-              worldDistance = simd_distance(nodePosition, hitPoint)
-          }
-          
-          // Combine both distances with weighting
-          let screenWeight: Float = 0.3
-          let worldWeight: Float = 0.7
+        // Skip if too far in screen space
+        if screenDistance > SCREEN_THRESHOLD { continue }  // 100 pixel max
+        
+        // World space check (more accurate for close objects)
+        var worldDistance: Float = Float.greatestFiniteMagnitude
+        if let hitPoint = worldHitPoint {
+            let nodePosition = node._modelEntity.transform.translation
+            worldDistance = simd_distance(nodePosition, hitPoint)
+        }
+        
+        // Combine both distances with weighting
+        let screenWeight: Float = 0.3
+        let worldWeight: Float = 0.7
           
         let normalizedScreenDistance = screenDistance / 100.0  // Normalize to 0-1
-        
-        
         var worldThreshold: Float = 0.1  // Default 10cm
 
         // Use actual sphere radius if it's a sphere
