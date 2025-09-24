@@ -7,7 +7,7 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
-@implementation NetworkUtils
+@implementation MAINetworkUtils
 
 + (NSString *)getIPAddress {
   
