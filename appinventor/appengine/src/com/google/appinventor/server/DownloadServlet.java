@@ -265,6 +265,14 @@ public class DownloadServlet extends OdeServlet {
           projectId, false, false, zipName, includeYail,
           false, false, false, false, true);
         downloadableFile = zipFile.getRawFile();
+
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_GLOBAL_ASSET)) {
+        uriComponents = uri.split("/");
+        String fileName = uriComponents.length > 0 ? uriComponents[uriComponents.length - 1] : null;
+        if (fileName == null || fileName.trim().isEmpty() || fileName.equals("globalasset")) {
+          throw new IllegalArgumentException("Missing global asset file name.");
+        }
+        downloadableFile = fileExporter.exportGlobalAsset(userId, fileName);
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_CSR)) {
         byte[] csr = getCSR();
         if (csr == null) {
