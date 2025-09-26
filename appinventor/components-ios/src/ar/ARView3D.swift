@@ -1320,7 +1320,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let xMeters: Float = UnitHelper.centimetersToMeters(x)
       let yMeters: Float = UnitHelper.centimetersToMeters(y)
       let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+      
+      let groundLevel = GROUND_LEVEL
+      let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
+      
+      node.setPosition(x: xMeters, y: safeY, z: zMeters)
       print("set up anchor and setting position \(xMeters) \(yMeters) \(zMeters)")
     }
     
