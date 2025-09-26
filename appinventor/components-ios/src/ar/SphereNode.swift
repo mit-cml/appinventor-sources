@@ -9,12 +9,8 @@ open class SphereNode: ARNodeBase, ARSphere {
   private var _radius: Float = 0.05 // stored in meters
   private var _storedPhysicsSettings: PhysicsSettings?
   private var _behaviorName: String = "default"
-  
-  private var _showShadow: Bool = true
-  
+
   private var _currentDragMode: DragMode = .rolling
-  private var _dragStartPosition: SIMD3<Float>?
-  private var _dragStartTime: Date?
   private var _lastFingerPosition: SIMD3<Float>? = nil
 
   private var _dragStartDamping: Float = 0.1
@@ -191,10 +187,8 @@ open class SphereNode: ARNodeBase, ARSphere {
       mesh: mesh,
       materials: existingMaterials.isEmpty ? [SimpleMaterial()] : existingMaterials
     )
-    
-    
+  
     updateCollisionShape()
-    
     
     if #available(iOS 15.0, *) {
         updateShadowSettings()
@@ -641,8 +635,7 @@ private func monitorPostCollisionState() {
       print("🔄 Scaling sphere \(Name) by \(scalar)")
       
       let oldScale = Scale
-      let oldActualRadius = _radius * oldScale
-          
+ 
       let hadPhysics = _modelEntity.physicsBody != nil
       
       let newScale = oldScale * abs(scalar)
@@ -672,7 +665,6 @@ private func monitorPostCollisionState() {
           return
       }
 
-
       // ✅ CRITICAL: Update collision shape BEFORE and AFTER scaling
       let hadPhysics = _modelEntity.physicsBody != nil
       
@@ -687,7 +679,6 @@ private func monitorPostCollisionState() {
           
           let previousSize = _radius * Scale
           _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_radius * newScale)
-        
         
           // Apply visual scaling
           Scale = newScale
@@ -1156,95 +1147,5 @@ private func monitorPostCollisionState() {
       print("==========================")
   }
 
-
-
-
-
-
-  // Add this computed property to SphereNode
-  @objc open override var ShowShadow: Bool {
-      get {
-          return _showShadow
-      }
-      set(showShadow) {
-          _showShadow = showShadow
-          updateShadowSettings()
-      }
-  }
-
-  // Add these methods to SphereNode class
-
-  /// Updates shadow casting and receiving for the sphere
-  private func updateShadowSettings() {
-      guard #available(iOS 15.0, *) else {
-          print("⚠️ Shadow control requires iOS 15.0+")
-          return
-      }
-      
-      // Enable/disable shadow casting and receiving
-      if _showShadow {
-          enableShadows()
-      } else {
-          disableShadows()
-      }
-  }
-
-  @available(iOS 15.0, *)
-  private func enableShadows() {
-      // Enable shadow casting
-    if #available(iOS 18.0, *) {
-      _modelEntity.components.set(GroundingShadowComponent(castsShadow: true))
-    } else {
-      // TODO Fallback on earlier versions
-    }
-      
-      // For more control over shadow properties, you can also modify materials
-      if var material = _modelEntity.model?.materials.first as? SimpleMaterial {
-          // Ensure the material can cast shadows
-        
-          _modelEntity.model?.materials = [material]
-      }
-      
-      print("🌘 Shadows enabled for sphere \(Name)")
-  }
-
-  @available(iOS 15.0, *)
-  private func disableShadows() {
-      // Disable shadow casting
-    if #available(iOS 18.0, *) {
-      _modelEntity.components.set(GroundingShadowComponent(castsShadow: false))
-    } else {
-      // TODO Fallback on earlier versions
-    }
-      
-      print("☀️ Shadows disabled for sphere \(Name)")
-  }
-
-
-  // Add convenience methods for shadow control
-  @objc open func enableShadowCasting() {
-      ShowShadow = true
-  }
-
-  @objc open func disableShadowCasting() {
-      ShowShadow = false
-  }
-
-  // Add shadow-specific behavior methods
-  @objc open func setShadowIntensity(_ intensity: Float) {
-      guard #available(iOS 15.0, *) else { return }
-      
-      // Note: RealityKit doesn't have direct shadow intensity control per object
-      // This would typically be controlled at the scene lighting level
-      print("⚠️ Shadow intensity is controlled by scene lighting in RealityKit")
-  }
-
-  @objc open func setShadowColor(_ color: Int32) {
-      guard #available(iOS 15.0, *) else { return }
-      
-      // Note: RealityKit doesn't have direct shadow color control per object
-      // This would typically be controlled at the scene lighting level
-      print("⚠️ Shadow color is controlled by scene lighting in RealityKit")
-  }
   
 }

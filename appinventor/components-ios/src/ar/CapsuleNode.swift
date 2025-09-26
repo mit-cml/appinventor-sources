@@ -67,7 +67,6 @@
         let hadPhysics = _modelEntity.physicsBody != nil
         
         let newScale = oldScale * abs(scalar)
-        // ✅ Update physics immediately if it was enabled before we change the scale
         if hadPhysics {
           let previousSize = _capRadius * Scale
           _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_capRadius * newScale)

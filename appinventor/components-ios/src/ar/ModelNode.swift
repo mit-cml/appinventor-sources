@@ -26,8 +26,6 @@ open class ModelNode: ARNodeBase, ARModel {
   private var _dragStartTime: Date?
   private var _fingerPositions: [SIMD3<Float>] = []
   private var _fingerTimestamps: [Date] = []
-  private var _lastFingerWorldPosition: SIMD3<Float>?
-  private var _dragOffset: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
   private var _originalPosition: SIMD3<Float>?
   private var _throwVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
 
@@ -38,7 +36,7 @@ open class ModelNode: ARNodeBase, ARModel {
   private let MAX_THROW_SPEED: Float = 4.0  // m/s
   private let VELOCITY_SCALE: Float = 1.0   // Amplify finger velocity
   private let GRAVITY: Float = -9.81        // Earth gravity
-  private let DRAG_HEIGHT_OFFSET: Float = 0.001 // Hover above surfaces during drag
+ 
   private let PLACEMENT_RAYCAST_DISTANCE: Float = 50.0
 
   @objc init(_ container: ARNodeContainer) {
@@ -120,14 +118,7 @@ open class ModelNode: ARNodeBase, ARModel {
     }
     set(opacity) {}
   }
-  
-  // ShowShadow is not user accessible
-  @objc open override var ShowShadow: Bool {
-    get {
-      return false
-    }
-    set(showShadow) {}
-  }
+
   
   private func loadModel(_ modelStr: String) {
   
@@ -262,13 +253,7 @@ open class ModelNode: ARNodeBase, ARModel {
       _fingerPositions.removeFirst()
       _fingerTimestamps.removeFirst()
     }
-    
-    // Calculate drag offset from original position on first touch
-    if _lastFingerWorldPosition == nil {
-      let originalPos = _originalPosition ?? _modelEntity.transform.translation
-      _dragOffset = fingerWorldPosition - originalPos
-    }
-    
+
     // Update model position with slight upward offset during drag
     let dragPosition = SIMD3<Float>(
       fingerWorldPosition.x,
@@ -278,7 +263,6 @@ open class ModelNode: ARNodeBase, ARModel {
     )
     
     _modelEntity.transform.translation = dragPosition
-    _lastFingerWorldPosition = fingerWorldPosition
     
     print("🎯 Dragging to position: \(dragPosition)")
   }
@@ -314,7 +298,6 @@ open class ModelNode: ARNodeBase, ARModel {
     // Clear tracking data
     _fingerPositions.removeAll()
     _fingerTimestamps.removeAll()
-    _lastFingerWorldPosition = nil
   }
 
   /// Calculates the 3D throw velocity from finger movement history
@@ -384,43 +367,48 @@ open class ModelNode: ARNodeBase, ARModel {
     // Start monitoring trajectory for placement
     monitorTrajectoryForPlacement()
   }
+  
   @available(iOS 15.0, *)
   private func placeOnNearestSurface() {
-      print("Placing on nearest surface")
+    print("Placing on nearest surface")
+    
+    // Use the cached preview surface if available
+    if let cachedSurface = getPreviewPlacementSurface() {
+      print("Using cached preview surface: \(cachedSurface)")
       
-      // Use the cached preview surface if available
-      if let cachedSurface = getPreviewPlacementSurface() {
-          print("Using cached preview surface: \(cachedSurface)")
-          
-          // Disable physics completely during placement
-          _modelEntity.physicsBody = nil
-          
-          animateToPosition(cachedSurface) {
-              self.finalizeModelPlacement()
-              self.clearPreviewPlacementSurface()
-          }
-          return
-      }
+      // Disable physics completely during placement
+      _modelEntity.physicsBody = nil
       
-      // Fallback: find surface from current position
-      let currentPos = _modelEntity.transform.translation
-      if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
-          animateToPosition(placementPosition) {
-              self.finalizeModelPlacement()
-          }
-      } else {
-          // Final fallback to ground level
-          let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
-          animateToPosition(groundPosition) {
-              self.finalizeModelPlacement()
-          }
+      animateToPosition(cachedSurface) {
+          self.finalizeModelPlacement()
+          self.clearPreviewPlacementSurface()
       }
+      return
+    }
+    
+    // Fallback: find surface from current position
+    let currentPos = _modelEntity.transform.translation
+    if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
+      animateToPosition(placementPosition) {
+          self.finalizeModelPlacement()
+      }
+    } else {
+      // Final fallback to ground level
+      let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
+      animateToPosition(groundPosition) {
+          self.finalizeModelPlacement()
+      }
+    }
   }
-
+  
+  //csb TODO move to parent
   private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
     guard let container = _container else { return nil }
-    return container.getARView().checkAndUpdateSurfacePreview(for: self, at: position)
+    //get the surface that the container has determined is the closest
+    // or just the placement anchor, right?
+    return container.getARView().findBestSurfaceForPlacement()
   }
+
 
   /// Sets up physics for trajectory throwing
   private func setupTrajectoryPhysics() {
@@ -547,7 +535,6 @@ open class ModelNode: ARNodeBase, ARModel {
         self?.EnablePhysics(true)
     }
 
-    
     if let container = _container {
       container.hidePlacementPreview()
     }
