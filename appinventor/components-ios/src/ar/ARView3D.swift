@@ -106,8 +106,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
   
   struct CollisionGroups {
-      static let arObjects: CollisionGroup = CollisionGroup(rawValue: 1 << 0)
-      static let environment: CollisionGroup = CollisionGroup(rawValue: 1 << 1)
+    static let arObjects: CollisionGroup = CollisionGroup(rawValue: 1 << 0)
+    static let environment: CollisionGroup = CollisionGroup(rawValue: 1 << 1)
     static let manualWalls: CollisionGroup = CollisionGroup(rawValue: 1 << 2)
   }
   
@@ -315,11 +315,19 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   @available(iOS 14.0, *)
   private func setupConfiguration() {
-    guard _trackingSet && _planeDetectionSet else { return }
+    guard _trackingSet && _planeDetectionSet else {
+      //self._container?.form?.dispatchErrorOccurredEvent(self, "AR Tracking", ErrorMessage.ERROR_AR_TRACKING_NOT_SUPPORTED.code, "AR tracking not supported on this device")
+      return }
     
+   
     // Check geo tracking support only when needed
     if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported {
       self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code, "Geo tracking not supported on this device")
+      return
+    }
+    
+    if _trackingType == .worldTracking && !ARWorldTrackingConfiguration.isSupported {
+      self._container?.form?.dispatchErrorOccurredEvent(self, "World tracking", ErrorMessage.ERROR_WORLD_TRACKING_NOT_SUPPORTED.code, "World tracking not supported on this device")
       return
     }
     
@@ -327,8 +335,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     case .worldTracking:
       let worldTrackingConfiguration = ARWorldTrackingConfiguration()
       
-      // Enable scene reconstruction for occlusion and physics
-      worldTrackingConfiguration.sceneReconstruction = .mesh
+      // Check if scene reconstruction is supported on this device
+      if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+        worldTrackingConfiguration.sceneReconstruction = .mesh
+          print("Mesh reconstruction enabled")
+      } else if ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) {
+          worldTrackingConfiguration.sceneReconstruction = .meshWithClassification
+          print("Mesh with classification enabled")
+      } else {
+        print("Scene reconstruction not supported on this device")
+        worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+      }
+     
       worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
       worldTrackingConfiguration.detectionImages = getReferenceImages()
       
@@ -343,14 +361,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       case .none:
         break
       }
-      
-      _configuration = worldTrackingConfiguration
+    _configuration = worldTrackingConfiguration
       
     case .geoTracking:
       let geoTrackingConfiguration = ARGeoTrackingConfiguration()
       
-      // ARGeoTrackingConfiguration does NOT support sceneReconstruction!
-      // This means limited occlusion capabilities with geo tracking
       geoTrackingConfiguration.maximumNumberOfTrackedImages = 4
       geoTrackingConfiguration.detectionImages = getReferenceImages()
       
@@ -387,6 +402,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     if _sessionRunning {
       ResetTracking()
     }
+    
+  
   }
   
   // Add this method to ARView3D class
@@ -629,24 +646,23 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
-  
-  
   // These methods would need to be implemented based on your ARNode creation logic
   private func CreateCapsuleNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
-    
     let capNode = CapsuleNode(self) as CapsuleNode
     let yailNodeObj: YailDictionary = yailNodeObj
     let result = ARNodeUtilities.parseYailToNode(
       capNode as CapsuleNode, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
     )
-    
-    
     return result
   }
   
-  private func CreateBoxNodeFromYail(_ nodeDict: YailDictionary) -> ARNodeBase? {
-    // Implementation depends on your ARNode structure
-    return nil
+  private func CreateBoxNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
+    let boxNode = BoxNode(self) as BoxNode
+    let yailNodeObj: YailDictionary = yailNodeObj
+    let result = ARNodeUtilities.parseYailToNode(
+      boxNode as BoxNode, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
+    )
+    return result
   }
   
   private func CreateSphereNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
@@ -757,7 +773,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                          geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
                          true, true) // isANodeAtPoint = true
         } else {
-            TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, true)
+          TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, true)
         }
         
       case .detectedPlane(let plane, let position):
@@ -1195,6 +1211,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let xMeters: Float = UnitHelper.centimetersToMeters(x)
       let yMeters: Float = UnitHelper.centimetersToMeters(y)
       let zMeters: Float = UnitHelper.centimetersToMeters(z)
+      
       node.setPosition(x: xMeters, y: yMeters, z: zMeters)
       return node
     }
@@ -1210,16 +1227,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.setPosition(x: xMeters, y: yMeters, z: zMeters)
       return node
     }
-    
-    
-    
-    
-    
-    
-    
+
     @objc open func CreatePlaneNode(_ x: Float, _ y: Float, _ z: Float) -> PlaneNode {
       let node = PlaneNode(self)
-      node.Name = "CreatedPlaneNode"
+      node.Name = "PlaneNode"
       node.Initialize()
       
       let xMeters: Float = UnitHelper.centimetersToMeters(x)
@@ -1255,11 +1266,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      */
     @objc open func CreateCapsuleNode(_ x: Float, _ y: Float, _ z: Float) -> CapsuleNode {
       let node = CapsuleNode(self)
+      node.Name = "CapsuleNode"
       node.Initialize()
       
       let xMeters: Float = UnitHelper.centimetersToMeters(x)
       let yMeters: Float = UnitHelper.centimetersToMeters(y)
       let zMeters: Float = UnitHelper.centimetersToMeters(z)
+      
       node.setPosition(x: xMeters, y: yMeters, z: zMeters)
       return node
     }
@@ -1341,16 +1354,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
+
     @objc open func CreateModelNode(_ x: Float, _ y: Float, _ z: Float, _ modelObjString: String) -> ModelNode {
       let node:ModelNode = ModelNode(self)
-      node.Name = "modelNode"
-      //print("adding anchor and setting position \(anchorEntity?.position.x) \(anchorEntity?.position.y) \(anchorEntity?.position.z)")
+      node.Name = "ModelNode"
       node.Initialize()
       node.Model = modelObjString
       
-      let xMeters: Float = 1.0 //UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = 0.0 //UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = 1.0 //UnitHelper.centimetersToMeters(z)
+      let xMeters: Float = UnitHelper.centimetersToMeters(x)
+      let yMeters: Float = UnitHelper.centimetersToMeters(y)
+      let zMeters: Float = UnitHelper.centimetersToMeters(z)
       node.setPosition(x: xMeters, y: yMeters, z: zMeters)
       return node
     }
@@ -1474,6 +1487,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     @objc open func CreateWebViewNode(_ x: Float, _ y: Float, _ z: Float) -> WebViewNode {
       let node = WebViewNode(self)
+      node.Name = "CreatedWebNode"
       node.Initialize()
       
       let xMeters: Float = UnitHelper.centimetersToMeters(x)
@@ -1573,6 +1587,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     public func worldToGPS(_ worldPoint: SIMD3<Float>) -> (coordinate: CLLocationCoordinate2D, altitude: Double)? {
       guard let sessionStart = sessionStartLocation else { return nil }
+      
+      guard ARGeoTrackingConfiguration.isSupported else {
+        _container?.form?.dispatchErrorOccurredEvent(self, "worldToGPS", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+        return nil
+      }
       
       // Calculate offset from session origin
       let deltaX = Double(worldPoint.x)  // East/West

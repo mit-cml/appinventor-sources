@@ -1965,9 +1965,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleFunction(description = "Create a new BoxNode with default properties at the " +
         "specified (x,y,z) position.")
     public BoxNode CreateBoxNode(float x, float y, float z) {
-        return new BoxNode(this);
-    }
 
+        Log.i("creating box node", "with x, y, z " + x + " " + y + " " + z);
+        BoxNode boxNode = new BoxNode(this);
+
+        float[] position = {x, y, z};
+        float[] rotation = {0, 0, 0, 1};
+        Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
+        Log.i("creating Capsule node, anchor is", myAnchor.toString());
+        boxNode.Anchor(myAnchor);
+        return boxNode;
+    }
 
     @SimpleFunction(description = "Create a new BoxNode with default properties at the plane position.")
     public BoxNode CreateBoxNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
