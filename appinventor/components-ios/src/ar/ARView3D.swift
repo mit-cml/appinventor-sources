@@ -115,7 +115,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
        case node(ARNodeBase, SIMD3<Float>)           // Node + world position
        case detectedPlane(DetectedPlane, SIMD3<Float>) // Detected plane + world position
        case invisibleFloor(SIMD3<Float>)             // Invisible floor + world position
-       case empty                                    // Nothing found
+       case empty(SIMD3<Float>)                                  // Nothing found
        
        var worldPosition: SIMD3<Float>? {
            switch self {
@@ -682,9 +682,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   func performHitTest(at screenPoint: CGPoint) -> HitTestResult {
 
-      if let node = findClosestNode(tapLocation: screenPoint) {
-          return .node(node, node._modelEntity.transform.translation)
-      }
+    if let node = findClosestNode(tapLocation: screenPoint) {
+      print("hit a node at \(screenPoint)")
+        return .node(node, node._modelEntity.transform.translation)
+    }
     let raycastResults = _arView.raycast(from: screenPoint, allowing: .existingPlaneGeometry, alignment: .any)
     if let bestResult = getHighestSurfaceRaycast(rayCastResults: raycastResults) {
       let worldPosition = SIMD3<Float>(
@@ -702,8 +703,20 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           // Hit some other surface
           return .invisibleFloor(worldPosition)
       }
-      
-      return .empty
+    
+      let estimatedPlanes = _arView.raycast(from: screenPoint, allowing: .estimatedPlane, alignment: .any)
+      if let result = estimatedPlanes.first {
+            let worldPosition = SIMD3<Float>(
+                result.worldTransform.columns.3.x,
+                result.worldTransform.columns.3.y,
+                result.worldTransform.columns.3.z
+            )
+            print("using estimated plane at \(worldPosition)")
+            return .invisibleFloor(worldPosition)
+        }
+    
+      return .empty(SIMD3<Float>(0, 0, 0))
+
   }
   
   private func getHighestSurfaceRaycast(rayCastResults: [ARRaycastResult]) -> ARRaycastResult? {
@@ -722,52 +735,53 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     return nil
   }
             
-      @objc func handleTap(_ sender: UITapGestureRecognizer) {
-          let tapLocation = sender.location(in: _arView)
-          let hitResult = performHitTest(at: tapLocation)
+  @objc func handleTap(_ sender: UITapGestureRecognizer) {
+    let tapLocation = sender.location(in: _arView)
+    let hitResult = performHitTest(at: tapLocation)
+    
+    switch hitResult {
+      case .node(let node, let position):
+        NodeClick(node)
+        node.Click()
+        
+        // Also dispatch tap at location with geo coordinates if available
+        if let geoData = worldToGPS(position) {
+            TapAtLocation(position.x, position.y, position.z,
+                         geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
+                         true, true) // isANodeAtPoint = true
+        } else {
+            TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, true)
+        }
+        
+      case .detectedPlane(let plane, let position):
+        // Handle detected plane tap
+        ClickOnDetectedPlaneAt(plane, position.x, position.y, position.z, false)
+        
+        // Also dispatch general tap
+        if let geoData = worldToGPS(position) {
+            TapAtLocation(position.x, position.y, position.z,
+                         geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
+                         true, false)
+        } else {
+            TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+        }
           
-          switch hitResult {
-          case .node(let node, let position):
-              NodeClick(node)
-              node.Click()
-              
-              // Also dispatch tap at location with geo coordinates if available
-              if let geoData = worldToGPS(position) {
-                  TapAtLocation(position.x, position.y, position.z,
-                               geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
-                               true, true) // isANodeAtPoint = true
-              } else {
-                  TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, true)
-              }
-              
-          case .detectedPlane(let plane, let position):
-              // Handle detected plane tap
-              ClickOnDetectedPlaneAt(plane, position.x, position.y, position.z, false)
-              
-              // Also dispatch general tap
-              if let geoData = worldToGPS(position) {
-                  TapAtLocation(position.x, position.y, position.z,
-                               geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
-                               true, false)
-              } else {
-                  TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
-              }
-              
-          case .invisibleFloor(let position):
-              // Handle floor/surface tap
-              if let geoData = worldToGPS(position) {
-                  TapAtLocation(position.x, position.y, position.z,
-                               geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
-                               true, false)
-              } else {
-                  TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
-              }
-              
-          case .empty:
-              print("Tap hit nothing")
-              // Could still dispatch a tap event with estimated position if desired
-          }
+      case .invisibleFloor(let position):
+        // Handle floor/surface tap
+        if let geoData = worldToGPS(position) {
+            TapAtLocation(position.x, position.y, position.z,
+                         geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
+                         true, false)
+        } else {
+            TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+        }
+          
+      case .empty (let position):
+          print("Tap hit nothing, but floating at position: \(position)")
+          TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+
       }
+  }
   
   private func addGeoAnchoredNode(_ node: ARNodeBase) {
     guard let geoAnchor = node.getGeoAnchor() else {
@@ -2356,11 +2370,25 @@ extension ARView3D {
       
     switch hitResult {
       case .node(let targetNode, let hitPosition):
-        guard targetNode != node else { return nil } // Can't stack on self
+       
+        guard targetNode != node else { return nil }
+        
+        print("🔍 Calculating surface for node: \(targetNode.Name)")
         let topSurface = calculateNodeTopSurface(targetNode)
+        print("🔍 Top surface result: \(topSurface)")
+        
         let surface = SIMD3<Float>(hitPosition.x, topSurface.y, hitPosition.z)
-        showPlacementPreview(at: surface, isStacking: true)
-        return surface
+        print("🔍 Final surface: \(surface)")
+        
+        if surface.y.isFinite {
+            showPlacementPreview(at: surface, isStacking: true)
+            return surface
+        } else {
+            print("🚨 Invalid surface Y calculated, using fallback")
+            let fallback = SIMD3<Float>(hitPosition.x, Float(GROUND_LEVEL) + 0.01, hitPosition.z)
+            showPlacementPreview(at: fallback, isStacking: false)
+            return fallback
+        }
           
       case .detectedPlane(_, let hitPosition):
         let surface = SIMD3<Float>(hitPosition.x, hitPosition.y + 0.01, hitPosition.z)
@@ -2388,15 +2416,20 @@ extension ARView3D {
       return surface.y > floorLevel + 0.1
   }
       
-
   private func calculateNodeTopSurface(_ node: ARNodeBase) -> SIMD3<Float> {
-    let nodePos = node._modelEntity.transform.translation
-    let bounds = node._modelEntity.visualBounds(relativeTo: nil)
-    let nodeScale = node.Scale
-    let visualHeight = (bounds.max.y - bounds.min.y) * nodeScale
-    let topY = nodePos.y + (visualHeight / 2) + 0.001
-    
-    return SIMD3<Float>(nodePos.x, topY, nodePos.z)
+      let nodePos = node._modelEntity.transform.translation
+      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+      
+      print("Node \(node.Name):")
+      print("  Position: \(nodePos)")
+      print("  Bounds min: \(bounds.min)")
+      print("  Bounds max: \(bounds.max)")
+      
+      // bounds.max.y is top of the object in world coordinates and scale
+      let topY = bounds.max.y + 0.001
+      print("  Calculated top: \(topY)")
+      
+      return SIMD3<Float>(nodePos.x, topY, nodePos.z)
   }
   
   private func showPlacementPreview(at position: SIMD3<Float>, isStacking: Bool) {
@@ -2421,7 +2454,7 @@ extension ARView3D {
     }
     
     indicatorEntity.model = ModelComponent(mesh: geometry, materials: [material])
-
+    print("📍 Placement indicator  at: \(position) world position ?")
     // Optional: Add a subtle pulsing animation
     let anchor = AnchorEntity(world: position)
     anchor.addChild(indicatorEntity)
