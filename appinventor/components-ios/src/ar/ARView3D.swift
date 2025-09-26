@@ -465,7 +465,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               self?.NodesCollided(nodeA, nodeB)
           }
           
+          
+          
           print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
+        }
+        
+        if entityA.name == "InvisibleFloor" || entityB.name == "InvisibleFloor" {
+            let nodeEntity = entityA.name == "InvisibleFloor" ? entityB : entityA
+            print("💥 FLOOR COLLISION with \(nodeEntity.name) at \(nodeEntity.transform.translation)")
         }
       }
       
@@ -872,57 +879,57 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   // MARK: ARSession Delegate Methods
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
     
-    
-      for anchor in anchors {
-          if let planeAnchor = anchor as? ARPlaneAnchor {
-              let detectedPlane = DetectedPlane(anchor: planeAnchor, container: self)
-              _detectedPlanesDict[anchor] = detectedPlane
-              PlaneDetected(detectedPlane)
+    for anchor in anchors {
+      if let planeAnchor = anchor as? ARPlaneAnchor {
+        let detectedPlane = DetectedPlane(anchor: planeAnchor, container: self)
+        _detectedPlanesDict[anchor] = detectedPlane
+        PlaneDetected(detectedPlane)
+      
+        
+      // for the floor
+        if !_hasSetGroundLevel &&
+         planeAnchor.alignment == .horizontal &&
+            planeAnchor.transform.translation.y < 0.1 {
+          let detectedRealFloorLevel = planeAnchor.transform.translation.y
+          
+          // optimize if we can, whether plane is large
+          if #available(iOS 16.0, *) {
+            let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
             
+            // Only use large, confident planes (at least 1 square meter)
+            if planeAnchor.classification == .floor && planeSize > 1.0 {
               
-            // for the floor
-              if !_hasSetGroundLevel &&
-               planeAnchor.alignment == .horizontal &&
-                  planeAnchor.transform.translation.y < 0.1 {
-                let detectedRealFloorLevel = planeAnchor.transform.translation.y
-                
-                // optimize if we can, whether plane is large
-                if #available(iOS 16.0, *) {
-                  let planeSize = planeAnchor.planeExtent.width * planeAnchor.planeExtent.height
-                  
-                  // Only use large, confident planes (at least 1 square meter)
-                  if planeAnchor.classification == .floor && planeSize > 1.5 {
-                    
-                    let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
-                    print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
-                    
-                    GROUND_LEVEL = invisibleFloorLevel
-                    
-                    // ✅ RECREATE invisible floor at correct position
-                    createInvisibleFloor(at: invisibleFloorLevel)
-                  }
-                } else {
-                  let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
-                  print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
-                  GROUND_LEVEL = invisibleFloorLevel
-                  createInvisibleFloor(at: invisibleFloorLevel)
-                }
-              } else {
-                if #available(iOS 16.0, *) {
-                  if planeAnchor.alignment == .vertical {
-                    createOptimizedWallCollision(planeAnchor)
-                  }
-                }
-              }
-          } else if let imageAnchor = anchor as? ARImageAnchor {
-              guard let name = imageAnchor.referenceImage.name else { return }
-              let imageMarker = _imageMarkers[name]
-          } else if let geoAnchor = anchor as? ARGeoAnchor {
-              handleGeoAnchorAdded(geoAnchor)
+              let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
+              print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
+              
+              GROUND_LEVEL = invisibleFloorLevel
+              
+              // ✅ RECREATE invisible floor at correct position
+              createInvisibleFloor(at: invisibleFloorLevel)
+            }
+          } else {
+            let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
+            print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
+            GROUND_LEVEL = invisibleFloorLevel
+            createInvisibleFloor(at: invisibleFloorLevel)
           }
+        } else {
+          if #available(iOS 16.0, *) {
+            if planeAnchor.alignment == .vertical {
+              createOptimizedWallCollision(planeAnchor)
+            }
+          }
+        }
+      } else if let imageAnchor = anchor as? ARImageAnchor {
+          guard let name = imageAnchor.referenceImage.name else { return }
+          let imageMarker = _imageMarkers[name]
+      } else if let geoAnchor = anchor as? ARGeoAnchor {
+          handleGeoAnchorAdded(geoAnchor)
       }
+    }
   }
 
+  //TODO csb not sure if this is truly necessary
   private func cleanupDistantWalls() {
       guard let camera = _arView.session.currentFrame?.camera else { return }
       let cameraPos = camera.transform.translation
@@ -948,6 +955,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       print("Cleaned up \(wallsToRemove.count) distant walls")
   }
 
+  //TODO csb not sure if this is truly necessary
   @available(iOS 16.0, *)
   private func createOptimizedWallCollision(_ planeAnchor: ARPlaneAnchor) {
       // Clean up old walls periodically
@@ -1006,26 +1014,24 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-      for anchor in anchors {
-          if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
-              updatedPlane.updateFor(anchor: planeAnchor)
-              DetectedPlaneUpdated(updatedPlane)
-              
-              
-          } else if let imageAnchor = anchor as? ARImageAnchor {
-              guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
-              if !imageAnchor.isTracked {
-                  imageMarker.NoLongerInView()
-              } else if !imageMarker._isTracking {
-                  imageMarker.AppearedInView()
-              }
-              let position = SIMD3<Float>(imageAnchor.transform.columns.3.x, imageAnchor.transform.columns.3.y, imageAnchor.transform.columns.3.z)
-              let rotation = imageAnchor.transform.eulerAngles
-              imageMarker.pushUpdate(position, rotation)
-          } else if let geoAnchor = anchor as? ARGeoAnchor {
-              handleGeoAnchorAdded(geoAnchor)
+    for anchor in anchors {
+      if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
+          updatedPlane.updateFor(anchor: planeAnchor)
+          DetectedPlaneUpdated(updatedPlane)
+      } else if let imageAnchor = anchor as? ARImageAnchor {
+          guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
+          if !imageAnchor.isTracked {
+              imageMarker.NoLongerInView()
+          } else if !imageMarker._isTracking {
+              imageMarker.AppearedInView()
           }
+          let position = SIMD3<Float>(imageAnchor.transform.columns.3.x, imageAnchor.transform.columns.3.y, imageAnchor.transform.columns.3.z)
+          let rotation = imageAnchor.transform.eulerAngles
+          imageMarker.pushUpdate(position, rotation)
+      } else if let geoAnchor = anchor as? ARGeoAnchor {
+          handleGeoAnchorAdded(geoAnchor)
       }
+    }
     
   
   }
@@ -2391,7 +2397,9 @@ extension ARView3D {
         }
           
       case .detectedPlane(_, let hitPosition):
-        let surface = SIMD3<Float>(hitPosition.x, hitPosition.y + 0.01, hitPosition.z)
+      
+        let safeY = max(hitPosition.y + 0.01, ARView3D.SHARED_GROUND_LEVEL + 0.01)
+        let surface = SIMD3<Float>(hitPosition.x, safeY, hitPosition.z)
         showPlacementPreview(at: surface, isStacking: false)
         return surface
           
@@ -2425,11 +2433,12 @@ extension ARView3D {
       print("  Bounds min: \(bounds.min)")
       print("  Bounds max: \(bounds.max)")
       
-      // bounds.max.y is top of the object in world coordinates and scale
-      let topY = bounds.max.y + 0.001
+    let topY = max(bounds.max.y, bounds.min.y) + 0.001
+      let safeY = max(topY, ARView3D.SHARED_GROUND_LEVEL + 0.01)
+  
       print("  Calculated top: \(topY)")
       
-      return SIMD3<Float>(nodePos.x, topY, nodePos.z)
+      return SIMD3<Float>(nodePos.x, safeY, nodePos.z)
   }
   
   private func showPlacementPreview(at position: SIMD3<Float>, isStacking: Bool) {
@@ -2480,7 +2489,7 @@ extension ARView3D {
     
     // Create large invisible floor
     let floorSize: Float = 200.0
-    let floorThickness: Float = 0.1
+    let floorThickness: Float = 0.2
     
     // Create collision shape - this will be centered on the entity
     let floorShape = ShapeResource.generateBox(

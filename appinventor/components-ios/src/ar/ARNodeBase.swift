@@ -42,7 +42,9 @@ open class ARNodeBase: NSObject, ARNode {
   private var _pinchToScale: Bool = false
   private var _panToMove: Bool = false
   private var _rotateWithGesture: Bool = false
+  public var _showShadow: Bool = true
   
+  public let DRAG_HEIGHT_OFFSET: Float = 0.001 // Hover above surfaces during drag
   public var _isBeingDragged = false
   private var _dragStartLocation: CGPoint = .zero
   private var _lastDragLocation: CGPoint = .zero
@@ -78,6 +80,8 @@ open class ARNodeBase: NSObject, ARNode {
   
   public var _previewPlacementSurface: SIMD3<Float>?
   public var _hasPreviewSurface: Bool = false
+  
+
 
   // MARK: - Initialization
   
@@ -287,8 +291,11 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   @objc open var ShowShadow: Bool {
-    get { return false }
-    set(showShadow) { }
+    get { return _showShadow }
+    set(showShadow) {
+      _showShadow = showShadow
+      updateShadowSettings()
+    }
   }
   
   @objc open var Opacity: Int32 {
@@ -322,6 +329,11 @@ open class ARNodeBase: NSObject, ARNode {
   @objc open var GravityScale: Float {
       get { return _gravityScale }
       set { _gravityScale = newValue }
+  }
+  
+  @objc open var isBeingDragged: Bool {
+      get { return _isBeingDragged }
+      set {_isBeingDragged = newValue }
   }
   
   @objc open var DragSensitivity: Float {
@@ -360,11 +372,6 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   // MARK: - Drag Properties
-  
-  @objc open var isBeingDragged: Bool {
-      get { return _isBeingDragged }
-      set(newValue) { _isBeingDragged = newValue }
-  }
   
   public var OriginalMaterial: Material? {
       get { return _originalMaterial }
@@ -416,11 +423,7 @@ open class ARNodeBase: NSObject, ARNode {
     euler.z += radians
     _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
   }
-  
-  @objc open func ScaleBy(_ scalar: Float) {
-    _modelEntity.transform.scale *= abs(scalar)
-    updateCollisionShape()
-  }
+
   
   @objc open func MoveBy(_ x: Float, _ y: Float, _ z: Float) {
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
@@ -474,11 +477,90 @@ open class ARNodeBase: NSObject, ARNode {
   
   // MARK: - Gesture Response Methods
   
-  open func scaleByPinch(scalar: Float) {
-    if PinchToScale {
-      ScaleBy(scalar)
+  
+ @objc open func ScaleBy(_ scalar: Float) {
+    print("🔄 Scaling model \(Name) by \(scalar)")
+    
+    let currentPos = _modelEntity.transform.translation
+    let oldScale = Scale
+    
+    // Calculate model bounds for bottom positioning
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let modelHeight = (bounds.max.y - bounds.min.y) * oldScale
+    let currentBottomY = currentPos.y - modelHeight / 2.0
+    
+    // Keep physics enabled during scaling
+    let hadPhysics = _modelEntity.physicsBody != nil
+    
+    // Update scale
+    let newScale = oldScale * abs(scalar)
+    _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
+    
+    // Calculate new position to keep bottom at same level
+    let newModelHeight = (bounds.max.y - bounds.min.y) * newScale
+    let newCenterY = currentBottomY + newModelHeight / 2.0
+    
+    // Apply new position
+    let newPosition = SIMD3<Float>(currentPos.x, newCenterY, currentPos.z)
+    _modelEntity.transform.translation = newPosition
+
+    // Update physics collision shape if it was enabled
+    if hadPhysics {
+      updatePhysicsCollisionShape()
     }
   }
+
+  open func scaleByPinch(scalar: Float) {
+    let oldScale = Scale
+    let newScale = oldScale * scalar
+    
+    // Validate scale bounds
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let currentSize = bounds.max - bounds.min
+    let newSize = currentSize * newScale
+    
+    let minSize: Float = 0.01
+    let maxSize: Float = 10.0
+    
+    let avgNewSize = (newSize.x + newSize.y + newSize.z) / 3.0
+    guard avgNewSize >= minSize && avgNewSize <= maxSize else { return }
+    
+    _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
+    
+    if _modelEntity.physicsBody != nil {
+      updatePhysicsCollisionShape()
+    }
+  }
+
+  private func updatePhysicsCollisionShape() {
+    guard _modelEntity.physicsBody != nil else { return }
+    
+    let currentScale = _modelEntity.transform.scale.x
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let scaledSize = (bounds.max - bounds.min) * currentScale
+    
+    let safeSize = SIMD3<Float>(
+      max(scaledSize.x, 0.05) * 1.1,
+      max(scaledSize.y, 0.05) * 1.1,
+      max(scaledSize.z, 0.05) * 1.1
+    )
+    
+    let newShape = ShapeResource.generateBox(size: safeSize)
+    
+    _modelEntity.collision = CollisionComponent(
+      shapes: [newShape],
+      filter: _modelEntity.collision?.filter ?? CollisionFilter(
+        group: ARView3D.CollisionGroups.arObjects,
+        mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
+      )
+    )
+    
+    if var physicsBody = _modelEntity.physicsBody {
+      physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
+      _modelEntity.physicsBody = physicsBody
+    }
+  }
+
   
   open func moveByPan(x: Float, y: Float) {
     if PanToMove {
@@ -790,20 +872,36 @@ open class ARNodeBase: NSObject, ARNode {
   // MARK: - Physics Methods
   
   @objc open func EnablePhysics(_ isDynamic: Bool = true) {
-    if (!isDynamic){
-      _enablePhysics = false
-      return
+    if (!isDynamic) {
+        _enablePhysics = false
+        _modelEntity.collision = nil
+        _modelEntity.physicsBody = nil
+        return
     }
-    
+    let currentPos = _modelEntity.transform.translation
+    let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+   
+    print("🎾 EnablePhysics called for \(Name) with Mass \(Mass)")
+    print("🎾 Current position: \(currentPos)")
+    print("🎾 Ground level: \(groundLevel)")
+    print("🎾 Distance from ground: \(currentPos.y - groundLevel)")
+  
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let size = bounds.max - bounds.min
-    
     // Ensure minimum size and make slightly larger for stability
     let safeSize = SIMD3<Float>(
         max(size.x, 0.05) * 1.001,
         max(size.y, 0.05) * 1.001,
         max(size.z, 0.05) * 1.001
     )
+    print("Object collision size: \(safeSize)")
+    print("Object bounds after physics: \(currentPos.y - safeSize.y/2) to \(currentPos.y + safeSize.y/2)")
+      
+    if currentPos.y - safeSize.y/2 < groundLevel {
+        print("WARNING: Object collision box extends below floor level!")
+        print("Moving object up to prevent floor penetration")
+        _modelEntity.transform.translation.y = groundLevel + safeSize.y/2 + 0.01
+    }
     
     // For round objects, use sphere collision (more stable)
     let shape: ShapeResource
@@ -815,8 +913,7 @@ open class ARNodeBase: NSObject, ARNode {
     } else {
         shape = ShapeResource.generateBox(size: safeSize)
     }
-    
-    _enablePhysics = isDynamic
+
     _modelEntity.collision = CollisionComponent(shapes: [shape])
     
     // Create mass properties separately
@@ -834,6 +931,12 @@ open class ARNodeBase: NSObject, ARNode {
       material: gentleMaterial,
       mode: isDynamic ? .dynamic : .static
     )
+    
+    _modelEntity.physicsMotion = PhysicsMotionComponent()
+    
+    if #available(iOS 15.0, *) {
+        updateShadowSettings()
+    }
   }
 
   @objc open func DisablePhysics() {
@@ -931,26 +1034,27 @@ open class ARNodeBase: NSObject, ARNode {
         collidedMaterial.color = .init(tint: .white.withAlphaComponent(0.5))
     }
       
-      // Apply collision color
+    // Apply collision color
     _modelEntity.model?.materials = [collidedMaterial]
     
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-        if let original = self?.OriginalMaterial {
-            self?._modelEntity.model?.materials = [original]
-            //print("🎨 Collision effect restored")
-        }
+      if let original = self?.OriginalMaterial {
+          self?._modelEntity.model?.materials = [original]
+      }
     }
   }
   
   // MARK: - Drag Methods
   
   @objc open func startDrag() {
-    isBeingDragged = true
+    _isBeingDragged = true
     _originalMaterial = _modelEntity.model?.materials.first
+    
     if var physicsBody = _modelEntity.physicsBody {
       physicsBody.mode = .kinematic
       _modelEntity.physicsBody = physicsBody
     }
+    
     print("🎯 \(Name) started being dragged")
   }
   
@@ -958,23 +1062,19 @@ open class ARNodeBase: NSObject, ARNode {
       guard _isBeingDragged else { return }
       let constrainedPosition = SIMD3<Float>(
         fingerWorldPosition.x,
-        max(fingerWorldPosition.y, Float(ARView3D.SHARED_GROUND_LEVEL) + 0.01), // always higher than ground level
+        max(fingerWorldPosition.y + DRAG_HEIGHT_OFFSET, ARView3D.SHARED_GROUND_LEVEL + 0.005),
         fingerWorldPosition.z
       )
       // Direct position control
       _modelEntity.transform.translation = constrainedPosition
-
     }
+
   @objc open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
-    let cameraVectors = camera3DProjection as? ARView3D.CameraVectors
-    isBeingDragged = false
+
+    _isBeingDragged = false
     if let original = _originalMaterial {
       _modelEntity.model?.materials = [original]
       _originalMaterial = nil
-    }
-    if var physicsBody = _modelEntity.physicsBody {
-      physicsBody.mode = .dynamic
-      _modelEntity.physicsBody = physicsBody
     }
     
     if #available(iOS 15.0, *) {
@@ -982,6 +1082,7 @@ open class ARNodeBase: NSObject, ARNode {
     } else {
       // will follow finger
     }
+    
     print("🎯 \(Name) drag ended - override in subclass")
   }
   
@@ -1006,18 +1107,20 @@ open class ARNodeBase: NSObject, ARNode {
     // Fallback: find surface from current position
     let currentPos = _modelEntity.transform.translation
     if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
+      print("Using horizontal surface: \(placementPosition)")
       animateToPosition(placementPosition) {
           self.finalizeModelPlacement()
       }
     } else {
       // Final fallback to ground level
       let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
+      print("Using groundPosition: \(groundPosition)")
       animateToPosition(groundPosition) {
           self.finalizeModelPlacement()
       }
     }
   }
-  
+
   private func finalizeModelPlacement() {
     print("Finalizing node placement")
 
@@ -1035,6 +1138,7 @@ open class ARNodeBase: NSObject, ARNode {
     print("node placement complete at: \(_modelEntity.transform.translation)")
   }
   
+
   /// Animates the node to a target position smoothly
   @available(iOS 15.0, *)
   private func animateToPosition(_ targetPosition: SIMD3<Float>, completion: @escaping () -> Void) {
@@ -1074,8 +1178,11 @@ open class ARNodeBase: NSObject, ARNode {
 
   private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
     guard let container = _container else { return nil }
-    return container.getARView().checkAndUpdateSurfacePreview(for: self, at: position)
+    print("best surface for node dragged from \(position)")
+    return container.getARView().findBestSurfaceForPlacement()
   }
+  
+  
 
 } // end ARNodeBase class
 
@@ -1165,8 +1272,7 @@ extension ARNodeBase {
     gesturePhase: UIGestureRecognizer.State
   ) {
     var groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
-    print("any node, handling drag gesture \(groundPos)")
-  
+
     switch gesturePhase {
     case .began:
       startDrag()
@@ -1204,4 +1310,64 @@ extension ARNodeBase {
   public func hasPreviewSurface() -> Bool {
       return _hasPreviewSurface
   }
+  
+  /// Updates shadow casting and receiving for the sphere
+  public func updateShadowSettings() {
+      guard #available(iOS 15.0, *) else {
+          print("⚠️ Shadow control requires iOS 15.0+")
+          return
+      }
+      
+      // Enable/disable shadow casting and receiving
+      if _showShadow {
+          enableShadows()
+      } else {
+          disableShadows()
+      }
+  }
+  
+  // Add convenience methods for shadow control
+  @objc open func enableShadowCasting() {
+      ShowShadow = true
+  }
+
+  @objc open func disableShadowCasting() {
+      ShowShadow = false
+  }
+
+  // Add shadow-specific behavior methods
+  @objc open func setShadowIntensity(_ intensity: Float) {
+      guard #available(iOS 15.0, *) else { return }
+      
+      // Note: RealityKit doesn't have direct shadow intensity control per object
+      // This would typically be controlled at the scene lighting level
+      print("⚠️ Shadow intensity is controlled by scene lighting in RealityKit")
+  }
+
+  @objc open func setShadowColor(_ color: Int32) {
+      guard #available(iOS 15.0, *) else { return }
+      
+      // Note: RealityKit doesn't have direct shadow color control per object
+      // This would typically be controlled at the scene lighting level
+      print("⚠️ Shadow color is controlled by scene lighting in RealityKit")
+  }
+  
+  @available(iOS 15.0, *)
+  private func enableShadows() {
+      // Enable shadow casting
+    if #available(iOS 18.0, *) {
+      _modelEntity.components.set(GroundingShadowComponent(castsShadow: true))
+    }
+    print("🌘 Shadows enabled \(Name)")
+  }
+
+  @available(iOS 15.0, *)
+  private func disableShadows() {
+      // Disable shadow casting
+    if #available(iOS 18.0, *) {
+      _modelEntity.components.set(GroundingShadowComponent(castsShadow: false))
+    }
+    print("☀️ Shadows disabled\(Name)")
+  }
+
 }
