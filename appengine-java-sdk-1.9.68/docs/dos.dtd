@@ -1,0 +1,4 @@
+<!ELEMENT blacklistentries (blacklist)*>
+<!ELEMENT blacklist (subnet, description)>
+<!ELEMENT subnet (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
