@@ -83,7 +83,6 @@ public class Tracking {
   public static final String USER_ACTION_UPLOAD_KEYSTORE = USER_ACTION_PREFIX + "UploadKeystore";
   public static final String USER_ACTION_DELETE_KEYSTORE = USER_ACTION_PREFIX + "DeleteKeystore";
 
-
   private Tracking() {
   }
 
