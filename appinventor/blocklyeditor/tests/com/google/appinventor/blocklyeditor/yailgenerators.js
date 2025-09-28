@@ -65,7 +65,7 @@ suite('Blockly Code Generator Tests', function() {
     test('controls_eval_but_ignore', function() {
       let expected = "(begin #f \"ignored\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('controls_eval_but_ignore');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.typeOf(yailForBlock, 'string');
       chai.assert.equal(yailForBlock, expected);
     })
@@ -74,7 +74,7 @@ suite('Blockly Code Generator Tests', function() {
     test('math_atan2', function() {
       let expected = "(call-yail-primitive atan2-degrees (*list-for-runtime* 1 1) '(number number) \"atan2\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('math_atan2');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })
@@ -83,28 +83,28 @@ suite('Blockly Code Generator Tests', function() {
     test('lists_create_with', function() {
       let expected = "(call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('lists_create_with');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })
     test('lists_add_items', function() {
       let expected =    "(call-yail-primitive yail-list-add-to-list! (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\") #f ) '(list any ) \"add items to list\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('lists_add_items');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.typeOf(yailForBlock, 'string');
       chai.assert.equal(yailForBlock, expected);
     })
     test('lists_join_with_separator', function() {
       let expected = "(call-yail-primitive yail-list-join-with-separator (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\") \"\") '(list text) \"join with separator\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('lists_join_with_separator');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })
     test('lists_select_item', function() {
       let expected = "(call-yail-primitive yail-list-get-item (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\") 1) '(list number) \"select list item\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('lists_select_item');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })
@@ -114,7 +114,7 @@ suite('Blockly Code Generator Tests', function() {
       let expected = "(call-yail-primitive string-split-at-any (*list-for-runtime* \"\" 1) '(text list) \"split at any\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('text_split');
       testBlock.setFieldValue('SPLITATANY', 'OP');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })
@@ -122,7 +122,7 @@ suite('Blockly Code Generator Tests', function() {
       let expected = "(call-yail-primitive string-split-at-first-of-any (*list-for-runtime* \"\" 1) '(text list) \"split at first of any\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('text_split');
       testBlock.setFieldValue('SPLITATFIRSTOFANY', 'OP');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })
@@ -130,7 +130,7 @@ suite('Blockly Code Generator Tests', function() {
       let expected = "(call-yail-primitive string-split-at-first (*list-for-runtime* \"\" 1) '(text text) \"split at first\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('text_split');
       testBlock.setFieldValue('SPLITATFIRST', 'OP');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })
@@ -138,7 +138,7 @@ suite('Blockly Code Generator Tests', function() {
       let expected = "(call-yail-primitive string-split (*list-for-runtime* \"\" 1) '(text text) \"split\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('text_split');
       testBlock.setFieldValue('SPLIT', 'OP');
-      let yailForBlock = AI.Yail[testBlock.type].call(testBlock);
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
       chai.assert.lengthOf(yailForBlock, 2);
       chai.assert.equal(yailForBlock[0], expected);
     })

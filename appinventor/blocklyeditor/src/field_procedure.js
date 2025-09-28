@@ -20,7 +20,7 @@ AI.Blockly.FieldProcedure.defaultValue = ["",""];
 
 AI.Blockly.FieldProcedure.onChange = function(procedureId) {
   const workspace = this.block.getTopWorkspace();
-  if(!this.block.editable_){ // [lyn, 10/14/13] .editable is undefined on blocks. Changed to .editable_
+  if(!this.block.isOwnEditable()){
     return;
   }
 
@@ -38,7 +38,6 @@ AI.Blockly.FieldProcedure.onChange = function(procedureId) {
       // return;
     }
   }
-  this.doValueUpdate_(text);
   // If we're just in the midst of renaming the procedure, we don't have (or want) to
   // add the new arguments
   if (!this.block.isRenaming) {

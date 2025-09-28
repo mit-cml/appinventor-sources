@@ -39,8 +39,8 @@ export interface PuzzleTab {
     type: number;
     width: number;
     height: number;
-    pathDown: string | ((p1: number) => string);
-    pathUp: string | ((p1: number) => string);
+    pathDown: string;
+    pathUp: string;
 }
 /**
  * An object containing sizing and path information about collapsed block
@@ -78,6 +78,10 @@ export type Shape = BaseShape | DynamicShape;
  * @returns Whether the shape is a dynamic shape or not.
  */
 export declare function isDynamicShape(shape: Shape): shape is DynamicShape;
+/** Returns whether the shape is a puzzle tab or not. */
+export declare function isPuzzleTab(shape: Shape): shape is PuzzleTab;
+/** Returns whether the shape is a notch or not. */
+export declare function isNotch(shape: Shape): shape is Notch;
 /**
  * An object that provides constants for rendering blocks.
  */
