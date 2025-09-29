@@ -1475,6 +1475,12 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use a dark theme, false otherwise
    */
   public static boolean getUserDarkThemeEnabled() {
+    String override = Window.Location.getParameter("ui");
+    if (override != null && override.contains("light")) {
+      return false;
+    } else if (override != null && override.contains("dark")) {
+      return true;
+    }
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
     if (value == null) {
@@ -1511,6 +1517,12 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use the new UI, false otherwise
    */
   public static boolean getUserNewLayout() {
+    String override = Window.Location.getParameter("ui");
+    if (override != null && override.contains("classic")) {
+      return false;
+    } else if (override != null && override.contains("neo")) {
+      return true;
+    }
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
     return Boolean.parseBoolean(value);
@@ -1820,7 +1832,7 @@ public class Ode implements EntryPoint {
       }
       return null;
     });
-    if (getShowUIPicker()) {
+    if (getShowUIPicker() && Ode.getUserNewLayout()) {
       TutorialPopup popup = new TutorialPopup(MESSAGES.neoWelcomeMessage(), () -> {
         setUserNewLayout(false);
         saveUserDesignSettings();

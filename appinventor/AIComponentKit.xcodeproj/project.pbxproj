@@ -80,6 +80,7 @@
 		06604B732034EFE70066C459 /* CsvUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06604B722034EFE70066C459 /* CsvUtil.swift */; };
 		0665ADE7210F592D0044C887 /* FileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC78693202E0B6E005363A3 /* FileTests.swift */; };
 		06678E32233956EE00BD3F19 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06678E31233956EE00BD3F19 /* main.swift */; };
+		066DB4082E7E955B00473BF2 /* ChartDataModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066DB4072E7E955B00473BF2 /* ChartDataModelTests.swift */; };
 		067BBF312C480CEF0058B1BD /* BaseAiComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */; };
 		067BBF322C480CEF0058B1BD /* PersonalImageClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */; };
 		067D1B171D9B398E00A6190E /* RetValManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 067D1B151D9B398E00A6190E /* RetValManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -480,6 +481,7 @@
 		065E429C2866BC5500479153 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		06604B722034EFE70066C459 /* CsvUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtil.swift; sourceTree = "<group>"; };
 		06678E31233956EE00BD3F19 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		066DB4072E7E955B00473BF2 /* ChartDataModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartDataModelTests.swift; sourceTree = "<group>"; };
 		066EA0A32979D44E008203B1 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = "webrtc/out/ios_arm64-Release/WebRTC.framework"; sourceTree = "<group>"; };
 		067BBEF02C480CEF0058B1BD /* BaseAiComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseAiComponent.swift; sourceTree = "<group>"; };
 		067BBEF12C480CEF0058B1BD /* PersonalImageClassifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonalImageClassifier.swift; sourceTree = "<group>"; };
@@ -1529,6 +1531,7 @@
 		DE85F127209CDA2700A809AA /* visible */ = {
 			isa = PBXGroup;
 			children = (
+				066DB4072E7E955B00473BF2 /* ChartDataModelTests.swift */,
 				DE102DB820F53189002C71F0 /* FontUtilTests.swift */,
 				06009FF52280723F00E4EC4A /* ImageTests.swift */,
 				06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */,
@@ -2141,6 +2144,7 @@
 				06E2D5FD1FDB15F100A1D52A /* BuiltinBlockTests.swift in Sources */,
 				06A623862507BDA800961743 /* CoercionTests.swift in Sources */,
 				0602B270203481F900ED60A8 /* FormTests.swift in Sources */,
+				066DB4082E7E955B00473BF2 /* ChartDataModelTests.swift in Sources */,
 				06009FF62280723F00E4EC4A /* ImageTests.swift in Sources */,
 				06E624A629F698EC007DA752 /* TextToSpeechTests.swift in Sources */,
 				DE68A88D20B4971400233AF9 /* XMLTests.swift in Sources */,
