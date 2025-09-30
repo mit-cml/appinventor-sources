@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -97,7 +98,12 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
       // to calculate insets to avoid any part of the app displaying under the status bar.
       ViewCompat.setOnApplyWindowInsetsListener(getWindow().getDecorView(), (v, windowInsets) -> {
         Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-        v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+        Insets ime = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+        v.setPadding(insets.left, insets.top, insets.right, insets.bottom + ime.bottom);
+
+        if (this instanceof Form) {
+          ((Form)this).ReplayFormOrientation();
+        }
 
         // Return CONSUMED if you don't want the window insets to keep passing
         // down to descendant views.
