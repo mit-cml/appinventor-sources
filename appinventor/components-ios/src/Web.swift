@@ -171,11 +171,10 @@ open class Web: NonvisibleComponent {
     }
 
     var request = URLRequest(url: url)
+    request.httpMethod = httpVerb
     if let postData = postData {
-      request.httpMethod = httpVerb
       request.httpBody = postData
     } else if let postFile = postFile {
-      request.httpMethod = httpVerb
       do {
         if postFile.starts(with: "file:"), let fileUrl = URL(string: postFile) {
           request.httpBody = try Data(contentsOf: fileUrl)
