@@ -67,11 +67,25 @@ open class AxisChartView : ChartView {
     }
   }
 
+  public func getXBounds() -> [Double] {
+    let minBound: Double = chart?.xAxis.axisMinimum ?? 0.0
+    let maxBound: Double = chart?.xAxis.axisMaximum ?? 0.0
+    let bounds: [Double] = [minBound, maxBound]
+    return bounds
+  }
+  
   public func setXBounds (minimum: Double, maximum: Double) {
     chart?.xAxis.axisMinimum = minimum
     chart?.xAxis.axisMaximum = maximum
   }
 
+  public func getYBounds() -> [Double] {
+    let minBound: Double = (chart as? BarLineChartViewBase)?.leftAxis.axisMinimum ?? 0.0
+    let maxBound: Double = (chart as? BarLineChartViewBase)?.leftAxis.axisMaximum ?? 0.0
+    let bounds: [Double] = [minBound, maxBound]
+    return bounds
+  }
+  
   public func setYBounds (minimum: Double, maximum: Double) {
     (chart as? BarLineChartViewBase)?.leftAxis.axisMinimum = minimum
     (chart as? BarLineChartViewBase)?.leftAxis.axisMaximum = maximum
