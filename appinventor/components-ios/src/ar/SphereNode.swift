@@ -827,6 +827,9 @@ private func monitorPostCollisionState() {
   override open func startDrag() {
     _isBeingDragged = true
     
+    if #available(iOS 16.0, *) {
+        _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = false
+    }
     // Switch to kinematic - position controlled manually
     if var physicsBody = _modelEntity.physicsBody {
       physicsBody.mode = .kinematic
@@ -867,6 +870,10 @@ private func monitorPostCollisionState() {
       } else {
         applyReleaseForceIOS16(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
       }
+    }
+    
+    if #available(iOS 16.0, *) {
+        _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = false
     }
     
     _isBeingDragged = false
@@ -1075,57 +1082,58 @@ private func monitorPostCollisionState() {
 
   // 5. ✅ TRUST PHYSICS: Let RealityKit handle everything
   override open func EnablePhysics(_ isDynamic: Bool = true) {
-      if (!isDynamic) {
-          _enablePhysics = false
-          _modelEntity.collision = nil
-          _modelEntity.physicsBody = nil
-          return
-      }
-      
-      // ✅ SPHERE COLLISION: Use precise sphere collision
-
-      let shape = ShapeResource.generateSphere(radius: _radius)
-      
-      _enablePhysics = isDynamic
-      _modelEntity.collision = CollisionComponent(shapes: [shape])
-
-      // ✅ REALISTIC PHYSICS: Let RealityKit handle all collisions
-      let massProperties = PhysicsMassProperties(mass: Mass)
-      
-      let material = PhysicsMaterialResource.generate(
-          staticFriction: StaticFriction,
-          dynamicFriction: DynamicFriction,
-          restitution: Restitution
-      )
-    
-    
-    
-    if _modelEntity.transform.translation.y < ARView3D.SHARED_GROUND_LEVEL{
-      print("Warning, sphere is BELOW ground level \(_modelEntity.transform.translation.y) groundlevel: \(ARView3D.SHARED_GROUND_LEVEL)")
-      
+    if (!isDynamic) {
+        _enablePhysics = false
+        _modelEntity.collision = nil
+        _modelEntity.physicsBody = nil
+        return
     }
       
-      _modelEntity.physicsBody = PhysicsBodyComponent(
-          massProperties: massProperties,
-          material: material,
-          mode: isDynamic ? .dynamic : .static
-      )
-   
-      // Enable continuous collision detection for fast-moving objects
-      if #available(iOS 16.0, *) {
-                // Use swept collision detection
-        _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = true
-      }
-     
-      _modelEntity.physicsMotion = PhysicsMotionComponent()
-      
-      if #available(iOS 15.0, *) {
-          updateShadowSettings()
-      }
+    let currentPos = _modelEntity.transform.translation
+    let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+    let bottomY = currentPos.y - _radius
     
-      print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
-      debugPhysicsState()
-      print("🎾 Sphere radius: \(_radius), mass: \(Mass)")
+    if bottomY < groundLevel {
+        print("⚠️ Sphere bottom at \(bottomY) is below ground \(groundLevel)")
+        let correctedY = groundLevel + _radius + 0.01
+        print("🔧 Correcting Y from \(currentPos.y) to \(correctedY)")
+        _modelEntity.transform.translation.y = correctedY
+    }
+      // ✅ SPHERE COLLISION: Use precise sphere collision
+
+    let shape = ShapeResource.generateSphere(radius: _radius)
+      
+    _enablePhysics = isDynamic
+    _modelEntity.collision = CollisionComponent(shapes: [shape])
+
+    // ✅ REALISTIC PHYSICS: Let RealityKit handle all collisions
+    let massProperties = PhysicsMassProperties(mass: Mass)
+    
+    let material = PhysicsMaterialResource.generate(
+        staticFriction: StaticFriction,
+        dynamicFriction: DynamicFriction,
+        restitution: Restitution
+    )
+      
+    _modelEntity.physicsBody = PhysicsBodyComponent(
+        massProperties: massProperties,
+        material: material,
+        mode: isDynamic ? .dynamic : .static
+    )
+   
+    // Enable continuous collision detection for fast-moving objects
+    if #available(iOS 16.0, *) {
+      _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = true
+    }
+    _modelEntity.physicsMotion = PhysicsMotionComponent()
+    
+    if #available(iOS 15.0, *) {
+        updateShadowSettings()
+    }
+  
+    print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
+    debugPhysicsState()
+    print("🎾 Sphere radius: \(_radius), mass: \(Mass)")
   }
 
   // 6. ✅ REMOVE ground level constraints entirely

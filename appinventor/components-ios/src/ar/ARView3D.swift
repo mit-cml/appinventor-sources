@@ -545,18 +545,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     startOptions = []
     
     ensureFloorExists()
+    updateGroundLevel(newGroundLevel: GROUND_LEVEL)
     if (_enableOcclusion){
       _arView.environment.sceneUnderstanding.options.insert(.occlusion)
     } else {
       _arView.environment.sceneUnderstanding.options.remove(.occlusion)
-      
     }
     
     if _requiresAddNodes {
       for (node, anchorEntity) in _nodeToAnchorDict {
-        
-        
-
         node.EnablePhysics(node.EnablePhysics)
         
         if node.IsGeoAnchored {
@@ -570,13 +567,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           if _reenableWebViewNodes, let webViewNode = node as? ARWebView {
             webViewNode.isUserInteractionEnabled = true
           }
-          
-          
-          
+  
           if !node.IsFollowingImageMarker {
             _arView.scene.addAnchor(anchorEntity)
           }
-          
           
           if node._fromPropertyPosition != nil {
             let position = node._fromPropertyPosition.split(separator: ",")
@@ -717,28 +711,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         bestResult.worldTransform.columns.3.z
     )
           
-      if let planeAnchor = bestResult.anchor as? ARPlaneAnchor,
-             let detected_Plane = _detectedPlanesDict[planeAnchor] {
-            print("best detected plane at \(worldPosition)")
-              return .detectedPlane(detected_Plane, worldPosition)
-          }
-          
-          // Hit some other surface
-          return .invisibleFloor(worldPosition)
+    if let planeAnchor = bestResult.anchor as? ARPlaneAnchor,
+      let detected_Plane = _detectedPlanesDict[planeAnchor] {
+        print("best detected plane at \(worldPosition)")
+          return .detectedPlane(detected_Plane, worldPosition)
       }
-    
-      let estimatedPlanes = _arView.raycast(from: screenPoint, allowing: .estimatedPlane, alignment: .any)
-      if let result = estimatedPlanes.first {
-            let worldPosition = SIMD3<Float>(
-                result.worldTransform.columns.3.x,
-                result.worldTransform.columns.3.y,
-                result.worldTransform.columns.3.z
-            )
-            print("using estimated plane at \(worldPosition)")
-            return .invisibleFloor(worldPosition)
-        }
-    
-      return .empty(SIMD3<Float>(0, 0, 0))
+      return .invisibleFloor(worldPosition)
+    }
+  
+    let estimatedPlanes = _arView.raycast(from: screenPoint, allowing: .estimatedPlane, alignment: .any)
+    if let result = estimatedPlanes.first {
+      let worldPosition = SIMD3<Float>(
+          result.worldTransform.columns.3.x,
+          result.worldTransform.columns.3.y,
+          result.worldTransform.columns.3.z
+      )
+      print("using estimated plane at \(worldPosition)")
+      return .invisibleFloor(worldPosition)
+    }
+  
+    return .empty(SIMD3<Float>(0, 0, 0))
 
   }
   
@@ -770,8 +762,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         // Also dispatch tap at location with geo coordinates if available
         if let geoData = worldToGPS(position) {
             TapAtLocation(position.x, position.y, position.z,
-                         geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
-                         true, true) // isANodeAtPoint = true
+                  geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
+                  true, true) // isANodeAtPoint = true
         } else {
           TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, true)
         }
@@ -783,8 +775,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         // Also dispatch general tap
         if let geoData = worldToGPS(position) {
             TapAtLocation(position.x, position.y, position.z,
-                         geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
-                         true, false)
+                  geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
+                  true, false)
         } else {
             TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
         }
@@ -858,7 +850,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             UnitHelper.centimetersToMeters(position[1]),
             UnitHelper.centimetersToMeters(position[2])
           )
-          
         }
         
         if (hasInvisibleFloor){
@@ -892,6 +883,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     return true
   }
   
+  
+  func updateGroundLevel(newGroundLevel: Float) {
+      
+      // Check all existing nodes
+    for node in _nodeToAnchorDict.keys {
+      let currentY = node._modelEntity.transform.translation.y
+      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+      let halfHeight = (bounds.max.y - bounds.min.y)/2
+      let bottomY = currentY - halfHeight
+      
+      if bottomY < newGroundLevel + 0.005 {
+        let correctedY = newGroundLevel + halfHeight + 0.02
+          node._modelEntity.transform.translation.y = correctedY
+          print("⬆️ LIFTED \(node.Name) from \(currentY) to \(correctedY)")
+      }
+      }
+  }
+  
+  
   // MARK: ARSession Delegate Methods
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
     
@@ -922,12 +932,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               
               // ✅ RECREATE invisible floor at correct position
               createInvisibleFloor(at: invisibleFloorLevel)
+              _hasSetGroundLevel = true
             }
           } else {
             let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
             print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
             GROUND_LEVEL = invisibleFloorLevel
             createInvisibleFloor(at: invisibleFloorLevel)
+            _hasSetGroundLevel = true
           }
         } else {
           if #available(iOS 16.0, *) {
@@ -1090,10 +1102,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
-    print("🔥 handleGeoAnchorAdded called!")
-    print("📍 Geo anchor coordinate: \(geoAnchor.coordinate)")
-    print("🌍 Geo anchor transform: \(geoAnchor.transform)")
-    
     // Calculate distance from session start
     if let sessionStart = sessionStartLocation {
       let distance = CLLocation(latitude: geoAnchor.coordinate.latitude, longitude: geoAnchor.coordinate.longitude)
@@ -1132,7 +1140,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               return
             }
           }
-          
           
           print("🎯 Geo anchor now tracked and displayed at \(geoAnchor.coordinate)")
           print("📍 AnchorEntity position: \(anchorEntity.position)")
@@ -1301,7 +1308,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               
               
               let groundLevel = GROUND_LEVEL
-              let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
+              let bounds = node._modelEntity.visualBounds(relativeTo: nil as Entity?)
+              let halfHeight = (bounds.max.y - bounds.min.y)/2
+
+              let safeY = max(
+                  yMeters + halfHeight + 0.01,  // detected surface + radius + clearance
+                  groundLevel + ARView3D.VERTICAL_OFFSET + halfHeight  // fallback floor position
+              )
               
               node.setPosition(x: xMeters, y: safeY, z: zMeters)
               print("create node at y  \(yMeters) and safe is \(safeY)")
@@ -1517,7 +1530,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func LoadScene(_ dictionaries: [AnyObject]) -> [AnyObject] {
-      print("loading stored scene \(dictionaries)")
+      print("LOADING stored scene \(dictionaries)")
       
       var loadNode: ARNodeBase?
       var newNodes: [ARNode] = []
@@ -1526,12 +1539,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         return []
       }
       
-      
       for obj in dictionaries {
         if obj is YailDictionary{
           
           let nodeDict = obj as! YailDictionary
-          
           
           guard let type = nodeDict["type"] as? String else {
             print("loadscene missing type (\type)")
@@ -1561,12 +1572,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           if let node = loadNode {
             addNode(node)
             newNodes.append(node)
-            print("loaded (\node)")
           }
         }
-        
       }
-      
       print("loadscene new nodes are \(newNodes)")
       return newNodes
     }
@@ -1689,17 +1697,16 @@ extension ARView3D: UIGestureRecognizerDelegate {
         let bounds = node._modelEntity.visualBounds(relativeTo: nil as Entity?)
         let currentSize = bounds.max - bounds.min
         worldThreshold = currentSize.max()
-        
 
         let normalizedWorldDistance = min(worldDistance / worldThreshold, 1.0)  // Normalize to 0-1
           
         let combinedScore = (screenWeight * Float(normalizedScreenDistance)) +
                              (worldWeight * normalizedWorldDistance)
           
-          if combinedScore < bestScore {
-              bestScore = combinedScore
-              bestNode = node
-          }
+        if combinedScore < bestScore {
+            bestScore = combinedScore
+            bestNode = node
+        }
       }
       
       if let node = bestNode {
@@ -1746,13 +1753,10 @@ extension ARView3D: UIGestureRecognizerDelegate {
     }
   }
   
-  
   private func isPositionValid(_ position: SIMD3<Float>) -> Bool {
     // Basic collision check - make sure we're not going below floor
     return position.y > GROUND_LEVEL
   }
-
-  
   
   @objc fileprivate func handleLongPress(sender: UILongPressGestureRecognizer) {
     guard _sessionRunning else { return }
@@ -2092,6 +2096,7 @@ extension ARView3D: LifecycleDelegate {
     _detectedPlanesDict = [:]
     _imageMarkers = [:]
     
+    _hasSetGroundLevel = false
     createInvisibleFloor()
   }
 }
@@ -2421,7 +2426,7 @@ extension ARView3D {
           
       case .detectedPlane(_, let hitPosition):
       
-        let safeY = max(hitPosition.y + 0.01, ARView3D.SHARED_GROUND_LEVEL + 0.01)
+        let safeY = max(hitPosition.y + 0.01,Float(GROUND_LEVEL) + 0.01)
         let surface = SIMD3<Float>(hitPosition.x, safeY, hitPosition.z)
         showPlacementPreview(at: surface, isStacking: false)
         return surface
@@ -2504,8 +2509,9 @@ extension ARView3D {
 @available(iOS 14.0, *)
 extension ARView3D {
   
+  
   @objc func createInvisibleFloor(at height: Float = SHARED_GROUND_LEVEL) {
-    print("Creating simple invisible floor at: \(height)m")
+    print("Creating simple INVISIBLE floor at: \(height)m")
     
     // Remove existing floor
     removeInvisibleFloor()
@@ -2525,10 +2531,9 @@ extension ARView3D {
     _invisibleFloor = ModelEntity()
     _invisibleFloor?.name = "InvisibleFloor"
     
-    // Position the ENTITY at the desired floor height
-    // The collision box will be centered on this position
-    let entityY = height + (floorThickness / 2) // Position so top of box is at 'height'
-    _invisibleFloor?.transform.translation = SIMD3<Float>(0, entityY, 0)
+    // Position RELATIVE to anchor (which will be at 'height')
+    let relativeY = floorThickness / 2  // Just offset for centering
+    _invisibleFloor?.transform.translation = SIMD3<Float>(0, relativeY, 0)
     
     _invisibleFloor?.collision = CollisionComponent(
       shapes: [floorShape],
@@ -2552,6 +2557,8 @@ extension ARView3D {
     _floorAnchor = AnchorEntity(world: SIMD3<Float>(0, height, 0))
     _floorAnchor?.addChild(_invisibleFloor!)
     _arView.scene.addAnchor(_floorAnchor!)
+    
+    updateGroundLevel(newGroundLevel: height)
     
     print("Simple invisible floor created with top at: \(height)m")
   }

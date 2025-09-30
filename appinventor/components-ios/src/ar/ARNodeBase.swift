@@ -590,6 +590,7 @@ open class ARNodeBase: NSObject, ARNode {
       yailDict["scale"] = self.Scale
       yailDict["pose"] = transformDict
       yailDict["type"] = self.Name
+      yailDict["physics"] = self.EnablePhysics
          
       print("exporting ARNode as Yail convert toYail ")
       return yailDict
@@ -621,6 +622,7 @@ open class ARNodeBase: NSObject, ARNode {
     
     translationDict["x"] = p.translation.x
     translationDict["y"] = p.translation.y
+    translationDict["y_offset"] = p.translation.y - Float(ARView3D.SHARED_GROUND_LEVEL)
     translationDict["z"] = p.translation.z
     yailDictSave["t"] = translationDict
     
@@ -899,7 +901,7 @@ open class ARNodeBase: NSObject, ARNode {
       
     if currentPos.y - safeSize.y/2 < groundLevel {
         print("WARNING: Object collision box extends below floor level!")
-        print("Moving object up to prevent floor penetration")
+        print("Moving object up to prevent floor penetration \(groundLevel + safeSize.y/2 + 0.01)")
         _modelEntity.transform.translation.y = groundLevel + safeSize.y/2 + 0.01
     }
     
@@ -1049,6 +1051,10 @@ open class ARNodeBase: NSObject, ARNode {
   @objc open func startDrag() {
     _isBeingDragged = true
     _originalMaterial = _modelEntity.model?.materials.first
+    
+    if #available(iOS 16.0, *) {
+        _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = false
+    }
     
     if var physicsBody = _modelEntity.physicsBody {
       physicsBody.mode = .kinematic
