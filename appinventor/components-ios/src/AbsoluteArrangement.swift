@@ -103,16 +103,16 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   open func setVisible(component: ViewComponent, to visibility: Bool) {
     let visible = isVisible(component: component)
     if visibility == visible {
-        return
+      return
     }
     
     if visibility {
-        _view.setVisibility(of: component.view, to: true)
-        // Replay width/height properties
-        setChildHeight(of: component, to: component._lastSetHeight)
-        setChildWidth(of: component, to: component._lastSetWidth)
+      _view.setVisibility(of: component.view, to: true)
+      // Replay width/height properties
+      setChildHeight(of: component, to: component._lastSetHeight)
+      setChildWidth(of: component, to: component._lastSetWidth)
     } else {
-        _view.setVisibility(of: component.view, to: false)
+      _view.setVisibility(of: component.view, to: false)
     }
   }
   
@@ -126,8 +126,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     let y = component.Top
     
     if x != NOT_VALID && y != NOT_VALID {
-        viewLayout.updateComponentPosition(component: component)
-
+      viewLayout.updateComponentPosition(component: component)
     }
   }
   
@@ -143,7 +142,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
       component._lastSetWidth = width
       
       NSLayoutConstraint.activate([
-          component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
+        component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
       ])
     } else if width == kLengthPreferred {
       // Let view size itself
@@ -153,7 +152,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     } else if width == kLengthFillParent {
       component._lastSetWidth = width
       NSLayoutConstraint.activate([
-          component.view.widthAnchor.constraint(equalTo: _view.widthAnchor)
+        component.view.widthAnchor.constraint(equalTo: _view.widthAnchor)
       ])
     } else {
       component._lastSetWidth = width
@@ -165,64 +164,64 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
     guard let form = form else {
-        return
+      return
     }
     
     if height <= kLengthPercentTag {
-        let parentHeight = form.Height
-        let childHeight = parentHeight * Int32(-(height - kLengthPercentTag)) / 100
-        component._lastSetHeight = height
-        
-        NSLayoutConstraint.activate([
-            component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
-        ])
+      let parentHeight = form.Height
+      let childHeight = parentHeight * Int32(-(height - kLengthPercentTag)) / 100
+      component._lastSetHeight = height
+      
+      NSLayoutConstraint.activate([
+        component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
+      ])
     } else if height == kLengthPreferred {
-        // Let view size itself
-        component._lastSetHeight = height
-        // Remove height constraints
-        component.view.constraints.filter { $0.firstAttribute == .height }.forEach { $0.isActive = false }
+      // Let view size itself
+      component._lastSetHeight = height
+      // Remove height constraints
+      component.view.constraints.filter { $0.firstAttribute == .height }.forEach { $0.isActive = false }
     } else if height == kLengthFillParent {
-        component._lastSetHeight = height
-        NSLayoutConstraint.activate([
-            component.view.heightAnchor.constraint(equalTo: _view.heightAnchor)
-        ])
+      component._lastSetHeight = height
+      NSLayoutConstraint.activate([
+        component.view.heightAnchor.constraint(equalTo: _view.heightAnchor)
+      ])
     } else {
-        component._lastSetHeight = height
-        NSLayoutConstraint.activate([
-            component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
-        ])
+      component._lastSetHeight = height
+      NSLayoutConstraint.activate([
+        component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
+      ])
     }
   }
   
   // MARK: - Properties
   @objc open var BackgroundColor: Int32 {
     get {
-        return colorToArgb(_backgroundColor)
+      return colorToArgb(_backgroundColor)
     }
     set(argb) {
-        _backgroundColor = argbToColor(argb)
-        if _imagePath.isEmpty {
-            _view.backgroundColor = _backgroundColor
-        }
+      _backgroundColor = argbToColor(argb)
+      if _imagePath.isEmpty {
+        _view.backgroundColor = _backgroundColor
+      }
     }
   }
   
   @objc open var Image: String {
     get {
-        return _imagePath
+      return _imagePath
     }
     set(path) {
-        if path == _imagePath {
-            return
-        } else if !path.isEmpty {
-            if let image = AssetManager.shared.imageFromPath(path: path) {
-                _view.backgroundColor = UIColor(patternImage: image)
-                _imagePath = path
-                return
-            }
+      if path == _imagePath {
+        return
+      } else if !path.isEmpty {
+        if let image = AssetManager.shared.imageFromPath(path: path) {
+          _view.backgroundColor = UIColor(patternImage: image)
+          _imagePath = path
+          return
         }
-        _imagePath = ""
-        _view.backgroundColor = _backgroundColor
+      }
+      _imagePath = ""
+      _view.backgroundColor = _backgroundColor
     }
   }
 }
