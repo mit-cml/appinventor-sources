@@ -606,7 +606,11 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 232:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 10.
   // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was added
-  public static final int YOUNG_ANDROID_VERSION = 232;
+  // - CHART_DATA_2D_COMPONENT_VERSION was incremented to 2
+  // - CHART_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 233:
+  // - CHATBOT_COMPONENT_VERSION was incremented to 4
+  public static final int YOUNG_ANDROID_VERSION = 233;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -892,9 +896,16 @@ public class YaVersion {
   // For CHART_COMPONENT_VERSION 3:
   // - The ExtendDomainToInclude and ExtendRangeToInclude methods were added
   // - The Type getter block was made visible
-  public static final int CHART_COMPONENT_VERSION = 3;
+  // For CHART_COMPONENT_VERSION 4:
+  // - The axesTextColor property was added
+  // - The setAxesTextColor method was added
+  // - The ValueFormat property was added
+  public static final int CHART_COMPONENT_VERSION = 4;
 
-  public static final int CHART_DATA_2D_COMPONENT_VERSION = 1;
+  // For CHART_DATA_2D_COMPONENT_VERSION 2:
+  // - The dataLabelColor property was added
+  // - The setDataLabelColor method was added
+  public static final int CHART_DATA_2D_COMPONENT_VERSION = 2;
 
   // For CHATBOT_COMPONENT_VERSION: Initial Version
   // For CHATBOT_COMPONENT_VERSION 2:
@@ -902,7 +913,9 @@ public class YaVersion {
   // For CHATBOT_COMPONENT_VERSION 3:
   // - GPT-4 with Vision can be used to handle image inputs
   // - The ConverseWithImage method was added
-  public static final int CHATBOT_COMPONENT_VERSION = 3;
+  // For CHATBOT_COMPONENT_VERSION 4:
+  // - Added CreateImage and GotResponseWithImage blocks
+  public static final int CHATBOT_COMPONENT_VERSION = 4;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1195,13 +1208,16 @@ public class YaVersion {
   // - Changed the default ElementColor from Black to None
   // For LISTVIEW_COMPONENT_VERSION 10:
   // - Changed TextSize property to FontSize
+  // - Add new layout
   public static final int LISTVIEW_COMPONENT_VERSION = 10;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
   // - The speed parameter was added to the LocationChanged event
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 3;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 4:
+  // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
 
   // For MAP_COMPONENT_VERSION 1:
   // - Initial Map implementation using OpenStreetMap
@@ -1379,7 +1395,9 @@ public class YaVersion {
   // - Initial version.
   // For SLIDER_COMPONENT_VERSION 2:
   // - Added the property to allow for the removal of the Thumb Slider
-  public static final int SLIDER_COMPONENT_VERSION = 2;
+  // For SLIDER_COMPONENT_VERSION 3:
+  // - Added the NumberOfStepsand ThumbColor property, TouchDown and TouchUp events
+  public static final int SLIDER_COMPONENT_VERSION = 3;
 
   // For SPINNER_COMPONENT_VERSION 1:
   public static final int SPINNER_COMPONENT_VERSION = 1;
@@ -1702,13 +1720,11 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-
   public static final String PREFERRED_COMPANION = "2.76";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.74", "2.74u" };
   public static final String [] ACCEPTABLE_COMPANIONS = { "2.76", "2.76u" };
 
   // Splash Screen Values
