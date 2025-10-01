@@ -308,6 +308,8 @@
 		4656A6452A6076090097DF06 /* CircularProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4656A6442A6076090097DF06 /* CircularProgress.swift */; };
 		46E77D8E29DD6894002CCDFB /* ShowAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E77D8D29DD6894002CCDFB /* ShowAlert.swift */; };
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
+		5DCF6AE22D6905EE00410BBF /* AbsoluteArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCF6AE12D6903D900410BBF /* AbsoluteArrangement.swift */; };
+		5DCF6AE42D690E2F00410BBF /* RelativeLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCF6AE32D690E2600410BBF /* RelativeLayout.swift */; };
 		5F7ED1062C35C950004418C5 /* tf-converter-1.7.4.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1002C35C94C004418C5 /* tf-converter-1.7.4.min.js */; };
 		5F7ED1072C35C950004418C5 /* facemesh.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1012C35C94D004418C5 /* facemesh.js */; };
 		5F7ED1082C35C950004418C5 /* facemesh.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1022C35C94E004418C5 /* facemesh.html */; };
@@ -707,6 +709,8 @@
 		46E77D8D29DD6894002CCDFB /* ShowAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAlert.swift; sourceTree = "<group>"; };
 		4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
+		5DCF6AE12D6903D900410BBF /* AbsoluteArrangement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsoluteArrangement.swift; sourceTree = "<group>"; };
+		5DCF6AE32D690E2600410BBF /* RelativeLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeLayout.swift; sourceTree = "<group>"; };
 		5F7ED1002C35C94C004418C5 /* tf-converter-1.7.4.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "tf-converter-1.7.4.min.js"; sourceTree = "<group>"; };
 		5F7ED1012C35C94D004418C5 /* facemesh.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = facemesh.js; sourceTree = "<group>"; };
 		5F7ED1022C35C94E004418C5 /* facemesh.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = facemesh.html; sourceTree = "<group>"; };
@@ -1136,8 +1140,10 @@
 			isa = PBXGroup;
 			children = (
 				06B215F91DB950F6000B3366 /* HorizontalArrangement.swift */,
+				5DCF6AE12D6903D900410BBF /* AbsoluteArrangement.swift */,
 				06D151E91DC6ED5200FC981E /* HVArrangement.swift */,
 				06B215FB1DB95109000B3366 /* VerticalArrangement.swift */,
+				5DCF6AE32D690E2600410BBF /* RelativeLayout.swift */,
 				0680ED581E012A2100732883 /* TableArrangement.swift */,
 				C4D38CC6230DCDF300D09FE3 /* VerticalScrollArrangement.swift */,
 				C4D38CC8230DCF9400D09FE3 /* HorizontalScrollArrangement.swift */,
@@ -1958,6 +1964,7 @@
 				06D998EE1F53CDDB00A13A0E /* ContactPicker.swift in Sources */,
 				461809A12A671463001854C4 /* ProximitySensor.swift in Sources */,
 				DE1443D820C842EE00A250F1 /* Pedometer.swift in Sources */,
+				5DCF6AE42D690E2F00410BBF /* RelativeLayout.swift in Sources */,
 				068F5D7E2B8D16EA00A24EB0 /* PieChartView.swift in Sources */,
 				06C791D12950E94500C1BB1B /* ChartView.swift in Sources */,
 				06E59EB51D93345E00C42804 /* ButtonBase.swift in Sources */,
@@ -2061,6 +2068,7 @@
 				065E429D2866BC5500479153 /* Navigation.swift in Sources */,
 				06E91E122D2B236800377845 /* LOBFValues.swift in Sources */,
 				DED39C2F2005537D0054B646 /* Camcorder.swift in Sources */,
+				5DCF6AE22D6905EE00410BBF /* AbsoluteArrangement.swift in Sources */,
 				062217F02A37767F00B89562 /* image.pb.swift in Sources */,
 				06C70BB52A8BCF9D00C6C78D /* OAuth2CallbackHelper.m in Sources */,
 				DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */,
