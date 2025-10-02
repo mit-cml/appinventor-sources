@@ -35,7 +35,7 @@ import com.google.ar.core.Trackable;
   public final class TextNode extends ARNodeBase implements ARText {
 
 
-  private Anchor anchor = null;
+  private String text = "";
 
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
   private String texture = "";
@@ -51,12 +51,12 @@ import com.google.ar.core.Trackable;
     @Override
     @SimpleProperty(description = "Text to display by the TextNode.  If this is " +
       "set to \"\", the TextNode will not be shown.")
-    public String Text() { return ""; }
+    public String Text() { return text; }
 
     @Override
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
     @SimpleProperty(category = PropertyCategory.APPEARANCE)
-    public void Text(String text) {}
+    public void Text(String txt) {text = txt;}
 
     @Override
     @SimpleProperty(description = "The font size in centimeters.  Values less than " +
