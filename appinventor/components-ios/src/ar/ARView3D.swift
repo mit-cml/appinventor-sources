@@ -15,7 +15,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
   
   public static var SHARED_GROUND_LEVEL: Float = -1.0
-  public static var VERTICAL_OFFSET: Float = 0.05
+  public static var VERTICAL_OFFSET: Float = 0.02
    // Update your existing GROUND_LEVEL to use the shared value
   public var GROUND_LEVEL: Float {
        get { return ARView3D.SHARED_GROUND_LEVEL }
@@ -338,12 +338,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       // Check if scene reconstruction is supported on this device
       if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
         worldTrackingConfiguration.sceneReconstruction = .mesh
-          print("Mesh reconstruction enabled")
+          print("CONFIG: Mesh reconstruction enabled")
       } else if ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) {
           worldTrackingConfiguration.sceneReconstruction = .meshWithClassification
-          print("Mesh with classification enabled")
+          print("CONFIG: Mesh with classification enabled")
       } else {
-        print("Scene reconstruction not supported on this device")
+        print("CONFIG: Scene reconstruction not supported on this device")
         worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
       }
      
@@ -498,7 +498,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     private func debugCollisionSetup() {
-      print("=== Collision Debug Info ===")
+      print("=== CONFIG: Collision Debug Info ===")
       print("Scene understanding options: \(_arView.environment.sceneUnderstanding.options)")
       print("Collision observer exists: \(collisionBeganObserver != nil)")
       print("Number of nodes with physics: \(_nodeToAnchorDict.keys.filter { $0._modelEntity.physicsBody != nil }.count)")
@@ -624,10 +624,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   @objc open func ResetTracking() {
     let _shouldRestartSession = _sessionRunning
     pauseTracking(!_shouldRestartSession)
+    setupConfiguration()
     startOptions = [.resetTracking, .removeExistingAnchors]
     if _shouldRestartSession {
       startTrackingWithOptions(startOptions)
     }
+    
   }
   
   @objc open func ResetDetectedItems() {
@@ -1312,11 +1314,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               let halfHeight = (bounds.max.y - bounds.min.y)/2
 
               let safeY = max(
-                  yMeters + halfHeight + 0.01,  // detected surface + radius + clearance
+                  yMeters + halfHeight + 0.001,  // detected surface + radius + clearance
                   groundLevel + ARView3D.VERTICAL_OFFSET + halfHeight  // fallback floor position
               )
               
-              node.setPosition(x: xMeters, y: safeY, z: zMeters)
+              //node.setPosition(x: xMeters, y: safeY, z: zMeters)
+              node._modelEntity.setPosition(SIMD3<Float>(xMeters, safeY, zMeters), relativeTo: nil)
               print("create node at y  \(yMeters) and safe is \(safeY)")
               node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
               node._creatorSessionStart = anchorLocation
@@ -1552,7 +1555,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           switch type.lowercased() {
           case "capsule", "geocapsulenode":
             loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
-          case "box":
+          case "box", "geoboxnode":
             loadNode = self.CreateBoxNodeFromYail(nodeDict)
           case "sphere", "geospherenode":
             loadNode = self.CreateSphereNodeFromYail(nodeDict)
@@ -2097,6 +2100,8 @@ extension ARView3D: LifecycleDelegate {
     _imageMarkers = [:]
     
     _hasSetGroundLevel = false
+    
+    ResetTracking()
     createInvisibleFloor()
   }
 }
@@ -2216,14 +2221,14 @@ extension ARView3D {
       let hitResult: HitTestResult = performHitTest(at: gesture.location(in: _arView))
       if gesture.state == .began {
          
-          if case .node(let node, _) = hitResult {
-              _currentDraggedObject = node
-              node.isBeingDragged = true
-              targetNode = node
-              print("BEGAN dragging: \(node.Name)")
-          } else {
-              targetNode = nil
-          }
+        if case .node(let node, _) = hitResult {
+            _currentDraggedObject = node
+            node.isBeingDragged = true
+            targetNode = node
+            print("BEGAN dragging: \(node.Name)")
+        } else {
+            targetNode = nil
+        }
           
       } else {
           targetNode = _currentDraggedObject
@@ -2411,12 +2416,18 @@ extension ARView3D {
         let topSurface = calculateNodeTopSurface(targetNode)
         print("🔍 Top surface result: \(topSurface)")
         
-        let surface = SIMD3<Float>(hitPosition.x, topSurface.y, hitPosition.z)
-        print("🔍 Final surface: \(surface)")
+        let dragBoxBounds = node._modelEntity.visualBounds(relativeTo: nil)
+        let dragBoxHalfHeight = (dragBoxBounds.max.y - dragBoxBounds.min.y) / 2
         
-        if surface.y.isFinite {
-            showPlacementPreview(at: surface, isStacking: true)
-            return surface
+        // Position the new box's CENTER at: top of target + half-height of new box
+        let stackPosition = SIMD3<Float>(
+            hitPosition.x,
+            topSurface.y + dragBoxHalfHeight + 0.02,
+            hitPosition.z
+        )
+        if stackPosition.y.isFinite {
+            showPlacementPreview(at: stackPosition, isStacking: true)
+            return stackPosition
         } else {
             print("🚨 Invalid surface Y calculated, using fallback")
             let fallback = SIMD3<Float>(hitPosition.x, Float(GROUND_LEVEL) + 0.01, hitPosition.z)
@@ -2461,7 +2472,7 @@ extension ARView3D {
       print("  Bounds min: \(bounds.min)")
       print("  Bounds max: \(bounds.max)")
       
-    let topY = max(bounds.max.y, bounds.min.y) + 0.001
+      let topY = max(bounds.max.y, bounds.min.y) + 0.001
       let safeY = max(topY, ARView3D.SHARED_GROUND_LEVEL + 0.01)
   
       print("  Calculated top: \(topY)")
@@ -2491,7 +2502,6 @@ extension ARView3D {
     }
     
     indicatorEntity.model = ModelComponent(mesh: geometry, materials: [material])
-    print("📍 Placement indicator  at: \(position) world position ?")
     // Optional: Add a subtle pulsing animation
     let anchor = AnchorEntity(world: position)
     anchor.addChild(indicatorEntity)
@@ -2499,7 +2509,7 @@ extension ARView3D {
     _placementIndicator = anchor
     _lastPlacementPosition = position
     
-    print("📍 Placement indicator shown at: \(position) world position \(_placementIndicator?.position)(stacking: \(isStacking))")
+    //print("📍 Placement indicator shown at: \(position) world position \(_placementIndicator?.position)(stacking: \(isStacking))")
   }
 }
 
@@ -2518,7 +2528,7 @@ extension ARView3D {
     
     // Create large invisible floor
     let floorSize: Float = 200.0
-    let floorThickness: Float = 0.2
+    let floorThickness: Float = 0.02
     
     // Create collision shape - this will be centered on the entity
     let floorShape = ShapeResource.generateBox(
@@ -2531,10 +2541,8 @@ extension ARView3D {
     _invisibleFloor = ModelEntity()
     _invisibleFloor?.name = "InvisibleFloor"
     
-    // Position RELATIVE to anchor (which will be at 'height')
-    let relativeY = floorThickness / 2  // Just offset for centering
-    _invisibleFloor?.transform.translation = SIMD3<Float>(0, relativeY, 0)
-    
+    _invisibleFloor?.transform.translation = SIMD3<Float>(0, -floorThickness/2, 0)  // Negative to put top at 0
+
     _invisibleFloor?.collision = CollisionComponent(
       shapes: [floorShape],
       filter: CollisionFilter(

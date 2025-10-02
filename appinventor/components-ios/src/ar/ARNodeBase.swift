@@ -29,7 +29,6 @@ enum CollisionType {
 @available(iOS 14.0, *)
 open class ARNodeBase: NSObject, ARNode {
 
-
   weak var _container: ARNodeContainer?
   public var _modelEntity: ModelEntity
   
@@ -478,59 +477,124 @@ open class ARNodeBase: NSObject, ARNode {
   // MARK: - Gesture Response Methods
   
   
- @objc open func ScaleBy(_ scalar: Float) {
-    print("🔄 Scaling model \(Name) by \(scalar)")
+  open func ScaleBy(_ scalar: Float) {
+    print("🔄 Scaling OBJECT \(Name) by \(scalar)")
     
-    let currentPos = _modelEntity.transform.translation
     let oldScale = Scale
-    
-    // Calculate model bounds for bottom positioning
-    let bounds = _modelEntity.visualBounds(relativeTo: nil)
-    let modelHeight = (bounds.max.y - bounds.min.y) * oldScale
-    let currentBottomY = currentPos.y - modelHeight / 2.0
-    
-    // Keep physics enabled during scaling
+
     let hadPhysics = _modelEntity.physicsBody != nil
-    
-    // Update scale
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let halfHeight = (bounds.max.x - bounds.min.x) / 2.0
     let newScale = oldScale * abs(scalar)
-    _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
-    
-    // Calculate new position to keep bottom at same level
-    let newModelHeight = (bounds.max.y - bounds.min.y) * newScale
-    let newCenterY = currentBottomY + newModelHeight / 2.0
-    
-    // Apply new position
-    let newPosition = SIMD3<Float>(currentPos.x, newCenterY, currentPos.z)
-    _modelEntity.transform.translation = newPosition
-
-    // Update physics collision shape if it was enabled
+    // ✅ Update physics immediately if it was enabled before we change the scale
     if hadPhysics {
-      updatePhysicsCollisionShape()
+      let previousSize = halfHeight * Scale
+      _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (halfHeight * newScale)
     }
+  
+    Scale = newScale
+    print("Scale complete - bottom position maintained")
   }
-
+  
   open func scaleByPinch(scalar: Float) {
     let oldScale = Scale
-    let newScale = oldScale * scalar
+    let newScale = oldScale * abs(scalar)
     
-    // Validate scale bounds
-    let bounds = _modelEntity.visualBounds(relativeTo: nil)
-    let currentSize = bounds.max - bounds.min
-    let newSize = currentSize * newScale
+    let hadPhysics = _modelEntity.physicsBody != nil
     
-    let minSize: Float = 0.01
-    let maxSize: Float = 10.0
+    if hadPhysics {
+      let savedMass = Mass
+      let savedFriction = StaticFriction
+      let savedRestitution = Restitution
+      
+      _modelEntity.physicsBody = nil
+      _modelEntity.collision = nil
+        
+      //remember bounds already has scale. Behavior is inconsistent w/r to RealityKit scaling itself
+      let bounds = _modelEntity.visualBounds(relativeTo: nil)
+      let halfHeight = (bounds.max.x - bounds.min.x) / 2.0
+      let previousSize = halfHeight * oldScale
+      _modelEntity.position.y = _modelEntity.position.y - previousSize + (halfHeight * newScale)
+      
+      // Apply scale
+      Scale = newScale
+
+      // Restore physics
+      Mass = savedMass
+      StaticFriction = savedFriction
+      Restitution = savedRestitution
     
-    let avgNewSize = (newSize.x + newSize.y + newSize.z) / 3.0
-    guard avgNewSize >= minSize && avgNewSize <= maxSize else { return }
-    
-    _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
-    
-    if _modelEntity.physicsBody != nil {
-      updatePhysicsCollisionShape()
+      EnablePhysics(true)
+    } else {
+        Scale = newScale
     }
   }
+
+ open func EnablePhysics(_ isDynamic: Bool = true) {
+    let currentPos = _modelEntity.transform.translation
+    let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+    
+    print("🎾 EnablePhysics called for \(Name) with Mass \(Mass)")
+    print("🎾 Current position: \(currentPos)")
+    print("🎾 Ground level: \(groundLevel)")
+    print("🎾 Distance from ground: \(currentPos.y - groundLevel)")
+    
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let sizeX = bounds.max.x - bounds.min.x
+    let sizeY = bounds.max.y - bounds.min.y
+    let sizeZ = bounds.max.z - bounds.min.z
+    let halfHeight = sizeY / 2
+    let bottomY = currentPos.y - halfHeight
+    
+    print("🎾 Box size: \(sizeY)")
+    print("🎾 Half height: \(halfHeight)")
+    print("🎾 Bottom Y: \(bottomY)")
+    print("🎾 Bottom vs floor: \(bottomY - groundLevel)")
+
+      // don't scale the collision shape
+    let shape: ShapeResource = ShapeResource.generateBox(width: sizeX, height: sizeY, depth: sizeZ)
+    _modelEntity.collision = CollisionComponent(shapes: [shape])
+
+    _enablePhysics = isDynamic
+    
+    // Create mass properties separately
+    let massProperties = PhysicsMassProperties(mass: Mass)
+    
+    // Create a custom physics material for gentle collisions
+    let gentleMaterial = PhysicsMaterialResource.generate(
+      staticFriction: StaticFriction,
+      dynamicFriction: DynamicFriction,
+      restitution: Restitution
+    )
+    
+    _modelEntity.physicsBody = PhysicsBodyComponent(
+      massProperties: massProperties,
+      material: gentleMaterial,
+      mode: isDynamic ? .dynamic : .static
+    )
+    
+    _modelEntity.physicsMotion = PhysicsMotionComponent()
+    
+    if #available(iOS 15.0, *) {
+        updateShadowSettings()
+    }
+  }
+  
+  @objc open func debugCollisionShape() {
+     let visualScale = _modelEntity.transform.scale.x
+     
+     print("=== COLLISION SHAPE DEBUG ===")
+     //print("Internal radius: \(_radius)m")
+     print("Visual scale: \(visualScale), and Scale is \(Scale)")
+     print("Has collision: \(_modelEntity.collision != nil)")
+     print("Has physics: \(_modelEntity.physicsBody != nil)")
+
+     // Visual bounds check
+     let bounds = _modelEntity.visualBounds(relativeTo: nil)
+     let visualBoundRadius = (bounds.max.x - bounds.min.x) / 2.0
+     print("Visual bounds radius: \(visualBoundRadius)m")
+     print("==========================")
+   }
 
   private func updatePhysicsCollisionShape() {
     guard _modelEntity.physicsBody != nil else { return }
@@ -590,7 +654,9 @@ open class ARNodeBase: NSObject, ARNode {
       yailDict["scale"] = self.Scale
       yailDict["pose"] = transformDict
       yailDict["type"] = self.Name
-      yailDict["physics"] = self.EnablePhysics
+      yailDict["physics"] = String(self._enablePhysics)
+      yailDict["canMove"] = String(self._panToMove)
+      yailDict["canScale"] = String(self._pinchToScale)
          
       print("exporting ARNode as Yail convert toYail ")
       return yailDict
@@ -873,74 +939,6 @@ open class ARNodeBase: NSObject, ARNode {
 
   // MARK: - Physics Methods
   
-  @objc open func EnablePhysics(_ isDynamic: Bool = true) {
-    if (!isDynamic) {
-        _enablePhysics = false
-        _modelEntity.collision = nil
-        _modelEntity.physicsBody = nil
-        return
-    }
-    let currentPos = _modelEntity.transform.translation
-    let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
-   
-    print("🎾 EnablePhysics called for \(Name) with Mass \(Mass)")
-    print("🎾 Current position: \(currentPos)")
-    print("🎾 Ground level: \(groundLevel)")
-    print("🎾 Distance from ground: \(currentPos.y - groundLevel)")
-  
-    let bounds = _modelEntity.visualBounds(relativeTo: nil)
-    let size = bounds.max - bounds.min
-    // Ensure minimum size and make slightly larger for stability
-    let safeSize = SIMD3<Float>(
-        max(size.x, 0.05) * 1.001,
-        max(size.y, 0.05) * 1.001,
-        max(size.z, 0.05) * 1.001
-    )
-    print("Object collision size: \(safeSize)")
-    print("Object bounds after physics: \(currentPos.y - safeSize.y/2) to \(currentPos.y + safeSize.y/2)")
-      
-    if currentPos.y - safeSize.y/2 < groundLevel {
-        print("WARNING: Object collision box extends below floor level!")
-        print("Moving object up to prevent floor penetration \(groundLevel + safeSize.y/2 + 0.01)")
-        _modelEntity.transform.translation.y = groundLevel + safeSize.y/2 + 0.01
-    }
-    
-    // For round objects, use sphere collision (more stable)
-    let shape: ShapeResource
-    //if abs(safeSize.x - safeSize.y) < 0.01 && abs(safeSize.y - safeSize.z) < 0.01 {
-    if CollisionShape == "sphere" {
-        // Nearly cubic - use sphere for stability
-        let radius = (safeSize.x + safeSize.y + safeSize.z) / 6.0
-        shape = ShapeResource.generateSphere(radius: radius)
-    } else {
-        shape = ShapeResource.generateBox(size: safeSize)
-    }
-
-    _modelEntity.collision = CollisionComponent(shapes: [shape])
-    
-    // Create mass properties separately
-    let massProperties = PhysicsMassProperties(mass: Mass)
-    
-    // Create a custom physics material for gentle collisions
-    let gentleMaterial = PhysicsMaterialResource.generate(
-      staticFriction: StaticFriction,
-      dynamicFriction: DynamicFriction,
-      restitution: Restitution
-    )
-    
-    _modelEntity.physicsBody = PhysicsBodyComponent(
-      massProperties: massProperties,
-      material: gentleMaterial,
-      mode: isDynamic ? .dynamic : .static
-    )
-    
-    _modelEntity.physicsMotion = PhysicsMotionComponent()
-    
-    if #available(iOS 15.0, *) {
-        updateShadowSettings()
-    }
-  }
-
   @objc open func DisablePhysics() {
       _modelEntity.collision = nil
       _modelEntity.physicsBody = nil
@@ -1068,7 +1066,7 @@ open class ARNodeBase: NSObject, ARNode {
       guard _isBeingDragged else { return }
       let constrainedPosition = SIMD3<Float>(
         fingerWorldPosition.x,
-        max(fingerWorldPosition.y + DRAG_HEIGHT_OFFSET, ARView3D.SHARED_GROUND_LEVEL + 0.005),
+        max(fingerWorldPosition.y + DRAG_HEIGHT_OFFSET, ARView3D.SHARED_GROUND_LEVEL + ARView3D.VERTICAL_OFFSET),
         fingerWorldPosition.z
       )
       // Direct position control
@@ -1095,31 +1093,47 @@ open class ARNodeBase: NSObject, ARNode {
   @available(iOS 15.0, *)
   private func placeOnNearestSurface() {
     print("Placing on nearest surface")
+    let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let halfHeight = (bounds.max.y - bounds.min.y) / 2
+    var correctedY = groundLevel + halfHeight + ARView3D.VERTICAL_OFFSET
     
-    // Use the cached preview surface if available
     if let cachedSurface = getPreviewPlacementSurface() {
-      print("Using cached preview surface: \(cachedSurface)")
-      
-      // Disable physics completely during placement
-      _modelEntity.physicsBody = nil
-      
-      animateToPosition(cachedSurface) {
-          self.finalizeModelPlacement()
-          self.clearPreviewPlacementSurface()
-      }
-      return
+        print("Using cached preview surface: \(cachedSurface)")
+        
+        let correctedSurface = SIMD3<Float>(
+            cachedSurface.x,
+            correctedY,  // Use corrected Y, not cached surface Y
+            cachedSurface.z
+        )
+        
+        print("📍 Corrected surface from \(cachedSurface.y) to \(correctedY)")
+        
+        _modelEntity.physicsBody = nil
+        
+        animateToPosition(correctedSurface) {
+            self.finalizeModelPlacement()
+            self.clearPreviewPlacementSurface()
+        }
+        return
     }
     
     // Fallback: find surface from current position
     let currentPos = _modelEntity.transform.translation
     if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
+      correctedY = placementPosition.y + halfHeight + ARView3D.VERTICAL_OFFSET
+      let correctedSurface = SIMD3<Float>(
+        placementPosition.x,
+        correctedY,  // Use corrected Y, not cached surface Y
+        placementPosition.z
+      )
       print("Using horizontal surface: \(placementPosition)")
-      animateToPosition(placementPosition) {
+      animateToPosition(correctedSurface) {
           self.finalizeModelPlacement()
       }
     } else {
       // Final fallback to ground level
-      let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
+      let groundPosition = SIMD3<Float>(currentPos.x, correctedY, currentPos.z)
       print("Using groundPosition: \(groundPosition)")
       animateToPosition(groundPosition) {
           self.finalizeModelPlacement()
