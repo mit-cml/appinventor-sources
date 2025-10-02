@@ -15,10 +15,19 @@ class ARNodeUtilities {
       let model = keyvalue["model"] as? String ?? ""
       let texture = keyvalue["texture"] as? String ?? ""
       let scale = keyvalue["scale"] as? Float ?? 0.5
+      let physics = keyvalue["physics"] as? String ?? "true"
+      let canMove = keyvalue["canMove"] as? String ?? "true"
+      let canScale = keyvalue["canScale"] as? String ?? "true"
       
       node.ModelUrl = model
       node.Texture = texture
       node.Scale = scale
+      node.EnablePhysics = physics == "true"
+      node.PanToMove = canMove == "true"
+      node.PinchToScale = canScale == "true"
+    
+    
+    print("node from yail: \(node.Name) \(node.EnablePhysics) \(node.PanToMove) \(node.PinchToScale)")
       
       if let poseDict = keyvalue["pose"] as? [String: Any],
          let tDict = poseDict["t"] as? [String: Float] {
@@ -64,7 +73,7 @@ class ARNodeUtilities {
           
           // Set position (for non-geo or as initial position for geo)
           node.setPosition(x: savedX, y: finalY, z: savedZ)
-          print("✅ Node positioned at: (\(savedX), \(finalY), \(savedZ))")
+          print("Node positioned at: (\(savedX), \(finalY), \(savedZ))")
           
           // Apply rotation
           if let qDict = poseDict["q"] as? [String: Float],
