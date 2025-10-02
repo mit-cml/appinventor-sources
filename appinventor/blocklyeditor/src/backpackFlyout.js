@@ -67,7 +67,7 @@ AI.Blockly.BackpackFlyout.prototype.dispose = function() {
   }
   this.workspace_ = null;
   if (this.svgGroup_) {
-    goog.dom.removeNode(this.svgGroup_);
+    Blockly.utils.dom.removeNode(this.svgGroup_);
     this.svgGroup_ = null;
   }
   this.svgBackground_ = null;

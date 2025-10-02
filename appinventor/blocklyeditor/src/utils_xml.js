@@ -24,9 +24,7 @@ Blockly.Util.xml = {};
  */
 Blockly.Util.xml.XMLToArray = function(xml) {
   var xmlArray = [];
-  // [lyn, 11/10/13] Use goog.dom.getChildren rather than .children or
-  //   .childNodes to make this code work across browsers.
-  var children = goog.dom.getChildren(xml);
+  var children = xml.children;
   for (var i = 0, child; child = children[i]; i++) {
     xmlArray.push(child);
   }

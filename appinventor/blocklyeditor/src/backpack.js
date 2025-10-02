@@ -39,7 +39,6 @@ goog.provide('AI.Blockly.Backpack');
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.BackpackFlyout');
 goog.require('AI.Blockly.Util');
-goog.require('goog.Timer');
 
 /**
  * Class for a backpack.
@@ -119,13 +118,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
    * @private
    */
   svgBody_ = null;
-
-  /**
-   * Task ID of opening/closing animation.
-   * @type {number}
-   * @private
-   */
-  openTask_ = 0;
 
   /**
    * Left coordinate of the backpack.
@@ -372,7 +364,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     }
     this.flyout_.dispose();
     this.flyout_ = null;
-    clearTimeout(this.openTask_);
   }
 
   /**
@@ -670,7 +661,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     if (this.isOpen == state) {
       return;
     }
-    goog.Timer.clear(this.openTask_);
     this.isOpen = state;
     this.animateBackpack_();
   }
@@ -763,11 +753,11 @@ AI.Blockly.Backpack.prototype.openBackpack = function(e) {
 /**
  * When block is let go over the backpack, copy it and return to original position
  * @param {!Event} e Mouse up event
- * @param {!goog.math.Coordinate} start coordinate of the mouseDown event
+ * @param {!Blockly.utils.Coordinate} start coordinate of the mouseDown event
  */
 AI.Blockly.Backpack.prototype.onMouseUp = function(e, start){
   var xy = Blockly.common.getSelected().getRelativeToSurfaceXY();
-  var diffXY = goog.math.Coordinate.difference(start, xy);
+  var diffXY = Blockly.utils.Coordinate.difference(start, xy);
   Blockly.common.getSelected().moveBy(diffXY.x, diffXY.y);
   Blockly.common.getMainWorkspace().render();
 };
