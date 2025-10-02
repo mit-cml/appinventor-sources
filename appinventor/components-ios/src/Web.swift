@@ -171,12 +171,21 @@ open class Web: NonvisibleComponent {
     }
 
     var request = URLRequest(url: url)
+    request.httpMethod = httpVerb
     if let postData = postData {
-      request.httpMethod = httpVerb
       request.httpBody = postData
     } else if let postFile = postFile {
-      request.httpMethod = httpVerb
-      request.httpBody = Data(base64Encoded: postFile)
+      do {
+        if postFile.starts(with: "file:"), let fileUrl = URL(string: postFile) {
+          request.httpBody = try Data(contentsOf: fileUrl)
+        } else if postFile.starts(with: "/"), let fileUrl = URL(string: "file:" + postFile) {
+          request.httpBody = try Data(contentsOf: fileUrl)
+        } else if let filePath = Application.current?.assetManager.pathForExistingFileAsset(postFile) {
+          request.httpBody = try Data(contentsOf: URL(fileURLWithPath: filePath))
+        }
+      } catch {
+        _form?.dispatchErrorOccurredEvent(self, httpVerb, ErrorMessage.ERROR_WEB_UNKNOWN_ERROR, "\(error)")
+      }
     }
     if webProps.timeout > 0 {
       request.timeoutInterval = Double(webProps.timeout) / 1000.0
