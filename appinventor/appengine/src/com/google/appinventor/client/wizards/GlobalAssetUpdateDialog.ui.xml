@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+  <g:DialogBox ui:field='dialogBox'>
+    <g:VerticalPanel>
+    <g:CaptionPanel>
+      <g:HTML ui:field='captionHTML'></g:HTML>
+    </g:CaptionPanel>
+    <g:VerticalPanel spacing='5'>
+      <g:HTML ui:field='message'></g:HTML>
+      <g:HorizontalPanel horizontalAlignment='center' spacing='5'>
+        <g:Button ui:field='updateButton'>Update</g:Button>
+        <g:Button ui:field='cancelButton'>Cancel</g:Button>
+      </g:HorizontalPanel>
+    </g:VerticalPanel>
+  </g:VerticalPanel>
+  </g:DialogBox>
+</ui:UiBinder>

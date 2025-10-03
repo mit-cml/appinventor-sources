@@ -87,6 +87,11 @@ public final class YoungAndroidFontTypefaceChoicePropertyEditor extends Addition
       public void setSelectedIndex(int index) {
         fontAssetsList.setSelectedIndex(index);
       }
+      
+      @Override
+      public int getItemCount() {
+        return fontAssetsList.getItemCount();
+      }
     });
     
     choices.addItem("0", MESSAGES.defaultFontTypeface());

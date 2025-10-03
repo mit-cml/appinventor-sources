@@ -34,6 +34,7 @@
   <inherits name="com.google.gwt.query.Query" />
   <inherits name="org.pepstock.charba.Charba"/>
   <inherits name="com.google.gwt.xml.XML" />
+  <inherits name="com.google.appinventor.client.assetlibrary.AssetLibrary" />
 
   <set-property name="gwt.logging.logLevel" value="INFO"/>
   <set-property name="gwt.logging.enabled" value="TRUE"/>
@@ -45,6 +46,7 @@
   <servlet path="/projects" class="com.google.appinventor.server.ProjectServiceImpl" />
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
+  <servlet path="/globalassets" class="com.google.appinventor.server.GlobalAssetServiceImpl" />
 
   <!-- srcs -->
   <source path="" includes="simple_components.json" />
@@ -93,6 +95,8 @@
   <source path="shared/rpc/project"/>
   <source path="shared/rpc/user"/>
   <source path="shared/rpc/project/youngandroid"/>
+  <source path="shared/rpc/globalasset"/>
+  <source path="shared/rpc/globalasset"/>
 
   <!-- extra_module_contents -->
 
@@ -109,6 +113,12 @@
   <generate-with class="com.google.appinventor.rebind.ExtendedServiceProxyGenerator">
     <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
   </generate-with>
+
+  <!--
+  <generate-with class="com.google.gwt.user.client.rpc.RemoteServiceProxyGenerator">
+    <when-type-assignable class="com.google.appinventor.shared.rpc.globalasset.GlobalAssetService" />
+  </generate-with>
+  -->
 
   <replace-with class="com.google.appinventor.client.utils.FocusImplStandard">
     <when-type-is class="com.google.gwt.user.client.ui.impl.FocusImpl"/>
