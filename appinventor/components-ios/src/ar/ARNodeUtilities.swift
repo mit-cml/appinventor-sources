@@ -10,80 +10,82 @@ class ARNodeUtilities {
     
 
   public static func parseYailToNode(_ node: ARNodeBase, _ yailObj: Any, _ trackingObj: ARSession, sessionStartLocation: CLLocation?) -> ARNodeBase {
-      guard let keyvalue = yailObj as? YailDictionary else { return node }
-      
-      let model = keyvalue["model"] as? String ?? ""
-      let texture = keyvalue["texture"] as? String ?? ""
-      let scale = keyvalue["scale"] as? Float ?? 0.5
-      let physics = keyvalue["physics"] as? String ?? "true"
-      let canMove = keyvalue["canMove"] as? String ?? "true"
-      let canScale = keyvalue["canScale"] as? String ?? "true"
-      
-      node.ModelUrl = model
-      node.Texture = texture
-      node.Scale = scale
-      node.EnablePhysics = physics == "true"
-      node.PanToMove = canMove == "true"
-      node.PinchToScale = canScale == "true"
+    guard let keyvalue = yailObj as? YailDictionary else { return node }
     
+    let model = keyvalue["model"] as? String ?? ""
+    let texture = keyvalue["texture"] as? String ?? ""
+    let scale = keyvalue["scale"] as? Float ?? 0.5
+    let physics = keyvalue["physics"] as? Bool ?? true
+    let canMove = keyvalue["canMove"] as? Bool ?? true
+    let canScale = keyvalue["canScale"] as? Bool ?? true
     
+    node.ModelUrl = model
+    node.Texture = texture
+    node.Scale = scale
+    node.EnablePhysics = physics == true
+    node.PanToMove = canMove == true
+    node.PinchToScale = canScale == true
+  
+  // this doesn't appear to be working
+    print("node from yail: \(node.Name) \(physics) \(canMove) \(canScale)")
     print("node from yail: \(node.Name) \(node.EnablePhysics) \(node.PanToMove) \(node.PinchToScale)")
+    
+    
+    if let poseDict = keyvalue["pose"] as? [String: Any],
+      let tDict = poseDict["t"] as? [String: Float] {
+        
+      let savedX = tDict["x"] ?? 0
+      let savedZ = tDict["z"] ?? 0
+      let yOffset = tDict["y_offset"]
       
-      if let poseDict = keyvalue["pose"] as? [String: Any],
-         let tDict = poseDict["t"] as? [String: Float] {
+      // Calculate Y position
+      let currentFloorLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+      let bounds = node._modelEntity.visualBounds(relativeTo: nil)
+      let halfHeight = (bounds.max.y - bounds.min.y) / 2
+      
+      let finalY: Float
+      if let offset = yOffset {
+          finalY = currentFloorLevel + offset
+      } else {
+          let savedY = tDict["y"] ?? 0
+          finalY = max(savedY, currentFloorLevel + halfHeight + 0.05)
+      }
+      
+      // Check if we should use geo-anchoring
+      var useGeoAnchor = false
+      if let lat = poseDict["lat"] as? Double,
+         let lng = poseDict["lng"] as? Double,
+         let alt = poseDict["alt"] as? Double,
+         let sessionStart = sessionStartLocation {
           
-          let savedX = tDict["x"] ?? 0
-          let savedZ = tDict["z"] ?? 0
-          let yOffset = tDict["y_offset"]
+          let savedLocation = CLLocation(latitude: lat, longitude: lng)
+          let distance = sessionStart.distance(from: savedLocation)
           
-          // Calculate Y position
-          let currentFloorLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
-          let bounds = node._modelEntity.visualBounds(relativeTo: nil)
-          let halfHeight = (bounds.max.y - bounds.min.y) / 2
+          // Only use geo-anchor if FAR from session start
+          useGeoAnchor = distance > 10.0  // 50+ meters = use GPS
           
-          let finalY: Float
-          if let offset = yOffset {
-              finalY = currentFloorLevel + offset
+          if useGeoAnchor {
+              let geoAnchor = ARGeoAnchor(coordinate: savedLocation.coordinate, altitude: alt)
+              node.setGeoAnchor(geoAnchor)
+              print("🌍 Using geo-anchor for distant node (\(distance)m away)")
           } else {
-              let savedY = tDict["y"] ?? 0
-              finalY = max(savedY, currentFloorLevel + halfHeight + 0.05)
-          }
-          
-          // Check if we should use geo-anchoring
-          var useGeoAnchor = false
-          if let lat = poseDict["lat"] as? Double,
-             let lng = poseDict["lng"] as? Double,
-             let alt = poseDict["alt"] as? Double,
-             let sessionStart = sessionStartLocation {
-              
-              let savedLocation = CLLocation(latitude: lat, longitude: lng)
-              let distance = sessionStart.distance(from: savedLocation)
-              
-              // Only use geo-anchor if FAR from session start
-              useGeoAnchor = distance > 10.0  // 50+ meters = use GPS
-              
-              if useGeoAnchor {
-                  let geoAnchor = ARGeoAnchor(coordinate: savedLocation.coordinate, altitude: alt)
-                  node.setGeoAnchor(geoAnchor)
-                  print("🌍 Using geo-anchor for distant node (\(distance)m away)")
-              } else {
-                  print("📍 Using world coordinates for nearby node (\(distance)m away)")
-              }
-          }
-          
-          // Set position (for non-geo or as initial position for geo)
-          node.setPosition(x: savedX, y: finalY, z: savedZ)
-          print("Node positioned at: (\(savedX), \(finalY), \(savedZ))")
-          
-          // Apply rotation
-          if let qDict = poseDict["q"] as? [String: Float],
-             let qx = qDict["x"], let qy = qDict["y"],
-             let qz = qDict["z"], let qw = qDict["w"] {
-              node._modelEntity.transform.rotation = simd_quatf(ix: qx, iy: qy, iz: qz, r: qw)
+              print("📍 Using world coordinates for nearby node (\(distance)m away)")
           }
       }
       
-      return node
+      // Set position (for non-geo or as initial position for geo)
+      node.setPosition(x: savedX, y: finalY, z: savedZ)
+      print("✅ Node positioned at: (\(savedX), \(finalY), \(savedZ))")
+      
+      // Apply rotation
+      if let qDict = poseDict["q"] as? [String: Float],
+         let qx = qDict["x"], let qy = qDict["y"],
+         let qz = qDict["z"], let qw = qDict["w"] {
+          node._modelEntity.transform.rotation = simd_quatf(ix: qx, iy: qy, iz: qz, r: qw)
+      }
+    }
+    
+    return node
   }
         
   public static func jsonObjectToYail(_ logTag: String, _ object: [String: Any]) throws -> YailList<AnyObject> {

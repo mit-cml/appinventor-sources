@@ -16,10 +16,13 @@ open class TextNode: ARNodeBase, ARText {
   
   @objc init(_ container: ARNodeContainer) {
     // Create initial mesh from text
-    super.init(container: container, mesh: nil)
-    
-    // Generate text mesh
+    let lineHeight: CGFloat = 0.05
+    let font = MeshResource.Font.systemFont(ofSize: lineHeight)
+    let textMesh = MeshResource.generateText(_text,extrusionDepth: UnitHelper.centimetersToMeters(_depth), font: font )
+    super.init(container: container, mesh: textMesh)
+    self.Name = "text"
     updateTextMesh()
+    
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -31,24 +34,17 @@ open class TextNode: ARNodeBase, ARText {
    * Note: RealityKit doesn't have built-in 3D text like SceneKit, so we create it from a 2D representation
    */
   private func updateTextMesh() {
+      let lineHeight: CGFloat = 0.05
+      let font = MeshResource.Font.systemFont(ofSize: lineHeight)
+      let textMesh = MeshResource.generateText(
+          _text,
+          extrusionDepth: UnitHelper.centimetersToMeters(_depth),
+          font: font
+      )
+      let textMaterial = SimpleMaterial(color: argbToUIColor(FillColor), isMetallic: true)
 
-    // Create a plane mesh for the text
-    let textBounds = calculateTextBounds()
-    
-    let lineHeight: CGFloat = 0.05
-    let font = MeshResource.Font.systemFont(ofSize: lineHeight)
-    let textMesh = MeshResource.generateText(_text,extrusionDepth: UnitHelper.centimetersToMeters(_depth), font: font )
-    let textMaterial = SimpleMaterial(color: .blue, isMetallic: true)
-    
- 
-    // Create material with text texture
-   
-    
-    _modelEntity = ModelEntity(mesh: textMesh, materials: [textMaterial])
-    
-    
-    // Center the text (similar to updateTextCenter in original)
-    updateTextCenter()
+      // Update existing entity instead of creating new one
+      _modelEntity.model = ModelComponent(mesh: textMesh, materials: [textMaterial])
   }
   
   
@@ -133,7 +129,7 @@ open class TextNode: ARNodeBase, ARText {
   }
   
   // The user should not be able to change the Scale directly
-  @objc open override var Scale: Float {
+ /* @objc open override var Scale: Float {
     get {
       return 1
     }
@@ -142,11 +138,23 @@ open class TextNode: ARNodeBase, ARText {
       let newFontSize = _fontSize * scalar
       FontSizeInCentimeters = newFontSize
     }
+  }*/
+  
+  override open func ScaleBy(_ scalar: Float) {
+    print("🔄 Scaling text \(Name) by \(scalar)")
+    
+    let oldScale = Scale
+    let hadPhysics = _modelEntity.physicsBody != nil
+    
+    let newScale = oldScale * abs(scalar)
+    // ✅ Update physics immediately if it was enabled before we change the scale
+    if hadPhysics {
+      let previousSize = _fontSize * Scale
+      _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_fontSize * newScale)
+    }
+  
+    Scale = newScale
+    print("Scale complete - bottom position maintained")
   }
   
-  // The user should not be able to change the scale directly
-  @objc open override func ScaleBy(_ scalar: Float) {
-    let newFontSize = _fontSize * scalar
-    FontSizeInCentimeters = newFontSize
-  }
 }

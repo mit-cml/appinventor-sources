@@ -622,6 +622,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   @objc open func ResetTracking() {
+
+    _arView.session.pause()
+    _sessionRunning = false
     let _shouldRestartSession = _sessionRunning
     pauseTracking(!_shouldRestartSession)
     setupConfiguration()
@@ -630,6 +633,32 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       startTrackingWithOptions(startOptions)
     }
     
+  }
+  
+
+  func onAppDidEnterBackground() {
+      // Session is automatically paused by iOS
+      _arView.session.pause()
+  }
+
+  func onAppWillEnterForeground() {
+      // Restart the session when coming back
+      let configuration = ARWorldTrackingConfiguration()
+      configuration.planeDetection = [.horizontal, .vertical]
+      // Add any other configuration you need
+      
+      // Restart without removing anchors if you want to keep your content
+      _arView.session.run(configuration, options: [.resetTracking])
+
+  }
+
+  func onAppDidBecomeActive() {
+      // Additional checks to ensure session is running
+      if _arView.session.currentFrame == nil {
+          let configuration = ARWorldTrackingConfiguration()
+          configuration.planeDetection = [.horizontal, .vertical]
+          _arView.session.run(configuration)
+      }
   }
   
   @objc open func ResetDetectedItems() {
@@ -702,7 +731,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   func performHitTest(at screenPoint: CGPoint) -> HitTestResult {
 
     if let node = findClosestNode(tapLocation: screenPoint) {
-      print("hit a node at \(screenPoint)")
+      print("hit a node \(node.Name) at \(screenPoint)")
         return .node(node, node._modelEntity.transform.translation)
     }
     let raycastResults = _arView.raycast(from: screenPoint, allowing: .existingPlaneGeometry, alignment: .any)
@@ -884,7 +913,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   open func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
     return true
   }
-  
   
   func updateGroundLevel(newGroundLevel: Float) {
       
@@ -1101,6 +1129,22 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
          self.clearView()
        }
    }
+  
+  //ARSessionObserver
+  public func sessionWasInterrupted(_ session: ARSession) {
+      print("⚠️ AR session was interrupted (phone call, backgrounding, etc.)")
+  }
+      
+  public func sessionInterruptionEnded(_ session: ARSession) {
+      print("✅ AR session interruption ended - restarting camera")
+      
+      // Restart the session with your configuration
+      let configuration = ARWorldTrackingConfiguration()
+      configuration.planeDetection = [.horizontal, .vertical]
+      // Add any other settings you need
+      
+      session.run(configuration, options: [.resetTracking])
+  }
   
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
@@ -1566,7 +1610,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           case "model", "geomodelnode":
             loadNode = self.CreateModelNodeFromYail(nodeDict)
           case "text", "geotextnode":
-            loadNode = self.CreateModelNodeFromYail(nodeDict)
+            loadNode = self.CreateTextNodeFromYail(nodeDict)
           default:
             // currently not storing or handling modelNode..
             loadNode = nil
@@ -1587,12 +1631,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       var dictionaries: [YailDictionary] = []
       // a list of arnodes
       for node in newNodes { // swift thinks newnodes is nsarray
-        
         guard let arNode = node as? ARNode else { continue }
         
         let nodeDict = arNode.ARNodeToYail()
         dictionaries.append(nodeDict)
-        
       }
       print("returning dictionaries")
       return dictionaries
@@ -1679,7 +1721,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
             pow(tapLocation.y - nodeScreenPos!.y, 2)
           )
           
-        var SCREEN_THRESHOLD: CGFloat = 30.0
+        var SCREEN_THRESHOLD: CGFloat = 50.0
         // Skip if too far in screen space
         if screenDistance > SCREEN_THRESHOLD { continue }  // 100 pixel max
         
@@ -2100,7 +2142,6 @@ extension ARView3D: LifecycleDelegate {
     _imageMarkers = [:]
     
     _hasSetGroundLevel = false
-    
     ResetTracking()
     createInvisibleFloor()
   }

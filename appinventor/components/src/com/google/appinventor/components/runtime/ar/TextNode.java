@@ -36,7 +36,9 @@ import com.google.ar.core.Trackable;
 
 
   private String text = "";
-
+  private float width = 1.0f;
+  private float height = 0.5f;
+  private float length = 1.0f;
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
   private String texture = "";
 
@@ -117,14 +119,21 @@ import com.google.ar.core.Trackable;
     // @SimpleProperty
     // public void CornerRadius(float cornerRadius) {}
 
+  @Override
+  @SimpleFunction(description = "Changes the text's scale by the given scalar, maintaining bottom position if physics enabled.")
+  public void ScaleBy(float scalar) {
+    Log.i("TextNode", "Scaling text " + name + " by " + scalar);
 
-    /**
-     * Functions from ARNodeBase that should not be user facing.
-     */
-    @Override
-    @SimpleProperty(userVisible = false)
-    public float Scale() { return 1f; }
+    float oldScale = Scale();
+    float newScale = oldScale * Math.abs(scalar);
 
-    @Override
-    public void Scale(float scalar) {}
+    // Update physics immediately if enabled to maintain bottom position
+    if (EnablePhysics()) {
+      float previousSize = width * Scale();
+      // Adjust Y position to maintain ground contact
+      float[] currentPos = getCurrentPosition();
+      currentPos[1] = currentPos[1] - previousSize + (width * newScale);
+      setCurrentPosition(currentPos);
+    }
+  }
   }
