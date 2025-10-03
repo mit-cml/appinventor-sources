@@ -168,6 +168,7 @@ import UIKit
 
       if initialized {
         DispatchQueue.main.async {
+          self.updated(with: computedResults)
           self._container.chartView?.refresh()
         }
       }
@@ -364,7 +365,7 @@ import UIKit
   }
 
   func updated(with results: [String: Any]) {
-    // Dispatch updated event with results
+    EventDispatcher.dispatchEvent(of: self, called: "Updated", arguments: results as AnyObject)
   }
 
   @objc public func initChartData() {
