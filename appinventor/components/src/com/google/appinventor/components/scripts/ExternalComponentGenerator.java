@@ -12,8 +12,13 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.json.JSONException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -170,14 +175,17 @@ public class ExternalComponentGenerator {
       try {
         JSONArray librariesNeeded = componentBuildInfo.getJSONArray("libraries");
         JSONArray librariesAar = new JSONArray();
+        boolean ensureFreshDir = true;
+
         for (int j = 0; j < librariesNeeded.length(); ++j) {
           // Copy Library files for Unjar and Jaring
           String library = librariesNeeded.getString(j);
           copyFile(buildServerClassDirPath + File.separator + library,
               extensionTempDirPath + File.separator + library);
           if (library.endsWith(".aar")) {
-            copyExternalAar(library, packageName);
+            copyExternalAar(library, packageName, ensureFreshDir);
             librariesAar.put(library);
+            ensureFreshDir = false;
           }
         }
         //empty the libraries meta-data to avoid redundancy
@@ -349,8 +357,7 @@ public class ExternalComponentGenerator {
     return true;
   }
 
-  private static void copyExternalAar(String library, String packageName)
-      throws IOException {
+  private static void copyExternalAar(String library, String packageName, boolean ensureFreshDir) throws IOException {
     File sourceDir = new File(buildServerClassDirPath + File.separator);
     File aarFile = new File(sourceDir, library);
     if (!aarFile.exists() || !library.endsWith(".aar")) {
@@ -359,7 +366,10 @@ public class ExternalComponentGenerator {
     // Get aar dest directory
     File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
     File aarDestDir = new File(destDir, "aars");
-    ensureFreshDirectory(aarDestDir.getPath(), "Unable to delete the aars directory for the extension.");
+    if (ensureFreshDir) {
+      // Ensure fresh directory before put the first library
+      ensureFreshDirectory(aarDestDir.getPath(), "Unable to delete the aars directory for the extension.");
+    }
 
     System.out.println("Extensions : " + "Copying file aar " + library);
     copyFile(aarFile.getAbsolutePath(), aarDestDir.getAbsolutePath() + File.separator + library);
