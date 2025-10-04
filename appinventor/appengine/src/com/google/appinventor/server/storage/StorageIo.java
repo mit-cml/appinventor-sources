@@ -18,6 +18,7 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -262,6 +263,47 @@ public interface StorageIo {
    *
    * @return long milliseconds
    */
+
+  // PROJECT SHARING 
+  // TODO(zamanova) add access type in the future
+  /**
+   * provide access to users for the given project
+   * @param projectId the id of the project
+   * @param userEmails a list of user emails
+   */
+  void updateProjectPermissions(long projectId, Boolean isShareAll, List<String> userEmails);
+
+  /**
+   * provide access to users for the given project
+   * @param projectId the id of the project
+   * @param userEmails a list of user emails
+   */
+  void shareProjectWithUsers(long projectId, List<String> userEmails);
+
+  /**
+   * retract access from users for the given project
+   * @param projectId the id of the project
+   * @param userIds a list of user emails
+   */
+  void retractAccessFromUsers(long projectId, List<String> userEmails);
+
+  /**
+   * get access list for the given project
+   * @param projectId the id of the project
+   * @return the list of users who have read access and the owner
+   * TODO: list of users who can edit?
+   */
+  HashMap<String, List<String>> getAccessInfo(long projectId);
+
+  /**
+   * gets project shared with the user
+   * @param userId user id
+   * @param shareId id shared with the user
+   * @return project under the shared id if user has access to it
+   * raises an error if user does not have access to it
+   */
+  UserProject getSharedProject(String userId, long shareId);
+
 
   // Non-project-specific file management
 
