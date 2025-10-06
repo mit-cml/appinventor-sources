@@ -1603,6 +1603,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 case "sphere":
                     addNode = this.CreateSphereNodeFromYail(nodeDict);
                     break;
+                case "text":
+                    addNode = this.CreateTextNodeFromYail(nodeDict);
+                    break;
                 case "video":
                     addNode = this.CreateVideoNodeFromYail(nodeDict);
                     break;
@@ -2263,6 +2266,62 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public PyramidNode CreatePyramidNode(float x, float y, float z) {
         return new PyramidNode(this);
     }
+
+
+
+    @SimpleFunction(description = "Create a new TextNode with geo coords")
+    public TextNode CreateTextNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating text node", "with geo location");
+
+        TextNode textNode = new TextNode(this);
+
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+
+        textNode.Anchor(geoAnchor);
+
+        Log.i("created text node, geo anchor is", textNode.Anchor().toString());
+        return textNode;
+    }
+
+
+    @SimpleFunction(description = "Create a new TextNode with default properties at the detected plane position.")
+    public TextNode CreateTextNodeAtPlane(ARDetectedPlane targetPlane, Object p, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating text node", "with detected plane and pose");
+        Pose pose = (Pose) p;
+        TextNode textNode = new TextNode(this);
+
+        Trackable trackable = (Trackable) targetPlane.DetectedPlane();
+        textNode.Anchor(trackable.createAnchor(pose));
+        textNode.Trackable(trackable);
+        Log.i("creating text node, anchor is", textNode.Anchor().toString());
+        return textNode;
+    }
+
+    @SimpleFunction(description = "Create a new boxNode with default properties with a pose.")
+    public TextNode CreateTextNodeFromYail(YailDictionary yailNodeObj) {
+        if (session != null) {
+            try {
+                Log.i(LOG_TAG, " triggered via block, text node is " + yailNodeObj);
+
+                TextNode textNode = new TextNode(this);
+                ARUtils.parseYailToNode(textNode, yailNodeObj, session);
+
+                Log.i(LOG_TAG, "SUCCESS created textNode node from json, anchor is" + textNode.Anchor().toString());
+                return textNode;
+            } catch (JSONException e) {
+                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
+                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "tried to create textnode from db string which is yail list" + e);
+                throw e;
+            }
+
+        }
+        Log.i("cannot create boxNode ", " since there is no session");
+        return null;
+    }
+
+
 
     @SimpleFunction(description = "Create a new TextNode with default properties at the specified (x,y,z) position.")
     public TextNode CreateTextNode(float x, float y, float z) {
