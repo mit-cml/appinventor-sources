@@ -29,7 +29,7 @@ open class TinyWebDB: NonvisibleComponent {
     // post a store value command
     do {
       let parameters: Parameters = [_tagParameter: tag, _valueParameter: try getJsonRepresentation(valueToStore)]
-      Alamofire.request(_serviceURL + _storeValueCommand, method:.post, parameters: parameters, encoding: URLEncoding.default).validate().responseJSON { response in
+      AF.request(_serviceURL + _storeValueCommand, method:.post, parameters: parameters, encoding: URLEncoding.default).validate().responseJSON { response in
         switch response.result {
           case .success:
             self.ValueStored()
@@ -47,7 +47,7 @@ open class TinyWebDB: NonvisibleComponent {
     let parameters: Parameters = [_tagParameter: tag]
     let headers: HTTPHeaders = ["Accept": "*/*"]
     
-    Alamofire.request(_serviceURL + _getValueCommand, method: .post, parameters: parameters, encoding: URLEncoding.default, headers: headers).validate().responseJSON { response in
+    AF.request(_serviceURL + _getValueCommand, method: .post, parameters: parameters, encoding: URLEncoding.default, headers: headers).validate().responseJSON { response in
       switch response.result {
         case .success(let responseValue):
           do {
