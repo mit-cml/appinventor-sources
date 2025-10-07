@@ -249,12 +249,51 @@ import DGCharts
       }
     }
   }
+  
+  @objc open func ExtendDomainToInclude(_ x: Double) {
+    guard let chartView = _chartView as? AxisChartView else {
+      return
+    }
+    let bounds: [Double] = chartView.getXBounds();
+    if x < bounds[0] {
+      chartView.setXBounds(minimum: x, maximum: bounds[1])
+    } else if x > bounds[1] {
+      chartView.setXBounds(minimum: bounds[0], maximum: x)
+    } else {
+      return
+    }
+    chartView.refresh()
+  }
+  
+  @objc open func ExtendRangeToInclude(_ y: Double) {
+    guard let chartView = _chartView as? AxisChartView else {
+      return
+    }
+    let bounds: [Double] = chartView.getYBounds()
+    if y < bounds[0] {
+      chartView.setYBounds(minimum: y, maximum: bounds[1])
+    } else if y > bounds[1] {
+      chartView.setYBounds(minimum: bounds[0], maximum: y)
+    } else {
+      return
+    }
+    chartView.refresh()
+  }
 
   // MARK: Chart events
 
   @objc open func EntryClick(_ series: Component, _ x: AnyObject, _ y: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "EntryClick",
                                   arguments: series, x, y as AnyObject)
+  }
+
+  // MARK: Chart methods
+
+  @objc open func ResetAxes() {
+    if let chartView = _chartView as? AxisChartView {
+      chartView.resetAxes()
+      refresh()
+    }
   }
 
   @objc open func SetDomain(_ minimum: Double, _ maximum: Double) {
