@@ -132,30 +132,28 @@ open class RelativeLayout: Layout {
 * respect to preferred empty width/height
 */
   private class CustomRelativeLayoutView: UIView {
-    private let preferredEmptyWidth: Int?
-    private let preferredEmptyHeight: Int?
-  
-    init(preferredEmptyWidth: Int?, preferredEmptyHeight: Int?) {
+    private let preferredEmptyWidth: Int
+    private let preferredEmptyHeight: Int
+    
+    init(preferredEmptyWidth: Int = kEmptyHVArrangementWidth, preferredEmptyHeight: Int = kEmptyHVArrangementHeight) {
       self.preferredEmptyWidth = preferredEmptyWidth
       self.preferredEmptyHeight = preferredEmptyHeight
       super.init(frame: .zero)
     }
-  
+    
     required init?(coder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
     }
     
     override var intrinsicContentSize: CGSize {
       // If there are no subviews, return preferred empty size
-      if subviews.isEmpty && preferredEmptyWidth != nil && preferredEmptyHeight != nil {
-          return CGSize(width: preferredEmptyWidth!, height: preferredEmptyHeight!)
+      if subviews.isEmpty {
+        return CGSize(width: Int(preferredEmptyWidth), height: Int(preferredEmptyHeight))
       }
-      
-      // Otherwise return automatic size
       return UIView.layoutFittingExpandedSize
     }
-    
     override func layoutSubviews() {
       super.layoutSubviews()
     }
+  
 }

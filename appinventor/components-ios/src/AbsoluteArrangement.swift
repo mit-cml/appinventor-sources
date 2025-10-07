@@ -55,7 +55,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   // MARK: - Initialization
   public override init(_ parent: ComponentContainer) {
     _view = AbsoluteView(frame: .zero)
-    viewLayout = RelativeLayout(preferredEmptyWidth: 0, preferredEmptyHeight: 0)
+    viewLayout = RelativeLayout(preferredEmptyWidth: kEmptyHVArrangementWidth,preferredEmptyHeight: kEmptyHVArrangementWidth)
     
     super.init(parent)
     super.setDelegate(self)
@@ -74,7 +74,6 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     ])
     
     parent.add(self)
-
   }
   
 
