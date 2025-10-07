@@ -80,7 +80,8 @@ open class BarChartDataModel: Chart2DDataModel {
         }
         return BarChartDataEntry(x: dateX, y: y)
       } catch {
-        print("Error parsing x or y coordinates: \(rawX), \(rawY), error:\(error)")
+        view.form.dispatchErrorOccurredEvent(view._chartComponent, "GetEntryFromTuple",
+         ErrorMessage.ERROR_INVALID_CHART_ENTRY_VALUES, rawX as AnyObject, rawY as AnyObject)
       }
     return nil
     }
