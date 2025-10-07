@@ -38,12 +38,6 @@ open class BarChartDataModel: Chart2DDataModel {
     if x < entries.count {
       _entries.insert(entry, at: x)
     } else {
-      // CSB removing b/c we don't need intermediary entries
-      // If x is beyond the current range of entries, fill the gap with placeholder entries
-      //while entries.count < x {
-      //  _entries.append(BarChartDataEntry(x: Double(entries.count), y: 0.0))
-      //}
-      // Add the new entry at the end
       _entries.append(entry)
     }
   }

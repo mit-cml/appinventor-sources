@@ -104,7 +104,7 @@ open class ChartView {
       return _valueType
     }
     set(valueType) {
-      _valueType = valueType;
+      _valueType = valueType
     }
   }
   
