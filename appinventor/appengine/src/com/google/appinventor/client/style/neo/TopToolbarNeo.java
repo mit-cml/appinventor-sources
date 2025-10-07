@@ -27,6 +27,7 @@ public class TopToolbarNeo extends TopToolbar {
   @UiField DropDownButton settingsDropDown;
   @UiField DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
+  @UiField (provided = true) Boolean isAvailable;
 
   @Override
   public void bindUI() {
@@ -36,12 +37,16 @@ public class TopToolbarNeo extends TopToolbar {
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
 
+    boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
+    isAvailable = !oneProjectMode && hasWriteAccess;
+
     initWidget(uibinder.createAndBindUi(this));
     super.fileDropDown = fileDropDown;
     super.connectDropDown = connectDropDown;
     super.buildDropDown = buildDropDown;
     super.settingsDropDown = settingsDropDown;
     super.adminDropDown = adminDropDown;
+    super.isAvailable = isAvailable;
   }
 
 }
