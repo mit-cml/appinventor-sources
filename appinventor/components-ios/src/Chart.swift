@@ -52,6 +52,7 @@ import DGCharts
   var _gridEnabled = true
   var _labels = [String]()
   var _dataComponents: Array<ChartComponent> = []
+  var _valueType: Int = 0
   
   var _axesTextColor: UIColor
   private var darkMode = false
@@ -78,6 +79,23 @@ import DGCharts
     self.Type = self.Type
   }
 
+  
+  @objc open var ValueFormat: Int {
+     get {
+       return _valueType;
+     }
+    set{
+      _valueType = newValue
+      _chartView?.ValueType = newValue
+      
+      for c in _dataComponents {
+        if let dc = c.dispatchDelegate as? ChartDataModel{
+          dc.ValueType = newValue
+        }
+        
+      }
+    }
+  }
   @objc open override var view: UIView {
     return _view
   }
@@ -347,6 +365,7 @@ import DGCharts
     Labels = _labels
     LegendEnabled = _legendEnabled
     PieRadius = _pieRadius
+    ValueFormat = _valueType
     
     AxesTextColor = colorToArgb(_axesTextColor)
   }

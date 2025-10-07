@@ -12,6 +12,11 @@ public enum EntryCriterion {
   case YValue
 }
 
+public enum ChartDataError: Error {
+    case invalidDateString(String)
+    case invalidValue(String)
+}
+
 open class ChartDataModel: DataModel {
   let data: DGCharts.ChartData
   var dataset: DGCharts.ChartDataSet?
@@ -19,6 +24,7 @@ open class ChartDataModel: DataModel {
   var highlights = [NSUIColor]()
   var highlightColor: NSUIColor = .black
   let view: ChartView
+  var _valueType: Int = 0
 
   init(data: DGCharts.ChartData, view: ChartView) {
     self.data = data
@@ -239,4 +245,16 @@ open class ChartDataModel: DataModel {
   public var chartEntries: [DGCharts.ChartDataEntry] {
     return _entries as? [DGCharts.ChartDataEntry] ?? []
   }
+  
+  public var ValueType: Int{
+    get {
+      return _valueType
+    }
+    set(valueType){
+      _valueType = valueType;
+      dataset?.valueFormatter = DefaultValueFormatter(formatter: NumberFormatter())
+      view.ValueType = valueType
+    }
+  }
+
 }
