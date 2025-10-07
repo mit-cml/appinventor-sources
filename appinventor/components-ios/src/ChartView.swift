@@ -9,7 +9,7 @@ import DGCharts
 open class ChartView {
   unowned let _chartComponent: Chart
   private let _workQueue = DispatchQueue(label: "Chart", qos: .userInitiated)
-  var _valueType: Int = 0
+  private var _valueType: Int = 0
   
   var form: Form {
     return _chartComponent.form!
@@ -21,10 +21,10 @@ open class ChartView {
   /*
   Chart value types
    */
-  public static var CHART_VALUE_DECIMAL: Int = 0;
-  public static var CHART_VALUE_INTEGER: Int = 1;
-  public static var CHART_VALUE_DATE: Int = 2;
-  public static var CHART_VALUE_TIME: Int = 3;
+  public static var CHART_VALUE_DECIMAL: Int = 0
+  public static var CHART_VALUE_INTEGER: Int = 1
+  public static var CHART_VALUE_DATE: Int = 2
+  public static var CHART_VALUE_TIME: Int = 3
 
   public init(_ chartComponent: Chart) {
     _chartComponent = chartComponent
@@ -99,11 +99,11 @@ open class ChartView {
   }
 
   
-  public var ValueType: Int{
+  public var ValueType: Int {
     get {
       return _valueType
     }
-    set(valueType){
+    set(valueType) {
       _valueType = valueType;
     }
   }

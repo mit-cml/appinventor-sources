@@ -12,6 +12,11 @@ public enum EntryCriterion {
   case YValue
 }
 
+public enum ChartDataError: Error {
+    case invalidDateString(String)
+    case invalidValue(String)
+}
+
 open class ChartDataModel: DataModel {
   let data: DGCharts.ChartData
   var dataset: DGCharts.ChartDataSet?

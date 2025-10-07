@@ -77,10 +77,18 @@ open class BarChartDataModel: Chart2DDataModel {
       let flooredX = Int(floor(x))
       return BarChartDataEntry(x: Double(flooredX), y: y)
     } else {
-      let dateX = formatDateTime(rawX) ?? 0.0
-      let y = Double(rawY) ?? 0.0
-      return BarChartDataEntry(x: dateX, y: y)
-    
+      do {
+        guard let dateX = formatDateTime(rawX) else {
+            throw ChartDataError.invalidDateString(rawX)
+        }
+        guard let y = Double(rawY) else {
+            throw ChartDataError.invalidValue(rawY)
+        }
+        return BarChartDataEntry(x: dateX, y: y)
+      } catch {
+        print("Error parsing x or y coordinates: \(rawX), \(rawY), error:\(error)")
+      }
+    return nil
     }
   }
 
