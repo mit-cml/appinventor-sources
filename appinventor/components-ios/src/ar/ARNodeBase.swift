@@ -720,7 +720,7 @@ open class ARNodeBase: NSObject, ARNode {
     if _color == AIComponentKit.Color.none.rawValue {
       material.baseColor = MaterialColorParameter.color(.clear)
     } else {
-      material.baseColor = MaterialColorParameter.color(argbToUIColor(_color))
+      material.baseColor = MaterialColorParameter.color(argbToColor(_color))
     }
     
     _modelEntity.model?.materials = [material]
@@ -756,14 +756,6 @@ open class ARNodeBase: NSObject, ARNode {
     }
     
     _modelEntity.model?.materials = [material]
-  }
-  
-  private func argbToUIColor(_ argb: Int32) -> UIColor {
-    let alpha = CGFloat((argb >> 24) & 0xFF) / 255.0
-    let red = CGFloat((argb >> 16) & 0xFF) / 255.0
-    let green = CGFloat((argb >> 8) & 0xFF) / 255.0
-    let blue = CGFloat(argb & 0xFF) / 255.0
-    return UIColor(red: red, green: green, blue: blue, alpha: alpha)
   }
   
   // MARK: - Anchor Management

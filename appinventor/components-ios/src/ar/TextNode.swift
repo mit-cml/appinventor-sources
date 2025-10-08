@@ -41,7 +41,7 @@ open class TextNode: ARNodeBase, ARText {
           extrusionDepth: UnitHelper.centimetersToMeters(_depth),
           font: font
       )
-      let textMaterial = SimpleMaterial(color: argbToUIColor(FillColor), isMetallic: true)
+      let textMaterial = SimpleMaterial(color: argbToColor(FillColor), isMetallic: true)
 
       // Update existing entity instead of creating new one
       _modelEntity.model = ModelComponent(mesh: textMesh, materials: [textMaterial])
