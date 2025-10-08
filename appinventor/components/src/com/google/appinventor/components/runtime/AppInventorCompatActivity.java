@@ -97,12 +97,15 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
       // to calculate insets to avoid any part of the app displaying under the status bar.
       ViewCompat.setOnApplyWindowInsetsListener(getWindow().getDecorView(), (v, windowInsets) -> {
         Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-        v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+        Insets imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+        int bottomInset = Math.max(imeInsets.bottom, insets.bottom);
+        v.setPadding(insets.left, insets.top, insets.right, bottomInset);
 
         // Return CONSUMED if you don't want the window insets to keep passing
         // down to descendant views.
         return WindowInsetsCompat.CONSUMED;
       });
+      getWindow().getDecorView().setBackgroundColor(primaryColor);
     }
     setContentView(frameWithTitle);  // Due to a bug in Honeycomb 3.0 and 3.1, a content view must
                                      // exist before attempting to check the ActionBar status,
