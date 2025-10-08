@@ -388,8 +388,11 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
       .appendingPathComponent("samples/\(app.title).aia", isDirectory: false))
     newapp.makeCurrent()
     newapp.loadScreen1(self.form)
-    self.navigationController?.popViewController(animated: true)
-    (self.navigationController as? ViewController)?.showMenuButton()
+    guard let vc = self.navigationController as? ViewController else {
+      return
+    }
+    self.navigationController?.popViewController(animated: false)
+    vc.showMenuButton()
   }
   
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
