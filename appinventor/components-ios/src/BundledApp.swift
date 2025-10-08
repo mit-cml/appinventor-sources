@@ -9,11 +9,13 @@ import UIKit
 
 public class BundledApp : Application, UINavigationControllerDelegate {
   let path: String
-  var theme: String = ""
+  public var theme: String = ""
+  var _assets = ""
 
   @objc public convenience init(aiaPath: URL) {
     var name = ""
     var path = ""
+    var assets = ""
     do {
       Zip.addCustomFileExtension("aia")
       var docUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -30,10 +32,16 @@ public class BundledApp : Application, UINavigationControllerDelegate {
       if name.hasSuffix(".aia"), let dot = name.firstIndex(of: ".") {
         name = String(name[..<dot])
       }
+      assets = docUrl.appendingPathComponent("assets").path
     } catch {
       print(error)
     }
     self.init(named: name, at: path)
+    _assets = assets
+  }
+
+  @objc open override var assetPath: String? {
+    return _assets
   }
 
   @objc public init(named name: String, at path: String) {
@@ -63,8 +71,13 @@ public class BundledApp : Application, UINavigationControllerDelegate {
         newForm.startValue = startValue
       }
       let interpreter = SCMInterpreter.shared
+      ReplForm.activeForm = newForm
       interpreter.setCurrentForm(newForm)
       interpreter.evalForm(yail)
+      if let exception = interpreter.exception {
+        print("\(exception)")
+      }
+      interpreter.evalForm("(ios$start-form)")
       navigationController.pushViewController(newForm, animated: true)
     }
   }
@@ -75,16 +88,17 @@ public class BundledApp : Application, UINavigationControllerDelegate {
       print("No navigation stack available for pushing forms")
       return
     }
-    guard let oldForm = navigationController.viewControllers.last as? ReplForm else {
-      return
+    guard let oldForm = navigationController.viewControllers.last as? Form else {
+      // We are closing the top-most form, so quit the app instead.
+      exit(0)
     }
     DispatchQueue.main.async {
-      SCMInterpreter.shared.setCurrentForm(oldForm)
       oldForm.OtherScreenClosed(oldForm.lastFormName, oldForm.formResult ?? ("" as AnyObject))
     }
   }
 
-  @objc open func loadScreen1(_ form: ReplForm) {
+  @objc open func loadScreen1(_ form: Form) {
+    self.makeCurrent()
     guard let screen = locateScreen(named: "Screen1") else {
       print("Unable to find screen Screen1 in project")
       return
@@ -95,7 +109,6 @@ public class BundledApp : Application, UINavigationControllerDelegate {
     }
     form.navigationController?.delegate = self
     form.application = self
-    self.makeCurrent()
     form.formName = "Screen1"
     form.clear()
     let interpreter = SCMInterpreter.shared
@@ -105,6 +118,19 @@ public class BundledApp : Application, UINavigationControllerDelegate {
       print("\(exception)")
     }
     theme = form.Theme
+    interpreter.evalForm("(ios$start-form)")
+  }
+
+  @objc open func loadScheme(for screenName: String) -> String? {
+    guard let screen = locateScreen(named: screenName) else {
+      if screenName == "Screen1" {
+        fatalError("Unable to load Screen1")
+      } else {
+        print("Unable to load \(screenName)")
+      }
+      return nil
+    }
+    return try? String(contentsOfFile: screen)
   }
 
   private func locateScreen(named name: String) -> String? {

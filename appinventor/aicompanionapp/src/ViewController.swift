@@ -6,6 +6,7 @@
 import UIKit
 import AIComponentKit
 import AVKit
+import Zip
 
 /**
  * Menu for the iPad REPL.
@@ -15,18 +16,28 @@ class MenuViewController: UITableViewController {
   weak var delegate: ViewController?
 
   public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 1
+    return SystemVariables.inConnectedApp ? 2 : 1
   }
 
   public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = UITableViewCell()
-    cell.textLabel?.text = "Close Project"
-    cell.textLabel?.textColor = UIColor.red
+    if indexPath.row == 0 {
+      cell.textLabel?.text = "Close Project"
+      cell.textLabel?.textColor = UIColor.red
+    } else {
+      cell.textLabel?.text = "Download Project"
+      cell.textLabel?.textColor = UIColor.blue
+    }
     return cell
   }
 
   public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    delegate?.reset()
+    if indexPath.row == 0 {
+      delegate?.reset()
+    } else {
+      RetValManager.shared().startCache()
+      dismiss(animated: true)
+    }
   }
 }
 
@@ -59,12 +70,14 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
+  @IBOutlet weak var libraryButton: UIButton?
   @IBOutlet weak var legacyCheckbox: CheckBoxView!
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
   @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
   private var didWifiCheck = false
+  private var menuButton: UIBarButtonItem?
 
   private static var _interpreterInitialized = false
 
@@ -75,6 +88,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     ViewController.controller = self
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
     self.delegate = self
+    SystemVariables.inConnectedApp = false
+    menuButton = viewControllers.first?.navigationItem.rightBarButtonItem
+    menuButton?.target = self
+    menuButton?.action = #selector(openMenu(caller:))
+    showHelpButton()
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
@@ -131,12 +149,19 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     return interpreter
   }
 
-  public override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+  public override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+    super.pushViewController(viewController, animated: animated)
+    if let menuButton = viewController.navigationItem.rightBarButtonItem {
       menuButton.action = #selector(openMenu(caller:))
       menuButton.target = self
+      if #available(iOS 13.0, *) {
+        menuButton.image = UIImage(systemName: "book")
+      }
     }
+  }
+
+  public override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     if (form == nil) {
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
@@ -168,8 +193,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
+      libraryButton = form.view.viewWithTag(7) as! UIButton?
       legacyCheckbox.Text = "Use Legacy Connection"
-      let ipaddr: String! = NetworkUtils.getIPAddress()
+      let ipaddr: String! = MAINetworkUtils.getIPAddress()
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
       let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
       ipAddrLabel?.text = "IP Address: \(ipaddr!)"
@@ -177,11 +203,40 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
+      libraryButton?.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
       navigationBar.barTintColor = argbToColor(form.PrimaryColor)
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
+      showHelpButton()
     }
+  }
+  
+  @objc func goBackToOnboarding(caller: UIBarButtonItem) {
+      NSLog("goBackToOnboarding called")
+      let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+      vc.modalPresentationStyle = .fullScreen
+      present(vc, animated: true)
+    }
+  
+  func showHelpButton() {
+    guard let menuButton = menuButton else {
+      return
+    }
+    let helpMenuButton: UIBarButtonItem
+    if #available(iOS 13, *) {
+      helpMenuButton = UIBarButtonItem(image: UIImage(systemName: "questionmark.circle"), style: .plain, target: self, action: #selector(goBackToOnboarding(caller:)))
+    } else {
+      helpMenuButton = UIBarButtonItem(title: "?", style: .plain, target: self, action: #selector(goBackToOnboarding(caller:)))
+    }
+    self.topViewController?.navigationItem.rightBarButtonItem = helpMenuButton
+  }
+
+  func showMenuButton() {
+    guard let menuButton = menuButton else {
+      return
+    }
+    self.topViewController?.navigationItem.rightBarButtonItem = menuButton
   }
 
   public override func didReceiveMemoryWarning() {
@@ -206,7 +261,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     guard let text = connectCode?.text else {
       return
     }
-    if text.hasPrefix("https:") {
+    if (text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}")) || text.hasPrefix("https:") {
       ViewController.gotText(text)
       return
     }
@@ -214,6 +269,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       notifier1.ShowAlert("Invalid code: Code must be 6 characters")
       return
     }
+    showMenuButton()
     phoneStatus.WebRTC = !(legacyCheckbox?.Checked ?? true)
     RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
     form.startHTTPD(false)
@@ -237,7 +293,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     var request = URLRequest(url: url!)
     let values = [
       "key": code,
-      "ipaddr": NetworkUtils.getIPAddress(),
+      "ipaddr": MAINetworkUtils.getIPAddress(),
       "port": "9987",
       "webrtc": phoneStatus.WebRTC ? "true" : "false",
       "version": phoneStatus.GetVersionName(),
@@ -246,6 +302,18 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       "os": form.Platform,
       "aid": phoneStatus.InstallationId(),
       "r2": "true",
+      "extensions": """
+      [
+      \"edu.mit.appinventor.ble\",
+      \"com.bbc.microbit.profile\",
+      \"edu.mit.appinventor.ai.personalimageclassifier\",
+      \"edu.mit.appinventor.ai.personalaudioclassifier\",
+      \"edu.mit.appinventor.ai.posenet\",
+      \"edu.mit.appinventor.ai.facemesh\",
+      \"edu.mit.appinventor.ai.teachablemachine\",
+      \"fun.microblocks.microblocks\"
+      ]
+      """,
       "useproxy": phoneStatus.UseProxy ? "true" : "false"
     ].map({ (key: String, value: String) -> String in
       return "\(key)=\(value)"
@@ -253,7 +321,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NSLog("Values = \(values)")
     request.httpMethod = "POST"
     request.httpBody = values.data(using: String.Encoding.utf8)
-    URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+    let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
       if self.phoneStatus.WebRTC {
         guard let data = data, let responseContent = String(data: data, encoding: .utf8) else {
           return
@@ -274,21 +342,64 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         }
         self.setPopup(popup: responseContent)
       }
+      SystemVariables.inConnectedApp = true
     }
-    ).resume()
+    )
+    task.priority = 1.0
+    task.resume()
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
+    let cameraStatus = checkCameraPermission()
+
+    if cameraStatus == .denied || cameraStatus == .restricted {
+      showSettingsAlert()
+      return
+    }
+
     form.interpreter.evalForm("(call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '())")
     if let exception = form.interpreter.exception {
       NSLog("Exception: \(exception.name) (\(exception))")
     }
   }
-  
+
+  @objc func openLibrary() {
+    guard let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as? AppLibraryViewController else {
+      return
+    }
+    libraryVC.form = self.form
+    self.pushViewController(libraryVC, animated:true)
+  }
+
+  func checkCameraPermission() -> AVAuthorizationStatus {
+    return AVCaptureDevice.authorizationStatus(for: .video)
+  }
+
+  private func showSettingsAlert() {
+    let alert = UIAlertController(
+        title: "Camera Permission Required",
+        message: "Please enable camera access in Settings to use the barcode scanner.",
+        preferredStyle: .alert
+    )
+
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+    alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+      if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+        UIApplication.shared.open(settingsUrl)
+      }
+    })
+    ViewController.controller?.present(alert, animated: true)
+  }
+
   @objc public class func gotText(_ text: String) {
     ViewController.controller?.connectCode?.text = text
     if !text.isEmpty {
-      ViewController.controller?.connect(nil)
+      if let first = text.first, Character("a") <= first && first <= Character("z") {
+        ViewController.controller?.connect(nil)
+      } else if text.hasPrefix("\u{02}") && text.hasSuffix("\u{03}") {
+        let code = String(text[text.index(after: text.startIndex)..<text.index(before: text.endIndex)])
+        ViewController.controller?.openProject(named: code)
+      }
     }
   }
   
@@ -301,8 +412,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
       controller.addAction(UIAlertAction(title: "Close Project", style: .destructive) { [weak self] (UIAlertAction) in
         self?.reset()
+        SystemVariables.inConnectedApp = false
         controller.dismiss(animated: false)
       })
+      if SystemVariables.inConnectedApp {
+        controller.addAction(UIAlertAction(title: "Download Project", style: .default) { (UIAlertAction) in
+          RetValManager.shared().startCache()
+          controller.dismiss(animated:true)
+        })
+      }
       controller.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (UIAlertAction) in
         controller.dismiss(animated: true)
       })
@@ -311,7 +429,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let menu = MenuViewController()
       menu.modalPresentationStyle = .popover
       menu.delegate = self
-      menu.preferredContentSize = UITableViewCell().frame.size
+      var size = UITableViewCell().frame.size
+      if SystemVariables.inConnectedApp {
+        size.height = size.height * 2.0 + 1.0
+      }
+      menu.preferredContentSize = size
       menu.popoverPresentationController?.barButtonItem = caller
       self.present(menu, animated: true)
     }
@@ -347,7 +469,26 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     self.viewControllers = []
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     if let newRoot = storyboard.instantiateInitialViewController() {
-      UIApplication.shared.delegate?.window??.rootViewController = newRoot
+      if #available(iOS 13, *) {
+        UIApplication.shared.connectedScenes.forEach { UIScene in
+          if let windowScene = UIScene as? UIWindowScene {
+            windowScene.windows.first?.rootViewController = newRoot
+          }
+        }
+      } else {
+        UIApplication.shared.delegate?.window??.rootViewController = newRoot
+      }
+    }
+  }
+
+  private func openProject(named name: String) {
+    if Bundle.main.path(forResource: "Screen1", ofType: "yail", inDirectory: "samples/\(name)/") != nil {
+      let newapp = BundledApp(named: name, at: "samples/\(name)/")
+      newapp.makeCurrent()
+      newapp.loadScreen1(form)
+      showMenuButton()
+    } else {
+      view.makeToast("Unable to locate project \(name)")
     }
   }
 

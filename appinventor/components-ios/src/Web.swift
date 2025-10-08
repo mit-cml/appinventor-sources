@@ -171,12 +171,24 @@ open class Web: NonvisibleComponent {
     }
 
     var request = URLRequest(url: url)
+    request.httpMethod = httpVerb
     if let postData = postData {
-      request.httpMethod = httpVerb
       request.httpBody = postData
     } else if let postFile = postFile {
-      request.httpMethod = httpVerb
-      request.httpBody = Data(base64Encoded: postFile)
+      do {
+        if postFile.starts(with: "file:"), let fileUrl = URL(string: postFile) {
+          request.httpBody = try Data(contentsOf: fileUrl)
+        } else if postFile.starts(with: "/"), let fileUrl = URL(string: "file:" + postFile) {
+          request.httpBody = try Data(contentsOf: fileUrl)
+        } else if let filePath = Application.current?.assetManager.pathForExistingFileAsset(postFile) {
+          request.httpBody = try Data(contentsOf: URL(fileURLWithPath: filePath))
+        }
+      } catch {
+        _form?.dispatchErrorOccurredEvent(self, httpVerb, ErrorMessage.ERROR_WEB_UNKNOWN_ERROR, "\(error)")
+      }
+    }
+    if webProps.timeout > 0 {
+      request.timeoutInterval = Double(webProps.timeout) / 1000.0
     }
     request.allHTTPHeaderFields = webProps.requestHeaders.mapValues({ (items) -> String in
       return items.joined(separator: ", ")
@@ -213,16 +225,21 @@ open class Web: NonvisibleComponent {
         }
       } else if let error = error {
         NSLog("Got error during URL fetch: \(error.localizedDescription)")
-        if (error as NSError).code == URLError.timedOut.rawValue {
+        let errorCode = (error as NSError).code
+        if errorCode == URLError.timedOut.rawValue || errorCode == URLError.cannotConnectToHost.rawValue || errorCode == URLError.notConnectedToInternet.rawValue {
           DispatchQueue.main.async {
             self.TimedOut(webProps.urlString as NSString)
             self._form?.dispatchErrorOccurredEvent(self, httpVerb,
                 ErrorMessage.ERROR_WEB_REQUEST_TIMED_OUT.code, webProps.urlString)
           }
+        } else {
+          DispatchQueue.main.async {
+            self._form?.dispatchErrorOccurredEvent(self, httpVerb, ErrorMessage.ERROR_WEB_UNKNOWN_ERROR, error.localizedDescription)
+          }
         }
       }
     })
-
+    task.priority = 1.0
     task.resume()
   }
 
@@ -240,6 +257,7 @@ open class Web: NonvisibleComponent {
     let urlSessionConfiguration = URLSessionConfiguration.default
     urlSessionConfiguration.httpCookieStorage = _cookieStorage
     urlSessionConfiguration.httpShouldSetCookies = _allowCookies
+    urlSessionConfiguration.waitsForConnectivity = false
     if webProps.timeout > 0 {
       urlSessionConfiguration.timeoutIntervalForRequest = Double(webProps.timeout) / 1000.0
     }

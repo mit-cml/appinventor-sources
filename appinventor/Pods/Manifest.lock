@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (4.9.1)
+  - Alamofire (5.10.2)
   - Base58Swift (2.1.10):
     - BigInt (~> 5.0.0)
   - BigInt (5.0.0)
@@ -39,7 +39,7 @@ PODS:
   - ZXingObjC/All (3.6.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.8)
+  - Alamofire (~> 5.10)
   - Base58Swift (~> 2.1.0)
   - CryptoSwift
   - DGCharts (~> 5.0.0)
@@ -101,7 +101,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/TheLevelUp/ZXingObjC.git
 
 SPEC CHECKSUMS:
-  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
   Base58Swift: 53d551f0b33d9478fa63b3445e453a772d6b31a7
   BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
@@ -123,6 +123,6 @@ SPEC CHECKSUMS:
   ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
   ZXingObjC: ec0306e7c8dac717f653e165f1c4fd0e69fde99f
 
-PODFILE CHECKSUM: 925eaca15780fdd8ad073324b32d93e53b17c9df
+PODFILE CHECKSUM: d83b64c3a842c56192889ecc066ed832d0d1c64f
 
 COCOAPODS: 1.16.2

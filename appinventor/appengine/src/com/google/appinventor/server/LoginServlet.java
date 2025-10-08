@@ -124,6 +124,7 @@ public class LoginServlet extends HttpServlet {
     String redirect = params.get("redirect");
     String autoload = params.get("autoload");
     String newGalleryId = params.get("ng");
+    String uiPreference = params.get("ui");
 
     if (DEBUG) {
       LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
@@ -178,6 +179,7 @@ public class LoginServlet extends HttpServlet {
         .add("repo", repo)
         .add("autoload", autoload)
         .add("ng", newGalleryId)
+        .add("ui", uiPreference)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);
       return;
@@ -190,6 +192,7 @@ public class LoginServlet extends HttpServlet {
           .add("ng", newGalleryId)
           .add("galleryId", galleryId)
           .add("autoload", autoload)
+          .add("ui", uiPreference)
           .add("redirect", redirect).build();
         resp.sendRedirect(uri);
         return;
@@ -210,6 +213,7 @@ public class LoginServlet extends HttpServlet {
               .add("ng", newGalleryId)
               .add("galleryId", galleryId)
               .add("autoload", autoload)
+              .add("ui", uiPreference)
               .add("redirect", redirect).build();
             resp.sendRedirect(uri);
             return;
@@ -338,6 +342,7 @@ public class LoginServlet extends HttpServlet {
         .add("ng", newGalleryId)
         .add("galleryId", galleryId)
         .add("autoload", autoload)
+        .add("ui", uiPreference)
         .add("redirect", redirect).build();
       resp.sendRedirect(uri);   // This should bring up App Inventor
       return;
@@ -365,6 +370,7 @@ public class LoginServlet extends HttpServlet {
     req.setAttribute("repo", repo);
     req.setAttribute("locale", locale);
     req.setAttribute("ng", newGalleryId);
+    req.setAttribute("ui", uiPreference);
     req.setAttribute("galleryId", galleryId);
     try {
       req.getRequestDispatcher("/login.jsp").forward(req, resp);
@@ -399,6 +405,7 @@ public class LoginServlet extends HttpServlet {
     String newGalleryId = params.get("ng");
     String redirect = params.get("redirect");
     String autoload = params.get("autoload");
+    String uiPreference = params.get("ui");
 
     if (locale == null) {
       locale = "en";
@@ -454,6 +461,7 @@ public class LoginServlet extends HttpServlet {
         .add("repo", repo)
         .add("autoload", autoload)
         .add("ng", newGalleryId)
+        .add("ui", uiPreference)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);   // Logged in, go to service
       return;
@@ -505,6 +513,7 @@ public class LoginServlet extends HttpServlet {
       .add("autoload", autoload)
       .add("repo", repo)
       .add("ng", newGalleryId)
+      .add("ui", uiPreference)
       .add("galleryId", galleryId).build();
     resp.sendRedirect(uri);
   }

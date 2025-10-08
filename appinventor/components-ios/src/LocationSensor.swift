@@ -18,7 +18,7 @@ public enum LocationManagerStatus: String {
  * altitude, speed, and address.  This can also perform geocoding.
  * @author Nichole Clarke
  */
-open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
+open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate, LifecycleDelegate {
 
   fileprivate static let UNKNOWN_VALUE: Double = 0
   fileprivate var _listening: Bool = false
@@ -218,6 +218,9 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     geocoder.geocodeAddressString(address) { [self] placemarks, error in
       if let error = error {
         print("Error geocoding address: \(error.localizedDescription)")
+        // Note in theory we could have a single error here, but the Android version will produce an error for each dimension.
+        self._form?.dispatchErrorOccurredEvent(self, "LatitudeFromAddress", ErrorMessage.ERROR_LOCATION_SENSOR_LATITUDE_NOT_FOUND, address)
+        self._form?.dispatchErrorOccurredEvent(self, "LongitudeFromAddress", ErrorMessage.ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND, address)
         // Trigger the GotLocation event with default/fallback values
         self.GotLocationFromAddress(address, LocationSensor.UNKNOWN_VALUE, LocationSensor.UNKNOWN_VALUE)
         return
@@ -382,6 +385,10 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate {
     if _enabled {
       RefreshProvider()
     }
+  }
+
+  @objc open func onPause() {
+    stopListening()
   }
 
   @objc open func onStop() {

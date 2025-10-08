@@ -169,14 +169,19 @@ public class ExternalComponentGenerator {
       JSONObject componentBuildInfo = info.buildInfo;
       try {
         JSONArray librariesNeeded = componentBuildInfo.getJSONArray("libraries");
+        JSONArray librariesAar = new JSONArray();
         for (int j = 0; j < librariesNeeded.length(); ++j) {
           // Copy Library files for Unjar and Jaring
           String library = librariesNeeded.getString(j);
           copyFile(buildServerClassDirPath + File.separator + library,
               extensionTempDirPath + File.separator + library);
+          if (library.endsWith(".aar")) {
+            copyExternalAar(library, packageName);
+            librariesAar.put(library);
+          }
         }
         //empty the libraries meta-data to avoid redundancy
-        componentBuildInfo.put("libraries", new JSONArray());
+        componentBuildInfo.put("libraries", librariesAar);
       } catch(JSONException e) {
         // bad
         throw new IllegalStateException("Unexpected JSON exception parsing simple_components.json",
@@ -342,6 +347,22 @@ public class ExternalComponentGenerator {
       return false;
     }
     return true;
+  }
+
+  private static void copyExternalAar(String library, String packageName)
+      throws IOException {
+    File sourceDir = new File(buildServerClassDirPath + File.separator);
+    File aarFile = new File(sourceDir, library);
+    if (!aarFile.exists() || !library.endsWith(".aar")) {
+      return;
+    }
+    // Get aar dest directory
+    File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
+    File aarDestDir = new File(destDir, "aars");
+    ensureFreshDirectory(aarDestDir.getPath(), "Unable to delete the aars directory for the extension.");
+
+    System.out.println("Extensions : " + "Copying file aar " + library);
+    copyFile(aarFile.getAbsolutePath(), aarDestDir.getAbsolutePath() + File.separator + library);
   }
 
   /**

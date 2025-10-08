@@ -52,6 +52,7 @@ import DGCharts
   var _gridEnabled = true
   var _labels = [String]()
   var _dataComponents: Array<ChartComponent> = []
+  var _valueType: Int = 0
   
   var _axesTextColor: UIColor
   private var darkMode = false
@@ -78,6 +79,23 @@ import DGCharts
     self.Type = self.Type
   }
 
+  
+  @objc open var ValueFormat: Int {
+     get {
+       return _valueType;
+     }
+    set{
+      _valueType = newValue
+      _chartView?.ValueType = newValue
+      
+      for c in _dataComponents {
+        if let dc = c.dispatchDelegate as? ChartDataModel{
+          dc.ValueType = newValue
+        }
+        
+      }
+    }
+  }
   @objc open override var view: UIView {
     return _view
   }
@@ -249,12 +267,51 @@ import DGCharts
       }
     }
   }
+  
+  @objc open func ExtendDomainToInclude(_ x: Double) {
+    guard let chartView = _chartView as? AxisChartView else {
+      return
+    }
+    let bounds: [Double] = chartView.getXBounds();
+    if x < bounds[0] {
+      chartView.setXBounds(minimum: x, maximum: bounds[1])
+    } else if x > bounds[1] {
+      chartView.setXBounds(minimum: bounds[0], maximum: x)
+    } else {
+      return
+    }
+    chartView.refresh()
+  }
+  
+  @objc open func ExtendRangeToInclude(_ y: Double) {
+    guard let chartView = _chartView as? AxisChartView else {
+      return
+    }
+    let bounds: [Double] = chartView.getYBounds()
+    if y < bounds[0] {
+      chartView.setYBounds(minimum: y, maximum: bounds[1])
+    } else if y > bounds[1] {
+      chartView.setYBounds(minimum: bounds[0], maximum: y)
+    } else {
+      return
+    }
+    chartView.refresh()
+  }
 
   // MARK: Chart events
 
   @objc open func EntryClick(_ series: Component, _ x: AnyObject, _ y: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "EntryClick",
                                   arguments: series, x, y as AnyObject)
+  }
+
+  // MARK: Chart methods
+
+  @objc open func ResetAxes() {
+    if let chartView = _chartView as? AxisChartView {
+      chartView.resetAxes()
+      refresh()
+    }
   }
 
   @objc open func SetDomain(_ minimum: Double, _ maximum: Double) {
@@ -308,6 +365,7 @@ import DGCharts
     Labels = _labels
     LegendEnabled = _legendEnabled
     PieRadius = _pieRadius
+    ValueFormat = _valueType
     
     AxesTextColor = colorToArgb(_axesTextColor)
   }

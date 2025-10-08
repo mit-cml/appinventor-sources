@@ -33,12 +33,14 @@ import com.google.gwt.user.client.Window;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Property editor for chatbot provider property
  *
  */
 public class YoungAndroidChatbotProviderPropertyEditor extends ChoicePropertyEditor {
+  private static final Logger LOG = Logger.getLogger(YoungAndroidChatbotProviderPropertyEditor.class.getName());
 
   private static final Promise<Choice[]> choicePromise = new Promise<Choice[]>((resolve, reject) -> {
       String url = AppInventorFeatures.chatBotHost() + "model_list/v1";

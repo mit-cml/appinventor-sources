@@ -52,7 +52,7 @@ public final class Urls {
    * @return the new URI to redirect to
    */
   public static String makeUri(String base, boolean hasParam) {
-    String[] params = new String[] { "locale", "repo", "galleryId" };
+    String[] params = new String[] { "locale", "repo", "galleryId", "ui" };
     String separator = "?";
     if (hasParam) {
       separator = "&";
