@@ -64,7 +64,6 @@ public final class AR3DFactory {
      Object Pose();
      void Pose(Object o);
      void PoseFromPropertyPosition(String positionFromProperty) ;
-     void PoseFromPropertyPositions(String x, String y, String z) ;
      float[] PoseFromPropertyPosition();
 
      YailDictionary PoseToYailDictionary();
@@ -144,8 +143,8 @@ public final class AR3DFactory {
      float ZRotation();
      void ZRotation(float zRotation);
 
-     float[] Rotation();
-     void Rotation(String r);
+     float[] FromPropertyRotation();
+     void FromPropertyRotation(String r);
 
      float Scale();
      void Scale(float scalar);
@@ -186,8 +185,8 @@ public final class AR3DFactory {
 
      void startDrag(PointF fingerLocation);
      void updateDrag(float[] groundProjection);
-     void endDrag(PointF fingerVelocity, CameraVectors cameraVectors);
-     void applyReleaseVelocity(PointF fingerVelocity, CameraVectors cameraVectors);
+     //void endDrag(PointF fingerVelocity, CameraVectors cameraVectors);
+     //void applyReleaseVelocity(PointF fingerVelocity, CameraVectors cameraVectors);
   }
 
    public interface FollowsMarker {

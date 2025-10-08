@@ -12,8 +12,8 @@ import UIKit
 open class WebViewNode: ARNodeBase, ARWebView {
   private var _webView: WKWebView = WKWebView(frame: CGRect(x: 0, y: 0, width: 400, height: 672))
   private var _url: String = ""
-  private var _width: Float = 0.125
-  private var _height: Float = 0.175
+  private var _width: Float = 0.5
+  private var _height: Float = 0.25
   
   @objc init(_ container: ARNodeContainer) {
     // Create a plane mesh for the web view
@@ -118,6 +118,8 @@ open class WebViewNode: ARNodeBase, ARWebView {
   
   private func updateMesh() {
     let mesh = MeshResource.generatePlane(width: _width, depth: _height)
+   
+    _modelEntity.model?.mesh = mesh
     
     // Preserve existing materials when updating mesh
     let existingMaterials = _modelEntity.model?.materials ?? []
@@ -132,29 +134,6 @@ open class WebViewNode: ARNodeBase, ARWebView {
     }
   }
   
-  // FillColor is not user accessible
-  @objc open override var FillColor: Int32 {
-    get {
-      return 0
-    }
-    set(color) {}
-  }
-  
-  // Texture is not user accessible
-  @objc open override var Texture: String {
-    get {
-      return ""
-    }
-    set(path) {}
-  }
-  
-  // TextureOpacity is not user accessible
-  @objc open override var TextureOpacity: Int32 {
-    get {
-      return 1
-    }
-    set(opacity) {}
-  }
   
   // MARK: Methods
   

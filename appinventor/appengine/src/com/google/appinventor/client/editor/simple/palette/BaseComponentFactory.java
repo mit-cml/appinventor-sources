@@ -14,7 +14,7 @@ import com.google.appinventor.client.editor.simple.components.MockModelNode;
 import com.google.appinventor.client.editor.simple.components.MockPlaneNode;
 import com.google.appinventor.client.editor.simple.components.MockSphereNode;
 import com.google.appinventor.client.editor.simple.components.MockVideoNode;
-import com.google.appinventor.client.editor.simple.components.MockWebNode;
+import com.google.appinventor.client.editor.simple.components.MockWebViewNode;
 import com.google.appinventor.client.editor.simple.components.MockTextNode;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
@@ -238,8 +238,8 @@ public class BaseComponentFactory implements ComponentFactory {
       return new MockPlaneNode(editor);
     } else if (name.equals(MockVideoNode.TYPE)) {
       return new MockVideoNode(editor);
-    } else if (name.equals(MockWebNode.TYPE)) {
-      return new MockWebNode(editor);
+    } else if (name.equals(MockWebViewNode.TYPE)) {
+      return new MockWebViewNode(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

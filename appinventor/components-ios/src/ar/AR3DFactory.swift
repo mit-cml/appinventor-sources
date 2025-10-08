@@ -26,6 +26,7 @@ import UIKit
   var PanToMove: Bool { get set }
   var RotateWithGesture: Bool { get set }
   var PoseFromPropertyPosition: String { get set }
+  var FromPropertyRotation: String { get set }
 
   var XPosition: Float { get set }
   var YPosition: Float { get set }

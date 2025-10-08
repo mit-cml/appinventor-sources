@@ -36,13 +36,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected ARView3D arView = null;
   protected Anchor anchor = null;
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
+  protected float[] fromPropRotation = {0,0,0,1};
   protected float scale = 1.0f;
   protected Session session = null;
   protected String texture = "";
   protected Trackable trackable = null;
   protected String name = "";
   protected String objectModel = Form.ASSETS_PREFIX + "";
-  protected float[] rotation = new float[]{0,0,0,1};
+
 
   // Enhanced Physics Properties
   protected String collisionShape = "sphere";
@@ -189,6 +190,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     // Get current position from anchor or trackable
     if (anchor != null) {
       return anchor.getPose().getTranslation();
+    }
+    return new float[]{0, 0, 0};
+  }
+
+  public float[] getCurrentRotation() {
+    // Get current position from anchor or trackable
+    if (anchor != null) {
+      return anchor.getPose().getRotationQuaternion();
     }
     return new float[]{0, 0, 0};
   }
@@ -737,30 +746,20 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       }
     }
 
-    this.fromPropertyPosition = position;
+    fromPropertyPosition = position;
+
 
     if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, fromPropRotation)); //CSB check
       Anchor(myAnchor);
     } else if (session != null) {
-      Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
+      Anchor myAnchor = session.createAnchor(new Pose(position, fromPropRotation));
       Anchor(myAnchor);
     }
 
     Log.i("ARNodeBase", "Stored pose with position " + positionFromProperty);
   }
 
-  @Override
-  public void PoseFromPropertyPositions(String x, String y, String z) {
-    try {
-      float xPos = Float.parseFloat(x.trim());
-      float yPos = Float.parseFloat(y.trim());
-      float zPos = Float.parseFloat(z.trim());
-      PoseFromPropertyPosition(xPos + "," + yPos + "," + zPos);
-    } catch (NumberFormatException e) {
-      Log.e("ARNodeBase", "Invalid position values: " + x + "," + y + "," + z, e);
-    }
-  }
 
 // MARK: - Enhanced Material and Texture System
 
@@ -1357,16 +1356,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
   }
 
-  @Override
-  //@SimpleProperty(description = "The rotation of the node in the form of a quaternion eg 0,0,0,1.")
-  public float[] Rotation() {
-    return this.rotation;
-  }
+  public float[] FromPropertyRotation() { return fromPropRotation; }
 
-  @Override
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "0,0,0,1")
-  public void Rotation(String rFromProperty) {
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Set the current rotation of the object from property. The rotation of the node in the form of rotation of degrees eg 45,0,0.")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  public void FromPropertyRotation(String rFromProperty) {
     String[] rotationAray = rFromProperty.split(",");
     float[] rotation = {0f, 0f, 0f};
 
@@ -1377,7 +1371,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
         Log.w("ARNodeBase", "Invalid number in position: " + rotationAray[i]);
       }
     }
-    this.rotation = rotation; // Ensure positive scale
+    fromPropRotation = rotation; // Ensure positive scale
   }
 
   @Override
@@ -1484,10 +1478,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
         currentPos[2] + zMeters
     };
 
-    float[] rotation = {0f, 0f, 0f, 1f};
-    if (anchor != null) {
-      rotation = anchor.getPose().getRotationQuaternion();
-    }
+    float[] rotation = getCurrentRotation();
+
 
     Pose newPose = new Pose(newPosition, rotation);
 
@@ -1608,7 +1600,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
   }
 
-  @Override
+
   public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
     if (!isBeingDragged) return;
 

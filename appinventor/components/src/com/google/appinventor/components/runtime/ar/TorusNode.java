@@ -84,27 +84,6 @@ import android.util.Log;
       }
     }
 
-    @SimpleProperty(description = "Set the current pose of the object from property",
-        category = PropertyCategory.APPEARANCE)
-    @Override
-    public void PoseFromPropertyPosition(String positionFromProperty) {
-      Log.i("setting Capsule pose", "with position" +positionFromProperty);
-
-
-      String[] positionArray = positionFromProperty.split(",");
-      float[] position = {0f,0f,0f};
-
-      for (int i = 0; i < positionArray.length; i++) {
-        position[i] = Float.parseFloat(positionArray[i]);
-      }
-      float[] rotation = {0,0,0, 1}; // no rotation TBD
-      if (this.trackable != null) {
-        Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-        Anchor(myAnchor);
-      }
-    }
-
-
   @Override
     @SimpleProperty(description = "The ring radius defines the size of the overall " +
       "torus (or major radius) in centimeters.  Values less than zero will be treated " +

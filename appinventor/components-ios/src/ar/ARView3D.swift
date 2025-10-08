@@ -583,6 +583,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               UnitHelper.centimetersToMeters(position[2])
             )
           }
+          if !node._fromPropertyRotation.isEmpty {
+            let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
+              .prefix(3)
+              .map { Float(String($0)) ?? 0.0 }
+            
+            // Convert degrees to radians
+            let xRadians = eulerDegrees[0] * .pi / 180.0
+            let yRadians = eulerDegrees[1] * .pi / 180.0
+            let zRadians = eulerDegrees[2] * .pi / 180.0
+            
+            // Create quaternion from Euler angles (ZYX order - standard)
+            node._modelEntity.transform.rotation = simd_quatf(
+              angle: yRadians, axis: [0, 1, 0]  // Y rotation (yaw)
+            ) * simd_quatf(
+              angle: xRadians, axis: [1, 0, 0]  // X rotation (pitch)
+            ) * simd_quatf(
+              angle: zRadians, axis: [0, 0, 1]  // Z rotation (roll)
+            )
+          }
         }
       }
       
@@ -880,6 +899,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             UnitHelper.centimetersToMeters(position[0]),
             UnitHelper.centimetersToMeters(position[1]),
             UnitHelper.centimetersToMeters(position[2])
+          )
+        }
+        
+        if !node._fromPropertyRotation.isEmpty {
+          let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
+            .prefix(3)
+            .map { Float(String($0)) ?? 0.0 }
+          
+          // Convert degrees to radians
+          let xRadians = eulerDegrees[0] * .pi / 180.0
+          let yRadians = eulerDegrees[1] * .pi / 180.0
+          let zRadians = eulerDegrees[2] * .pi / 180.0
+          
+          // Create quaternion from Euler angles (ZYX order - standard)
+          node._modelEntity.transform.rotation = simd_quatf(
+            angle: yRadians, axis: [0, 1, 0]  // Y rotation (yaw)
+          ) * simd_quatf(
+            angle: xRadians, axis: [1, 0, 0]  // X rotation (pitch)
+          ) * simd_quatf(
+            angle: zRadians, axis: [0, 0, 1]  // Z rotation (roll)
           )
         }
         
