@@ -40,6 +40,7 @@ class ListViewTests: AppInventorTestCase {
 
   func testBackgroundColor() {
     testList.BackgroundColor = Color.blue.int32
+    testList.ElementColor = Color.none.int32
     testList.Elements = ["Test"] as [AnyObject]
     let view = testList.view as! UITableView
     var cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
@@ -53,6 +54,43 @@ class ListViewTests: AppInventorTestCase {
     cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
     XCTAssertNotNil(cell)
     XCTAssertEqual(Color.black.uiColor, cell.backgroundColor)
+  }
+  
+  func testElementColor() {
+    testList.BackgroundColor = Color.blue.int32
+    testList.ElementColor = Color.red.int32
+    testList.Elements = ["Test"] as [AnyObject]
+    let view = testList.view as! UITableView
+    var cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
+    XCTAssertNotNil(cell)
+    XCTAssertEqual(Color.red.uiColor, cell.backgroundColor)
+    
+    // Change elementColor
+    testList.ElementColor = Color.yellow.int32
+    cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
+    XCTAssertNotNil(cell)
+    XCTAssertEqual(Color.yellow.uiColor, cell.backgroundColor)
+  }
+  func testDividerColor() {
+    testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as [AnyObject]
+    let view = testList.view as! UITableView
+    testList.DividerColor = Color.green.int32
+    XCTAssertEqual(Color.green.int32, testList.DividerColor)
+    view.separatorColor = argbToColor(testList.DividerColor)
+    XCTAssertNotNil(view)
+    XCTAssertNotNil(view.separatorColor)
+    XCTAssertEqual(Color.green.uiColor, view.separatorColor)
+  }
+  
+  func testCornerRadius() {
+    testList.Elements = ["Test"] as [AnyObject]
+    let view = testList.view as! UITableView
+    var cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
+    XCTAssertNotNil(cell)
+    testList.ElementCornerRadius = 10
+    cell.layer.cornerRadius = CGFloat(testList.ElementCornerRadius)
+    XCTAssertEqual(10, cell.layer.cornerRadius)
+
   }
 
   func testMixedElements() {
