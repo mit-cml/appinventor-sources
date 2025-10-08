@@ -1027,7 +1027,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.1")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void StaticFriction(float friction) {
     this.staticFriction = Math.max(0.0f, Math.min(1.0f, friction));
     updatePhysicsMaterial();
@@ -1039,7 +1039,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.1")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void DynamicFriction(float friction) {
     this.dynamicFriction = Math.max(0.0f, Math.min(1.0f, friction));
     updatePhysicsMaterial();
@@ -1051,7 +1051,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.5")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void Restitution(float rest) {
     this.restitution = Math.max(0.0f, Math.min(1.0f, rest));
     updatePhysicsMaterial();
@@ -1063,7 +1063,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1.0")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void Mass(float m) {
     this.mass = Math.max(0.001f, m); // Minimum mass to prevent physics issues
     updateMassProperties();
@@ -1087,7 +1087,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "2.0")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void DragSensitivity(float d) {
     this.dragSensitivity = Math.max(0.1f, d); // Minimum sensitivity
   }
@@ -1129,7 +1129,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.0")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void LinearDamping(float damping) {
     this.linearDamping = Math.max(0.0f, Math.min(1.0f, damping));
     updatePhysicsBody();
@@ -1141,7 +1141,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.0")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void AngularDamping(float damping) {
     this.angularDamping = Math.max(0.0f, Math.min(1.0f, damping));
     updatePhysicsBody();
@@ -1169,7 +1169,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "sphere")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
   public void CollisionShape(String shape) {
     this.collisionShape = shape;
     updateCollisionShape();

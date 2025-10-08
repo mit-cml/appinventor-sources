@@ -5,6 +5,8 @@
 
 package com.google.appinventor.components.runtime.ar;
 
+import android.content.res.AssetFileDescriptor;
+import com.google.android.filament.MaterialInstance;
 import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 
@@ -21,10 +23,20 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
+import com.google.android.filament.Material;
+import com.google.android.filament.Stream;
+import android.media.MediaPlayer;
+import android.graphics.SurfaceTexture;
+import android.view.Surface;
+import java.io.File;
+
 import android.util.Log;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
+
+import java.io.IOException;
 
 
 // TODO: either supply a simple quad or make one
@@ -44,243 +56,212 @@ import com.google.ar.core.Trackable;
 @SimpleObject
 public final class VideoNode extends ARNodeBase implements ARVideo {
 
-  private float[] fromPropertyPosition = {0f,0f,0f};
-  private Anchor anchor = null;
-
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
   private String texture = Form.ASSETS_PREFIX + "Palette.png";
+  private MediaPlayer mediaPlayer;
+  private SurfaceTexture videoSurfaceTexture;
+  private Surface videoSurface;
+  private Stream videoStream;
+  private Texture videoTexture;
 
-  public VideoNode(final ARNodeContainer container) {
+  private static final String LOG_TAG = "VideoNode";
+
+  private float widthInCentimeters = 50.0f;
+  private float heightInCentimeters = 37.5f;
+  private String videoSource = "";
+  private int volume = 100;
+
+  private boolean isInitialized = false;
+  private boolean shouldAutoPlay = false;
+  private boolean isFirstFrameReady = false;
+
+  private Material videoMaterial;
+  private MaterialInstance videoMaterialInstance;
+  private int videoEntity;
+  private ARNodeContainer container;
+
+  public VideoNode(ARNodeContainer container) {
     super(container);
     // Additional updates
       Model( objectModel);
       Texture(texture);
     container.addNode(this);
+    container = container;
   }
-  @Override // wht is the significance?
-  public Anchor Anchor() { return this.anchor; }
 
-  @Override
-  public void Anchor(Anchor a) { this.anchor = a;}
+  /**
+   * Create plane geometry for video
+   */
+  /*private void createVideoPlaneGeometry() {
+    updateGeometry
+  }*/
 
-  @Override
-  public Trackable Trackable() { return this.trackable; }
 
-  @Override
-  public void Trackable(Trackable t) { this.trackable = t;}
+  private void updateVideoPlaneSize() {
+    if (!isInitialized || videoEntity == 0) {
+      return;
+    }
+    // Recreate geometry with new dimensions
+    //createVideoPlaneGeometry();
+    Log.i(LOG_TAG, "Updated video size: " + widthInCentimeters + "x" + heightInCentimeters + " cm");
+  }
 
-  @Override
-  @SimpleProperty(description = "The 3D model file to be loaded.",
-      category = PropertyCategory.APPEARANCE)
-  public String Model() { return this.objectModel; }
-
-  @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-  public void Model(String model) {this.objectModel = model;}
+  @SimpleProperty(
+      description = "The path to the video file, which should be added in the Designer.",
+      category = PropertyCategory.BEHAVIOR)
+  public void Source(String path) {
+    videoSource = path;
+    loadVideoSource(path);
+  }
 
-  @Override
-  @SimpleFunction(description = "move a capsule node properties at the " +
-      "specified (x,y,z) position.")
-  public void MoveBy(float x, float y, float z){
-
-    float[] position = { 0, 0, 0};
-    float[] rotation = {0, 0, 0, 1};
-
-    //float[] currentAnchorPoseRotation = rotation;
-
-    if (this.Anchor() != null) {
-      float[] translations = this.Anchor().getPose().getTranslation();
-      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
-      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+  private void loadVideoSource(String path) {
+    if (mediaPlayer == null) {
+      Log.e("VideoNode", "MediaPlayer not initialized");
+      return;
     }
 
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null){
-      Anchor(this.trackable.createAnchor(newPose));
-      Log.i("capsule","moved anchor BY " + newPose+ " with rotaytion "+rotation);
-    }else {
-      Log.i("capsule", "tried to move anchor BY pose");
+    try {
+      // Reset media player
+      if (mediaPlayer.isPlaying()) {
+        mediaPlayer.stop();
+      }
+      mediaPlayer.reset();
+
+      // Re-attach surface after reset
+      mediaPlayer.setSurface(videoSurface);
+
+      // Load video source
+      File videoFile = new java.io.File(path);
+      if (videoFile.exists()) {
+        mediaPlayer.setDataSource(videoFile.getAbsolutePath());
+        Log.i(LOG_TAG, "Loading video from file: " + path);
+      } else {
+        // Try as asset
+        AssetFileDescriptor afd = container.$context().getAssets().openFd(path);
+        mediaPlayer.setDataSource(afd.getFileDescriptor(),
+            afd.getStartOffset(), afd.getLength());
+        afd.close();
+        Log.i(LOG_TAG, "Loading video from assets: " + path);
+      }
+
+      // Prepare asynchronously
+      mediaPlayer.prepareAsync();
+
+    } catch (IOException e) {
+      Log.e(LOG_TAG, "Failed to load video source: " + path, e);
+      //container.$context().dispatchErrorOccurredEvent(
+      //    this, "Source", ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, path);
     }
   }
 
+  @Override
+  @SimpleProperty(description = "Returns true if the video is currently playing.")
+  public boolean IsPlaying() {
+    return mediaPlayer != null && mediaPlayer.isPlaying();
+  }
 
   @Override
-  @SimpleFunction(description = "Changes the node's position by (x,y,z).")
-  public void MoveTo(float x, float y, float z) {
-    float[] position = {x, y, z};
-    float[] rotation = {0, 0, 0, 1};
-
-    float[] currentAnchorPoseRotation = rotation;
-    if (this.Anchor() != null) {
-      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "100")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Sets the volume to a number between 0 and 100.")
+  public void Volume(int vol) {
+    volume = Math.max(0, Math.min(100, vol));
+    if (mediaPlayer != null && isInitialized) {
+      float volumeFloat = volume / 100.0f;
+      mediaPlayer.setVolume(volumeFloat, volumeFloat);
+      Log.i(LOG_TAG, "Volume set to: " + volume);
     }
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null){
-      Anchor(this.trackable.createAnchor(newPose));
-      Log.i("webview","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
-    }else {
-      Log.i("webview", "tried to move anchor to pose");
+  }
+
+  // Playback Methods
+
+  @Override
+  @SimpleFunction(description = "Starts playback of the video.")
+  public void Play() {
+    if (mediaPlayer != null && isInitialized) {
+      try {
+        if (!mediaPlayer.isPlaying()) {
+          mediaPlayer.start();
+          Log.i(LOG_TAG, "Video playback started");
+        }
+      } catch (IllegalStateException e) {
+        Log.e(LOG_TAG, "Cannot start playback", e);
+      }
+    } else {
+      shouldAutoPlay = true;
+      Log.i(LOG_TAG, "Video will auto-play when ready");
     }
   }
 
   @Override
-  @SimpleFunction(description = "move a sphere node properties at the " +
-      "specified (x,y,z) position.")
-  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
-    this.trackable = (Trackable) targetPlane.DetectedPlane();
-    if (this.anchor != null) {
-      this.anchor.detach();
-    }
-    Anchor(this.trackable.createAnchor((Pose) p));
-    Log.i("created Anchor!", " " );
-  }
-
-
-  @SimpleProperty(description = "Set the current pose of the object",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void Pose(Object p) {
-    Log.i("setting Capsule pose", "with " +p);
-    Pose pose = (Pose) p;
-
-    float[] position = {pose.tx(), pose.ty(), pose.tz()};
-    float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
+  @SimpleFunction(description = "Pauses playback of the video.")
+  public void Pause() {
+    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+      mediaPlayer.pause();
+      Log.i(LOG_TAG, "Video playback paused");
     }
   }
 
-
-  /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
   @Override
-  public float[] PoseFromPropertyPosition(){ return fromPropertyPosition; }
-
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
-      category = PropertyCategory.APPEARANCE)
-  @Override
-  public void PoseFromPropertyPosition(String positionFromProperty) {
-    String[] positionArray = positionFromProperty.split(",");
-    float[] position = {0f,0f,0f};
-
-    for (int i = 0; i < positionArray.length; i++) {
-      position[i] = Float.parseFloat(positionArray[i]);
+  @SimpleFunction(description = "Returns duration of the video in milliseconds.")
+  public int GetDuration() {
+    if (mediaPlayer != null && isInitialized) {
+      try {
+        int duration = mediaPlayer.getDuration();
+        return duration > 0 ? duration : 0;
+      } catch (IllegalStateException e) {
+        Log.e(LOG_TAG, "Cannot get duration", e);
+      }
     }
-    this.fromPropertyPosition = position;
-    float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
-    if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-      Anchor(myAnchor);
-    }
-    Log.i("store sphere pose", "with position" +positionFromProperty);
+    return 0;
   }
 
   @Override
+  @SimpleFunction(description = "Seeks to the requested time (specified in milliseconds).")
+  public void SeekTo(int ms) {
+    if (mediaPlayer != null && isInitialized) {
+      try {
+        mediaPlayer.seekTo(ms);
+        Log.i(LOG_TAG, "Seeking to: " + ms + "ms");
+      } catch (IllegalStateException e) {
+        Log.e(LOG_TAG, "Cannot seek", e);
+      }
+    }
+  }
+
+  // Events
+
+  @Override
+  @SimpleEvent(description = "Indicates that the video has reached the end.")
+  public void Completed() {
+    EventDispatcher.dispatchEvent(this, "Completed");
+  }
+
+
   @SimpleProperty(description = "How far, in centimeters, the VideoNode extends along the x-axis.  " +
-    "Values less than zero will be treated as their absolute value.  When set to zero, the VideoNode " +
-    "will not be shown.")
-  public float WidthInCentimeters() { return 0.5f; }
+      "Values less than zero will be treated as their absolute value.  When set to zero, the VideoNode " +
+      "will not be shown.")
+  public float WidthInCentimeters() { return widthInCentimeters; }
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "50")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  public void WidthInCentimeters(float widthInCentimeters) {}
+  public void WidthInCentimeters(float width) {
+    widthInCentimeters = width;
+  }
 
   @Override
   @SimpleProperty(description = "How far, in centimeters, the VideoNode extends along the y-axis.  " +
-    "Values less than zero will be treated as their absolute value.  When set to zero, the VideoNode " +
-    "will not be shown.")
-  public float HeightInCentimeters() { return 0.5f; }
+      "Values less than zero will be treated as their absolute value.  When set to zero, the VideoNode " +
+      "will not be shown.")
+  public float HeightInCentimeters() { return heightInCentimeters; }
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "37.5")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
-  public void HeightInCentimeters(float heightInCentimeters) {}
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-    defaultValue = "")
-  @SimpleProperty(
-    description = "The \"path\" to the video.  Usually, this will be the "
-    + "name of the video file, which should be added in the Designer.",
-    category = PropertyCategory.BEHAVIOR)
-  public void Source(String path) {}
-
-  @Override
-  @SimpleProperty(description = "Returns true if the video is currently playing " +
-    "false otherwise.")
-  public boolean IsPlaying() { return false; }
-
-  /**
-  * Sets the volume property to a number between 0 and 100.
-  *
-  * @param vol  the desired volume level
-  */
-  @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-    defaultValue = "100")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-                  description = "Sets the volume to a number between 0 and 100. " +
-    "Values less than 0 will be treated as 0, and values greater than 100 " +
-    "will be treated as 100.")
-  public void Volume(int vol) {}
-
-  // Methods
-  @Override
-  @SimpleFunction(description = "Starts playback of the video.")
-  public void Play() {}
-
-  @Override
-  @SimpleFunction(description = "Pauses playback of the video.")
-  public void Pause() {}
-
-  @Override
-  @SimpleFunction(description = "Returns duration of the video in milliseconds.")
-  public int GetDuration() { return 0; }
-
-  @Override
-  @SimpleFunction(description = "Seeks to the requested time (specified in milliseconds) in the video. " +
-      "If the video is paused, the frame shown will not be updated by the seek. " +
-      "The player can jump only to key frames in the video, so seeking to times that " +
-      "differ by short intervals may not actually move to different frames.")
-  public void SeekTo(int ms) {}
-
-  // Events
-  @Override
-  @SimpleEvent(description = "Indicated that the video has reached the end.")
-  public void Completed() {}
-
-  // Hidden Properties
-  @Override
-  @SimpleProperty(userVisible = false)
-  public int FillColor() { return 0; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void FillColor(int color) {}
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public int FillColorOpacity() { return 0; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void FillColorOpacity(int FillColorOpacity) {}
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public String Texture() { return this.texture; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void Texture(String texture) {}
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public int TextureOpacity() { return 0; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void TextureOpacity(int textureOpacity) {}
+  public void HeightInCentimeters(float height) {
+    heightInCentimeters=height;
+  }
 }

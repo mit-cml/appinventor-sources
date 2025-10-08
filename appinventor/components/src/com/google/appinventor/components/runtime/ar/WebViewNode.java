@@ -43,10 +43,6 @@ import com.google.ar.core.Trackable;
     category = ComponentCategory.AR)
 @SimpleObject
 public final class WebViewNode extends ARNodeBase implements ARWebView {
-
-  private float[] fromPropertyPosition = {0f,0f,0f};
-  private Anchor anchor = null;
-
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
   private String texture = Form.ASSETS_PREFIX + "Palette.png";
 
@@ -58,50 +54,6 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
     container.addNode(this);
   }
 
-  @Override
-  @SimpleFunction(description = "move a capsule node properties at the " +
-      "specified (x,y,z) position.")
-  public void MoveBy(float x, float y, float z){
-
-    float[] position = { 0, 0, 0};
-    float[] rotation = {0, 0, 0, 1};
-
-    //float[] currentAnchorPoseRotation = rotation;
-
-    if (this.Anchor() != null) {
-      float[] translations = this.Anchor().getPose().getTranslation();
-      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
-      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
-    }
-
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null){
-      Anchor(this.trackable.createAnchor(newPose));
-      Log.i("webview","moved anchor BY " + newPose+ " with rotaytion "+rotation);
-    }else {
-      Log.i("webview", "tried to move anchor BY pose");
-    }
-  }
-
-
-  @Override
-  @SimpleFunction(description = "Changes the node's position by (x,y,z).")
-  public void MoveTo(float x, float y, float z) {
-    float[] position = {x, y, z};
-    float[] rotation = {0, 0, 0, 1};
-
-    float[] currentAnchorPoseRotation = rotation;
-    if (this.Anchor() != null) {
-      //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
-    }
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null){
-      Anchor(this.trackable.createAnchor(newPose));
-      Log.i("webview","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
-    }else {
-      Log.i("webview", "tried to move anchor to pose");
-    }
-  }
 
   @Override
   @SimpleProperty(description = "How far, in centimeters, the WebViewNode extends along the x-axis.  " +
@@ -167,67 +119,6 @@ public final class WebViewNode extends ARNodeBase implements ARWebView {
     "the home URL is changed.")
   public void GoHome() {}
 
-  // Hidden Properties
-  @Override
-  @SimpleProperty(userVisible = false)
-  public int FillColor() { return 0; }
 
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void FillColor(int color) {}
 
-  @Override
-  @SimpleProperty(userVisible = false)
-  public int FillColorOpacity() { return 0; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void FillColorOpacity(int textureOpacity) {}
-
-  @Override
-  @SimpleFunction(description = "move a webview node properties at the " +
-      "specified (x,y,z) position.")
-  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
-    this.trackable = (Trackable) targetPlane.DetectedPlane();
-    if (this.anchor != null) {
-      this.anchor.detach();
-    }
-    Anchor(this.trackable.createAnchor((Pose) p));
-    Log.i("created Anchor!", " " );
-  }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public int TextureOpacity() { return 0; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void TextureOpacity(int textureOpacity) {}
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void PinchToScale(boolean pinchToScale) {}
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public boolean PinchToScale() { return false; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void PanToMove(boolean panToMove) {}
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public boolean RotateWithGesture() { return false; }
-
-  @Override
-  @SimpleProperty(userVisible = false)
-  public void RotateWithGesture(boolean rotateWithGesture) {}
-
-  // Hidden Methods
-  @Override
-  public void Click() {}
-
-  @Override
-  public void LongClick() {}
 }

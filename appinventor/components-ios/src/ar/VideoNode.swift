@@ -2,28 +2,31 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
-import SpriteKit
+import RealityKit
 import AVKit
-import SceneKit
+import Combine
 
 @available(iOS 14.0, *)
-open class VideoNode{ //}: ARNodeBase, ARVideo {
-  /*private var _videoNode: SKVideoNode
+open class VideoNode: ARNodeBase, ARVideo {
   private var _player: AVPlayer
   private var _videoItem: AVPlayerItem? = nil
-  private var _videoPlaneNode: SCNNode
-  private var _videoPlaneGeometry = SCNPlane(width: 0.5, height: 0.375)
-  private var videoScene: SKScene
+  private var _videoMaterial: VideoMaterial?
+  private var cancellables = Set<AnyCancellable>()
+  private var _videoWidth: Float = 0.5
+  private var _videoHeight: Float = 0.375
+  private var _isObservingStatus = false  // Track observer state
   
   @objc init(_ container: ARNodeContainer) {
-    _player = AVPlayer(playerItem: _videoItem)
-    _videoNode = SKVideoNode(avPlayer: _player)
-    _videoPlaneNode = SCNNode(geometry: _videoPlaneGeometry)
-    videoScene = SKScene(size: CGSize(width: 640, height: 480))
-    super.init(container: container, node: _videoPlaneNode)
+    _player = AVPlayer()
+    super.init(container: container)
     setupVideoNode()
     
-    NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidPlayToEndTime), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: _videoItem)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(playerItemDidPlayToEndTime),
+      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+      object: nil
+    )
     try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
   }
   
@@ -32,35 +35,42 @@ open class VideoNode{ //}: ARNodeBase, ARVideo {
   }
   
   @objc private func setupVideoNode() {
-    videoScene.scaleMode = .aspectFit
-    videoScene.addChild(_videoNode)
+    // Create a plane mesh for the video using the parent's _modelEntity
+    let mesh = MeshResource.generatePlane(width: _videoWidth, height: _videoHeight)
+    _modelEntity.model = ModelComponent(mesh: mesh, materials: [])
     
-    _videoNode.position = CGPoint(x: videoScene.size.width/2, y: videoScene.size.height/2)
-    _videoNode.size = videoScene.size
-    
-    _videoPlaneGeometry.firstMaterial?.diffuse.contents = videoScene
-    _videoPlaneGeometry.firstMaterial?.isDoubleSided = true
-    
-    _videoPlaneNode.eulerAngles = SCNVector3(Double.pi, 0, 0)
-    
+    // Rotate 180 degrees around Y axis to face the correct direction
+    _modelEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0])
   }
   
   // MARK: Properties
   @objc open var WidthInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_videoPlaneGeometry.width)
+      return UnitHelper.metersToCentimeters(_videoWidth)
     }
     set(width) {
-      _videoPlaneGeometry.width = UnitHelper.centimetersToMeters(abs(width))
+      _videoWidth = UnitHelper.centimetersToMeters(abs(width))
+      updateVideoPlaneSize()
     }
   }
   
   @objc open var HeightInCentimeters: Float {
     get {
-      return UnitHelper.metersToCentimeters(_videoPlaneGeometry.height)
+      return UnitHelper.metersToCentimeters(_videoHeight)
     }
     set(height) {
-      _videoPlaneGeometry.height = UnitHelper.centimetersToMeters(abs(height))
+      _videoHeight = UnitHelper.centimetersToMeters(abs(height))
+      updateVideoPlaneSize()
+    }
+  }
+  
+  private func updateVideoPlaneSize() {
+    let mesh = MeshResource.generatePlane(width: _videoWidth, height: _videoHeight)
+    _modelEntity.model?.mesh = mesh
+    
+    // Reapply the material if it exists
+    if let material = _videoMaterial {
+      _modelEntity.model?.materials = [material]
     }
   }
   
@@ -69,23 +79,161 @@ open class VideoNode{ //}: ARNodeBase, ARVideo {
       return ""
     }
     set(path) {
-      let url = URL(fileURLWithPath: AssetManager.shared.pathForPublicAsset(path))
+      loadVideoSource(path: path)
+    }
+  }
+  
+  private func loadVideoSource(path: String) {
+    
+    // Remove observer from old video item if it exists
+    if _isObservingStatus, let oldItem = _videoItem {
+      oldItem.removeObserver(self, forKeyPath: "status")
+      _isObservingStatus = false
+    }
+    
+    // Check if this is a YouTube URL
+    if isYouTubeURL(path) {
+      print("📺 YouTube URL detected, this is a problem..")
+      showFailYouTubeVideo(path)
+      return
+    }
+    
+    // Determine if this is a local file or remote URL
+    let url: URL
+    
+    if path.hasPrefix("http://") || path.hasPrefix("https://") {
+      // Remote URL
+      guard let remoteURL = URL(string: path) else {
+        print("❌ Invalid URL: \(path)")
+        _container?.form?.dispatchErrorOccurredEvent(
+          self,
+          "Source",
+          ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code,
+          ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message
+        )
+        return
+      }
+      url = remoteURL
+      
+    } else {
+      // Local file - get from asset manager
+      let localPath = AssetManager.shared.pathForPublicAsset(path)
+      url = URL(fileURLWithPath: localPath)
+      
+      // Check if file exists
       do {
-        if try url.checkResourceIsReachable() {
-          _videoItem = AVPlayerItem(url: url)
-          _player.replaceCurrentItem(with: _videoItem)
-        } else {
-          _container?.form?.dispatchErrorOccurredEvent(self, "Source", ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code, ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message)
+        if try !url.checkResourceIsReachable() {
+          print("❌ Video file not found: \(localPath)")
+          _container?.form?.dispatchErrorOccurredEvent(
+            self,
+            "Source",
+            ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code,
+            ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message
+          )
+          return
         }
       } catch {
-        _container?.form?.dispatchErrorOccurredEvent(self, "Source", ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code, ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message)
+        print("❌ Error checking video file: \(error)")
+        _container?.form?.dispatchErrorOccurredEvent(
+          self,
+          "Source",
+          ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code,
+          ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message
+        )
+        return
+      }
+    }
+    
+    // Create AVPlayerItem with proper configuration
+    let asset = AVURLAsset(url: url)
+    _videoItem = AVPlayerItem(asset: asset)
+    
+    // CRITICAL: Wait for player item to be ready before creating VideoMaterial
+    _videoItem?.addObserver(
+      self,
+      forKeyPath: "status",
+      options: [.new, .initial],
+      context: nil
+    )
+    _isObservingStatus = true
+    print("🔧 Added observer to new video item")
+    
+    // Replace current item
+    _player.replaceCurrentItem(with: _videoItem)
+    
+    // Update notification observer
+    NotificationCenter.default.removeObserver(
+      self,
+      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+      object: nil
+    )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(playerItemDidPlayToEndTime),
+      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+      object: _videoItem
+    )
+  }
+  
+  private func isYouTubeURL(_ urlString: String) -> Bool {
+    return urlString.contains("youtube.com") ||
+           urlString.contains("youtu.be")
+  }
+  
+  private func showFailYouTubeVideo(_ urlString: String) {
+    _container?.form?.dispatchErrorOccurredEvent(
+      self,
+      "Source",
+      ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code,
+      "to show YouTube videos, you need to use the webViewNode instead."
+    )
+  }
+  
+  open override func observeValue(
+    forKeyPath keyPath: String?,
+    of object: Any?,
+    change: [NSKeyValueChangeKey : Any]?,
+    context: UnsafeMutableRawPointer?
+  ) {
+    if keyPath == "status" {
+      if let playerItem = object as? AVPlayerItem {
+        switch playerItem.status {
+        case .readyToPlay:
+          createVideoMaterial()
+        case .failed:
+          print("❌ Video failed to load: \(playerItem.error?.localizedDescription ?? "unknown error")")
+          _container?.form?.dispatchErrorOccurredEvent(
+            self,
+            "Source",
+            ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code,
+            playerItem.error?.localizedDescription ?? "Failed to load video"
+          )
+        case .unknown:
+          print("⏳ Video status unknown")
+        @unknown default:
+          break
+        }
       }
     }
   }
   
+  private func createVideoMaterial() {
+    // Remove observer now that we're ready
+    if _isObservingStatus, let item = _videoItem {
+      item.removeObserver(self, forKeyPath: "status")
+      _isObservingStatus = false
+      print("🔧 Removed observer after video ready")
+    }
+    
+    // Create VideoMaterial only when player is ready
+    _videoMaterial = VideoMaterial(avPlayer: _player)
+    _modelEntity.model?.materials = [_videoMaterial!]
+    
+    print("✅ VideoMaterial created and applied")
+  }
+  
   @objc open var IsPlaying: Bool {
     get {
-      /// Note: the minimum SDK for the functino is iOS10.  However, the minimum for ARKit is 11+
       return _player.timeControlStatus == .playing
     }
   }
@@ -99,56 +247,34 @@ open class VideoNode{ //}: ARNodeBase, ARVideo {
     }
   }
   
-  // FillColor is not user accessible
-  @objc open override var FillColor: Int32 {
-    get {
-      return 0
-    }
-    set(color) {}
-  }
-  
-  // FillColorOpacity is not user accessible
-  @objc open override var FillColorOpacity: Int32 {
-    get {
-      return 1
-    }
-    set(color) {}
-  }
-  
-  // Texture is not user accessible
-  @objc open override var Texture: String {
-    get {
-      return ""
-    }
-    set(path) {}
-  }
-  
-  // TextureOpacity is not user accessible
-  @objc open override var TextureOpacity: Int32 {
-    get {
-      return 1
-    }
-    set(opacity) {}
-  }
-  
   @objc open func Play() {
-    _videoNode.play()
+    print("▶️ Playing video")
+    _player.play()
   }
   
   @objc open func Pause() {
-    _videoNode.pause()
+    print("⏸ Pausing video")
+    _player.pause()
   }
   
   @objc open func GetDuration() -> Int32 {
     if let item = _videoItem {
-      return Int32(CMTimeGetSeconds(item.duration))
+      let duration = CMTimeGetSeconds(item.duration)
+      if duration.isNaN || duration.isInfinite {
+        return 0
+      }
+      return Int32(duration)
     }
     return 0
   }
   
   @objc open func SeekTo(_ ms: Int32) {
-    _player.seek(to: CMTime(seconds: Double(ms), preferredTimescale: 1))
-    _player.pause()
+    let time = CMTime(seconds: Double(ms) / 1000.0, preferredTimescale: 1000)
+    _player.seek(to: time) { finished in
+      if finished {
+        print("⏩ Seek completed to \(ms)ms")
+      }
+    }
   }
   
   @objc open func Completed() {
@@ -156,8 +282,22 @@ open class VideoNode{ //}: ARNodeBase, ARVideo {
   }
   
   @objc func playerItemDidPlayToEndTime() {
+    print("🏁 Video completed")
     Completed()
-    _videoItem?.seek(to: .zero)
+    _videoItem?.seek(to: .zero) { _ in }
   }
-   */
+  
+  deinit {
+    if _isObservingStatus, let item = _videoItem {
+      item.removeObserver(self, forKeyPath: "status")
+      _isObservingStatus = false
+      print("🔧 Removed observer in deinit")
+    }
+    
+    // Remove notification observer
+    NotificationCenter.default.removeObserver(self)
+    
+    // Clean up
+    cancellables.removeAll()
+  }
 }

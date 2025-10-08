@@ -57,16 +57,6 @@ import com.google.ar.core.Trackable;
         }
     }
 
-
-    @Override
-    @SimpleProperty(description = "The 3D model file to be loaded.",
-        category = PropertyCategory.APPEARANCE)
-    public String Model() { return this.objectModel; }
-
-    @Override
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
-    public void Model(String model) {this.objectModel = model;}
-
     @Override
     @SimpleFunction(description = "move a capsule node properties at the " +
         "specified (x,y,z) position.")
@@ -122,46 +112,6 @@ import com.google.ar.core.Trackable;
       Anchor(this.trackable.createAnchor((Pose) p));
 
     }
-    @SimpleProperty(description = "Set the current pose of the object",
-        category = PropertyCategory.APPEARANCE)
-    @Override
-    public void Pose(Object p) {
-        Log.i("setting Capsule pose", "with " +p);
-        Pose pose = (Pose) p;
-
-        float[] position = {pose.tx(), pose.ty(), pose.tz()};
-        float[] rotation = {pose.qx(), pose.qy(), pose.qz(), 1};
-        if (this.trackable != null) {
-            Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-            Anchor(myAnchor);
-        }
-    }
-
-    /* we need this b/c if the anchor isn't yet trackable, we can't create an anchor. therefore, we need to store the position as a float */
-    @Override
-    public float[] PoseFromPropertyPosition(){ return fromPropertyPosition; }
-
-
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-    @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
-        category = PropertyCategory.APPEARANCE)
-    @Override
-    public void PoseFromPropertyPosition(String positionFromProperty) {
-        String[] positionArray = positionFromProperty.split(",");
-        float[] position = {0f,0f,0f};
-
-        for (int i = 0; i < positionArray.length; i++) {
-            position[i] = Float.parseFloat(positionArray[i]);
-        }
-        this.fromPropertyPosition = position;
-        float[] rotation = {0f,0f,0f, 1f}; // no rotation rn TBD
-        if (this.trackable != null) {
-            Anchor myAnchor = this.trackable.createAnchor(new Pose(position, rotation));
-            Anchor(myAnchor);
-        }
-        Log.i("store sphere pose", "with position" +positionFromProperty);
-    }
-
 
 
     @Override
