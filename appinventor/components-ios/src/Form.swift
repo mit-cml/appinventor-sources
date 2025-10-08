@@ -56,6 +56,7 @@ let kMinimumToastWait = 10.0
   private var _bigDefaultText = false
   private var _highContrast = false
   private var _backGesture: UIGestureRecognizer? = nil
+  private var _tapGesture: UITapGestureRecognizer? = nil
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -184,6 +185,9 @@ let kMinimumToastWait = 10.0
   open override func viewDidLoad() {
     super.viewDidLoad()
     view.accessibilityIdentifier = String(describing: type(of: self))
+    _tapGesture = UITapGestureRecognizer(target: self, action: #selector(HideKeyboard))
+    _tapGesture?.cancelsTouchesInView = false
+    view.addGestureRecognizer(_tapGesture!)
   }
 
   open func add(_ component: NonvisibleComponent) {
