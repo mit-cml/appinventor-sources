@@ -949,7 +949,7 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
       try {
         var handler = this.getWarningHandler();
         if (handler) {  // not true for flyouts and before the main workspace is rendered.
-          goog.array.forEach(this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck,
+          (this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck).forEach(
             function(block) {
               handler.checkErrors(block);
             });
@@ -989,7 +989,7 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
  */
 /*
 Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
-  goog.array.forEach(this.connectionDBList, function(connectionDB) {
+  this.connectionDBList.forEach(function(connectionDB) {
     connectionDB.sort(function(a, b) {
       return a.y_ - b.y_;
     });
