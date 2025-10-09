@@ -5,11 +5,10 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.ResizableWidget;
-import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
 
 /**
  * A widget that displays progress on an arbitrary scale.
@@ -26,7 +25,7 @@ import com.google.gwt.widgetideas.client.ResizableWidgetCollection;
  * text when progress is greater than 50 percent } </li>
  * </ul>
  */
-public class MiniProgressBar extends Widget implements ResizableWidget {
+public class MiniProgressBar extends Widget {
   private static final String DEFAULT_TEXT_CLASS_NAME =
       "gwt-ProgressBar-text";
 
@@ -378,14 +377,8 @@ public class MiniProgressBar extends Widget implements ResizableWidget {
   @Override
   protected void onLoad() {
     // Reset the position attribute of the parent element
-    DOM.setStyleAttribute(getElement(), "position", "relative");
-    ResizableWidgetCollection.get().add(this);
+    getElement().getStyle().setPosition(Style.Position.RELATIVE);
     redraw();
-  }
-
-  @Override
-  protected void onUnload() {
-    ResizableWidgetCollection.get().remove(this);
   }
 
   /**
