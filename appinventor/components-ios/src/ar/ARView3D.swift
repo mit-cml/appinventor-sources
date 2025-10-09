@@ -736,14 +736,22 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     return result
   }
   
-  private func CreateVideoNodeFromYail(_ nodeDict: YailDictionary) -> ARNodeBase? {
-    // Implementation depends on your ARNode structure
-    return nil
+  private func CreateVideoNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
+    let videoNode = VideoNode(self) as VideoNode
+    let yailNodeObj: YailDictionary = yailNodeObj
+    let result = ARNodeUtilities.parseYailToNode(
+      videoNode as ARNodeBase, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
+    )
+    return result
   }
   
-  private func CreateWebViewNodeFromYail(_ nodeDict: YailDictionary) -> ARNodeBase? {
-    // Implementation depends on your ARNode structure
-    return nil
+  private func CreateWebViewNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
+    let webviewNode = WebViewNode(self) as WebViewNode
+    let yailNodeObj: YailDictionary = yailNodeObj
+    let result = ARNodeUtilities.parseYailToNode(
+      webviewNode as WebViewNode, yailNodeObj as YailDictionary, _arView.session, sessionStartLocation: sessionStartLocation
+    )
+    return result
   }
   
   
@@ -1516,7 +1524,20 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    
+    @objc open func CreateVideoNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> VideoNode? {
+      guard ARGeoTrackingConfiguration.isSupported else {
+        _container?.form?.dispatchErrorOccurredEvent(self, "CreateVideoNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+        return nil
+      }
+      
+      let node = VideoNode(self)
+      node.Name = "GeoVideoNode"
+      node.Initialize()
+      
+      setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+      
+      return node
+    }
     
     /*
      @objc open func CreateTubeNode(_ x: Float, _ y: Float, _ z: Float) -> TubeNode {
@@ -1650,6 +1671,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             loadNode = self.CreateModelNodeFromYail(nodeDict)
           case "text", "geotextnode":
             loadNode = self.CreateTextNodeFromYail(nodeDict)
+          case "video", "geovideonode":
+            loadNode = self.CreateVideoNodeFromYail(nodeDict)
+          case "webview", "geowebviewnode":
+            loadNode = self.CreateWebViewNodeFromYail(nodeDict)
           default:
             // currently not storing or handling modelNode..
             loadNode = nil

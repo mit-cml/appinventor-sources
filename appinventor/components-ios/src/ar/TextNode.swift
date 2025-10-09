@@ -34,7 +34,7 @@ open class TextNode: ARNodeBase, ARText {
    * Note: RealityKit doesn't have built-in 3D text like SceneKit, so we create it from a 2D representation
    */
   private func updateTextMesh() {
-      let lineHeight: CGFloat = 0.05
+      let lineHeight: CGFloat = 0.05 * CGFloat(Scale)
       let font = MeshResource.Font.systemFont(ofSize: lineHeight)
       let textMesh = MeshResource.generateText(
           _text,
@@ -47,19 +47,16 @@ open class TextNode: ARNodeBase, ARText {
       _modelEntity.model = ModelComponent(mesh: textMesh, materials: [textMaterial])
   }
   
-  
-  public func calculateTextBounds() -> (width: Float, height: Float) {
+  public func calculateTextBoundsNoScale() -> (width: Float, height: Float) {
     let font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
     let textSize = _text.size(withAttributes: [.font: font])
     
-    // Scale to appropriate AR size (similar to original 0.01 scale)
-    let scaleFactor: Float = 0.01
     return (
-      width: Float(textSize.width) * scaleFactor,
-      height: Float(textSize.height) * scaleFactor
+      width: Float(textSize.width),
+      height: Float(textSize.height)
     )
   }
-  
+
   /**
    * Centers the text entity similar to the original SCNNode pivot adjustment
    */
@@ -127,34 +124,44 @@ open class TextNode: ARNodeBase, ARText {
       updateTextMesh()
     }
   }
-  
-  // The user should not be able to change the Scale directly
- /* @objc open override var Scale: Float {
-    get {
-      return 1
-    }
-    set(scalar) {
-      // Redirect to font size change instead
-      let newFontSize = _fontSize * scalar
-      FontSizeInCentimeters = newFontSize
-    }
-  }*/
-  
   override open func ScaleBy(_ scalar: Float) {
-    print("🔄 Scaling text \(Name) by \(scalar)")
-    
     let oldScale = Scale
+    let newScale = abs(scalar)
     let hadPhysics = _modelEntity.physicsBody != nil
     
-    let newScale = oldScale * abs(scalar)
-    // ✅ Update physics immediately if it was enabled before we change the scale
-    if hadPhysics {
-      let previousSize = _fontSize * Scale
-      _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (_fontSize * newScale)
-    }
-  
+    
     Scale = newScale
-    print("Scale complete - bottom position maintained")
+    if hadPhysics {
+      //not necessary?
+    }
+    updateTextMesh()
   }
-  
+
+  override open func scaleByPinch(scalar: Float) {
+    let oldScale = Scale
+    let newScale = oldScale * abs(scalar)
+    let hadPhysics = _modelEntity.physicsBody != nil
+    
+    //let bounds = calculateTextBoundsNoScale()
+    //let halfHeight = bounds.height / 2
+    
+    if hadPhysics {
+      let savedMass = Mass
+      let savedFriction = StaticFriction
+      let savedRestitution = Restitution
+        
+      
+      // Apply scale
+      Scale = newScale
+            
+      // Restore physics
+      Mass = savedMass
+      StaticFriction = savedFriction
+      Restitution = savedRestitution
+      EnablePhysics(_enablePhysics)
+    } else {
+      Scale = newScale
+    }
+    updateTextMesh()
+  }
 }

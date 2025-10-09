@@ -300,4 +300,49 @@ open class VideoNode: ARNodeBase, ARVideo {
     // Clean up
     cancellables.removeAll()
   }
+  
+  override open func ScaleBy(_ scalar: Float) {
+      let oldScale = Scale
+      let hadPhysics = _modelEntity.physicsBody != nil
+      
+      let bounds = _modelEntity.visualBounds(relativeTo: nil)
+      let halfHeight = (bounds.max.y - bounds.min.y) / 2.0  // Use Y for height
+      let newScale = oldScale * abs(scalar)
+      
+      if hadPhysics {
+          let previousSize = halfHeight * oldScale  // Use oldScale for clarity
+          _modelEntity.position.y = _modelEntity.position.y - previousSize + (halfHeight * newScale)
+      }
+      
+      Scale = newScale
+  }
+
+  override open func scaleByPinch(scalar: Float) {
+    let oldScale = Scale
+    let newScale = oldScale * abs(scalar)
+    
+    let hadPhysics = _modelEntity.physicsBody != nil
+    // Use internal _height like SphereNode uses _radius
+    let halfHeight = _videoHeight / 2.0
+    let previousSize = halfHeight * oldScale
+    if hadPhysics {
+      let savedMass = Mass
+      let savedFriction = StaticFriction
+      let savedRestitution = Restitution
+      
+      _modelEntity.physicsBody = nil
+      _modelEntity.collision = nil
+        
+      _modelEntity.position.y = _modelEntity.position.y - previousSize + (halfHeight * newScale)
+      
+      Scale = newScale
+      Mass = savedMass
+      StaticFriction = savedFriction
+      Restitution = savedRestitution
+      
+      EnablePhysics(true)
+    } else {
+        Scale = newScale
+    }
+  }
 }

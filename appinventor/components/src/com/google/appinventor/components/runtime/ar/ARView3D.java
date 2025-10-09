@@ -2379,6 +2379,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return null;
     }
 
+    @SimpleFunction(description = "Create a new VideoNode with geo coords")
+    public VideoNode CreateVideoNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating text node", "with geo location");
+
+        VideoNode vNode = new VideoNode(this);
+
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+
+        vNode.Anchor(geoAnchor);
+
+        Log.i("created text node, geo anchor is", vNode.Anchor().toString());
+        return vNode;
+    }
+
     @SimpleFunction(description = "Create a new WebViewNode with default properties at the specified (x,y,z) position.")
     public WebViewNode CreateWebViewNode(float x, float y, float z) {
         return new WebViewNode(this);
