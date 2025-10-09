@@ -33,8 +33,6 @@ function getFormComponents(formJson) {
 
 function defineComponents(componentJsonObj) {
   Blockly.common.getMainWorkspace().addComponent(componentJsonObj.Uuid, componentJsonObj.$Name, componentJsonObj.$Type);
-//    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
-//            componentJsonObj.$Name, componentJsonObj.Uuid);
   if (componentJsonObj.$Components) {
     for (var i = 0, comp; comp = componentJsonObj.$Components[i]; i++) {
       defineComponents(comp);
