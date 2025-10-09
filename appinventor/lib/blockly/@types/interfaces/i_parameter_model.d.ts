@@ -3,6 +3,7 @@
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import { ParameterState } from '../serialization/procedures';
 import { IProcedureModel } from './i_procedure_model';
 /**
  * A data model for a procedure.
@@ -33,5 +34,11 @@ export interface IParameterModel {
     getId(): string;
     /** Sets the procedure model this parameter is associated with. */
     setProcedureModel(model: IProcedureModel): this;
+    /**
+     * Serializes the state of the parameter to JSON.
+     *
+     * @returns JSON serializable state of the parameter.
+     */
+    saveState(): ParameterState;
 }
 //# sourceMappingURL=i_parameter_model.d.ts.map

@@ -17,10 +17,9 @@ export interface IDeleteArea extends IDragTarget {
      * before onDragEnter/onDragOver/onDragExit.
      *
      * @param element The block or bubble currently being dragged.
-     * @param couldConnect Whether the element could could connect to another.
      * @returns Whether the element provided would be deleted if dropped on this
      *     area.
      */
-    wouldDelete(element: IDraggable, couldConnect: boolean): boolean;
+    wouldDelete(element: IDraggable): boolean;
 }
 //# sourceMappingURL=i_delete_area.d.ts.map

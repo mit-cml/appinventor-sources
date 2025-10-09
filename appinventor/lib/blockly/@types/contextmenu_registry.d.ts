@@ -9,6 +9,7 @@
  * @class
  */
 import type { BlockSvg } from './block_svg.js';
+import { RenderedWorkspaceComment } from './comments/rendered_workspace_comment.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Class for the registry of context menu items. This is intended to be a
@@ -18,7 +19,7 @@ import type { WorkspaceSvg } from './workspace_svg.js';
 export declare class ContextMenuRegistry {
     static registry: ContextMenuRegistry;
     /** Registry of all registered RegistryItems, keyed by ID. */
-    private registry_;
+    private registeredItems;
     /** Resets the existing singleton instance of ContextMenuRegistry. */
     constructor();
     /** Clear and recreate the registry. */
@@ -63,7 +64,8 @@ export declare namespace ContextMenuRegistry {
      */
     enum ScopeType {
         BLOCK = "block",
-        WORKSPACE = "workspace"
+        WORKSPACE = "workspace",
+        COMMENT = "comment"
     }
     /**
      * The actual workspace/block where the menu is being rendered. This is passed
@@ -72,12 +74,19 @@ export declare namespace ContextMenuRegistry {
     interface Scope {
         block?: BlockSvg;
         workspace?: WorkspaceSvg;
+        comment?: RenderedWorkspaceComment;
     }
     /**
      * A menu item as entered in the registry.
      */
     interface RegistryItem {
-        callback: (p1: Scope) => void;
+        /**
+         * @param scope Object that provides a reference to the thing that had its
+         *     context menu opened.
+         * @param e The original event that triggered the context menu to open. Not
+         *     the event that triggered the click on the option.
+         */
+        callback: (scope: Scope, e: PointerEvent) => void;
         scopeType: ScopeType;
         displayText: ((p1: Scope) => string | HTMLElement) | string | HTMLElement;
         preconditionFn: (p1: Scope) => string;
@@ -90,7 +99,13 @@ export declare namespace ContextMenuRegistry {
     interface ContextMenuOption {
         text: string | HTMLElement;
         enabled: boolean;
-        callback: (p1: Scope) => void;
+        /**
+         * @param scope Object that provides a reference to the thing that had its
+         *     context menu opened.
+         * @param e The original event that triggered the context menu to open. Not
+         *     the event that triggered the click on the option.
+         */
+        callback: (scope: Scope, e: PointerEvent) => void;
         scope: Scope;
         weight: number;
     }

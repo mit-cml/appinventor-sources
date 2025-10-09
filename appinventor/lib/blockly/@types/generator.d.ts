@@ -19,7 +19,7 @@ import type { Workspace } from './workspace.js';
  * @deprecated
  * @see {@link https://developers.google.com/blockly/guides/create-custom-blocks/generating-code}
  * @param block The Block instance to generate code for.
- * @param genearator The CodeGenerator calling the function.
+ * @param generator The CodeGenerator calling the function.
  * @returns A string containing the generated code (for statement blocks),
  *     or a [code, precedence] tuple (for value/expression blocks), or
  *     null if no code should be emitted for block.
@@ -149,8 +149,8 @@ export declare class CodeGenerator {
      * @param name The name of the input.
      * @param outerOrder The maximum binding strength (minimum order value) of any
      *     operators adjacent to "block".
-     * @returns Generated code or '' if no blocks are connected or the specified
-     *     input does not exist.
+     * @returns Generated code or '' if no blocks are connected.
+     * @throws ReferenceError if the specified input does not exist.
      */
     valueToCode(block: Block, name: string, outerOrder: number): string;
     /**
@@ -162,6 +162,7 @@ export declare class CodeGenerator {
      * @param block The block containing the input.
      * @param name The name of the input.
      * @returns Generated code or '' if no blocks are connected.
+     * @throws ReferenceError if the specified input does not exist.
      */
     statementToCode(block: Block, name: string): string;
     /**
@@ -254,7 +255,7 @@ export declare class CodeGenerator {
      * @param _opt_thisOnly True to generate code for only this statement.
      * @returns Code with comments and subsequent blocks added.
      */
-    protected scrub_(_block: Block, code: string, _opt_thisOnly?: boolean): string;
+    scrub_(_block: Block, code: string, _opt_thisOnly?: boolean): string;
     /**
      * Hook for code to run at end of code generation.
      * Subclasses may override this, e.g. to prepend the generated code with
