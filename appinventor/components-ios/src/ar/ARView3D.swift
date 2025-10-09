@@ -824,6 +824,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                   true, true) // isANodeAtPoint = true
         } else {
           TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, true)
+          TapAtPoint(position.x, position.y, position.z, false)
         }
         
       case .detectedPlane(let plane, let position):
@@ -836,7 +837,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                   geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
                   true, false)
         } else {
-            TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+          TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+          TapAtPoint(position.x, position.y, position.z, false)
         }
           
       case .invisibleFloor(let position):
@@ -846,13 +848,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                          geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
                          true, false)
         } else {
-            TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+          TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+          TapAtPoint(position.x, position.y, position.z, false)
         }
           
       case .empty (let position):
-          print("Tap hit nothing, but floating at position: \(position)")
-          TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
-
+        print("Tap hit nothing, but floating at position: \(position)")
+        TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+        TapAtPoint(position.x, position.y, position.z, false)
       }
   }
   
