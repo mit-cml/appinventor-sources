@@ -77,8 +77,6 @@ public abstract class ProjectEditor extends Composite {
 
     deckPanel.setSize("100%", "100%");
     initWidget(deckPanel);
-    // Note: I'm not sure that the setSize call below does anything useful.
-    setSize("100%", "100%");
   }
 
   /**

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             xmlns:yaactions="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
+
+  <ai:Toolbar styleName="ode-TopToolbar">
+    <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
+        ui:field="settingsDropDown" align="right" icon="menu">
+    </ai:DropDownButton>
+
+    <g:VerticalPanel ui:field="menuContent" visible="false" spacing="10">
+      <ai:TextButton ui:field="languageButton" text="Language" styleName="mobile-MenuItem"/>
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.projectsTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="MyProjects" caption="{messages.projectMenuItem}" visible="false" styleName="mobile-dropdown-button">
+              <actions:SwitchToProjectAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:NewProjectAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="false" styleName="mobile-dropdown-button">
+              <actions:ImportProjectAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="false" styleName="mobile-dropdown-button">
+              <actions:ImportTemplateAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:DeleteAction/>
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:SaveAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:SaveAsAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:CheckpointAction/>
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="ExportProject" caption="{messages.exportButton}" styleName="mobile-dropdown-button">
+              <actions:ExportProjectAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}" visible="false" styleName="mobile-dropdown-button">
+              <actions:ExportAllProjectsAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.connectTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="Wireless" caption="{messages.AICompanionMenuItem}" styleName="mobile-dropdown-button">
+              <yaactions:WirelessAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Emulator" caption="{messages.emulatorMenuItem}" styleName="mobile-dropdown-button">
+              <yaactions:EmulatorAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Usb" caption="{messages.usbMenuItem}" styleName="mobile-dropdown-button">
+              <yaactions:UsbAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Chromebook" caption="{messages.chromebookMenuItem}" styleName="mobile-dropdown-button">
+              <yaactions:ChromebookAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}" styleName="mobile-dropdown-button">
+              <yaactions:RefreshCompanionAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Reset" caption="{messages.resetConnectionsMenuItem}" styleName="mobile-dropdown-button">
+              <yaactions:ResetAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}" styleName="mobile-dropdown-button">
+              <yaactions:HardResetAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="CompanionInformation" caption="{messages.companionInformation}" styleName="mobile-dropdown-button">
+              <actions:AboutCompanionAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="CompanionUpdate" caption="{messages.companionUpdate}" styleName="mobile-dropdown-button">
+              <actions:CompanionUpdateAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.buildTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="BuildApk" caption="{messages.showExportAndroidApk}" styleName="mobile-dropdown-button">
+              <actions:BarcodeAction second="false" isAab="false"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="BuildAab" caption="{messages.showExportAndroidAab}" styleName="mobile-dropdown-button">
+              <actions:BarcodeAction second="false" isAab="true"/>
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="BuildApk2" caption="{messages.showExportAndroidApk2}" visible="false" styleName="mobile-dropdown-button">
+              <actions:BarcodeAction second="true" isAab="false"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="BuildAab2" caption="{messages.showExportAndroidAab2}" visible="false" styleName="mobile-dropdown-button">
+              <actions:BarcodeAction second="true" isAab="true"/>
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="BuildIPA" caption="{messages.showExportiOSAdHoc}"
+                  visible="false" styleName="mobile-dropdown-button"  >
+              <actions:BarcodeAction foriOS="true" forAppStore="false" />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="BuildIPAStore" caption="{messages.showExportiOSAppStore}"
+                      visible="false" styleName="mobile-dropdown-button">
+              <actions:BarcodeAction foriOS="true" forAppStore="true" />
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="Yail" caption="{messages.generateYailMenuItem}" visible="false" styleName="mobile-dropdown-button">
+              <actions:GenerateYailAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.settingsTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="UISettings" caption="{messages.uiSettings}" styleName="mobile-dropdown-button">
+              <actions:UISettingsAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="AutoloadLastProject" caption="{messages.disableAutoload}"
+                            visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:DisableAutoloadAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}"
+                            visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:SetFontRegularAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="AppStoreSettings" caption="{messages.appStoreSettingsMenuTitle}" styleName="mobile-dropdown-button">
+              <actions:ShowAppStoreSettingsDialog />
+            </ai:ToolbarItem>
+
+            <ai:ToolbarItem name="DownloadCSR" caption="{messages.downloadCertificateRequestItem}" styleName="mobile-dropdown-button">
+              <actions:DownloadCsrAction />
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:UploadKeystoreAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:DownloadKeystoreAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}" styleName="mobile-dropdown-button">
+              <actions:DeleteKeystoreAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel>
+        <g:header styleName="mobile-SectionHeader">
+          <ui:text from="{messages.helpTabName}"/>
+        </g:header>
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="About" caption="{messages.aboutMenuItem}" styleName="mobile-dropdown-button">
+              <actions:AboutAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Guide" caption="{messages.guideTabName}" styleName="mobile-dropdown-button">
+              <actions:OpenGuideAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Feedback" caption="{messages.feedbackTabName}" styleName="mobile-dropdown-button">
+              <actions:OpenFeedbackAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Library" caption="{messages.libraryMenuItem}" styleName="mobile-dropdown-button">
+              <actions:OpenLinkAction link_name="Library"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="GetStarted" caption="{messages.getStartedMenuItem}" styleName="mobile-dropdown-button">
+              <actions:OpenLinkAction link_name="GetStarted"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Extensions" caption="{messages.extensionsMenuItem}" styleName="mobile-dropdown-button">
+              <actions:OpenLinkAction link_name="Extensions"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Tutorials" caption="{messages.tutorialsMenuItem}" styleName="mobile-dropdown-button">
+              <actions:OpenLinkAction link_name="Tutorials"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}" styleName="mobile-dropdown-button">
+              <actions:OpenLinkAction link_name="Troubleshooting"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="Forums" caption="{messages.forumsMenuItem}" styleName="mobile-dropdown-button">
+              <actions:OpenLinkAction link_name="Forums"/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ShowSplash" caption="{messages.showSplashMenuItem}" styleName="mobile-dropdown-button">
+              <actions:ShowSplashAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="ShowShortcuts" caption="{messages.showShortcuts}" styleName="mobile-dropdown-button">
+              <actions:ShowShortcutsAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+      <g:DisclosurePanel ui:field="accountPanel">
+        <g:customHeader>
+          <g:FlowPanel styleName="mobile-SectionHeader">
+            <g:Label ui:field="accountButton" />
+          </g:FlowPanel>
+        </g:customHeader>
+
+        <g:VerticalPanel styleName="mobile-SectionPanel">
+          <ai:Toolbar styleName="ode-TopToolbar">
+            <ai:ToolbarItem name="Signout" caption="{messages.signOutLink}" styleName="mobile-dropdown-button">
+              <actions:SignOutAction/>
+            </ai:ToolbarItem>
+            <ai:ToolbarItem name="DeleteAccount" ui:field="deleteAccountItem"
+                            caption="{messages.deleteAccountLink}"
+                            styleName="ode-ContextMenuItem-Red"
+                            visible="{hasWriteAccess}">
+              <actions:DeleteAccountAction/>
+            </ai:ToolbarItem>
+          </ai:Toolbar>
+        </g:VerticalPanel>
+      </g:DisclosurePanel>
+
+    </g:VerticalPanel>
+
+
+    <ai:DropDownButton name="Projects" caption="{messages.projectsTabName}" icon="inventory_2"
+        styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left" visible="false">
+      <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}" visible="false">
+        <actions:SwitchToProjectAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}">
+        <actions:NewProjectAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="false">
+        <actions:ImportProjectAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="false">
+        <actions:ImportTemplateAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}">
+        <actions:DeleteAction/>
+      </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
+        <actions:SaveAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
+        <actions:SaveAsAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
+        <actions:CheckpointAction/>
+      </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="ExportProject" caption="{messages.exportButton}">
+        <actions:ExportProjectAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}"
+          visible="false">
+        <actions:ExportAllProjectsAction/>
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+
+    <!-- Connect Menu -->
+    <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}" styleName="ode-TopPanelButton"
+        ui:field="connectDropDown" icon="settings_remote" align="left" visible="false">
+      <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
+        <yaactions:WirelessAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}">
+        <yaactions:EmulatorAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
+        <yaactions:UsbAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
+          dependentStyleName="needsChromebook" visible="false">
+        <yaactions:ChromebookAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
+        <yaactions:RefreshCompanionAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
+        <yaactions:ResetAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
+        <yaactions:HardResetAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}">
+        <actions:AboutCompanionAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}">
+        <actions:CompanionUpdateAction/>
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+
+    <!-- Build Menu -->
+    <ai:DropDownButton name="Build" caption="{messages.buildTabName}" styleName="ode-TopPanelButton"
+        ui:field="buildDropDown" icon="system_security_update" align="left"
+        visible="false">
+      <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
+        <actions:BarcodeAction second="false" isAab="false"/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="BuildAab" caption="{messages.showExportAndroidAab}">
+        <actions:BarcodeAction second="false" isAab="true"/>
+      </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="BuildApk2" caption="{messages.showExportAndroidApk2}">
+        <actions:BarcodeAction second="true" isAab="false"/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="BuildAab2" caption="{messages.showExportAndroidAab2}">
+        <actions:BarcodeAction second="true" isAab="true"/>
+      </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="BuildIPA" caption="{messages.showExportiOSAdHoc}"
+          >
+        <actions:BarcodeAction foriOS="true" forAppStore="false" />
+      </ai:DropDownItem>
+      <ai:DropDownItem name="BuildIPAStore" caption="{messages.showExportiOSAppStore}"
+          >
+        <actions:BarcodeAction foriOS="true" forAppStore="true" />
+      </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="Yail" caption="{messages.generateYailMenuItem}">
+        <actions:GenerateYailAction/>
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+
+    <!-- Settings Menu -->
+<!--    <ai:DropDownButton name="Settings2" styleName="ode-TopPanelButton"-->
+<!--        ui:field="settingsDropDown" align="left" icon="settings" caption="{messages.settingsTabName}" visible="false">-->
+<!--      <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">-->
+<!--        <actions:UISettingsAction/>-->
+<!--      </ai:DropDownItem>-->
+<!--      <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}"-->
+<!--          visible="{hasWriteAccess}" >-->
+<!--        <actions:DisableAutoloadAction/>-->
+<!--      </ai:DropDownItem>-->
+<!--      <ai:DropDownItem name="DyslexicFont" caption="{messages.disableOpenDyslexic}"-->
+<!--          visible="{hasWriteAccess}" >-->
+<!--        <actions:SetFontRegularAction/>-->
+<!--      </ai:DropDownItem>-->
+<!--      <ai:DropDownItem name="AppStoreSettings" caption="{messages.appStoreSettingsMenuTitle}">-->
+<!--        <actions:ShowAppStoreSettingsDialog />-->
+<!--      </ai:DropDownItem>-->
+<!--      <hr/>-->
+<!--      <ai:DropDownItem name="DownloadCSR" caption="{messages.downloadCertificateRequestItem}">-->
+<!--        <actions:DownloadCsrAction />-->
+<!--      </ai:DropDownItem>-->
+<!--      <ai:DropDownItem name="UploadKeystore" caption="{messages.uploadKeystoreMenuItem}" visible="{hasWriteAccess}">-->
+<!--        <actions:UploadKeystoreAction/>-->
+<!--      </ai:DropDownItem>-->
+<!--      <ai:DropDownItem name="DownloadKeystore" caption="{messages.downloadKeystoreMenuItem}" visible="{hasWriteAccess}">-->
+<!--        <actions:DownloadKeystoreAction/>-->
+<!--      </ai:DropDownItem>-->
+<!--      <ai:DropDownItem name="DeleteKeystore" caption="{messages.deleteKeystoreMenuItem}" visible="{hasWriteAccess}">-->
+<!--        <actions:DeleteKeystoreAction/>-->
+<!--      </ai:DropDownItem>-->
+<!--    </ai:DropDownButton>-->
+
+    <!-- Admin Menu -->
+    <ai:DropDownButton name="Admin" styleName="ode-TopPanelButton"
+        ui:field="adminDropDown" icon="shield_person" align="left" visible="false">
+
+      <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
+        <actions:DownloadUserSourceAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="UserAdmin" caption="{messages.userAdminMenuItem}">
+        <actions:SwitchToUserAdminAction/>
+      </ai:DropDownItem>
+    </ai:DropDownButton>
+  </ai:Toolbar>
+</ui:UiBinder>
