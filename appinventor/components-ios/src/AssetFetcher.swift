@@ -34,23 +34,30 @@ class AssetLoadError: Error {
   
   @objc public static func fetchCachedProject(_ cookieValue: String, _ projectId: String, _ uri: String, _ projectName: String) {
     DispatchQueue.main.async {
+      guard let window = UIApplication.shared.keyWindow else {
+        return
+      }
+      guard let rootView = window.rootViewController else {
+        return
+      }
+      let alertView = UIAlertController(title: "Saving", message: nil, preferredStyle: .alert)
+      alertView.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+      rootView.present(alertView, animated: true) {
+        alertView.message = "Downloading and saving your project..."
+      }
       let projectUrl = uri + "/ode/download/project-cached/" + projectId;
       getProject(projectUrl: projectUrl, cookieValue: cookieValue, projectName: projectName, depth: 0) { success, error in
         if success {
           DispatchQueue.main.async {
-            guard let window = UIApplication.shared.keyWindow else {
-              return
-            }
             let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
+            alertView.dismiss(animated: true)
             window.makeToast("Head to your Library to open your downloaded app.", point: center,
                              title: "Project successfully downloaded!", image: nil, completion: nil)
           }
         } else if let error = error {
           DispatchQueue.main.async {
-            guard let window = UIApplication.shared.keyWindow else {
-              return
-            }
             let center = CGPoint(x: window.frame.size.width / 2.0, y: window.frame.size.height / 2.0)
+            alertView.dismiss(animated: true)
             window.makeToast("Unable to download project with error \(error)", point: center,
                              title: nil, image: nil, completion: nil)
           }
