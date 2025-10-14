@@ -62,37 +62,10 @@ Blockly.WorkspaceSvg.prototype.flydown_ = null;
 Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
 
 /**
- * latest clicked position is used to open the type blocking suggestions window
- * Initial position is 0,0
- * @type {{x: number, y: number}}
- */
-Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
-
-/**
  * Whether the workspace elements are hidden
  * @type {boolean}
  */
 Blockly.WorkspaceSvg.prototype.chromeHidden = false;
-
-/**
- * Wrap the onMouseDown event to handle additional behaviors.
- */
-Blockly.WorkspaceSvg.prototype.onMouseDown = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var f = function(e) {
-      var metrics = Blockly.common.getMainWorkspace().getMetrics();
-      var point = Blockly.utils.browserEvents.mouseToSvg(e, this.getParentSvg(), this.getInverseScreenCTM());
-      point.x = (point.x + metrics.viewLeft) / this.scale;
-      point.y = (point.y + metrics.viewTop) / this.scale;
-      this.latestClick = point;
-      return func.call(this, e);
-    };
-    f.isWrapper = true;
-    return f;
-  }
-})(Blockly.WorkspaceSvg.prototype.onMouseDown);
 
 Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
   if (func.isWrapped) {
@@ -319,7 +292,7 @@ Blockly.WorkspaceSvg.prototype.addScreen = function(name) {
   }
   if (this.screenList_.indexOf(name) == -1) {
     this.screenList_.push(name);
-    this.typeBlock_.needsReload.screens = true;
+    this.typeBlock_.invalidateCache('screen added: ' + name);
   }
 };
 
@@ -335,7 +308,7 @@ Blockly.WorkspaceSvg.prototype.removeScreen = function(name) {
   var index = this.screenList_.indexOf(name);
   if (index != -1) {
     this.screenList_.splice(index, 1);
-    this.typeBlock_.needsReload.screens = true;
+    this.typeBlock_.invalidateCache('screen removed: ' + name);
   }
 }
 
@@ -360,7 +333,7 @@ Blockly.WorkspaceSvg.prototype.addAsset = function(name) {
   }
   if (!this.assetList_.includes(name)) {
     this.assetList_.push(name);
-    this.typeBlock_.needsReload.assets = true;
+    this.typeBlock_.invalidateCache('asset added: ' + name);
   }
 };
 
@@ -375,7 +348,7 @@ Blockly.WorkspaceSvg.prototype.removeAsset = function(name) {
   var index = this.assetList_.indexOf(name);
   if (index != -1) {  // Make sure it is actually an asset.
     this.assetList_.splice(index, 1);
-    this.typeBlock_.needsReload.assets = true;
+    this.typeBlock_.invalidateCache('asset removed: ' + name);
   }
 };
 
@@ -437,7 +410,7 @@ Blockly.WorkspaceSvg.prototype.getProviderList = function() {
  */
 Blockly.WorkspaceSvg.prototype.addComponent = function(uid, instanceName, typeName) {
   if (this.componentDb_.addInstance(uid, instanceName, typeName)) {
-    this.typeBlock_.needsReload.components = true;
+    this.typeBlock_.invalidateCache('component added: ' + instanceName);
   }
   return this;
 };
@@ -460,7 +433,7 @@ Blockly.WorkspaceSvg.prototype.removeComponent = function(uid) {
   if (!this.componentDb_.removeInstance(uid)) {
     return this;
   }
-  this.typeBlock_.needsReload.components = true;
+  this.typeBlock_.invalidateCache('component removed: ' + component.name);
   var blocks = this.getAllBlocks();
   for (var i = 0, block; block = blocks[i]; ++i) {
     if (block.category == 'Component'
@@ -486,7 +459,7 @@ Blockly.WorkspaceSvg.prototype.renameComponent = function(uid, oldName, newName)
     console.log('Renaming: No such component instance ' + oldName + '; aborting.');
     return this;
   }
-  this.typeBlock_.needsReload.components = true;
+  this.typeBlock_.invalidateCache('component renamed: ' + oldName + ' to ' + newName);
   var blocks = this.getAllBlocks();
   for (var i = 0, block; block = blocks[i]; ++i) {
     if (block.category == 'Component' && block.rename(oldName, newName)) {
@@ -627,7 +600,6 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
 Blockly.WorkspaceSvg.prototype.hideChaff = (function(func) {
   return function(opt_allowToolbox) {
     this.flydown_ && this.flydown_.hide();
-    this.typeBlock_ && this.typeBlock_.hide();
     if (!opt_allowToolbox) {  // Fixes #1269
       this.backpack_ && this.backpack_.hide();
     }
