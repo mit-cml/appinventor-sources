@@ -851,7 +851,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   },
   // This generates a single generic call to 'call no return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
-  // blocks have not been loaded yet (they are loaded in typeblock.js)
+  // blocks have not been loaded yet (they are loaded in typeblock_option_generator.js)
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME}]
 };
 
@@ -894,6 +894,6 @@ Blockly.Blocks['procedures_callreturn'] = {
   removeProcedureValue: Blockly.Blocks.procedures_callnoreturn.removeProcedureValue,
   // This generates a single generic call to 'call return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
-  // blocks have not been loaded yet (they are loaded in typeblock.js)
+  // blocks have not been loaded yet (they are loaded in typeblock_option_generator.js)
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME}]
 };
