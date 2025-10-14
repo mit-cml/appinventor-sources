@@ -118,6 +118,25 @@ private extension String {
   }
 }
 
+/**
+ * Gets the main window for the application, if any.
+ *
+ * - Returns: a UIWindow object representing the main window, or nil if the app scene isn't available
+ */
+func getMainWindow() -> UIWindow? {
+  if #available(iOS 13.0, *) {
+    for scene in UIApplication.shared.connectedScenes {
+      guard let delegate = scene.delegate as? SceneDelegate else {
+        continue
+      }
+      return delegate.window
+    }
+  } else {
+    return UIApplication.shared.keyWindow
+  }
+  return nil
+}
+
 fileprivate class CustomAlertView: UIView {
   private var background = UIView()
   private var dialog = UIView()
@@ -192,7 +211,7 @@ fileprivate class CustomAlertView: UIView {
   func show(animated: Bool, callback: ((Bool) -> Void)? = nil){
     self.background.alpha = 0
     self.dialog.isHidden = true
-    if let parent =  UIApplication.shared.delegate?.window??.rootViewController?.view {
+    if let parent = getMainWindow()?.rootViewController?.view {
       parent.addSubview(self)
       if let handler = callback {
         handler(true)
@@ -378,7 +397,7 @@ open class Notifier: NonvisibleComponent {
   }
 
   @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {
-      let newAlert = CustomAlertView(title: title, message: message) // Create the new alert
+    let newAlert = CustomAlertView(title: title, message: message) // Create the new alert
     newAlert.alertType = .Choose
 
       // Configure buttons
