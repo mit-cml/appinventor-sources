@@ -11,9 +11,6 @@ import Combine
 @available(iOS 14.0, *)
 open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
 
-  
-
-  
   public static var SHARED_GROUND_LEVEL: Float = -1.0
   public static var VERTICAL_OFFSET: Float = 0.02
    // Update your existing GROUND_LEVEL to use the shared value
@@ -70,6 +67,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   fileprivate var _rotation: Float = 0.0
   fileprivate var _containsModelNodes: Bool = false
   fileprivate var _lightingEstimationEnabled: Bool = false
+  
+  private var _lastLightingUpdate: TimeInterval = 0
+  private let _lightingUpdateInterval: TimeInterval = 0.1
   
   // Needed for configuration setting and ensuring initialization
   fileprivate var _trackingSet: Bool = false
@@ -155,33 +155,38 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   public override init(_ parent: ComponentContainer) {
-    _arView = ARView()
-    _arView.environment.sceneUnderstanding.options = [.physics, .occlusion]
+      _arView = ARView()
+      _arView.environment.sceneUnderstanding.options = [.physics]
+      _arView.translatesAutoresizingMaskIntoConstraints = false
 
-    
-    if (_enableOcclusion){
-      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
-    } else {
-      _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+      super.init(parent)
+      _arView.session.delegate = self
+      setupLocationManager()
+      initializeGestureRecognizers()
+      setupLifecycleObservers()
       
-    }
-    
-    _arView.translatesAutoresizingMaskIntoConstraints = false
-    
-    
-    super.init(parent)
-    _arView.session.delegate = self
-    setupLocationManager()
-    initializeGestureRecognizers()
-    
-    TrackingType = 1
-    PlaneDetectionType = 2 // .horizontal
-    LightingEstimation = false
-    parent.add(self)
-    Height = kARViewPreferredHeight
-    Width = kARViewPreferredWidth
-    
-    ensureFloorExists()
+
+      _trackingSet = true
+      _trackingType = .worldTracking
+      _planeDetectionSet = true
+      _planeDetection = .horizontal
+      _lightingEstimationSet = true
+      _lightingEstimationEnabled = false
+      
+
+      setupConfiguration()
+      
+      parent.add(self)
+      Height = kARViewPreferredHeight
+      Width = kARViewPreferredWidth
+      
+      _showWireframes = false
+      _showWorldOrigin = false
+      _showFeaturePoints = false
+      
+      ensureFloorExists()
+      
+      print("🏁 ARView3D initialization complete")
   }
   
   
@@ -277,9 +282,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     set(showWireframes) {
       if showWireframes {
-        _arView.debugOptions.insert(.showAnchorGeometry)
+        _arView.debugOptions.insert([.showSceneUnderstanding])
       } else {
-        _arView.debugOptions.remove(.showAnchorGeometry)
+        _arView.debugOptions.remove([.showSceneUnderstanding])
       }
       _showWireframes = showWireframes
     }
@@ -349,6 +354,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      
       worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
       worldTrackingConfiguration.detectionImages = getReferenceImages()
+      _configuration = worldTrackingConfiguration
+     // worldTrackingConfiguration.initialWorldMap = _initialWorldMap
       
       // Configure plane detection
       switch _planeDetection {
@@ -406,6 +413,83 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   }
   
+  // MARK: - Debug Options Management
+
+  private func reapplyDebugOptions() {
+    print("🔧 Reapplying debug options...")
+    print("🔧 Current flags - Wireframes: \(_showWireframes), Origin: \(_showWorldOrigin), Features: \(_showFeaturePoints)")
+    
+    // Clear all debug options first
+    _arView.debugOptions = []
+    
+    for delay in [1.0, 2.0, 3.0, 5.0] {
+      DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+        
+        
+        // Small delay to ensure session is fully started
+        //DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        
+        var options: ARView.DebugOptions = []
+        
+        if self._showWireframes {
+          options.insert(.showSceneUnderstanding)
+          print("🔧 Adding .showSceneUnderstanding")
+        }
+        
+        if self._showWorldOrigin {
+          options.insert(.showWorldOrigin)
+          print("🔧 Adding .showWorldOrigin")
+        }
+        
+        if self._showFeaturePoints {
+          options.insert(.showFeaturePoints)
+          print("🔧 Adding .showFeaturePoints")
+        }
+        
+        if self._showBoundingBoxes {
+          options.insert(.showAnchorOrigins)
+          print("🔧 Adding .showAnchorOrigins")
+        }
+        
+        if self.ShowStatistics {
+          options.insert(.showStatistics)
+          print("🔧 Adding .showStatistics")
+        }
+        //findCorrectDebugValues()
+        self._arView.debugOptions = options
+        
+        print("🔧 Final debug options: \(self._arView.debugOptions)")
+        print("🔧 Scene understanding enabled in config: \((self._configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction != .none)")
+      }
+    }
+  }
+  
+  @objc func findCorrectDebugValues() {
+      print("🔍 === DEBUG OPTION RAW VALUES ===")
+      
+      // Test all possible raw values
+      for i in 0...256 {
+        let option = ARView.DebugOptions(rawValue: Int(UInt(i)))
+          if option.rawValue > 0 {
+              var name = "Unknown"
+              
+              if option == .showPhysics { name = "showPhysics" }
+              else if option == .showStatistics { name = "showStatistics" }
+              else if option == .showSceneUnderstanding { name = "showSceneUnderstanding" }
+              else if option == .showWorldOrigin { name = "showWorldOrigin" }
+              else if option == .showFeaturePoints { name = "showFeaturePoints" }
+              else if option == .showAnchorOrigins { name = "showAnchorOrigins" }
+              else if option == .showAnchorGeometry { name = "showAnchorGeometry" }
+              
+              if name != "Unknown" {
+                  print("🔍 \(name) = rawValue: \(option.rawValue)")
+              }
+          }
+      }
+      
+      print("🔍 ================================")
+  }
+  
   // Add this method to ARView3D class
   private func setupCollisionGroups(for node: ARNodeBase) {
       guard let shapes = node._modelEntity.collision?.shapes else {
@@ -425,110 +509,102 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   
-   @objc func removeInvisibleFloor() {
-      if let floorAnchor = _floorAnchor {
-          _arView.scene.removeAnchor(floorAnchor)
-          _floorAnchor = nil
-      }
-      _invisibleFloor = nil
-      print("🏠 Invisible floor removed")
-  }
-      
-  @objc func adjustFloorHeight(_ newHeight: Float) {
-      guard let floor = _invisibleFloor else {
-          print("🏠 No invisible floor to adjust")
-          return
-      }
-      
-      floor.transform.translation.y = newHeight
-      _floorAnchor?.transform.translation.y = newHeight
-      print("🏠 Floor height adjusted to: \(newHeight)m")
+  @objc func removeInvisibleFloor() {
+    if let floorAnchor = _floorAnchor {
+        _arView.scene.removeAnchor(floorAnchor)
+        _floorAnchor = nil
+    }
+    _invisibleFloor = nil
+    _hasSetGroundLevel = false
+    print("🏠 Invisible floor removed")
   }
   
   @objc var hasInvisibleFloor: Bool {
-      return _invisibleFloor != nil
+    return _invisibleFloor != nil
   }
   
   @objc func ensureFloorExists() {
-      if !hasInvisibleFloor {
-          createInvisibleFloor()
-      }
+    if !hasInvisibleFloor {
+        createInvisibleFloor()
+    }
   }
   
   
   private func setupCollisionDetection() {
-      // Cancel existing observer
-      collisionBeganObserver?.cancel()
-      
-      // Simple collision observer - only gets AR object collisions due to collision groups
-      collisionBeganObserver = _arView.scene.subscribe(
-        to: CollisionEvents.Began.self,
-        on: nil
-      ) { [weak self] event in
-        guard let self = self else { return }
-        
-        let entityA = event.entityA
-        let entityB = event.entityB
-        
-        // Find the nodes and notify them of the collision
-        if let nodeA = self.findNodeForEntity(entityA as? ModelEntity),
-           let nodeB = self.findNodeForEntity(entityB as? ModelEntity) {
-          
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-              nodeA.ObjectCollidedWithObject(nodeB)
-              nodeB.ObjectCollidedWithObject(nodeA)
-              
-              // Notify app level
-              self?.NodesCollided(nodeA, nodeB)
-          }
-          
-          
-          
-          print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
-        }
-        
-        if entityA.name == "InvisibleFloor" || entityB.name == "InvisibleFloor" {
-            let nodeEntity = entityA.name == "InvisibleFloor" ? entityB : entityA
-            print("💥 FLOOR COLLISION with \(nodeEntity.name) at \(nodeEntity.transform.translation)")
-        }
-      }
-      
-      print("✅ Simplified collision observer set up")
-      debugCollisionSetup()
-    }
+    // Cancel existing observer
+    collisionBeganObserver?.cancel()
     
-    private func debugCollisionSetup() {
-      print("=== CONFIG: Collision Debug Info ===")
-      print("Scene understanding options: \(_arView.environment.sceneUnderstanding.options)")
-      print("Collision observer exists: \(collisionBeganObserver != nil)")
-      print("Number of nodes with physics: \(_nodeToAnchorDict.keys.filter { $0._modelEntity.physicsBody != nil }.count)")
-      print("Total nodes: \(_nodeToAnchorDict.count)")
-    }
-    
-    // ✅ KEEP - Essential for connecting entities to nodes
-    private func findNodeForEntity(_ entity: ModelEntity?) -> ARNodeBase? {
-      guard let entity = entity else { return nil }
+    // Simple collision observer - only gets AR object collisions due to collision groups
+    collisionBeganObserver = _arView.scene.subscribe(
+      to: CollisionEvents.Began.self,
+      on: nil
+    ) { [weak self] event in
+      guard let self = self else { return }
       
-      for (node, anchor) in _nodeToAnchorDict {
-        if node._modelEntity == entity || anchor.children.contains(entity) {
-          return node
+      let entityA = event.entityA
+      let entityB = event.entityB
+      
+      // Find the nodes and notify them of the collision
+      if let nodeA = self.findNodeForEntity(entityA as? ModelEntity),
+         let nodeB = self.findNodeForEntity(entityB as? ModelEntity) {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            nodeA.ObjectCollidedWithObject(nodeB)
+            nodeB.ObjectCollidedWithObject(nodeA)
+            
+            // Notify app level
+            self?.NodesCollided(nodeA, nodeB)
         }
+          
+          
+          
+        print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
       }
-      return nil
+        
+      if entityA.name == "InvisibleFloor" || entityB.name == "InvisibleFloor" {
+          let nodeEntity = entityA.name == "InvisibleFloor" ? entityB : entityA
+          print("💥 FLOOR COLLISION with \(nodeEntity.name) at \(nodeEntity.transform.translation)")
+      }
     }
+      
+    //print("✅ Simplified collision observer set up")
+    //debugCollisionSetup()
+  }
+    
+  private func debugCollisionSetup() {
+    print("=== CONFIG: Collision Debug Info ===")
+    print("Scene understanding options: \(_arView.environment.sceneUnderstanding.options)")
+    print("Collision observer exists: \(collisionBeganObserver != nil)")
+    print("Number of nodes with physics: \(_nodeToAnchorDict.keys.filter { $0._modelEntity.physicsBody != nil }.count)")
+    print("Total nodes: \(_nodeToAnchorDict.count)")
+  }
+    
+  // ✅ KEEP - Essential for connecting entities to nodes
+  private func findNodeForEntity(_ entity: ModelEntity?) -> ARNodeBase? {
+    guard let entity = entity else { return nil }
+    
+    for (node, anchor) in _nodeToAnchorDict {
+      if node._modelEntity == entity || anchor.children.contains(entity) {
+        return node
+      }
+    }
+    return nil
+  }
     
    
-    @objc open func NodesCollided(_ nodeA: ARNodeBase, _ nodeB: ARNodeBase) {
-      EventDispatcher.dispatchEvent(of: self, called: "NodesCollided",
-                                    arguments: nodeA as AnyObject, nodeB as AnyObject)
-    }
-  // ✅ Add cleanup
+  @objc open func NodesCollided(_ nodeA: ARNodeBase, _ nodeB: ARNodeBase) {
+    EventDispatcher.dispatchEvent(of: self, called: "NodesCollided",
+                                  arguments: nodeA as AnyObject, nodeB as AnyObject)
+  }
+
   deinit {
-      collisionBeganObserver?.cancel()
+    NotificationCenter.default.removeObserver(self)
+    collisionBeganObserver?.cancel()
+    _arView.session.pause()
+    _arView.scene.anchors.removeAll()
   }
 
 
-  
   private func getReferenceImages() -> Set<ARReferenceImage> {
     return Set(_imageMarkers.values.compactMap{ $0._referenceImage })
   }
@@ -536,20 +612,42 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   // MARK: Functions
   
   @objc open func StartTracking() {
-    startTrackingWithOptions(startOptions)
+      print("▶️ Starting AR tracking")
+      startTrackingWithOptions(startOptions)
   }
-  
+
   @objc open func startTrackingWithOptions(_ options: ARSession.RunOptions = []) {
+    if _sessionRunning && options.isEmpty {
+        print("⚠️ Session already running, skipping start")
+        return
+    }
+    print("▶️ Starting AR session with options: \(options)")
+    
     _arView.session.run(_configuration, options: options)
     _sessionRunning = true
     startOptions = []
     
-    ensureFloorExists()
+    // ✅ Only recreate floor if anchors were removed
+    if options.contains(.removeExistingAnchors) || _invisibleFloor == nil {
+        ensureFloorExists()
+    }
+    
     updateGroundLevel(newGroundLevel: GROUND_LEVEL)
-    if (_enableOcclusion){
-      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+    
+    if (_enableOcclusion) {
+        _arView.environment.sceneUnderstanding.options.insert(.occlusion)
     } else {
-      _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+        _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+    }
+    
+    // ✅ Re-enable WebViews if needed
+    if _reenableWebViewNodes {
+      for node in _nodeToAnchorDict.keys {
+          if let webViewNode = node as? ARWebView {
+              webViewNode.isUserInteractionEnabled = true
+          }
+      }
+      _reenableWebViewNodes = false
     }
     
     if _requiresAddNodes {
@@ -557,137 +655,172 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         node.EnablePhysics(node.EnablePhysics)
         
         if node.IsGeoAnchored {
-          // Handle geo anchors
-          if let geoAnchor = node.getGeoAnchor() {
-            _arView.session.add(anchor: geoAnchor)
-            // AnchorEntity will be created in delegate callback
-          }
+            if let geoAnchor = node.getGeoAnchor() {
+                _arView.session.add(anchor: geoAnchor)
+            }
         } else {
-          
-          if _reenableWebViewNodes, let webViewNode = node as? ARWebView {
-            webViewNode.isUserInteractionEnabled = true
+            if !node.IsFollowingImageMarker {
+                _arView.scene.addAnchor(anchorEntity)
+            }
+            
+            if node._fromPropertyPosition != nil {
+              let position = node._fromPropertyPosition.split(separator: ",")
+                .prefix(3)
+                .map { Float(String($0)) ?? 0.0 }
+              
+              node._modelEntity.transform.translation = SIMD3<Float>(
+                position[0],
+                position[1],
+                position[2]
+              )
+            }
+            if !node._fromPropertyRotation.isEmpty {
+              let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
+                  .prefix(3)
+                  .map { Float(String($0)) ?? 0.0 }
+              
+              let xRadians = eulerDegrees[0] * .pi / 180.0
+              let yRadians = eulerDegrees[1] * .pi / 180.0
+              let zRadians = eulerDegrees[2] * .pi / 180.0
+              
+              node._modelEntity.transform.rotation = simd_quatf(
+                  angle: yRadians, axis: [0, 1, 0]
+              ) * simd_quatf(
+                  angle: xRadians, axis: [1, 0, 0]
+              ) * simd_quatf(
+                  angle: zRadians, axis: [0, 0, 1]
+              )
+            }
           }
-  
-          if !node.IsFollowingImageMarker {
+        }
+          
+        for (anchorEntity, light) in _lights {
             _arView.scene.addAnchor(anchorEntity)
-          }
-          
-          if node._fromPropertyPosition != nil {
-            let position = node._fromPropertyPosition.split(separator: ",")
-              .prefix(3)
-              .map { Float(String($0)) ?? 0.0 }
-            
-            node._modelEntity.transform.translation = SIMD3<Float>(
-              UnitHelper.centimetersToMeters(position[0]),
-              UnitHelper.centimetersToMeters(position[1]),
-              UnitHelper.centimetersToMeters(position[2])
-            )
-          }
-          if !node._fromPropertyRotation.isEmpty {
-            let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
-              .prefix(3)
-              .map { Float(String($0)) ?? 0.0 }
-            
-            // Convert degrees to radians
-            let xRadians = eulerDegrees[0] * .pi / 180.0
-            let yRadians = eulerDegrees[1] * .pi / 180.0
-            let zRadians = eulerDegrees[2] * .pi / 180.0
-            
-            // Create quaternion from Euler angles (ZYX order - standard)
-            node._modelEntity.transform.rotation = simd_quatf(
-              angle: yRadians, axis: [0, 1, 0]  // Y rotation (yaw)
-            ) * simd_quatf(
-              angle: xRadians, axis: [1, 0, 0]  // X rotation (pitch)
-            ) * simd_quatf(
-              angle: zRadians, axis: [0, 0, 1]  // Z rotation (roll)
-            )
-          }
         }
+        
+        _requiresAddNodes = false
       }
       
-      for (anchorEntity, light) in _lights {
-        _arView.scene.addAnchor(anchorEntity)
-      }
-      
-      _requiresAddNodes = false
-      _reenableWebViewNodes = false
-    } else if _reenableWebViewNodes {
-      for node in _nodeToAnchorDict.keys {
-        if let webViewNode = node as? ARWebView {
-          webViewNode.isUserInteractionEnabled = true
-        }
-      }
-      _reenableWebViewNodes = false
+    // ✅ Reapply debug options
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        self.reapplyDebugOptions()
     }
+    
+    print("▶️ AR session started successfully")
   }
   
   @objc open func PauseTracking() {
+    print("⏸️ Pausing AR tracking")
     pauseTracking(true)
   }
-  
-  private func pauseTracking(_ disableWebViewInteraction: Bool = false ) {
+
+  private func pauseTracking(_ disableWebViewInteraction: Bool = false) {
+
     _sessionRunning = false
     _arView.session.pause()
     trackingNode = nil
     
     if disableWebViewInteraction {
-      for node in _nodeToAnchorDict.keys {
-        if let webViewNode = node as? ARWebView {
-          webViewNode.isUserInteractionEnabled = false
-          _reenableWebViewNodes = true
+        for node in _nodeToAnchorDict.keys {
+            if let webViewNode = node as? ARWebView {
+                webViewNode.isUserInteractionEnabled = false
+                _reenableWebViewNodes = true
+            }
         }
-      }
     }
+    print("⏸️ AR session paused")
   }
   
   @objc open func ResetTracking() {
-
+    print("🔄 Complete AR reset...")
+    
+    let wasRunning = _sessionRunning
+    
+    // Stop session
     _arView.session.pause()
     _sessionRunning = false
-    let _shouldRestartSession = _sessionRunning
-    pauseTracking(!_shouldRestartSession)
-    setupConfiguration()
-    startOptions = [.resetTracking, .removeExistingAnchors]
-    if _shouldRestartSession {
-      startTrackingWithOptions(startOptions)
+    
+    // Clear all AR state
+    _hasSetGroundLevel = false
+    removeInvisibleFloor()
+    _detectedPlanesDict.removeAll()
+    
+    for (node, _) in _nodeToAnchorDict {
+        node.EnablePhysics(false)
     }
+    
+    // Pause and prepare for reset
+    pauseTracking(!wasRunning)
+    setupConfiguration()
+    startOptions = [] //[.resetTracking]
+    
+    // Short delay to ensure clean reset
+
+      
+    if wasRunning {
+      print("🔄 Restarting with clean slate...")
+      self.startTrackingWithOptions(self.startOptions)
+      
+      // Re-enable physics after restart
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          for (node, _) in self._nodeToAnchorDict {
+              node.EnablePhysics(node.EnablePhysics)
+          }
+      }
+    }
+    
+    print("🔄 Complete reset finished")
     
   }
   
-
-  func onAppDidEnterBackground() {
-      // Session is automatically paused by iOS
-      _arView.session.pause()
+  private func setupLifecycleObservers() {
+    NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(onAppDidBecomeActive),
+        name: UIApplication.didBecomeActiveNotification,
+        object: nil
+    )
+    print("🔔 Lifecycle observers registered")
   }
 
-  func onAppWillEnterForeground() {
-      // Restart the session when coming back
-      let configuration = ARWorldTrackingConfiguration()
-      configuration.planeDetection = [.horizontal, .vertical]
-      // Add any other configuration you need
+
+  @objc func onAppDidBecomeActive() {
+      print("📱 ===== APP BECAME ACTIVE =====")
       
-      // Restart without removing anchors if you want to keep your content
-      _arView.session.run(configuration, options: [.resetTracking])
-
-  }
-
-  func onAppDidBecomeActive() {
-      // Additional checks to ensure session is running
+      // ✅ If we manually paused, restart now
+      if !_sessionRunning {
+          print("📱 Session not running, restarting...")
+          startTrackingWithOptions([])
+          return
+      }
+        
+      // ✅ If session claims to be running but has no frame, force restart
       if _arView.session.currentFrame == nil {
-          let configuration = ARWorldTrackingConfiguration()
-          configuration.planeDetection = [.horizontal, .vertical]
-          _arView.session.run(configuration)
+          print("📱 Session running but no frame - force restarting...")
+          _sessionRunning = false
+          startTrackingWithOptions([])
       }
   }
   
   @objc open func ResetDetectedItems() {
     let _shouldRestartSession = _sessionRunning
+    
+    _hasSetGroundLevel = false
+    removeInvisibleFloor()
+    
     pauseTracking(!_shouldRestartSession)
     if _shouldRestartSession {
       startTrackingWithOptions([.removeExistingAnchors])
     } else if startOptions.isEmpty {
       startOptions = [.removeExistingAnchors]
     }
+  }
+  
+  @objc func verifyFloorState() {
+    print("🏠 Floor State Check:")
+    print("  - Has floor: \(hasInvisibleFloor)")
+    print("  - Ground level: \(GROUND_LEVEL)")
+    print("  - Has set ground level: \(_hasSetGroundLevel)")
   }
   
   // These methods would need to be implemented based on your ARNode creation logic
@@ -758,8 +891,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   func performHitTest(at screenPoint: CGPoint) -> HitTestResult {
 
     if let node = findClosestNode(tapLocation: screenPoint) {
-      print("hit a node \(node.Name) at \(screenPoint)")
-        return .node(node, node._modelEntity.transform.translation)
+      //print("hit a node \(node.Name) at \(screenPoint)")
+      return .node(node, node._modelEntity.transform.translation)
     }
     let raycastResults = _arView.raycast(from: screenPoint, allowing: .existingPlaneGeometry, alignment: .any)
     if let bestResult = getHighestSurfaceRaycast(rayCastResults: raycastResults) {
@@ -785,6 +918,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           result.worldTransform.columns.3.z
       )
       print("using estimated plane at \(worldPosition)")
+      // CSB this should be a plane object.. why not detected plane?
       return .invisibleFloor(worldPosition)
     }
   
@@ -850,6 +984,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         } else {
           TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
           TapAtPoint(position.x, position.y, position.z, false)
+          //ClickOnDetectedPlaneAt(plane, position.x, position.y, position.z, false)
         }
           
       case .empty (let position):
@@ -907,9 +1042,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             .map { Float(String($0)) ?? 0.0 }
           
           node._modelEntity.transform.translation = SIMD3<Float>(
-            UnitHelper.centimetersToMeters(position[0]),
-            UnitHelper.centimetersToMeters(position[1]),
-            UnitHelper.centimetersToMeters(position[2])
+            position[0],
+            position[1],
+            position[2]
           )
         }
         
@@ -1011,6 +1146,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               GROUND_LEVEL = invisibleFloorLevel
               
               // ✅ RECREATE invisible floor at correct position
+              removeInvisibleFloor()
               createInvisibleFloor(at: invisibleFloorLevel)
               _hasSetGroundLevel = true
             }
@@ -1018,13 +1154,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
             print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
             GROUND_LEVEL = invisibleFloorLevel
+            removeInvisibleFloor()
             createInvisibleFloor(at: invisibleFloorLevel)
             _hasSetGroundLevel = true
           }
         } else {
           if #available(iOS 16.0, *) {
             if planeAnchor.alignment == .vertical {
-              createOptimizedWallCollision(planeAnchor)
+              //createOptimizedWallCollision(planeAnchor) //CSB keep ?
             }
           }
         }
@@ -1156,19 +1293,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
   }
+  
   public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-    guard _lightingEstimationEnabled else { return }
-    
-    // Extract values immediately and don't capture the frame
-    if let lightingEstimate = frame.lightEstimate {
-      let ambientIntensity = Float(lightingEstimate.ambientIntensity)
-      let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
-      
-      // Don't capture frame in the closure - use the extracted values
-      DispatchQueue.main.async { [weak self] in
-        self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
+      autoreleasepool {
+          guard _lightingEstimationEnabled else { return }
+          
+          // Throttle updates to prevent frame buildup
+          let currentTime = frame.timestamp
+          guard currentTime - _lastLightingUpdate >= _lightingUpdateInterval else { return }
+          _lastLightingUpdate = currentTime
+          
+          if let lightingEstimate = frame.lightEstimate {
+              let ambientIntensity = Float(lightingEstimate.ambientIntensity)
+              let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
+              
+              DispatchQueue.main.async { [weak self] in
+                  self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
+              }
+          }
       }
-    }
   }
   
   public func session(_ session: ARSession, didFailWithError error: Error) {
@@ -1182,18 +1325,36 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   //ARSessionObserver
   public func sessionWasInterrupted(_ session: ARSession) {
-      print("⚠️ AR session was interrupted (phone call, backgrounding, etc.)")
+      print("⚠️ ===== AR SESSION INTERRUPTED =====")
+      print("⚠️ Reason: phone call, backgrounding, control center, etc.")
+      _sessionRunning = false
+      // Don't call pause() here - ARKit already paused it
   }
       
   public func sessionInterruptionEnded(_ session: ARSession) {
-      print("✅ AR session interruption ended - restarting camera")
+      print("✅ ===== AR SESSION INTERRUPTION ENDED =====")
+      print("✅ Automatically resuming camera...")
       
-      // Restart the session with your configuration
-      let configuration = ARWorldTrackingConfiguration()
-      configuration.planeDetection = [.horizontal, .vertical]
-      // Add any other settings you need
+      // ✅ ARKit is telling us it's safe to resume now
+      _arView.session.run(_configuration, options: [])
+      _sessionRunning = true
       
-      session.run(configuration, options: [.resetTracking])
+      // Restore all state
+
+      ensureFloorExists()
+      
+      if _reenableWebViewNodes {
+          for node in _nodeToAnchorDict.keys {
+              if let webViewNode = node as? ARWebView {
+                  webViewNode.isUserInteractionEnabled = true
+              }
+          }
+          _reenableWebViewNodes = false
+      }
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          self.reapplyDebugOptions()
+      }
+      print("✅ Camera resumed successfully!")
   }
   
   
@@ -1704,6 +1865,24 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         dictionaries.append(nodeDict)
       }
       print("returning dictionaries")
+      // Save world map
+      _arView.session.getCurrentWorldMap { worldMap, error in
+        /*  guard let worldMap = worldMap else {
+              print("Error getting world map: \(error?.localizedDescription ?? "unknown")")
+              return
+          }
+          
+          // Save worldMap to disk
+          do {
+              let data = try NSKeyedArchiver.archivedData(
+                  withRootObject: worldMap,
+                  requiringSecureCoding: true
+              )
+              try data.write(to: worldMapURL)
+          } catch {
+              print("Error saving world map: \(error)")
+          }*/
+      }
       return dictionaries
     }
     
@@ -1822,7 +2001,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
       }
       
       if let node = bestNode {
-          print("Selected node \(node.Name) with combined score: \(bestScore)")
+          //print("Selected node \(node.Name) with combined score: \(bestScore)")
           return node
       }
       
@@ -2173,16 +2352,22 @@ extension ARView3D: ARLightContainer {
 // MARK: LifeCycleDelegate
 @available(iOS 14.0, *)
 extension ARView3D: LifecycleDelegate {
-  @objc public func onResume() {}
-  
   @objc public func onPause() {
     if _sessionRunning {
       PauseTracking()
     }
   }
   
+  @objc public func onResume() {
+    ResetTracking()
+  }
+  
   @objc public func onDelete() {
-    clearView()
+    //clearView()
+    ResetTracking()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      self.reapplyDebugOptions()
+    }
   }
   
   @objc public func onDestroy() {
@@ -2208,9 +2393,10 @@ extension ARView3D: LifecycleDelegate {
     _detectedPlanesDict = [:]
     _imageMarkers = [:]
     
-    _hasSetGroundLevel = false
     ResetTracking()
-    createInvisibleFloor()
+    
+    reapplyDebugOptions()
+    
   }
 }
 
@@ -2302,19 +2488,21 @@ extension ARView3D {
   }
   
   private func getCurrentCameraVectors() -> CameraVectors? {
-    guard let frame = _arView.session.currentFrame else { return nil }
-    
-    let transform = frame.camera.transform
-    
-    let right = simd_normalize(SIMD3<Float>(
-      transform.columns.0.x, 0, transform.columns.0.z
-    ))
-    
-    let forward = simd_normalize(SIMD3<Float>(
-      -transform.columns.2.x, 0, -transform.columns.2.z
-    ))
-    
-    return CameraVectors(right: right, forward: forward)
+      autoreleasepool {
+          guard let frame = _arView.session.currentFrame else { return nil }
+          
+          let transform = frame.camera.transform
+          
+          let right = simd_normalize(SIMD3<Float>(
+              transform.columns.0.x, 0, transform.columns.0.z
+          ))
+          
+          let forward = simd_normalize(SIMD3<Float>(
+              -transform.columns.2.x, 0, -transform.columns.2.z
+          ))
+          
+          return CameraVectors(right: right, forward: forward)
+      }
   }
   
   // Define a simple struct to hold camera vectors
@@ -2433,46 +2621,44 @@ extension ARView3D {
   
   
   private func projectFingerIncrementally(_ currentPos: SIMD3<Float>, fingerMovement: CGPoint) -> SIMD3<Float> {
-    guard let frame = _arView.session.currentFrame else {
-      // Basic fallback without camera info
-      let scale: Float = 0.002
-      return SIMD3<Float>(
-        currentPos.x + Float(fingerMovement.x) * scale,
-        currentPos.y,
-        currentPos.z + Float(fingerMovement.y) * scale
-      )
-    }
-    
-    // Camera-compensated movement (restored from original working code)
-    let cameraTransform = frame.camera.transform
-    let cameraForward = -SIMD3<Float>(
-      cameraTransform.columns.2.x,
-      0,
-      cameraTransform.columns.2.z
-    )
-    let cameraYaw = atan2(cameraForward.x, cameraForward.z)
-    
-    // Scale movement based on distance
-    let cameraPosition = SIMD3<Float>(
-      cameraTransform.columns.3.x,
-      cameraTransform.columns.3.y,
-      cameraTransform.columns.3.z
-    )
-    let distance = simd_distance(currentPos, cameraPosition)
-    let scale: Float = 0.004 * max(distance * 0.5, 0.5)
-    
-    // Apply camera rotation to movement (this is what was missing!)
-    let fingerX = -Float(fingerMovement.x) * scale
-    let fingerZ = -Float(fingerMovement.y) * scale
-    
-    let rotatedX = fingerX * cos(-cameraYaw) - fingerZ * sin(-cameraYaw)
-    let rotatedZ = fingerX * sin(-cameraYaw) + fingerZ * cos(-cameraYaw)
-    
-    return SIMD3<Float>(
-      currentPos.x + rotatedX,
-      currentPos.y, // Maintain current Y during drag
-      currentPos.z + rotatedZ
-    )
+      guard let frame = _arView.session.currentFrame else {
+          let scale: Float = 0.002
+          return SIMD3<Float>(
+              currentPos.x + Float(fingerMovement.x) * scale,
+              currentPos.y,
+              currentPos.z + Float(fingerMovement.y) * scale
+          )
+      }
+      
+      return autoreleasepool {
+          let cameraTransform = frame.camera.transform
+          let cameraForward = -SIMD3<Float>(
+              cameraTransform.columns.2.x,
+              0,
+              cameraTransform.columns.2.z
+          )
+          let cameraYaw = atan2(cameraForward.x, cameraForward.z)
+          
+          let cameraPosition = SIMD3<Float>(
+              cameraTransform.columns.3.x,
+              cameraTransform.columns.3.y,
+              cameraTransform.columns.3.z
+          )
+          let distance = simd_distance(currentPos, cameraPosition)
+          let scale: Float = 0.004 * max(distance * 0.5, 0.5)
+          
+          let fingerX = -Float(fingerMovement.x) * scale
+          let fingerZ = -Float(fingerMovement.y) * scale
+          
+          let rotatedX = fingerX * cos(-cameraYaw) - fingerZ * sin(-cameraYaw)
+          let rotatedZ = fingerX * sin(-cameraYaw) + fingerZ * cos(-cameraYaw)
+          
+          return SIMD3<Float>(
+              currentPos.x + rotatedX,
+              currentPos.y,
+              currentPos.z + rotatedZ
+          )
+      }
   }
   
   // ✅ Keep existing methods but with improvements
@@ -2609,15 +2795,27 @@ extension ARView3D {
       material.baseColor = MaterialColorParameter.color(.green)
     }
     
-    indicatorEntity.model = ModelComponent(mesh: geometry, materials: [material])
-    // Optional: Add a subtle pulsing animation
     let anchor = AnchorEntity(world: position)
-    anchor.addChild(indicatorEntity)
+    indicatorEntity.model = ModelComponent(mesh: geometry, materials: [material])
+    if #available(iOS 18.0, *) {
+      material.faceCulling = .none
+      anchor.addChild(indicatorEntity)
+    } else {
+      // iOS 14-17 - create back plane
+      guard let mesh = indicatorEntity.model?.mesh,
+            let materials = indicatorEntity.model?.materials else { return }
+      
+      let backPlane = ModelEntity(mesh: mesh, materials: materials)
+      backPlane.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0])
+      anchor.addChild(indicatorEntity)
+      anchor.addChild(backPlane)
+    }
+    
+    
     _arView.scene.addAnchor(anchor)
     _placementIndicator = anchor
     _lastPlacementPosition = position
-    
-    //print("📍 Placement indicator shown at: \(position) world position \(_placementIndicator?.position)(stacking: \(isStacking))")
+
   }
 }
 
