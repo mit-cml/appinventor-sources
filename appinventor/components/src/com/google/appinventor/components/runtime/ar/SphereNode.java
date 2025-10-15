@@ -720,6 +720,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   private void applyRealisticRolling(float[] movement) {
     float[] horizontalMovement = {movement[0], 0, movement[2]};
     float distance = vectorLength(horizontalMovement);
+    float[] rotation = getCurrentRotation(); //CSB check this
     Log.d("SphereNode", "Going to roll: " + arrayToString(rotation));
     if (distance <= 0.0001f) return;
 

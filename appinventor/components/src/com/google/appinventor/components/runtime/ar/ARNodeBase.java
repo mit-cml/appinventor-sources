@@ -59,7 +59,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected boolean pinchToScale = false;
   protected boolean panToMove = false;
   protected boolean rotateWithGesture = false;
-
+  protected boolean visible = true;
   // Enhanced Dragging
   protected boolean isBeingDragged = false;
   protected PointF dragStartLocation = new PointF(0, 0);
@@ -903,7 +903,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY, defaultValue = "True")
   @SimpleProperty
   public boolean Visible() {
-    return true;
+    return visible;
   }
 
   @Override

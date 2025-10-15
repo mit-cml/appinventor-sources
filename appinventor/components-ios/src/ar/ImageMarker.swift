@@ -231,6 +231,11 @@ open class ImageMarker: NSObject, ARImageMarker {
     
     _attachedNodes = []
   }
+  
+  @objc open var Visible: Bool {
+    get { return _anchorEntity!.isEnabled }
+    set(visible) { _anchorEntity!.isEnabled = visible }
+  }
 }
 
 @available(iOS 14.0, *)
