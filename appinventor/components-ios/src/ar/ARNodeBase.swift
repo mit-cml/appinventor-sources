@@ -540,11 +540,6 @@ open class ARNodeBase: NSObject, ARNode {
     let currentPos = _modelEntity.transform.translation
     let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
     
-    print("🎾 EnablePhysics called for \(Name) with Mass \(Mass)")
-    print("🎾 Current position: \(currentPos)")
-    print("🎾 Ground level: \(groundLevel)")
-    print("🎾 Distance from ground: \(currentPos.y - groundLevel)")
-    
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let sizeX = bounds.max.x - bounds.min.x
     let sizeY = bounds.max.y - bounds.min.y
@@ -552,10 +547,11 @@ open class ARNodeBase: NSObject, ARNode {
     let halfHeight = sizeY / 2
     let bottomY = currentPos.y - halfHeight
     
-    print("🎾 Box size: \(sizeY)")
+    /*print("🎾 Box size: \(sizeY)")
     print("🎾 Half height: \(halfHeight)")
     print("🎾 Bottom Y: \(bottomY)")
     print("🎾 Bottom vs floor: \(bottomY - groundLevel)")
+     */
 
       // don't scale the collision shape
     let shape: ShapeResource = ShapeResource.generateBox(width: sizeX, height: sizeY, depth: sizeZ)

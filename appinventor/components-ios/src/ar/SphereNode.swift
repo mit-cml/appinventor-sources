@@ -890,7 +890,7 @@ private func monitorPostCollisionState() {
     // Apply incremental rotation
     let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
     _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-    print("🎾 Rolling: distance=\(String(format: "%.4f", distance)), angle=\(String(format: "%.4f", rollAngle))")
+    //print("🎾 Rolling: distance=\(String(format: "%.4f", distance)), angle=\(String(format: "%.4f", rollAngle))")
   }
   
   private func debugReleaseDirection(screenVelocity: CGPoint, cameraVectors: ARView3D.CameraVectors){
@@ -1125,9 +1125,9 @@ private func monitorPostCollisionState() {
         updateShadowSettings()
     }
   
-    print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
-    debugPhysicsState()
-    print("🎾 Sphere radius: \(_radius), mass: \(Mass)")
+    //print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
+    //debugPhysicsState()
+    //print("🎾 Sphere radius: \(_radius), mass: \(Mass)")
   }
 
   // 6. ✅ REMOVE ground level constraints entirely
