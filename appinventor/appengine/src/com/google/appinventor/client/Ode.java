@@ -40,8 +40,6 @@ import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.local.LocalProjectService;
-import com.google.appinventor.client.local.LocalTokenAuthService;
-import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
@@ -69,6 +67,7 @@ import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
@@ -92,8 +91,9 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
@@ -123,6 +123,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -169,6 +171,13 @@ public class Ode implements EntryPoint {
   // Set to true if we are loading from the new Gallery
   private boolean newGalleryLoadingFlag = false;
   private String newGalleryId;
+
+  // collaboration path if set by /?shared=
+  // Set to true if we are loading shared project
+  private boolean sharedProjectLoadingFlag = false;
+  private String sharedProjectId;
+
+  private boolean openingProjectFromURLFlag = false;
 
   // Nonce Information
   private String nonce;
@@ -571,6 +580,9 @@ public class Ode implements EntryPoint {
         };
       LoadGalleryProject.openProjectFromGallery(newGalleryId, callback);
       return true;
+    } else if (sharedProjectLoadingFlag) {
+      openSharedProject(projectService, user.getUserEmail(), Long.parseLong(sharedProjectId), true);
+      return true;
     }
     return false;
   }
@@ -597,11 +609,76 @@ public class Ode implements EntryPoint {
     }
   }
 
+  public void getAccessInfo(long projectId, OdeAsyncCallback<HashMap<String, List<String>>> callback) {
+    projectService.getAccessInfo(projectId, callback);
+  }
+
+  /**
+   * Load the user's relation to the project
+   *
+   * @return a Promise to load the user's access type to project
+   */
+  // userId here is email
+  private void openSharedProject(ProjectServiceAsync projectService, String userId, long shareId, boolean openInReadOnlyMode) {
+    projectService.getSharedProject(userId, shareId, new AsyncCallback<UserProject>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          // Handle error here (e.g., show a message to the user)
+          LOG.warning("Failed to load project: " + caught.getMessage());
+          switchToProjectsView();  // the user will need to select a project...
+          ErrorReporter.reportInfo(MESSAGES.chooseProject());
+        }
+    
+        @Override
+        public void onSuccess(UserProject sharedProject) {
+          if (sharedProject != null) {
+            final long sharedProjectId = sharedProject.getProjectId();
+            getAccessInfo(sharedProjectId, new OdeAsyncCallback<HashMap<String, List<String>>>() {
+              @Override
+              public void onSuccess(HashMap<String, List<String>> result) {
+                if (result.get("owner").get(0).equals(userId)) {
+                  Project loadedProject = projectManager.getProject(sharedProjectId);
+                  // Window.Location.assign(Window.Location.createUrlBuilder().removeParameter("shared").setHash(String.valueOf(sharedProjectId)).buildString());
+                  UrlBuilder builder = Window.Location.createUrlBuilder();
+                  builder.setPath(Window.Location.getPath());  // Ensures "/" is preserved
+                  builder.removeParameter("shared");
+                  builder.setHash(String.valueOf(sharedProjectId));
+                  String finalUrl = builder.buildString();
+                  if (!finalUrl.contains("/?")) {
+                    // Inject the slash if it's missing (quick patch)
+                    finalUrl = finalUrl.replace("?", "/?");
+                  }
+                  Window.Location.assign(finalUrl);
+                  openYoungAndroidProjectInDesigner(loadedProject);
+                } else {
+                  if (openInReadOnlyMode) {
+                    Ode.getInstance().setReadOnly();
+                  }
+                  projectManager.addProject(sharedProject);
+                  projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+                    Project loadedProject = projectManager.getProject(sharedProjectId);
+                    if (loadedProject != null) {
+                      openYoungAndroidProjectInDesigner(loadedProject);
+                    } else {
+                      switchToProjectsView();  // the user will need to select a project...
+                      ErrorReporter.reportInfo(MESSAGES.chooseProject());
+                    }
+                    return null;
+                  });
+                }
+              }
+            });
+          }
+        }
+      });
+  }
+
   private void openProject(String projectIdString) {
     if (projectIdString.equals("")) {
       openPreviousProject();
     } else if (!projectIdString.equals("0")) {
       final long projectId = Long.parseLong(projectIdString);
+      // check whether user has the project
       Project project = projectManager.getProject(projectId);
       if (project != null && !project.isInTrash()) {   // If last opened project is now in the trash, don't open it.
         openYoungAndroidProjectInDesigner(project);
@@ -616,8 +693,8 @@ public class Ode implements EntryPoint {
           if (loadedProject != null) {
             openYoungAndroidProjectInDesigner(loadedProject);
           } else {
-            switchToProjectsView();  // the user will need to select a project...
-            ErrorReporter.reportInfo(MESSAGES.chooseProject());
+            // TODO: FIRST check whether its owned by someone else?
+            openSharedProject(projectService, user.getUserEmail(), projectId, true);
           }
           return null;
         });
@@ -718,6 +795,12 @@ public class Ode implements EntryPoint {
       if (newGalleryId != null) {
         LOG.warning("Got a new Gallery ID of " + newGalleryId);
         newGalleryLoadingFlag = true;
+      } else {
+        sharedProjectId = Window.Location.getParameter("shared");
+        if (sharedProjectId != null) {
+          LOG.warning("Got a new shared project ID of " + sharedProjectId);
+          sharedProjectLoadingFlag = true;
+        }
       }
     }
 
@@ -776,6 +859,7 @@ public class Ode implements EntryPoint {
           return resolve(projects);
         })
         .then0(this::retrieveTemplateData)
+        .then0(this::maybeOpenProject)
         .then0(this::maybeOpenLastProject)
         .error(caught -> {
           if (caught == null) {
@@ -864,10 +948,21 @@ public class Ode implements EntryPoint {
   }
 
   private Promise<Object> maybeOpenLastProject() {
-    if (!handleQueryString() && shouldAutoloadLastProject()) {
+    if (!handleQueryString() && shouldAutoloadLastProject() && !openingProjectFromURLFlag) {
       openPreviousProject();
     }
+    openingProjectFromURLFlag = false;
+    return null;
+  }
 
+  private Promise<Object> maybeOpenProject() {
+    String projectId = Window.Location.getHash();
+    if (projectId != "") {
+      openingProjectFromURLFlag = true;
+      openProject(projectId.substring(1));
+    } else {
+      openingProjectFromURLFlag = false;
+    }
     return null;
   }
 
@@ -1731,7 +1826,7 @@ public class Ode implements EntryPoint {
           return null;  // We have at least one valid project so exit early
         }
       }
-      if (!templateLoadingFlag && !newGalleryLoadingFlag) {
+      if (!templateLoadingFlag && !newGalleryLoadingFlag && !sharedProjectLoadingFlag) {
         ErrorReporter.hide();  // hide the "Please choose a project" message
         createNoProjectsDialog(true);
       }
@@ -1860,7 +1955,7 @@ public class Ode implements EntryPoint {
   private void maybeShowSplash2() {
     projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
       if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0
-          && !templateLoadingFlag && !newGalleryLoadingFlag) {
+          && !templateLoadingFlag && !newGalleryLoadingFlag && !sharedProjectLoadingFlag) {
         ErrorReporter.hide();  // hide the "Please choose a project" message
         showSplashScreens();
       }
