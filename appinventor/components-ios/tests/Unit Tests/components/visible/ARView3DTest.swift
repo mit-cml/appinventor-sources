@@ -10,13 +10,10 @@ class ARView3DTests: AppInventorTestCase {
     var mockContainer: MockComponentContainer!
     
     override func setUpWithError() throws {
-        try super.setUpWithError()
+      super.setUp()
         
-
       mockContainer = MockComponentContainer(container: nil, Width: 480, Height: 768, form: form)
-        
-        // Create ARView3D instance
-        arView = ARView3D(mockContainer)
+      arView = ARView3D(mockContainer)
     }
     
     override func tearDownWithError() throws {

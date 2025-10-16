@@ -246,6 +246,30 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
+   open var CurrentAnchors: [ARNodeBase: AnchorEntity] {
+    get {
+      return _nodeToAnchorDict
+    }
+  }
+  
+  @objc open var CurrentConfig: ARConfiguration {
+    get {
+      return _configuration
+    }
+  }
+  
+  @objc open var IsSessionRunning: Bool {
+    get {
+      return _sessionRunning
+    }
+  }
+  
+  @objc open var InvisibleFloorIsNil: Bool {
+    get {
+      return _invisibleFloor == nil
+    }
+  }
+  
   @objc open var EnableOcclusion: Bool {
     get {
       return _enableOcclusion
@@ -436,7 +460,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   // MARK: - Debug Options Management
 
-  private func reapplyDebugOptions() {
+  public func reapplyDebugOptions() {
     print("🔧 Reapplying debug options...")
     print("🔧 Current flags - Wireframes: \(_showWireframes), Origin: \(_showWorldOrigin), Features: \(_showFeaturePoints)")
     
@@ -488,7 +512,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         self._arView.debugOptions = options
         
         print("🔧 Final debug options: \(self._arView.debugOptions)")
-        print("🔧 Scene understanding enabled in config: \((self._configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction != .none)")
+        print("🔧 Scene understanding enabled in config: \((self._configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction != [])")
       }
     }
   }
@@ -1196,7 +1220,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
       } else if let imageAnchor = anchor as? ARImageAnchor {
           guard let name = imageAnchor.referenceImage.name else { return }
-          let imageMarker = _imageMarkers[name]
+          
       } else if let geoAnchor = anchor as? ARGeoAnchor {
           handleGeoAnchorAdded(geoAnchor)
       }
@@ -1856,10 +1880,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             loadNode = self.CreateBoxNodeFromYail(nodeDict)
           case "sphere", "geospherenode":
             loadNode = self.CreateSphereNodeFromYail(nodeDict)
-          case "video":
-            loadNode = self.CreateVideoNodeFromYail(nodeDict)
-          case "webview":
-            loadNode = self.CreateWebViewNodeFromYail(nodeDict)
           case "model", "geomodelnode":
             loadNode = self.CreateModelNodeFromYail(nodeDict)
           case "text", "geotextnode":
@@ -1996,7 +2016,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
             pow(tapLocation.y - nodeScreenPos!.y, 2)
           )
           
-        var SCREEN_THRESHOLD: CGFloat = 50.0
+        let SCREEN_THRESHOLD: CGFloat = 50.0
         // Skip if too far in screen space
         if screenDistance > SCREEN_THRESHOLD { continue }  // 100 pixel max
         
@@ -2593,7 +2613,7 @@ extension ARView3D {
  
   func getProjectionForNode(node: ARNodeBase, fingerLocation: CGPoint, fingerMovement: CGPoint, gesturePhase: UIGestureRecognizer.State, hitResult: HitTestResult) -> SIMD3<Float>? {
     
-    if let sphereNode = node as? SphereNode {
+    if node is SphereNode {
       // Spheres use ground projection for rolling behavior
       return projectFingerToGround(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
       
@@ -2628,7 +2648,7 @@ extension ARView3D {
   
   func getProjectionForNode(node: ARNodeBase, fingerLocation: CGPoint, fingerMovement: CGPoint, gesturePhase: UIGestureRecognizer.State) -> SIMD3<Float>? {
           
-    if let sphereNode = node as? SphereNode {
+    if node is SphereNode {
         return projectFingerToGround(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
     } else {
         let currentPos = node._modelEntity.transform.translation
