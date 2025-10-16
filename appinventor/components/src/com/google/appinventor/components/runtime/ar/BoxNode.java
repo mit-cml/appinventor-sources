@@ -118,7 +118,7 @@ import com.google.ar.core.Trackable;
     @SimpleProperty(description = "How far, in centimeters, the BoxNode extends along the x-axis.  " +
       "Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode " +
       "will not appear.")
-    public float WidthInCentimeters() { return 5f; }
+    public float WidthInCentimeters() { return width; }
 
     @Override
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
@@ -129,7 +129,7 @@ import com.google.ar.core.Trackable;
     @SimpleProperty(description = "How far, in centimeters, the BoxNode extends along the y-axis.  " +
       "Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode " +
       "will not appear.")
-    public float HeightInCentimeters() { return 5f; }
+    public float HeightInCentimeters() { return height; }
 
     @Override
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
@@ -140,7 +140,7 @@ import com.google.ar.core.Trackable;
     @SimpleProperty(description = "How far, in centimeters, the BoxNode extends along the z-axis.  " +
       "Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode " +
       "will not appear.")
-    public float LengthInCentimeters() { return 5f; }
+    public float LengthInCentimeters() { return length; }
 
     @Override
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
