@@ -156,38 +156,44 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   public override init(_ parent: ComponentContainer) {
-      _arView = ARView()
-      _arView.environment.sceneUnderstanding.options = [.physics]
-      _arView.translatesAutoresizingMaskIntoConstraints = false
+    _arView = ARView()
+    _arView.environment.sceneUnderstanding.options = [.physics]
+    _arView.translatesAutoresizingMaskIntoConstraints = false
 
-      super.init(parent)
-      _arView.session.delegate = self
-      setupLocationManager()
-      initializeGestureRecognizers()
-      setupLifecycleObservers()
-      
+  
+    if (_enableOcclusion){
+      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+    } else {
+      _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+    }
+    super.init(parent)
+    _arView.session.delegate = self
+    setupLocationManager()
+    initializeGestureRecognizers()
+    setupLifecycleObservers()
+    
 
-      _trackingSet = true
-      _trackingType = .worldTracking
-      _planeDetectionSet = true
-      _planeDetection = .horizontal
-      _lightingEstimationSet = true
-      _lightingEstimationEnabled = false
-      
+    _trackingSet = true
+    _trackingType = .worldTracking
+    _planeDetectionSet = true
+    _planeDetection = .horizontal
+    _lightingEstimationSet = true
+    _lightingEstimationEnabled = false
+    
 
-      setupConfiguration()
-      
-      parent.add(self)
-      Height = kARViewPreferredHeight
-      Width = kARViewPreferredWidth
-      
-      _showWireframes = false
-      _showWorldOrigin = false
-      _showFeaturePoints = false
-      
-      ensureFloorExists()
-      
-      print("🏁 ARView3D initialization complete")
+    setupConfiguration()
+    
+    parent.add(self)
+    Height = kARViewPreferredHeight
+    Width = kARViewPreferredWidth
+    
+    _showWireframes = false
+    _showWorldOrigin = false
+    _showFeaturePoints = false
+    
+    ensureFloorExists()
+    
+    print("🏁 ARView3D initialization complete")
   }
   
   
@@ -291,13 +297,27 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
+  @objc open var ShowAnchorGeometry: Bool {
+    get {
+      return _showGeometry
+    }
+    set(showAnchorGeometry) {
+      if showAnchorGeometry {
+        _arView.debugOptions.insert(.showAnchorGeometry)
+      } else {
+        _arView.debugOptions.remove(.showAnchorGeometry)
+      }
+      _showGeometry = showAnchorGeometry
+    }
+  }
+  
   @objc open var ShowBoundingBoxes: Bool {
     get {
       return _showBoundingBoxes
     }
     set(showBoundingBoxes) {
       if showBoundingBoxes {
-        _arView.debugOptions.insert(.showAnchorOrigins)
+        _arView.debugOptions.insert(.showAnchorOrigins) //showPhysics?
       } else {
         _arView.debugOptions.remove(.showAnchorOrigins)
       }
@@ -634,7 +654,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     _arView.session.run(_configuration, options: options)
     _sessionRunning = true
-    startOptions = []
+    startOptions = [.resetTracking, .resetSceneReconstruction]
     
     // ✅ Only recreate floor if anchors were removed
     if options.contains(.removeExistingAnchors) || _invisibleFloor == nil {
