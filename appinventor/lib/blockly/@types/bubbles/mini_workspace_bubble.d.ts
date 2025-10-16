@@ -3,19 +3,19 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Abstract as AbstractEvent } from '../events/events_abstract.js';
 import type { BlocklyOptions } from '../blockly_options.js';
-import { Bubble } from './bubble.js';
-import { Coordinate } from '../utils/coordinate.js';
+import { Abstract as AbstractEvent } from '../events/events_abstract.js';
 import { Options } from '../options.js';
+import { Coordinate } from '../utils/coordinate.js';
 import type { Rect } from '../utils/rect.js';
 import type { WorkspaceSvg } from '../workspace_svg.js';
+import { Bubble } from './bubble.js';
 /**
  * A bubble that contains a mini-workspace which can hold arbitrary blocks.
  * Used by the mutator icon.
  */
 export declare class MiniWorkspaceBubble extends Bubble {
-    protected readonly workspace: WorkspaceSvg;
+    readonly workspace: WorkspaceSvg;
     protected anchor: Coordinate;
     protected ownerRect?: Rect | undefined;
     /**
