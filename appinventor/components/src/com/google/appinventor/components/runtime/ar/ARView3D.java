@@ -1839,8 +1839,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleProperty
     public void ShowAnchorGeometry(boolean showGeometry) {
     }
-
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether enable occlusion in world understanding. If true, objects will disappear behind walls, furniture and sometime floor")
+    
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether geometry shows in world understanding. ")
     public boolean ShowAnchorGeometry() {
         return false;
     }
