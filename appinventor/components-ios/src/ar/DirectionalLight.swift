@@ -30,7 +30,7 @@ open class DirectionalLight: ARLightBase, ARDirectionalLight {
   }
   
   private func updateShadowSettings() {
-    guard var lightComponent = _modelEntity.components[DirectionalLightComponent.self] else { return }
+    guard let lightComponent = _modelEntity.components[DirectionalLightComponent.self] else { return }
     
     if _castsShadows {
       //lightComponent.shadow = DirectionalLightComponent.Shadow()

@@ -62,8 +62,7 @@
         print("🔄 Scaling sphere \(Name) by \(scalar)")
         
         let oldScale = Scale
-        let oldActualRadius = _capRadius * oldScale
-            
+      
         let hadPhysics = _modelEntity.physicsBody != nil
         
         let newScale = oldScale * abs(scalar)

@@ -986,9 +986,6 @@ extension ModelNode {
            return false
        }
        
-       // Play the specific animation
-       let controller = modelEntity.playAnimation(animation.repeat(duration: .infinity))
-       
        print("✅ Playing animation '\(animationName)' on entity '\(entity.name)'")
        return true
    }

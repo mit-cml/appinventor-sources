@@ -89,7 +89,6 @@ open class SphereNode: ARNodeBase, ARSphere {
       // Calculate energy loss
       let preEnergy = simd_length_squared(preVel)
       let postEnergy = simd_length_squared(postVel)
-      let expectedEnergy = simd_length_squared(expectedReflection)
       let energyLoss = (preEnergy - postEnergy) / preEnergy
       
       let data = CollisionData(
@@ -354,12 +353,10 @@ open class SphereNode: ARNodeBase, ARSphere {
   override open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
     // Capture pre-collision velocity
     let preVelocity = getCurrentVelocity()
-    let preSpeed = simd_length(preVelocity)
-    
+
+    //let preSpeed = simd_length(preVelocity)
     // Your existing collision handling
     let speed = getCollisionSpeed()
-    let force = calculateCollisionForce(with: otherNode)
-  
     if #available(iOS 15.0, *) {
       showCollisionFlash(intensity: speed, collisionType: .object)
     }
@@ -367,7 +364,7 @@ open class SphereNode: ARNodeBase, ARSphere {
     // Analyze trajectory after collision response
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
         guard let self = self else { return }
-        let postVelocity = self.getCurrentVelocity()
+        //let postVelocity = self.getCurrentVelocity()
         
         /* helpful debugging
          self.analyzeCollisionTrajectory(
@@ -521,7 +518,7 @@ private func monitorPostCollisionState() {
   private func updateBehaviorSettings() {
     
     
-    var baseMass: Float = 0.2
+    let baseMass: Float = 0.2
     let massRatio = Mass / baseMass
     
 
@@ -967,7 +964,7 @@ private func monitorPostCollisionState() {
       camera3DProjection: Any?,
       gesturePhase: UIGestureRecognizer.State
   ) {
-    var groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
+    let groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
     print("sphereNode, handling drag gesture \(groundPos)")
 
   

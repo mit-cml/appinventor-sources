@@ -123,14 +123,10 @@ open class BoxNode: ARNodeBase, ARBox {
   }
   
   override open func EnablePhysics(_ isDynamic: Bool = true) {
-      let currentPos = _modelEntity.transform.translation
-      let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
-      
-      let bounds = _modelEntity.visualBounds(relativeTo: nil)
-      let sizeY = _height * Scale
-      let halfHeight = sizeY / 2
-      let bottomY = currentPos.y - halfHeight
+    let currentPos = _modelEntity.transform.translation
 
+    let sizeY = _height * Scale
+    let halfHeight = sizeY / 2
 
     // don't scale the collision shape
     let shape: ShapeResource = ShapeResource.generateBox(width: _width, height: _height, depth: _length)

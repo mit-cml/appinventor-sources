@@ -125,7 +125,6 @@ open class TextNode: ARNodeBase, ARText {
     }
   }
   override open func ScaleBy(_ scalar: Float) {
-    let oldScale = Scale
     let newScale = abs(scalar)
     let hadPhysics = _modelEntity.physicsBody != nil
     

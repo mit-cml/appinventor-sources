@@ -538,14 +538,14 @@ open class ARNodeBase: NSObject, ARNode {
 
  open func EnablePhysics(_ isDynamic: Bool = true) {
     let currentPos = _modelEntity.transform.translation
-    let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+    var groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
     
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let sizeX = bounds.max.x - bounds.min.x
     let sizeY = bounds.max.y - bounds.min.y
     let sizeZ = bounds.max.z - bounds.min.z
     let halfHeight = sizeY / 2
-    let bottomY = currentPos.y - halfHeight
+    var bottomY = currentPos.y - halfHeight
     
     /*print("🎾 Box size: \(sizeY)")
     print("🎾 Half height: \(halfHeight)")
@@ -646,22 +646,22 @@ open class ARNodeBase: NSObject, ARNode {
   // MARK: - Serialization Methods
   
   @objc open func ARNodeToYail() -> YailDictionary {
-      os_log("going to try to export ARNode as yail", log: .default, type: .info)
-         
-      var yailDict: YailDictionary = [:]
-      var transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
-      
-      yailDict["model"] = self.ModelUrl
-      yailDict["texture"] = self.Texture
-      yailDict["scale"] = self.Scale
-      yailDict["pose"] = transformDict
-      yailDict["type"] = self.Name
-      yailDict["physics"] = String(self._enablePhysics)
-      yailDict["canMove"] = String(self._panToMove)
-      yailDict["canScale"] = String(self._pinchToScale)
-         
-      print("exporting ARNode as Yail convert toYail ")
-      return yailDict
+    os_log("going to try to export ARNode as yail", log: .default, type: .info)
+       
+    let yailDict: YailDictionary = [:]
+    let transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
+    
+    yailDict["model"] = self.ModelUrl
+    yailDict["texture"] = self.Texture
+    yailDict["scale"] = self.Scale
+    yailDict["pose"] = transformDict
+    yailDict["type"] = self.Name
+    yailDict["physics"] = String(self._enablePhysics)
+    yailDict["canMove"] = String(self._panToMove)
+    yailDict["canScale"] = String(self._pinchToScale)
+       
+    print("exporting ARNode as Yail convert toYail ")
+    return yailDict
   }
      
   open func CoordinatesToYailDictionary() -> YailDictionary? {
@@ -675,9 +675,8 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   @objc open func PoseToYailDictionary() -> YailDictionary? {
-    os_log("anchor pose as YailDict", log: .default, type: .info)
-    
-    guard let p = self._modelEntity.transform as? Transform else {
+
+    guard let p = self._modelEntity.transform else {
         os_log("pose is nil", log: .default, type: .info)
         return nil
     }
