@@ -1835,6 +1835,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return enableOcclusion;
     }
 
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+    @SimpleProperty
+    public void ShowAnchorGeometry(boolean showGeometry) {
+    }
+
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether enable occlusion in world understanding. If true, objects will disappear behind walls, furniture and sometime floor")
+    public boolean ShowAnchorGeometry() {
+        return false;
+    }
+
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty
@@ -1856,14 +1866,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return true;
     }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
     @SimpleProperty
     public void ShowWireframes(boolean showWireframes) {
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether to show the wireframe of nodes' geometries on top of their FillColor of Texture.")
     public boolean ShowWireframes() {
-        return false;
+        return true;
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")

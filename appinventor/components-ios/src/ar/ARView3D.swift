@@ -60,6 +60,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _showFeaturePoints: Bool = false
   private var _showWireframes: Bool = false
   private var _showBoundingBoxes: Bool = false
+  private var _showGeometry: Bool = false
   private var _showLightLocations: Bool = false
   private var _showLightAreas: Bool = false
   fileprivate var trackingNode: ARNode? = nil
@@ -354,7 +355,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      
       worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
       worldTrackingConfiguration.detectionImages = getReferenceImages()
-      _configuration = worldTrackingConfiguration
+
      // worldTrackingConfiguration.initialWorldMap = _initialWorldMap
       
       // Configure plane detection
@@ -422,7 +423,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     // Clear all debug options first
     _arView.debugOptions = []
     
-    for delay in [1.0, 2.0, 3.0, 5.0] {
+    for delay in [5.0, 15.0] {
       DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
         
         
@@ -430,10 +431,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         //DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
         
         var options: ARView.DebugOptions = []
-        
+        self._arView.environment.sceneUnderstanding.options = [.physics, .occlusion]
         if self._showWireframes {
           options.insert(.showSceneUnderstanding)
           print("🔧 Adding .showSceneUnderstanding")
+          
+          self._arView.environment.sceneUnderstanding.options = [.physics, .occlusion]
+          print("🔧 Scene understanding toggled and re-enabled")
         }
         
         if self._showWorldOrigin {
@@ -448,6 +452,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         
         if self._showBoundingBoxes {
           options.insert(.showAnchorOrigins)
+          print("🔧 Adding .showAnchorOrigins")
+        }
+        
+        if self._showGeometry {
+          options.insert(.showAnchorGeometry)
           print("🔧 Adding .showAnchorOrigins")
         }
         
@@ -2363,11 +2372,7 @@ extension ARView3D: LifecycleDelegate {
   }
   
   @objc public func onDelete() {
-    //clearView()
-    ResetTracking()
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-      self.reapplyDebugOptions()
-    }
+    clearView()
   }
   
   @objc public func onDestroy() {
@@ -2393,9 +2398,9 @@ extension ARView3D: LifecycleDelegate {
     _detectedPlanesDict = [:]
     _imageMarkers = [:]
     
-    ResetTracking()
-    
-    reapplyDebugOptions()
+    _arView.session.delegate = nil
+    locationManager!.delegate = nil
+    _planeDetection = .none
     
   }
 }
