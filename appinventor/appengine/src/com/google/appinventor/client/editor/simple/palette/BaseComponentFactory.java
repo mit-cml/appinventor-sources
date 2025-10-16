@@ -10,6 +10,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
 import com.google.appinventor.client.editor.simple.components.MockAmbientLight;
 import com.google.appinventor.client.editor.simple.components.MockARView3D;
+import com.google.appinventor.client.editor.simple.components.MockBoxNode;
 import com.google.appinventor.client.editor.simple.components.MockCapsuleNode;
 import com.google.appinventor.client.editor.simple.components.MockDirectionalLight;
 import com.google.appinventor.client.editor.simple.components.MockImageMarker;
@@ -233,6 +234,8 @@ public class BaseComponentFactory implements ComponentFactory {
       return new MockARView3D(editor);
     } else if (name.equals(MockAmbientLight.TYPE)) {
       return new MockAmbientLight(editor);
+    } else if (name.equals(MockBoxNode.TYPE)) {
+      return new MockBoxNode(editor);
     } else if (name.equals(MockCapsuleNode.TYPE)) {
       return new MockCapsuleNode(editor);
     } else if (name.equals(MockDirectionalLight.TYPE)) {
