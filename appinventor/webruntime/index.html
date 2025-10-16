@@ -39,6 +39,21 @@ class FileSystemSimulator {
       throw new Error(`File not found: ${filename}`);
     }
   }
+  
+  static delete(filename) {
+    if (filename in FileSystemSimulator.files) {
+      delete FileSystemSimulator.files[filename];
+    } else {
+      throw new Error(`File not found: ${filename}`);
+    }
+  }
+
+  static copyFile(input, dest) {
+    if (!(input in FileSystemSimulator.files)) {
+    throw new Error(`File not found: ${input}`);
+    }
+    FileSystemSimulator.files[dest] = FileSystemSimulator.files[input];
+  }
 }
 
 top.FileSystemSimulator = FileSystemSimulator;

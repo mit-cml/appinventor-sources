@@ -2,6 +2,13 @@ package java.io;
 
 import java.net.URI;
 
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FileWriteOperation;
+import com.google.appinventor.components.runtime.util.ScopedFile;
+
+import weblib.FileSystemSimulator;
+
 public class File {
   private String path = "";
 
@@ -41,4 +48,34 @@ public class File {
   public String toString() {
     return path;
   }
+
+  public boolean delete() {
+    try {
+      if (FileSystemSimulator.getFile(path) == null) {
+        // File does not exist
+        return false;
+      }
+      FileSystemSimulator.delete(path);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public boolean mkdirs() {
+    return false;
+  }
+
+  public File[] listFiles() {
+    return new File[]{new File(path)};
+  }
+
+  public long lastModified() {
+    return 0;
+  }
+
 }

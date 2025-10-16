@@ -616,8 +616,13 @@
         <include name="${components.pkg}/runtime/CheckBox.java" />
         <include name="${components.pkg}/runtime/Clock.java" />
         <include name="${components.pkg}/runtime/Deleteable.java" />
+
+        <include name="${components.pkg}/runtime/File.java" />
+        <include name="${components.pkg}/runtime/util/FileUtil.java" />
+
         <include name="${components.pkg}/runtime/Image.java" />
         <include name="${components.pkg}/runtime/ImageBot.java" />
+        <include name="${components.pkg}/runtime/ImagePicker.java" />
         <include name="${components.pkg}/runtime/Label.java" />
         <include name="${components.pkg}/runtime/Layout.java" />
         <include name="${components.pkg}/runtime/LinearLayout.java" />

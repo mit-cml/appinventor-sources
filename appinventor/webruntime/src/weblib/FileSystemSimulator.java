@@ -7,4 +7,6 @@ import jsinterop.annotations.JsType;
 public class FileSystemSimulator {
   public static native void storeFile(String filename, byte[] contents);
   public static native byte[] getFile(String filename);
+  public static native void delete(String filename);
+  public static native void copyFile(String input, String output);
 }

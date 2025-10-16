@@ -11,8 +11,10 @@ import com.google.appinventor.components.runtime.CheckBox;
 import com.google.appinventor.components.runtime.Clock;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
+import com.google.appinventor.components.runtime.File;
 import com.google.appinventor.components.runtime.Image;
 import com.google.appinventor.components.runtime.ImageBot;
+import com.google.appinventor.components.runtime.ImagePicker;
 import com.google.appinventor.components.runtime.Label;
 import com.google.appinventor.components.runtime.ListPicker;
 import com.google.appinventor.components.runtime.ListView;
@@ -40,8 +42,12 @@ public class ComponentFactory {
     LOOKUP.put("ChatBot", ChatBot::new);
     LOOKUP.put("CheckBox", CheckBox::new);
     LOOKUP.put("Clock", Clock::new);
+
+    LOOKUP.put(key:"File", File::new);
+
     LOOKUP.put("Image", Image::new);
     LOOKUP.put("ImageBot", ImageBot::new);
+    LOOKUP.put("ImagePicker", ImagePicker::new);
     LOOKUP.put("Label", Label::new);
     LOOKUP.put("ListPicker", ListPicker::new);
     LOOKUP.put("ListView", ListView::new);

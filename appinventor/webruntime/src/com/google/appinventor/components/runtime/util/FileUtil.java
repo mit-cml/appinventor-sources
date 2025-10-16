@@ -9,7 +9,10 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.errors.RuntimeError;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
 public class FileUtil {
@@ -81,6 +84,14 @@ public class FileUtil {
       path = getExternalFile(form, fileName.substring(1), scope);
     }
     return Uri.fromFile(path).toString();
+  }
+
+  public static boolean needsWritePermission(ScopedFile file) {
+    return false;
+  }
+
+  public static void copyFile(String file, String file2) {
+    
   }
 
 
