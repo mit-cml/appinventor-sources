@@ -155,7 +155,7 @@ Blockly.Block.prototype.walk = function(callback) {
   function doWalk(block, depth) {
     callback(block, depth);
     block.inputList.forEach(function(input) {
-      if ((input.type === Blockly.INPUT_VALUE || input.type === Blockly.NEXT_STATEMENT) &&
+      if ((input.type === Blockly.inputs.inputTypes.VALUE || input.type === Blockly.inputs.inputTypes.STATEMENT) &&
           input.connection && input.connection.targetBlock()) {
         doWalk(input.connection.targetBlock(), depth + 1);
       }

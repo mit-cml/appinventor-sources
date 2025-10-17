@@ -9,7 +9,6 @@
     "./src/lexical_variable_plugin_shim.js",
     "./src/events.js",
     "./src/blocklyeditor.js",
-    './src/typeblock.js',
     "./src/blockly.js",
     "./src/events.js",
     "./src/block.js",
