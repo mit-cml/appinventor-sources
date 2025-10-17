@@ -111,7 +111,7 @@
       <srcfiles dir="src/" includes="**/*.js" />
       <srcfiles dir="${blockly.src.dir}/" includes="*.js" />
       <srcfiles dir="${blockly.plugin.dir}/" includes="*.js" />
-      <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
+      <srcfiles file="${lib.dir}/closure-compiler/base.js" />
     </uptodate>
   </target>
 
@@ -138,11 +138,7 @@
 			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-62b3583.min.js'"/>
 			<arg value="--js='${blockly.plugin.dir}/typeblocking-josmas-pr1-e5c97e4.min.js'"/>
 			<arg value="--js='blocklyeditor/src/**.js'"/>
-			<arg value="--js='${lib.dir}/closure-library/closure/goog/**.js'"/>
-			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_test.js'"/>
-			<arg value="--js='!${lib.dir}/closure-library/closure/goog/testing/**.js'"/>
-			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**tests.js'"/>
-			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_perf.js'"/>
+			<arg value="--js='${lib.dir}/closure-compiler/base.js'"/>
 		</java>
 	</target>
 
