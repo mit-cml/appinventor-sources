@@ -26,12 +26,13 @@ AI.Swift.SWIFT_INIT = [
 AI.Swift.SWIFT_FORM_POSTLUDE = "}\n";
 
 AI.Swift.SwiftWriter = function() {
-  AI.Swift.SwiftWriter.superClass_.constructor.call(this, 'Swift');
+  Blockly.Generator.call(this, 'Swift');
   this.indent_ = 0;
   this.pretty = true;
   this.code = [];
 };
-goog.inherits(AI.Swift.SwiftWriter, Blockly.Generator);
+AI.Swift.SwiftWriter.prototype = Object.create(Blockly.Generator.prototype);
+AI.Swift.SwiftWriter.prototype.constructor = AI.Swift.SwiftWriter;
 
 AI.Swift.SwiftWriter.prototype.indent = function() {
   this.indent_ += 2;
