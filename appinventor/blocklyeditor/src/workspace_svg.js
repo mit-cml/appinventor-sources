@@ -948,10 +948,9 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
       try {
         var handler = this.getWarningHandler();
         if (handler) {  // not true for flyouts and before the main workspace is rendered.
-          goog.array.forEach(this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck,
-            function(block) {
-              handler.checkErrors(block);
-            });
+          for (const block of this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck) {
+            handler.checkErrors(block);
+          }
         }
       } finally {
         this.pendingErrorCheck = null;
@@ -988,7 +987,7 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
  */
 /*
 Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
-  goog.array.forEach(this.connectionDBList, function(connectionDB) {
+  for (const connectionDB of this.connectionDBList) {
     connectionDB.sort(function(a, b) {
       return a.y_ - b.y_;
     });
@@ -999,7 +998,7 @@ Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
     // assumption may break in the future if Blockly decides on a different mechanism for indexing
     // connections.
     connectionDB.removeDupes();
-  });
+  }
 };
  */
 
