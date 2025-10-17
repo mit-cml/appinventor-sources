@@ -55,8 +55,6 @@
     <link type="text/css" rel="stylesheet" href="static/css/gwt.css">
     <link type="text/css" rel="stylesheet" href="static/css/blockly.css">
     <link type="text/css" rel="stylesheet" href="static/css/ai2blockly.css">
-    <link type="text/css" rel="stylesheet" href="static/closure-library/closure/goog/css/dialog.css">
-    <link type="text/css" rel="stylesheet" href="static/closure-library/closure/goog/css/hsvapalette.css">
     <link type="text/css" rel="stylesheet" href="static/font-awesome/css/font-awesome.min.css">
     <link type="text/css" rel="stylesheet" href="static/leaflet/leaflet.css">
     <link type="text/css" rel="stylesheet" href="static/leaflet/leaflet.toolbar.css">
@@ -107,7 +105,7 @@
       })();
     </script>
     <script src="static/js/tutorial.js"></script>
-    <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="static/closure-compiler/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="static/js/scroll-options-6.0.16.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-search-9.1.10.min.js"></script>
