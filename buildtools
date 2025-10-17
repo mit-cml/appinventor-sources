@@ -155,7 +155,7 @@ doctor() {
     ((pass++))
     echo [PASS] Git is installed.
     # Check if git submodules are present
-    if git submodule status lib/blockly lib/closure-library &> /dev/null; then
+    if git submodule status lib/blockly &> /dev/null; then
       ((pass++))
       echo [PASS] Git submodules are properly set up.
     else
