@@ -100,7 +100,7 @@ AI.Blockly.TypeBlock.prototype.generateOptions = function() {
 
     function createOption(tb, canonicName){
       if (tb){
-        goog.array.forEach(tb, function(dd){
+        for (const dd of tb) {
           var dropDownValues = {};
           var mutatorAttributes = {};
           if (dd.dropDown){
@@ -121,7 +121,7 @@ AI.Blockly.TypeBlock.prototype.generateOptions = function() {
             dropDown: dropDownValues,
             mutatorAttributes: mutatorAttributes
           };
-        });
+        }
       }
     }
 
@@ -144,23 +144,22 @@ AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
       function(opti){ return !opti.isProcedure;});
 
   var procsNoReturn = createTypeBlockForProcedures_.call(this, false);
-  var self = this;
-  goog.array.forEach(procsNoReturn, function(pro){
-    self.TBOptions_[pro.translatedName] = {
+  for (const pro of procsNoReturn) {
+    this.TBOptions_[pro.translatedName] = {
       canonicName: 'procedures_callnoreturn',
       dropDown: pro.dropDown,
       isProcedure: true // this attribute is used to clean up before reloading
     };
-  });
+  }
 
   var procsReturn = createTypeBlockForProcedures_.call(this, true);
-  goog.array.forEach(procsReturn, function(pro){
-    self.TBOptions_[pro.translatedName] = {
+  for (const pro of procsReturn) {
+    this.TBOptions_[pro.translatedName] = {
       canonicName: 'procedures_callreturn',
       dropDown: pro.dropDown,
       isProcedure: true
     };
-  });
+  }
 
   /**
    * Procedure names can be collected for both 'with return' and 'no return' varieties from
@@ -175,7 +174,7 @@ AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
     if (procNames.length == 1 && procNames[0][0] == '') {
       procNames = [];
     }
-    goog.array.forEach(procNames, function(proc){
+    for (const proc of procNames) {
       options.push(
           {
             translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL + proc[0],
@@ -185,7 +184,7 @@ AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
             }
           }
       );
-    });
+    }
     return options;
   }
 };
@@ -201,7 +200,7 @@ AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
   });
 
   var globalVarNames = Blockly.FieldLexicalVariable.getGlobalNames();
-  goog.array.forEach(globalVarNames, function(varName) {
+  for (const varName of globalVarNames) {
     var prefixedName = Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX  +
         ' ' + varName;
     var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET +
@@ -226,7 +225,7 @@ AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
       },
       isGlobalvar: true
     }
-  }.bind(this));
+  }
 };
 
 /**
@@ -261,7 +260,7 @@ AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
               .getInternationalizedParameterName(varName);
         }));
   }
-  goog.array.forEach(localVarNames, function(varName) {
+  for (const varName of localVarNames) {
     var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET + ' ' + varName;
     this.TBOptions_[translatedGet] = {
       canonicName: 'lexical_variable_get',
@@ -280,7 +279,7 @@ AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
       },
       isLocalVar: true
     }
-  }.bind(this));
+  }
 };
 
 AI.Blockly.TypeBlock.matchNumberOrTextBlock = function(blockName) {
@@ -411,15 +410,16 @@ AI.Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(
   //Because we allow for similar matches, Button.Text will always appear before Text
   //So we handle the 'text' case as a special case here
   if (token === 'text' || token === 'Text'){
-    goog.array.remove(matches, 'Text');
-    goog.array.insertAt(matches, 'Text', 0);
+    const index = matches.indexOf('Text');
+    if (index > -1) matches.splice(index, 1);
+    matches.unshift('Text');
   }
 
   // Added code to handle any number typed in the widget (including negatives and decimals)
   var reg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
   if (match && match.length > 0){
-    goog.array.insertAt(matches, token, 0);
+    matches.unshift(token);
   }
 
   // Added code to handle default values for text fields (they start with " or ')
