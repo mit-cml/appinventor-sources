@@ -1159,10 +1159,10 @@ AI.inject = function(container, workspace, isDarkMode=false) {
   workspace.setGridSettings(gridEnabled, gridSnap);
   // Update the workspace size in case the window was resized while we were hidden
   setTimeout(function() {
-    goog.array.forEach(workspace.blocksNeedingRendering, function(block) {
+    for (const block of workspace.blocksNeedingRendering) {
       workspace.getWarningHandler().checkErrors(block);
       block.render();
-    });
+    }
     workspace.blocksNeedingRendering.splice(0);  // clear the array of pending blocks
     workspace.resizeContents();
     Blockly.common.svgResize(workspace);

@@ -874,10 +874,9 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
       try {
         var handler = this.getWarningHandler();
         if (handler) {  // not true for flyouts and before the main workspace is rendered.
-          goog.array.forEach(this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck,
-            function(block) {
-              handler.checkErrors(block);
-            });
+          for (const block of this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck) {
+            handler.checkErrors(block);
+          }
         }
       } finally {
         this.pendingErrorCheck = null;
