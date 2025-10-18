@@ -19,6 +19,7 @@
       <g:FlowPanel ui:field="structureAndAssets">
         <box:SourceStructureBox />
         <box:BlockSelectorBox />
+        <ya:AssetManagerPanel ui:field="assetManagerPanel" />
         <box:AssetListBox />
       </g:FlowPanel>
       <box:BlocksBox />
