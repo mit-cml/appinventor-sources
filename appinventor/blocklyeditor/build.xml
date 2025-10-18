@@ -158,7 +158,7 @@
 
 	<target name="BlocklyTestbed"
 		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
-		      depends="components_AndroidRuntime, common_CommonTestUtils">
+		      depends="BlocklyTranslationGenerator, components_AndroidRuntime, common_CommonTestUtils">
 		<mkdir dir="${run.lib.dir}" />
 
 		<echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />
