@@ -10,8 +10,9 @@
  */
 import type { Block } from '../block.js';
 import * as blocks from '../serialization/blocks.js';
-import { BlockBase, BlockBaseJson } from './events_block_base.js';
 import { Workspace } from '../workspace.js';
+import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when a block (or connected stack of blocks) is
  * deleted.
@@ -25,7 +26,7 @@ export declare class BlockDelete extends BlockBase {
     ids?: string[];
     /** True if the deleted block was a shadow block, false otherwise. */
     wasShadow?: boolean;
-    type: string;
+    type: EventType;
     /** @param opt_block The deleted block.  Undefined for a blank event. */
     constructor(opt_block?: Block);
     /**
