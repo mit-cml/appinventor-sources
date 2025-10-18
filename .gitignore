@@ -1,6 +1,4 @@
-# You can copy and/or modify this file to create your own .gitignore file.
 # This keeps generated files from being added to source control management.
-.gitignore
 .classpath
 .project
 bin/
