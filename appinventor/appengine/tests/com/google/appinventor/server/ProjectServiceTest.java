@@ -331,9 +331,9 @@ public class ProjectServiceTest {
         getProjectId();
     // Check the contents of each file in the new project.
     Map<String, String> expectedYaFiles2 = new HashMap<String, String>();
-    expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.bky", "");
-    expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.yail", "");
-    expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.scm",
+    expectedYaFiles2.put("src/appinventor/ai_noname1/Project2/Screen1.bky", "");
+    expectedYaFiles2.put("src/appinventor/ai_noname1/Project2/Screen1.yail", "");
+    expectedYaFiles2.put("src/appinventor/ai_noname1/Project2/Screen1.scm",
         YOUNG_ANDROID_PROJECT_SCM_SOURCE);
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2, true));
     assertEqualProperties(new YoungAndroidSettingsBuilder()
