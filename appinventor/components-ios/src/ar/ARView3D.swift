@@ -106,6 +106,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _placementIndicator: AnchorEntity?
   private var _lastPlacementPosition: SIMD3<Float>?
 
+  private var worldMapURL: URL {
+      let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+      return docs.appendingPathComponent("ar_worldmap.ardata")
+  }
   
   struct CollisionGroups {
     static let arObjects: CollisionGroup = CollisionGroup(rawValue: 1 << 0)
@@ -445,9 +449,19 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      
       worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
       worldTrackingConfiguration.detectionImages = getReferenceImages()
-
-     // worldTrackingConfiguration.initialWorldMap = _initialWorldMap
       
+      do {
+        let data = try Data(contentsOf: worldMapURL)
+        if let worldMap = try NSKeyedUnarchiver.unarchivedObject(
+            ofClass: ARWorldMap.self,
+            from: data
+        ){
+          worldTrackingConfiguration.initialWorldMap = worldMap
+        }
+     
+      } catch {
+        print("❌ Error loading world map: \(error)")
+      }
       // Configure plane detection
       switch _planeDetection {
       case .horizontal:
@@ -854,6 +868,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     // Pause and prepare for reset
     pauseTracking(!wasRunning)
     setupConfiguration()
+    setupSceneUnderstanding()
     startOptions = [] //.resetTracking] //, .resetSceneReconstruction]
     
     // Short delay to ensure clean reset
@@ -1911,89 +1926,162 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    @objc open func LoadScene(_ dictionaries: [AnyObject]) -> [AnyObject] {
-      print("LOADING stored scene \(dictionaries)")
+    @objc open func LoadScene(_ dictionaries: [AnyObject], completion: ((Bool, [ARNode]) -> Void)? = nil) {
+       print("🔄 LOADING stored scene with \(dictionaries.count) nodes")
+       
+       // 1. First load the ARWorldMap to restore spatial anchoring
+       guard FileManager.default.fileExists(atPath: worldMapURL.path) else {
+           print("⚠️ No saved world map found, loading without spatial anchoring")
+           let nodes = loadNodesFromDictionaries(dictionaries)
+           completion?(false, nodes)
+           return
+       }
       
-      var loadNode: ARNodeBase?
+      do {
+        let data = try Data(contentsOf: worldMapURL)
+        guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(
+            ofClass: ARWorldMap.self,
+            from: data
+        ) else {
+            print("❌ Failed to unarchive world map")
+            let nodes = loadNodesFromDictionaries(dictionaries)
+            completion?(false, nodes)
+            return
+        }
+          
+        print("📍 Loading world map with \(worldMap.anchors.count) anchors")
+        
+        // 2. Configure ARSession with the saved world map
+        // do we need to reset?
+        print("✅ World map loaded - waiting for relocalization...")
+        
+        // 3. Wait a moment for relocalization, then load nodes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            let nodes = self.loadNodesFromDictionaries(dictionaries)
+            completion?(true, nodes)
+            print("✅ Loaded \(nodes.count) nodes with spatial anchoring")
+        }
+            
+        } catch {
+            print("❌ Error loading world map: \(error)")
+            let nodes = loadNodesFromDictionaries(dictionaries)
+            completion?(false, nodes)
+        }
+      }
+        
+      // Legacy synchronous version
+    @objc open func LoadScene(_ dictionaries: [AnyObject]) -> [AnyObject] {
+      print("LOADING stored scene \(dictionaries.count) nodes")
+      return loadNodesFromDictionaries(dictionaries)
+    }
+        
+        // MARK: - Helper Methods
+        
+    private func loadNodesFromDictionaries(_ dictionaries: [AnyObject]) -> [ARNode] {
       var newNodes: [ARNode] = []
       
       guard !dictionaries.isEmpty else {
-        return []
+          return []
       }
       
       for obj in dictionaries {
-        if obj is YailDictionary{
-          
+        if obj is YailDictionary {
           let nodeDict = obj as! YailDictionary
           
           guard let type = nodeDict["type"] as? String else {
-            print("loadscene missing type (\type)")
-            continue
+              print("loadscene missing type")
+              continue
           }
+          
+          let loadNode: ARNodeBase?
           
           switch type.lowercased() {
           case "capsule", "geocapsulenode":
-            loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
+              loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
           case "box", "geoboxnode":
-            loadNode = self.CreateBoxNodeFromYail(nodeDict)
+              loadNode = self.CreateBoxNodeFromYail(nodeDict)
           case "sphere", "geospherenode":
-            loadNode = self.CreateSphereNodeFromYail(nodeDict)
+              loadNode = self.CreateSphereNodeFromYail(nodeDict)
           case "model", "geomodelnode":
-            loadNode = self.CreateModelNodeFromYail(nodeDict)
+              loadNode = self.CreateModelNodeFromYail(nodeDict)
           case "text", "geotextnode":
-            loadNode = self.CreateTextNodeFromYail(nodeDict)
+              loadNode = self.CreateTextNodeFromYail(nodeDict)
           case "video", "geovideonode":
-            loadNode = self.CreateVideoNodeFromYail(nodeDict)
+              loadNode = self.CreateVideoNodeFromYail(nodeDict)
           case "webview", "geowebviewnode":
-            loadNode = self.CreateWebViewNodeFromYail(nodeDict)
+              loadNode = self.CreateWebViewNodeFromYail(nodeDict)
           default:
-            // currently not storing or handling modelNode..
-            loadNode = nil
+              loadNode = nil
           }
           
           if let node = loadNode {
-            addNode(node)
-            newNodes.append(node)
+              addNode(node)
+              newNodes.append(node)
           }
         }
       }
-      print("loadscene new nodes are \(newNodes)")
+        
+      print("✅ Loaded \(newNodes.count) nodes")
       return newNodes
     }
     
-    //objc signature expects only primitives or object
+    @objc open func SaveScene(_ newNodes: [AnyObject], completion: @escaping (Bool, [YailDictionary]) -> Void) {
+        var dictionaries: [YailDictionary] = []
+        
+        // 1. Create YAIL dictionaries (App Inventor will persist these)
+        for node in newNodes {
+          guard let arNode = node as? ARNode else { continue }
+          let nodeDict = arNode.ARNodeToYail()
+          dictionaries.append(nodeDict)
+        }
+              
+        print("✅ Created YAIL dictionaries for \(dictionaries.count) nodes")
+        
+        // getCurrentWorldMap method is asynchronous
+        _arView.session.getCurrentWorldMap { [weak self] worldMap, error in
+        guard let self = self,
+              let worldMap = worldMap else {
+            print("❌ Error getting world map: \(error?.localizedDescription ?? "unknown")")
+            completion(false, dictionaries)
+            return
+        }
+                  
+        print("📍 World map contains \(worldMap.anchors.count) anchors")
+        
+        do {
+          let data = try NSKeyedArchiver.archivedData(
+              withRootObject: worldMap,
+              requiringSecureCoding: true
+          )
+          try data.write(to: self.worldMapURL)
+          print("✅ World map saved successfully")
+          completion(true, dictionaries)
+        } catch {
+            print("❌ Error saving world map: \(error)")
+            completion(false, dictionaries)
+        }
+      }
+    }
+        
     @objc open func SaveScene(_ newNodes: [AnyObject]) -> [YailDictionary] {
       var dictionaries: [YailDictionary] = []
-      // a list of arnodes
-      for node in newNodes { // swift thinks newnodes is nsarray
-        guard let arNode = node as? ARNode else { continue }
-        
-        let nodeDict = arNode.ARNodeToYail()
-        dictionaries.append(nodeDict)
+      
+      for node in newNodes {
+          guard let arNode = node as? ARNode else { continue }
+          let nodeDict = arNode.ARNodeToYail()
+          dictionaries.append(nodeDict)
       }
-      print("returning dictionaries")
-      // Save world map
-      _arView.session.getCurrentWorldMap { worldMap, error in
-        /*  guard let worldMap = worldMap else {
-              print("Error getting world map: \(error?.localizedDescription ?? "unknown")")
-              return
-          }
-          
-          // Save worldMap to disk
-          do {
-              let data = try NSKeyedArchiver.archivedData(
-                  withRootObject: worldMap,
-                  requiringSecureCoding: true
-              )
-              try data.write(to: worldMapURL)
-          } catch {
-              print("Error saving world map: \(error)")
-          }*/
+      
+      // Trigger async save in background
+      SaveScene(newNodes) { success, _ in
+        if success {
+            print("✅ Scene saved with ARWorldMap")
+        }
       }
+      
       return dictionaries
     }
-    
-    
     
     public func worldToGPS(_ worldPoint: SIMD3<Float>) -> (coordinate: CLLocationCoordinate2D, altitude: Double)? {
       guard let sessionStart = sessionStartLocation else { return nil }
