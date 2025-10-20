@@ -59,6 +59,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _showWorldOrigin: Bool = false
   private var _showFeaturePoints: Bool = false
   private var _showWireframes: Bool = false
+  private var _showPhysics: Bool = false
   private var _showBoundingBoxes: Bool = false
   private var _showGeometry: Bool = false
   private var _showLightLocations: Bool = false
@@ -160,12 +161,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _arView.environment.sceneUnderstanding.options = [.physics]
     _arView.translatesAutoresizingMaskIntoConstraints = false
 
-  
-    if (_enableOcclusion){
-      _arView.environment.sceneUnderstanding.options.insert(.occlusion)
-    } else {
-      _arView.environment.sceneUnderstanding.options.remove(.occlusion)
-    }
+
     super.init(parent)
     _arView.session.delegate = self
     setupLocationManager()
@@ -182,6 +178,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
 
     setupConfiguration()
+    setupSceneUnderstanding()
     
     parent.add(self)
     Height = kARViewPreferredHeight
@@ -275,7 +272,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return _enableOcclusion
     }
     set(enableOcclusion) {
-      
+      if enableOcclusion {
+          _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+      } else {
+          _arView.environment.sceneUnderstanding.options.remove(.occlusion)
+      }
     _enableOcclusion = enableOcclusion
     }
   }
@@ -313,9 +314,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     set(showWireframes) {
       if showWireframes {
-        _arView.debugOptions.insert([.showSceneUnderstanding])
+        _arView.debugOptions.insert(.showSceneUnderstanding)
       } else {
-        _arView.debugOptions.remove([.showSceneUnderstanding])
+        _arView.debugOptions.remove(.showSceneUnderstanding)
       }
       _showWireframes = showWireframes
     }
@@ -341,11 +342,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     set(showBoundingBoxes) {
       if showBoundingBoxes {
-        _arView.debugOptions.insert(.showAnchorOrigins) //showPhysics?
+        _arView.debugOptions.insert(.showPhysics) //showPhysics?
       } else {
-        _arView.debugOptions.remove(.showAnchorOrigins)
+        _arView.debugOptions.remove(.showPhysics)
       }
       _showBoundingBoxes = showBoundingBoxes
+    }
+  }
+  
+  @objc open var ShowPhysics: Bool {
+    get {
+      return _showPhysics
+    }
+    set(showPhysics) {
+      if showPhysics {
+        _arView.debugOptions.insert(.showPhysics)
+      } else {
+        _arView.debugOptions.remove(.showPhysics)
+      }
+      _showPhysics = showPhysics
     }
   }
   
@@ -363,8 +378,35 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
+  
+  private func setupSceneUnderstanding() {
+      print("🎯 Setting up scene understanding...")
+      
+      // Start with base options
+      var options: ARView.Environment.SceneUnderstanding.Options = [.physics]
+      
+      // Add occlusion if enabled
+      if _enableOcclusion {
+          options.insert(.occlusion)
+          print("  ✅ Occlusion enabled")
+      }
+      
+      // Add collision if needed
+      options.insert(.collision)
+      
+      _arView.environment.sceneUnderstanding.options = options
+      
+      print("  Final scene understanding options: \(options)")
+      
+      // Verify configuration has scene reconstruction
+      if let config = _arView.session.configuration as? ARWorldTrackingConfiguration {
+          print("  Scene reconstruction in config: \(String(describing: config.sceneReconstruction))")
+      }
+  }
+  
   @available(iOS 14.0, *)
   private func setupConfiguration() {
+    print("SETUP CONFIGURATION")
     guard _trackingSet && _planeDetectionSet else {
       //self._container?.form?.dispatchErrorOccurredEvent(self, "AR Tracking", ErrorMessage.ERROR_AR_TRACKING_NOT_SUPPORTED.code, "AR tracking not supported on this device")
       return }
@@ -395,6 +437,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       } else {
         print("CONFIG: Scene reconstruction not supported on this device")
         worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+      }
+      
+      if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+        worldTrackingConfiguration.frameSemantics.insert(.sceneDepth)
       }
      
       worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
@@ -452,7 +498,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     setupCollisionDetection()
     
     if _sessionRunning {
-      ResetTracking()
+      //ResetTracking()
     }
     
   
@@ -462,6 +508,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
   public func reapplyDebugOptions() {
     print("🔧 Reapplying debug options...")
+    print("🔧 Reapplying DEBUG OPTIONS...")
     print("🔧 Current flags - Wireframes: \(_showWireframes), Origin: \(_showWorldOrigin), Features: \(_showFeaturePoints)")
     
     // Clear all debug options first
@@ -475,12 +522,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         //DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
         
         var options: ARView.DebugOptions = []
-        self._arView.environment.sceneUnderstanding.options = [.physics, .occlusion]
+       
         if self._showWireframes {
           options.insert(.showSceneUnderstanding)
           print("🔧 Adding .showSceneUnderstanding")
-          
-          self._arView.environment.sceneUnderstanding.options = [.physics, .occlusion]
+
           print("🔧 Scene understanding toggled and re-enabled")
         }
         
@@ -492,6 +538,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         if self._showFeaturePoints {
           options.insert(.showFeaturePoints)
           print("🔧 Adding .showFeaturePoints")
+        }
+        
+        if self._showPhysics {
+          options.insert(.showPhysics)
+          print("🔧 Adding .showPhysics")
         }
         
         if self._showBoundingBoxes {
@@ -508,7 +559,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           options.insert(.showStatistics)
           print("🔧 Adding .showStatistics")
         }
-        //findCorrectDebugValues()
+        self.findCorrectDebugValues()
         self._arView.debugOptions = options
         
         print("🔧 Final debug options: \(self._arView.debugOptions)")
@@ -655,6 +706,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     collisionBeganObserver?.cancel()
     _arView.session.pause()
     _arView.scene.anchors.removeAll()
+    _arView.session.delegate = nil
   }
 
 
@@ -674,12 +726,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         print("⚠️ Session already running, skipping start")
         return
     }
-    print("▶️ Starting AR session with options: \(options)")
-    
-    _arView.session.run(_configuration, options: options)
+    print("▶️ STARTTRACKING WITH OPTIONS: \(options)")
+    startOptions = []
+    _arView.session.run(_configuration, options: startOptions)
     _sessionRunning = true
-    startOptions = [.resetTracking, .resetSceneReconstruction]
+     //, .resetSceneReconstruction]
     
+
     // ✅ Only recreate floor if anchors were removed
     if options.contains(.removeExistingAnchors) || _invisibleFloor == nil {
         ensureFloorExists()
@@ -687,11 +740,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     updateGroundLevel(newGroundLevel: GROUND_LEVEL)
     
-    if (_enableOcclusion) {
-        _arView.environment.sceneUnderstanding.options.insert(.occlusion)
-    } else {
-        _arView.environment.sceneUnderstanding.options.remove(.occlusion)
-    }
     
     // ✅ Re-enable WebViews if needed
     if _reenableWebViewNodes {
@@ -756,6 +804,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
     // ✅ Reapply debug options
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      self.setupSceneUnderstanding()
         self.reapplyDebugOptions()
     }
     
@@ -785,7 +834,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   @objc open func ResetTracking() {
-    print("🔄 Complete AR reset...")
+    print("RESET TRACKING")
     
     let wasRunning = _sessionRunning
     
@@ -805,7 +854,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     // Pause and prepare for reset
     pauseTracking(!wasRunning)
     setupConfiguration()
-    startOptions = [] //[.resetTracking]
+    startOptions = [] //.resetTracking] //, .resetSceneReconstruction]
     
     // Short delay to ensure clean reset
 
@@ -855,7 +904,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
   }
   
-  @objc open func ResetDetectedItems() {
+  /*@objc open func ResetDetectedItems() {
     let _shouldRestartSession = _sessionRunning
     
     _hasSetGroundLevel = false
@@ -867,7 +916,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     } else if startOptions.isEmpty {
       startOptions = [.removeExistingAnchors]
     }
-  }
+  }*/
   
   @objc func verifyFloorState() {
     print("🏠 Floor State Check:")
@@ -1348,22 +1397,28 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   public func session(_ session: ARSession, didUpdate frame: ARFrame) {
+
       autoreleasepool {
-          guard _lightingEstimationEnabled else { return }
+          // Extract data immediately - don't store frame reference
+          let timestamp = frame.timestamp
           
-          // Throttle updates to prevent frame buildup
-          let currentTime = frame.timestamp
-          guard currentTime - _lastLightingUpdate >= _lightingUpdateInterval else { return }
-          _lastLightingUpdate = currentTime
-          
-          if let lightingEstimate = frame.lightEstimate {
-              let ambientIntensity = Float(lightingEstimate.ambientIntensity)
-              let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
+          // Handle lighting estimation
+          if _lightingEstimationEnabled {
+              guard timestamp - _lastLightingUpdate >= _lightingUpdateInterval else { return }
+              _lastLightingUpdate = timestamp
               
-              DispatchQueue.main.async { [weak self] in
-                  self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
+              if let lightingEstimate = frame.lightEstimate {
+                  let ambientIntensity = Float(lightingEstimate.ambientIntensity)
+                  let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
+                  
+                  // ✅ Don't capture frame in async block
+                  DispatchQueue.main.async { [weak self] in
+                      self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
+                  }
               }
           }
+          
+          // Frame is released here when autoreleasepool exits
       }
   }
   
@@ -1386,14 +1441,17 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
   public func sessionInterruptionEnded(_ session: ARSession) {
       print("✅ ===== AR SESSION INTERRUPTION ENDED =====")
-      print("✅ Automatically resuming camera...")
       
-      // ✅ ARKit is telling us it's safe to resume now
-      _arView.session.run(_configuration, options: [])
+      // ✅ Don't restart the session - ARKit resumes automatically
+      // Just mark that we're running again
       _sessionRunning = true
       
-      // Restore all state
-
+      // ✅ Optionally verify the session has our configuration
+      if _arView.session.configuration == nil {
+          print("⚠️ Configuration lost, reapplying...")
+          _arView.session.run(_configuration, options: [])
+      }
+      
       ensureFloorExists()
       
       if _reenableWebViewNodes {
@@ -1596,7 +1654,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     
     private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double, node: ARNodeBase, hasGeoCoordinates: Bool) {
-      
+      print("SETUP LOCATION")
       // Create geo anchor if we can
       if hasGeoCoordinates {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -2408,11 +2466,17 @@ extension ARView3D: LifecycleDelegate {
   }
   
   @objc public func onResume() {
+    print("RESUMING view")
     ResetTracking()
   }
   
   @objc public func onDelete() {
+    print("DELETEING/REFRESHING view")
     clearView()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+            print("CLEARING view in onDelete")
+            
+        }
   }
   
   @objc public func onDestroy() {
@@ -2420,13 +2484,29 @@ extension ARView3D: LifecycleDelegate {
   }
   
   private func clearView() {
+    print("CLEARING view")
     _nodeToAnchorDict.keys.forEach {
       $0.stopFollowing()
       $0.removeFromAnchor()
     }
     
-    _detectedPlanesDict.removeAll()
+    _arView.session.pause()
+    _sessionRunning = false
     
+    // ✅ Force release any retained frames
+    autoreleasepool {
+        // This ensures any frames in the current pool are released
+        _ = _arView.session.currentFrame  // Access and release
+    }
+    
+    // ✅ Remove all anchors
+    _arView.scene.anchors.removeAll()
+    
+    // ✅ Clear the session completely
+    _arView.session.delegate = nil
+    _detectedPlanesDict.removeAll()
+
+
     _imageMarkers.removeAll()
     
     _lights.keys.forEach {
