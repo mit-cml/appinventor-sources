@@ -676,7 +676,7 @@ open class ARNodeBase: NSObject, ARNode {
   
   @objc open func PoseToYailDictionary() -> YailDictionary? {
 
-    guard let p = self._modelEntity.transform else {
+    guard let p = self._modelEntity.transform as? Transform else {
         os_log("pose is nil", log: .default, type: .info)
         return nil
     }

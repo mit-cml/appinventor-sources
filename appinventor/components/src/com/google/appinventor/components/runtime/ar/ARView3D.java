@@ -1839,12 +1839,21 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleProperty
     public void ShowAnchorGeometry(boolean showGeometry) {
     }
-    
+
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether geometry shows in world understanding. ")
     public boolean ShowAnchorGeometry() {
         return false;
     }
+    
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+    @SimpleProperty
+    public void ShowPhysics(boolean showP) {
+    }
 
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether physics show in world understanding. ")
+    public boolean ShowPhysics() {
+        return false;
+    }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty
@@ -1873,7 +1882,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether to show the wireframe of nodes' geometries on top of their FillColor of Texture.")
     public boolean ShowWireframes() {
-        return true;
+        return false;
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")

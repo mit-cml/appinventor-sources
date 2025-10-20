@@ -313,8 +313,8 @@ public protocol ARModel: ARNode {
 @available(iOS 14.0, *)
 @objc public protocol ARNodeContainer: ComponentContainer {
   var Nodes: [ARNode] { get }
-  var ShowWireframes: Bool { get set }
-  var ShowBoundingBoxes: Bool { get set }
+  //var ShowWireframes: Bool { get set }
+  //var ShowBoundingBoxes: Bool { get set }
 
   func getARView() -> ARView3D
   func addNode(_ node: ARNodeBase)
