@@ -40,6 +40,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.EclairUtil;
+import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
@@ -380,6 +381,10 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     } else {
       Log.d(LOG_TAG, "mainStance is null on doSettings");
     }
+  }
+
+  static void startCache() {
+    RetValManager.startCache();
   }
 
   public static String intToIp(int i) {

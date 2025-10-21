@@ -368,6 +368,8 @@ public abstract class ButtonBase extends AndroidViewComponent
   public void Image(@Asset String path) {
     // If it's the same as on the prior call and the prior load was successful,
     // do nothing.
+    Log.d(LOG_TAG, "Image: Path = " + path + " backgroundImageDrawable = " + backgroundImageDrawable);
+
     if (path.equals(imagePath) && backgroundImageDrawable != null) {
       return;
     }
