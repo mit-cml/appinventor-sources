@@ -573,11 +573,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           options.insert(.showStatistics)
           print("🔧 Adding .showStatistics")
         }
-        self.findCorrectDebugValues()
+        //self.findCorrectDebugValues()
         self._arView.debugOptions = options
         
         print("🔧 Final debug options: \(self._arView.debugOptions)")
-        print("🔧 Scene understanding enabled in config: \((self._configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction != [])")
       }
     }
   }

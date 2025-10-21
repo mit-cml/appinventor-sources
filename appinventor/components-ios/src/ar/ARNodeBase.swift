@@ -1371,7 +1371,6 @@ extension ARNodeBase {
     if #available(iOS 18.0, *) {
       _modelEntity.components.set(GroundingShadowComponent(castsShadow: true))
     }
-    print("🌘 Shadows enabled \(Name)")
   }
 
   @available(iOS 15.0, *)
@@ -1380,7 +1379,6 @@ extension ARNodeBase {
     if #available(iOS 18.0, *) {
       _modelEntity.components.set(GroundingShadowComponent(castsShadow: false))
     }
-    print("☀️ Shadows disabled\(Name)")
   }
 
 }
