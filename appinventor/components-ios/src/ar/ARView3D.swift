@@ -1925,16 +1925,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    @objc open func LoadScene(_ dictionaries: [AnyObject], completion: ((Bool, [ARNode]) -> Void)? = nil) {
-       print("🔄 LOADING stored scene with \(dictionaries.count) nodes")
-       
-       // 1. First load the ARWorldMap to restore spatial anchoring
-       guard FileManager.default.fileExists(atPath: worldMapURL.path) else {
-           print("⚠️ No saved world map found, loading without spatial anchoring")
-           let nodes = loadNodesFromDictionaries(dictionaries)
-           completion?(false, nodes)
-           return
-       }
+    private func loadWorldMapFromDisk() -> ARWorldMap? {
+      guard FileManager.default.fileExists(atPath: worldMapURL.path) else {
+          return nil
+      }
       
       do {
         let data = try Data(contentsOf: worldMapURL)
@@ -1942,38 +1936,69 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             ofClass: ARWorldMap.self,
             from: data
         ) else {
-            print("❌ Failed to unarchive world map")
-            let nodes = loadNodesFromDictionaries(dictionaries)
-            completion?(false, nodes)
-            return
+          Swift.print("❌ Failed to unarchive world map")
+            return nil
         }
-          
-        print("📍 Loading world map with \(worldMap.anchors.count) anchors")
+        Swift.print("✅ world map!")
+        return worldMap
+      } catch {
+        Swift.print("❌ Error loading world map: \(error)")
+        return nil
+      }
+    }
+    
+      
+    @available(iOS 15.0, *)
+    @objc open func LoadScene(_ dictionaries: [AnyObject]) async -> [ARNode] {
+      print("🔄 LOADING stored scene with \(dictionaries.count) nodes")
+      
+      // Wait for ARKit to be ready (check world mapping status)
+      await waitForARKitReady()
+      
+      let nodes = loadNodesFromDictionaries(dictionaries)
+      print("✅ Loaded \(nodes.count) nodes")
+      return nodes
+    }
         
-        // 2. Configure ARSession with the saved world map
-        // do we need to reset?
-        print("✅ World map loaded - waiting for relocalization...")
+    @available(iOS 15.0, *)
+    private func waitForARKitReady() async {
+      let maxWaitTime: TimeInterval = 3.0
+      let checkInterval: TimeInterval = 0.1
+      var elapsed: TimeInterval = 0
+      
+      while elapsed < maxWaitTime {
+        if let mappingStatus = _arView.session.currentFrame?.worldMappingStatus {
+            // Ready when status is .extending or .mapped
+          if mappingStatus == .extending || mappingStatus == .mapped {
+              print("✅ ARKit ready (status: \(mappingStatus))")
+              return
+          }
+        }
         
-        // 3. Wait a moment for relocalization, then load nodes
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            let nodes = self.loadNodesFromDictionaries(dictionaries)
-            completion?(true, nodes)
-            print("✅ Loaded \(nodes.count) nodes with spatial anchoring")
-        }
-            
-        } catch {
-            print("❌ Error loading world map: \(error)")
-            let nodes = loadNodesFromDictionaries(dictionaries)
-            completion?(false, nodes)
-        }
+        try? await Task.sleep(nanoseconds: UInt64(checkInterval * 1_000_000_000))
+        elapsed += checkInterval
       }
         
-      // Legacy synchronous version
-    @objc open func LoadScene(_ dictionaries: [AnyObject]) -> [AnyObject] {
-      print("LOADING stored scene \(dictionaries.count) nodes")
-      return loadNodesFromDictionaries(dictionaries)
+      print("⚠️ ARKit not fully ready after \(maxWaitTime)s, proceeding anyway")
     }
+    
+    @objc open func getWorldMappingStatus() -> String {
+      switch _arView.session.currentFrame?.worldMappingStatus {
+      case .notAvailable:
+          return "Not Available"
+      case .limited:
+          return "Limited"
+      case .extending:
+          return "Extending"
+      case .mapped:
+          return "Mapped"
+      case .none:
+          return "Unknown"
+      @unknown default:
+          return "Unknown"
+      }
+    }
+    
         
         // MARK: - Helper Methods
         
@@ -2025,45 +2050,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return newNodes
     }
     
-    @objc open func SaveScene(_ newNodes: [AnyObject], completion: @escaping (Bool, [YailDictionary]) -> Void) {
-        var dictionaries: [YailDictionary] = []
-        
-        // 1. Create YAIL dictionaries (App Inventor will persist these)
-        for node in newNodes {
-          guard let arNode = node as? ARNode else { continue }
-          let nodeDict = arNode.ARNodeToYail()
-          dictionaries.append(nodeDict)
-        }
-              
-        print("✅ Created YAIL dictionaries for \(dictionaries.count) nodes")
-        
-        // getCurrentWorldMap method is asynchronous
-        _arView.session.getCurrentWorldMap { [weak self] worldMap, error in
-        guard let self = self,
-              let worldMap = worldMap else {
-            print("❌ Error getting world map: \(error?.localizedDescription ?? "unknown")")
-            completion(false, dictionaries)
-            return
-        }
-                  
-        print("📍 World map contains \(worldMap.anchors.count) anchors")
-        
-        do {
-          let data = try NSKeyedArchiver.archivedData(
-              withRootObject: worldMap,
-              requiringSecureCoding: true
-          )
-          try data.write(to: self.worldMapURL)
-          print("✅ World map saved successfully")
-          completion(true, dictionaries)
-        } catch {
-            print("❌ Error saving world map: \(error)")
-            completion(false, dictionaries)
-        }
-      }
-    }
-        
-    @objc open func SaveScene(_ newNodes: [AnyObject]) -> [YailDictionary] {
+    @available(iOS 15.0, *)
+    @objc open func SaveScene(_ newNodes: [AnyObject]) async -> [YailDictionary] {
       var dictionaries: [YailDictionary] = []
       
       for node in newNodes {
@@ -2071,16 +2059,47 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           let nodeDict = arNode.ARNodeToYail()
           dictionaries.append(nodeDict)
       }
-      
-      // Trigger async save in background
-      SaveScene(newNodes) { success, _ in
-        if success {
-            print("✅ Scene saved with ARWorldMap")
-        }
+        
+      print("✅ Created YAIL dictionaries for \(dictionaries.count) nodes")
+        
+      do {
+        let worldMap = try await getCurrentWorldMap()
+        print("📍 World map contains \(worldMap.anchors.count) anchors")
+        
+        let data = try NSKeyedArchiver.archivedData(
+            withRootObject: worldMap,
+            requiringSecureCoding: true
+        )
+        try data.write(to: worldMapURL)
+        print("✅ World map saved successfully")
+          
+      } catch {
+        print("❌ Error saving world map: \(error)")
       }
       
       return dictionaries
     }
+    
+    /// Get current world map as async function
+    @available(iOS 15.0, *)
+    private func getCurrentWorldMap() async throws -> ARWorldMap {
+      try await withCheckedThrowingContinuation { continuation in
+        _arView.session.getCurrentWorldMap { (worldMap: ARWorldMap?, error: Error?) in
+            if let error = error {
+                continuation.resume(throwing: error)
+            } else if let worldMap = worldMap {
+                continuation.resume(returning: worldMap)
+            } else {
+                continuation.resume(throwing: NSError(
+                    domain: "ARWorldMap",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "No world map returned"]
+                ))
+            }
+        }
+      }
+    }
+        
     
     public func worldToGPS(_ worldPoint: SIMD3<Float>) -> (coordinate: CLLocationCoordinate2D, altitude: Double)? {
       guard let sessionStart = sessionStartLocation else { return nil }
