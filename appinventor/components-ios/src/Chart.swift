@@ -185,7 +185,7 @@ import DGCharts
     set {
       _labels = newValue
       if let chart = _chartView as? AxisChartView {
-        chart.axisLabels = _labels
+        chart.setLabels(labels: _labels)
       }
     }
   }
