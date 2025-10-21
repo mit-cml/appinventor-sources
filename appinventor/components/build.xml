@@ -276,6 +276,7 @@
         <exclude name="internal.md" />
       </fileset>
     </copy>
+    <copy todir="${appinventor.dir}/components-ios/src/" file="${AndroidRuntime-class.dir}/OptionHelper.swift" />
   </target>
 
   <!-- =====================================================================
