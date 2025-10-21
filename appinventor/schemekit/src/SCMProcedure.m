@@ -82,4 +82,12 @@
   return self;
 }
 
+- (id<SCMValue>)invoke {
+  return [interpreter_ apply:self.value];
+}
+
+- (id<SCMValue>)invokeWithArguments:(NSArray<id> *)arguments {
+  return [interpreter_ apply:self.value to:arguments];
+}
+
 @end
