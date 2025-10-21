@@ -95,10 +95,10 @@ Blockly.BlockSvg.isRenderingOn = true;
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.getSvgRoot()),
                            'badBlock');
     // Move the selected block to the top of the stack.
-    this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+    this.getSvgRoot().parentNode.appendChild(this.getSvgRoot());
   }
 };
 
@@ -107,10 +107,10 @@ Blockly.BlockSvg.prototype.addBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.removeBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.getSvgRoot()),
                               'badBlock');
     // Move the selected block to the top of the stack.
-    this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+    this.getSvgRoot().parentNode.appendChild(this.getSvgRoot());
   }
 };
 
@@ -119,10 +119,10 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
   // Return false for unrendered blocks - they can't be visually marked as bad
-  if (!this.svgGroup_ || !this.rendered) {
+  if (!this.getSvgRoot() || !this.rendered) {
     return false;
   }
-  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.svgGroup_),
+  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.getSvgRoot()),
     'badBlock');
 };
 
@@ -133,7 +133,7 @@ Blockly.BlockSvg.prototype.badBlock = function() {
   this.isBad = true;
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block bad only if it is on the main workspace
-    goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
+    goog.asserts.assertObject(this.getSvgRoot(), 'Block is not rendered.');
     this.addBadBlock();
   }
 };
@@ -146,7 +146,7 @@ Blockly.BlockSvg.prototype.notBadBlock = function() {
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
     // For Blockly v11 compatibility: allow unrendered blocks during XML loading
-    if (this.svgGroup_) {
+    if (this.getSvgRoot()) {
       this.removeBadBlock();
     }
     // If block is not rendered yet (during XML loading), skip visual updates
