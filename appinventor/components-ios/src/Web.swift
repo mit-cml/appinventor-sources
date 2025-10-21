@@ -246,11 +246,17 @@ open class Web: NonvisibleComponent {
   fileprivate func saveResponseContent(_ response: URLResponse, _ fileName: String, _ responseType: String, _ data: Data?) -> String {
     let filename = (fileName.isEmpty) ? response.suggestedFilename : fileName
 
-    let fileManager = FileManager.default
-    let path = NSTemporaryDirectory() + filename!
-    fileManager.createFile(atPath: path, contents: data, attributes: nil)
+    let fileExtension = (filename ?? "download.tmp").split(separator: ".").last ?? ""
 
-    return path
+    let fileManager = FileManager.default
+    if let path = try? FileUtil.getDownloadFile(String(fileExtension)) {
+      fileManager.createFile(atPath: path, contents: data, attributes: nil)
+      return path
+    } else {
+      let path = NSTemporaryDirectory() + (filename ?? "download.tmp")
+      fileManager.createFile(atPath: path, contents: data)
+      return path
+    }
   }
 
   fileprivate func openSession(_ webProps: CapturedProperties, _ httpVerb: String) -> URLSession {
