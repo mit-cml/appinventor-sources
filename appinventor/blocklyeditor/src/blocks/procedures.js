@@ -564,9 +564,9 @@ Blockly.Blocks['procedures_mutatorarg'] = {
     var editor = new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam);
     // 2017 Blockly's text input change breaks our renaming behavior.
     // The following is a version we've defined.
-    editor.onHtmlInputChange_ = function(e) {
+    editor.onHtmlInputChange = function(e) {
       var oldValue = this.getValue();
-      Blockly.FieldFlydown.prototype.onHtmlInputChange_.call(this, e);
+      Blockly.FieldFlydown.prototype.onHtmlInputChange.call(this, e);
       var newValue = this.getValue();
       if (newValue && oldValue !== newValue && Blockly.Events.isEnabled()) {
         Blockly.Events.fire(new Blockly.Events.BlockChange(
