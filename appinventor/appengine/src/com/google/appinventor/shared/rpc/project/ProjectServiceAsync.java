@@ -9,6 +9,7 @@ package com.google.appinventor.shared.rpc.project;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -54,6 +55,31 @@ public interface ProjectServiceAsync {
    */
   void restoreProject(long projectId, AsyncCallback<UserProject> callback);
 
+  /**
+   * @see ProjectService#updateProjectPermissions(long, Boolean, List<String>)
+   */
+  void updateProjectPermissions(final long projectId, Boolean isShareAll, List<String> userEmails, AsyncCallback<Void> callback);
+
+  /**
+   * @see ProjectService#shareProjectWithUsers(long, Boolean, List<String>)
+   */
+  void shareProjectWithUsers(long projectId, Boolean isShareAll, List<String> userEmails, AsyncCallback<Void> callback);
+  
+  /**
+   * @see ProjectService#retractAccessFromUsers(long, List<String>)
+   */
+  void retractAccessFromUsers(long projectId, List<String> userEmails, AsyncCallback<Void> callback);
+
+  /**
+   * @see ProjectService#getAccessInfo(long)
+   */
+  void getAccessInfo(long projectId, AsyncCallback<HashMap<String, List<String>>> callback);
+
+  /**
+   * @see ProjectService#getSharedProject(String, long)
+   */
+  void getSharedProject(String userId, long shareId, AsyncCallback<UserProject> callback);
+  
   /**
    * @see ProjectService@loginToGallery()
    */
