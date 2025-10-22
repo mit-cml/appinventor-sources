@@ -1870,12 +1870,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void ShowFeaturePoints(boolean showFeaturePoints) {
     }
 
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether to visualize features points as yellow points.  Feature points are " + "points for which their world coordinates are known.")
     public boolean ShowFeaturePoints() {
         return true;
     }
 
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty
     public void ShowWireframes(boolean showWireframes) {
     }
