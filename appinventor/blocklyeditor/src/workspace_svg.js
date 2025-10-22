@@ -763,7 +763,7 @@ Blockly.WorkspaceSvg.prototype.hasBackpack = function() {
   return this.backpack_ != null;
 };
 
-Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
+Blockly.WorkspaceSvg.prototype.onMouseWheel = function(e) {
   this.cancelCurrentGesture();
   if (e.eventPhase == 3) {
     if (e.ctrlKey == true) {
