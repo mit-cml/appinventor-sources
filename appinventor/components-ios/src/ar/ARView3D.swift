@@ -167,6 +167,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   public override init(_ parent: ComponentContainer) {
     _arView = ARView()
+    _arView.automaticallyConfigureSession = false
     _arView.environment.sceneUnderstanding.options = [.physics]
     _arView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -871,19 +872,19 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             }
             if !node._fromPropertyRotation.isEmpty {
               let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
-                  .prefix(3)
-                  .map { Float(String($0)) ?? 0.0 }
+                .prefix(3)
+                .map { Float(String($0)) ?? 0.0 }
               
               let xRadians = eulerDegrees[0] * .pi / 180.0
               let yRadians = eulerDegrees[1] * .pi / 180.0
               let zRadians = eulerDegrees[2] * .pi / 180.0
               
               node._modelEntity.transform.rotation = simd_quatf(
-                  angle: yRadians, axis: [0, 1, 0]
+                angle: yRadians, axis: [0, 1, 0]
               ) * simd_quatf(
-                  angle: xRadians, axis: [1, 0, 0]
+                angle: xRadians, axis: [1, 0, 0]
               ) * simd_quatf(
-                  angle: zRadians, axis: [0, 0, 1]
+                angle: zRadians, axis: [0, 0, 1]
               )
             }
           }
@@ -1252,7 +1253,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         anchorEntity = node.createAnchor()
       }
       let nodeId = ObjectIdentifier(node)
-      print("adding non-geo node")
       _nodeToAnchorDict[node] = anchorEntity
       _containsModelNodes = node is ModelNode ? true : _containsModelNodes
       
@@ -2668,11 +2668,11 @@ extension ARView3D: LifecycleDelegate {
   @objc public func onDelete() {
     print("DELETEING/REFRESHING view")
     clearView()
-    DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
-            print("CLEARING view in onDelete")
-            
-        }
+    // ⚙️ Delay full AR reconfiguration to ensure ARView stays valid after App Inventor reload
+    
+   
   }
+
   
   @objc public func onDestroy() {
     clearView()
