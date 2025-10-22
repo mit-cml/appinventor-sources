@@ -387,17 +387,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       print("🎯 Setting up scene understanding...")
       
       // Start with base options
-      var options: ARView.Environment.SceneUnderstanding.Options = [.physics]
+      var options: ARView.Environment.SceneUnderstanding.Options = [.collision]
       
       // Add occlusion if enabled
       if _enableOcclusion {
           options.insert(.occlusion)
           print("  ✅ Occlusion enabled")
       }
-      
-      // Add collision if needed
-      options.insert(.collision)
-      
+
       _arView.environment.sceneUnderstanding.options = options
       
       print("  Final scene understanding options: \(options)")
@@ -406,117 +403,117 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       if let config = _arView.session.configuration as? ARWorldTrackingConfiguration {
           print("  Scene reconstruction in config: \(String(describing: config.sceneReconstruction))")
       }
+    
+  
+    _arView.debugOptions = [.showSceneUnderstanding]
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      let meshes = self._arView.session.currentFrame?.anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
+      let mapping = self._arView.session.currentFrame?.worldMappingStatus
+      print("🧪 scene understanding: Mesh anchors:", meshes, " • mapping:", String(describing: mapping))
+      let s = self._arView.session.currentFrame?.worldMappingStatus
+      if s == .extending || s == .mapped {
+          //if self._showWireframes { self._arView.debugOptions.insert(.showSceneUnderstanding) }
+        self._arView.debugOptions.insert(.showSceneUnderstanding)
+      }
+    }
   }
   
   @available(iOS 14.0, *)
-  private func setupConfiguration() {
-    print("SETUP CONFIGURATION")
-    guard _trackingSet && _planeDetectionSet else {
-      //self._container?.form?.dispatchErrorOccurredEvent(self, "AR Tracking", ErrorMessage.ERROR_AR_TRACKING_NOT_SUPPORTED.code, "AR tracking not supported on this device")
-      return }
+  private func setupConfiguration() -> ARConfiguration {
     
-   
     // Check geo tracking support only when needed
     if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported {
       self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code, "Geo tracking not supported on this device")
-      return
+     
     }
     
     if _trackingType == .worldTracking && !ARWorldTrackingConfiguration.isSupported {
       self._container?.form?.dispatchErrorOccurredEvent(self, "World tracking", ErrorMessage.ERROR_WORLD_TRACKING_NOT_SUPPORTED.code, "World tracking not supported on this device")
-      return
+
     }
     
     switch _trackingType {
-    case .worldTracking:
-      let worldTrackingConfiguration = ARWorldTrackingConfiguration()
-      
-      // Check if scene reconstruction is supported on this device
-      if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
-        worldTrackingConfiguration.sceneReconstruction = .mesh
-          print("CONFIG: Mesh reconstruction enabled")
-      } else if ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) {
+      case .worldTracking:
+        let worldTrackingConfiguration = ARWorldTrackingConfiguration()
+        
+        // Check if scene reconstruction is supported on this device
+        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) {
           worldTrackingConfiguration.sceneReconstruction = .meshWithClassification
+          print("CONFIG: Mesh reconstruction enabled")
+        } else if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+          worldTrackingConfiguration.sceneReconstruction = .mesh
           print("CONFIG: Mesh with classification enabled")
-      } else {
-        print("CONFIG: Scene reconstruction not supported on this device")
-        worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
-      }
-      
-      if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
-        worldTrackingConfiguration.frameSemantics.insert(.sceneDepth)
-      }
-     
-      worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
-      worldTrackingConfiguration.detectionImages = getReferenceImages()
-      
-      do {
-        let data = try Data(contentsOf: worldMapURL)
-        if let worldMap = try NSKeyedUnarchiver.unarchivedObject(
-            ofClass: ARWorldMap.self,
-            from: data
-        ){
-          worldTrackingConfiguration.initialWorldMap = worldMap
+        } else {
+          print("CONFIG: Scene reconstruction not supported on this device")
+          //worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
         }
-     
-      } catch {
-        print("❌ Error loading world map: \(error)")
-      }
+        
+        do {
+          let data = try Data(contentsOf: worldMapURL)
+          if let worldMap = try NSKeyedUnarchiver.unarchivedObject(
+              ofClass: ARWorldMap.self,
+              from: data
+          ){
+            worldTrackingConfiguration.initialWorldMap = worldMap
+          }
+        } catch {
+          print("❌ Error loading world map: \(error)")
+        }
       // Configure plane detection
-      switch _planeDetection {
-      case .horizontal:
-        worldTrackingConfiguration.planeDetection = .horizontal
-      case .vertical:
-        worldTrackingConfiguration.planeDetection = .vertical
-      case .both:
-        worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
-      case .none:
-        break
-      }
-    _configuration = worldTrackingConfiguration
+        switch _planeDetection {
+          case .horizontal:
+            worldTrackingConfiguration.planeDetection = .horizontal
+          case .vertical:
+            worldTrackingConfiguration.planeDetection = .vertical
+          case .both:
+            worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+          case .none:
+            break
+        }
+        
+        worldTrackingConfiguration.environmentTexturing = .automatic
+        worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
+        worldTrackingConfiguration.detectionImages = getReferenceImages()
+        _configuration = worldTrackingConfiguration
+        
+      case .geoTracking:
+        let geoTrackingConfiguration = ARGeoTrackingConfiguration()
+        geoTrackingConfiguration.maximumNumberOfTrackedImages = 4
       
-    case .geoTracking:
-      let geoTrackingConfiguration = ARGeoTrackingConfiguration()
-      
-      geoTrackingConfiguration.maximumNumberOfTrackedImages = 4
-      geoTrackingConfiguration.detectionImages = getReferenceImages()
-      
-      // Configure plane detection (still available)
-      switch _planeDetection {
-      case .horizontal:
-        geoTrackingConfiguration.planeDetection = .horizontal
-      case .vertical:
-        geoTrackingConfiguration.planeDetection = .vertical
-      case .both:
-        geoTrackingConfiguration.planeDetection = [.horizontal, .vertical]
-      case .none:
-        break
-      }
-      
-      _configuration = geoTrackingConfiguration
-      
-    case .orientationTracking:
-      _configuration = AROrientationTrackingConfiguration()
-      
-    case .imageTracking:
-      let imageTrackingConfiguration = ARImageTrackingConfiguration()
-      imageTrackingConfiguration.maximumNumberOfTrackedImages = 4
-      imageTrackingConfiguration.trackingImages = getReferenceImages()
-      _configuration = imageTrackingConfiguration
+        switch _planeDetection {
+            case .horizontal:
+              geoTrackingConfiguration.planeDetection = .horizontal
+            case .vertical:
+              geoTrackingConfiguration.planeDetection = .vertical
+            case .both:
+              geoTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+            case .none:
+              break
+            }
+        geoTrackingConfiguration.detectionImages = getReferenceImages()
+        _configuration = geoTrackingConfiguration
+        
+      case .orientationTracking:
+        _configuration = AROrientationTrackingConfiguration()
+        
+      case .imageTracking:
+        let imageTrackingConfiguration = ARImageTrackingConfiguration()
+        imageTrackingConfiguration.maximumNumberOfTrackedImages = 4
+        imageTrackingConfiguration.trackingImages = getReferenceImages()
+        _configuration = imageTrackingConfiguration
     }
-    
+  
     // Enable lighting estimation
     _configuration.isLightEstimationEnabled = _lightingEstimationEnabled
     
-    
     setupCollisionDetection()
     
-    if _sessionRunning {
-      //ResetTracking()
-    }
+    return _configuration
     
-  
+
   }
+
   
   // MARK: - Debug Options Management
 
@@ -739,42 +736,78 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         print("⚠️ Session already running, skipping start")
         return
     }
-    print("▶️ STARTTRACKING WITH OPTIONS: \(options)")
-    startOptions = []
-    _arView.session.run(_configuration, options: startOptions)
-    _sessionRunning = true
-     //, .resetSceneReconstruction]
     
 
-    // ✅ Only recreate floor if anchors were removed
-    if options.contains(.removeExistingAnchors) || _invisibleFloor == nil {
-        ensureFloorExists()
-    }
-    
-    updateGroundLevel(newGroundLevel: GROUND_LEVEL)
-    
-    
-    // ✅ Re-enable WebViews if needed
-    if _reenableWebViewNodes {
-      for node in _nodeToAnchorDict.keys {
-          if let webViewNode = node as? ARWebView {
-              webViewNode.isUserInteractionEnabled = true
-          }
+    print("▶️ STARTTRACKING WITH OPTIONS: \(options)")
+    print("ARView instance:", ObjectIdentifier(_arView))
+    let startOptions: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]//options
+    DispatchQueue.main.async {
+      // Ensure configuration exists
+      print("ARView instance inside startrackingoptions async:", ObjectIdentifier(self._arView))
+      self._arView.session.pause()
+      self._arView.automaticallyConfigureSession = false
+      
+      self._arView.session.delegate = self
+      
+      /*if _enableOcclusion {
+       print("enabling occlusion")
+       _arView.environment.sceneUnderstanding.options.insert(.occlusion)
+       }*/
+      self._arView.automaticallyConfigureSession = false
+      // Now run the session ONCE
+      
+      let config = self.setupConfiguration()
+      
+      self._arView.session.run(config, options: startOptions)
+      self._sessionRunning = true
+      print("Mesh mode:", (self._arView.session.configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction as Any)
+      print("SU options:", self._arView.environment.sceneUnderstanding.options)
+      print("autoConfig:", self._arView.automaticallyConfigureSession)
+      
+      
+      
+      var dbg: ARView.DebugOptions = []
+      dbg.insert(.showSceneUnderstanding)
+      if self._showWorldOrigin { dbg.insert(.showWorldOrigin) }
+      if self._showFeaturePoints { dbg.insert(.showFeaturePoints) }
+      if self._showPhysics { dbg.insert(.showPhysics) }
+      
+      self.waitForFirstMeshAndRefresh()
+      
+      self._arView.debugOptions = dbg
+      
+      self._arView.environment.sceneUnderstanding.options.insert(.collision)
+      self._arView.environment.sceneUnderstanding.options.insert(.occlusion)
+      
+      
+      if startOptions.contains(.removeExistingAnchors) {
+        self.ensureFloorExists()
       }
-      _reenableWebViewNodes = false
-    }
-    
-    if _requiresAddNodes {
-      for (node, anchorEntity) in _nodeToAnchorDict {
-        node.EnablePhysics(node.EnablePhysics)
-        
-        if node.IsGeoAnchored {
+      
+      self.updateGroundLevel(newGroundLevel: self.GROUND_LEVEL)
+      
+      
+      // ✅ Re-enable WebViews if needed
+      if self._reenableWebViewNodes {
+        for node in self._nodeToAnchorDict.keys {
+          if let webViewNode = node as? ARWebView {
+            webViewNode.isUserInteractionEnabled = true
+          }
+        }
+        self._reenableWebViewNodes = false
+      }
+      
+      if self._requiresAddNodes {
+        for (node, anchorEntity) in self._nodeToAnchorDict {
+          node.EnablePhysics(node.EnablePhysics)
+          
+          if node.IsGeoAnchored {
             if let geoAnchor = node.getGeoAnchor() {
-                _arView.session.add(anchor: geoAnchor)
+              self._arView.session.add(anchor: geoAnchor)
             }
-        } else {
+          } else {
             if !node.IsFollowingImageMarker {
-                _arView.scene.addAnchor(anchorEntity)
+              self._arView.scene.addAnchor(anchorEntity)
             }
             
             if node._fromPropertyPosition != nil {
@@ -846,9 +879,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     print("⏸️ AR session paused")
   }
   
-  @objc open func ResetTracking() {
-    print("RESET TRACKING")
-    
+ @objc open func ResetTracking() {
+    print("----RESET TRACKING----")
+     
     let wasRunning = _sessionRunning
     
     // Stop session
@@ -858,7 +891,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     // Clear all AR state
     _hasSetGroundLevel = false
     removeInvisibleFloor()
-    _detectedPlanesDict.removeAll()
+    //_detectedPlanesDict.removeAll()
     
     for (node, _) in _nodeToAnchorDict {
         node.EnablePhysics(false)
@@ -866,16 +899,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     // Pause and prepare for reset
     pauseTracking(!wasRunning)
-    setupConfiguration()
-    setupSceneUnderstanding()
-    startOptions = [] //.resetTracking] //, .resetSceneReconstruction]
-    
-    // Short delay to ensure clean reset
-
       
     if wasRunning {
       print("🔄 Restarting with clean slate...")
-      self.startTrackingWithOptions(self.startOptions)
+      requestRestart()
       
       // Re-enable physics after restart
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -885,17 +912,19 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
     
-    print("🔄 Complete reset finished")
+    print("🔄 Complete resetTracking finished")
     
   }
   
   private func setupLifecycleObservers() {
+    guard !_observersInstalled else { return }
     NotificationCenter.default.addObserver(
         self,
         selector: #selector(onAppDidBecomeActive),
         name: UIApplication.didBecomeActiveNotification,
         object: nil
     )
+    _observersInstalled = true
     print("🔔 Lifecycle observers registered")
   }
 
@@ -903,19 +932,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   @objc func onAppDidBecomeActive() {
       print("📱 ===== APP BECAME ACTIVE =====")
       
-      // ✅ If we manually paused, restart now
-      if !_sessionRunning {
-          print("📱 Session not running, restarting...")
-          startTrackingWithOptions([])
-          return
-      }
-        
-      // ✅ If session claims to be running but has no frame, force restart
-      if _arView.session.currentFrame == nil {
-          print("📱 Session running but no frame - force restarting...")
-          _sessionRunning = false
-          startTrackingWithOptions([])
-      }
+    if !_sessionRunning || _arView.session.currentFrame == nil {
+        requestRestart([.resetTracking, .removeExistingAnchors])
+    }
   }
   
   /*@objc open func ResetDetectedItems() {
@@ -1454,34 +1473,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
       
   public func sessionInterruptionEnded(_ session: ARSession) {
-      print("✅ ===== AR SESSION INTERRUPTION ENDED =====")
-      
-      // ✅ Don't restart the session - ARKit resumes automatically
-      // Just mark that we're running again
-      _sessionRunning = true
-      
-      // ✅ Optionally verify the session has our configuration
-      if _arView.session.configuration == nil {
-          print("⚠️ Configuration lost, reapplying...")
-          _arView.session.run(_configuration, options: [])
+    print("⚠️ ===== AR SESSION INTERRUPTED ENDED =====")
+      _sessionRunning = false
+
+      // Optional: sanity checks and recovery. Use your single start method:
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+          // If config was lost or currentFrame is nil, gently restart WITHOUT reset:
+        self.requestRestart()
+          
       }
-      
-      ensureFloorExists()
-      
-      if _reenableWebViewNodes {
-          for node in _nodeToAnchorDict.keys {
-              if let webViewNode = node as? ARWebView {
-                  webViewNode.isUserInteractionEnabled = true
-              }
-          }
-          _reenableWebViewNodes = false
-      }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          self.reapplyDebugOptions()
-      }
-      print("✅ Camera resumed successfully!")
   }
-  
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
     // Calculate distance from session start
@@ -2590,44 +2591,29 @@ extension ARView3D: LifecycleDelegate {
   }
   
   private func clearView() {
-    print("CLEARING view")
-    _nodeToAnchorDict.keys.forEach {
-      $0.stopFollowing()
-      $0.removeFromAnchor()
-    }
-    
-    _arView.session.pause()
-    _sessionRunning = false
-    
-    // ✅ Force release any retained frames
-    autoreleasepool {
-        // This ensures any frames in the current pool are released
-        _ = _arView.session.currentFrame  // Access and release
-    }
-    
-    // ✅ Remove all anchors
-    _arView.scene.anchors.removeAll()
-    
-    // ✅ Clear the session completely
-    _arView.session.delegate = nil
-    _detectedPlanesDict.removeAll()
+      print("CLEARING view")
+      DispatchQueue.main.async {
+        self._sessionRunning = false
+        self._arView.session.pause()
 
+        // Remove your content (anchors/entities), but keep the ARView itself alive
+        if let floor = self._floorAnchor { self._arView.scene.removeAnchor(floor) }
+        self._floorAnchor = nil
+        self._invisibleFloor = nil
 
-    _imageMarkers.removeAll()
-    
-    _lights.keys.forEach {
-      _arView.scene.removeAnchor($0)
-    }
-    
-    _nodeToAnchorDict = [:]
-    _lights = [:]
-    _detectedPlanesDict = [:]
-    _imageMarkers = [:]
-    
-    _arView.session.delegate = nil
-    locationManager!.delegate = nil
-    _planeDetection = .none
-    
+        for (_, anchorEntity) in self._nodeToAnchorDict {
+          self._arView.scene.removeAnchor(anchorEntity)
+        }
+
+        self._nodeToAnchorDict.removeAll()
+        self._lights.removeAll()
+        self._imageMarkers.removeAll()
+        self.removeInvisibleFloor()
+        self._hasSetGroundLevel = false
+        
+        NotificationCenter.default.removeObserver(self)
+        self._observersInstalled = false
+      }
   }
 }
 
