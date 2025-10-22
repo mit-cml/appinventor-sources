@@ -35,12 +35,14 @@ import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appinventor.server.storage.StoredData.ProjectPermissionsData;
 import com.google.appinventor.server.storage.StoredData.PWData;
 import com.google.appinventor.server.storage.StoredData.SplashData;
 import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
+import com.google.appinventor.server.storage.StoredData.ShareLinkData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONParser;
@@ -2843,6 +2845,189 @@ public class ObjectifyStorageIo implements StorageIo {
     } else {
       return GCS_BUCKET_NAME;
     }
+  }
+
+  @Override
+  public StoredData.Permission getPermission(final String userEmail, final long projectId) {
+    final Result<StoredData.Permission> result = new Result<>();
+    try{
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
+                                                      .filter("projectKey", projectKey(projectId))
+                                                      .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL))).list();
+          psd.sort((a, b) -> {
+              if (a.userEmail == b.userEmail) return 0;
+              if (a.userEmail == userEmail) return -1;
+              if (b.userEmail == userEmail) return 1;
+              return 0;
+          });
+          if (!psd.isEmpty()) {
+            result.t = psd.get(0).permission;
+          }else {
+            result.t = StoredData.Permission.NONE;
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e){
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
+  }
+
+
+  @Override
+  public void addSharedProjectToUser(final String userEmail, final String userId, final long projectId,
+                            final StoredData.Permission perm) {
+    try {
+     if (perm != StoredData.Permission.OWNER) {
+        runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) throws ObjectifyException, IOException {
+            Key<ProjectData> projectKey = projectKey(projectId);
+            ProjectData pd = datastore.find(projectKey);
+            List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
+                                                        .filter("projectKey", projectKey)
+                                                        .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL)))
+                                                        .filter("permssion", perm).list();
+            if(!psd.isEmpty()){
+              UserProjectData upd = new UserProjectData();
+              upd.projectId = projectId;
+              upd.userKey = userKey(userId);
+              upd.settings = pd.settings;
+              upd.state = UserProjectData.StateEnum.CLOSED;
+              datastore.put(upd);
+            }
+          }
+        }, true);
+      }
+    } catch (ObjectifyException e){
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  // @Override
+  // public long addPermission(final String userEmail, final String userId, final long projectId,
+  //                           final StoredData.Permission perm) {
+  //   final Result<Long> result = new Result<>();
+  //   result.t = 0L;
+  //   try{
+  //     // Add project permission
+  //     runJobWithRetries(new JobRetryHelper() {
+  //       @Override
+  //       public void run(Objectify datastore) throws ObjectifyException, IOException {
+  //         List<ProjectPermissionsData> psd = datastore.filter("projectKey", projectKey(projectId))
+  //                                                     .filter("userKey in", [userId, StoredData.ALL])
+  //                                                     .filter("permssion", perm).list();
+  //         // add permission
+  //         if(psd.isEmpty()){
+  //           ProjectPermissionsData ppd = new ProjectPermissionsData();
+  //           ppd.projectKey = projectKey(projectId);
+  //           ppd.userId = userId;
+  //           ppd.permission = perm;
+  //           datastore.put(ppd);
+  //         }
+  //         List<ShareLinkData> ssd = datastore.filter("projectKey", projectKey(projectId)).list();
+  //         // add url
+  //         if (ssd.isEmpty()){
+  //           ShareLinkData sld = new ShareLinkData();
+  //           sld.projectKey = projectKey(projectId);
+  //           sld.isForAll = false;
+  //           result.t = sld.id;
+  //           datastore.put(sld);
+  //         }
+  //         // if perm is not owner, we need to create new UserProjectData for the user
+  //         // TODO: pobably should not in case your email is out there
+  //         // if(perm!= StoredData.Permission.OWNER){
+  //         //   addSharedProjectToUser(userId, projectId, perm);
+  //         // }
+  //       }
+  //     }, true);
+      
+  //   }catch (ObjectifyException e){
+  //     throw CrashReport.createAndLogError(LOG, null, null, e);
+  //   }
+  // }
+
+  @Override
+  public long addPermission(final String userEmail, final long projectId,
+                            final StoredData.Permission perm) {
+    final Result<Long> result = new Result<>();
+    result.t = 0L;
+    try{
+      // Add project permission
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          Key<ProjectData> projectKey = projectKey(projectId);
+          // remove permission
+          if (perm == StoredData.Permission.NONE) {            
+            // redact access from all
+            if (StoredData.ALL == userEmail) {
+              datastore.delete(datastore.query(ProjectPermissionsData.class)
+                                      .filter("projectKey", projectKey));
+              datastore.delete(datastore.query(ShareLinkData.class)
+                                      .filter("projectKey", projectKey));
+            } else {
+              // redact access from some
+              datastore.delete(datastore.query(ProjectPermissionsData.class)
+                                      .filter("projectKey", projectKey)
+                                      .filter("userEmail", userEmail));
+            }
+          } else {
+            // check whether already has permission
+            List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
+                                            .filter("projectKey", projectKey)
+                                            .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL)))
+                                            .filter("permssion", perm).list();
+            // add permission
+            if(psd.isEmpty()){
+              ProjectPermissionsData ppd = new ProjectPermissionsData();
+              ppd.projectKey = projectKey;
+              ppd.userEmail = userEmail;
+              ppd.permission = perm;
+              datastore.put(ppd);
+            }
+            List<ShareLinkData> ssd = datastore.query(ShareLinkData.class).filter("projectKey", projectKey).list();
+            // add url
+            if (ssd.isEmpty()){
+              ShareLinkData sld = new ShareLinkData();
+              sld.projectKey = projectKey;
+              sld.isForAll = StoredData.ALL == userEmail;
+              result.t = sld.id;
+              datastore.put(sld);
+            } else if (StoredData.ALL == userEmail) {
+              ShareLinkData sld = ssd.get(0);
+              sld.isForAll = true;
+              result.t = sld.id;
+              datastore.put(sld);
+            }
+          }
+        }
+      }, true);
+      
+    }catch (ObjectifyException e){
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public String getProjectOwner(final long projectId) {
+    final Result<String> result = new Result<>();
+    try{
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          result.t = pd.owner;
+        }
+      }, false);
+    } catch (ObjectifyException e){
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
   }
 
 }

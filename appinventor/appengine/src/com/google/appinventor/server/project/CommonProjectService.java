@@ -8,6 +8,7 @@ package com.google.appinventor.server.project;
 
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.server.util.CsvParser;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -18,6 +19,8 @@ import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.ShareResponse;
+import com.google.appinventor.shared.rpc.project.ShareResponse.Status;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
@@ -33,6 +36,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+
 import org.json.JSONException;
 
 /**
@@ -342,6 +347,129 @@ public abstract class CommonProjectService {
     }
     return RpcResult.createSuccessfulRpcResult("", "");
   }
+
+  /**
+   * Share project with others by email.
+   * @param userId the userId of the owner of the project
+   * @param projectId the project id
+   * @param otherEmail the email address of other user
+   */
+  public ShareResponse shareProject(String userId, long projectId, String otherEmail,
+                                    StoredData.Permission perm) {
+    Status status = Status.UNAUTHORIZED;
+    String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+    // Only the project owner can share.
+    if (userId.equals(storageIo.getProjectOwner(projectId))) {
+      StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
+      // add owner permission first
+      if (owner != StoredData.Permission.OWNER) {
+        storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
+      }
+      if (storageIo.getPermission(otherEmail, projectId) != StoredData.Permission.NONE) {
+        status = Status.ALREADY_SHARED;
+      } else {
+        storageIo.addPermission(otherEmail, projectId, perm);
+        sendShareEmailNew(userId, projectId, otherEmail);
+        return new ShareResponse(Status.SHARED, projectId, otherEmail);
+      }
+    }
+    return new ShareResponse(status);
+  }
+
+    /**
+   * Share project with others by email.
+   * @param userId the userId of the owner of the project
+   * @param projectId the project id
+   * @param otherEmails the email addresses of other users
+   */
+  public List<ShareResponse> shareProject(String userId, long projectId, List<String> otherEmails,
+                                    StoredData.Permission perm) {
+    List<ShareResponse> result = new ArrayList<>();
+    Status status = Status.UNAUTHORIZED;
+    String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+    // Only the project owner can share.
+    if (userId.equals(storageIo.getProjectOwner(projectId))) {
+      StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
+      // add owner permission first
+      if (owner != StoredData.Permission.OWNER) {
+        storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
+      }
+      for (String otherEmail : otherEmails){
+        if (storageIo.getPermission(otherEmail, projectId) == perm) {
+          status = Status.ALREADY_SHARED;
+          result.add(new ShareResponse(status));
+        } else {
+          storageIo.addPermission(otherEmail, projectId, perm);
+          sendShareEmailNew(userId, projectId, otherEmail);
+          result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
+        }
+      }
+    }
+    result.add(new ShareResponse(status));
+    return result;
+  }
+
+  /**
+  //  * Unshare project with others by email.
+  //  * @param userId the userId of the owner of the project
+  //  * @param projectId the project id
+  //  * @param otherEmails the email addresses of other users
+  //  */
+  // public List<ShareResponse> unShareProject(String userId, long projectId, List<String> otherEmails,
+  //                                   StoredData.Permission perm) {
+  //   List<ShareResponse> result = new ArrayList<>();
+  //   Status status = Status.UNAUTHORIZED;
+  //   String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+  //   // Only the project owner can share.
+  //   if (userId.equals(storageIo.getProjectOwner(projectId))) {
+  //     StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
+  //     // add owner permission first
+  //     if (owner != StoredData.Permission.OWNER) {
+  //       storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
+  //     }
+  //     for (String otherEmail : otherEmails){
+  //       if (storageIo.getPermission(otherEmail, projectId) == perm) {
+  //         status = Status.ALREADY_SHARED;
+  //         result.add(new ShareResponse(status));
+  //       } else {
+  //         storageIo.addPermission(otherEmail, projectId, perm);
+  //         sendShareEmailNew(userId, projectId, otherEmail);
+  //         result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
+  //       }
+  //     }
+  //   }
+  //   result.add(new ShareResponse(status));
+  //   return result;
+  // }
+
+  // /**
+  //  * Share project with others by email.
+  //  * @param userId the userId of the owner of the project
+  //  * @param projectId the project id
+  //  * @param otherEmails the email addresses of other users
+  //  */
+  // public ShareResponse shareProjectWithAll(String userId, long projectId, StoredData.Permission perm) {
+  //   Status status = Status.UNAUTHORIZED;
+  //   String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+  //   // Only the project owner can share.
+  //   if (userId.equals(storageIo.getProjectOwner(projectId))) {
+  //     StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
+  //     // add owner permission first
+  //     if (owner != StoredData.Permission.OWNER) {
+  //       storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
+  //     }
+  //     if (storageIo.getPermission(StoredData.ALL, projectId) == perm) {
+  //       status = Status.ALREADY_SHARED;
+  //     } else {
+  //       storageIo.addPermission(StoredData.ALL, projectId, perm);
+  //       sendShareEmailNew(userId, projectId, otherEmail);
+  //       result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
+  //     }
+  //   }
+  //   return new ShareResponse(status);
+  // }
+
+  public abstract void sendShareEmailNew(String userId, long shareId, String otherEmail);
 
   /**
    * Sets the moved to trash flag for a project.

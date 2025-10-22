@@ -14,6 +14,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -151,6 +152,33 @@ public interface ProjectService extends RemoteService {
    * @param settings  project settings
    */
   void storeProjectSettings(String sessionId, long projectId, String settings) throws InvalidSessionException;
+
+  /**
+   * Give `perm` permission to `userId` user's project to another user with `otherEmail` email
+   * @param userId owner's id
+   * @param projectId project id
+   * @param otherEmail the other user's email
+   * @param perm type of permission
+   * @return share id
+   */
+  long updateProjectPermissionForUser(String userId, long projectId, String otherEmail, int perm);
+
+  /**
+   * gets project shared with the user
+   * @param userId user id
+   * @param shareId id shared with the user
+   * @return project under the shared id if user has access to it
+   * raises an error if user does not have access to it
+   */
+  UserProject getSharedProject(String userId, long shareId);
+
+  /**
+   * get access list for the given project
+   * @param projectId the id of the project
+   * @return mapping from permission type to user emails who have the permission type to project `projectId`
+   */
+  HashMap<Integer, List<String>> getPermissionsInfo(long projectId);
+
 
   /**
    * Deletes a file in the given project.

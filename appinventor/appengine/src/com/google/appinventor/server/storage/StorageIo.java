@@ -18,6 +18,7 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -672,6 +673,17 @@ public interface StorageIo {
   boolean deleteAccount(String userId);
 
   String getIosExtensionsConfig();
+
+  StoredData.Permission getPermission(String userEmail, long shareId);
+
+  void addSharedProjectToUser(String userEmail, String userId, long projectId,
+                             StoredData.Permission perm); 
+
+  long addPermission(String userEmail, long projectId, StoredData.Permission perm);
+
+  // long addPermission(String userEmail, String userId, long projectId, StoredData.Permission perm);
+
+  String getProjectOwner(long shareId);
 
 }
 

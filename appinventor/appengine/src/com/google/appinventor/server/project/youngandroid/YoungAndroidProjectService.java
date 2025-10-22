@@ -32,6 +32,7 @@ import com.google.appinventor.server.encryption.EncryptionException;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.ios.ProvisioningProfileValidationResult;
 import com.google.appinventor.server.project.CommonProjectService;
+import com.google.appinventor.server.project.utils.MailUtil;
 import com.google.appinventor.server.project.utils.Security;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
@@ -1010,6 +1011,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       throw new IOException("Unable to read content: " + e.getMessage());
     }
 
+  }
+
+  @Override
+  public void sendShareEmailNew(String userId, long shareId, String otherEmail) {
+    String url = new UriBuilder("http://" + getCurrentHost() + "/")
+        .add("shareId", Long.toString(shareId))
+        .build();
+    String username = storageIo.getUser(userId).getUserEmail();
+    try {
+      MailUtil.sendMail(otherEmail, String.format("%s shared a project with you - MIT App Inventor", username),
+          String.format(MailUtil.MESSAGE_TEXT, username, url), String.format(MailUtil.MESSAGE_HTML, username, url));
+    } catch (IOException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Unable to send share project email", e);
+    }
   }
 
 }

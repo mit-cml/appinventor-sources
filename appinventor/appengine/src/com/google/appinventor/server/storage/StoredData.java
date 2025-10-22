@@ -15,6 +15,8 @@ import com.googlecode.objectify.annotation.Unindexed;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Id;
 
@@ -33,6 +35,16 @@ import javax.persistence.Id;
  *
  */
 public class StoredData {
+  public enum Permission{
+    OWNER,
+    WRITE,
+    COMMENT,
+    READ,
+    SHARE_ALL,
+    NONE
+  };
+
+  public static String ALL = "ALL";
   // The UserData class is an entity root, and the parent of UserFileData
   // and UserProjectData
   @Unindexed
@@ -102,6 +114,38 @@ public class StoredData {
 
     //adding a boolean variable to mark deleted project
     boolean projectMovedToTrashFlag;
+
+    // User ID of the project creator
+    String owner;
+
+    // Whether project is shared with others
+    boolean shared;
+  }
+
+  // Project sharing properties
+  @Unindexed
+  static final class ProjectPermissionsData {
+    // key of project that this id shares
+    @Indexed Key<ProjectData> projectKey;
+
+    // The user (parent's) key
+    // TODO: might wanna have email
+    @Indexed String userEmail;
+
+    // Permission type
+    Permission permission;
+  }
+
+  @Unindexed
+  static final class ShareLinkData {
+    // Auto-generated unique share id
+    @Id Long id;
+
+    // key of project that this id shares
+    @Indexed Key<ProjectData> projectKey;
+
+    // Whether link can be used by all
+    Boolean isForAll;
   }
 
   // Project properties specific to the user

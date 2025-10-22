@@ -9,6 +9,7 @@ package com.google.appinventor.shared.rpc.project;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -98,6 +99,21 @@ public interface ProjectServiceAsync {
    * @see ProjectService#storeProjectSettings(String, long, String)
    */
   void storeProjectSettings(String sessionId, long projectId, String settings, AsyncCallback<Void> callback);
+
+  /** 
+   * @see ProjectService#updateProjectPermissionForUser(String, long, int)
+   */
+  void updateProjectPermissionForUser(String userId, long projectId, String otherEmail, int perm, AsyncCallback<Integer> callback);
+
+  /**
+   * @see ProjectService#getSharedProject(String, long)
+   */
+  void getSharedProject(String userId, long shareId, AsyncCallback<UserProject> callback);
+
+  /**
+   * @see ProjectService#getPermissionsInfo(long)
+   */
+  void getPermissionsInfo(long projectId, AsyncCallback<HashMap<Integer, List<String>>> callback);
 
   /**
    * @see ProjectService#deleteFile(String, long, String)
