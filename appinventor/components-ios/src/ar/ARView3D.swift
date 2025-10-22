@@ -70,6 +70,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   fileprivate var _containsModelNodes: Bool = false
   fileprivate var _lightingEstimationEnabled: Bool = false
   
+  fileprivate var _isStarting: Bool = false
+  
   private var _lastLightingUpdate: TimeInterval = 0
   private let _lightingUpdateInterval: TimeInterval = 0.1
   
@@ -91,6 +93,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   internal var collisionBeganObserver: Cancellable!
   private var wallCollisionCache: [UUID: ModelEntity] = [:]
   private var lastWallCleanup: Date = Date()
+  
+  private var _observersInstalled = false
+  private var restartPending = false
   
   enum State {
     case none,
@@ -182,7 +187,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
 
     setupConfiguration()
-    setupSceneUnderstanding()
     
     parent.add(self)
     Height = kARViewPreferredHeight
@@ -191,10 +195,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _showWireframes = false
     _showWorldOrigin = false
     _showFeaturePoints = false
-    
-    ensureFloorExists()
-    
-    print("🏁 ARView3D initialization complete")
+
+    print("🏁 ARView3D init complete")
   }
   
   
@@ -731,7 +733,53 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       startTrackingWithOptions(startOptions)
   }
 
+
+  func requestRestart(_ opts: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]) {
+    guard !restartPending else { return }
+    restartPending = true
+      DispatchQueue.main.async {
+          self.startTrackingWithOptions(opts)
+          self.restartPending = false
+      }
+  }
+  
+  // MARK: - Wireframe Refresh Helpers
+  private var meshArrivalToken: Cancellable?
+
+  private func refreshWireframeUI() {
+      // Force RealityKit to redraw the wireframe overlay
+      _arView.debugOptions.remove(.showSceneUnderstanding)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+          self._arView.debugOptions.insert(.showSceneUnderstanding)
+      }
+  }
+
+  private func waitForFirstMeshAndRefresh() {
+    meshArrivalToken?.cancel()
+    _arView.debugOptions.insert(.showSceneUnderstanding)
+    meshArrivalToken = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self] _ in
+      guard let self = self, let frame = self._arView.session.currentFrame else { return }
+      if frame.anchors.contains(where: { $0 is ARMeshAnchor }) {
+        self._arView.environment.sceneUnderstanding.options = [.occlusion]
+        self._arView.debugOptions.remove(.showSceneUnderstanding)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+          self._arView.debugOptions.insert(.showSceneUnderstanding) // toggle overlay
+        }
+        self.meshArrivalToken?.cancel()
+        self.meshArrivalToken = nil
+      }
+    }
+  }
+
   @objc open func startTrackingWithOptions(_ options: ARSession.RunOptions = []) {
+    
+    if _isStarting {
+        print("⛔️ startTracking re-entry blocked");
+        return
+    }
+    _isStarting = true
+    defer { _isStarting = false }
+    
     if _sessionRunning && options.isEmpty {
         print("⚠️ Session already running, skipping start")
         return
@@ -840,22 +888,62 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             }
           }
         }
-          
-        for (anchorEntity, light) in _lights {
-            _arView.scene.addAnchor(anchorEntity)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { [weak self] in
+          guard let self = self else { return }
+          if let wt = self._arView.session.configuration as? ARWorldTrackingConfiguration,
+             wt.sceneReconstruction == [] {
+              print("⚠️ sceneReconstruction empty after run, reasserting config…")
+              self._arView.session.run(config, options: []) // no reset; just apply
+          }
+          print("Mesh mode (session, after reassert):",
+                (self._arView.session.configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction as Any)
+      
         }
         
-        _requiresAddNodes = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+          let meshes = self?._arView.session.currentFrame?.anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
+          let status = self?._arView.session.currentFrame?.worldMappingStatus
+          print("🧪 startTracking mesh anchors:", meshes, "mapping:", String(describing: status))
+        }
+        for (anchorEntity, light) in self._lights {
+          self._arView.scene.addAnchor(anchorEntity)
+        }
+        
+  
+        
+        self._requiresAddNodes = false
       }
-      
-    // ✅ Reapply debug options
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-      self.setupSceneUnderstanding()
-        self.reapplyDebugOptions()
+      //self.ensureWireframeAfterMeshesAppear()
     }
     
     print("▶️ AR session started successfully")
   }
+  
+  private var _wireframeOnceToken: Cancellable?
+
+  private func ensureWireframeAfterMeshesAppear() {
+    // ask for it immediately…
+    _arView.debugOptions.insert(.showSceneUnderstanding)
+
+    // …and re-assert once meshes are back
+    _wireframeOnceToken?.cancel()
+    _wireframeOnceToken = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self] _ in
+      guard let self = self else { return }
+      let meshCount = self._arView.session.currentFrame?
+        .anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
+
+      if meshCount > 0 {
+        // toggle to force a refresh
+        self._arView.debugOptions.remove(.showSceneUnderstanding)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+          self._arView.debugOptions.insert(.showSceneUnderstanding)
+        }
+        self._wireframeOnceToken?.cancel()
+        self._wireframeOnceToken = nil
+      }
+    }
+  }
+
   
   @objc open func PauseTracking() {
     print("⏸️ Pausing AR tracking")
