@@ -178,15 +178,16 @@ import DGCharts
     }
   }
 
-  @objc open var Labels: [String] {
+  @objc open var Labels: YailList<AnyObject> {
     get {
-      return _labels
+      return YailList(array: _labels)
     }
     set {
-      _labels = newValue
+      _labels = newValue.filter { $0 is String }.map { $0 as! String }
       if let chart = _chartView as? AxisChartView {
         chart.setLabels(labels: _labels)
       }
+      _chartView?.refresh()
     }
   }
 
@@ -195,7 +196,7 @@ import DGCharts
         return ""
     }
     set{
-      Labels = newValue.split(",") as [String]
+      Labels = YailList(array:newValue.split(",") as [String])
     }
   }
 
@@ -362,7 +363,7 @@ import DGCharts
     BackgroundColor = colorToArgb(_backgroundColor)
     Description = _description
     GridEnabled = _gridEnabled
-    Labels = _labels
+    Labels = YailList(array:_labels)
     LegendEnabled = _legendEnabled
     PieRadius = _pieRadius
     ValueFormat = _valueType
