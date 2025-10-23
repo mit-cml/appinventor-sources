@@ -458,9 +458,9 @@ Blockly.Blocks['local_declaration_statement'] = {
       newLocals[paramIndex] = newParamName;
 
       // If there's an open mutator, change the name in the corresponding slot.
-      if (localDecl.mutator && localDecl.mutator.rootBlock_) {
+      if (localDecl.mutator && localDecl.mutator.rootBlock) {
         // Iterate through mutatorarg param blocks and change name of one at paramIndex
-        var mutatorContainer = localDecl.mutator.rootBlock_;
+        var mutatorContainer = localDecl.mutator.rootBlock;
         var mutatorargIndex = 0;
         var mutatorarg = mutatorContainer.getInputTargetBlock('STACK');
         while (mutatorarg && mutatorargIndex < paramIndex) {
