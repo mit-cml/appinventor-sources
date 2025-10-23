@@ -1137,7 +1137,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   workspace.flyout_ = workspace.getFlyout();
   workspace.addWarningIndicator();
   workspace.addBackpack();
-  Blockly.browserEvents.bind(workspace.svgGroup_, 'focus', workspace, workspace.markFocused);
+  Blockly.browserEvents.bind(workspace.getSvgGroup(), 'focus', workspace, workspace.markFocused);
   // Hide scrollbars by default (otherwise ghost rectangles intercept mouse events)
   workspace.flyout_.scrollbar_ && workspace.flyout_.scrollbar_.setContainerVisible(false);
   workspace.backpack_.flyout_.scrollbar_ && workspace.backpack_.flyout_.scrollbar_.setContainerVisible(false);
