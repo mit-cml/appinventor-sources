@@ -2,6 +2,7 @@
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
 import Foundation
+import AVFoundation
 import RealityKit
 import ARKit
 import UIKit
@@ -104,6 +105,41 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
          idle
     
   }
+  
+  /// Simple camera ownership guard to prevent multiple components from using the camera simultaneously.
+  enum CameraClient {
+      case arkit
+      case barcode
+      case none
+  }
+
+  final class CameraGuard {
+      static let shared = CameraGuard()
+      private init() {}
+      
+      private(set) var owner: CameraClient = .none
+      
+      /// Try to acquire exclusive camera use for a client.
+      /// Returns true if successful, false if someone else already owns it.
+      func tryAcquire(_ who: CameraClient) -> Bool {
+          guard owner == .none else {
+              print("⚠️ Camera already owned by \(owner)")
+              return false
+          }
+          owner = who
+          print("🎥 Camera acquired by \(who)")
+          return true
+      }
+      
+      /// Release the camera for other clients to use.
+      func release(_ who: CameraClient) {
+          if owner == who {
+              owner = .none
+              print("📸 Camera released by \(who)")
+          }
+      }
+  }
+
   var currentState: State = .none
 
   private var _currentDraggedObject: ARNodeBase? = nil
@@ -386,42 +422,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   
-  private func setupSceneUnderstanding() {
-      print("🎯 Setting up scene understanding...")
-      
-      // Start with base options
-      var options: ARView.Environment.SceneUnderstanding.Options = [.collision]
-      
-      // Add occlusion if enabled
-      if _enableOcclusion {
-          options.insert(.occlusion)
-          print("  ✅ Occlusion enabled")
-      }
-
-      _arView.environment.sceneUnderstanding.options = options
-      
-      print("  Final scene understanding options: \(options)")
-      
-      // Verify configuration has scene reconstruction
-      if let config = _arView.session.configuration as? ARWorldTrackingConfiguration {
-          print("  Scene reconstruction in config: \(String(describing: config.sceneReconstruction))")
-      }
-    
-  
-    _arView.debugOptions = [.showSceneUnderstanding]
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-      let meshes = self._arView.session.currentFrame?.anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
-      let mapping = self._arView.session.currentFrame?.worldMappingStatus
-      print("🧪 scene understanding: Mesh anchors:", meshes, " • mapping:", String(describing: mapping))
-      let s = self._arView.session.currentFrame?.worldMappingStatus
-      if s == .extending || s == .mapped {
-          //if self._showWireframes { self._arView.debugOptions.insert(.showSceneUnderstanding) }
-        self._arView.debugOptions.insert(.showSceneUnderstanding)
-      }
-    }
-  }
-  
   @available(iOS 14.0, *)
   private func setupConfiguration() -> ARConfiguration {
     
@@ -518,95 +518,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
 
   
-  // MARK: - Debug Options Management
 
-  public func reapplyDebugOptions() {
-    print("🔧 Reapplying debug options...")
-    print("🔧 Reapplying DEBUG OPTIONS...")
-    print("🔧 Current flags - Wireframes: \(_showWireframes), Origin: \(_showWorldOrigin), Features: \(_showFeaturePoints)")
-    
-    // Clear all debug options first
-    _arView.debugOptions = []
-    
-    for delay in [5.0, 15.0] {
-      DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-        
-        
-        // Small delay to ensure session is fully started
-        //DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        
-        var options: ARView.DebugOptions = []
-       
-        if self._showWireframes {
-          options.insert(.showSceneUnderstanding)
-          print("🔧 Adding .showSceneUnderstanding")
-
-          print("🔧 Scene understanding toggled and re-enabled")
-        }
-        
-        if self._showWorldOrigin {
-          options.insert(.showWorldOrigin)
-          print("🔧 Adding .showWorldOrigin")
-        }
-        
-        if self._showFeaturePoints {
-          options.insert(.showFeaturePoints)
-          print("🔧 Adding .showFeaturePoints")
-        }
-        
-        if self._showPhysics {
-          options.insert(.showPhysics)
-          print("🔧 Adding .showPhysics")
-        }
-        
-        if self._showBoundingBoxes {
-          options.insert(.showAnchorOrigins)
-          print("🔧 Adding .showAnchorOrigins")
-        }
-        
-        if self._showGeometry {
-          options.insert(.showAnchorGeometry)
-          print("🔧 Adding .showAnchorOrigins")
-        }
-        
-        if self.ShowStatistics {
-          options.insert(.showStatistics)
-          print("🔧 Adding .showStatistics")
-        }
-        //self.findCorrectDebugValues()
-        self._arView.debugOptions = options
-        
-        print("🔧 Final debug options: \(self._arView.debugOptions)")
-      }
-    }
-  }
-  
-  @objc func findCorrectDebugValues() {
-      print("🔍 === DEBUG OPTION RAW VALUES ===")
-      
-      // Test all possible raw values
-      for i in 0...256 {
-        let option = ARView.DebugOptions(rawValue: Int(UInt(i)))
-          if option.rawValue > 0 {
-              var name = "Unknown"
-              
-              if option == .showPhysics { name = "showPhysics" }
-              else if option == .showStatistics { name = "showStatistics" }
-              else if option == .showSceneUnderstanding { name = "showSceneUnderstanding" }
-              else if option == .showWorldOrigin { name = "showWorldOrigin" }
-              else if option == .showFeaturePoints { name = "showFeaturePoints" }
-              else if option == .showAnchorOrigins { name = "showAnchorOrigins" }
-              else if option == .showAnchorGeometry { name = "showAnchorGeometry" }
-              
-              if name != "Unknown" {
-                  print("🔍 \(name) = rawValue: \(option.rawValue)")
-              }
-          }
-      }
-      
-      print("🔍 ================================")
-  }
-  
   // Add this method to ARView3D class
   private func setupCollisionGroups(for node: ARNodeBase) {
       guard let shapes = node._modelEntity.collision?.shapes else {
@@ -786,6 +698,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         return
     }
     
+    if !CameraGuard.shared.tryAcquire(.arkit) {
+        print("🚫 seems that Camera in use by another component")
+        //return
+    }
 
     print("▶️ STARTTRACKING WITH OPTIONS: \(options)")
     print("ARView instance:", ObjectIdentifier(_arView))
@@ -2701,6 +2617,8 @@ extension ARView3D: LifecycleDelegate {
         
         NotificationCenter.default.removeObserver(self)
         self._observersInstalled = false
+        
+        //CameraGuard.shared.release(.arkit)
       }
   }
 }
