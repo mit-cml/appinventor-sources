@@ -248,9 +248,9 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       Blockly.Procedures.mutateCallers(procDecl);
 
       // 2. If there's an open mutator, change the name in the corresponding slot.
-      if (procDecl.mutator && procDecl.mutator.rootBlock_) {
+      if (procDecl.mutator && procDecl.mutator.rootBlock) {
         // Iterate through mutatorarg param blocks and change name of one at paramIndex
-        var mutatorContainer = procDecl.mutator.rootBlock_;
+        var mutatorContainer = procDecl.mutator.rootBlock;
         var mutatorargIndex = 0;
         var mutatorarg = mutatorContainer.getInputTargetBlock('STACK');
         while (mutatorarg && mutatorargIndex < paramIndex) {
