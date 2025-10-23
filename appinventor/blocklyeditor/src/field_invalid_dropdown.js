@@ -40,7 +40,7 @@ Blockly.FieldInvalidDropdown = class extends Blockly.FieldDropdown {
   doValueInvalid_(invalidValue) {
     this.value_ = invalidValue;
     this.isDirty_ = true;
-    this.sourceBlock_ && this.sourceBlock_.badBlock();
+    this.getSourceBlock && this.getSourceBlock() && this.getSourceBlock().badBlock();
 
     this.selectedOption = [invalidValue, invalidValue];
     for (let i = 0, option; (option = this.invalidOptions_[i]); i++) {
@@ -61,7 +61,7 @@ Blockly.FieldInvalidDropdown = class extends Blockly.FieldDropdown {
     super.doValueUpdate_(newValue);
 
     // If we get here the value is valid. Make sure the block is not marked as bad.
-    this.sourceBlock_ && this.sourceBlock_.notBadBlock();
+    this.getSourceBlock && this.getSourceBlock() && this.getSourceBlock().notBadBlock();
   }
 }
 

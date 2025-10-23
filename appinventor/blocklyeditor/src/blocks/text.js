@@ -532,7 +532,7 @@ Blockly.Blocks.text_split.adjustToMode = function (mode, block) {
 };
 
 Blockly.Blocks.text_split.dropdown_onchange = function (mode) {
-  Blockly.Blocks.text_split.adjustToMode(mode, this.sourceBlock_)
+  Blockly.Blocks.text_split.adjustToMode(mode, this.getSourceBlock())
 };
 
 // The order here determines the order in the dropdown

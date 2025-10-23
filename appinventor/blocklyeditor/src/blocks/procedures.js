@@ -570,7 +570,7 @@ Blockly.Blocks['procedures_mutatorarg'] = {
       var newValue = this.getValue();
       if (newValue && oldValue !== newValue && Blockly.Events.isEnabled()) {
         Blockly.Events.fire(new Blockly.Events.BlockChange(
-          this.sourceBlock_, 'field', this.name, oldValue, newValue));
+          this.getSourceBlock(), 'field', this.name, oldValue, newValue));
       }
     };
     this.appendDummyInput()

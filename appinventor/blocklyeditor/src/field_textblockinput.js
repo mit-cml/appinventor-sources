@@ -38,8 +38,8 @@ AI.FieldTextBlockInput.prototype.setText = function(text) {
       text = validated;
     }
   }
-  if(this.sourceBlock_ && this.sourceBlock_.outputConnection){
-    this.sourceBlock_.outputConnection.setCheck(this.sourceBlock_.outputConnection.getCheck())
+  if(this.getSourceBlock && this.getSourceBlock() && this.getSourceBlock().outputConnection){
+    this.getSourceBlock().outputConnection.setCheck(this.getSourceBlock().outputConnection.getCheck())
   }
   Blockly.Field.prototype.setText.call(this, text);
 };
