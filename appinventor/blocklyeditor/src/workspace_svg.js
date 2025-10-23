@@ -198,7 +198,7 @@ Blockly.WorkspaceSvg.prototype.addWarningIndicator = function() {
     }
     this.warningIndicator_ = new Blockly.WarningIndicator(this);
     var svgWarningIndicator = this.warningIndicator_.createDom();
-    this.svgGroup_.appendChild(svgWarningIndicator);
+    this.getSvgGroup().appendChild(svgWarningIndicator);
     this.warningIndicator_.init();
   }
 };
@@ -911,7 +911,7 @@ Blockly.WorkspaceSvg.prototype.requestRender = function(block) {
         this.pendingRender = null;
       }
     }.bind(this);
-    if (this.svgGroup_.parentElement.parentElement.parentElement.style.display === 'none') {
+    if (this.getSvgGroup().parentElement.parentElement.parentElement.style.display === 'none') {
       this.pendingRender = true;
     } else {
       this.pendingRender = setTimeout(this.pendingRenderFunc, 0);
