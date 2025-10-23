@@ -84,6 +84,12 @@ The `CloudDB` component is a Non-visible component that allows you to store data
 {:id="CloudDB.ClearTag" class="method"} <i/> ClearTag(*tag*{:.text})
 : Remove the tag from CloudDB.
 
+{:id="CloudDB.CloseConnection" class="method"} <i/> CloseConnection()
+: CloseConnection explicitly closes any open connections to the Redis server
+ and stops the listener. Use this when you want to release connections to
+ a private/self-hosted Redis instance (for example to avoid hitting
+ connection limits when switching screens or when the app is done).
+
 {:id="CloudDB.CloudConnected" class="method returns boolean"} <i/> CloudConnected()
 : Returns `true`{:.logic.block} if we are on the network and will likely be able to connect to
  the `CloudDB` server.
