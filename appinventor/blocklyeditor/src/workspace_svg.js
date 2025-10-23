@@ -745,8 +745,8 @@ Blockly.WorkspaceSvg.prototype.recordDeleteAreas = function() {
   if (this.isMutator) {
     if (this.flyout_) {
       this.deleteAreaToolbox_ = this.flyout_.getClientRect();
-    } else if (this.toolbox_) {
-      this.deleteAreaToolbox_ = this.toolbox_.getClientRect();
+    } else if (this.getToolbox()) {
+      this.deleteAreaToolbox_ = this.getToolbox().getClientRect();
     } else {
       this.deleteAreaToolbox_ = null;
     }
