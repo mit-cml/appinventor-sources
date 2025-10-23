@@ -94,7 +94,7 @@ function maybeBumpBlockOnFinishEdit(block) {
   // If the connections are no longer compatible.
   if (!(targetConnection.getConnectionChecker().canConnect(outputConnection, targetConnection, false))) {
     targetConnection.disconnect();
-    targetConnection.sourceBlock_.bumpNeighbours();
+    targetConnection.getSourceBlock().bumpNeighbours();
   }
 }
 

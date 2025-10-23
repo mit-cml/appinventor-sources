@@ -44,7 +44,7 @@ Blockly.RenderedConnection.prototype.getInput = function() {
     return this.input_;
   }
 
-  var inputs = this.sourceBlock_.inputList;
+  var inputs = this.getSourceBlock().inputList;
   for (var i = 0, input; (input = inputs[i]); i++) {
     if (input.connection == this) {
       this.input_ = input;
