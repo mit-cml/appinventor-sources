@@ -39,7 +39,7 @@ AI.FieldTextBlockInput.prototype.setText = function(text) {
     }
   }
   if(this.sourceBlock_ && this.sourceBlock_.outputConnection){
-    this.sourceBlock_.outputConnection.setCheck(this.sourceBlock_.outputConnection.check_)
+    this.sourceBlock_.outputConnection.setCheck(this.sourceBlock_.outputConnection.getCheck())
   }
   Blockly.Field.prototype.setText.call(this, text);
 };
