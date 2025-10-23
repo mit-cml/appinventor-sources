@@ -772,7 +772,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
         if (quarkName in this.quarkConnections_) {
           connection = this.quarkConnections_[quarkName];
           if (!connection || connection.targetConnection ||
-              connection.sourceBlock_.workspace != this.workspace) {
+              connection.getSourceBlock().workspace != this.workspace) {
             // Block no longer exists or has been attached elsewhere.
             delete this.quarkConnections_[quarkName];
           } else {
