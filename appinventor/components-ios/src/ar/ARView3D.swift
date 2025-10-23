@@ -443,26 +443,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         // Check if scene reconstruction is supported on this device
         if ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) {
           worldTrackingConfiguration.sceneReconstruction = .meshWithClassification
-          print("CONFIG: Mesh reconstruction enabled")
+          print("CONFIG: Mesh classification enabled")
         } else if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
           worldTrackingConfiguration.sceneReconstruction = .mesh
-          print("CONFIG: Mesh with classification enabled")
+          print("CONFIG: Mesh with reconstruction enabled")
         } else {
           print("CONFIG: Scene reconstruction not supported on this device")
           //worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
         }
         
-        do {
-          let data = try Data(contentsOf: worldMapURL)
-          if let worldMap = try NSKeyedUnarchiver.unarchivedObject(
-              ofClass: ARWorldMap.self,
-              from: data
-          ){
-            worldTrackingConfiguration.initialWorldMap = worldMap
-          }
-        } catch {
-          print("❌ Error loading world map: \(error)")
-        }
       // Configure plane detection
         switch _planeDetection {
           case .horizontal:
@@ -475,7 +464,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             break
         }
         
-        worldTrackingConfiguration.environmentTexturing = .automatic
+        worldTrackingConfiguration.environmentTexturing = .none //.automatic
+      _arView.renderOptions.insert(.disableMotionBlur)
+      _arView.renderOptions.insert(.disableGroundingShadows)
         worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
         worldTrackingConfiguration.detectionImages = getReferenceImages()
         _configuration = worldTrackingConfiguration
@@ -507,6 +498,17 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         _configuration = imageTrackingConfiguration
     }
   
+    /* backup occlusion via depth*/
+   var semantics: ARConfiguration.FrameSemantics = []
+    if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+        semantics.insert(.sceneDepth)
+    }
+    if ARWorldTrackingConfiguration.supportsFrameSemantics(.smoothedSceneDepth) {
+        semantics.insert(.smoothedSceneDepth)
+    }
+    _configuration.frameSemantics = semantics
+    print("🔧 Frame semantics:", semantics)
+    
     // Enable lighting estimation
     _configuration.isLightEstimationEnabled = _lightingEstimationEnabled
     
@@ -656,33 +658,85 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
   }
   
-  // MARK: - Wireframe Refresh Helpers
-  private var meshArrivalToken: Cancellable?
-
-  private func refreshWireframeUI() {
-      // Force RealityKit to redraw the wireframe overlay
-      _arView.debugOptions.remove(.showSceneUnderstanding)
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-          self._arView.debugOptions.insert(.showSceneUnderstanding)
-      }
-  }
-
-  private func waitForFirstMeshAndRefresh() {
-    meshArrivalToken?.cancel()
-    _arView.debugOptions.insert(.showSceneUnderstanding)
-    meshArrivalToken = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self] _ in
-      guard let self = self, let frame = self._arView.session.currentFrame else { return }
-      if frame.anchors.contains(where: { $0 is ARMeshAnchor }) {
-        self._arView.environment.sceneUnderstanding.options = [.occlusion]
-        self._arView.debugOptions.remove(.showSceneUnderstanding)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-          self._arView.debugOptions.insert(.showSceneUnderstanding) // toggle overlay
+  private func parseNodes() {
+    for (node, anchorEntity) in self._nodeToAnchorDict {
+      node.EnablePhysics(node.EnablePhysics)
+      
+      if node.IsGeoAnchored {
+        if let geoAnchor = node.getGeoAnchor() {
+          self._arView.session.add(anchor: geoAnchor)
         }
-        self.meshArrivalToken?.cancel()
-        self.meshArrivalToken = nil
+      } else {
+        if !node.IsFollowingImageMarker {
+          self._arView.scene.addAnchor(anchorEntity)
+        }
+        
+        if node._fromPropertyPosition != nil {
+          let position = node._fromPropertyPosition.split(separator: ",")
+            .prefix(3)
+            .map { Float(String($0)) ?? 0.0 }
+          
+          node._modelEntity.transform.translation = SIMD3<Float>(
+            position[0],
+            position[1],
+            position[2]
+          )
+        }
+        if !node._fromPropertyRotation.isEmpty {
+          let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
+            .prefix(3)
+            .map { Float(String($0)) ?? 0.0 }
+          
+          let xRadians = eulerDegrees[0] * .pi / 180.0
+          let yRadians = eulerDegrees[1] * .pi / 180.0
+          let zRadians = eulerDegrees[2] * .pi / 180.0
+          
+          node._modelEntity.transform.rotation = simd_quatf(
+            angle: yRadians, axis: [0, 1, 0]
+          ) * simd_quatf(
+            angle: xRadians, axis: [1, 0, 0]
+          ) * simd_quatf(
+            angle: zRadians, axis: [0, 0, 1]
+          )
+        }
       }
     }
   }
+  
+  
+  private var relocalizationTimer: DispatchWorkItem?
+
+  /* returning to same place or not ? */
+  private func armRelocalizationWatchdog(enabled: Bool) {
+      relocalizationTimer?.cancel()
+      guard enabled else { return }
+
+      let task = DispatchWorkItem { [weak self] in
+          guard let self = self else { return }
+          let frame = self._arView.session.currentFrame
+          let status = frame?.worldMappingStatus
+          let meshes = frame?.anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
+
+          // Not relocalized AND no meshes → fall back
+          let notRelocalized = (status == .notAvailable || status == .limited || status == nil)
+          if meshes == 0 && notRelocalized {
+              self.forceFreshMapping()
+          }
+      }
+      relocalizationTimer = task
+      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: task)
+  }
+
+  private func forceFreshMapping() {
+      print("⏩ Fallback: dropping initialWorldMap to unblock mesh reconstruction")
+
+      //prevent ARKit from trying to relocalize again
+      self.shouldAttemptRelocalization = false
+      requestRestart()
+  }
+
+  // MARK: - Wireframe Refresh Helpers
+  private var meshArrivalToken: Cancellable?
 
   @objc open func startTrackingWithOptions(_ options: ARSession.RunOptions = []) {
     
@@ -706,51 +760,52 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     print("▶️ STARTTRACKING WITH OPTIONS: \(options)")
     print("ARView instance:", ObjectIdentifier(_arView))
     let startOptions: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]//options
+    
+    
+    
     DispatchQueue.main.async {
-      // Ensure configuration exists
+
       print("ARView instance inside startrackingoptions async:", ObjectIdentifier(self._arView))
       self._arView.session.pause()
       self._arView.automaticallyConfigureSession = false
       
       self._arView.session.delegate = self
-      
-      /*if _enableOcclusion {
-       print("enabling occlusion")
-       _arView.environment.sceneUnderstanding.options.insert(.occlusion)
-       }*/
       self._arView.automaticallyConfigureSession = false
-      // Now run the session ONCE
       
       let config = self.setupConfiguration()
+      if self.shouldAttemptRelocalization {
+        if let map = self.loadWorldMapFromDisk() {
+          print("✅ Restoring with saved world map")
+          if let cfg = config as? ARWorldTrackingConfiguration {
+            cfg.initialWorldMap = map
+          }
+        } else {
+          print("ℹ️ No saved map found — starting fresh")
+        }
+      }
       
       self._arView.session.run(config, options: startOptions)
+      self.armRelocalizationWatchdog(enabled: self.shouldAttemptRelocalization)
       self._sessionRunning = true
+      
       print("Mesh mode:", (self._arView.session.configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction as Any)
       print("SU options:", self._arView.environment.sceneUnderstanding.options)
       print("autoConfig:", self._arView.automaticallyConfigureSession)
-      
-      
-      
+
       var dbg: ARView.DebugOptions = []
-      dbg.insert(.showSceneUnderstanding)
+      if self._showWireframes { dbg.insert(.showSceneUnderstanding) }
       if self._showWorldOrigin { dbg.insert(.showWorldOrigin) }
       if self._showFeaturePoints { dbg.insert(.showFeaturePoints) }
       if self._showPhysics { dbg.insert(.showPhysics) }
-      
-      self.waitForFirstMeshAndRefresh()
       
       self._arView.debugOptions = dbg
       
       self._arView.environment.sceneUnderstanding.options.insert(.collision)
       self._arView.environment.sceneUnderstanding.options.insert(.occlusion)
       
-      
-      if startOptions.contains(.removeExistingAnchors) {
-        self.ensureFloorExists()
-      }
+      self.ensureFloorExists()
       
       self.updateGroundLevel(newGroundLevel: self.GROUND_LEVEL)
-      
       
       // ✅ Re-enable WebViews if needed
       if self._reenableWebViewNodes {
@@ -763,59 +818,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
       
       if self._requiresAddNodes {
-        for (node, anchorEntity) in self._nodeToAnchorDict {
-          node.EnablePhysics(node.EnablePhysics)
-          
-          if node.IsGeoAnchored {
-            if let geoAnchor = node.getGeoAnchor() {
-              self._arView.session.add(anchor: geoAnchor)
-            }
-          } else {
-            if !node.IsFollowingImageMarker {
-              self._arView.scene.addAnchor(anchorEntity)
-            }
-            
-            if node._fromPropertyPosition != nil {
-              let position = node._fromPropertyPosition.split(separator: ",")
-                .prefix(3)
-                .map { Float(String($0)) ?? 0.0 }
-              
-              node._modelEntity.transform.translation = SIMD3<Float>(
-                position[0],
-                position[1],
-                position[2]
-              )
-            }
-            if !node._fromPropertyRotation.isEmpty {
-              let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
-                .prefix(3)
-                .map { Float(String($0)) ?? 0.0 }
-              
-              let xRadians = eulerDegrees[0] * .pi / 180.0
-              let yRadians = eulerDegrees[1] * .pi / 180.0
-              let zRadians = eulerDegrees[2] * .pi / 180.0
-              
-              node._modelEntity.transform.rotation = simd_quatf(
-                angle: yRadians, axis: [0, 1, 0]
-              ) * simd_quatf(
-                angle: xRadians, axis: [1, 0, 0]
-              ) * simd_quatf(
-                angle: zRadians, axis: [0, 0, 1]
-              )
-            }
-          }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { [weak self] in
-          guard let self = self else { return }
-          if let wt = self._arView.session.configuration as? ARWorldTrackingConfiguration,
-             wt.sceneReconstruction == [] {
-              print("⚠️ sceneReconstruction empty after run, reasserting config…")
-              self._arView.session.run(config, options: []) // no reset; just apply
-          }
-          print("Mesh mode (session, after reassert):",
-                (self._arView.session.configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction as Any)
-      
-        }
+        
+        self.parseNodes()
+        //self.refreshWireframeAndSU()
+
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
           let meshes = self?._arView.session.currentFrame?.anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
@@ -825,42 +831,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         for (anchorEntity, light) in self._lights {
           self._arView.scene.addAnchor(anchorEntity)
         }
-        
-  
-        
         self._requiresAddNodes = false
       }
-      //self.ensureWireframeAfterMeshesAppear()
     }
     
     print("▶️ AR session started successfully")
   }
-  
-  private var _wireframeOnceToken: Cancellable?
-
-  private func ensureWireframeAfterMeshesAppear() {
-    // ask for it immediately…
-    _arView.debugOptions.insert(.showSceneUnderstanding)
-
-    // …and re-assert once meshes are back
-    _wireframeOnceToken?.cancel()
-    _wireframeOnceToken = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self] _ in
-      guard let self = self else { return }
-      let meshCount = self._arView.session.currentFrame?
-        .anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
-
-      if meshCount > 0 {
-        // toggle to force a refresh
-        self._arView.debugOptions.remove(.showSceneUnderstanding)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-          self._arView.debugOptions.insert(.showSceneUnderstanding)
-        }
-        self._wireframeOnceToken?.cancel()
-        self._wireframeOnceToken = nil
-      }
-    }
-  }
-
   
   @objc open func PauseTracking() {
     print("⏸️ Pausing AR tracking")
@@ -893,7 +869,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _arView.session.pause()
     _sessionRunning = false
     
-    // Clear all AR state
     _hasSetGroundLevel = false
     removeInvisibleFloor()
     //_detectedPlanesDict.removeAll()
@@ -907,7 +882,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
     if wasRunning {
       print("🔄 Restarting with clean slate...")
-      requestRestart()
+      requestRestart([])
       
       // Re-enable physics after restart
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -916,9 +891,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           }
       }
     }
-    
     print("🔄 Complete resetTracking finished")
-    
   }
   
   private func setupLifecycleObservers() {
@@ -942,19 +915,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
-  /*@objc open func ResetDetectedItems() {
+  @objc open func ResetDetectedItems() {
     let _shouldRestartSession = _sessionRunning
     
     _hasSetGroundLevel = false
     removeInvisibleFloor()
     
     pauseTracking(!_shouldRestartSession)
-    if _shouldRestartSession {
-      startTrackingWithOptions([.removeExistingAnchors])
-    } else if startOptions.isEmpty {
-      startOptions = [.removeExistingAnchors]
-    }
-  }*/
+    requestRestart([])
+  }
   
   @objc func verifyFloorState() {
     print("🏠 Floor State Check:")
@@ -1061,7 +1030,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       // CSB this should be a plane object.. why not detected plane?
       return .invisibleFloor(worldPosition)
     }
-  
     return .empty(SIMD3<Float>(0, 0, 0))
 
   }
@@ -1234,8 +1202,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
+  private var shouldAttemptRelocalization = true
   open func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
-    return true
+      return shouldAttemptRelocalization
   }
   
   func updateGroundLevel(newGroundLevel: Float) {
@@ -1252,12 +1221,60 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           node._modelEntity.transform.translation.y = correctedY
           print("⬆️ LIFTED \(node.Name) from \(currentY) to \(correctedY)")
       }
-      }
+    }
   }
   
+  private var didRefreshForFirstMesh = false
+  private var meshAnchorCount = 0
+  private var didReassertConfigOnce = false
+
+  private func resetMeshFlags() {
+      didRefreshForFirstMesh = false
+      meshAnchorCount = 0
+      didReassertConfigOnce = false
+  }
   
+  private func refreshWireframeAndSU() {
+    DispatchQueue.main.async {
+      var su = self._arView.environment.sceneUnderstanding.options
+      su.insert(.collision)
+      su.insert(.physics)
+      if su.contains(.occlusion) || self._enableOcclusion {
+        su.insert(.occlusion)
+      } else {
+        su.remove(.occlusion)
+      }
+      
+      self._arView.environment.sceneUnderstanding.options = su
+      print("🔁 refreshWireframeAndSU")
+      var dbg: ARView.DebugOptions = []
+      if self._showWireframes { dbg.insert(.showSceneUnderstanding) }
+      if self._showWorldOrigin   { dbg.insert(.showWorldOrigin) }
+      if self._showFeaturePoints { dbg.insert(.showFeaturePoints) }
+      if self._showPhysics       { dbg.insert(.showPhysics) }
+      self._arView.debugOptions = dbg
+
+      let hasCollision = su.contains(.collision)
+      let hasOcclusion = su.contains(.occlusion)
+      let hasPhysics   = su.contains(.physics)
+      print("🔁 SU:", su.rawValue, "DBG:", dbg.rawValue,
+            "=> collision=\(hasCollision) occlusion=\(hasOcclusion) physics=\(hasPhysics)")
+    }
+  }
+  
+
   // MARK: ARSession Delegate Methods
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+    let newMeshes = anchors.compactMap { $0 as? ARMeshAnchor }.count
+    print("🔁 didAdd")
+    if newMeshes > 0 {
+        meshAnchorCount += newMeshes
+        print("✅ didAdd adding ARMeshAnchor(s): +\(newMeshes), total=\(meshAnchorCount)")
+        if !didRefreshForFirstMesh {
+            didRefreshForFirstMesh = true
+            refreshWireframeAndSU()
+        }
+    }
     
     for anchor in anchors {
       if let planeAnchor = anchor as? ARPlaneAnchor {
@@ -1266,7 +1283,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         PlaneDetected(detectedPlane)
       
         
-      // for the floor
+        // for the floor
         if !_hasSetGroundLevel &&
          planeAnchor.alignment == .horizontal &&
             planeAnchor.transform.translation.y < 0.1 {
@@ -1416,8 +1433,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           handleGeoAnchorAdded(geoAnchor)
       }
     }
-    
-  
   }
   
   public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
@@ -1435,37 +1450,35 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   public func session(_ session: ARSession, didUpdate frame: ARFrame) {
 
-      autoreleasepool {
-          // Extract data immediately - don't store frame reference
-          let timestamp = frame.timestamp
+    autoreleasepool {
+      // Extract data immediately - don't store frame reference
+      let timestamp = frame.timestamp
+      
+      // Handle lighting estimation
+      if _lightingEstimationEnabled {
+        guard timestamp - _lastLightingUpdate >= _lightingUpdateInterval else { return }
+        _lastLightingUpdate = timestamp
+        
+        if let lightingEstimate = frame.lightEstimate {
+          let ambientIntensity = Float(lightingEstimate.ambientIntensity)
+          let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
           
-          // Handle lighting estimation
-          if _lightingEstimationEnabled {
-              guard timestamp - _lastLightingUpdate >= _lightingUpdateInterval else { return }
-              _lastLightingUpdate = timestamp
-              
-              if let lightingEstimate = frame.lightEstimate {
-                  let ambientIntensity = Float(lightingEstimate.ambientIntensity)
-                  let ambientColorTemperature = Float(lightingEstimate.ambientColorTemperature)
-                  
-                  // ✅ Don't capture frame in async block
-                  DispatchQueue.main.async { [weak self] in
-                      self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
-                  }
-              }
+          // ✅ Don't capture frame in async block
+          DispatchQueue.main.async { [weak self] in
+              self?.LightingEstimateUpdated(ambientIntensity, ambientColorTemperature)
           }
-          
-          // Frame is released here when autoreleasepool exits
+        }
       }
+    }
   }
   
   public func session(_ session: ARSession, didFailWithError error: Error) {
-       print("AR Session failed: \(error.localizedDescription)")
-       
-       DispatchQueue.main.async {
-         print("AR Session failed. Restarting...")
-         self.clearView()
-       }
+     print("AR Session failed: \(error.localizedDescription)")
+     
+     DispatchQueue.main.async {
+       print("AR Session failed. Restarting...")
+       self.clearView()
+     }
    }
   
   //ARSessionObserver
@@ -1473,18 +1486,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       print("⚠️ ===== AR SESSION INTERRUPTED =====")
       print("⚠️ Reason: phone call, backgrounding, control center, etc.")
       _sessionRunning = false
-      // Don't call pause() here - ARKit already paused it
   }
       
   public func sessionInterruptionEnded(_ session: ARSession) {
     print("⚠️ ===== AR SESSION INTERRUPTED ENDED =====")
       _sessionRunning = false
-
-      // Optional: sanity checks and recovery. Use your single start method:
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-          // If config was lost or currentFrame is nil, gently restart WITHOUT reset:
         self.requestRestart()
-          
       }
   }
   
@@ -1930,182 +1938,151 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    private func loadWorldMapFromDisk() -> ARWorldMap? {
+    public func loadWorldMapFromDisk() -> ARWorldMap? {
       guard FileManager.default.fileExists(atPath: worldMapURL.path) else {
           return nil
       }
-      
+      print("Load world map from disk")
       do {
         let data = try Data(contentsOf: worldMapURL)
         guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(
             ofClass: ARWorldMap.self,
             from: data
         ) else {
-          Swift.print("❌ Failed to unarchive world map")
+          print("❌ Failed to unarchive world map")
             return nil
         }
-        Swift.print("✅ world map!")
+        print("✅ world map!")
         return worldMap
       } catch {
-        Swift.print("❌ Error loading world map: \(error)")
+        print("❌ Error loading world map: \(error)")
         return nil
       }
     }
-    
       
-    @available(iOS 15.0, *)
-    @objc open func LoadScene(_ dictionaries: [AnyObject]) async -> [ARNode] {
-      print("🔄 LOADING stored scene with \(dictionaries.count) nodes")
-      
-      // Wait for ARKit to be ready (check world mapping status)
-      await waitForARKitReady()
-      
-      let nodes = loadNodesFromDictionaries(dictionaries)
-      print("✅ Loaded \(nodes.count) nodes")
-      return nodes
+    // MARK: - NodeSpec (lightweight blueprint built off-main)
+    private struct NodeSpec {
+        let type: String
+        let dict: YailDictionary
     }
-        
-    @available(iOS 15.0, *)
-    private func waitForARKitReady() async {
-      let maxWaitTime: TimeInterval = 3.0
-      let checkInterval: TimeInterval = 0.1
-      var elapsed: TimeInterval = 0
+
+    @objc open func LoadScene(_ dictionaries: [AnyObject]) -> [AnyObject] {
+      print("LOADING stored scene \(dictionaries)")
       
-      while elapsed < maxWaitTime {
-        if let mappingStatus = _arView.session.currentFrame?.worldMappingStatus {
-            // Ready when status is .extending or .mapped
-          if mappingStatus == .extending || mappingStatus == .mapped {
-              print("✅ ARKit ready (status: \(mappingStatus))")
-              return
-          }
-        }
-        
-        try? await Task.sleep(nanoseconds: UInt64(checkInterval * 1_000_000_000))
-        elapsed += checkInterval
-      }
-        
-      print("⚠️ ARKit not fully ready after \(maxWaitTime)s, proceeding anyway")
-    }
-    
-    @objc open func getWorldMappingStatus() -> String {
-      switch _arView.session.currentFrame?.worldMappingStatus {
-      case .notAvailable:
-          return "Not Available"
-      case .limited:
-          return "Limited"
-      case .extending:
-          return "Extending"
-      case .mapped:
-          return "Mapped"
-      case .none:
-          return "Unknown"
-      @unknown default:
-          return "Unknown"
-      }
-    }
-    
-        
-        // MARK: - Helper Methods
-        
-    private func loadNodesFromDictionaries(_ dictionaries: [AnyObject]) -> [ARNode] {
+      var loadNode: ARNodeBase?
       var newNodes: [ARNode] = []
       
       guard !dictionaries.isEmpty else {
-          return []
+        return []
       }
       
       for obj in dictionaries {
-        if obj is YailDictionary {
+        if obj is YailDictionary{
+          
           let nodeDict = obj as! YailDictionary
           
           guard let type = nodeDict["type"] as? String else {
-              print("loadscene missing type")
-              continue
+            print("loadscene missing type (\type)")
+            continue
           }
-          
-          let loadNode: ARNodeBase?
           
           switch type.lowercased() {
           case "capsule", "geocapsulenode":
-              loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
+            loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
           case "box", "geoboxnode":
-              loadNode = self.CreateBoxNodeFromYail(nodeDict)
+            loadNode = self.CreateBoxNodeFromYail(nodeDict)
           case "sphere", "geospherenode":
-              loadNode = self.CreateSphereNodeFromYail(nodeDict)
+            loadNode = self.CreateSphereNodeFromYail(nodeDict)
           case "model", "geomodelnode":
-              loadNode = self.CreateModelNodeFromYail(nodeDict)
+            loadNode = self.CreateModelNodeFromYail(nodeDict)
           case "text", "geotextnode":
-              loadNode = self.CreateTextNodeFromYail(nodeDict)
+            loadNode = self.CreateTextNodeFromYail(nodeDict)
           case "video", "geovideonode":
-              loadNode = self.CreateVideoNodeFromYail(nodeDict)
+            loadNode = self.CreateVideoNodeFromYail(nodeDict)
           case "webview", "geowebviewnode":
-              loadNode = self.CreateWebViewNodeFromYail(nodeDict)
+            loadNode = self.CreateWebViewNodeFromYail(nodeDict)
           default:
-              loadNode = nil
+            // currently not storing or handling modelNode..
+            loadNode = nil
           }
           
           if let node = loadNode {
-              addNode(node)
-              newNodes.append(node)
+            addNode(node)
+            newNodes.append(node)
           }
         }
       }
-        
-      print("✅ Loaded \(newNodes.count) nodes")
+      print("loadscene new nodes are \(newNodes)")
       return newNodes
     }
     
+
+    // Keep this main-actor because it touches session/currentFrame.
     @available(iOS 15.0, *)
-    @objc open func SaveScene(_ newNodes: [AnyObject]) async -> [YailDictionary] {
-      var dictionaries: [YailDictionary] = []
-      
-      for node in newNodes {
-          guard let arNode = node as? ARNode else { continue }
-          let nodeDict = arNode.ARNodeToYail()
-          dictionaries.append(nodeDict)
-      }
-        
-      print("✅ Created YAIL dictionaries for \(dictionaries.count) nodes")
-        
-      do {
-        let worldMap = try await getCurrentWorldMap()
-        print("📍 World map contains \(worldMap.anchors.count) anchors")
-        
-        let data = try NSKeyedArchiver.archivedData(
-            withRootObject: worldMap,
-            requiringSecureCoding: true
-        )
-        try data.write(to: worldMapURL)
-        print("✅ World map saved successfully")
-          
-      } catch {
-        print("❌ Error saving world map: \(error)")
-      }
-      
-      return dictionaries
+    @MainActor
+    private func waitForARKitReady() async {
+        let maxWaitTime: TimeInterval = 3.0
+        let checkInterval: TimeInterval = 0.1
+        var elapsed: TimeInterval = 0
+
+        while elapsed < maxWaitTime {
+            if let status = _arView.session.currentFrame?.worldMappingStatus,
+               status == .extending || status == .mapped {
+                print("✅ ARKit ready (status: \(status))")
+                return
+            }
+            try? await Task.sleep(nanoseconds: UInt64(checkInterval * 1_000_000_000))
+            elapsed += checkInterval
+        }
+        print("⚠️ ARKit not fully ready after \(maxWaitTime)s, proceeding anyway")
+    }
+
+    @objc open func getWorldMappingStatus() -> String {
+        switch _arView.session.currentFrame?.worldMappingStatus {
+        case .notAvailable: return "Not Available"
+        case .limited:      return "Limited"
+        case .extending:    return "Extending"
+        case .mapped:       return "Mapped"
+        case .none:         return "Unknown"
+        @unknown default:   return "Unknown"
+        }
     }
     
-    /// Get current world map as async function
-    @available(iOS 15.0, *)
-    private func getCurrentWorldMap() async throws -> ARWorldMap {
-      try await withCheckedThrowingContinuation { continuation in
-        _arView.session.getCurrentWorldMap { (worldMap: ARWorldMap?, error: Error?) in
-            if let error = error {
-                continuation.resume(throwing: error)
-            } else if let worldMap = worldMap {
-                continuation.resume(returning: worldMap)
-            } else {
-                continuation.resume(throwing: NSError(
-                    domain: "ARWorldMap",
-                    code: -1,
-                    userInfo: [NSLocalizedDescriptionKey: "No world map returned"]
-                ))
-            }
+    @objc open func SaveScene(_ newNodes: [AnyObject]) -> [YailDictionary] {
+      var dictionaries: [YailDictionary] = []
+      // a list of arnodes
+      for node in newNodes { // swift thinks newnodes is nsarray
+        guard let arNode = node as? ARNode else { continue }
+        
+        let nodeDict = arNode.ARNodeToYail()
+        dictionaries.append(nodeDict)
+      }
+      print("returning dictionaries with count:\(dictionaries.count)")
+      // Save world map
+      _arView.session.getCurrentWorldMap { worldMap, error in
+        guard let worldMap = worldMap else {
+          print("❌ Error getting world map: \(error?.localizedDescription ?? "unknown")")
+          return
+        }
+        
+        do {
+          // Encode the ARWorldMap using NSKeyedArchiver
+          let data = try NSKeyedArchiver.archivedData(
+              withRootObject: worldMap,
+              requiringSecureCoding: true
+          )
+          
+          // Save the encoded data to your file URL
+          try data.write(to: self.worldMapURL, options: [.atomic])
+          print("✅ World map saved successfully at \(self.worldMapURL.path)")
+            
+        } catch {
+            print("❌ Error saving world map: \(error)")
         }
       }
+      return dictionaries
     }
-        
-    
+
     public func worldToGPS(_ worldPoint: SIMD3<Float>) -> (coordinate: CLLocationCoordinate2D, altitude: Double)? {
       guard let sessionStart = sessionStartLocation else { return nil }
       
@@ -2608,7 +2585,9 @@ extension ARView3D: LifecycleDelegate {
         for (_, anchorEntity) in self._nodeToAnchorDict {
           self._arView.scene.removeAnchor(anchorEntity)
         }
-
+        
+        self.resetMeshFlags()
+        
         self._nodeToAnchorDict.removeAll()
         self._lights.removeAll()
         self._imageMarkers.removeAll()
