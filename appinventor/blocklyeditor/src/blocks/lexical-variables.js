@@ -469,7 +469,7 @@ Blockly.Blocks['local_declaration_statement'] = {
         }
         if (mutatorarg && mutatorargIndex == paramIndex) {
           // See Subtlety #3 in  procedureParameterChangeHandler in language/common/procedures.js
-          Blockly.Field.prototype.setText.call(mutatorarg.getField("NAME"), newParamName);
+          Blockly.Field.prototype.setValue.call(mutatorarg.getField("NAME"), newParamName);
         }
       }
     }
