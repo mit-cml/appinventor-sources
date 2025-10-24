@@ -17,6 +17,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
+import com.google.appinventor.shared.rpc.project.GlobalAssetProjectNode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -95,14 +96,21 @@ public class PreviewFileCommand extends ChainableCommand {
    * @return widget
    */
   private Widget generateFilePreview(ProjectNode node) {
-    String fileSuffix = node.getProjectId() + "/" + node.getFileId();
-    String fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
+    String fileSuffix;
+    String fileUrl;
+    if (node instanceof GlobalAssetProjectNode) {
+      fileSuffix = node.getFileId();
+      fileUrl = "/ode/download/globalasset/" + node.getFileId();
+    } else {
+      fileSuffix = node.getProjectId() + "/" + node.getFileId();
+      fileUrl = StorageUtil.getFileUrl(node.getProjectId(), node.getFileId());
+    }
 
     if (StorageUtil.isImageFile(fileSuffix)) { // Image Preview
       String fileType = StorageUtil.getContentTypeForFilePath(fileSuffix);
       // Support preview for file types that all major browser support
       if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif")
-          || fileType.endsWith("bmp") || fileType.endsWith("svg+xml")) {
+          || fileType.endsWith("bmp") || fileType.endsWith("svg+xml") || fileType.endsWith("webp")) {
         Image img = new Image(fileUrl);
         img.getElement().getStyle().setProperty("maxWidth","600px");
         return img;
