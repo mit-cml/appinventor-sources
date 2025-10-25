@@ -20,7 +20,7 @@ export declare class VariableModel {
     workspace: Workspace;
     name: string;
     type: string;
-    private readonly id_;
+    private readonly id;
     /**
      * @param workspace The variable's workspace.
      * @param name The name of the variable.  This is the user-visible name (e.g.
