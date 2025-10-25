@@ -26,12 +26,13 @@ AI.Swift.SWIFT_INIT = [
 AI.Swift.SWIFT_FORM_POSTLUDE = "}\n";
 
 AI.Swift.SwiftWriter = function() {
-  AI.Swift.SwiftWriter.superClass_.constructor.call(this, 'Swift');
+  Blockly.Generator.call(this, 'Swift');
   this.indent_ = 0;
   this.pretty = true;
   this.code = [];
 };
-goog.inherits(AI.Swift.SwiftWriter, Blockly.Generator);
+AI.Swift.SwiftWriter.prototype = Object.create(Blockly.Generator.prototype);
+AI.Swift.SwiftWriter.prototype.constructor = AI.Swift.SwiftWriter;
 
 AI.Swift.SwiftWriter.prototype.indent = function() {
   this.indent_ += 2;
@@ -778,10 +779,10 @@ AI.Swift.SwiftWriter.prototype.blockToCode = function(block) {
   // The current prefered method of accessing the block is through the second
   // argument to func.call, which becomes the first parameter to the generator.
   var code = func.call(this, block);
-  if (goog.isArray(code)) {
+  if (Array.isArray(code)) {
     // Value blocks return tuples of code and operator order.
     return [this.scrub_(block, code[0]), code[1]];
-  } else if (goog.isString(code)) {
+  } else if (typeof code === 'string') {
     if (this.STATEMENT_PREFIX) {
       code = this.STATEMENT_PREFIX.replace(/%1/g, '\'' + block.id + '\'') +
           code;

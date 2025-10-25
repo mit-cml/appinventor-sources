@@ -14,6 +14,7 @@ export declare class Connection extends Measurable {
     connectionModel: RenderedConnection;
     shape: Shape;
     isDynamicShape: boolean;
+    highlighted: boolean;
     /**
      * @param constants The rendering constants provider.
      * @param connectionModel The connection object on the block that this
