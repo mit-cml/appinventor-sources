@@ -3,9 +3,9 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { FlyoutButton } from './flyout_button.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
-import type { FlyoutButton } from './flyout_button.js';
 /**
  * String for use in the "custom" attribute of a category in toolbox XML.
  * This string indicates that the category should be dynamically populated with

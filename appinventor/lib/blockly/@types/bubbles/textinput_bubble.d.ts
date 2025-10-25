@@ -3,17 +3,17 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Bubble } from './bubble.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Rect } from '../utils/rect.js';
 import { Size } from '../utils/size.js';
 import { WorkspaceSvg } from '../workspace_svg.js';
+import { Bubble } from './bubble.js';
 /**
  * A bubble that displays editable text. It can also be resized by the user.
  * Used by the comment icon.
  */
 export declare class TextInputBubble extends Bubble {
-    protected readonly workspace: WorkspaceSvg;
+    readonly workspace: WorkspaceSvg;
     protected anchor: Coordinate;
     protected ownerRect?: Rect | undefined;
     /** The root of the elements specific to the text element. */
@@ -42,6 +42,7 @@ export declare class TextInputBubble extends Bubble {
     private readonly DEFAULT_SIZE;
     /** The minimum size of this bubble, including borders. */
     private readonly MIN_SIZE;
+    private editable;
     /**
      * @param workspace The workspace this bubble belongs to.
      * @param anchor The anchor location of the thing this bubble is attached to.
@@ -54,6 +55,10 @@ export declare class TextInputBubble extends Bubble {
     getText(): string;
     /** Sets the text of this bubble. Calls change listeners. */
     setText(text: string): void;
+    /** Sets whether or not the text in the bubble is editable. */
+    setEditable(editable: boolean): void;
+    /** Returns whether or not the text in the bubble is editable. */
+    isEditable(): boolean;
     /** Adds a change listener to be notified when this bubble's text changes. */
     addTextChangeListener(listener: () => void): void;
     /** Adds a change listener to be notified when this bubble's size changes. */
