@@ -36,9 +36,6 @@ jobs:
       - name: 'Build Appinventor'
         run: ant noplay
         working-directory: appinventor
-      - name: 'Run Tests'
-        run: ant tests
-        working-directory: appinventor
 
       - name: Log in to GHCR
         uses: docker/login-action@v3

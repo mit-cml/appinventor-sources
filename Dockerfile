@@ -1,5 +1,5 @@
 # ========= Runtime Image =========
-FROM eclipse-temurin:11-jre
+FROM eclipse-temurin:17-jre
 
 WORKDIR /appinventor
 
