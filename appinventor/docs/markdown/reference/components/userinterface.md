@@ -164,8 +164,17 @@ None
 : Specifies the background color of the `CheckBox` as an alpha-red-green-blue
  integer.
 
+{:id="CheckBox.BoxColorChecked" .color} *BoxColorChecked*
+: Specifies the `CheckBox`'s box color when checked.
+
+{:id="CheckBox.BoxColorUnchecked" .color} *BoxColorUnchecked*
+: Specifies the `CheckBox`'s box color when unchecked.
+
 {:id="CheckBox.Checked" .boolean} *Checked*
 : Set to `true`{:.logic.block} if the box is checked, `false`{:.logic.block} otherwise.
+
+{:id="CheckBox.CheckmarkColor" .color} *CheckmarkColor*
+: Specifies the `CheckBox`'s checkmark color.
 
 {:id="CheckBox.Enabled" .boolean} *Enabled*
 : Specifies whether the `CheckBox` should be active and clickable.
