@@ -28,5 +28,5 @@ ENV PATH="/usr/lib/google-cloud-sdk/bin:${PATH}"
 EXPOSE 8888 9990
 
 # Run both BuildServer and DevAppServer
-CMD bash -c "cd /appinventor/buildserver && ant RunLocalBuildServer & \
+CMD bash -c "cd /appinventor/buildserver && ant RunLocalBuildServer -Dskip.ios=true & \
     bash /usr/lib/google-cloud-sdk/bin/java_dev_appserver.sh --address=0.0.0.0 --port=8888 /appinventor/appengine/build/war"
