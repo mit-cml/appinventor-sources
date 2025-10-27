@@ -23,4 +23,4 @@ ENV PATH="/usr/lib/google-cloud-sdk/bin:${PATH}"
 EXPOSE 8888
 
 # Run the App Inventor dev server
-CMD ["bash", "/usr/lib/google-cloud-sdk/bin/java_dev_appserver.sh", "--port=8888", "--host=0.0.0.0", "/appinventor/appengine/build/war"]
+CMD ["bash", "/usr/lib/google-cloud-sdk/bin/java_dev_appserver.sh", "--address=0.0.0.0", "--port=8888", "/appinventor/appengine/build/war"]
