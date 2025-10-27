@@ -9,7 +9,7 @@ env:
 
 jobs:
   build-and-push:
-    if: github.ref == 'refs/heads/feature/no-ref/ekalavya'
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
