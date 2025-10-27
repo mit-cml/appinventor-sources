@@ -914,6 +914,11 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // Added BoxColorChecked, BoxColorUnchecked, and CheckmarkColor properties.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
