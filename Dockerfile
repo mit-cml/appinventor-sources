@@ -10,6 +10,7 @@ COPY appinventor/common /appinventor/common
 COPY appinventor/components /appinventor/components
 COPY appinventor/lib /appinventor/lib
 COPY appinventor/build-common.xml /appinventor/
+COPY appinventor/ios-build.xml /appinventor/
 
 # Install Cloud SDK and App Engine Java runtime
 RUN apt-get update && \
