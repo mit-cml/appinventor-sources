@@ -34,7 +34,7 @@ jobs:
         run: ant MakeAuthKey
         working-directory: appinventor
       - name: 'Build Appinventor'
-        run: ant noplay
+        run: ant -Dskip.ios=true noplay
         working-directory: appinventor
 
       - name: Log in to GHCR
