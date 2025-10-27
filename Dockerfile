@@ -20,4 +20,4 @@ ENV PATH="/opt/appengine-java-sdk/bin:${PATH}"
 EXPOSE 8888
 
 # Run the MIT App Inventor local server
-CMD ["java", "-Xmx1G", "-cp", "/opt/appengine-java-sdk/lib/appengine-tools-api.jar", "com.google.appengine.tools.development.DevAppServerMain", "/appinventor/appengine/build/war", "--address=0.0.0.0", "--port=8888"]
+CMD ["java", "-Xmx1G", "-cp", "/opt/appengine-java-sdk/lib/appengine-tools-api.jar", "com.google.appengine.tools.development.DevAppServerMain", "/appinventor/appengine/build/war", "--host=0.0.0.0", "--port=8888"]
