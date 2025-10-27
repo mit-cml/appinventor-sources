@@ -9,6 +9,7 @@ COPY appinventor/buildserver /appinventor/buildserver
 COPY appinventor/common /appinventor/common
 COPY appinventor/components /appinventor/components
 COPY appinventor/lib /appinventor/lib
+COPY appinventor/PlayerApp /appinventor/PlayerApp
 COPY appinventor/build-common.xml /appinventor/
 COPY appinventor/ios-build.xml /appinventor/
 
