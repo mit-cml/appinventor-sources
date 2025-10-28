@@ -1,25 +1,42 @@
+# Stage 1: Install Google Cloud SDK
+FROM eclipse-temurin:17-jre-jammy AS gcloud
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      bash curl unzip ca-certificates python3-minimal lsb-release locales && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
+    curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-474.0.0-linux-x86_64.tar.gz \
+      | tar -xz -C /opt && \
+    bash /opt/google-cloud-sdk/install.sh --quiet --usage-reporting=false --command-completion=false --path-update=false && \
+    # Only install App Engine Java local dev tools \
+    /opt/google-cloud-sdk/bin/gcloud components install app-engine-java --quiet --verbosity=error || true && \
+    # Strip heavy unused parts \
+    rm -rf /opt/google-cloud-sdk/.install/.backup \
+           /opt/google-cloud-sdk/help \
+           /opt/google-cloud-sdk/.backup \
+           /opt/google-cloud-sdk/.install/.download \
+           /opt/google-cloud-sdk/platform/bq \
+           /opt/google-cloud-sdk/platform/gsutil \
+           /opt/google-cloud-sdk/platform/pubsub-emulator \
+           /opt/google-cloud-sdk/.kube \
+           /opt/google-cloud-sdk/.github \
+           /opt/google-cloud-sdk/anthoscli \
+           /var/lib/apt/lists/* && \
+    apt-get clean && rm -rf /tmp/* /var/tmp/*
+
+# Stage 2: Runtime
 FROM eclipse-temurin:17-jre-jammy
 
+# Copy only necessary parts of gcloud SDK (App Engine runtime + scripts)
+COPY --from=gcloud /opt/google-cloud-sdk /opt/google-cloud-sdk
+COPY --from=gcloud /usr/lib/python3.10 /usr/lib/python3.10
+COPY --from=gcloud /usr/bin/python3 /usr/bin/python3
+COPY --from=gcloud /usr/bin/python /usr/bin/python
 
-WORKDIR /appinventor
-
-# Copy prebuilt App Inventor WAR files
 COPY appinventor/appengine/build/war /appinventor/appengine/build/war
 
-# Install minimal dependencies and Cloud SDK with Java runtime only
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      curl gnupg ca-certificates && \
-    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" \
-      | tee /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg \
-      | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-      google-cloud-cli google-cloud-cli-app-engine-java && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV PATH="/opt/google-cloud-sdk/bin:${PATH}"
 
-ENV PATH="/usr/lib/google-cloud-sdk/bin:${PATH}"
-
+WORKDIR /appinventor
 
 EXPOSE 8888
 
