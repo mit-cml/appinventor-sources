@@ -10,6 +10,18 @@ import os.log
 import Combine
 
 @available(iOS 14.0, *)
+private extension Entity {
+  func isDescendant(of ancestor: Entity) -> Bool {
+    var cur: Entity? = self
+    while let e = cur {
+        if e === ancestor { return true }
+        cur = e.parent
+    }
+    return false
+  }
+}
+
+@available(iOS 14.0, *)
 open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
 
   public static var SHARED_GROUND_LEVEL: Float = -1.0
@@ -188,6 +200,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     locationManager?.desiredAccuracy = kCLLocationAccuracyBest
     locationManager?.requestWhenInUseAuthorization()
     locationManager?.startUpdatingLocation()
+    locationManager?.requestTemporaryFullAccuracyAuthorization(withPurposeKey: "ARPlacement")
   }
   
   public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -499,15 +512,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   
     /* backup occlusion via depth*/
-   var semantics: ARConfiguration.FrameSemantics = []
-    if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+    if _enableOcclusion {
+      var semantics: ARConfiguration.FrameSemantics = []
+      if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
         semantics.insert(.sceneDepth)
-    }
-    if ARWorldTrackingConfiguration.supportsFrameSemantics(.smoothedSceneDepth) {
+      }
+      if ARWorldTrackingConfiguration.supportsFrameSemantics(.smoothedSceneDepth) {
         semantics.insert(.smoothedSceneDepth)
+      }
+      _configuration.frameSemantics = semantics
+      print("🔧 Frame semantics:", semantics)
     }
-    _configuration.frameSemantics = semantics
-    print("🔧 Frame semantics:", semantics)
+    
     
     // Enable lighting estimation
     _configuration.isLightEstimationEnabled = _lightingEstimationEnabled
@@ -801,7 +817,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       self._arView.debugOptions = dbg
       
       self._arView.environment.sceneUnderstanding.options.insert(.collision)
-      self._arView.environment.sceneUnderstanding.options.insert(.occlusion)
+      if (self._enableOcclusion){
+        self._arView.environment.sceneUnderstanding.options.insert(.occlusion)
+      }
       
       self.ensureFloorExists()
       
@@ -1302,7 +1320,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               GROUND_LEVEL = invisibleFloorLevel
               
               // ✅ RECREATE invisible floor at correct position
-              removeInvisibleFloor()
+
               createInvisibleFloor(at: invisibleFloorLevel)
               _hasSetGroundLevel = true
             }
@@ -1310,7 +1328,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             let invisibleFloorLevel = detectedRealFloorLevel + ARView3D.VERTICAL_OFFSET
             print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
             GROUND_LEVEL = invisibleFloorLevel
-            removeInvisibleFloor()
             createInvisibleFloor(at: invisibleFloorLevel)
             _hasSetGroundLevel = true
           }
@@ -1496,6 +1513,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
   }
   
+  func canUseGeo() -> Bool {
+      guard let status = _arView.session.currentFrame?.geoTrackingStatus else { return false }
+      return status.state == .localized && status.accuracy == .high
+  }
+  
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
     // Calculate distance from session start
     if let sessionStart = sessionStartLocation {
@@ -1525,9 +1547,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           
           // Check if current user is close to where anchor was created
           let creatorLocation = CLLocation(latitude: creatorSessionStart.coordinate.latitude, longitude: creatorSessionStart.coordinate.longitude)
-          let currentDistance = currentSessionStart.distance(from: creatorLocation)
+          let currentDistance = currentSessionStart.distance(from: currentSessionStart)
           
-          if currentDistance < 5.0 {
+          if !canUseGeo() || currentDistance < 5.0 {
             // User is very close to original creation location - use precise world coordinates
             if let creatorStartWorldPos = self.gpsToWorld(creatorSessionStart.coordinate, creatorSessionStart.altitude) {
               let precisePosition = creatorStartWorldPos + worldOffset
@@ -2136,73 +2158,104 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 @available(iOS 14.0, *)
 extension ARView3D: UIGestureRecognizerDelegate {
   
-  func findClosestNode(tapLocation: CGPoint) -> ARNodeBase? {
-      
-      var bestNode: ARNodeBase?
-      var bestScore: Float = Float.greatestFiniteMagnitude
-      
-      // Get fresh world hit point
-      let worldHitPoint: SIMD3<Float>?
-      if let result = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
-          worldHitPoint = SIMD3<Float>(
-              result.worldTransform.columns.3.x,
-              result.worldTransform.columns.3.y,
-              result.worldTransform.columns.3.z
-          )
-      } else {
-          worldHitPoint = nil
-      }
-      
+
+
+  // Turn a hit entity into your ARNodeBase using _nodeToAnchorDict
+  private func ownerNode(for hit: Entity) -> ARNodeBase? {
+      // You wrap each node around a single ModelEntity: node._modelEntity
       for (node, _) in _nodeToAnchorDict {
-          // Screen space check (always works, accounts for camera movement)
-          let nodeScreenPos = _arView.project(node._modelEntity.position)
-          if nodeScreenPos == nil { continue }
-          let screenDistance = sqrt(
-            pow(tapLocation.x - nodeScreenPos!.x, 2) +
-            pow(tapLocation.y - nodeScreenPos!.y, 2)
-          )
-          
-        let SCREEN_THRESHOLD: CGFloat = 50.0
-        // Skip if too far in screen space
-        if screenDistance > SCREEN_THRESHOLD { continue }  // 100 pixel max
-        
-        // World space check (more accurate for close objects)
-        var worldDistance: Float = Float.greatestFiniteMagnitude
-        if let hitPoint = worldHitPoint {
-            let nodePosition = node._modelEntity.transform.translation
-            worldDistance = simd_distance(nodePosition, hitPoint)
-        }
-        
-        // Combine both distances with weighting
-        let screenWeight: Float = 0.3
-        let worldWeight: Float = 0.7
-          
-        let normalizedScreenDistance = screenDistance / 100.0  // Normalize to 0-1
-        var worldThreshold: Float = 0.1  // Default 10cm
-
-        let bounds = node._modelEntity.visualBounds(relativeTo: nil as Entity?)
-        let currentSize = bounds.max - bounds.min
-        worldThreshold = currentSize.max()
-
-        let normalizedWorldDistance = min(worldDistance / worldThreshold, 1.0)  // Normalize to 0-1
-          
-        let combinedScore = (screenWeight * Float(normalizedScreenDistance)) +
-                             (worldWeight * normalizedWorldDistance)
-          
-        if combinedScore < bestScore {
-            bestScore = combinedScore
-            bestNode = node
-        }
+          if hit.isDescendant(of: node._modelEntity) {
+              return node
+          }
       }
-      
-      if let node = bestNode {
-          //print("Selected node \(node.Name) with combined score: \(bestScore)")
-          return node
-      }
-      
       return nil
   }
+
   
+  func findClosestNode(tapLocation: CGPoint) -> ARNodeBase? {
+
+      // 1) Try RealityKit's entity hit-test first (topmost renderable under the finger)
+      if let hitEntity = _arView.entity(at: tapLocation) {
+        if let hitEntity = _arView.entity(at: tapLocation),
+           let owner = ownerNode(for: hitEntity) {
+            return owner
+        }
+      }
+
+      // 2) Build a ray from the camera through the tap for robust fallback picking
+      guard let cam = _arView.cameraTransform as? Transform else { return nil }
+      let origin = cam.translation
+      let screenRayDir: SIMD3<Float>
+      if let ray = _arView.ray(through: tapLocation) {
+          screenRayDir = simd_normalize(ray.direction)
+      } else {
+          // Last-resort: use ARKit plane raycast to get a direction
+          if let rr = _arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .any).first {
+              let hit = SIMD3<Float>(rr.worldTransform.columns.3.x,
+                                     rr.worldTransform.columns.3.y,
+                                     rr.worldTransform.columns.3.z)
+              screenRayDir = simd_normalize(hit - origin)
+          } else {
+              return nil
+          }
+      }
+
+      var best: (node: ARNodeBase, depth: Float, score: Float)?
+      let maxDepth: Float = 10.0 // meters, ignore stuff behind far plane
+
+      for (node, _) in _nodeToAnchorDict {
+
+          // Skip invisible/no-geometry/no-name placeholders
+          guard node.Visible,
+                node._modelEntity.model != nil,
+                !node.Name.isEmpty else { continue }
+
+          // WORLD space position for everything
+          let worldPos = node._modelEntity.position(relativeTo: nil)
+
+          // Discard things behind the camera
+          let toNode = worldPos - origin
+          let depthAlongRay = simd_dot(toNode, screenRayDir)
+          if depthAlongRay <= 0 || depthAlongRay > maxDepth { continue }
+
+          // Adaptive screen gate using world->screen projection (WORLD point!)
+          if let screenPt = _arView.project(worldPos) {
+              // Threshold scales with distance so small far objects still pass
+              let basePx: CGFloat = 36.0
+              let adaptivePx = max(basePx, CGFloat(depthAlongRay) * 18.0)
+
+              let dx = tapLocation.x - screenPt.x
+              let dy = tapLocation.y - screenPt.y
+              let screenDist = hypot(dx, dy)
+              if screenDist > adaptivePx { continue }
+          } else {
+              // Can't project => skip
+              continue
+          }
+
+          // Compute distance from the node to the camera ray (not to a plane hit)
+          // dist(ray, point) = |(p0 - o) x d|  where o=origin, d=dir (unit)
+          let crossVec = simd_cross(worldPos - origin, screenRayDir)
+          let distToRay = simd_length(crossVec)
+
+          // Use a size-aware radius based on visual bounds in WORLD space
+          let vb = node._modelEntity.visualBounds(relativeTo: nil)
+          let size = vb.max - vb.min
+          let radius = max(max(size.x, size.y), size.z) * 0.5
+
+          // Combine: favor small distToRay, then small depth (front-most)
+          // Penalty disappears if the ray actually passes through the node's radius
+          let missPenalty = max(0, distToRay - radius)
+          let score = missPenalty * 4.0 + depthAlongRay * 0.25
+
+          if best == nil || score < best!.score {
+              best = (node, depthAlongRay, score)
+          }
+      }
+
+      return best?.node
+  }
+
   
   // Helper method to find node for entity
   private func findNodeForEntity(_ entity: ModelEntity) -> ARNodeBase? {

@@ -74,14 +74,15 @@ class ARNodeUtilities {
       }
       
       // Set position (for non-geo or as initial position for geo)
-      node.setPosition(x: savedX, y: finalY, z: savedZ)
+      node._modelEntity.setPosition(SIMD3<Float>(savedX, finalY, savedZ), relativeTo: nil as Entity?)
       print("✅ Node positioned at: (\(savedX), \(finalY), \(savedZ))")
       
       // Apply rotation
       if let qDict = poseDict["q"] as? [String: Float],
          let qx = qDict["x"], let qy = qDict["y"],
          let qz = qDict["z"], let qw = qDict["w"] {
-          node._modelEntity.transform.rotation = simd_quatf(ix: qx, iy: qy, iz: qz, r: qw)
+          let rot = simd_quatf(ix: qx, iy: qy, iz: qz, r: qw).normalized
+          node._modelEntity.transform.rotation = rot
       }
     }
     
