@@ -1,26 +1,23 @@
-# ========= Runtime Image =========
-FROM eclipse-temurin:17-jre
+# Use a lightweight Java 17 runtime
+FROM eclipse-temurin:17-jre-jammy AS runtime
 
 WORKDIR /appinventor
 
-# Copy already-built App Inventor WAR files
+# Copy prebuilt App Inventor WAR files
 COPY appinventor/appengine/build/war /appinventor/appengine/build/war
 
-# Install Cloud SDK and App Engine Java runtime
-RUN apt-get update && \
-    apt-get install -y wget curl gnupg && \
-    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" \
-      | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg \
-      | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
-    apt-get update && \
-    apt-get install -y google-cloud-cli google-cloud-cli-app-engine-java && \
+# Install only required dependencies and App Engine Java SDK (not full gcloud)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      wget unzip ca-certificates && \
+    wget -q https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.92.zip && \
+    unzip appengine-java-sdk-1.9.92.zip -d /opt && \
+    rm appengine-java-sdk-1.9.92.zip && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Add App Engine Java SDK to PATH
-ENV PATH="/usr/lib/google-cloud-sdk/bin:${PATH}"
+# Add App Engine SDK to PATH
+ENV PATH="/opt/appengine-java-sdk-1.9.92/bin:${PATH}"
 
 EXPOSE 8888
 
 # Run the App Inventor dev server
-CMD ["bash", "/usr/lib/google-cloud-sdk/bin/java_dev_appserver.sh", "--address=0.0.0.0", "--port=8888", "/appinventor/appengine/build/war"]
+CMD ["bash", "-c", "dev_appserver.sh --address=0.0.0.0 --port=8888 /appinventor/appengine/build/war"]
