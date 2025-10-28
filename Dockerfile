@@ -1,4 +1,4 @@
-# ===== Stage 1: Extract tools =====
+# ===== Stage 1: Extract minimal Cloud SDK components =====
 FROM eclipse-temurin:17-jre-jammy AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN mkdir -p /extract/usr/lib/google-cloud-sdk && \
     cp -r /usr/lib/google-cloud-sdk/platform /extract/usr/lib/google-cloud-sdk/platform && \
-    cp -r /usr/lib/google-cloud-sdk/bin /extract/usr/lib/google-cloud-sdk/bin
+    cp -r /usr/lib/google-cloud-sdk/bin /extract/usr/lib/google-cloud-sdk/bin && \
+    cp -r /usr/lib/google-cloud-sdk/lib /extract/usr/lib/google-cloud-sdk/lib
 
 # ===== Stage 2: Final runtime =====
 FROM eclipse-temurin:17-jre-jammy
@@ -22,7 +23,7 @@ WORKDIR /appinventor
 
 COPY appinventor/appengine/build/war /appinventor/appengine/build/war
 
-# Copy only the App Engine Java runtime + dev server
+# Copy minimal Google Cloud SDK runtime
 COPY --from=builder /extract/usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
 
 ENV PATH="/usr/lib/google-cloud-sdk/bin:${PATH}"
