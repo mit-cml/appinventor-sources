@@ -138,6 +138,9 @@ import Foundation
   // ImageBot Errors
   case ERROR_IMAGEBOT_ERROR = 4300
 
+  // Spreadsheet Errors
+  case ERROR_SPREADSHEET_ERROR = 4401
+
   // ListView Errors
   case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
 
@@ -392,6 +395,9 @@ import Foundation
     // ImageBot Errors
     case .ERROR_IMAGEBOT_ERROR:
       return "Error from the ImageBot code: %d %s"
+
+    case .ERROR_SPREADSHEET_ERROR:
+      return "Error in Spreadsheet: %s"
 
     // ListView Errors
     case .ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS:
