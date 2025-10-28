@@ -11,10 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get install -y --no-install-recommends google-cloud-cli-app-engine-java && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /extract/usr/lib/google-cloud-sdk && \
-    cp -r /usr/lib/google-cloud-sdk/platform /extract/usr/lib/google-cloud-sdk/platform && \
-    cp -r /usr/lib/google-cloud-sdk/bin /extract/usr/lib/google-cloud-sdk/bin && \
-    cp -r /usr/lib/google-cloud-sdk/lib /extract/usr/lib/google-cloud-sdk/lib
+RUN mkdir -p /extract/bin && \
+    ln -s /usr/lib/google-cloud-sdk/platform/google_appengine /extract/bin/appengine && \
+    ln -s /usr/lib/google-cloud-sdk/bin/java_dev_appserver.sh /extract/bin/java_dev_appserver.sh
 
 # ===== Stage 2: Final runtime =====
 FROM eclipse-temurin:17-jre-jammy
