@@ -1148,10 +1148,10 @@ public final class ProviderDynamoDB extends DatabaseService {
             }
           }
 
+          uploadProjectFileResult.fileRole = fd.getRole();
           if (filesystemName != null) {
             fd.setIsFilesystem(true);
             fd.setFilesystemName(filesystemName);
-            uploadProjectFileResult.fileRole = fd.getRole();
             // If the content was previously stored in the datastore, clear it out.
             fd.setContent(null);
           } else {

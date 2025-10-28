@@ -1072,10 +1072,10 @@ public final class ProviderDatastoreAppEngine extends DatabaseService {
             }
           }
 
+          uploadProjectFileResult.fileRole = fd.role;
           if (filesystemName != null) {
             fd.isGCS = true;
             fd.gcsName = filesystemName;
-            uploadProjectFileResult.fileRole = fd.role;
             // If the content was previously stored in the datastore, clear it out.
             fd.content = null;
             fd.isBlob = false;  // in case we are converting from a blob
