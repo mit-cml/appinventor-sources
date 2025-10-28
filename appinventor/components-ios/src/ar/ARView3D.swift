@@ -25,7 +25,7 @@ private extension Entity {
 open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocationManagerDelegate, EventSource {
 
   public static var SHARED_GROUND_LEVEL: Float = -1.0
-  public static var VERTICAL_OFFSET: Float = 0.02
+  public static var VERTICAL_OFFSET: Float = 0.002
    // Update your existing GROUND_LEVEL to use the shared value
   public var GROUND_LEVEL: Float {
        get { return ARView3D.SHARED_GROUND_LEVEL }
@@ -531,8 +531,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     setupCollisionDetection()
     
     return _configuration
-    
-
   }
 
   
@@ -854,6 +852,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     print("▶️ AR session started successfully")
+    verifyFloorState()
   }
   
   @objc open func PauseTracking() {
@@ -1019,7 +1018,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
     if let node = findClosestNode(tapLocation: screenPoint) {
       //print("hit a node \(node.Name) at \(screenPoint)")
-      return .node(node, node._modelEntity.transform.translation)
+      //return .node(node, node._modelEntity.transform.translation)
+      let worldPos = node._modelEntity.convert(position: .zero, to: nil)
+      return .node(node, worldPos)
     }
     let raycastResults = _arView.raycast(from: screenPoint, allowing: .existingPlaneGeometry, alignment: .any)
     if let bestResult = getHighestSurfaceRaycast(rayCastResults: raycastResults) {
@@ -1729,7 +1730,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               let halfHeight = (bounds.max.y - bounds.min.y)/2
 
               let safeY = max(
-                  yMeters + halfHeight + 0.001,  // detected surface + radius + clearance
+                  yMeters + halfHeight + ARView3D.VERTICAL_OFFSET,  // detected surface + radius + clearance
                   groundLevel + ARView3D.VERTICAL_OFFSET + halfHeight  // fallback floor position
               )
               
@@ -2093,7 +2094,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               withRootObject: worldMap,
               requiringSecureCoding: true
           )
-          
           // Save the encoded data to your file URL
           try data.write(to: self.worldMapURL, options: [.atomic])
           print("✅ World map saved successfully at \(self.worldMapURL.path)")
@@ -2963,7 +2963,7 @@ extension ARView3D {
         
         print("🔍 Calculating surface for node: \(targetNode.Name)")
         let topSurface = calculateNodeTopSurface(targetNode)
-        print("🔍 Top surface result: \(topSurface)")
+        
         
         let dragBoxBounds = node._modelEntity.visualBounds(relativeTo: nil)
         let dragBoxHalfHeight = (dragBoxBounds.max.y - dragBoxBounds.min.y) / 2
@@ -2971,7 +2971,7 @@ extension ARView3D {
         // Position the new box's CENTER at: top of target + half-height of new box
         let stackPosition = SIMD3<Float>(
             hitPosition.x,
-            topSurface.y + dragBoxHalfHeight + 0.02,
+            topSurface.y,
             hitPosition.z
         )
         if stackPosition.y.isFinite {

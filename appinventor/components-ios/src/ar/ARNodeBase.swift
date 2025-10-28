@@ -490,7 +490,7 @@ open class ARNodeBase: NSObject, ARNode {
 
     let hadPhysics = _modelEntity.physicsBody != nil
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
-    let halfHeight = (bounds.max.x - bounds.min.x) / 2.0
+    let halfHeight = (bounds.max.y - bounds.min.y) / 2.0
     let newScale = oldScale * abs(scalar)
     // ✅ Update physics immediately if it was enabled before we change the scale
     if hadPhysics {
@@ -637,7 +637,7 @@ open class ARNodeBase: NSObject, ARNode {
   open func rotateByGesture(radians: Float) {
     if RotateWithGesture {
       var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      euler.y = radians
+      euler.y -= radians * 180.0 / .pi //geometeryUtil
       _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
       print("node rotation \(radians)")
     }
@@ -660,7 +660,7 @@ open class ARNodeBase: NSObject, ARNode {
     yailDict["canMove"] = String(self._panToMove)
     yailDict["canScale"] = String(self._pinchToScale)
        
-    print("exporting ARNode as Yail convert toYail ")
+    print("exporting ARNode as Yail convert toYail, physics is \(self._enablePhysics)")
     return yailDict
   }
      
@@ -947,8 +947,8 @@ open class ARNodeBase: NSObject, ARNode {
 
   @objc open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
     // Default collision behavior for all AR objects
-    print("🔥 \(Name) collided with another node \(otherNode.Name) at y \(String(_modelEntity.transform.translation.y))")
-    
+    //print("🔥 \(Name) collided with another node \(otherNode.Name) at y \(String(_modelEntity.transform.translation.y))")
+    // CSB todo something to ignore additional collisions
     // Show collision effect if available
     if #available(iOS 15.0, *) {
         showCollisionEffect(type: .object)
@@ -1074,6 +1074,7 @@ open class ARNodeBase: NSObject, ARNode {
       _originalMaterial = nil
     }
     
+    _modelEntity.physicsBody = nil
     if #available(iOS 15.0, *) {
       placeOnNearestSurface()
     } else {
@@ -1089,32 +1090,33 @@ open class ARNodeBase: NSObject, ARNode {
     let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let halfHeight = (bounds.max.y - bounds.min.y) / 2
-    var correctedY = groundLevel + halfHeight + ARView3D.VERTICAL_OFFSET
     
-    if let cachedSurface = getPreviewPlacementSurface() {
+    _hasPreviewSurface = true
+    /*if let cachedSurface = getPreviewPlacementSurface() {
         print("Using cached preview surface: \(cachedSurface)")
-        
+        //var correctedY = cachedSurface.y + halfHeight + ARView3D.VERTICAL_OFFSET
         let correctedSurface = SIMD3<Float>(
             cachedSurface.x,
-            correctedY,  // Use corrected Y, not cached surface Y
+            cachedSurface.y,  // Use corrected Y, not cached surface Y
             cachedSurface.z
         )
         
-        print("📍 Corrected surface from \(cachedSurface.y) to \(correctedY)")
+        print("📍  surface is \(cachedSurface.y)")
         
-        _modelEntity.physicsBody = nil
+        
         
         animateToPosition(correctedSurface) {
             self.finalizeModelPlacement()
             self.clearPreviewPlacementSurface()
         }
         return
-    }
+    }*/
+    
     
     // Fallback: find surface from current position
     let currentPos = _modelEntity.transform.translation
     if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
-      correctedY = placementPosition.y + halfHeight + ARView3D.VERTICAL_OFFSET
+    let correctedY = placementPosition.y + halfHeight + ARView3D.VERTICAL_OFFSET
       let correctedSurface = SIMD3<Float>(
         placementPosition.x,
         correctedY,  // Use corrected Y, not cached surface Y
@@ -1126,13 +1128,22 @@ open class ARNodeBase: NSObject, ARNode {
       }
     } else {
       // Final fallback to ground level
+      let correctedY = currentPos.y + halfHeight + ARView3D.VERTICAL_OFFSET
       let groundPosition = SIMD3<Float>(currentPos.x, correctedY, currentPos.z)
+      
       print("Using groundPosition: \(groundPosition)")
       animateToPosition(groundPosition) {
           self.finalizeModelPlacement()
       }
     }
   }
+  
+  private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
+    guard let container = _container else { return nil }
+    print("best surface for node dragged from \(position)")
+    return container.getARView().findBestSurfaceForPlacement()
+  }
+  
 
   private func finalizeModelPlacement() {
     print("Finalizing node placement")
@@ -1154,48 +1165,37 @@ open class ARNodeBase: NSObject, ARNode {
 
   /// Animates the node to a target position smoothly
   @available(iOS 15.0, *)
-  private func animateToPosition(_ targetPosition: SIMD3<Float>, completion: @escaping () -> Void) {
-    print("📍 Animating to position: \(targetPosition)")
-    
-    // Disable physics during animation
-    _modelEntity.physicsBody = nil
-    
-    // Create smooth animation to target position
-    let currentTransform = _modelEntity.transform
-    var targetTransform = currentTransform
-    targetTransform.translation = targetPosition
-    
-    // Use RealityKit's animation system
-    let animation = FromToByAnimation<Transform>(
-      name: "placeAnimation",
-      from: currentTransform,
-      to: targetTransform,
-      duration: 0.3,
-      timing: .easeOut,
-      bindTarget: .transform
-    )
-    
-    if let animationResource = try? AnimationResource.generate(with: animation) {
-      _modelEntity.playAnimation(animationResource, transitionDuration: 0.1, startsPaused: false)
-      
-      // Completion handler
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-        completion()
+  @available(iOS 15.0, *)
+  private func animateToPosition(_ targetWorld: SIMD3<Float>, completion: @escaping () -> Void) {
+      print("📍 Animating to WORLD position: \(targetWorld)")
+
+      // Pause physics while we reposition
+      let hadPhysics = (_modelEntity.physicsBody != nil)
+      _modelEntity.physicsBody = nil
+
+      // Preserve current world rotation & scale
+      let worldRot   = _modelEntity.orientation(relativeTo: nil)
+      let worldScale = _modelEntity.scale(relativeTo: nil)
+
+      // Animate directly in WORLD space
+      _modelEntity.move(
+          to: Transform(scale: worldScale, rotation: worldRot, translation: targetWorld),
+          relativeTo: nil,            // <- WORLD frame is the reference
+          duration: 0.30,
+          timingFunction: .easeOut
+      )
+
+      // Call completion after the animation has settled
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+          // Optionally restore physics here; or let finalizeModelPlacement() do it.
+          if hadPhysics {
+              // If you want to keep physics off until finalizeModelPlacement, omit this.
+              // self.EnablePhysics(true)
+          }
+          completion()
       }
-    } else {
-      // Fallback - direct position set
-      _modelEntity.transform.translation = targetPosition
-      completion()
-    }
   }
 
-  private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
-    guard let container = _container else { return nil }
-    print("best surface for node dragged from \(position)")
-    return container.getARView().findBestSurfaceForPlacement()
-  }
-  
-  
 
 } // end ARNodeBase class
 

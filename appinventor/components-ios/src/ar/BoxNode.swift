@@ -90,8 +90,7 @@ open class BoxNode: ARNodeBase, ARBox {
   }
 
   override open func startDrag() {
-    let originalPosition = _modelEntity.transform.translation
-
+    super.startDrag()
     if var physicsBody = _modelEntity.physicsBody {
       physicsBody.mode = .kinematic
       _modelEntity.physicsBody = physicsBody
@@ -101,35 +100,25 @@ open class BoxNode: ARNodeBase, ARBox {
   
   override open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
     guard _isBeingDragged else { return }
-    
-    // Switch back to dynamic mode
-    if var physicsBody = _modelEntity.physicsBody {
-      physicsBody.mode = .dynamic
-      _modelEntity.physicsBody = physicsBody
-    }
-    
-    _isBeingDragged = false
-    // Let base class handle surface placement
     super.endDrag(releaseVelocity: releaseVelocity, camera3DProjection: camera3DProjection)
   }
   
   private func updateCollisionShape() {
-    let shape = ShapeResource.generateBox(width: _width * Scale,
-                                        height: _height * Scale,
-                                        depth: _length * Scale)
+    let shape = ShapeResource.generateBox(width: _width,
+                                        height: _height,
+                                        depth: _length)
     _modelEntity.collision = CollisionComponent(shapes: [shape])
-    
+    //RealityKit already scales the collider by the entity transform scale.
     debugVisualState()
   }
   
   override open func EnablePhysics(_ isDynamic: Bool = true) {
     let currentPos = _modelEntity.transform.translation
-
-    let sizeY = _height * Scale
-    let halfHeight = sizeY / 2
-
-    // don't scale the collision shape
-    let shape: ShapeResource = ShapeResource.generateBox(width: _width, height: _height, depth: _length)
+//
+    let shape = ShapeResource.generateBox(width: _width,
+                                          height: _height,
+                                          depth: _length)
+ 
     _modelEntity.collision = CollisionComponent(shapes: [shape])
 
     _enablePhysics = isDynamic
