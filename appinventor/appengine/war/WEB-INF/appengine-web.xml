@@ -197,5 +197,28 @@
     <!-- https://example.com/something. -->
     <property name="ode.base" value="" />
 
+    <!-- Cache Service Provider -->
+    <property name="cache.provider" value="" />
+    <!-- Redis Compatible Cache Configuration -->
+    <property name="cache.redis.host" value="" />
+
+    <!-- File System Service Provider -->
+    <property name="filesystem.provider" value="" />
+    <!-- S3 Compatible Storage Configuration -->
+    <property name="filesystem.s3.endpoint" value="" />
+    <property name="filesystem.s3.endpointpathstyle" value="" />
+    <property name="filesystem.s3.bucketname" value="" />
+    <property name="filesystem.s3.bucketregion" value="" />
+    <property name="filesystem.s3.accesskeyid" value="" />
+    <property name="filesystem.s3.secretaccesskey" value="" />
+
+    <!-- Database Service Provider -->
+    <property name="database.provider" value="" />
+    <!-- DynamoDB Compatible Database Configuration -->
+    <property name="database.ddb.endpoint" value="" />
+    <property name="database.ddb.tablesregion" value="" />
+    <property name="database.ddb.accesskeyid" value="" />
+    <property name="database.ddb.secretaccesskey" value="" />
+
   </system-properties>
 </appengine-web-app>
