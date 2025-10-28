@@ -609,7 +609,7 @@ Blockly.Blocks['controls_do_then_return'] = {
 };
 
 Blockly.Blocks['controls_run_in_background'] = {
-  category: 'Control',
+  //category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_HELPURL,
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -631,7 +631,7 @@ Blockly.Blocks['controls_run_in_background'] = {
 };
 
 Blockly.Blocks['controls_run_after_period'] = {
-  category: 'Control',
+  //category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_HELPURL,
   init: function () {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);

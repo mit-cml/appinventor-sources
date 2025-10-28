@@ -22,6 +22,7 @@
 (define *testing* #f)
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
 (define-alias AssetFetcher <AIComponentKit.AssetFetcher>)
+(define-alias YailProcedure <AIComponentKit.YailProcedure>)
 
 (define-syntax call-with-output-string
   (syntax-rules ()
@@ -1656,6 +1657,29 @@ Dictionary implementation.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Dictionary implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;Yail Procedure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (create-yail-procedure x)
+  (YailProcedure:create x))
+
+(define (create-yail-procedure-with-name x)
+  (YailProcedure:createWithName x))
+
+(define (call-yail-procedure procedure . args)
+  (YailProcedure:callProcedure procedure args))
+
+(define (call-yail-procedure-input-list procedure inputlist)
+  (YailProcedure:callProcedure procedure inputlist))
+
+(define (num-args-yail-procedure procedure)
+  (YailProcedure:numArgs procedure))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Yail Procedure
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
