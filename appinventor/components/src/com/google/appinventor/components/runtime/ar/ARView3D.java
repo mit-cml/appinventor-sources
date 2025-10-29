@@ -2042,14 +2042,42 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public BoxNode CreateBoxNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         Log.i("creating Sphere node", "with geo location");
 
-        BoxNode boxNode = new BoxNode(this);
+        BoxNode node = new BoxNode(this);
 
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
 
-        boxNode.Anchor(geoAnchor);
+        node.Anchor(geoAnchor);
 
-        Log.i("created Box node, geo anchor is", boxNode.Anchor().toString());
-        return boxNode;
+        Log.i("created Box node, geo anchor is", node.Anchor().toString());
+        return node;
+    }
+
+    @SimpleFunction(description = "Create a new BoxNode with default properties at the " +
+        "specified (x,y,z) position.")
+    public ImageMarker CreateImageMarker(String image) {
+
+        //Log.i("creating box node", "with x, y, z " + x + " " + y + " " + z);
+        ImageMarker imageMarker = new ImageMarker(this);
+
+        /*float[] position = {0,0,0};
+        float[] rotation = {0, 0, 0, 1};
+        Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
+        */
+        return imageMarker;
+    }
+
+    @SimpleFunction(description = "Create a new PlaneNode with geo coords")
+    public PlaneNode CreatePlaneNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+        Log.i("creating Plane node", "with geo location");
+
+        PlaneNode node = new PlaneNode(this);
+
+        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+
+        node.Anchor(geoAnchor);
+
+        Log.i("created Capsule node, geo anchor is", node.Anchor().toString());
+        return node;
     }
 
 
@@ -2057,14 +2085,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public SphereNode CreateSphereNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         Log.i("creating Sphere node", "with geo location");
 
-        SphereNode sphereNode = new SphereNode(this);
+        SphereNode node = new SphereNode(this);
 
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
 
-        sphereNode.Anchor(geoAnchor);
+        node.Anchor(geoAnchor);
 
-        Log.i("created Capsule node, geo anchor is", sphereNode.Anchor().toString());
-        return sphereNode;
+        Log.i("created Capsule node, geo anchor is", node.Anchor().toString());
+        return node;
     }
 
 

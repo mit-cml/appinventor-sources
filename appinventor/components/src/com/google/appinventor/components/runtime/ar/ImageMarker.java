@@ -4,17 +4,11 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.ar;
+import android.util.Log;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
 
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -26,17 +20,20 @@ import java.util.ArrayList;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that allows for image detection in a ARView3D.",
     category = ComponentCategory.AR)
-
 @SimpleObject
 public final class ImageMarker implements ARImageMarker {
   protected ARView3D arView = null;
   protected String name = "";
 
   public ImageMarker(ARImageMarkerContainer container) {
-    // Additional
+    // added to container implicitly
+    container.ImageMarkers().add(this);
   }
 
   @Override
+  @SimpleProperty(
+      description = "Name",
+      category = PropertyCategory.APPEARANCE)
   public void setComponentName(String componentName) {
     this.name = componentName;
   }
@@ -47,11 +44,13 @@ public final class ImageMarker implements ARImageMarker {
       category = PropertyCategory.APPEARANCE)
   public String Image() { return ""; }
 
+
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(userVisible = false)
   public void Image(String image) {}
+
 
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,

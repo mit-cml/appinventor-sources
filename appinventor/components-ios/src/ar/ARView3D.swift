@@ -1819,6 +1819,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
+    @objc open func CreatePlaneNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> PlaneNode? {
+      guard ARGeoTrackingConfiguration.isSupported else {
+        _container?.form?.dispatchErrorOccurredEvent(self, "CreatePlaneNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+        return nil
+      }
+      
+      let node = PlaneNode(self)
+      node.Name = "GeoPlaneNode"
+      node.Initialize()
+      
+      setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+
+      return node
+    }
+    
     @objc open func CreateSphereNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> SphereNode? {
       guard ARGeoTrackingConfiguration.isSupported else {
         _container?.form?.dispatchErrorOccurredEvent(self, "CreateSphereNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
