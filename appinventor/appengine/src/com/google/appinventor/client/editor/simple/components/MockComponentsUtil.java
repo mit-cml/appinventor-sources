@@ -9,6 +9,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.utils.Color;
 import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
@@ -24,7 +25,6 @@ import com.google.gwt.dom.client.StyleElement;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.graphics.client.Color;
 
 /**
  * Helper methods for working with mock components.
