@@ -9,6 +9,7 @@ private let FILENAME_PREFIX: String = "app_inventor_"
 private let DIRECTORY_RECORDINGS: String = "Recordings"
 private let ANDROID_TO_IOS_RECORDING_EXTENSION: String = "aac"
 private let DIRECTORY_PICTURES: String = "Pictures"
+private let DIRECTORY_DOWNLOADS: String = "Downloads"
 
 open class FileUtil {
   
@@ -24,7 +25,11 @@ open class FileUtil {
   public static func getPictureFile(_ fileExtension: String) throws -> String {
     return try getFile(DIRECTORY_PICTURES, fileExtension)
   }
-  
+
+  public static func getDownloadFile(_ fileExtension: String) throws -> String {
+    return try getFile(DIRECTORY_DOWNLOADS, fileExtension)
+  }
+
   public static func transformFileExtension(_ fileName: String, toExtension fileExtension: String) -> String {
     let originalName: NSString = NSString(string: fileName)
     let pathPrefix: NSString = NSString(string: originalName.deletingPathExtension)

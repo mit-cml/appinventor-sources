@@ -20,7 +20,7 @@ import DGCharts
     let pair: YailList<AnyObject> = [x, y]
     chartDataModel?.addEntryFromTuple(pair)
     // refresh chart with new data
-    refreshChart()
+    onDataChange()
   }
 
   @objc func RemoveEntry(_ x: String, _ y: String){
@@ -28,7 +28,7 @@ import DGCharts
     let pair: YailList<AnyObject> = [x, y]
     chartDataModel?.removeEntryFromTuple(pair)
     // refresh chart with new data
-    refreshChart()
+    onDataChange()
   }
 
   // checks whether an (x, y) entry exists in the Coordinate Data. Returns true if the Entry exists, and false otherwise.

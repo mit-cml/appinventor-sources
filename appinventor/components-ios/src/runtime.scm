@@ -22,6 +22,7 @@
 (define *testing* #f)
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
 (define-alias AssetFetcher <AIComponentKit.AssetFetcher>)
+(define-alias OptionHelper <AIComponentKit.OptionHelper>)
 
 (define-syntax call-with-output-string
   (syntax-rules ()
@@ -80,6 +81,13 @@
 (define (lookup-handler registeredObjectName eventName)
   (let ((eventSymbol (string->symbol (string-append registeredObjectName "$" eventName))))
     (lookup-in-form-environment eventSymbol)))
+
+(define-syntax try-catch
+  (syntax-rules ()
+    ((_ program ... (exception type handler))
+     (with-exception-handler
+      (lambda (e) (if e (begin (display e) (display "\n") handler)))
+      (lambda () program ...)))))
 
 #|
 (define-macro gen-event-name
@@ -630,6 +638,14 @@
    ;((instance? data JavaCollection) (java-collection->yail-list data))
    (#t (sanitize-atomic data))))
 
+(define (sanitize-return-value component func-name value)
+  (if (enum? value)
+    value
+    (let ((value (OptionHelper:optionListFromValue component func-name value)))
+      (if (enum? value)
+        value
+        (sanitize-component-data value)))))
+
 (define (sanitize-atomic arg)
   (cond
    ;; TODO(halabelson,markf):Discuss whether this is the correct way to
@@ -760,13 +776,6 @@
 
 (define (set-form-name name)
   (yail:invoke *this-form* 'setName name))
-
-(define-syntax try-catch
-  (syntax-rules ()
-    ((_ program ... (exception type handler))
-     (with-exception-handler
-      (lambda (e) (if e (begin (display e) (display "\n") handler)))
-      (lambda () program ...)))))
 
 (define (call-yail-primitive prim arglist typelist codeblocks-name)
   ;; (android-log (format #f "applying procedure: ~A to ~A" codeblocks-name arglist))

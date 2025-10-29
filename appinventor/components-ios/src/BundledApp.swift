@@ -71,8 +71,13 @@ public class BundledApp : Application, UINavigationControllerDelegate {
         newForm.startValue = startValue
       }
       let interpreter = SCMInterpreter.shared
+      ReplForm.activeForm = newForm
       interpreter.setCurrentForm(newForm)
       interpreter.evalForm(yail)
+      if let exception = interpreter.exception {
+        print("\(exception)")
+      }
+      interpreter.evalForm("(ios$start-form)")
       navigationController.pushViewController(newForm, animated: true)
     }
   }

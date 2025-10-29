@@ -195,7 +195,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
       libraryButton = form.view.viewWithTag(7) as! UIButton?
       legacyCheckbox.Text = "Use Legacy Connection"
-      let ipaddr: String! = NetworkUtils.getIPAddress()
+      let ipaddr: String! = MAINetworkUtils.getIPAddress()
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
       let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
       ipAddrLabel?.text = "IP Address: \(ipaddr!)"
@@ -293,7 +293,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     var request = URLRequest(url: url!)
     let values = [
       "key": code,
-      "ipaddr": NetworkUtils.getIPAddress(),
+      "ipaddr": MAINetworkUtils.getIPAddress(),
       "port": "9987",
       "webrtc": phoneStatus.WebRTC ? "true" : "false",
       "version": phoneStatus.GetVersionName(),
