@@ -35,14 +35,29 @@ import javax.persistence.Id;
  *
  */
 public class StoredData {
-  public enum Permission{
-    OWNER,
-    WRITE,
-    COMMENT,
-    READ,
-    SHARE_ALL,
-    NONE
-  };
+
+  public enum Permission {
+    OWNER (0),
+    WRITE (1),
+    COMMENT (2),
+    READ (3),
+    SHARE_ALL (4),
+    NONE (5);
+
+    private final int code;
+
+    Permission(int code) { this.code = code; }
+
+    public int getCode() { return code; }
+
+    public static Permission fromCode(int code) {
+        for (Permission p : values()) {
+            if (p.code == code) return p;
+        }
+        throw new IllegalArgumentException("Invalid permission code: " + code);
+    }
+}
+
 
   public static String ALL = "ALL";
   // The UserData class is an entity root, and the parent of UserFileData

@@ -674,7 +674,11 @@ public interface StorageIo {
 
   String getIosExtensionsConfig();
 
-  StoredData.Permission getPermission(String userEmail, long shareId);
+  StoredData.Permission getPermission(String userEmail, long projectId);
+
+  // StoredData.Permission getPermissionFromShareId(String userEmail, long shareId);
+
+  Long getProjectIdFromShareId(long shareId); 
 
   void addSharedProjectToUser(String userEmail, String userId, long projectId,
                              StoredData.Permission perm); 
@@ -683,7 +687,11 @@ public interface StorageIo {
 
   // long addPermission(String userEmail, String userId, long projectId, StoredData.Permission perm);
 
+  HashMap<StoredData.Permission, List<String>> getPermissionsInfo(long projectId);
+
   String getProjectOwner(long shareId);
+
+  UserProject getSharedProject(String userEmail, String userId, long projectId, StoredData.Permission perm);
 
 }
 

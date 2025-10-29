@@ -400,4 +400,9 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     projectsLoaded = true;
     refresh(true);
   }
+
+  @Override
+  public void onProjectSharedOrUnshared() {
+    refresh(false);
+  }
 }

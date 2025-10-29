@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server.project;
 
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StoredData;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -346,6 +348,34 @@ public abstract class CommonProjectService {
       // should never happen because force is set to true
     }
     return RpcResult.createSuccessfulRpcResult("", "");
+  }
+
+  /**
+   * Share project with others by email.
+   * @param userId the userId of the owner of the project
+   * @param projectId the project id
+   * @param otherEmail the email address of other user
+   */
+  public HashMap<StoredData.Permission, List<String>> getPermissionsInfo(long projectId) {
+    return storageIo.getPermissionsInfo(projectId);
+  }
+
+  /**
+   * gets project shared with the user
+   * @param userId user id
+   * @param shareId id shared with the user
+   * @return project under the shared id if user has access to it
+   * raises an error if user does not have access to it
+   */
+  public UserProject getSharedProject(String userId, long shareId){
+    // add to the user projects if not there already
+    Long projectId = storageIo.getProjectIdFromShareId(shareId);
+    StoredData.Permission perm = storageIo.getPermission(userId, projectId);
+    if (perm != StoredData.Permission.NONE) {
+      return storageIo.getSharedProject(storageIo.getUserFromEmail(userId).getUserEmail(), userId, projectId, perm);
+    } else {
+      throw new IllegalArgumentException("Need valid share link");
+    }
   }
 
   /**

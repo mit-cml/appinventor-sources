@@ -154,33 +154,6 @@ public interface ProjectService extends RemoteService {
   void storeProjectSettings(String sessionId, long projectId, String settings) throws InvalidSessionException;
 
   /**
-   * Give `perm` permission to `userId` user's project to another user with `otherEmail` email
-   * @param userId owner's id
-   * @param projectId project id
-   * @param otherEmail the other user's email
-   * @param perm type of permission
-   * @return share id
-   */
-  long updateProjectPermissionForUser(String userId, long projectId, String otherEmail, int perm);
-
-  /**
-   * gets project shared with the user
-   * @param userId user id
-   * @param shareId id shared with the user
-   * @return project under the shared id if user has access to it
-   * raises an error if user does not have access to it
-   */
-  UserProject getSharedProject(String userId, long shareId);
-
-  /**
-   * get access list for the given project
-   * @param projectId the id of the project
-   * @return mapping from permission type to user emails who have the permission type to project `projectId`
-   */
-  HashMap<Integer, List<String>> getPermissionsInfo(long projectId);
-
-
-  /**
    * Deletes a file in the given project.
    * @param sessionId current session id
    * @param projectId  project ID
@@ -401,5 +374,53 @@ public interface ProjectService extends RemoteService {
    * @param message message to log
    */
   void log(String message);
+
+  /**
+   * Share a project with others by email.
+   * @param userId the user id of the owner of the project
+   * @param projectId the project id
+   * @param otherEmail the email of other user
+   * @param perm permission
+   *
+   * @return status of sharing action
+   */
+  ShareResponse shareProject(String userId, long projectId, String otherEmail, int perm);
+
+  /**
+   * Share a project with others by email.
+   * @param userId the user id of the owner of the project
+   * @param projectId the project id
+   * @param otherEmail the email of other user
+   * @param perm permission
+   *
+   * @return status of sharing action
+   */
+  List<ShareResponse> shareProject(String userId, long projectId, List<String> otherEmail, int perm);
+
+  // /**
+  //  * Give `perm` permission to `userId` user's project to another user with `otherEmail` email
+  //  * @param userId owner's id
+  //  * @param projectId project id
+  //  * @param otherEmail the other user's email
+  //  * @param perm type of permission
+  //  * @return share id
+  //  */
+  // long updateProjectPermissionForUser(String userId, long projectId, String otherEmail, int perm);
+
+  /**
+   * gets project shared with the user
+   * @param userId user id
+   * @param shareId id shared with the user
+   * @return project under the shared id if user has access to it
+   * raises an error if user does not have access to it
+   */
+  UserProject getSharedProject(String userId, long shareId);
+
+  /**
+   * get access list for the given project
+   * @param projectId the id of the project
+   * @return mapping from permission type to user emails who have the permission type to project `projectId`
+   */
+  HashMap<Integer, List<String>> getPermissionsInfo(long projectId);
 
 }

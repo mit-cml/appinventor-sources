@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.style.neo;
 
+import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectListItem;
 import com.google.gwt.core.client.GWT;
@@ -31,6 +32,7 @@ public class ProjectListItemNeo extends ProjectListItem {
   @UiField Label dateCreatedLabel;
   @UiField CheckBox checkBox;
   @UiField FocusPanel projectnameFocusPanel;
+  @UiField Icon sharedIcon;
 
   public ProjectListItemNeo(Project project) {
     super(project);
@@ -45,6 +47,7 @@ public class ProjectListItemNeo extends ProjectListItem {
     super.dateModifiedLabel = dateModifiedLabel;
     super.nameLabel = nameLabel;
     super.projectnameFocusPanel = projectnameFocusPanel;
+    super.sharedIcon = sharedIcon;
   }
 
   @UiHandler("checkBox")

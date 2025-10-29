@@ -2405,6 +2405,53 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text on 'Next' button to proceed to the next page of the wizard.")
   String nextButton();
 
+  // Used in wizards/ShareProjectsWizard.java
+
+  @DefaultMessage("Project is Shared")
+  @Description("Alt text for the project shared icon")
+  String projectSharedAltText();
+
+  @DefaultMessage("Share App Inventor projects")
+  @Description("Caption for the wizard to share Young Android projects")
+  String shareProjectsWizardCaption();
+
+  @DefaultMessage("User Emails")
+  @Description("Label for user emails textbox")
+  String userEmailsLabel();
+
+  @DefaultMessage("Share")
+  @Description("Label for the share projects button")
+  String shareProjectButton();
+
+  @DefaultMessage("Share Project...")
+  @Description("Label of the menu item for sharing a project with other users")
+  String shareProjectMenuItem();
+
+  @DefaultMessage("Server error: could not share project. Please try again later!")
+  @Description("Error message reported when the project couldn't be shared on the server.")
+  String shareProjectError();
+
+  @DefaultMessage("Please select a project to share")
+  @Description("Error message displayed when no project is selected")
+  String noProjectSelectedToShare();
+
+  @DefaultMessage("Anyone with the link")
+  @Description("Label for the share all checkbox")
+  String shareAll();
+
+  @DefaultMessage("Email people")
+  @Description("Label for the send email checkbox")
+  String sendEmail();
+
+  @DefaultMessage("Copy")
+  @Description("Label for the copy link button")
+  String copyButton();
+
+  @DefaultMessage("Invalid character. User names can only contain letters, numbers, dots, commas, and @")
+  @Description("Error shown when user types invalid character into user names")
+  String invalidEmailListError();
+
+
   // Used in wizards/youngandroid/NewYoungAndroidProjectWizard.java
 
   @DefaultMessage("Create new App Inventor project")
@@ -2446,6 +2493,18 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("The first character of the folder name must be a letter")
   @Description("Error shown when user does not type letter as first character in folder name.")
   String firstCharFolderNameError();
+
+  @DefaultMessage("Invalid character. User emails can only start with letters, number, and any of . _ % + -")
+  @Description("Error shown when user types invalid first character into user email.")
+  String invalidFirstCharUserEmailError();
+
+  @DefaultMessage("Invalid character. User emails must contain special character @")
+  @Description("Error shown when user does not type @ into user email.")
+  String invalidCharUserEmailError();
+
+  @DefaultMessage("Invalid domain. User emails must end with dot and at least 2 more letters")
+  @Description("Error shown when user does not type domain into user email.")
+  String invalidDomainUserEmailError();
 
   @DefaultMessage("Invalid character. Folder names can only contain letters, numbers, and underscores")
   @Description("Error shown when user types invalid character into folder name.")

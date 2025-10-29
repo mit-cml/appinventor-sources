@@ -197,6 +197,8 @@ public class ObjectifyStorageIo implements StorageIo {
     // Register the data object classes stored in the database
     ObjectifyService.register(UserData.class);
     ObjectifyService.register(ProjectData.class);
+    ObjectifyService.register(ProjectPermissionsData.class);
+    ObjectifyService.register(ShareLinkData.class);
     ObjectifyService.register(UserProjectData.class);
     ObjectifyService.register(FileData.class);
     ObjectifyService.register(UserFileData.class);
@@ -2314,6 +2316,10 @@ public class ObjectifyStorageIo implements StorageIo {
     return new Key<ProjectData>(ProjectData.class, projectId);
   }
 
+  private Key<ShareLinkData> shareKey(long shareId) {
+    return new Key<ShareLinkData>(ShareLinkData.class, shareId);
+  }
+
   private Key<UserProjectData> userProjectKey(Key<UserData> userKey, long projectId) {
     return new Key<UserProjectData>(userKey, UserProjectData.class, projectId);
   }
@@ -2406,6 +2412,10 @@ public class ObjectifyStorageIo implements StorageIo {
 
   private static String collectUserProjectErrorInfo(final String userId, final long projectId) {
     return "user=" + userId + ", project=" + projectId;
+  }
+
+  private static String collectUserShareErrorInfo(final String userEmail, final long shareId) {
+    return "userEmail=" + userEmail + ", share=" + shareId;
   }
 
   @Override
@@ -2876,6 +2886,84 @@ public class ObjectifyStorageIo implements StorageIo {
     return result.t;
   }
 
+  // @Override
+  // public StoredData.Permission getPermissionFromShareId(final String userEmail, final long shareId) {
+  //   // check whether user is supposed to have access
+  //   final Result<StoredData.Permission> result = new Result<>();
+  //   try {
+  //     runJobWithRetries(new JobRetryHelper() {
+  //       @Override
+  //       public void run(Objectify datastore) {
+  //         ShareLinkData ssd = datastore.find(shareKey(shareId));
+  //         if (ssd != null) {
+  //           result.t = getPermission(userEmail, ssd.projectKey.getId());
+  //         } else {
+  //           result.t = StoredData.Permission.NONE;
+  //         }
+          
+  //       }
+  //     }, false);
+  //   } catch (ObjectifyException e) {
+  //     throw CrashReport.createAndLogError(LOG, null,
+  //         collectUserShareErrorInfo(userEmail, shareId), e);
+  //   }
+  //   return result.t;
+  // }
+
+  @Override
+  public Long getProjectIdFromShareId(final long shareId) {
+    // check whether user is supposed to have access
+    final Result<Long> result = new Result<>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ShareLinkData ssd = datastore.find(shareKey(shareId));
+          if (ssd != null) {
+            result.t = ssd.projectKey.getId();
+          } 
+          
+        }
+      }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "shareId="+shareId, e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public UserProject getSharedProject(final String userEmail, final String userId, final long projectId, final StoredData.Permission perm){
+    // add the project
+    addSharedProjectToUser(userEmail, userId, projectId, perm);
+    
+    // return the project
+    return getUserProject(userId, projectId);
+  }
+
+  @Override
+  public HashMap<StoredData.Permission, List<String>> getPermissionsInfo(long projectId){
+    final HashMap<StoredData.Permission, List<String>> result =  new HashMap<>();
+    try{
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
+                                                      .filter("projectKey", projectKey(projectId)).list();
+          if (!psd.isEmpty()) {
+            for (ProjectPermissionsData entry : psd) {
+                StoredData.Permission perm = entry.permission;
+                String email = entry.userEmail;
+                result.computeIfAbsent(perm, k -> new ArrayList<>()).add(email);
+            }
+          }
+        }
+      }, false);
+    } catch (ObjectifyException e){
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result;
+  }
 
   @Override
   public void addSharedProjectToUser(final String userEmail, final String userId, final long projectId,

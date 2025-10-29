@@ -22,6 +22,7 @@ public class DesignToolbarNeo extends DesignToolbar {
   @UiField protected DropDownButton pickFormItem;
   @UiField protected ToolbarItem addFormItem;
   @UiField protected ToolbarItem removeFormItem;
+  @UiField protected ToolbarItem shareProjectButton;
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
@@ -33,6 +34,7 @@ public class DesignToolbarNeo extends DesignToolbar {
     super.pickFormItem = pickFormItem;
     super.addFormItem = addFormItem;
     super.removeFormItem = removeFormItem;
+    super.shareProjectButton = shareProjectButton;
     super.switchToDesign = switchToDesign;
     super.switchToBlocks = switchToBlocks;
     super.sendToGalleryItem = sendToGalleryItem;

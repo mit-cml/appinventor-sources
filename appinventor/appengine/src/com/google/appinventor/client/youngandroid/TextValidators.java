@@ -33,6 +33,12 @@ public final class TextValidators {
     DUPLICATEINTRASH
   }
 
+  public enum UserStatus {
+    VALID,
+    INVALIDFORMAT,
+    UNCOMMON
+  }
+
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
           "SimpleForm", "String", "Pattern", "YailDictionary", "YailList", "YailNumberToString", "YailRuntimeError");
@@ -302,4 +308,65 @@ public final class TextValidators {
       return "";
     }
   }
+
+  /**
+   * 
+   * @param userName the user identifies being used to share project with
+   * @return {@code true} if the user name is valid, {@code false} otherwise
+   */
+  public static UserStatus checkNewUserName(String userName) {
+    // Check the format of the email
+    if (isValidEmailList(userName) != "") {
+      Window.alert("bad username for some reason: " + userName);
+      return UserStatus.INVALIDFORMAT;
+    }
+
+    // Check that user email exists/is gmail?
+
+    return UserStatus.VALID;
+  }
+
+  /**
+   * Checks whether the argument is a legal list of emails
+   *
+   * @param text the proposed identifier
+   * @return {@code ""} if the argument is a legal email list, {@code error_message}
+   *         otherwise
+   */
+  public static String isValidEmailList(String text) {
+    String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})(,\\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\\s*)*$";
+    if(text.matches(regex) || text == "") {
+      return "";
+    }
+    return MESSAGES.invalidEmailListError();
+  }
+
+  /**
+   * Determines human-readable message for specific error.
+   * @param user The username (for now email)
+   * @return String representing error message, empty string if no error
+   */
+  public static String getErrorMessageForUser(String user){
+    String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$";
+    String errorMessage = "";
+    String firstCharacterLetter = "[a-zA-Z0-9._%+-]+";
+    String containsAt = firstCharacterLetter + "@[a-zA-Z0-9.-]+";
+    String temp = user.trim();
+    if (temp.length() > 0) {
+      if (!temp.matches(regex)) {
+        if (!temp.matches(firstCharacterLetter)) {
+          //Check to make sure that the first character is a letter
+          errorMessage = MESSAGES.invalidFirstCharUserEmailError();
+        } else { //The text contains a character that is not a letter, number, or underscore
+          if (!temp.matches(containsAt)) {
+            errorMessage = MESSAGES.invalidCharUserEmailError();
+          } else {
+            errorMessage = MESSAGES.invalidDomainUserEmailError();
+          }
+        }
+      }
+    }
+    return errorMessage;
+  }
+
 }

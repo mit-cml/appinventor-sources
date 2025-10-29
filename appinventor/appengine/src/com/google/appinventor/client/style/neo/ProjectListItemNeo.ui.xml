@@ -3,6 +3,7 @@
 <!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -11,6 +12,7 @@
     <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox ode-ProjectCheckBox'/>
     <g:FocusPanel ui:field='projectnameFocusPanel' styleName='ode-ProjectNameFocusPanel'>
       <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/>
+      <ai:Icon ui:field="sharedIcon" icon="group" tooltip="{messages.projectSharedAltText}" />
     </g:FocusPanel>
     <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label ode-ProjectFieldLabel'/>
     <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label ode-ProjectFieldLabel'/>

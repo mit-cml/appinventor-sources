@@ -189,6 +189,24 @@ public final class Project {
   }
 
   /**
+   * Returns if the project is shared with others
+   *
+   * @return shared
+   */
+  public boolean isShared() {
+    return projectInfo.isShared();
+  }
+
+  /**
+   * Set if the project is shared.
+   *
+   * @param shared
+   */
+  public void setShared(boolean shared) {
+    projectInfo.setShared(shared);
+  }
+
+  /**
    * Adds the given node to the project.
    *
    * <p/>If a node with the same file id already exists, the node is not added
