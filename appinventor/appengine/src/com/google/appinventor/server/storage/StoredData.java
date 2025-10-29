@@ -140,6 +140,8 @@ public class StoredData {
   // Project sharing properties
   @Unindexed
   static final class ProjectPermissionsData {
+    // Auto-generated unique id
+    @Id Long id;
     // key of project that this id shares
     @Indexed Key<ProjectData> projectKey;
 
