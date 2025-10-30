@@ -30,6 +30,13 @@ public final class ImageMarker implements ARImageMarker {
     container.ImageMarkers().add(this);
   }
 
+  @SimpleProperty(
+      description = "Name",
+      category = PropertyCategory.APPEARANCE)
+  public String Name() {
+    return this.name;
+  }
+
   @Override
   @SimpleProperty(
       description = "Name",

@@ -1938,6 +1938,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      }
      */
     
+    @objc open func CreateImageMarker(_ imagePath: String) -> ImageMarker {
+      let marker = ImageMarker(self)
+      marker.Name = "RoomMarker" + UUID().uuidString
+      marker.Image = imagePath
+      return marker
+    }
+    
     @objc open func CreateTextNode(_ x: Float, _ y: Float, _ z: Float) -> TextNode {
       let node = TextNode(self)
       node.Name = "CreatedTextNode"
