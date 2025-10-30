@@ -552,6 +552,8 @@ open class ARNodeBase: NSObject, ARNode {
     print("🎾 Bottom Y: \(bottomY)")
     print("🎾 Bottom vs floor: \(bottomY - groundLevel)")
      */
+   
+   _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = false
 
       // don't scale the collision shape
     let shape: ShapeResource = ShapeResource.generateBox(width: sizeX, height: sizeY, depth: sizeZ)
