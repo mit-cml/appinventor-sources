@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2018-2020 MIT, All rights reserved
+// Copyright 2018-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -81,6 +81,24 @@ public class AssetFetcher {
           if (getFile(fileName, cookieValue, asset, 0) != null) {
             RetValManager.assetTransferred(asset);
           }
+        }
+      });
+  }
+
+  /**
+   * Fetch project from App Inventor server and save it as a "cached" project which
+   * can be loaded later without connecting to App Inventor
+   *
+   * @param cookieValue -- Used to authenticate to the App Inventor Server
+   * @param projectId
+   * @param ProjectName
+   */
+  public static void fetchCachedProject(final String cookieValue, final String projectId, final String uri, final String projectName) {
+    background.submit(new Runnable() {
+        @Override
+        public void run() {
+          String fileName = uri + "/ode/download/project-cached/" + projectId;
+          getFile(fileName, cookieValue, "assets/__projects__/" + projectName, 0);
         }
       });
   }
@@ -271,6 +289,52 @@ public class AssetFetcher {
   }
 
   /**
+   * Insert/Update an Asset from a project in the App Library.
+   *
+   * Make sure that the copy of an asset equals the version from the
+   * stored library app. We are called with the asset name and content,
+   * so we just copy it into place and update the hash in the db cache.
+   *
+   * @param assetName the name of the asset
+   * @param assetContent the actual bytes of the asset
+   */
+  public static void UpdateLibraryAsset(String assetName, byte[] assetContent) {
+    try {
+      Form form = Form.getActiveForm();
+      File outFile = getDestinationFile(form, assetName);
+      File parentOutFile = outFile.getParentFile();
+      if (parentOutFile == null || (!parentOutFile.exists() && !parentOutFile.mkdirs())) {
+        throw new IOException("Unable to create assets directory " + parentOutFile);
+      }
+      String destinationFilename = assetName;
+      if (assetName.endsWith("/classes.jar")) {
+        destinationFilename = assetName.substring(0, assetName.lastIndexOf("/") + 1) + outFile.getName();
+      }
+      final boolean makeReadonly = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        && assetName.contains("/external_comps/") && assetName.endsWith("/classes.jar");
+      if (!outFile.canWrite()) {
+        outFile.setWritable(true);
+      }
+      BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile), 0x1000);
+      out.write(assetContent, 0, assetContent.length);
+      out.flush();
+      if (makeReadonly) {
+        outFile.setReadOnly();
+      }
+
+      // We delete the entry from the HashFile database because we don't know
+      // what hash was used by the server (aka from the etag field) so we cannot
+      // safely compute our own hash.
+      HashFile file = db.getHashFile(destinationFilename);
+      if (file != null) {
+        db.deleteOne(file);
+      }
+    } catch (Exception e) {
+      Log.e(LOG_TAG, "Error Updating Library Assets", e);
+    }
+  }
+
+  /**
    * Get the destination file for the asset.
    *
    * Generally, the assets are stored in the external storage directory of the app. However, if the
@@ -312,4 +376,5 @@ public class AssetFetcher {
     }
     return formatter.toString();
   }
+
 }
