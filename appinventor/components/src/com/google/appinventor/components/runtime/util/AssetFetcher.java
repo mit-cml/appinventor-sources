@@ -283,6 +283,8 @@ public class AssetFetcher {
    * @return The destination file for the asset
    */
   private static File getDestinationFile(Form form, String asset) {
+    Log.d(LOG_TAG, "*** ASSET FETCHER DEBUG *** asset: " + asset);
+    
     if (asset.contains("/external_comps/")
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       File dest = new File(form.getCacheDir(), asset.substring("assets/".length()));
@@ -300,9 +302,19 @@ public class AssetFetcher {
         String[] parts = asset.split("/");
         filename = parts[parts.length - 1];
       }
+      Log.d(LOG_TAG, "External comps path: " + new File(parent, filename).getAbsolutePath());
       return new File(parent, filename);
     }
-    return new File(QUtil.getReplAssetPath(form, true), asset.substring("assets/".length()));
+    
+    String adjustedAsset = asset.substring("assets/".length());
+    String replAssetPath = QUtil.getReplAssetPath(form, true);
+    File result = new File(replAssetPath, adjustedAsset);
+    
+    Log.d(LOG_TAG, "Adjusted asset (after removing assets/): " + adjustedAsset);
+    Log.d(LOG_TAG, "ReplAssetPath: " + replAssetPath);
+    Log.d(LOG_TAG, "Final destination file: " + result.getAbsolutePath() + " ***");
+    
+    return result;
   }
 
   private static String byteArray2Hex(final byte[] hash) {

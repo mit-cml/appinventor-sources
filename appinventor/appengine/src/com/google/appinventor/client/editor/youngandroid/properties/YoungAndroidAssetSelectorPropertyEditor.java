@@ -14,6 +14,11 @@ import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.shared.rpc.globalasset.GlobalAssetService;
+import com.google.appinventor.shared.rpc.globalasset.GlobalAssetServiceAsync;
+import com.google.appinventor.shared.rpc.project.GlobalAsset;
+import com.google.gwt.core.client.GWT;
 import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.client.wizards.FileUploadWizard.FileUploadedCallback;
 import com.google.appinventor.shared.rpc.project.FileNode;
@@ -22,6 +27,8 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import java.util.List;
+import java.util.ArrayList;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -41,10 +48,12 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
     implements ProjectChangeListener {
   // UI elements
   private final ListBox assetsList;
+private final List<String> assetFileIds = new ArrayList<String>(); // To store actual fileIds
 
   private final ListWithNone choices;
 
   private final YoungAndroidAssetsFolder assetsFolder;
+  private final GlobalAssetServiceAsync globalAssetService = GWT.create(GlobalAssetService.class);
 
   /**
    * Creates a new property editor for selecting a Young Android asset.
@@ -88,14 +97,15 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
       public void setSelectedIndex(int index) {
         assetsList.setSelectedIndex(index);
       }
+
+      @Override
+      public int getItemCount() {
+        return assetsList.getItemCount();
+      }
     });
 
     // Fill choices with the assets.
-    if (assetsFolder != null) {
-      for (ProjectNode node : assetsFolder.getChildren()) {
-        choices.addItem(node.getName());
-      }
-    }
+    loadAssetChoices();
 
     Button addButton = new Button(MESSAGES.addButton());
     addButton.setWidth("100%");
@@ -105,9 +115,10 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
         FileUploadedCallback callback = new FileUploadedCallback() {
           @Override
           public void onFileUploaded(FolderNode folderNode, FileNode fileNode) {
-            // At this point, the asset has been uploaded to the server, and
-            // has even been added to the assetsFolder. We are all set!
-            choices.selectValue(fileNode.getName());
+            loadAssetChoices();
+            if (fileNode != null) {
+              choices.selectValue(fileNode.getFileId());
+            }
             closeAdditionalChoiceDialog(true);
           }
         };
@@ -167,52 +178,168 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
     if (isMultipleValues()) {
       return MESSAGES.multipleValues();
     }
-    String value = property.getValue();
-    if (choices.containsValue(value)) {
-      return choices.getDisplayItemForValue(value);
+    String currentFileId = property.getValue();
+    if (currentFileId == null || currentFileId.isEmpty()) {
+      return MESSAGES.noneCaption();
     }
-    return value;
+
+    for (int i = 0; i < assetFileIds.size(); i++) {
+      if (assetFileIds.get(i).equals(currentFileId)) {
+        int indexInListBox = i;
+        // Adjust index if "None" is the first item in the displayed list
+        if (assetsList.getItemCount() > 0 && assetsList.getItemText(0).equals(MESSAGES.noneCaption())) {
+          indexInListBox = i + 1;
+        }
+        if (indexInListBox >= 0 && indexInListBox < assetsList.getItemCount()) {
+          return assetsList.getItemText(indexInListBox);
+        }
+      }
+    }
+    // If the fileId is not in assetFileIds, it might be a manually entered path or an old value.
+    // Display it, possibly formatted if it's a global asset.
+    if (currentFileId.startsWith("assets/_global_/")) {
+      String pathWithoutPrefix = currentFileId.substring("assets/_global_/".length());
+      return "[G] " + pathWithoutPrefix + " (missing?)";
+    }
+    // For project assets, it might be just "asset.png" if it's an old project or manually entered.
+    // Or "assets/asset.png" if it was saved with the new logic.
+    if (currentFileId.startsWith("assets/")) {
+         return currentFileId.substring("assets/".length()) + " (missing?)";
+    }
+    return currentFileId + " (missing?)";
   }
 
   @Override
   protected boolean okAction() {
-    int selected = assetsList.getSelectedIndex();
-    if (selected == -1) {
+    int selectedIndexInListBox = assetsList.getSelectedIndex();
+    if (selectedIndexInListBox == -1) {
       Window.alert(MESSAGES.noAssetSelected());
       return false;
     }
+
+    String selectedDisplayName = assetsList.getItemText(selectedIndexInListBox);
+    String valueToSet;
+
+    if (selectedDisplayName.equals(MESSAGES.noneCaption())) {
+      valueToSet = ""; // Represents "None"
+    } else {
+      int actualIndexInAssetFileIds = selectedIndexInListBox;
+      // Adjust index if "None" is the first item in the displayed list
+      if (assetsList.getItemCount() > 0 && assetsList.getItemText(0).equals(MESSAGES.noneCaption())) {
+        actualIndexInAssetFileIds = selectedIndexInListBox - 1;
+      }
+
+      if (actualIndexInAssetFileIds >= 0 && actualIndexInAssetFileIds < assetFileIds.size()) {
+        valueToSet = assetFileIds.get(actualIndexInAssetFileIds);
+      } else {
+        Window.alert("Error: Asset selection out of sync. Please try again.");
+        return false;
+      }
+    }
+
     boolean multiple = isMultipleValues();
     setMultipleValues(false);
-    property.setValue(choices.getValueAtIndex(selected), multiple);
+    property.setValue(valueToSet, multiple);
     return true;
+  }
+
+  private void loadAssetChoices() {
+    assetsList.clear(); // Directly clear the ListBox
+    assetFileIds.clear();
+
+    choices.clearNoneItem();
+
+    if (assetsFolder != null) {
+      for (ProjectNode node : assetsFolder.getChildren()) {
+        addAssetChoice(node.getName(), node.getFileId());
+      }
+    }
+    
+    finalizeAssetLoading();
+  }
+
+  private void finalizeAssetLoading() {
+    choices.updateNoneItem();
+  }
+
+  private void addAssetChoice(String name, String fileId) {
+    String displayName = name;
+    
+    // Handle old-style global assets that were added to the project
+    if (fileId.startsWith("assets/_global_/")) {
+      String pathWithoutPrefix = fileId.substring("assets/_global_/".length());
+      // Show global assets with a [G] prefix to distinguish them
+      displayName = "[G] " + pathWithoutPrefix;
+    } 
+    // Handle new-style global assets with folder prefix (e.g., "assets/icons_home.png")
+    else if (fileId.startsWith("assets/") && name.contains("_")) {
+      // Check if this might be a folder-prefixed global asset
+      String assetName = fileId.substring("assets/".length());
+      if (assetName.contains("_")) {
+        int underscoreIndex = assetName.indexOf("_");
+        String possibleFolder = assetName.substring(0, underscoreIndex);
+        String possibleFilename = assetName.substring(underscoreIndex + 1);
+        // If it looks like a folder_filename pattern, show with [G] prefix
+        if (possibleFolder.length() > 0 && possibleFilename.length() > 0) {
+          displayName = "[G] " + possibleFolder + "/" + possibleFilename;
+        }
+      }
+    }
+    
+    // choices.addItem will add to assetsList (the UI ListBox)
+    choices.addItem(displayName);
+    assetFileIds.add(fileId); // Store the actual fileId in parallel
+  }
+
+  private void removeAssetChoice(String fileIdToRemove) {
+    int indexToRemove = -1;
+    for (int i = 0; i < assetFileIds.size(); i++) {
+      if (assetFileIds.get(i).equals(fileIdToRemove)) {
+        indexToRemove = i;
+        break;
+      }
+    }
+    if (indexToRemove != -1) {
+      assetFileIds.remove(indexToRemove);
+      int indexInListBox = indexToRemove;
+      if (assetsList.getItemCount() > 0 && assetsList.getItemText(0).equals(MESSAGES.noneCaption())) {
+        if (indexToRemove + 1 < assetsList.getItemCount()) {
+          indexInListBox = indexToRemove + 1;
+        }
+      }
+      String currentPropertyValue = property.getValue();
+      loadAssetChoices();
+      choices.selectValue(currentPropertyValue);
+    }
   }
 
   // ProjectChangeListener implementation
 
   @Override
   public void onProjectLoaded(Project project) {
+    loadAssetChoices();
   }
 
   @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
-    // Check whether our asset was updated.
-    if (node instanceof YoungAndroidAssetNode) {
-      String assetName = node.getName();
-
-      // Add it to the list if it isn't already there.
-      // It could already be there if the user adds an asset that's already there, which is the way
-      // to replace the asset.
-      if (!choices.containsValue(assetName)) {
-        choices.addItem(assetName);
+    if (node instanceof YoungAndroidAssetNode && node.getProjectId() == assetsFolder.getProjectId()) {
+      // Check if it's a new asset not yet in our list (could be a replacement)
+      boolean found = false;
+      for (String fileId : assetFileIds) {
+        if (fileId.equals(node.getFileId())) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        addAssetChoice(node.getName(), node.getFileId());
       }
 
-      // Check whether our asset was updated.
+      // If this newly added node corresponds to the current property value,
+      // refresh the component (e.g. image preview).
       String currentValue = property.getValue();
-      if (assetName.equals(currentValue)) {
-        // Our asset was updated.
-        // Set the property value to blank and then back to the current value.
-        // This will force the component to update itself (for example, it will refresh its image).
-        property.setValue("");
+      if (node.getFileId().equals(currentValue)) {
+        property.setValue(""); // Force refresh
         property.setValue(currentValue);
       }
     }
@@ -220,18 +347,14 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
 
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
-    if (node instanceof YoungAndroidAssetNode) {
-      String assetName = node.getName();
+    if (node instanceof YoungAndroidAssetNode && node.getProjectId() == assetsFolder.getProjectId()) {
+      String removedFileId = node.getFileId();
+      String currentPropertyValue = property.getValue();
 
-      // Check whether our asset was removed.
-      String currentValue = property.getValue();
-      if (node.getName().equals(currentValue)) {
-        // Our asset was removed.
-        property.setValue("");
+      if (removedFileId.equals(currentPropertyValue)) {
+        property.setValue(""); // Clear property if the selected asset was removed
       }
-
-      // Remove the asset from the list.
-      choices.removeValue(assetName);
+      removeAssetChoice(removedFileId); // Remove from our lists
     }
   }
 }

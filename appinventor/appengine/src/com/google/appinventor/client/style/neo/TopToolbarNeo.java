@@ -8,6 +8,7 @@ package com.google.appinventor.client.style.neo;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -26,6 +27,7 @@ public class TopToolbarNeo extends TopToolbar {
   @UiField DropDownButton buildDropDown;
   @UiField DropDownButton settingsDropDown;
   @UiField DropDownButton adminDropDown;
+  @UiField DropDownItem assetLibraryDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
 
   @Override
