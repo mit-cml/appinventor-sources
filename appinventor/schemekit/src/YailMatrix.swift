@@ -1,10 +1,7 @@
-//
-//  YailMatrix.swift
-//  SchemeKit
-//
-//  Created by Grant Hu on 4/1/25.
-//  Copyright © 2025 Massachusetts Institute of Technology. All rights reserved.
-//
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright 2018-2023 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 @objc open class YailMatrix: NSObject, SCMObject {
     
     public var interpreter: SCMInterpreter {
@@ -12,7 +9,7 @@
     }
     
     public func isPicEqual(_ other: pic_value) -> Bool {
-        return false
+        return value == other
     }
     
     public func mark() {
@@ -29,10 +26,10 @@
     public let isSymbol: Bool = false
     public let isCons: Bool = false
     public let isExact: Bool = false
-    public let value: pic_value = 0
+    public let value: pic_value = interpreter.internObject(self)
     
     public func copy(with zone: NSZone? = nil) -> Any {
-        return ""
+        return self
     }
     
     enum MatrixError: Error {
@@ -96,8 +93,6 @@
         return Double.nan
       }
     }
-  
-  //NSLog(@"%@", [SCMNameResolver lookupMethodsForClass:[yail_native_instance_ptr(pic, native_object)->object_ class]]);
 
     
     @objc public func setCell(_ row: Int, _ col: Int, _ value: Double) throws {

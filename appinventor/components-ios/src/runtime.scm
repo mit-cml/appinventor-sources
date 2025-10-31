@@ -396,8 +396,6 @@
       (yail:invoke (yail:invoke AIComponentKit.Form 'activeForm) 'ShowListsAsJson)))))
 
 (define (coerce-to-string arg)
-  (display arg)
-  (display "\n")
   (cond ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
         ((eq? arg #undefined) *the-null-value-printed-rep*)
         ((string? arg) arg)
