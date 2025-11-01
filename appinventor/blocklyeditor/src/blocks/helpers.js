@@ -406,7 +406,7 @@ Blockly.Blocks['helpers_providermodel'] = {
     // Must include the '' so .some returns true if no restrictions.
     var restrictedFormats = [''];
     var types = this.outputConnection.targetConnection &&
-        this.outputConnection.targetConnection.check_;
+        this.outputConnection.targetConnection.getCheck();
     if (types) {
       for (var i = 0, type; type = types[i]; i++) {
         if (Array.isArray(type)) {
@@ -529,7 +529,7 @@ Blockly.Blocks['helpers_provider'] = {
     // Must include the '' so .some returns true if no restrictions.
     var restrictedFormats = [''];
     var types = this.outputConnection.targetConnection &&
-        this.outputConnection.targetConnection.check_;
+        this.outputConnection.targetConnection.getCheck();
     if (types) {
       for (var i = 0, type; type = types[i]; i++) {
         if (Array.isArray(type)) {

@@ -26,46 +26,52 @@ AI.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/variables.
 
 // Generator code for procedure call with return
 // [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
-AI.Yail['procedures_defreturn'] = function() {
+AI.Yail.forBlock['procedures_defreturn'] = function(block, generator) {
   var argPrefix = AI.Yail.YAIL_LOCAL_VAR_TAG
-                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
-  var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
-  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('NAME');
-  var returnVal = AI.Yail.valueToCode(this, 'RETURN', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+                  + (Blockly.usePrefixInYail && block.arguments_.length != 0 ? "param_" : "");
+  var args = block.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
+  var procName = AI.Yail.YAIL_PROC_TAG + block.getFieldValue('NAME');
+  var returnVal = generator.valueToCode(block, 'RETURN', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_DEFINE + AI.Yail.YAIL_OPEN_COMBINATION + procName
-      + AI.Yail.YAIL_SPACER + args + AI.Yail.YAIL_CLOSE_COMBINATION 
+      + AI.Yail.YAIL_SPACER + args + AI.Yail.YAIL_CLOSE_COMBINATION
       + AI.Yail.YAIL_SPACER + returnVal + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // Generator code for procedure call with return
-AI.Yail['procedures_defnoreturn'] = function() {
+AI.Yail.forBlock['procedures_defnoreturn'] = function(block, generator) {
   var argPrefix = AI.Yail.YAIL_LOCAL_VAR_TAG
-                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
-  var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
-  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('NAME');
-  var body = AI.Yail.statementToCode(this, 'STACK', AI.Yail.ORDER_NONE)  || AI.Yail.YAIL_FALSE;
+                  + (Blockly.usePrefixInYail && block.arguments_.length != 0 ? "param_" : "");
+  var args = block.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
+  var procName = AI.Yail.YAIL_PROC_TAG + block.getFieldValue('NAME');
+  var body = '';
+  var currentBlock = block.getInputTargetBlock('STACK');
+  while (currentBlock) {
+    body += generator.blockToCode(currentBlock);
+    currentBlock = currentBlock.getNextBlock();
+  }
+  body = body || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_DEFINE + AI.Yail.YAIL_OPEN_COMBINATION + procName
       + AI.Yail.YAIL_SPACER + args + AI.Yail.YAIL_CLOSE_COMBINATION + body
       + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
-AI.Yail['procedure_lexical_variable_get'] = function() {
-  return AI.Yail.lexical_variable_get.call(this);
+AI.Yail.forBlock['procedure_lexical_variable_get'] = function(block, generator) {
+  return AI.Yail.forBlock['lexical_variable_get'](block, generator);
 }
 
 //call the do return in control category
-AI.Yail['procedures_do_then_return'] = function() {
-  return AI.Yail.controls_do_then_return.call(this);
+AI.Yail.forBlock['procedures_do_then_return'] = function(block, generator) {
+  return AI.Yail.forBlock['controls_do_then_return'](block, generator);
 }
 
 // Generator code for procedure call with return
-AI.Yail['procedures_callnoreturn'] = function() {
-  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
+AI.Yail.forBlock['procedures_callnoreturn'] = function(block, generator) {
+  var procName = AI.Yail.YAIL_PROC_TAG + block.getFieldValue('PROCNAME');
   var argCode = [];
-  for ( var x = 0;this.getInput("ARG" + x); x++) {
-    argCode[x] = AI.Yail.valueToCode(this, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  for ( var x = 0;block.getInput("ARG" + x); x++) {
+    argCode[x] = generator.valueToCode(block, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   }
   var code = AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_GET_VARIABLE + procName
       + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + argCode.join(' ')
@@ -74,11 +80,11 @@ AI.Yail['procedures_callnoreturn'] = function() {
 };
 
 // Generator code for procedure call with return
-AI.Yail['procedures_callreturn'] = function() {
-  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
+AI.Yail.forBlock['procedures_callreturn'] = function(block, generator) {
+  var procName = AI.Yail.YAIL_PROC_TAG + block.getFieldValue('PROCNAME');
   var argCode = [];
-  for ( var x = 0; this.getInput("ARG" + x); x++) {
-    argCode[x] = AI.Yail.valueToCode(this, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  for ( var x = 0; block.getInput("ARG" + x); x++) {
+    argCode[x] = generator.valueToCode(block, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   }
   var code = AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_GET_VARIABLE + procName
       + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + argCode.join(' ')

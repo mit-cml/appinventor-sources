@@ -75,9 +75,9 @@ Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
 Blockly.WorkspaceSvg.prototype.chromeHidden = false;
 
 /**
- * Wrap the onMouseClick_ event to handle additional behaviors.
+ * Wrap the onMouseDown event to handle additional behaviors.
  */
-Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
+Blockly.WorkspaceSvg.prototype.onMouseDown = (function(func) {
   if (func.isWrapped) {
     return func;
   } else {
@@ -92,7 +92,7 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
     f.isWrapper = true;
     return f;
   }
-})(Blockly.WorkspaceSvg.prototype.onMouseDown_);
+})(Blockly.WorkspaceSvg.prototype.onMouseDown);
 
 Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
   if (func.isWrapped) {
@@ -198,7 +198,7 @@ Blockly.WorkspaceSvg.prototype.addWarningIndicator = function() {
     }
     this.warningIndicator_ = new Blockly.WarningIndicator(this);
     var svgWarningIndicator = this.warningIndicator_.createDom();
-    this.svgGroup_.appendChild(svgWarningIndicator);
+    this.getSvgGroup().appendChild(svgWarningIndicator);
     this.warningIndicator_.init();
   }
 };
@@ -370,7 +370,7 @@ Blockly.WorkspaceSvg.prototype.addScreen = function(name) {
   }
   if (this.screenList_.indexOf(name) == -1) {
     this.screenList_.push(name);
-    this.typeBlock_.needsReload.screens = true;
+    this.typeBlock_.invalidateCache('screen added: ' + name);
   }
 };
 
@@ -386,7 +386,7 @@ Blockly.WorkspaceSvg.prototype.removeScreen = function(name) {
   var index = this.screenList_.indexOf(name);
   if (index != -1) {
     this.screenList_.splice(index, 1);
-    this.typeBlock_.needsReload.screens = true;
+    this.typeBlock_.invalidateCache('screen removed: ' + name);
   }
 }
 
@@ -411,7 +411,7 @@ Blockly.WorkspaceSvg.prototype.addAsset = function(name) {
   }
   if (!this.assetList_.includes(name)) {
     this.assetList_.push(name);
-    this.typeBlock_.needsReload.assets = true;
+    this.typeBlock_.invalidateCache('asset added: ' + name);
   }
 };
 
@@ -426,7 +426,7 @@ Blockly.WorkspaceSvg.prototype.removeAsset = function(name) {
   var index = this.assetList_.indexOf(name);
   if (index != -1) {  // Make sure it is actually an asset.
     this.assetList_.splice(index, 1);
-    this.typeBlock_.needsReload.assets = true;
+    this.typeBlock_.invalidateCache('asset removed: ' + name);
   }
 };
 
@@ -488,7 +488,7 @@ Blockly.WorkspaceSvg.prototype.getProviderList = function() {
  */
 Blockly.WorkspaceSvg.prototype.addComponent = function(uid, instanceName, typeName) {
   if (this.componentDb_.addInstance(uid, instanceName, typeName)) {
-    this.typeBlock_.needsReload.components = true;
+    this.typeBlock_.invalidateCache('component added: ' + instanceName);
   }
   return this;
 };
@@ -511,7 +511,7 @@ Blockly.WorkspaceSvg.prototype.removeComponent = function(uid) {
   if (!this.componentDb_.removeInstance(uid)) {
     return this;
   }
-  this.typeBlock_.needsReload.components = true;
+  this.typeBlock_.invalidateCache('component removed: ' + component.name);
   var blocks = this.getAllBlocks();
   for (var i = 0, block; block = blocks[i]; ++i) {
     if (block.category == 'Component'
@@ -537,7 +537,7 @@ Blockly.WorkspaceSvg.prototype.renameComponent = function(uid, oldName, newName)
     console.log('Renaming: No such component instance ' + oldName + '; aborting.');
     return this;
   }
-  this.typeBlock_.needsReload.components = true;
+  this.typeBlock_.invalidateCache('component renamed: ' + oldName + ' to ' + newName);
   var blocks = this.getAllBlocks();
   for (var i = 0, block; block = blocks[i]; ++i) {
     if (block.category == 'Component' && block.rename(oldName, newName)) {
@@ -588,7 +588,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
             // Potentially apply any new translations for event parameter names
             var untranslatedEventName = block.eventparam;
             block.fieldVar_.setValue(untranslatedEventName);
-            // block.fieldVar_.setText(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
+            // block.fieldVar_.setValue(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
             block.eventparam = untranslatedEventName;
             block.workspace.requestErrorChecking(block);
           }
@@ -678,7 +678,6 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
 Blockly.WorkspaceSvg.prototype.hideChaff = (function(func) {
   return function(opt_allowToolbox) {
     this.flydown_ && this.flydown_.hide();
-    this.typeBlock_ && this.typeBlock_.hide();
     if (!opt_allowToolbox) {  // Fixes #1269
       this.backpack_ && this.backpack_.hide();
     }
@@ -743,10 +742,10 @@ Blockly.WorkspaceSvg.prototype.recordDeleteAreas = function() {
     this.deleteAreaTrash_ = null;
   }
   if (this.isMutator) {
-    if (this.flyout_) {
-      this.deleteAreaToolbox_ = this.flyout_.getClientRect();
-    } else if (this.toolbox_) {
-      this.deleteAreaToolbox_ = this.toolbox_.getClientRect();
+    if (this.getFlyout(true)) {
+      this.deleteAreaToolbox_ = this.getFlyout(true).getClientRect();
+    } else if (this.getToolbox()) {
+      this.deleteAreaToolbox_ = this.getToolbox().getClientRect();
     } else {
       this.deleteAreaToolbox_ = null;
     }
@@ -763,7 +762,7 @@ Blockly.WorkspaceSvg.prototype.hasBackpack = function() {
   return this.backpack_ != null;
 };
 
-Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
+Blockly.WorkspaceSvg.prototype.onMouseWheel = function(e) {
   this.cancelCurrentGesture();
   if (e.eventPhase == 3) {
     if (e.ctrlKey == true) {
@@ -911,7 +910,7 @@ Blockly.WorkspaceSvg.prototype.requestRender = function(block) {
         this.pendingRender = null;
       }
     }.bind(this);
-    if (this.svgGroup_.parentElement.parentElement.parentElement.style.display === 'none') {
+    if (this.getSvgGroup().parentElement.parentElement.parentElement.style.display === 'none') {
       this.pendingRender = true;
     } else {
       this.pendingRender = setTimeout(this.pendingRenderFunc, 0);
@@ -949,10 +948,9 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
       try {
         var handler = this.getWarningHandler();
         if (handler) {  // not true for flyouts and before the main workspace is rendered.
-          goog.array.forEach(this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck,
-            function(block) {
-              handler.checkErrors(block);
-            });
+          for (const block of this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck) {
+            handler.checkErrors(block);
+          }
         }
       } finally {
         this.pendingErrorCheck = null;
@@ -989,7 +987,7 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
  */
 /*
 Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
-  goog.array.forEach(this.connectionDBList, function(connectionDB) {
+  for (const connectionDB of this.connectionDBList) {
     connectionDB.sort(function(a, b) {
       return a.y_ - b.y_;
     });
@@ -1000,7 +998,7 @@ Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
     // assumption may break in the future if Blockly decides on a different mechanism for indexing
     // connections.
     connectionDB.removeDupes();
-  });
+  }
 };
  */
 
