@@ -889,7 +889,7 @@ Blockly.Blocks.component_method = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       //var title = this.inputList[0].titleRow[0];
-      //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
+      //title.setValue('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1366,7 +1366,7 @@ Blockly.Blocks.component_set_get = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       //var title = this.inputList[0].titleRow[0];
-      //title.setText(this.instanceName + '.');
+      //title.setValue(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1530,7 +1530,7 @@ Blockly.Blocks.component_component_block = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       //var title = this.inputList[0].titleRow[0];
-      //title.setText(this.instanceName);
+      //title.setValue(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
