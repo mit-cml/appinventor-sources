@@ -14,6 +14,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.Notifier;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
@@ -99,6 +100,12 @@ public class AssetFetcher {
         public void run() {
           String fileName = uri + "/ode/download/project-cached/" + projectId;
           getFile(fileName, cookieValue, "assets/__projects__/" + projectName, 0);
+          final Form form = Form.getActiveForm();
+          form.runOnUiThread(new Runnable() {
+              public void run() {
+                new Notifier(form).ShowAlert("Project " + projectName + " Saved");
+              }
+            });
         }
       });
   }
