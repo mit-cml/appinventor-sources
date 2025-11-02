@@ -23,11 +23,16 @@
           function showprojects() {
             let projects = Android.listProjects();
             projects = JSON.parse(projects);
-            let html = "<table border=1>\n";
-            for (let i=0; i < projects.length; i++) {
-              html += "<tr><td>" + projects[i] + "</td><td><button onClick=\"loadproject('" + projects[i] + "');\">Run</button></td><td>&nbsp;</td><td><button onClick=\"deleteproject('" + projects[i] + "');\">Delete</button></td></tr>\n"
+            let html = "";
+            if (projects.length == 0) {
+              html += '<p>You do not have any projects saved.</p>'
+            } else {
+              html += "<table border=1>\n";
+              for (let i=0; i < projects.length; i++) {
+                html += "<tr><td>" + projects[i] + "</td><td><button onClick=\"loadproject('" + projects[i] + "');\">Run</button></td><td>&nbsp;</td><td><button onClick=\"deleteproject('" + projects[i] + "');\">Delete</button></td></tr>\n"
+              }
+              html += "</table>\n";
             }
-            html += "</table>\n";
             let l = document.getElementById("projects");
             l.innerHTML = html;
           }
@@ -43,7 +48,7 @@
           });
         </script>
     </head>
-    <body onload="start();">
+    <body>
       <center>
         <h1>Select Project to load</h1>
       </center>

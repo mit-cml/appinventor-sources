@@ -297,6 +297,30 @@ $Source $Yail
 
 (define-event ScanButton Click()(set-this-form)
     (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '()))
+;;; Spacer4
+
+(add-component PhonePanel com.google.appinventor.components.runtime.Label Spacer4 
+(set-and-coerce-property! 'Spacer4 'HasMargins #f 'boolean)
+
+(set-and-coerce-property! 'Spacer4 'Height 8 'number)
+
+)
+
+;;; LibraryButton
+
+(add-component PhonePanel com.google.appinventor.components.runtime.Button LibraryButton 
+(set-and-coerce-property! 'LibraryButton 'BackgroundColor #xFF00FF00 'number)
+
+(set-and-coerce-property! 'LibraryButton 'FontSize 18 'number)
+
+(set-and-coerce-property! 'LibraryButton 'Image "myAppLibrary.png" 'text)
+
+(set-and-coerce-property! 'LibraryButton 'TextColor #xFFFFFFFF 'number)
+
+)
+
+(define-event LibraryButton Click()(set-this-form)
+    (call-component-method 'PhoneStatus1 'loadProjects (*list-for-runtime*) '()))
 ;;; IPContainer
 
 (add-component MainPanel com.google.appinventor.components.runtime.HorizontalArrangement IPContainer 

@@ -83,6 +83,9 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   private String firstHmacSeed = null;
   private static String popup = "No Page Provided!";
 
+  private static final String PROJECTS_ACTIVITY_CLASS = ProjectsActivity.class
+      .getName();               // Also defined in ReplForm.java
+
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
     this.form = container.$form();
@@ -362,6 +365,14 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   // get the pop-up page, called from AppInvHTTPD
   public static String getPopup() {
     return popup;
+  }
+
+  @SimpleFunction(description = "Displays the List of Loaded Cached Projects")
+  public static void loadProjects() {
+    Form activeForm = Form.getActiveForm();
+    Intent projectsIntent = new Intent(Intent.ACTION_MAIN);
+    projectsIntent.setClassName(activeForm.$context(), PROJECTS_ACTIVITY_CLASS);
+    activeForm.$context().startActivity(projectsIntent);
   }
 
   /* Static context way to get the useWebRTC flag */
