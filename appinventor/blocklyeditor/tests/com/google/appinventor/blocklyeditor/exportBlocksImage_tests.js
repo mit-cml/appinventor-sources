@@ -4,6 +4,7 @@ suite('ExportBlocksImage', function() {
   setup(function() {
     Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
     workspace = Blockly.common.getMainWorkspace();
+    Blockly.common.setSelected(null);
   });
 
   test('export and import blocks png round-trip', async function() {
