@@ -2052,18 +2052,43 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return node;
     }
 
-    @SimpleFunction(description = "Create a new BoxNode with default properties at the " +
-        "specified (x,y,z) position.")
+    @SimpleFunction(description = "Create an ImageMarker with an url string")
     public ImageMarker CreateImageMarker(String image) {
-
-        //Log.i("creating box node", "with x, y, z " + x + " " + y + " " + z);
         ImageMarker imageMarker = new ImageMarker(this);
-
-        /*float[] position = {0,0,0};
-        float[] rotation = {0, 0, 0, 1};
-        Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
-        */
+        imageMarker.imageUrl = image;
         return imageMarker;
+    }
+
+
+    @SimpleFunction(description = "take picture and invoke listener for a successful capture")
+    public void TakePicture(String name, float width) {
+        //capture screenshot
+            //AfterPicture(image, name: name)
+    }
+
+    @SimpleEvent(description = "handle after picture")
+    public String AfterPicture(String url, String name, float width) {
+        //let url = try self.savePNG(imageUI, name: "Marker")
+        //          self._currentImageSnapshot = image
+        EventDispatcher.dispatchEvent(this, "AfterPicture", url, name, width);
+        return url;
+    }
+
+    @SimpleFunction(description = "returnImageMarker after snapshot url is made")
+    public ImageMarker ImageForMarkerCreated(String url, String name, float width){
+        ImageMarker iM = new ImageMarker(this); //url
+        iM.imageUrl = url;
+        iM.name = name;
+        iM.PhysicalWidthInCentimeters(width);
+        return iM;
+    }
+
+    @SimpleFunction(description = "Create an ImageMarker with from a snapshot with width and url string")
+    public void CreateImageMarkerFromSnapshot(String name, float width) {
+        // TODO CSB how to do snapshot from frame in ARCore?
+        Log.i("Create ImageMarker from snapshot", "");
+        String url = "dummyimagestring";
+        TakePicture(name, width);
     }
 
     @SimpleFunction(description = "Create a new PlaneNode with geo coords")

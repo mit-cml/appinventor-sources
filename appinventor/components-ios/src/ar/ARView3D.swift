@@ -110,6 +110,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _observersInstalled = false
   private var restartPending = false
   
+  private var _currentImageSnapshot = ""
+  
   enum State {
     case none,
          colliding,
@@ -1942,6 +1944,65 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let marker = ImageMarker(self)
       marker.Name = "RoomMarker" + UUID().uuidString
       marker.Image = imagePath
+      return marker
+    }
+    
+    @objc open func CreateImageMarkerFromSnapshot(_ name: String, _ width: Float) {
+      self.TakePicture(name, width)
+    }
+    
+    
+    func captureSnapshot(_ onDone: @escaping (UIImage?) -> Void) {
+      self._arView.snapshot(saveToHDR: false) { image in
+        onDone(image)
+      }
+    }
+    
+    @objc open func TakePicture(_ name: String, _ width: Float) {
+      captureSnapshot { image in
+        guard let image else {
+          print("❌ Failed to make image for marker")
+          return
+        }
+        guard let imageUI = image as Optional else { return }
+        do {
+          let url = try self.savePNG(imageUI, "Marker")
+          self._currentImageSnapshot = url
+          
+          let nsWidth: NSNumber = NSNumber(value: width)
+          EventDispatcher.dispatchEvent(
+              of: self,
+              called: "AfterPicture",
+              arguments: url as NSString, name as NSString, nsWidth
+          )
+        }catch {
+            print("❌ Failed to save snapshot for marker: \(error)")
+        }
+      }
+    }
+
+    @objc open func AfterPicture( _ ref: NSString, _ name: NSString, _ width: NSNumber) -> NSString?{
+        return ref
+    }
+    
+    func savePNG(_ image: UIImage, _ name: String) throws -> String {
+      let data = image.pngData()!
+      let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        .first!
+        .appendingPathComponent("\(name).png")
+      try data.write(to: url, options: .atomic)
+      return url.absoluteString
+    }
+    
+    @objc open func ImageForMarkerCreated(_ url: String, _ name: String, _ widthCm: Float = 15.0) -> ImageMarker? {
+      guard let container = self as? ARImageMarkerContainer else {
+        print("⚠️ self is not ARImageMarkerContainer")
+        return nil
+      }
+      let marker = ImageMarker(container)
+      marker.Name = name
+      marker.Image = url
+      marker.PhysicalWidthInCentimeters = widthCm // defaulting atm
       return marker
     }
     

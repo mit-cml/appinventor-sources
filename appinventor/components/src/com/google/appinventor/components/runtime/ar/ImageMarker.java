@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public final class ImageMarker implements ARImageMarker {
   protected ARView3D arView = null;
   protected String name = "";
+  protected String imageUrl = "";
 
   public ImageMarker(ARImageMarkerContainer container) {
     // added to container implicitly
@@ -49,15 +50,13 @@ public final class ImageMarker implements ARImageMarker {
   @SimpleProperty(
       description = "The image file asset to be detected.",
       category = PropertyCategory.APPEARANCE)
-  public String Image() { return ""; }
-
+  public String Image() { return this.imageUrl; }
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
-  @SimpleProperty(userVisible = false)
-  public void Image(String image) {}
-
+  @SimpleProperty(description = "ImageURL")
+  public void Image(String image) { this.imageUrl = image; }
 
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
