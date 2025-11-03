@@ -1,6 +1,7 @@
 suite('XML Serialization Tests', function() {
   setup(function() {
     Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', false, false));
+    Blockly.common.setSelected(null);
     initComponentTypes();
   });
 
