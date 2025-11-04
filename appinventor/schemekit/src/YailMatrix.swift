@@ -26,8 +26,12 @@
     public let isSymbol: Bool = false
     public let isCons: Bool = false
     public let isExact: Bool = false
-    public let value: pic_value = interpreter.internObject(self)
-    
+    private var _value: pic_value = 0
+
+    public var value: pic_value {
+      _value
+    }
+
     public func copy(with zone: NSZone? = nil) -> Any {
         return self
     }
@@ -57,6 +61,7 @@
         self.cols = cols
         self.data = data
         super.init()
+        _value = SCMInterpreter.shared.internObject(self)
     }
     
     @objc public static func makeMatrix(_ dataValues: YailList<AnyObject>) throws -> YailMatrix {

@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 #include "picrin.h"
 
+@protocol SCMObject;
 @protocol SCMValue;
 @class SCMSymbol;
 
@@ -26,6 +27,7 @@
 - (nonnull id<SCMValue>)valueForObject:(nullable id)object;
 - (void)protect:(nonnull id)object;
 - (void)unprotect:(nonnull id)object;
+- (pic_value)internObject:(nonnull id<SCMObject>)object;
 
 /**
  * Run a garbage collection cycle of the Scheme memory.
