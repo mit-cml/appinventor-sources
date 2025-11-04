@@ -94,7 +94,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     return this.buildTree(1);
   }
 
-  protected TreeItem buildTree(Integer view) {
+  protected TreeItem buildTree(int view) {
     TreeItem itemNode = super.buildTree();
     //hide all containers except form if only nonvisible components are to be shown
     //in such a case, we need only the form's treeItem because all non-visible components are attached to it
@@ -149,7 +149,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     int beforeActualIndex;
     if ((beforeVisibleIndex == -1) || (beforeVisibleIndex >= visibleChildren.size())) {
       // Insert after last visible component
-      if (visibleChildren.size() == 0) {
+      if (visibleChildren.isEmpty()) {
         beforeActualIndex = 0;
       } else {
         beforeActualIndex = getChildren().indexOf(
@@ -161,6 +161,16 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
 
     addComponent(component, beforeActualIndex);
+  }
+
+  /**
+   * Called when a component is pasted into this container in case additional
+   * processing is needed.
+   *
+   * @param child the child component that was pasted
+   */
+  public void onPaste(MockComponent child) {
+    // Provided for subclasses
   }
 
   /**
@@ -192,7 +202,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       refreshForm();
     }
 
-    getForm().fireComponentAdded(component);
+    getRoot().fireComponentAdded(component);
   }
 
   /**
@@ -250,7 +260,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       editor.getNonVisibleComponentsPanel().removeComponent(component);
     }
 
-    getForm().fireComponentRemoved(component, permanentlyDeleted);
+    getRoot().fireComponentRemoved(component, permanentlyDeleted);
   }
 
   /**
@@ -316,6 +326,18 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   public boolean willAcceptComponentType(String type) {
     return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);
+  }
+
+  /**
+   * Indicates whether a component of the given type can be pasted into this container. By default,
+   * this is the same as {@link #willAcceptComponentType(String)}. Subclasses may override this
+   * behavior if they have custom rules.
+   *
+   * @param type the type of the component being considered for pasting
+   * @return true if the component can be pasted, false otherwise
+   */
+  public boolean canPasteComponentOfType(String type) {
+    return willAcceptComponentType(type);
   }
 
   // TODO(user): Draw a colored border around the edges of the container

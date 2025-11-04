@@ -74,8 +74,10 @@ public class RpcStatusPopup extends DecoratedPopupPanel implements RpcListener {
    *
    * @param service the service to monitor
    */
-  public void register(ExtendedServiceProxy<?> service) {
-    service.addRpcListener(this);
+  public void register(Object service) {
+    if (service instanceof ExtendedServiceProxy) {
+      ((ExtendedServiceProxy<?>) service).addRpcListener(this);
+    }
   }
 
   /**

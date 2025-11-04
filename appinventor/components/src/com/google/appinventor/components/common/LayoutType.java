@@ -17,7 +17,8 @@ public enum LayoutType implements OptionList<Integer> {
   MainText_DetailText_Vertical(1),
   MainText_DetailText_Horizontal(2),
   Image_MainText(3),
-  Image_MainText_DetailText_Vertical(4);
+  Image_MainText_DetailText_Vertical(4),
+  ImageTop_MainText_DetailText(5);
 
   private final int layout;
 

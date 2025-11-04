@@ -1029,7 +1029,6 @@ Blockly.Versioning.changePropertyName = function(componentType, oldPropertyName,
   }
 };
 
-
 Blockly.Versioning.makeMethodUseHelper =
   function(componentType, methodName, argNum, replaceFunc) {
     return function(blocksRep, workspace) {
@@ -1874,6 +1873,8 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // The ConverseWithImage method was added
     3: "noUpgrade",
+    // Added CreateImage and GotResponseWithImage
+    4: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
@@ -2466,9 +2467,8 @@ Blockly.Versioning.AllUpgradeMaps =
     9: "noUpgrade",
     // AI2: 
     // - Changed TextSize property to FontSize
-    10: [
-      Blockly.Versioning.changePropertyName("ListView", "TextSize", "FontSize")
-    ]
+    // - Add new layout
+    10: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -3514,7 +3514,10 @@ Blockly.Versioning.AllUpgradeMaps =
     9: "noUpgrade",
 
     // AI2: Added ErrorOccurred event and RunJavaScript method
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // AI2: Added UsesCamera and UsesMicrophone properties
+    11: "noUpgrade"
 
   }, // End WebViewer upgraders
 

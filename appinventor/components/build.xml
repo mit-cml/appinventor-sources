@@ -12,7 +12,7 @@
     App Inventor component libraries
   </description>
 
-  <property name="android.sdk.version" value="34"/>
+  <property name="android.sdk.version" value="35"/>
 
   <target name="all"
           depends="CommonConstants,AndroidRuntime">
@@ -276,6 +276,7 @@
         <exclude name="internal.md" />
       </fileset>
     </copy>
+    <copy todir="${appinventor.dir}/components-ios/src/" file="${AndroidRuntime-class.dir}/OptionHelper.swift" />
   </target>
 
   <!-- =====================================================================

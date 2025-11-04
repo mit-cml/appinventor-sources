@@ -54,7 +54,8 @@ import org.osmdroid.util.GeoPoint;
     category = ComponentCategory.MAPS,
     description = "<p>An icon positioned at a point to indicate information on a map. Markers "
         + "can be used to provide an info window, custom fill and stroke colors, and custom "
-        + "images to convey information to the user.</p>")
+        + "images to convey information to the user.</p>",
+    iconName = "images/marker.png")
 @SimpleObject
 @UsesLibraries(libraries = "osmdroid.aar, androidsvg.jar")
 public class Marker extends MapFeatureBaseWithFill implements MapMarker {

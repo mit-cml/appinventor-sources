@@ -899,6 +899,10 @@ public final class YoungAndroidFormUpgrader {
       // The ConverseWithImage block was added
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The CreateImage and GotResponseWithImage block added
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -1556,6 +1560,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 10) {
       // The TextSize property was renamed to FontSize.
+      // Add new layout
       handlePropertyRename(componentProperties, "TextSize", "FontSize");
       // Properties related to this component have now been upgraded to version 10.
       srcCompVersion = 10;
@@ -2035,7 +2040,7 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 10) {
+    if (srcCompVersion < 11) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
@@ -2048,7 +2053,8 @@ public final class YoungAndroidFormUpgrader {
       // PageLoaded event was added (version 8)
       // BeforePageLoad event and Stop, Reload, and ClearCookies methods added (version 9)
       // ErrorOccurred event and RunJavaScript method added (version 10)
-      srcCompVersion = 10;
+      // The UsesCamera and UsesMicrophone properties were added (version 11)
+      srcCompVersion = 11;
     }
     return srcCompVersion;
   }

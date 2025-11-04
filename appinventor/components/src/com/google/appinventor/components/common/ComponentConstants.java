@@ -18,7 +18,7 @@ public class ComponentConstants {
   /**
    * App constants
    */
-  public static final int APP_INVENTOR_MIN_SDK = 7;
+  public static final int APP_INVENTOR_MIN_SDK = 14;
 
   /**
    * Layout constants.
@@ -120,6 +120,8 @@ public class ComponentConstants {
   public static final int LISTVIEW_LAYOUT_TWO_TEXT_LINEAR = 2;
   public static final int LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT = 3;
   public static final int LISTVIEW_LAYOUT_IMAGE_TWO_TEXT = 4;
+  public static final int LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT = 5;
+
 
   /*
    * Chart Components

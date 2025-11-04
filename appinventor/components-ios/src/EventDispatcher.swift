@@ -67,10 +67,11 @@ open class EventDispatcher: NSObject {
     }
     var dispatched = false
     if (dispatchDelegate.canDispatchEvent(of: component, called: eventName)) {
+      SCMInterpreter.shared.evalForm("(set-this-form)")
       let er = mapDispatchDelegateToEventRegistry[dispatchDelegate] as! EventRegistry?
-      let eventClosures: Set<EventClosure>? = er?.eventClosuresMap[eventName]
-      if eventClosures != nil && (eventClosures?.count)! > 0 {
-        dispatched = delegateDispatchEvent(to: dispatchDelegate, withClosures: eventClosures!, forComponent: component, arguments: arguments)
+      if let eventClosures = er?.eventClosuresMap[eventName], eventClosures.count > 0 {
+        dispatched = delegateDispatchEvent(to: dispatchDelegate, withClosures: eventClosures,
+                                           forComponent: component, arguments: arguments)
       }
       dispatchDelegate.dispatchGenericEvent(of: component, eventName: eventName, unhandled: !dispatched, arguments: arguments)
     }

@@ -7,11 +7,11 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor;
 
 /**
  * Property editor for color RGB values.
- *
  */
 public final class YoungAndroidColorChoicePropertyEditor extends ColorChoicePropertyEditor {
 
@@ -46,13 +46,13 @@ public final class YoungAndroidColorChoicePropertyEditor extends ColorChoiceProp
    * Creates a new property editor for color RGB values.
    */
   public YoungAndroidColorChoicePropertyEditor(String defaultValue) {
-    super(YA_COLORS, "&H", defaultValue, true);
+    super(YA_COLORS, "&H", defaultValue, false);
   }
 
   /**
    * Creates a new property editor for a specific array of color RGB values.
    */
   public YoungAndroidColorChoicePropertyEditor(Color[] colors, String defaultValue) {
-    super(colors, "&H", defaultValue);
+    super(colors, "&H", defaultValue, true);
   }
 }

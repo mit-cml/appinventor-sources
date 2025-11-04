@@ -42,6 +42,8 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
   protected final C container;
   protected M dataModel;
 
+  protected String componentName;
+
   /**
    * Used to queue & execute asynchronous tasks while ensuring
    * order of method execution (ExecutorService should be a Single Thread runner)
@@ -105,6 +107,11 @@ public abstract class DataCollection<C extends ComponentContainer, M extends Dat
     dataFileColumns = Arrays.asList("", "");
     sheetsColumns = Arrays.asList("", "");
     webColumns = Arrays.asList("", ""); // Construct default webColumns list with 2 entries
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    this.componentName = componentName;
   }
 
   /**

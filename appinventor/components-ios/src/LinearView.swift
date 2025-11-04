@@ -396,12 +396,15 @@ public class LinearView: UIView {
       }
     } else if length == .Automatic {
       length.constraint = _inner.widthAnchor.constraint(greaterThanOrEqualTo: view.widthAnchor)
+
+
     } else if length.isPercent {
       length.constraint = view.widthAnchor.constraint(equalTo: length.view.widthAnchor, multiplier: length.cgFloat)
     } else {
       length.constraint = view.widthAnchor.constraint(equalToConstant: length.cgFloat)
     }
-    length.constraint?.isActive = true
+    let shouldActivate = self.superview != nil
+    length.constraint?.isActive = shouldActivate
     widthConstraints[view] = length
     invalidateIntrinsicContentSize()
   }
@@ -458,7 +461,8 @@ public class LinearView: UIView {
     } else {
       length.constraint = view.heightAnchor.constraint(equalToConstant: length.cgFloat)
     }
-    length.constraint?.isActive = true
+    let shouldActivate = self.superview != nil
+    length.constraint?.isActive = shouldActivate
     heightConstraints[view] = length
     invalidateIntrinsicContentSize()
   }
@@ -600,6 +604,7 @@ public class LinearView: UIView {
     // Dynamic horizontal control
     horizontalHead.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
     horizontalTail.setContentHuggingPriority(DefaultSizingPriority, for: .horizontal)
+
     if widthFillParent == 0 {
       switch _horizontalAlign {
       case .left:
@@ -608,6 +613,22 @@ public class LinearView: UIView {
         break
       case .right:
         horizontalTail.setContentHuggingPriority(TightSizingPriority, for: .horizontal)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       }
     }
 

@@ -267,6 +267,7 @@ struct NavigationRequest: Codable {
         }
       }
     }
+    task.priority = 1.0
     task.resume()
   }
 

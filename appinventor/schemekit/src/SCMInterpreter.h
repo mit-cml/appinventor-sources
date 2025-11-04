@@ -27,6 +27,7 @@
 - (nonnull id<SCMValue>)valueForObject:(nullable id)object;
 - (void)protect:(nonnull id)object;
 - (void)unprotect:(nonnull id)object;
+- (void)markObject:(nonnull NSObject *)object;
 - (pic_value)internObject:(nonnull id<SCMObject>)object;
 
 /**

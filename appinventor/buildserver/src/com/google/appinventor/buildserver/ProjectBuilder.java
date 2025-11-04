@@ -7,7 +7,11 @@
 package com.google.appinventor.buildserver;
 
 import static com.google.appinventor.buildserver.context.Resources.RUNTIME_FILES_DIR;
-import static com.google.appinventor.buildserver.util.ProjectUtils.PROJECT_DIRECTORY;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.PROJECT_DIRECTORY;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.BlockXmlAnalyzer;
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ComponentBlocksExtractor;
@@ -15,6 +19,7 @@ import com.google.appinventor.buildserver.FormPropertiesAnalyzer.PermissionBlock
 import com.google.appinventor.buildserver.FormPropertiesAnalyzer.ScopeBlockExtractor;
 import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.context.Paths;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.stats.StatReporter;
 import com.google.appinventor.buildserver.tasks.common.BuildFactory;
 import com.google.appinventor.buildserver.util.Execution;
@@ -43,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -72,18 +79,13 @@ public final class ProjectBuilder {
   private static final int MAX_COMPILER_MESSAGE_LENGTH = 160;
   private static final String SEPARATOR = File.separator;
 
+  private static final int MAX_BUILD_TIMEOUT_SECONDS = 60 * 5; // 5 minutes
+
   // Project folder prefixes
   // TODO(user): These constants are (or should be) also defined in
   // appengine/src/com/google/appinventor/server/project/youngandroid/YoungAndroidProjectService
   // They should probably be in some place shared with the server
   private static final String KEYSTORE_FILE_NAME = YoungAndroidConstants.PROJECT_KEYSTORE_LOCATION;
-
-  private static final String FORM_PROPERTIES_EXTENSION =
-      YoungAndroidConstants.FORM_PROPERTIES_EXTENSION;
-  private static final String YAIL_EXTENSION = YoungAndroidConstants.YAIL_EXTENSION;
-
-  private static final String CODEBLOCKS_SOURCE_EXTENSION =
-      YoungAndroidConstants.CODEBLOCKS_SOURCE_EXTENSION;
 
   private static final String ALL_COMPONENT_TYPES = RUNTIME_FILES_DIR + "simple_components.txt";
 
@@ -114,6 +116,7 @@ public final class ProjectBuilder {
         try {
           sourceFiles = ProjectUtils.extractProjectFiles(inputZip, projectRoot);
         } catch (IOException e) {
+          e.printStackTrace();
           LOG.severe("unexpected problem extracting project file from zip");
           return Result.createFailingResult("", "Problems processing zip file.");
         }
@@ -133,11 +136,17 @@ public final class ProjectBuilder {
           throw new IllegalStateException("No factory for target: " + ext);
         }
         if (outputFileName == null) {
-          outputFileName = project.getProjectName() + "." + factory.getExtension();
+          if (BuildType.ASC_EXTENSION.equals(ext)) {
+            outputFileName = "PlayerApp.ipa";
+          } else {
+            outputFileName = project.getProjectName() + "." + factory.getExtension();
+          }
         }
 
         File buildTmpDir = new File(projectRoot, "build/tmp");
-        buildTmpDir.mkdirs();
+        if (!buildTmpDir.mkdirs()) {
+          throw new IOException("Unable to create build dir");
+        }
 
         Set<String> componentTypes = getComponentTypes(sourceFiles, project.getAssetsDirectory());
         if (isForCompanion) {
@@ -201,33 +210,32 @@ public final class ProjectBuilder {
 
         Future<Boolean> executor = Executors.newSingleThreadExecutor().submit(compiler);
 
-        boolean success = executor.get();
+        boolean success;
+        try {
+          if (isForCompanion) {
+            // If we are building for companion, very likely in CI, don't limit the build time...
+            success = executor.get();
+          } else {
+            success = executor.get(MAX_BUILD_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+          }
+        } catch (TimeoutException e) {
+          LOG.severe("Build has timed out");
+          context.getReporter().error("Build has timed out");
+          success = false;
+        }
+
         statReporter.stopBuild(compiler, success);
         r.close();
 
         // Retrieve compiler messages and convert to HTML and log
         String srcPath = projectRoot.getAbsolutePath() + SEPARATOR + PROJECT_DIRECTORY + SEPARATOR
-            + ".." + SEPARATOR + "src" + SEPARATOR;
+            + ".." + SEPARATOR + SRC_FOLDER + SEPARATOR;
         String messages = processCompilerOutput(context.getReporter().getSystemOutput(),
             srcPath);
 
         if (success) {
-          // Locate output file
-          String fileName = outputFileName;
-          if (fileName == null) {
-            fileName = project.getProjectName() + "." + ext;
-          }
-          File outputFile = new File(projectRoot,
-              "build" + SEPARATOR + "deploy" + SEPARATOR + fileName);
-          if (!outputFile.exists()) {
-            LOG.warning("Young Android build - " + outputFile + " does not exist");
-          } else {
-            outputApk = new File(outputDir, outputFile.getName());
-            Files.copy(outputFile, outputApk);
-            if (saveKeystore) {
-              outputKeystore = new File(outputDir, KEYSTORE_FILE_NAME);
-              Files.copy(keyStoreFile, outputKeystore);
-            }
+          for (File file : context.getOutputFiles()) {
+            Files.copy(file, new File(outputDir, file.getName()));
           }
         }
         return new Result(success, messages, context.getReporter().getUserOutput());
@@ -277,7 +285,7 @@ public final class ProjectBuilder {
 
     Set<String> componentTypes = Sets.newHashSet();
     for (String f : files) {
-      if (f.endsWith(".scm")) {
+      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
         File scmFile = new File(f);
         String scmContent = new String(Files.toByteArray(scmFile),
             PathUtil.DEFAULT_CHARSET);
@@ -292,7 +300,7 @@ public final class ProjectBuilder {
   private static void analyzeBlockFiles(List<String> files, BlockXmlAnalyzer<?>... analyzers)
       throws IOException {
     for (String f : files) {
-      if (f.endsWith(".bky")) {
+      if (f.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
         File bkyFile = new File(f);
         String bkyContent = Files.toString(bkyFile, StandardCharsets.UTF_8);
         FormPropertiesAnalyzer.analyzeBlocks(bkyContent, analyzers);
@@ -315,7 +323,7 @@ public final class ProjectBuilder {
       throws IOException {
     Map<String, Set<String>> result = new HashMap<>();
     for (String f : files) {
-      if (f.endsWith(".scm")) {
+      if (f.endsWith(FORM_PROPERTIES_EXTENSION)) {
         File scmFile = new File(f);
         String scmContent = Files.toString(scmFile, StandardCharsets.UTF_8);
         for (Map.Entry<String, Set<String>> entry :
@@ -406,7 +414,8 @@ public final class ProjectBuilder {
         "-keypass", "android"
     };
 
-    if (Execution.execute(null, keytoolCommandline, System.out, System.err)) {
+    if (Execution.execute(null, keytoolCommandline, System.out, System.err,
+        Execution.Timeout.SHORT)) {
       if (keyStoreFile.length() > 0) {
         return keyStoreFile.getAbsolutePath();
       }
@@ -454,7 +463,7 @@ public final class ProjectBuilder {
 
           // If the error/warning is in a yail file, generate a div and append it to the
           // StringBuilder.
-          if (filename.endsWith(YoungAndroidConstants.YAIL_EXTENSION)) {
+          if (filename.endsWith(YAIL_FILE_EXTENSION)) {
             skippedErrorOrWarning = false;
             sb.append("<div><span class='" + spanClass + "'>" + kind + "</span>: " +
                 StringUtils.escape(filename) + " line " + lineNumber + ": " +

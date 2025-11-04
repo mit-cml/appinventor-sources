@@ -91,13 +91,6 @@ body {
 .ode-MessagesOutput {
   background-color: background-color;
 }
-/*
-  * MotdBox
-  */
-.ode-Motd {
-  background-color: box-background-color;
-  color: panel-shadow;
-}
 .ode-ProjectNameLabel {
   color: panel-shadow;
 }

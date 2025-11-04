@@ -141,7 +141,7 @@
 			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
 			<arg value="--js='${blockly.src.dir}/blockly_compressed.js'"/>
-			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-2.0.6.min.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-3.0.2.min.js'"/>
 			<arg value="--js='blocklyeditor/src/**.js'"/>
 			<arg value="--js='${lib.dir}/closure-library/closure/goog/**.js'"/>
 			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_test.js'"/>

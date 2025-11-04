@@ -85,6 +85,15 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     }
   }
 
+  open override func onAttach() {
+    super.onAttach()
+    for child in _components {
+      if child.Visible {
+        child.onAttach()
+      }
+    }
+  }
+
   open func isVisible(component: ViewComponent) -> Bool {
     return _view.contains(component.view)
   }
@@ -96,9 +105,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
     }
     if visibility {
       _view.setVisibility(of: component.view, to: true)
-      // Replay width/height properties
-      setChildHeight(of: component, to: component._lastSetHeight)
-      setChildWidth(of: component, to: component._lastSetWidth)
+      component.onAttach()
     } else {
       _view.setVisibility(of: component.view, to: false)
     }

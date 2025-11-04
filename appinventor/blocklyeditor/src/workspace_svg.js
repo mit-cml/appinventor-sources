@@ -82,37 +82,12 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
     return func;
   } else {
     var f = function(e) {
-      try {
-        var metrics = Blockly.common.getMainWorkspace().getMetrics();
-        var point = Blockly.utils.browserEvents.mouseToSvg(e, this.getParentSvg(), this.getInverseScreenCTM());
-        point.x = (point.x + metrics.viewLeft) / this.scale;
-        point.y = (point.y + metrics.viewTop) / this.scale;
-        this.latestClick = point;
-        return func.call(this, e);
-      } finally {
-        //if drawer exists and supposed to close
-        if (this.drawer_ && this.drawer_.flyout_.autoClose) {
-          this.drawer_.hide();
-        }
-        if (this.backpack_ && this.backpack_.flyout_.autoClose) {
-          this.backpack_.hide();
-        }
-
-        //Closes mutators
-        var blocks = this.getAllBlocks();
-        var numBlocks = blocks.length;
-        var temp_block = null;
-        for(var i = 0; i < numBlocks; i++) {
-          temp_block = blocks[i];
-          if(temp_block.mutator){
-            //deselect block in mutator workspace
-            if(Blockly.common.getSelected() && Blockly.common.getSelected().workspace && Blockly.common.getSelected().workspace!=Blockly.common.getMainWorkspace()){
-              Blockly.common.getSelected().unselect();
-            }
-            blocks[i].mutator.setBubbleVisible(false);
-          }
-        }
-      }
+      var metrics = Blockly.common.getMainWorkspace().getMetrics();
+      var point = Blockly.utils.browserEvents.mouseToSvg(e, this.getParentSvg(), this.getInverseScreenCTM());
+      point.x = (point.x + metrics.viewLeft) / this.scale;
+      point.y = (point.y + metrics.viewTop) / this.scale;
+      this.latestClick = point;
+      return func.call(this, e);
     };
     f.isWrapper = true;
     return f;
@@ -237,6 +212,7 @@ Blockly.WorkspaceSvg.prototype.addBackpack = function() {
         scrollbars: true,
         media: './assets/',
         disabledPatternId: this.options.disabledPatternId,
+        renderer: 'geras2_renderer',
       });
     this.backpack_.init();
   }
@@ -828,7 +804,8 @@ Blockly.WorkspaceSvg.prototype.setGridSettings = function(enabled, snap) {
       this.svgBackground_.setAttribute('style', 'fill: url(#' + this.options.gridPattern.id + ');');
     } else {
       // remove grid
-      this.svgBackground_.setAttribute('style', 'fill: white;');
+      const color = Blockly.common.getMainWorkspace().getTheme().componentStyles.workspaceBackgroundColour ?? "white";
+      this.svgBackground_.setAttribute('style', `fill: ${color};`);
     }
   }
 };

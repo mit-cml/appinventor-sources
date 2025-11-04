@@ -79,6 +79,8 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
         }
       };
 
+  protected String componentName;
+
   private final DashPathEffect dashed;
   private final DashPathEffect dotted;
   private final Chart container;
@@ -112,6 +114,11 @@ public class Trendline implements ChartComponent, DataSourceChangeListener {
     container.addDataComponent(this);
     dashed = new DashPathEffect(new float[]{10f * density, 10f * density}, 0f);
     dotted = new DashPathEffect(new float[]{2f * density, 10f * density}, 0f);
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    this.componentName = componentName;
   }
 
   /**
