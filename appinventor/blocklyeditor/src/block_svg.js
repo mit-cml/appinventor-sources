@@ -31,25 +31,6 @@ Blockly.BlockSvg.prototype.error = null;
 Blockly.BlockSvg.prototype.isBad = false;
 
 /**
- * This is to prevent any recursive render calls. It is not elegant in the
- * least, but it is pretty future proof.
- * @type {boolean}
- */
-Blockly.BlockSvg.prototype.isRendering = false;
-
-/**
- * The language-neutral id given to the collapsed input.
- * @const {string}
- */
-Blockly.BlockSvg.COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
-
-/**
- * The language-neutral id given to the collapsed field.
- * @const {string}
- */
-Blockly.BlockSvg.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';
-
-/**
  * Set this block's warning text.
  * @param {?string} text The text, or null to delete.
  */
