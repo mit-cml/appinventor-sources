@@ -1102,7 +1102,9 @@ import GoogleAPIClientForREST
   // Description: Triggered whenever an API call encounters an error. Details about the error are in `errorMessage`
   @objc func ErrorOccurred(_ errorMessage: String) {
     DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: errorMessage as AnyObject)
+      if (!EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: errorMessage as AnyObject)) {
+        self._form?.dispatchErrorOccurredEvent(self, "ErrorOccurred", ErrorMessage.ERROR_SPREADSHEET_ERROR, errorMessage)
+      }
     }
   }
   
@@ -1430,6 +1432,10 @@ import GoogleAPIClientForREST
       _service.authorizer = ServiceAccountAuthorizer(serviceAccountConfig: credentials, scopes: [
         kGTLRAuthScopeSheetsSpreadsheets,
       ])
+      guard _service.authorizer != nil else {
+        self.ErrorOccurred("Authorization failed due to bad credential.")
+        return
+      }
     } catch {
       self.ErrorOccurred("\(error)")
       return

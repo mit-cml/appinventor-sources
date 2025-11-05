@@ -708,7 +708,6 @@ public abstract class ComponentProcessor extends AbstractProcessor {
    * {@link SimpleProperty}).
    */
   protected final class Property extends Feature implements Cloneable {
-    protected final String name;
     private PropertyCategory propertyCategory;
     private TypeMirror type;
     private boolean readable;
@@ -721,7 +720,6 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         PropertyCategory category, boolean userVisible, boolean deprecated) {
       super(name, description, longDescription, "Property", userVisible, deprecated);
       this.propertyCategory = category;
-      this.name = name;
       // All other properties can be left as their defaults.
     }
 

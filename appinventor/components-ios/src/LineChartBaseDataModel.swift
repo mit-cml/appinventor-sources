@@ -41,6 +41,10 @@ class LineChartBaseDataModel: PointChartDataModel {
 
     // Insert the entry into the entries array.
     _entries.insert(entry, at: index)
+    if !highlights.isEmpty {
+      highlights.insert(argbToColor(color), at: index)
+      (self.dataset as? LineChartDataSet)?.circleColors = highlights
+    }
 
     // Assuming you're updating some dataset that needs to be replaced entirely.
     // Performing UI updates asynchronously on the main thread.

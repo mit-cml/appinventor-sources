@@ -76,6 +76,10 @@ import Foundation
    */
   func getChildren() -> [Component]
   
-  
+  /**
+   * Calls the `RelativeLayout.updateComponentPosition` on `component`
+   *
+   * - Parameter component:The component needs to update its layout
+   */
   @objc optional func setChildNeedsLayout(component: ViewComponent)
 }
