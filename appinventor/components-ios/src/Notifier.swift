@@ -491,6 +491,8 @@ open class Notifier: NonvisibleComponent {
       row.alignment = .center
       row.distribution = .fill
       row.spacing = 0
+      row.heightAnchor.constraint(equalToConstant: 120).isActive = true
+      row.widthAnchor.constraint(greaterThanOrEqualToConstant: 240).isActive = true
       row.addArrangedSubview(UIView()) // spacer
       row.addArrangedSubview(iv)
       row.addArrangedSubview(UIView()) // spacer
@@ -515,12 +517,12 @@ open class Notifier: NonvisibleComponent {
     actions.distribution = .fillEqually
     actions.spacing = 0
     
-    if cancelable {
+    //if cancelable {
       let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(afterTextInput(sender:)), shouldSize: false)
       height = max(button.intrinsicContentSize.height, height)
       cancel.frame.size.height = height
       actions.addArrangedSubview(cancel)
-    }
+    //}
 
     button.frame.size.height = height
     actions.addArrangedSubview(button)
