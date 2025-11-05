@@ -179,13 +179,19 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
   
   // MARK: Events
-  @objc open func FirstDetected(_ anchor: AnyObject) {
-    // Create anchor entity from ARKit anchor
-    _anchorEntity = anchor as! AnchorEntity
-    
+  @objc open func FirstDetected(_ imageAnchor: ARImageAnchor) {
+    // Build a RealityKit anchor that follows the ARImageAnchor
+    let rkAnchor = AnchorEntity(anchor: imageAnchor)
+    _anchorEntity = rkAnchor
+
+    // Attach any nodes that were queued before detection
+    for node in _attachedNodes {
+      rkAnchor.addChild(node._modelEntity)
+    }
+
     _isTracking = true
     _lastPushTime = Date()
-    AppearedInView()
+    self.AppearedInView()
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
     }

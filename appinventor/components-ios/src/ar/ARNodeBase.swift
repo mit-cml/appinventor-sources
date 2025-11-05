@@ -780,7 +780,7 @@ open class ARNodeBase: NSObject, ARNode {
     
     let anchor: AnchorEntity
     
-    if let followingMarker = _followingMarker {
+    if let followingMarker = _followingMarker { //only works for asset-catalog images
       anchor = AnchorEntity(.image(group: "ARResources", name: followingMarker.Name))
     } else {
       let worldTransform = _modelEntity.transformMatrix(relativeTo: nil)

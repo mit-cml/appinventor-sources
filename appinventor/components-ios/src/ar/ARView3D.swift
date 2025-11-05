@@ -1342,8 +1342,33 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           }
         }
       } else if let imageAnchor = anchor as? ARImageAnchor {
-          guard let name = imageAnchor.referenceImage.name else { return }
-          
+        print("🔁 didAdd imageAnchor \(imageAnchor)")
+  
+        guard
+          let name = imageAnchor.referenceImage.name,
+          let marker = _imageMarkers[name]
+        else { continue }
+
+        // Create or update the RealityKit anchor bound to this ARImageAnchor
+        let rkAnchor = AnchorEntity(anchor: imageAnchor)
+        marker.Anchor = rkAnchor
+
+        // Attach any nodes that were queued before detection
+        for node in marker.AttachedNodes {
+          if node._followingMarker === marker {
+              // Remove from any temporary world anchor, but preserve local transform
+              node._modelEntity.removeFromParent()
+
+              // Attach directly to marker anchor
+              marker.Anchor!.addChild(node._modelEntity)
+
+              // For consistency: let the node *reference* marker.Anchor
+              node._anchorEntity = marker.Anchor
+          }
+        }
+
+        _arView.scene.addAnchor(rkAnchor)
+        marker.FirstDetected(imageAnchor)
       } else if let geoAnchor = anchor as? ARGeoAnchor {
           handleGeoAnchorAdded(geoAnchor)
       }
@@ -1440,7 +1465,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           updatedPlane.updateFor(anchor: planeAnchor)
           DetectedPlaneUpdated(updatedPlane)
       } else if let imageAnchor = anchor as? ARImageAnchor {
-          guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
+        guard
+          let name = imageAnchor.referenceImage.name,
+          let imageMarker = _imageMarkers[name]
+        else { continue }
           if !imageAnchor.isTracked {
               imageMarker.NoLongerInView()
           } else if !imageMarker._isTracking {
@@ -1958,7 +1986,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
     
-    @objc open func TakePicture(_ name: String, _ width: Float) {
+    @objc open func TakePicture(_ name: String, _ width: Float = 15.0) {
       captureSnapshot { image in
         guard let image else {
           print("❌ Failed to make image for marker")
@@ -1973,7 +2001,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           EventDispatcher.dispatchEvent(
               of: self,
               called: "AfterPicture",
-              arguments: url as NSString, name as NSString, nsWidth
+              arguments: url as NSString, name as NSString, wParam as NSNumber
           )
         }catch {
             print("❌ Failed to save snapshot for marker: \(error)")
@@ -1981,7 +2009,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
 
-    @objc open func AfterPicture( _ ref: NSString, _ name: NSString, _ width: NSNumber) -> NSString?{
+    @objc open func AfterPicture( _ ref: NSString, _ name: NSString, _ width: Float = 15.0) -> NSString?{
         return ref
     }
     
@@ -2240,8 +2268,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 // MARK: Functions Handling Gestures
 @available(iOS 14.0, *)
 extension ARView3D: UIGestureRecognizerDelegate {
-  
-
 
   // Turn a hit entity into your ARNodeBase using _nodeToAnchorDict
   private func ownerNode(for hit: Entity) -> ARNodeBase? {
@@ -2253,10 +2279,8 @@ extension ARView3D: UIGestureRecognizerDelegate {
       }
       return nil
   }
-
   
   func findClosestNode(tapLocation: CGPoint) -> ARNodeBase? {
-
       // 1) Try RealityKit's entity hit-test first (topmost renderable under the finger)
       if let hitEntity = _arView.entity(at: tapLocation) {
         if let hitEntity = _arView.entity(at: tapLocation),
@@ -2514,9 +2538,17 @@ extension ARView3D: ARImageMarkerContainer {
       _container?.form?.dispatchErrorOccurredEvent(self, "addMarker", ErrorMessage.ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME.code, marker.Name)
       return
     }
+    
+    guard marker._referenceImage?.name != nil else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "addMarker",
+         ErrorMessage.ERROR_IMAGEMARKER_MISSING_NAME.code)
+      return
+    }
 
     _imageMarkers[marker.Name] = marker
-    setupConfiguration()
+    setupConfiguration()  //to load in detected markers
+    requestRestart()
+  
   }
 
   public func removeMarker(_ marker: ImageMarker) {
