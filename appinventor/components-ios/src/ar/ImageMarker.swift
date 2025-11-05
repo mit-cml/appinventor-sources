@@ -31,7 +31,7 @@ open class ImageMarker: NSObject, ARImageMarker {
         return anchor
       }
       
-      //_anchorEntity = createAnchor()
+      //_anchorEntity = createAnchor() CSB we don't create an anchor here b/c it is created upon detection in ARView3D.session.didAdd
       return _anchorEntity
     }
     set(a) {
