@@ -19,9 +19,8 @@ let HORIZONTAL_LAYOUT = 1
     UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,
     UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
   fileprivate final var _view: UITableView
-  fileprivate var _horizontalTableView: UICollectionView?
   fileprivate let _rootView = UIView()
-  fileprivate var _collectionView: UICollectionView?
+  fileprivate var _collectionView: UICollectionView
   fileprivate let kDefaultItemSize = CGSize(width: 160, height: 56)
     
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
@@ -43,6 +42,7 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _fontTypefaceDetail: String = ""
     
   fileprivate var _orientation = Int32(VERTICAL_LAYOUT)
+  fileprivate let _horizontalLayout = UICollectionViewFlowLayout()
   fileprivate let filter = UISearchBar()
   fileprivate var _hint = "Search list..."
   fileprivate var _dividerColor = Int32(bitPattern: Color.default.rawValue)
@@ -55,6 +55,7 @@ let HORIZONTAL_LAYOUT = 1
 
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: .zero, style: .plain)
+    _collectionView = UICollectionView(frame: .zero, collectionViewLayout: _horizontalLayout)
     super.init(parent)
 
     // Root container
@@ -79,32 +80,27 @@ let HORIZONTAL_LAYOUT = 1
     // Create horizontal collection view
     let layout = UICollectionViewFlowLayout()
    
-    layout.scrollDirection = .horizontal
-    layout.minimumLineSpacing = 8                // horizontal gap between cells
-    layout.minimumInteritemSpacing = 0           // vertical gap (keep 0)
-    layout.sectionInset = .zero
-    layout.estimatedItemSize = .zero
-    
+    _horizontalLayout.scrollDirection = .horizontal
+    _horizontalLayout.minimumLineSpacing = 8
+    _horizontalLayout.minimumInteritemSpacing = 0
+    _horizontalLayout.sectionInset = .zero
+    _horizontalLayout.estimatedItemSize = .zero
 
-    let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-    cv.backgroundColor = .clear
-    cv.translatesAutoresizingMaskIntoConstraints = false
-    cv.showsHorizontalScrollIndicator = true
-    cv.showsVerticalScrollIndicator = false
-    cv.alwaysBounceVertical = false
-    cv.alwaysBounceHorizontal = true
-    cv.dataSource = self
-    cv.delegate = self
-    cv.register(HListCell.self, forCellWithReuseIdentifier: HListCell.reuseId)
-    
-    
-    let cvHeight = cv.heightAnchor.constraint(equalToConstant: 60) // pick your row height
-    cvHeight.isActive = true
-    _collectionView = cv
+    _collectionView.backgroundColor = .clear
+    _collectionView.translatesAutoresizingMaskIntoConstraints = false
+    _collectionView.showsHorizontalScrollIndicator = true
+    _collectionView.showsVerticalScrollIndicator = false
+    _collectionView.alwaysBounceVertical = false
+    _collectionView.alwaysBounceHorizontal = true
+    _collectionView.dataSource = self
+    _collectionView.delegate = self
+    _collectionView.heightAnchor.constraint(equalToConstant: 60)
+  
+    _collectionView.register(HListCell.self, forCellWithReuseIdentifier: HListCell.reuseId)
 
     // Assemble root: keep both, toggle visibility later
     _rootView.addSubview(_view)
-    _rootView.addSubview(cv)
+    _rootView.addSubview(_collectionView)
 
     
     NSLayoutConstraint.activate([
@@ -113,14 +109,12 @@ let HORIZONTAL_LAYOUT = 1
       _view.topAnchor.constraint(equalTo: _rootView.topAnchor),
       _view.bottomAnchor.constraint(equalTo: _rootView.bottomAnchor),
 
-      cv.leadingAnchor.constraint(equalTo: _rootView.leadingAnchor),
-      cv.trailingAnchor.constraint(equalTo: _rootView.trailingAnchor),
-      cv.topAnchor.constraint(equalTo: _rootView.topAnchor),
-      cv.bottomAnchor.constraint(equalTo: _rootView.bottomAnchor),
+      _collectionView.leadingAnchor.constraint(equalTo: _rootView.leadingAnchor),
+      _collectionView.trailingAnchor.constraint(equalTo: _rootView.trailingAnchor),
+      _collectionView.topAnchor.constraint(equalTo: _rootView.topAnchor),
+      _collectionView.bottomAnchor.constraint(equalTo: _rootView.bottomAnchor),
       // Give the horizontal list a reasonable intrinsic height like the table
-      
-      cv.heightAnchor.constraint(greaterThanOrEqualToConstant: kDefaultTableCellHeight)
-
+    
     ])
 
     updateOrientationUI()
@@ -205,8 +199,8 @@ let HORIZONTAL_LAYOUT = 1
     } else {
       _view.reloadData()
     }
-    _collectionView?.reloadData()
-    _collectionView?.collectionViewLayout.invalidateLayout()
+    _collectionView.reloadData()
+    _collectionView.collectionViewLayout.invalidateLayout()
   }
 
   @objc open var FontTypeface: String {
@@ -364,19 +358,36 @@ let HORIZONTAL_LAYOUT = 1
   private func updateOrientationUI() {
     let isHorizontal = (_orientation == HORIZONTAL_LAYOUT)
 
+    // Show / hide views
     _view.isHidden = isHorizontal
-    _collectionView?.isHidden = false //!isHorizontal
+    _collectionView.isHidden = !isHorizontal
 
-    if isHorizontal, let cv = _collectionView {
-      _rootView.bringSubviewToFront(cv)        // make sure CV is above the table
+    if isHorizontal {
       _automaticHeightConstraint?.isActive = false
-      cv.reloadData()
-      //cv.collectionViewLayout.invalidateLayout()
+
+      // Ensure scroll direction stays horizontal
+      if let layout = _collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 8
+        layout.minimumInteritemSpacing = 0
+      }
+
+      _collectionView.backgroundColor =
+        (_backgroundColor == Int32(bitPattern: Color.default.rawValue))
+        ? preferredTextColor(_container?.form)
+        : argbToColor(_backgroundColor)
+
+      // ✅ Correct update order:
+      _collectionView.reloadData()
+      _collectionView.collectionViewLayout.invalidateLayout()
+
     } else {
       _automaticHeightConstraint?.isActive = true
       _view.reloadData()
     }
+
   }
+
 
   @objc open var Selection: String {
     get {
@@ -961,9 +972,9 @@ let HORIZONTAL_LAYOUT = 1
         ? argbToColor(Int32(bitPattern: kListViewDefaultSelectionColor.rawValue))
         : argbToColor(_selectionColor)
     
-    _collectionView?.backgroundColor =
+    _collectionView.backgroundColor =
         (_backgroundColor == Color.default.int32)
-        ? preferredTextColor(_container?.form)
+    ? preferredTextColor(_container?.form)
         : argbToColor(_backgroundColor)
 
     cell.titleLabel.text = mainText
