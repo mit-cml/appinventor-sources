@@ -95,7 +95,6 @@ open class BoxNode: ARNodeBase, ARBox {
       physicsBody.mode = .kinematic
       _modelEntity.physicsBody = physicsBody
     }
-    print("🎯 box Drag started at position: \(originalPosition)")
   }
   
   override open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {

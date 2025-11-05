@@ -136,12 +136,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       /// Try to acquire exclusive camera use for a client.
       /// Returns true if successful, false if someone else already owns it.
       func tryAcquire(_ who: CameraClient) -> Bool {
-          guard owner == .none else {
-              print("⚠️ Camera already owned by \(owner)")
+          guard owner == .none && owner != who else {
+              print("⚠️ Camera already owned by other \(owner)")
               return false
           }
-          owner = who
-          print("🎥 Camera acquired by \(who)")
+          guard owner == who else {
+            owner = who
+            print("🎥 Camera now acquired by \(who)")
+            return true
+          }
+        print("🎥 Camera already owned by arkit: \(who)")
           return true
       }
       
@@ -605,12 +609,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           
           
           
-        print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
+        //print("🔥 Notified nodes of collision: \(nodeA.Name) ↔ \(nodeB.Name)")
       }
         
       if entityA.name == "InvisibleFloor" || entityB.name == "InvisibleFloor" {
           let nodeEntity = entityA.name == "InvisibleFloor" ? entityB : entityA
-          print("💥 FLOOR COLLISION with \(nodeEntity.name) at \(nodeEntity.transform.translation)")
+          //print("💥 FLOOR COLLISION with \(nodeEntity.name) at \(nodeEntity.transform.translation)")
       }
     }
       
@@ -740,7 +744,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           }
       }
       relocalizationTimer = task
-      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: task)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: task)
   }
 
   private func forceFreshMapping() {
@@ -789,7 +793,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       self._arView.automaticallyConfigureSession = false
       
       let config = self.setupConfiguration()
-      if self.shouldAttemptRelocalization {
+      /*if self.shouldAttemptRelocalization {
         if let map = self.loadWorldMapFromDisk() {
           print("✅ Restoring with saved world map")
           if let cfg = config as? ARWorldTrackingConfiguration {
@@ -798,13 +802,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         } else {
           print("ℹ️ No saved map found — starting fresh")
         }
-      }
+      }*/
       
       self._arView.session.run(config, options: startOptions)
       self.armRelocalizationWatchdog(enabled: self.shouldAttemptRelocalization)
       self._sessionRunning = true
       
       print("Mesh mode:", (self._arView.session.configuration as? ARWorldTrackingConfiguration)?.sceneReconstruction as Any)
+      print("NOT loading a stored world map right now:")
       print("SU options:", self._arView.environment.sceneUnderstanding.options)
       print("autoConfig:", self._arView.automaticallyConfigureSession)
 
@@ -1238,7 +1243,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let bottomY = currentY - halfHeight
       
       if bottomY < newGroundLevel + 0.005 {
-        let correctedY = newGroundLevel + halfHeight + 0.02
+        let correctedY = newGroundLevel + halfHeight + ARView3D.VERTICAL_OFFSET
           node._modelEntity.transform.translation.y = correctedY
           print("⬆️ LIFTED \(node.Name) from \(currentY) to \(correctedY)")
       }
