@@ -355,38 +355,38 @@ let HORIZONTAL_LAYOUT = 1
     }
   }
     
-  private func updateOrientationUI() {
-    let isHorizontal = (_orientation == HORIZONTAL_LAYOUT)
+    private func updateOrientationUI() {
+      let isHorizontal = (_orientation == HORIZONTAL_LAYOUT)
 
-    // Show / hide views
-    _view.isHidden = isHorizontal
-    _collectionView.isHidden = !isHorizontal
+      // Show / hide views
+      _view.isHidden = isHorizontal
+      _collectionView.isHidden = !isHorizontal
 
-    if isHorizontal {
-      _automaticHeightConstraint?.isActive = false
+      if isHorizontal {
+        _automaticHeightConstraint?.isActive = false
 
-      // Ensure scroll direction stays horizontal
-      if let layout = _collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 8
-        layout.minimumInteritemSpacing = 0
+        // Ensure scroll direction stays horizontal
+        if let layout = _collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = 8
+            layout.minimumInteritemSpacing = 0
+        }
+
+        _collectionView.backgroundColor =
+            (_backgroundColor == Int32(bitPattern: Color.default.rawValue))
+            ? preferredTextColor(_container?.form)
+            : argbToColor(_backgroundColor)
+
+        // ✅ Correct update order:
+        _collectionView.reloadData()
+        _collectionView.collectionViewLayout.invalidateLayout()
+
+      } else {
+        _automaticHeightConstraint?.isActive = true
+        _view.reloadData()
       }
 
-      _collectionView.backgroundColor =
-        (_backgroundColor == Int32(bitPattern: Color.default.rawValue))
-        ? preferredTextColor(_container?.form)
-        : argbToColor(_backgroundColor)
-
-      // ✅ Correct update order:
-      _collectionView.reloadData()
-      _collectionView.collectionViewLayout.invalidateLayout()
-
-    } else {
-      _automaticHeightConstraint?.isActive = true
-      _view.reloadData()
     }
-
-  }
 
 
   @objc open var Selection: String {
