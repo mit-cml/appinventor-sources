@@ -355,8 +355,8 @@ let HORIZONTAL_LAYOUT = 1
     }
   }
     
-  private func updateOrientationUI() {
-    let isHorizontal = (_orientation == HORIZONTAL_LAYOUT)
+    private func updateOrientationUI() {
+      let isHorizontal = (_orientation == HORIZONTAL_LAYOUT)
 
     // Show / hide views
     _view.isHidden = isHorizontal
