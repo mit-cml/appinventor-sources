@@ -42,7 +42,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _elementCornerRadius = Int32(0)
   fileprivate var _elementMarginsWidth = Int32(0)
 
-
+  let COMPANION_CORRECTION = 5
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: CGRect.zero, style: .plain)
     super.init(parent)
@@ -191,7 +191,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       }
     }
   }
-  
 
   // This property is not fully implemented in iOS
   @objc open var DividerThickness: Int32 {
@@ -543,8 +542,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
 
-
-    
     if indexPath.row < _elements.count {
       cell.textLabel?.text = _elements[indexPath.row]
       cell.textLabel?.numberOfLines = 0
@@ -677,8 +674,6 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       cell.textLabel?.lineBreakMode = .byWordWrapping
     }
     
-
-
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
 
@@ -687,7 +682,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
 
     if _elementCornerRadius > 0 {
-      cell.layer.cornerRadius = CGFloat(_elementCornerRadius)
+      cell.layer.cornerRadius = CGFloat(_elementCornerRadius) / CGFloat(COMPANION_CORRECTION)
       cell.layer.masksToBounds = true
     }
     
