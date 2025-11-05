@@ -2027,15 +2027,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return url.absoluteString
     }
     
-    @objc open func ImageForMarkerCreated(_ url: String, _ name: String, _ widthCm: Float = 15.0) -> ImageMarker? {
-      guard let container = self as? ARImageMarkerContainer else {
-        print("⚠️ self is not ARImageMarkerContainer")
-        return nil
-      }
-      let marker = ImageMarker(container)
+    @objc open func ImageForMarkerCreated(_ url: String, _ name: String, _ widthCm: Float = 15.0) -> ImageMarker {
+      //marker.Name = "RoomMarker" + UUID().uuidString
+      //marker.Image = imagePath
+      let marker: ImageMarker = ImageMarker(self)
       marker.Name = name
       marker.Image = url
       marker.PhysicalWidthInCentimeters = widthCm // defaulting atm
+      print("returning IM \(marker.Name) \(url) \(widthCm)")
       return marker
     }
     
