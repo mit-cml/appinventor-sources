@@ -289,6 +289,8 @@ public class LinearView: UIView {
     _innerHeadZero.isActive = false
     _innerTailZero.isActive = false
 
+    widthConstraints.removeAll()
+    heightConstraints.removeAll()
     updatePositioningConstraints()
     updatePriorities()
   }
