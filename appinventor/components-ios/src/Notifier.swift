@@ -457,6 +457,67 @@ open class Notifier: NonvisibleComponent {
     }
   }
 
+  private func showTextInputAndImageDialog(message: String, title: String, cancelable: Bool, maskInput: Bool = false, imageURL: String) {
+    guard _activeAlert == nil else { return }
+
+    let newAlert = CustomAlertView(title: title, message: message)
+    newAlert.alertType = .Text
+    _activeAlerts.append(newAlert)
+
+
+    if let iURL = URL(string: imageURL),
+       iURL.isFileURL,
+       let img = UIImage(contentsOfFile: iURL.path) {
+      let iv = UIImageView(image: img)
+      iv.contentMode = .scaleAspectFit
+      iv.translatesAutoresizingMaskIntoConstraints = false
+      let row = UIStackView()
+      row.axis = .horizontal
+      row.alignment = .center
+      row.distribution = .fill
+      row.spacing = 0
+      row.heightAnchor.constraint(equalToConstant: 120).isActive = true
+      row.widthAnchor.constraint(greaterThanOrEqualToConstant: 240).isActive = true
+      row.addArrangedSubview(UIView()) // spacer
+      row.addArrangedSubview(iv)
+      row.addArrangedSubview(UIView()) // spacer
+      NSLayoutConstraint.activate([
+        iv.widthAnchor.constraint(equalToConstant: 160),
+        iv.heightAnchor.constraint(equalToConstant: 120)
+      ])
+      _activeAlert?.stack.addArrangedSubview(row)
+    }
+    let text = UITextField(frame: .zero)
+    text.borderStyle = .bezel
+    text.isSecureTextEntry = maskInput
+    _activeAlert?.stack.addArrangedSubview(text)
+
+    let button = makeButton("OK", with: text, action: #selector(afterTextInput(sender:)), shouldSize: false)
+    var height = button.intrinsicContentSize.height
+    button.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
+
+    let actions = UIStackView()
+    actions.axis = .horizontal
+    actions.alignment = .center
+    actions.distribution = .fillEqually
+    actions.spacing = 0
+    
+    //if cancelable {
+      let cancel = makeButton("Cancel", with: "Cancel" as NSString, action: #selector(afterTextInput(sender:)), shouldSize: false)
+      height = max(button.intrinsicContentSize.height, height)
+      cancel.frame.size.height = height
+      actions.addArrangedSubview(cancel)
+    //}
+
+    button.frame.size.height = height
+    actions.addArrangedSubview(button)
+
+    _activeAlert?.stack.addArrangedSubview(actions)
+    _activeAlert?.show(animated: true) { completed in
+      text.becomeFirstResponder()
+    }
+  }
+
   fileprivate func makeBorder(for parent: UIView, vertical: Bool) {
     let border = UIView()
     border.layer.borderWidth = 1
