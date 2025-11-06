@@ -653,6 +653,19 @@ body {
   padding-right: 20px;
   text-shadow: none;
 }
+
+.ya-Toolbar .ya-DonateButtonNameLabel {
+  font-family: "Poppins", Helvetica, sans-serif;
+  color: v-black;
+  font-weight: 500;
+  font-size: 1.4em;
+  padding-top: 2px;
+  padding-right: 20px;
+  text-shadow: none;
+  border-left: 1px solid #000000;
+  margin-left: 8px;
+}
+
 .ode-TextButton,
 .gwt-Button {
   /* all: unset; */

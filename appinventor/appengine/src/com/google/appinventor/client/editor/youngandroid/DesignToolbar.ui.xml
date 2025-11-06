@@ -15,7 +15,14 @@
 
   <ai:Toolbar>
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName" />
-
+    <!-- Donate Button items -->
+    <g:Label ui:field="donateButtonNameLabel"
+             styleName="ya-DonateButtonNameLabel"
+             text="Donate to App Inventor"  />
+    <ai:ToolbarItem name="Donate" caption="Donate Now"
+                    tooltip="Please Donate to App Inventor" align="left" ui:field="donateButton">
+      <ya:DonateAction />
+    </ai:ToolbarItem>
     <!-- Left button items -->
     <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}"
                     visible="false" align="center">

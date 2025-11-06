@@ -18,6 +18,17 @@
       <ca:SwitchToProjectAction/>
     </ai:ToolbarItem>
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName"/>
+    <!-- Donate Button items -->
+    <g:Label ui:field="donateButtonNameLabel"
+             styleName="ya-DonateButtonNameLabel"
+             text="Donate to App Inventor" />
+    <ai:ToolbarItem name="Donate" caption="Donate Now"
+                    ui:field="donateButton"
+                    styleName="ode-ProjectListButton"
+                    tooltip="Please Donate to App Inventor" align="left">
+      <ya:DonateAction />
+    </ai:ToolbarItem>
+    <!-- End Donate Button items -->
 
     <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false"/>
     <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
