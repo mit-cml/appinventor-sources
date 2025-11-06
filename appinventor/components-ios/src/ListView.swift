@@ -1053,13 +1053,13 @@ let HORIZONTAL_LAYOUT = 1
 
     cell.titleLabel.text = mainText
     cell.detailLabel.text = detailText
-    cell.titleLabel.font = UIFont.systemFont(ofSize: CGFloat(_textSize))
+    cell.titleLabel.font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
     cell.detailLabel.font = UIFont.systemFont(ofSize: CGFloat(_fontSizeDetail))
 
     // Typeface mapping similar to table
-    if _fontTypeface == "1" { cell.titleLabel.font = UIFont(name: "Helvetica", size: CGFloat(_textSize)) ?? cell.titleLabel.font }
-    else if _fontTypeface == "2" { cell.titleLabel.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize)) ?? cell.titleLabel.font }
-    else if _fontTypeface == "3" { cell.titleLabel.font = UIFont(name: "Courier", size: CGFloat(_textSize)) ?? cell.titleLabel.font }
+    if _fontTypeface == "1" { cell.titleLabel.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize)) ?? cell.titleLabel.font }
+    else if _fontTypeface == "2" { cell.titleLabel.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSize)) ?? cell.titleLabel.font }
+    else if _fontTypeface == "3" { cell.titleLabel.font = UIFont(name: "Courier", size: CGFloat(_fontSize)) ?? cell.titleLabel.font }
 
     if _fontTypefaceDetail == "1" { cell.detailLabel.font = UIFont(name: "Helvetica", size: CGFloat(_fontSizeDetail)) ?? cell.detailLabel.font }
     else if _fontTypefaceDetail == "2" { cell.detailLabel.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSizeDetail)) ?? cell.detailLabel.font }
