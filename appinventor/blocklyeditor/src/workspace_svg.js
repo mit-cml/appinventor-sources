@@ -286,57 +286,6 @@ Blockly.WorkspaceSvg.prototype.isDrawerShowing = function() {
 };
 
 /**
- * Render the workspace.
- * @param {Array.<Blockly.BlockSvg>=} blocks
- */
-// Override Blockly's render with optimized version from lyn
-/*
-Blockly.WorkspaceSvg.prototype.render = function(blocks) {
-  this.rendered = true;
-  this.bulkRendering = true;
-  Blockly.utils.dom.startTextWidthCache();
-  try {
-    if (Blockly.Instrument.isOn) {
-      var start = new Date().getTime();
-    }
-    // [lyn, 04/08/14] Get both top and all blocks for stats
-    var topBlocks = blocks || this.getTopBlocks(/* ordered * / false);
-    var allBlocks = this.getAllBlocks();
-    if (Blockly.Instrument.useRenderDown) {
-      for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
-        Blockly.Instrument.timer(
-          function () {
-            topBlock.render(false);
-          },
-          function (result, timeDiffInner) {
-            Blockly.Instrument.stats.renderDownTime += timeDiffInner;
-          }
-        );
-      }
-    } else {
-      for (var x = 0, block; block = allBlocks[x]; x++) {
-        if (!block.getChildren().length) {
-          block.render();
-        }
-      }
-    }
-    if (Blockly.Instrument.isOn) {
-      var stop = new Date().getTime();
-      var timeDiffOuter = stop - start;
-      Blockly.Instrument.stats.blockCount = allBlocks.length;
-      Blockly.Instrument.stats.topBlockCount = topBlocks.length;
-      Blockly.Instrument.stats.workspaceRenderCalls++;
-      Blockly.Instrument.stats.workspaceRenderTime += timeDiffOuter;
-    }
-  } finally {
-    this.bulkRendering = false;
-    this.requestConnectionDBUpdate();
-    Blockly.utils.dom.stopTextWidthCache();
-  }
-};
-*/
-
-/**
  * Obtain the {@link Blockly.ComponentDatabase} associated with the workspace.
  *
  * @returns {!Blockly.ComponentDatabase}
@@ -985,46 +934,6 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
     this.checkAllBlocks = true;
   }
 };
-
-/**
- * Sort the workspace's connection database. This only needs to be called if the bulkRendering
- * property of the workspace is set to true to false as any connections that Blockly attempted to
- * update during that time may be incorrectly ordered in the database.
- */
-/*
-Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
-  goog.array.forEach(this.connectionDBList, function(connectionDB) {
-    connectionDB.sort(function(a, b) {
-      return a.y_ - b.y_;
-    });
-    // If we are rerendering due to a new error, we only redraw the error block, which means that
-    // we can't clear the database, otherwise all other connections disappear. Instead, we add
-    // the moved connections anyway, and at this point we can remove the duplicate entries in the
-    // database. We remove after sorting so that the operation is O(n) rather than O(n^2). This
-    // assumption may break in the future if Blockly decides on a different mechanism for indexing
-    // connections.
-    connectionDB.removeDupes();
-  });
-};
- */
-
-/**
- * Request an update to the connection database's order due to movement of a block while a bulk
- * rendering operation was in progress.
- */
-/*
-Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
-  if (!this.pendingConnectionDBUpdate) {
-    this.pendingConnectionDBUpdate = setTimeout(function() {
-      try {
-        this.sortConnectionDB();
-      } finally {
-        this.pendingConnectionDBUpdate = null;
-      }
-    }.bind(this));
-  }
-};
-*/
 
 /*
 * Refresh the state of the backpack. Called from BlocklyPanel.java
