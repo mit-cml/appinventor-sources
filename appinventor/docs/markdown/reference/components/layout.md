@@ -8,11 +8,69 @@ title: Layout
 
 Table of Contents:
 
+* [AbsoluteArrangement](#AbsoluteArrangement)
 * [HorizontalArrangement](#HorizontalArrangement)
 * [HorizontalScrollArrangement](#HorizontalScrollArrangement)
 * [TableArrangement](#TableArrangement)
 * [VerticalArrangement](#VerticalArrangement)
 * [VerticalScrollArrangement](#VerticalScrollArrangement)
+
+## AbsoluteArrangement  {#AbsoluteArrangement}
+
+Container for components that arranges them absolutely.
+
+
+
+### Properties  {#AbsoluteArrangement-Properties}
+
+{:.properties}
+
+{:id="AbsoluteArrangement.BackgroundColor" .color} *BackgroundColor*
+: Specifies the button's background color as an alpha-red-green-blue integer.
+ If the parameter is [`Component`'s `COLOR`](#Component.COLOR), the original beveling is
+ restored. If an Image has been set, the color change will not be visible
+ until the Image is removed.
+
+{:id="AbsoluteArrangement.Height" .number .bo} *Height*
+: Specifies the `AbsoluteArrangement`'s vertical height, measured in pixels.
+
+{:id="AbsoluteArrangement.HeightPercent" .number .wo .bo} *HeightPercent*
+: Specifies the `AbsoluteArrangement`'s vertical height as a percentage
+ of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="AbsoluteArrangement.Image" .text} *Image*
+: Specifies the path of the button's image.
+
+{:id="AbsoluteArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="AbsoluteArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="AbsoluteArrangement.Visible" .boolean} *Visible*
+: Specifies whether the `AbsoluteArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
+ if the `AbsoluteArrangement` is showing and `false`{:.logic.block} if hidden.
+
+{:id="AbsoluteArrangement.Width" .number .bo} *Width*
+: Specifies the horizontal width of the `AbsoluteArrangement`, measured in pixels.
+
+{:id="AbsoluteArrangement.WidthPercent" .number .wo .bo} *WidthPercent*
+: Specifies the horizontal width of the `AbsoluteArrangement` as a percentage
+ of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
+
+### Events  {#AbsoluteArrangement-Events}
+
+{:.events}
+None
+
+
+### Methods  {#AbsoluteArrangement-Methods}
+
+{:.methods}
+None
+
 
 ## HorizontalArrangement  {#HorizontalArrangement}
 
@@ -76,6 +134,14 @@ Table of Contents:
 {:id="HorizontalArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `HorizontalArrangement`.
 
+{:id="HorizontalArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="HorizontalArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="HorizontalArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `HorizontalArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `HorizontalArrangement` is showing and `false`{:.logic.block} if hidden.
@@ -137,6 +203,14 @@ A formatting element in which to place components that should be displayed from 
 
 {:id="HorizontalScrollArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `HorizontalScrollArrangement`.
+
+{:id="HorizontalScrollArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="HorizontalScrollArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="HorizontalScrollArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `HorizontalScrollArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -200,8 +274,16 @@ Use a table arrangement component to display a group of components in a tabular 
 : Specifies the `TableArrangement`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="TableArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="TableArrangement.Rows" .number .do} *Rows*
 : Determines the number of rows in the table.
+
+{:id="TableArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="TableArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `TableArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -288,6 +370,14 @@ None
 {:id="VerticalArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `VerticalArrangement`.
 
+{:id="VerticalArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="VerticalArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="VerticalArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `VerticalArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
  if the `VerticalArrangement` is showing and `false`{:.logic.block} if hidden.
@@ -349,6 +439,14 @@ A formatting element in which to place components that should be displayed one b
 
 {:id="VerticalScrollArrangement.Image" .text} *Image*
 : Specifies the path of the background image of the `VerticalScrollArrangement`.
+
+{:id="VerticalScrollArrangement.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
+{:id="VerticalScrollArrangement.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="VerticalScrollArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `VerticalScrollArrangement` should be visible on the screen.  Value is `true`{:.logic.block}

@@ -406,6 +406,13 @@ static SCMInterpreter *_defaultInterpreter = nil;
   gc_mark(_pic, value);
 }
 
+- (void)markObject:(NSObject *)object {
+  pic_value value = yail_get_native_instance(_pic, object);
+  if (!pic_nil_p(_pic, value)) {
+    [self mark:value];
+  }
+}
+
 - (void)runGC {
   pic_gc(_pic);
 }

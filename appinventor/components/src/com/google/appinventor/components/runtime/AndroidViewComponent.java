@@ -1,10 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
+
+import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -15,12 +17,10 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import android.view.View;
-
 /**
  * Underlying base class for all components with views; not accessible to Simple programmers.
- * <p>
- * Provides implementations for standard properties and events.
+ *
+ * <p>Provides implementations for standard properties and events.
  *
  */
 @SimpleObject
@@ -35,6 +35,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
 
   private int column = ComponentConstants.DEFAULT_ROW_COLUMN;
   private int row = ComponentConstants.DEFAULT_ROW_COLUMN;
+
+  private int left = ComponentConstants.DEFAULT_X_Y;
+  private int top = ComponentConstants.DEFAULT_X_Y;
 
   /**
    * Creates a new AndroidViewComponent.
@@ -251,6 +254,30 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
+   * Specifies the position of the Left edge of the component relative to an
+   * AbsoluteArrangement.
+   *
+   * @return the left edge of the view, in pixels
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public int Left() {
+    return left;
+  }
+
+  /**
+   * Specifies the position of the Left edge of the component relative to an
+   * AbsoluteArrangement.
+   *
+   * @param x x property used by the absolute arrangement
+   */
+  @SimpleProperty
+  public void Left(int x) {
+    this.left = x;
+    container.setChildNeedsLayout(this);
+  }
+
+  /**
    * Row property getter method.
    *
    * @return  row property used by the table arrangement
@@ -268,6 +295,30 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @SimpleProperty(userVisible = false)
   public void Row(int row) {
     this.row = row;
+  }
+
+  /**
+   * Specifies the position of the Top edge of the component relative to an
+   * AbsoluteArrangement.
+   *
+   * @return the top edge of the view, in pixels
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public int Top() {
+    return top;
+  }
+
+  /**
+   * Specifies the position of the Top edge of the component relative to an
+   * AbsoluteArrangement.
+   *
+   * @param y y property used by the absolute arrangement
+   */
+  @SimpleProperty
+  public void Top(int y) {
+    this.top = y;
+    container.setChildNeedsLayout(this);
   }
 
   // Component implementation

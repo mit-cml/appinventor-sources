@@ -59,6 +59,7 @@ import Foundation
   case ERROR_WEB_XML_TEXT_DECODE_FAILED = 1115
   case ERROR_WEB_REQUEST_TIMED_OUT = 1117
   case ERROR_WEB_JSON_TEXT_ENCODE_FAILED = 1118
+  case ERROR_WEB_UNKNOWN_ERROR = 1119
 
   // Camcorder Errors
   case ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201
@@ -136,6 +137,9 @@ import Foundation
 
   // ImageBot Errors
   case ERROR_IMAGEBOT_ERROR = 4300
+
+  // Spreadsheet Errors
+  case ERROR_SPREADSHEET_ERROR = 4401
 
   // ListView Errors
   case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
@@ -262,6 +266,8 @@ import Foundation
       return "Took longer than timeout period to receive data from the URL: %s"
     case .ERROR_WEB_JSON_TEXT_ENCODE_FAILED:
       return "Unable to encode as JSON the object %@"
+    case .ERROR_WEB_UNKNOWN_ERROR:
+      return "Unknown Web error: %s"
 
     // Camcorder Errors
     case .ERROR_CAMCORDER_NO_CLIP_RETURNED:
@@ -320,7 +326,7 @@ import Foundation
     case .ERROR_INVALID_ANCHOR_HORIZONTAL:
       return "Invalid value %d given for AnchorHorizontal. Valid settings are 1, 2, or 3."
     case .ERROR_INVALID_MAP_TYPE:
-      return "The MapType must be 1, 2, or 3"
+      return "The MapType must be 1, 2, 3, or 4"
 
     // File Errors
     case .ERROR_CANNOT_FIND_FILE:
@@ -384,11 +390,14 @@ import Foundation
 
     // ChatBot Errors
     case .ERROR_CHATBOT_ERROR:
-      return "Error from the ChatBot code: %d %@"
+      return "Error from the ChatBot code: %d %s"
 
     // ImageBot Errors
     case .ERROR_IMAGEBOT_ERROR:
-      return "Error from the ImageBot code: %d %@"
+      return "Error from the ImageBot code: %d %s"
+
+    case .ERROR_SPREADSHEET_ERROR:
+      return "Error in Spreadsheet: %s"
 
     // ListView Errors
     case .ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS:

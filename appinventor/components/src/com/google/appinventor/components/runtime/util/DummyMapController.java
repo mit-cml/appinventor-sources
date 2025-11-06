@@ -65,6 +65,14 @@ class DummyMapController implements MapController {
     throw new UnsupportedOperationException();
   }
 
+  public void setCustomUrl(String url) {
+    throw new UnsupportedOperationException();
+  }
+
+  public String getCustomUrl() {
+    throw new UnsupportedOperationException();
+  }
+
   public void setMapTypeAbstract(MapType type) {
     throw new UnsupportedOperationException();
   }

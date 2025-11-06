@@ -6,10 +6,10 @@
 
 package com.google.appinventor.client.editor.simple.components.utils;
 
+import com.google.appinventor.client.editor.designer.DesignerEditor;
+
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
-
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 
@@ -19,6 +19,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBestFitModelPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidBooleanPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLineTypeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartPointShapeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartTypeChoicePropertyEditor;
@@ -45,6 +46,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewLayoutChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapScaleUnitsPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapTypePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidMapCustomUrlPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidNavigationMethodChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidRecyclerViewOrientationPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;
@@ -129,7 +131,9 @@ public class PropertiesUtil {
    * @param propertyDefinitions
    */
   public static void populateProperties(MockComponent mockComponent, List<ComponentDatabaseInterface.PropertyDefinition> propertyDefinitions,
-                                        YaFormEditor editor) {
+                                        DesignerEditor editor) {
+
+    String componentType = mockComponent.getType();
     // Configure properties
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefinitions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
@@ -209,7 +213,7 @@ public class PropertiesUtil {
   /*
    * Creates a new property editor.
    */
-  public static PropertyEditor createPropertyEditor(String editorType, String defaultValue, YaFormEditor editor, String[] editorArgs) {
+  public static PropertyEditor createPropertyEditor(String editorType, String defaultValue, DesignerEditor editor, String[] editorArgs) {
     if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT)) {
       return new YoungAndroidHorizontalAlignmentChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT)) {
@@ -266,6 +270,8 @@ public class PropertiesUtil {
       return new YoungAndroidFloatRangePropertyEditor(-180, 180);
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_TYPE)) {
       return new YoungAndroidMapTypePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_CUSTOMURL)) {
+      return new YoungAndroidMapCustomUrlPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_UNIT_SYSTEM)) {
       return new YoungAndroidMapScaleUnitsPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MAP_ZOOM)) {
@@ -340,6 +346,8 @@ public class PropertiesUtil {
       return new YoungAndroidChartLineTypeChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_RECYCLERVIEW_ORIENTATION)) {
       return new YoungAndroidRecyclerViewOrientationPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHART_VALUE_TYPE)) {
+      return new YoungAndroidChartLabelValueTypeChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_PROVIDER)) {
       return new YoungAndroidChatbotProviderPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_MODEL)) {

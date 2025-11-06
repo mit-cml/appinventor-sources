@@ -70,6 +70,29 @@ public class RetValManager {
     }
   }
 
+  public static void appendLogValue(String item, String blockid, String status, String level) {
+    synchronized(semaphore) {
+      JSONObject retval = new JSONObject();
+      try {
+        retval.put("status", status);
+        retval.put("type", "log");
+        retval.put("item", item);
+        retval.put("blockid", blockid);
+        retval.put("level", level);
+      } catch (JSONException e) {
+        Log.e(LOG_TAG, "Error building retval", e);
+        return;
+      }
+      boolean sendNotify = currentArray.isEmpty();
+      currentArray.add(retval);
+      if (PhoneStatus.getUseWebRTC()) {
+        webRTCsendCurrent();
+      } else if (sendNotify) {
+        semaphore.notifyAll();
+      }
+    }
+  }
+
   public static void sendError(String error) {
     synchronized (semaphore) {
       JSONObject retval = new JSONObject();

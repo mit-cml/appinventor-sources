@@ -14,7 +14,8 @@ import java.util.Map;
 public enum MapType implements OptionList<Integer> {
   Road(1),
   Aerial(2),
-  Terrain(3);
+  Terrain(3),
+  Custom(4);
 
   private final Integer value;
 

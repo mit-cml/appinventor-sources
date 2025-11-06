@@ -7,9 +7,13 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.utils.Color;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.dom.client.CanvasElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.widgetideas.graphics.client.Color;
-import com.google.gwt.widgetideas.graphics.client.GWTCanvas;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Mock Ball component.
@@ -31,7 +35,7 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
 
   // Widget for showing the mock ball
   private final SimplePanel ballWidget;
-  private final GWTCanvas canvas;
+  private final CanvasElement canvas;
 
   private int radius = DEFAULT_RADIUS;
   private int diameter = 2 * radius;
@@ -54,23 +58,43 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
     ballWidget.setStylePrimaryName("ode-SimpleMockComponent");
 
     // Create an appropriately sized ball
-    canvas = new GWTCanvas(diameter, diameter);
-    canvas.setPixelSize(diameter, diameter);
-    canvas.setBackgroundColor(GWTCanvas.TRANSPARENT);
-    fillCircle();
-    ballWidget.setWidget(canvas);
+    canvas = Document.get().createCanvasElement();
+    canvas.setWidth(diameter);
+    canvas.setHeight(diameter);
+    canvas.getStyle().setWidth(diameter, Style.Unit.PX);
+    canvas.getStyle().setHeight(diameter, Style.Unit.PX);
+    fillCircle(canvas);
+    ballWidget.getElement().appendChild(canvas);
 
     initComponent(ballWidget);
   }
 
+  /**
+   * Draws the ball onto the drag widget. This is necessary because cloning a CanvasElement
+   * does not copy the drawn contents. Otherwise, the drag widget would be a canvas.
+   *
+   * @param dragWidget cloned widget used for dragging
+   */
+  @Override
+  protected void onDragWidgetCreated(Widget dragWidget) {
+    super.onDragWidgetCreated(dragWidget);
+    CanvasElement el = (CanvasElement) dragWidget.getElement().getFirstChildElement();
+    el.setWidth(diameter);
+    el.setHeight(diameter);
+    el.getStyle().setWidth(diameter, Style.Unit.PX);
+    el.getStyle().setHeight(diameter, Style.Unit.PX);
+    fillCircle(el);
+  }
+
   // Drawing
 
-  private void fillCircle() {
-    canvas.clear();
-    canvas.setFillStyle(color);
-    canvas.beginPath();
-    canvas.arc(radius, radius, radius, 0, Math.PI * 2, true);
-    canvas.fill();
+  private void fillCircle(CanvasElement el) {
+    final Context2d context = el.getContext2d();
+    context.clearRect(0, 0, diameter, diameter);
+    context.setFillStyle(color.toString());
+    context.beginPath();
+    context.arc(radius, radius, radius, 0, Math.PI * 2, true);
+    context.fill();
   }
 
   // Handling property changes
@@ -79,9 +103,11 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
     try {
       radius = Integer.parseInt(text);
       diameter = 2 * radius;
-      canvas.setCoordSize(diameter, diameter);
-      canvas.setPixelSize(diameter, diameter);
-      fillCircle();
+      canvas.setWidth(diameter);
+      canvas.setHeight(diameter);
+      canvas.getStyle().setWidth(diameter, Style.Unit.PX);
+      canvas.getStyle().setHeight(diameter, Style.Unit.PX);
+      fillCircle(canvas);
       if (originAtCenter) {
         // Force the position of the ballWidget to be adjusted relative
         // to the parent canvas.
@@ -97,7 +123,7 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       text = "&HFF000000";  // black
     }
     color = MockComponentsUtil.getColor(text);
-    fillCircle();
+    fillCircle(canvas);
   }
 
   private void refreshCanvas() {

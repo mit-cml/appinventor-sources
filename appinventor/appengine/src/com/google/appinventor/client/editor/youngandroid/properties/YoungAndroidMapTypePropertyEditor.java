@@ -19,7 +19,8 @@ public class YoungAndroidMapTypePropertyEditor extends ChoicePropertyEditor {
   private static final Choice[] mapTypes = new Choice[] {
     new Choice(MESSAGES.mapTypeRoads(), "1"),
     new Choice(MESSAGES.mapTypeAerial(), "2"),
-    new Choice(MESSAGES.mapTypeTerrain(), "3")
+    new Choice(MESSAGES.mapTypeTerrain(), "3"),
+    new Choice(MESSAGES.mapTypeCustom(), "4")
   };
 
   public YoungAndroidMapTypePropertyEditor() {

@@ -213,6 +213,15 @@ public struct ChatBot_request {
   /// Clears the value of `inputimage`. Subsequent reads from it will return its default value.
   public mutating func clearInputimage() {self._inputimage = nil}
 
+  public var doimage: Bool {
+    get {return _doimage ?? false}
+    set {_doimage = newValue}
+  }
+  /// Returns true if `doimage` has been explicitly set.
+  public var hasDoimage: Bool {return self._doimage != nil}
+  /// Clears the value of `doimage`. Subsequent reads from it will return its default value.
+  public mutating func clearDoimage() {self._doimage = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -226,6 +235,7 @@ public struct ChatBot_request {
   fileprivate var _provider: String? = nil
   fileprivate var _model: String? = nil
   fileprivate var _inputimage: Data? = nil
+  fileprivate var _doimage: Bool? = nil
 }
 
 public struct ChatBot_response {
@@ -270,6 +280,15 @@ public struct ChatBot_response {
   /// Clears the value of `answer`. Subsequent reads from it will return its default value.
   public mutating func clearAnswer() {self._answer = nil}
 
+  public var outputimage: Data {
+    get {return _outputimage ?? Data()}
+    set {_outputimage = newValue}
+  }
+  /// Returns true if `outputimage` has been explicitly set.
+  public var hasOutputimage: Bool {return self._outputimage != nil}
+  /// Clears the value of `outputimage`. Subsequent reads from it will return its default value.
+  public mutating func clearOutputimage() {self._outputimage = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -278,6 +297,7 @@ public struct ChatBot_response {
   fileprivate var _status: UInt64? = nil
   fileprivate var _uuid: String? = nil
   fileprivate var _answer: String? = nil
+  fileprivate var _outputimage: Data? = nil
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
@@ -411,6 +431,7 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     7: .same(proto: "provider"),
     8: .same(proto: "model"),
     9: .same(proto: "inputimage"),
+    20: .same(proto: "doimage"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -428,6 +449,7 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
       case 7: try { try decoder.decodeSingularStringField(value: &self._provider) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self._model) }()
       case 9: try { try decoder.decodeSingularBytesField(value: &self._inputimage) }()
+      case 20: try { try decoder.decodeSingularBoolField(value: &self._doimage) }()
       default: break
       }
     }
@@ -465,6 +487,9 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     try { if let v = self._inputimage {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 9)
     } }()
+    try { if let v = self._doimage {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 20)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -478,6 +503,7 @@ extension ChatBot_request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     if lhs._provider != rhs._provider {return false}
     if lhs._model != rhs._model {return false}
     if lhs._inputimage != rhs._inputimage {return false}
+    if lhs._doimage != rhs._doimage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -490,6 +516,7 @@ extension ChatBot_response: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     2: .same(proto: "status"),
     3: .same(proto: "uuid"),
     4: .same(proto: "answer"),
+    5: .same(proto: "outputimage"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -502,6 +529,7 @@ extension ChatBot_response: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._status) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._uuid) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._answer) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._outputimage) }()
       default: break
       }
     }
@@ -524,6 +552,9 @@ extension ChatBot_response: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     try { if let v = self._answer {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     } }()
+    try { if let v = self._outputimage {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -532,6 +563,7 @@ extension ChatBot_response: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     if lhs._status != rhs._status {return false}
     if lhs._uuid != rhs._uuid {return false}
     if lhs._answer != rhs._answer {return false}
+    if lhs._outputimage != rhs._outputimage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

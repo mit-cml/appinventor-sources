@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2021 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -346,6 +346,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
     throw new UnsupportedOperationException("Map.setChildHeight called");
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    throw new UnsupportedOperationException("Map.setChildNeedsLayout called");
   }
 
   public void removeFeature(MapFactory.MapFeature feature) {

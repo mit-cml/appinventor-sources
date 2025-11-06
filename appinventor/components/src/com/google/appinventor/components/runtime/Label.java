@@ -6,6 +6,10 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -16,11 +20,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
-
-import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 /**
  * Labels are components used to show text.
@@ -51,7 +50,7 @@ public final class Label extends AndroidViewComponent implements AccessibleCompo
 
   private final TextView view;
 
-  private final LinearLayout.LayoutParams linearLayoutParams;
+  private final ViewGroup.MarginLayoutParams marginLayoutParams;
 
   // Backing for text alignment
   private int textAlignment;
@@ -102,12 +101,12 @@ public final class Label extends AndroidViewComponent implements AccessibleCompo
     Object lp = view.getLayoutParams();
     // The following instanceof check will fail if we have not previously
     // added the label to the container (Why?)
-    if (lp instanceof LinearLayout.LayoutParams) {
-        linearLayoutParams = (LinearLayout.LayoutParams) lp;
-        defaultLabelMarginInDp = dpToPx(view, DEFAULT_LABEL_MARGIN);
+    if (lp instanceof ViewGroup.MarginLayoutParams) {
+      marginLayoutParams = (ViewGroup.MarginLayoutParams) lp;
+      defaultLabelMarginInDp = dpToPx(view, DEFAULT_LABEL_MARGIN);
     } else {
       defaultLabelMarginInDp = 0;
-      linearLayoutParams = null;
+      marginLayoutParams = null;
       Log.e("Label", "Error: The label's view does not have linear layout parameters");
       new RuntimeException().printStackTrace();
     }
@@ -292,7 +291,7 @@ public final class Label extends AndroidViewComponent implements AccessibleCompo
 
 private void setLabelMargins(boolean hasMargins) {
   int m = hasMargins ? defaultLabelMarginInDp : 0 ;
-  linearLayoutParams.setMargins(m, m, m, m);
+  marginLayoutParams.setMargins(m, m, m, m);
   view.invalidate();
 }
 

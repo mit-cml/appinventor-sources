@@ -45,7 +45,8 @@ import java.util.List;
 @SimpleObject
 @DesignerComponent(version = YaVersion.CHART_COMPONENT_VERSION,
     category = ComponentCategory.CHARTS,
-    description = "A component that allows visualizing data")
+    description = "A component that allows visualizing data",
+    iconName = "images/chart.png")
 @UsesLibraries(libraries = "mpandroidchart.jar")
 @SuppressWarnings("checkstyle:JavadocParagraph")
 public class Chart extends AndroidViewComponent
@@ -67,6 +68,9 @@ public class Chart extends AndroidViewComponent
   private boolean zeroX;
   private boolean zeroY;
   private YailList labels;
+
+  private int axesTextColor;
+  private int valueType;
 
   // Synced tick value across all Data Series (used for real-time entries)
   // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -103,6 +107,9 @@ public class Chart extends AndroidViewComponent
     Labels(new YailList());
     XFromZero(false);
     YFromZero(false);
+    ValueFormat(0);
+
+    AxesTextColor(Component.COLOR_DEFAULT);
 
     // Register onInitialize event of the Chart
     $form().registerForOnInitialize(this);
@@ -136,6 +143,11 @@ public class Chart extends AndroidViewComponent
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
     throw new UnsupportedOperationException("ChartBase.setChildHeight called");
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    // not needed for charts
   }
 
   @Override
@@ -234,6 +246,8 @@ public class Chart extends AndroidViewComponent
     LegendEnabled(legendEnabled);
     GridEnabled(gridEnabled);
     Labels(labels);
+
+    AxesTextColor(axesTextColor);
   }
 
   /**
@@ -287,6 +301,61 @@ public class Chart extends AndroidViewComponent
     }
     backgroundColor = argb;
     chartView.setBackgroundColor(argb);
+  }
+
+  /**
+   * Returns the chart's axes text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return axes text RGB color with alpha
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public int AxesTextColor() {
+    return axesTextColor;
+  }
+
+  /**
+   * Specifies the chart's axes text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb background RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @SimpleProperty
+  public void AxesTextColor(int argb) {
+    if (argb == Component.COLOR_DEFAULT) {
+      argb = $form().isDarkTheme() ? Component.COLOR_WHITE : Component.COLOR_BLACK;
+    }
+    axesTextColor = argb;
+    if (chartView instanceof PointChartView) {
+      ((PointChartView) chartView).setAxesTextColor(argb);
+    }
+  }
+
+  @SimpleProperty
+  public int ValueFormat() {
+    return valueType;
+  }
+
+  /**
+   * Specifies the format for X axis labels and point values.
+   *
+   * @param valueType set to true if the user desires to interpret data as integers
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_VALUE_TYPE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
+  public void ValueFormat(int valueType) {
+    this.valueType = valueType;
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setValueType(valueType);
+    }
+    for (ChartComponent dataComponent : dataComponents) {
+      if (dataComponent.getDataModel() != null) {
+        dataComponent.getDataModel().setChartValueType(valueType);
+      }
+    }
   }
 
   /**

@@ -6,6 +6,7 @@
 package com.google.appinventor.buildserver.util;
 
 import com.google.appinventor.buildserver.Project;
+import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.io.IOUtils;
 
 public final class ExecutorUtils {
   private ExecutorUtils() {
@@ -75,6 +77,26 @@ public final class ExecutorUtils {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Copies the list of source files to the target directory.
+   *
+   * @param sources files to copy
+   * @param targetDir destination directory
+   * @return an error result if a file fails to copy, otherwise success
+   */
+  public static TaskResult copyFilesToDir(File[] sources, File targetDir) {
+    for (File source : sources) {
+      File target = new File(targetDir, source.getName());
+      try (FileInputStream in = new FileInputStream(source);
+           FileOutputStream out = new FileOutputStream(target)) {
+        IOUtils.copy(in, out);
+      } catch (IOException e) {
+        return TaskResult.generateError(e);
+      }
+    }
+    return TaskResult.generateSuccess();
   }
 
   /**

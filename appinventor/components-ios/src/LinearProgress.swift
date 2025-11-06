@@ -20,6 +20,7 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
     parent.add(self)
     Width = kLengthFillParent
     Height = 6
+    Indeterminate = true
   }
   
   private func setupProgressView() {
@@ -27,7 +28,7 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
     _view.progressTintColor = UIColor.blue
     _view.trackTintColor = UIColor.lightGray
     _view.setProgress(0.0, animated: false)
-    _isAnimating = true
+    _isAnimating = false
   }
   
   public override var view: UIView {
@@ -98,6 +99,14 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
       
       setProgressValue()
       ProgressChanged(_progress)
+    }
+  }
+
+  @objc override open var Visible: Bool {
+    didSet {
+      if Visible && Indeterminate && !_isAnimating {
+        IsAnimating = true
+      }
     }
   }
 

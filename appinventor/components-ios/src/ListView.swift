@@ -32,7 +32,7 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _showFilter = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _textSize = Int32(22)
+  fileprivate var _fontSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
@@ -50,6 +50,8 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _elementColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _elementCornerRadius = Int32(0)
   fileprivate var _elementMarginsWidth = Int32(0)
+  fileprivate var _imageHeight = Int32(200)
+  fileprivate var _imageWidth = Int32(200)
 
   let COMPANION_CORRECTION = 5
 
@@ -292,6 +294,26 @@ let HORIZONTAL_LAYOUT = 1
     }
   }
 
+  @objc open var ImageHeight: Int32 {
+    get {
+        return _imageHeight
+    }
+    set(height) {
+        _imageHeight = height
+        _view.reloadData()
+    }
+}
+
+  @objc open var ImageWidth: Int32 {
+    get {
+        return _imageWidth
+    }
+    set(width) {
+        _imageWidth = width
+        _view.reloadData()
+    }
+  }
+
   //ListData
   @objc open var ListData: String {
     get {
@@ -508,12 +530,12 @@ let HORIZONTAL_LAYOUT = 1
     }
   }
 
-  @objc open var TextSize: Int32 {
+  @objc open var FontSize: Int32 {
     get {
-      return _textSize
+      return _fontSize
     }
-    set(textSize) {
-      _textSize = textSize < 0 ? Int32(7) : textSize
+    set(fontSize) {
+      _fontSize = fontSize < 0 ? Int32(7) : fontSize
       _view.reloadData()
     }
   }
@@ -552,7 +574,7 @@ let HORIZONTAL_LAYOUT = 1
     }
     if addIndex < 1 || addIndex - 1 > max(_listData.count, _elements.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
-           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
+           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
     let index = Int(addIndex - 1)
@@ -634,10 +656,13 @@ let HORIZONTAL_LAYOUT = 1
     } else {
       let listDataIndex = indexPath.row - _elements.count
       if _listViewLayoutMode == 1{
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 44
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
       } else if _listViewLayoutMode == 2 {
-        tableView.rowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
 
@@ -668,11 +693,13 @@ let HORIZONTAL_LAYOUT = 1
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
         ])
       } else if _listViewLayoutMode == 3 {
-        tableView.rowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         if let imagePath = _listData[listDataIndex]["Image"],
            let image = AssetManager.shared.imageFromPath(path: imagePath) {
           cell.imageView?.image = image
+          cell.imageView?.contentMode = .scaleAspectFit
 
           // Configure the layout
           cell.layoutMargins = UIEdgeInsets.zero
@@ -700,16 +727,19 @@ let HORIZONTAL_LAYOUT = 1
               stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
+              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
           ])
         }
       } else if _listViewLayoutMode == 4 {
-        tableView.rowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
         if let imagePath = _listData[listDataIndex]["Image"],
            let image = AssetManager.shared.imageFromPath(path: imagePath) {
           cell.imageView?.image = image
+          cell.imageView?.contentMode = .scaleAspectFit
 
           // Configure the layout
           cell.layoutMargins = UIEdgeInsets.zero
@@ -748,18 +778,62 @@ let HORIZONTAL_LAYOUT = 1
               horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
-              cell.imageView!.widthAnchor.constraint(equalToConstant: 50.0)
+              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+          ])
+        }
+      } else if _listViewLayoutMode == 5 {
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 120
+        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+        if let imagePath = _listData[listDataIndex]["Image"],
+          let image = AssetManager.shared.imageFromPath(path: imagePath) {
+          cell.imageView?.image = image
+          cell.imageView?.contentMode = .scaleAspectFit
+
+          // Configure the layout
+          cell.layoutMargins = UIEdgeInsets.zero
+          cell.separatorInset = UIEdgeInsets.zero
+          cell.preservesSuperviewLayoutMargins = true
+
+          // Create a vertical stack view
+          let verticalStackView = UIStackView()
+          verticalStackView.axis = .vertical
+          verticalStackView.alignment = .center
+          verticalStackView.distribution = .fill
+          verticalStackView.spacing = 8.0
+
+          // Add the imageView, textLabel and detailTextLabel to the vertical stack view
+          verticalStackView.addArrangedSubview(cell.imageView!)
+          verticalStackView.addArrangedSubview(cell.textLabel!)
+          verticalStackView.addArrangedSubview(cell.detailTextLabel!)
+
+          // Add the horizontal stack view to the cell's content view
+          cell.contentView.addSubview(verticalStackView)
+
+          // Set up constraints
+          verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate([
+            verticalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            verticalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+            cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
           ])
         }
       } else {
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 44
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
       }
 
       cell.textLabel?.numberOfLines = 0
       cell.textLabel?.lineBreakMode = .byWordWrapping
     }
-    
-    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_textSize))
+
+    cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
 
     guard let form = _container?.form else {
@@ -811,11 +885,11 @@ let HORIZONTAL_LAYOUT = 1
     }
 
     if _fontTypeface == "1" {
-      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize))
     } else if _fontTypeface == "2" {
-      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSize))
     } else if _fontTypeface == "3" {
-      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_textSize))
+      cell.textLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSize))
     }
 
     if _fontTypefaceDetail == "1" {

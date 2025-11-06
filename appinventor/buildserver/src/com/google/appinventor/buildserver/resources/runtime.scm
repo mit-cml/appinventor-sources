@@ -94,6 +94,8 @@
   (let* ((container :: SimpleContainer (lookup-in-current-form-environment container-name))
          (existing-component (lookup-in-current-form-environment component-name))
          (component-to-add (make component-type container)))
+    ;; Set the component name field
+    (*:setComponentName component-to-add component-name)
     (add-to-current-form-environment component-name component-to-add)
     (add-init-thunk component-name
      (lambda ()
@@ -412,17 +414,18 @@
          ;; The call below is a no-op unless we are in the wireless repl
 ;; Commented out -- we only send reports from the setting menu choice
 ;;         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
-         (if isrepl
-             (when ((this):toastAllowed)
-                   (let ((message (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))))
-                     (send-error message)
-                     ((android.widget.Toast:makeText (this) message 5):show)))
 
-             (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
-              (this)
-              (ex:getMessage)
-              (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
-              "End Application")))
+            ;; only take action if we are non-REPL (compiled app) or
+            ;; when toastAllowed (and REPL)
+         (if (or (not isrepl) ((this):toastAllowed))
+             ((com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
+               (this)                                        ;; context
+               ;; dialog is shown for compiled apps
+               ;; or toast if condition (REPL and toastAllowed)
+               (and isrepl (this):toastAllowed)              ;; toast
+               (if (instance? ex java.lang.Error) (ex:toString) (ex:getMessage))     ;; message
+               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")   ;; title
+               "End Application"))))    ;; buttonText
 
 
        ;; For the HandlesEventDispatching interface
@@ -573,6 +576,8 @@
                          ;;  (format #f "making component: ~A of type: ~A with container: ~A (container-name: ~A)"
                          ;;          component-name component-type component-container (car component-info)))
                          (let ((component-object (make component-type component-container)))
+                           ;; Set the component name field
+                           (*:setComponentName component-object component-name)
                            ;; Construct the component and assign it to its corresponding field
                            (set! (field (this) component-name) component-object)
                            ;; Add the mapping from component name -> component object to the
@@ -2727,9 +2732,9 @@ list, use the make-yail-list constructor with no arguments.
 
 ;;Implements a generic sorting procedure that works on lists of any type.
 
-(define typeordering '(boolean number text list component))
+(define yail-typeordering '(boolean number text list component))
 
-(define (typeof val)
+(define (yail-typeof val)
   (cond ((boolean? val) 'boolean)
     ((number? val) 'number)
     ((string? val) 'text)
@@ -2739,18 +2744,18 @@ list, use the make-yail-list constructor with no arguments.
             (format #f
               "typeof called with unexpected value: ~A"
               (get-display-representation val))
-            "Bad arguement to typeof"))))
+            "Bad arguement to yail-typeof"))))
 
-(define (indexof element lst)
+(define (yail-indexof element lst)
   (yail-list-index element lst))
 
 (define (type-lt? type1 type2)
-  (< (indexof type1 typeordering)
-    (indexof type2 typeordering)))
+  (< (yail-indexof type1 yail-typeordering)
+    (yail-indexof type2 yail-typeordering)))
 
 (define (is-lt? val1 val2)
-  (let ((type1 (typeof val1))
-         (type2 (typeof val2)))
+  (let ((type1 (yail-typeof val1))
+         (type2 (yail-typeof val2)))
     (or (type-lt? type1 type2)
       (and (eq? type1 type2)
         (cond ((eq? type1 'boolean) (boolean-lt? val1 val2))
@@ -2766,8 +2771,8 @@ list, use the make-yail-list constructor with no arguments.
                   "Shouldn't happen")))))))
 
 (define (is-eq? val1 val2)
-  (let ((type1 (typeof val1))
-         (type2 (typeof val2)))
+  (let ((type1 (yail-typeof val1))
+         (type2 (yail-typeof val2)))
     (and (eq? type1 type2)
       (cond ((eq? type1 'boolean) (boolean-eq? val1 val2))
         ((eq? type1 'number) (= val1 val2))
@@ -2782,8 +2787,8 @@ list, use the make-yail-list constructor with no arguments.
                 "Shouldn't happen"))))))
 
 (define (is-leq? val1 val2)
-  (let ((type1 (typeof val1))
-         (type2 (typeof val2)))
+  (let ((type1 (yail-typeof val1))
+         (type2 (yail-typeof val2)))
     (or (type-lt? type1 type2)
       (and (eq? type1 type2)
         (cond ((eq? type1 'boolean) (boolean-leq? val1 val2))
@@ -2866,7 +2871,7 @@ list, use the make-yail-list constructor with no arguments.
 
 ;; take function returns a list containing the first 'n' number of elements from the list 'xs'
 ;; Need to check if n is a proper list and xs is a postive integer
-(define (take n xs)
+(define (yail-take n xs)
   (let loop ((n n) (xs xs) (zs '()))
     (if (or (= n 0) (null? xs))
       (reverse zs)
@@ -2875,33 +2880,33 @@ list, use the make-yail-list constructor with no arguments.
 
 ;; drop function returns a list drops the first 'n' number of elements from the list 'xs'
 ;; Need to check if n is a proper list and xs is a postive integer
-(define (drop n xs)
+(define (yail-drop n xs)
   (if (or (= n 0) (null? xs))
     xs
-    (drop (- n 1) (cdr xs))))
+    (yail-drop (- n 1) (cdr xs))))
 
 ;; Merge sort
-(define (merge lessthan? lst1 lst2)
+(define (yail-merge lessthan? lst1 lst2)
   (cond ((null? lst1) lst2)
     ((null? lst2) lst1)
-    ((lessthan? (car lst1) (car lst2)) (cons (car lst1) (merge lessthan? (cdr lst1) lst2)))
-    (else (cons (car lst2) (merge lessthan? lst1 (cdr lst2))))))
+    ((lessthan? (car lst1) (car lst2)) (cons (car lst1) (yail-merge lessthan? (cdr lst1) lst2)))
+    (else (cons (car lst2) (yail-merge lessthan? lst1 (cdr lst2))))))
 
-(define (mergesort lessthan? lst)
+(define (yail-mergesort lessthan? lst)
   (cond ((null? lst) lst)
     ((null? (cdr lst)) lst)
-    (else (merge lessthan? (mergesort lessthan? (take (quotient (length lst) 2) lst))
-            (mergesort lessthan? (drop (quotient (length lst) 2) lst))))))
+    (else (yail-merge lessthan? (yail-mergesort lessthan? (yail-take (quotient (length lst) 2) lst))
+            (yail-mergesort lessthan? (yail-drop (quotient (length lst) 2) lst))))))
 
 (define (yail-list-sort y1)
   (cond ((yail-list-empty? y1) (make YailList))
     ((not (pair? y1)) y1)
-    (else (kawa-list->yail-list (mergesort is-leq? (yail-list-contents y1))))))
+    (else (kawa-list->yail-list (yail-mergesort is-leq? (yail-list-contents y1))))))
 
 (define (yail-list-sort-comparator lessthan? y1)
   (cond ((yail-list-empty? y1) (make YailList))
     ((not (pair? y1)) y1)
-    (else (kawa-list->yail-list (mergesort lessthan? (yail-list-contents y1))))))
+    (else (kawa-list->yail-list (yail-mergesort lessthan? (yail-list-contents y1))))))
 
 (define (merge-key lessthan? key lst1 lst2)
   (cond ((null? lst1) lst2)
@@ -2912,8 +2917,8 @@ list, use the make-yail-list constructor with no arguments.
 (define (mergesort-key lessthan? key lst)
   (cond ((null? lst) lst)
     ((null? (cdr lst)) lst)
-    (else (merge-key lessthan? key (mergesort-key lessthan? key (take (quotient (length lst) 2) lst))
-            (mergesort-key lessthan? key (drop (quotient (length lst) 2) lst))))))
+    (else (merge-key lessthan? key (mergesort-key lessthan? key (yail-take (quotient (length lst) 2) lst))
+            (mergesort-key lessthan? key (yail-drop (quotient (length lst) 2) lst))))))
 
 (define (yail-list-sort-key key y1)
   (cond ((yail-list-empty? y1) (make YailList))
@@ -2977,14 +2982,6 @@ list, use the make-yail-list constructor with no arguments.
                               "Bad list argument to but-last"))
       (else  (kawa-list->yail-list (but-last (yail-list-contents yail-list)))))))
 
-(define (front lst n)
-  (cond ((= n 1) lst)
-    (else (front (cdr lst) (- n 1)))))
-
-(define (back lst n1 n2)
-  (cond ((= n1 (- n2 1)) '())
-    (else (cons (car lst) (back (cdr lst) (+ n1 1) n2)))))
-
 (define (yail-list-slice yail-list index1 index2)
   (let ((verified-index1 (coerce-to-number index1))
          (verified-index2 (coerce-to-number index2)))
@@ -3012,7 +3009,7 @@ list, use the make-yail-list constructor with no arguments.
             verified-index2
             len+1)
           "List index too large"))
-      (kawa-list->yail-list (take (- verified-index2 verified-index1) (drop (- verified-index1 1) (yail-list-contents yail-list)))))))
+      (kawa-list->yail-list (yail-take (- verified-index2 verified-index1) (yail-drop (- verified-index1 1) (yail-list-contents yail-list)))))))
 
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this

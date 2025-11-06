@@ -6,7 +6,12 @@
 
 package com.google.appinventor.server.project;
 
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.util.CsvParser;
+import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
@@ -19,12 +24,16 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.util.Base64Util;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.json.JSONException;
 
 /**
  * The base class for classes that provide project services for a specific
@@ -39,6 +48,17 @@ public abstract class CommonProjectService {
   protected CommonProjectService(String projectType, StorageIo storageIo) {
     this.projectType = projectType;
     this.storageIo = storageIo;
+  }
+
+  /**
+   * Loads the project settings.
+   *
+   * @param userId  the user id
+   * @param projectId  project ID
+   * @return project settings as a JSON string
+   */
+  public String loadProjectSettings(String userId, long projectId) {
+    return storageIo.loadProjectSettings(userId, projectId);
   }
 
   /**
@@ -163,7 +183,7 @@ public abstract class CommonProjectService {
    * Deletes all files and folders that are inside the given directory. The given directory itself is deleted.
    * @param userId the user Id
    * @param projectId project ID
-   * @param directoy path of the directory
+   * @param directory path of the directory
    */
   public long deleteFolder(String userId, long projectId, String directory) {
     // TODO(user) : This is also not efficient
@@ -323,6 +343,53 @@ public abstract class CommonProjectService {
     return RpcResult.createSuccessfulRpcResult("", "");
   }
 
+  /**
+   * Sets the moved to trash flag for a project.
+   *
+   * @param userId the user id
+   * @param projectId  project ID
+   * @param movedToTrash true if the project is moved to trash, false otherwise
+   * @return the updated UserProject object
+   */
+  public UserProject setMovedToTrash(String userId, long projectId, boolean movedToTrash) {
+    storageIo.setMoveToTrashFlag(userId, projectId, movedToTrash);
+    return storageIo.getUserProject(userId, projectId);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * <p>Expected format is either JSON or CSV. If the first character of the
+   * file's contents is a left curly bracket ( { ), then JSON parsing is
+   * attempted. Otherwise, CSV parsing is done.
+   *
+   * @param userId  the user id
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed columns (each column is a List of Strings)
+   */
+  public List<List<String>> loadDataFile(String userId, long projectId, String fileId) {
+    final int maxRows = 10; // Parse a maximum of 10 rows
+
+    // Load the contents of the specified file
+    String result = load(userId, projectId, fileId);
+
+    // If the contents of the file start with a curly bracket, assume JSON
+    // and attempt parsing the contents as JSON. Otherwise, attempt to parse
+    // the contents as a CSV file.
+    if (result.startsWith("{")) {
+      try {
+        return parseJsonColumns(result, maxRows);
+      } catch (JSONException e) {
+        // JSON parsing failed; Attempt CSV parsing instead
+        return parseCsvColumns(result, maxRows);
+      }
+    } else {
+      return parseCsvColumns(result, maxRows);
+    }
+  }
 
   /**
    * Invokes a build command for the project.
@@ -333,9 +400,12 @@ public abstract class CommonProjectService {
    * @param target  build target (optional, implementation dependent)
    * @param secondBuildserver use second buildserver
    *
+   * @param foriOS
+   * @param forAppStore
    * @return  build results
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab);
+  public abstract RpcResult build(User user, long projectId, String nonce, String target,
+      boolean secondBuildserver, boolean isAab, boolean foriOS, boolean forAppStore);
 
   /**
    * Gets the result of a build command for the project.
@@ -386,5 +456,100 @@ public abstract class CommonProjectService {
         }
       }
     }
+  }
+
+  /**
+   * Parses and returns columns from the specified String formatted
+   * in CSV.
+   *
+   * @param source  Source String to parse CSV columns from
+   * @param rows  Number of rows to parse
+   * @return  List representing the columns (each column is a List of Strings)
+   */
+  private List<List<String>> parseCsvColumns(String source, int rows) {
+    List<List<String>> columns = new ArrayList<List<String>>();
+
+    // Construct an InputStream and a CSVParser for the contents of the file
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(source.getBytes());
+    CsvParser csvParser = new CsvParser(inputStream);
+
+    for (int i = 0; i <= rows && csvParser.hasNext(); ++i) {
+      // Parse next row
+      List<String> row = csvParser.next();
+
+      // Add row entries to columns
+      for (int j = 0; j < row.size(); ++j) {
+        // A List for the column did not exist before; Create one
+        if (columns.size() <= j) {
+          columns.add(new ArrayList<String>());
+        }
+
+        // Add the j-th element of the row to the j-th column.
+        // E.G. consider the CSV row 1,2,3,4
+        // 1 goes into the 1st column, 2 goes into the 2nd one, and so on.
+        // So the indexes for both the column and the row match.
+        columns.get(j).add(row.get(j));
+      }
+    }
+
+    return columns;
+  }
+
+  /**
+   * Parses and returns columns from the specified String formatted
+   * in JSON.
+   *
+   * @param source  Source String to parse JSON columns from
+   * @param rows  Number of rows to parse
+   * @return  List representing the columns (each column is a List of Strings)
+   */
+  private List<List<String>> parseJsonColumns(String source, int rows) throws JSONException {
+    List<List<String>> columns = new ArrayList<List<String>>();
+
+    // Parse a JSON value from the specified source String
+    ServerJsonParser jsonParser = new ServerJsonParser();
+    JSONValue value = jsonParser.parse(source);
+
+    // Value must be a JSONObject for the parsing to be valid. If
+    // that is not the case, skip column parsing.
+    if (value instanceof JSONObject) {
+      // Get the value as a JSONObject and retrieve the properties (key-value pairs)
+      Map<String, JSONValue> properties = value.asObject().getProperties();
+
+      // Iterate over all the entries (one entry is interpreted as a single column)
+      for (final Map.Entry<String, JSONValue> entry : properties.entrySet()) {
+        List<String> column = new ArrayList<String>();
+
+        // Add the key as the first entry in the column
+        column.add(entry.getKey());
+
+        // Get the actual value of the column
+        JSONValue entryValue = entry.getValue();
+
+        // JSONArrays require different handling
+        if (entryValue instanceof JSONArray) {
+          // Retrieve the value as an Array, and get it's elements
+          JSONArray entryArray = entryValue.asArray();
+          List<JSONValue> jsonElements = entryArray.getElements();
+
+          // A maximum of the specified rows should be parsed.
+          int entries = Math.min(jsonElements.size(), rows);
+
+          // Add all the entries from the array to the column
+          for (int i = 0; i < entries; ++i) {
+            JSONValue arrayValue = jsonElements.get(i);
+            column.add(arrayValue.toString()); // Value has to be converted to String
+          }
+        } else {
+          // Add the value as a String to the elements of the column
+          column.add(entryValue.toString());
+        }
+
+        // Add the constructed column to the resulting columns List
+        columns.add(column);
+      }
+    }
+
+    return columns;
   }
 }

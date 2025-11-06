@@ -48,8 +48,13 @@
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
 
+    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar" 
+                    ui:field="toggleConsoleItem" align="right" styleName="ode-ProjectListButton bleft primary">
+      <ya:ToggleConsoleAction/>
+    </ai:ToolbarItem>
+
     <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
-                    ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bleft primary">
+                    ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bcenter primary">
       <ya:SwitchToFormEditorAction/>
     </ai:ToolbarItem>
     <ai:ToolbarItem name="switchToBlocks" caption="{messages.switchToBlocksEditorButton}"

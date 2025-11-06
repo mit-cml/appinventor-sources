@@ -93,7 +93,7 @@ public class AdminUserList extends Composite {
 
     // Initialize UI
     table = new Grid(1, 4); // The table initially contains just the header row.
-    table.addStyleName("ode-ProjectTable");
+    table.addStyleName("ode-AdminUserListTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
     nameSortIndicator = new Label("");
@@ -144,30 +144,30 @@ public class AdminUserList extends Composite {
    *
    */
   private void setHeaderRow() {
-    table.getRowFormatter().setStyleName(0, "ode-ProjectHeaderRow");
+    table.getRowFormatter().setStyleName(0, "ode-AdminUserListHeaderRow");
 
     HorizontalPanel emailHeader = new HorizontalPanel();
     final Label emailHeaderLabel = new Label("User Email");
-    emailHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
+    emailHeaderLabel.addStyleName("ode-AdminUserListLabel");
     emailHeader.add(emailHeaderLabel);
     emailHeader.add(nameSortIndicator);
     table.setWidget(0, 0, emailHeader);
 
     HorizontalPanel uidHeader = new HorizontalPanel();
     final Label uidHeaderLabel = new Label("UID");
-    uidHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
+    uidHeaderLabel.addStyleName("ode-AdminUserListLabel");
     uidHeader.add(uidHeaderLabel);
     table.setWidget(0, 1, uidHeader);
 
     HorizontalPanel adminHeader = new HorizontalPanel();
     final Label adminHeaderLabel = new Label("isAdmin?");
-    adminHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
+    adminHeaderLabel.addStyleName("ode-AdminUserListLabel");
     adminHeader.add(adminHeaderLabel);
     table.setWidget(0, 2, adminHeader);
 
     HorizontalPanel visitedHeader = new HorizontalPanel();
     final Label visitedLabel = new Label("Visited");
-    visitedLabel.addStyleName("ode-ProjectHeaderLabel");
+    visitedLabel.addStyleName("ode-AdminUserListLabel");
     visitedHeader.add(visitedLabel);
     visitedHeader.add(visitedSortIndicator);
     table.setWidget(0, 3, visitedHeader);
@@ -230,7 +230,7 @@ public class AdminUserList extends Composite {
 
     private UserWidgets(final AdminUser user) {
       nameLabel = new Label(user.getEmail());
-      nameLabel.addStyleName("ode-ProjectNameLabel");
+      nameLabel.addStyleName("ode-AdminUserListNameLabel");
       uidLabel = new Label(user.getId());
       Date visited = user.getVisited();
       if (visited == null) {

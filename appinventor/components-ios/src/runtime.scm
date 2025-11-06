@@ -22,6 +22,7 @@
 (define *testing* #f)
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
 (define-alias AssetFetcher <AIComponentKit.AssetFetcher>)
+(define-alias OptionHelper <AIComponentKit.OptionHelper>)
 
 (define-syntax call-with-output-string
   (syntax-rules ()
@@ -81,6 +82,13 @@
   (let ((eventSymbol (string->symbol (string-append registeredObjectName "$" eventName))))
     (lookup-in-form-environment eventSymbol)))
 
+(define-syntax try-catch
+  (syntax-rules ()
+    ((_ program ... (exception type handler))
+     (with-exception-handler
+      (lambda (e) (if e (begin (display e) (display "\n") handler)))
+      (lambda () program ...)))))
+
 #|
 (define-macro gen-event-name
   (lambda (form _)
@@ -114,7 +122,7 @@
   (syntax-rules ()
     ((_ container component-type component-name)
      (begin
-       (define component-name #!null)
+       ;(define component-name #!null)
        (if *this-is-the-repl*
            (add-component-within-repl 'container
                                       component-type
@@ -126,7 +134,7 @@
                               #f))))
     ((_ container component-type component-name init-property-form ...)
      (begin
-       (define component-name #!null)
+       ;(define component-name #!null)
        (if *this-is-the-repl*
            (add-component-within-repl 'container
                                       component-type
@@ -141,12 +149,12 @@
   (syntax-rules ()
     ((_ event-func-name (arg ...) (expr ...))
      (begin
-       (define (event-func-name arg ...)
-         (let ((arg (sanitize-component-data arg)) ...)
-           expr ...))
-       (if *this-is-the-repl*
-           (add-to-current-form-environment 'event-func-name event-func-name)
-           (add-to-form-environment 'event-func-name event-func-name))))))
+       (let ((event-func-name (lambda (arg ...)
+               (let ((arg (sanitize-component-data arg)) ...)
+                 expr ...))))
+         (if *this-is-the-repl*
+             (add-to-current-form-environment 'event-func-name event-func-name)
+             (add-to-form-environment 'event-func-name event-func-name)))))))
 
 (define-syntax *list-for-runtime*
   (syntax-rules ()
@@ -630,6 +638,14 @@
    ;((instance? data JavaCollection) (java-collection->yail-list data))
    (#t (sanitize-atomic data))))
 
+(define (sanitize-return-value component func-name value)
+  (if (enum? value)
+    value
+    (let ((value (OptionHelper:optionListFromValue component func-name value)))
+      (if (enum? value)
+        value
+        (sanitize-component-data value)))))
+
 (define (sanitize-atomic arg)
   (cond
    ;; TODO(halabelson,markf):Discuss whether this is the correct way to
@@ -749,18 +765,17 @@
 (define (init-runtime)
   (set-this-form))
 
+(define (ios$start-form)
+  (let ((component-names (filter string? (map (lambda (name)
+                                (if (component? (lookup-in-current-form-environment name)) name #f))
+                              (yail-dictionary-get-keys (yail:invoke *this-form* 'environment))))))
+    (apply call-Initialize-of-components (map string->symbol component-names))))
+
 (define (set-this-form)
   (set! *this-form* (SimpleForm:getActiveForm)))
 
 (define (set-form-name name)
   (yail:invoke *this-form* 'setName name))
-
-(define-syntax try-catch
-  (syntax-rules ()
-    ((_ program ... (exception type handler))
-     (with-exception-handler
-      (lambda (e) (if e (begin (display e) (display "\n") handler)))
-      (lambda () program ...)))))
 
 (define (call-yail-primitive prim arglist typelist codeblocks-name)
   ;; (android-log (format #f "applying procedure: ~A to ~A" codeblocks-name arglist))
@@ -1780,6 +1795,17 @@ Dictionary implementation.
              (b3 (bitwise-and (bitwise-ior (bitwise-arithmetic-shift-left b2 8) b) 255))
              (b4 (bitwise-and (bitwise-xor b3 (char->integer (string-ref lc i))) 255)))
         (set! acc (cons b4 acc))))))
+
+;;; Mappings so we can replace substrings within strings
+(define (string-replace-mappings-dictionary text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsDictionary text mappings))
+
+(define (string-replace-mappings-longest-string text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsLongestString text mappings))
+
+(define (string-replace-mappings-earliest-occurrence text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsEarliestOccurrence text mappings))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation
