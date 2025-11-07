@@ -872,9 +872,13 @@ open class ARNodeBase: NSObject, ARNode {
       _container?.form?.dispatchErrorOccurredEvent(self, "Follow", ErrorMessage.ERROR_ALREADY_FOLLOWING_IMAGEMARKER.code)
       return
     }
+    if let marker = imageMarker as? ImageMarker {
+      reparentUnderMarker(marker, keepWorld: true)
+    } else {
+      // If only ARImageMarker protocol is available and no anchor yet, queue it
+      imageMarker.attach(self) // queues
+    }
     
-    _followingMarker = imageMarker
-    setPosition(x: 0, y: 0, z: 0)
     imageMarker.attach(self)
   }
   
@@ -884,13 +888,59 @@ open class ARNodeBase: NSObject, ARNode {
       return
     }
     
-    _followingMarker = imageMarker
     let xMeters: Float = UnitHelper.centimetersToMeters(x)
     let yMeters: Float = UnitHelper.centimetersToMeters(y)
     let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    setPosition(x: xMeters, y: yMeters, z: zMeters)
-    imageMarker.attach(self)
+    let offset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
+    if let marker = imageMarker as? ImageMarker {
+      reparentUnderMarker(marker, keepWorld: true, offsetCM: offset)
+    } else {
+      // If only ARImageMarker protocol is available and no anchor yet, queue it
+      imageMarker.attach(self) // queues
+    }
   }
+  
+  
+
+  func reparentUnderMarker(_ marker: ImageMarker,
+                           keepWorld: Bool = true,
+                           offsetCM: SIMD3<Float>? = nil) {
+    // You can't be both geo-anchored and marker-following
+    _geoAnchor = nil
+
+    let worldMatrix = _modelEntity.transformMatrix(relativeTo: nil)
+
+    _modelEntity.removeFromParent()
+    _anchorEntity = nil
+
+    guard let markerAnchor = marker.Anchor else {
+      // Marker not detected yet → fall back to queued attachment
+      marker.attach(self)  // queues it; FirstDetected will parent it
+      _followingMarker = marker
+      return
+    }
+
+    // Compute local transform under marker (so we keep the pose visually)
+    let markerWorld = markerAnchor.transformMatrix(relativeTo: nil)
+    let localMatrix = markerWorld.inverse * worldMatrix
+    var localTransform = Transform(matrix: localMatrix)
+
+    if let off = offsetCM {
+      let m = SIMD3<Float>(UnitHelper.centimetersToMeters(off.x),
+                           UnitHelper.centimetersToMeters(off.y),
+                           UnitHelper.centimetersToMeters(off.z))
+      localTransform.translation += m
+    }
+
+    //set the local transform explicitly
+    markerAnchor.addChild(_modelEntity, preservingWorldTransform: false)
+    _modelEntity.transform = localTransform
+
+    _followingMarker = marker
+    _anchorEntity = markerAnchor
+  }
+  
+
   
   @objc open func StopFollowingImageMarker() {
     _followingMarker?.removeNode(self)

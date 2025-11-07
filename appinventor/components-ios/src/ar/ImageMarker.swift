@@ -30,16 +30,18 @@ open class ImageMarker: NSObject, ARImageMarker {
       if let anchor = _anchorEntity {
         return anchor
       }
-      
-      //_anchorEntity = createAnchor() CSB we don't create an anchor here b/c it is created upon detection in ARView3D.session.didAdd
+      //CSB NOTE: unlike other 'nodes', we don't create an anchor here b/c it is created upon detection in ARView3D.session.didAdd
       return _anchorEntity
     }
     set(a) {
       _anchorEntity = a
-      
     }
   }
   
+  public var anchorMatrix: simd_float4x4 {
+    get { _anchorEntity!.transform.matrix }
+    set { _anchorEntity!.transform.matrix = newValue }
+    }
   
   @objc init(_ container: ARImageMarkerContainer) {
     _container = container
@@ -47,6 +49,20 @@ open class ImageMarker: NSObject, ARImageMarker {
     setupReferenceImage()
   }
   
+  public func attachNode(_ node: ARNodeBase) {
+    node._modelEntity.removeFromParent()
+    _attachedNodes.append(node)
+    if let anchor = _anchorEntity {
+        anchor.addChild(node._modelEntity)
+    }
+    node._followingMarker = self
+  }
+
+  public func detachNode(_ node: ARNodeBase) {
+    node._modelEntity.removeFromParent()
+  }
+  
+  //@objc open var Anchor: AnchorEntity { get set }
   @objc open var Name: String {
     get {
       return _name
@@ -180,20 +196,15 @@ open class ImageMarker: NSObject, ARImageMarker {
   
   // MARK: Events
   @objc open func FirstDetected(_ imageAnchor: ARImageAnchor) {
-    // Build a RealityKit anchor that follows the ARImageAnchor
-    let rkAnchor = AnchorEntity(anchor: imageAnchor)
-    _anchorEntity = rkAnchor
-
-    // Attach any nodes that were queued before detection
-    for node in _attachedNodes {
-      rkAnchor.addChild(node._modelEntity)
+    guard _anchorEntity != nil else {
+      print("⚠️ ImageMarker.FirstDetected called before anchor assigned/added")
+      return
     }
-
     _isTracking = true
     _lastPushTime = Date()
     self.AppearedInView()
     DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
+        EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
     }
   }
   

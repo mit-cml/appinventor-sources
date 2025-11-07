@@ -293,6 +293,10 @@ public protocol ARModel: ARNode {
   var _attachedNodes: [ARNodeBase] { get }
   var _referenceImage: ARReferenceImage? { get }
   var _isTracking: Bool { get set }
+  
+  var anchorMatrix: simd_float4x4 { get set }   // Obj-C compatible
+  @objc func attachNode(_ node: ARNodeBase)
+  @objc func detachNode(_ node: ARNodeBase)
 
   func attach(_ node: ARNodeBase)
   func removeNode(_ node: ARNodeBase)

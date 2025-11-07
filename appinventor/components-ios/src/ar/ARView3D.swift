@@ -1292,10 +1292,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   // MARK: ARSession Delegate Methods
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
     let newMeshes = anchors.compactMap { $0 as? ARMeshAnchor }.count
-    print("🔁 didAdd")
     if newMeshes > 0 {
         meshAnchorCount += newMeshes
-        print("✅ didAdd adding ARMeshAnchor(s): +\(newMeshes), total=\(meshAnchorCount)")
         if !didRefreshForFirstMesh {
             didRefreshForFirstMesh = true
             refreshWireframeAndSU()
@@ -1351,29 +1349,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
         guard
           let name = imageAnchor.referenceImage.name,
-          let marker = _imageMarkers[name]
+          let marker = _imageMarkers[name] as ImageMarker?
         else { continue }
 
-        // Create or update the RealityKit anchor bound to this ARImageAnchor
-        let rkAnchor = AnchorEntity(anchor: imageAnchor)
-        marker.Anchor = rkAnchor
+        if marker.Anchor == nil {
+          let rkAnchor = AnchorEntity(anchor: imageAnchor)
+          DispatchQueue.main.async {
+            self._arView.scene.anchors.append(rkAnchor)
+            marker.Anchor = rkAnchor                           // store anchor on the marker
 
-        // Attach any nodes that were queued before detection
-        for node in marker.AttachedNodes {
-          if node._followingMarker === marker {
-              // Remove from any temporary world anchor, but preserve local transform
-              node._modelEntity.removeFromParent()
+            // Drain any queued nodes
+            for node in marker.AttachedNodes { // 
+              rkAnchor.addChild(node._modelEntity)
+            }
 
-              // Attach directly to marker anchor
-              marker.Anchor!.addChild(node._modelEntity)
-
-              // For consistency: let the node *reference* marker.Anchor
-              node._anchorEntity = marker.Anchor
+            marker._isTracking = true
+            marker._lastPushTime = Date()
+            marker.FirstDetected(imageAnchor)
           }
         }
-
-        _arView.scene.addAnchor(rkAnchor)
-        marker.FirstDetected(imageAnchor)
       } else if let geoAnchor = anchor as? ARGeoAnchor {
           handleGeoAnchorAdded(geoAnchor)
       }
@@ -1922,7 +1916,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           EventDispatcher.dispatchEvent(
               of: self,
               called: "AfterPicture",
-              arguments: url as NSString, name as NSString, wParam as NSNumber
+              arguments: url as NSString, name as NSString, width as NSNumber
           )
         }catch {
             print("❌ Failed to save snapshot for marker: \(error)")
