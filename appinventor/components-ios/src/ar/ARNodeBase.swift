@@ -648,11 +648,9 @@ open class ARNodeBase: NSObject, ARNode {
   // MARK: - Serialization Methods
   
   @objc open func ARNodeToYail() -> YailDictionary {
-    os_log("going to try to export ARNode as yail", log: .default, type: .info)
-       
     let yailDict: YailDictionary = [:]
     let transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
-    
+
     yailDict["model"] = self.ModelUrl
     yailDict["texture"] = self.Texture
     yailDict["scale"] = self.Scale
@@ -662,7 +660,28 @@ open class ARNodeBase: NSObject, ARNode {
     yailDict["canMove"] = String(self._panToMove)
     yailDict["canScale"] = String(self._pinchToScale)
        
-    print("exporting ARNode as Yail convert toYail, physics is \(self._enablePhysics)")
+    if let marker = self._followingMarker as? ImageMarker,
+       let markerAnchor = marker.Anchor {
+
+      // compute local offset of this node under marker (in meters)
+      let nodeWorld   = _modelEntity.transformMatrix(relativeTo: nil)
+      let markerWorld = markerAnchor.transformMatrix(relativeTo: nil)
+      let localMtx    = markerWorld.inverse * nodeWorld
+      let local       = Transform(matrix: localMtx)
+
+      let follow: YailDictionary = [:]
+      follow["markerName"] = marker.Name
+      // if you also have a UUID on the marker, include it:
+      // follow["markerId"] = marker.id
+
+      let offCM: YailDictionary = [:]
+      offCM["x"] = local.translation.x
+      offCM["y"] = local.translation.y
+      offCM["z"] = local.translation.z
+      follow["offsetCM"] = offCM
+      print("⚠️ node is following marker \(String(describing: marker.Name)) with offset: \(offCM)");
+      yailDict["follow"] = follow
+    }
     return yailDict
   }
      
@@ -894,6 +913,10 @@ open class ARNodeBase: NSObject, ARNode {
     let offset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
     if let marker = imageMarker as? ImageMarker {
       reparentUnderMarker(marker, keepWorld: true, offsetCM: offset)
+      if #available(iOS 18.0, *) {
+          // Yaw-only (stay upright while facing the camera)
+        self._modelEntity.components.set(BillboardComponent())
+      }
     } else {
       // If only ARImageMarker protocol is available and no anchor yet, queue it
       imageMarker.attach(self) // queues

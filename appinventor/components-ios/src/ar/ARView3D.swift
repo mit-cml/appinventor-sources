@@ -956,6 +956,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     print("  - Has set ground level: \(_hasSetGroundLevel)")
   }
   
+  private func CreateImageMarkerFromYail(_ d: YailDictionary) -> ImageMarker? {
+      guard let type = (d["type"] as? String)?.lowercased(), type == "imagemarker" else { return nil }
+      let name = (d["name"] as? String) ?? "<unnamed>"
+      let img  = (d["image"] as? String) ?? ""
+      let wCM  = (d["physicalWidthCM"] as? Float) ?? 0
+      let vis  = (d["visible"] as? Bool) ?? true
+
+      let marker = ImageMarker(self) as ImageMarker   // your existing creation entry point
+      marker.Name = name
+      marker.Image = img
+      marker.PhysicalWidthInCentimeters = wCM
+      marker.Visible = vis
+      return marker
+    }
+  
   // These methods would need to be implemented based on your ARNode creation logic
   private func CreateCapsuleNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
     let capNode = CapsuleNode(self) as CapsuleNode
@@ -1299,15 +1314,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             refreshWireframeAndSU()
         }
     }
-    
     for anchor in anchors {
       if let planeAnchor = anchor as? ARPlaneAnchor {
         let detectedPlane = DetectedPlane(anchor: planeAnchor, container: self)
         _detectedPlanesDict[anchor] = detectedPlane
         PlaneDetected(detectedPlane)
       
-        
-        // for the floor
         if !_hasSetGroundLevel &&
          planeAnchor.alignment == .horizontal &&
             planeAnchor.transform.translation.y < 0.1 {
@@ -1324,9 +1336,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               print("🏠 FIRST TIME: Setting ground level to detected floor: \(invisibleFloorLevel)")
               
               GROUND_LEVEL = invisibleFloorLevel
-              
-              // ✅ RECREATE invisible floor at correct position
-
               createInvisibleFloor(at: invisibleFloorLevel)
               _hasSetGroundLevel = true
             }
@@ -1336,12 +1345,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             GROUND_LEVEL = invisibleFloorLevel
             createInvisibleFloor(at: invisibleFloorLevel)
             _hasSetGroundLevel = true
-          }
-        } else {
-          if #available(iOS 16.0, *) {
-            if planeAnchor.alignment == .vertical {
-              //createOptimizedWallCollision(planeAnchor) //CSB keep ?
-            }
           }
         }
       } else if let imageAnchor = anchor as? ARImageAnchor {
@@ -2020,10 +2023,22 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       var loadNode: ARNodeBase?
       var newNodes: [ARNode] = []
       
+      var markersByName: [String: ImageMarker] = [:]
+      var pendingFollows: [(node: ARNodeBase, marker: String, offCM: SIMD3<Float>)] = []
+      
       guard !dictionaries.isEmpty else {
         return []
       }
       
+      for any in dictionaries {
+          guard let d = any as? YailDictionary else { continue }
+          if let type = (d["type"] as? String)?.lowercased(), type == "imagemarker" {
+            if let marker = CreateImageMarkerFromYail(d) {
+              markersByName[marker.Name] = marker
+            }
+          }
+        }
+      print("⚠️ markers from yail '\(markersByName)");
       for obj in dictionaries {
         if obj is YailDictionary{
           
@@ -2057,7 +2072,34 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           if let node = loadNode {
             addNode(node)
             newNodes.append(node)
+            
+            if let follow = nodeDict["follow"] as? YailDictionary,
+               let name = follow["markerName"] as? String,
+               let off = follow["offsetCM"] as? YailDictionary,
+               let ox = off["x"] as? Float, let oy = off["y"] as? Float, let oz = off["z"] as? Float {
+              print("⚠️ node \(node.Name) has marker follow '\(name)'");
+              pendingFollows.append((node, name, SIMD3<Float>(ox, oy, oz)))
+            }
           }
+        }
+      }
+      
+      for (node, markerName, offCM) in pendingFollows {
+        if let marker = markersByName[markerName] {
+          if marker.Anchor != nil {
+            node.reparentUnderMarker(marker, keepWorld: true, offsetCM: offCM)
+          } else {
+            // queue until FirstDetected (keeps a cm offset if you want)
+            marker.attach(node)
+            node._worldOffset = SIMD3<Float>(
+              UnitHelper.centimetersToMeters(offCM.x),
+              UnitHelper.centimetersToMeters(offCM.y),
+              UnitHelper.centimetersToMeters(offCM.z)
+            )
+            print("⚠️ attached node to marker '\(markerName) \(node.Name)");
+          }
+        } else {
+          print("⚠️ Missing marker '\(markerName)'; leaving node in world space.")
         }
       }
       print("loadscene new nodes are \(newNodes)")
@@ -2096,16 +2138,27 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
     }
     
+    private func allImageMarkersForSave() -> [YailDictionary] {
+      var out: [YailDictionary] = []
+      for m in _imageMarkers {   // implement `allMarkers()`
+        out.append(m.value.ImageMarkerToYail())
+      }
+      print("⚠️ markers to save: \(out)");
+      return out
+    }
+    
     @objc open func SaveScene(_ newNodes: [AnyObject]) -> [YailDictionary] {
       var dictionaries: [YailDictionary] = []
-      // a list of arnodes
+ 
+      dictionaries.append(contentsOf: allImageMarkersForSave())
+      
       for node in newNodes { // swift thinks newnodes is nsarray
         guard let arNode = node as? ARNode else { continue }
         
         let nodeDict = arNode.ARNodeToYail()
         dictionaries.append(nodeDict)
       }
-      print("returning dictionaries with count:\(dictionaries.count)")
+      print("returning dictionaries: imageMarkers and nodes with count:\(dictionaries.count)")
       // Save world map
       _arView.session.getCurrentWorldMap { worldMap, error in
         guard let worldMap = worldMap else {

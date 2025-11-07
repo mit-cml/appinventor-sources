@@ -8,6 +8,8 @@ import GLKit
 
 @available(iOS 14.0, *)
 open class ImageMarker: NSObject, ARImageMarker {
+  //public var Anchor: AnchorEntity
+  
 
   weak var _container: ARImageMarkerContainer?
   open var _referenceImage: ARReferenceImage? = nil
@@ -250,8 +252,19 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
   
   @objc open var Visible: Bool {
-    get { return _anchorEntity!.isEnabled }
-    set(visible) { _anchorEntity!.isEnabled = visible }
+    get { return _anchorEntity != nil && ((_anchorEntity?.isEnabled) != nil) ? (_anchorEntity?.isEnabled)! : false }
+    set(visible) { if _anchorEntity != nil { _anchorEntity?.isEnabled = visible }}
+  }
+  
+  @objc open func ImageMarkerToYail() -> YailDictionary {
+    let d: YailDictionary = [:]
+    d["type"] = "imagemarker"
+    d["schemaVersion"] = 1 as NSNumber
+    d["name"] = self.Name
+    d["image"] = self.Image
+    d["physicalWidthCM"] = self.PhysicalWidthInCentimeters
+    d["visible"] = self.Visible
+    return d
   }
 }
 
