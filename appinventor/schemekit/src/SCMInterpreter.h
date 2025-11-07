@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 #include "picrin.h"
 
+@protocol SCMObject;
 @protocol SCMValue;
 @class SCMSymbol;
 
@@ -27,6 +28,7 @@
 - (void)protect:(nonnull id)object;
 - (void)unprotect:(nonnull id)object;
 - (void)markObject:(nonnull NSObject *)object;
+- (pic_value)internObject:(nonnull id<SCMObject>)object;
 - (nullable id<SCMValue>)apply:(pic_value)proc;
 - (nullable id<SCMValue>)apply:(pic_value)proc to:(NSArray * _Nonnull)arguments;
 

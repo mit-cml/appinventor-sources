@@ -9,27 +9,21 @@ import Network
 import UIKit
 
 @objc public class BestFitModel: NSObject, OptionList {
-  @objc public static let Linear = BestFitModel(0)
-  @objc public static let Quadratic = BestFitModel(1)
+  @objc public static let Linear = BestFitModel("Linear")
+  @objc public static let Quadratic = BestFitModel("Quadratic")
   // @objc public static let Cubic = BestFitModel("Cubic")
-  @objc public static let Exponential = BestFitModel(2)
-  @objc public static let Logarithmic = BestFitModel(3)
+  @objc public static let Exponential = BestFitModel("Exponential")
+  @objc public static let Logarithmic = BestFitModel("Logarithmic")
 
-  private static let LOOKUP: [Int32: BestFitModel] = [
-    0: .Linear,
-    1: .Quadratic,
-    // "Cubic": .Cubic,
-    2: .Exponential,
-    3: .Logarithmic
-  ]
+  private static let LOOKUP: [String: BestFitModel] = generateOptionsLookup(Linear, Quadratic, Exponential, Logarithmic)
 
-  let value: Int32
+  let value: String
 
-  @objc private init(_ value: Int32) {
+  @objc private init(_ value: String) {
     self.value = value
   }
 
-  @objc public class func fromUnderlyingValue(_ value: Int32) -> BestFitModel? {
+  @objc public class func fromUnderlyingValue(_ value: String) -> BestFitModel? {
     return LOOKUP[value]
   }
 

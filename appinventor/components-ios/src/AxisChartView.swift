@@ -97,6 +97,9 @@ open class AxisChartView : ChartView {
   }
 
   public func setLabels(labels: Array<String>) {
+    if let formatter = chart?.xAxis.valueFormatter as? AppInventorValueFormatter {
+        formatter._axisLabels = labels
+    }
     self.axisLabels = labels
   }
 
@@ -133,7 +136,11 @@ open class AxisChartView : ChartView {
     }
 
     public func stringForValue(_ value: Double, axis: DGCharts.AxisBase?) -> String {
-      if _vType == CHART_VALUE_INTEGER {
+      let integerValue: Int = Int(value.rounded())
+
+      if integerValue >= 0 && integerValue < _axisLabels.count {
+        return _axisLabels[integerValue]
+      } else if _vType == CHART_VALUE_INTEGER {
         return String(Int(value))
       } else {
         return parseForFormat(value)
