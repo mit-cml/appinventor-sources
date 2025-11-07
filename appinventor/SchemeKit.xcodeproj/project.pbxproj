@@ -90,6 +90,7 @@
 		068B4F18207553060050A8BE /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F17207553060050A8BE /* runtime.scm */; };
 		068B4F1A207553DF0050A8BE /* HelloPurr.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F19207553DF0050A8BE /* HelloPurr.yail */; };
 		068B4F20207562880050A8BE /* Screen1.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F1F207562880050A8BE /* Screen1.yail */; };
+		069B37752EB12A5500C212FD /* SCMProcedureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 069B37742EB12A4E00C212FD /* SCMProcedureTests.m */; };
 		06AC1CC41DB3CF2000A59EB3 /* SCMInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = 06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06AC1CC51DB3CF2000A59EB3 /* SCMInterpreter.m in Sources */ = {isa = PBXBuildFile; fileRef = 06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */; };
 		06BEC1791D961AE100B62630 /* emyg_atod.c in Sources */ = {isa = PBXBuildFile; fileRef = 06BEC1751D961AE100B62630 /* emyg_atod.c */; };
@@ -215,6 +216,7 @@
 		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = "components-ios/src/runtime.scm"; sourceTree = SOURCE_ROOT; };
 		068B4F19207553DF0050A8BE /* HelloPurr.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HelloPurr.yail; sourceTree = "<group>"; };
 		068B4F1F207562880050A8BE /* Screen1.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Screen1.yail; path = ../../aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail; sourceTree = "<group>"; };
+		069B37742EB12A4E00C212FD /* SCMProcedureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMProcedureTests.m; sourceTree = "<group>"; };
 		06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMInterpreter.h; sourceTree = "<group>"; };
 		06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMInterpreter.m; sourceTree = "<group>"; };
 		06B9A1372472BCB1002284A9 /* SCMErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMErrors.h; sourceTree = "<group>"; };
@@ -447,6 +449,7 @@
 		06FCDEED1D94383000199DD4 /* schemekit/tests */ = {
 			isa = PBXGroup;
 			children = (
+				069B37742EB12A4E00C212FD /* SCMProcedureTests.m */,
 				068B4F1F207562880050A8BE /* Screen1.yail */,
 				068B4F19207553DF0050A8BE /* HelloPurr.yail */,
 				068B4F17207553060050A8BE /* runtime.scm */,
@@ -754,6 +757,7 @@
 			files = (
 				0644E91C246064EC00ECD2BD /* YailListTests.m in Sources */,
 				0644E91E246064F900ECD2BD /* YailDictionaryTests.m in Sources */,
+				069B37752EB12A5500C212FD /* SCMProcedureTests.m in Sources */,
 				06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */,
 				061609111D96112D00D145C4 /* MockComponent.swift in Sources */,
 				0650B1F11DAB0AD600A7846C /* YailRuntimeError.swift in Sources */,

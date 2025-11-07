@@ -29,6 +29,8 @@
 - (void)unprotect:(nonnull id)object;
 - (void)markObject:(nonnull NSObject *)object;
 - (pic_value)internObject:(nonnull id<SCMObject>)object;
+- (nullable id<SCMValue>)apply:(pic_value)proc;
+- (nullable id<SCMValue>)apply:(pic_value)proc to:(NSArray * _Nonnull)arguments;
 
 /**
  * Run a garbage collection cycle of the Scheme memory.
