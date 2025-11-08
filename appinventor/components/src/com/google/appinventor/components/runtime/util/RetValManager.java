@@ -223,6 +223,30 @@ public class RetValManager {
   }
 
   /*
+   * Start the process of loading and saving a project locally
+   * (AppLibrary)
+   */
+  public static void startCache() {
+    synchronized (semaphore) {
+      JSONObject retval = new JSONObject();
+      try {
+        retval.put("status", "OK");
+        retval.put("type", "startCache");
+      } catch (JSONException e) {
+        Log.e(LOG_TAG, "Error building retval", e);
+        return;
+      }
+      boolean sendNotify = currentArray.isEmpty();
+      currentArray.add(retval);
+      if (PhoneStatus.getUseWebRTC()) {
+        webRTCsendCurrent();
+      } else if (sendNotify) {
+        semaphore.notifyAll();
+      }
+    }
+  }
+
+  /*
    * fetch -- Fetch all pending results as a JSON encoded array.
    *
    * NOTE: This code is not used when we are using webrtc
