@@ -34,31 +34,28 @@
             <ya:RemoveFormAction/>
         </ai:ToolbarItem>
 
-        <ai:ToolbarItem name="TutorialToggle" icon="school" tooltip="{messages.toggleTutorialButton}"
-                        visible="false" align="center" styleName="ode-ProjectListButton inline">
-            <ya:ToggleTutorialAction/>
-        </ai:ToolbarItem>
+      <ai:ToolbarItem name="SwitchToDesignHidden" ui:field="switchToDesign" visible="false" />
+      <ai:ToolbarItem name="SwitchToBlocksHidden" ui:field="switchToBlocks" visible="false" />
+      <ai:ToolbarItem name="SendToGalleryHidden" ui:field="sendToGalleryItem" visible="false" />
 
-        <ai:ToolbarItem name="ProjectPropertiesDialog" icon="manufacturing"
-                        tooltip="{messages.projectPropertiesText}" align="center" styleName="ode-ProjectListButton inline left-spacer" visible="false">
-            <ya:ProjectPropertiesAction />
-        </ai:ToolbarItem>
-
-        <ai:ToolbarItem name="Gallery" icon="public" tooltip="{messages.publishToGalleryButton}"
-                        ui:field="sendToGalleryItem" align="center"  styleName="ode-ProjectListButton inline" visible="false">
-            <ca:SendToGalleryAction/>
-        </ai:ToolbarItem>
-
-        <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
-                        ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bleft primary" visible="false">
-            <ya:SwitchToFormEditorAction/>
-        </ai:ToolbarItem>
-        <ai:ToolbarItem name="switchToBlocks" caption="{messages.switchToBlocksEditorButton}"
-                        ui:field="switchToBlocks" align="right" styleName="ode-ProjectListButton bright primary" visible="false">
-            <ya:SwitchToBlocksEditorAction/>
-        </ai:ToolbarItem>
-
-        <ai:DropDownButton name="DesignerAction" align="right" styleName="ode-designer-action-button"
-                           icon="more_vert" ui:field="designerActionDropdown"/>
+      <ai:DropDownButton name="MobileDropdown" icon="more_vert" styleName="ode-designer-action-button"
+        align="right" rightAlign="true" >
+        <ai:DropDownItem name="SwitchToDesign" caption="{messages.switchToFormEditorButton}"
+            styleName="mobile-dropdown-button">
+          <ya:SwitchToFormEditorAction />
+        </ai:DropDownItem>
+        <ai:DropDownItem name="SwitchToBlocks" caption="{messages.switchToBlocksEditorButton}"
+            styleName="mobile-dropdown-button">
+          <ya:SwitchToBlocksEditorAction />
+        </ai:DropDownItem>
+        <hr/>
+        <ai:DropDownItem name="ProjectProperties" caption="{messages.projectPropertiesText}" styleName="mobile-dropdown-button">
+          <ya:ProjectPropertiesAction />
+        </ai:DropDownItem>
+        <ai:DropDownItem name="SendToGallery" caption="{messages.publishToGalleryButton}"
+            styleName="mobile-dropdown-button">
+          <ca:SendToGalleryAction />
+        </ai:DropDownItem>
+      </ai:DropDownButton>
     </ai:Toolbar>
 </ui:UiBinder>

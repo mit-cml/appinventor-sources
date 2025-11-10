@@ -22,7 +22,7 @@
                 <g:FlowPanel styleName="ode-ProjectEditor" >
                     <mob:DesignToolbarMob ui:field="designToolbar" />
                     <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns">
-                        <box:PaletteBox width="100%" ui:field="paletteBox"  addStyleNames="ode-Hidden"/>
+                        <box:PaletteBox width="80%" ui:field="paletteBox"  addStyleNames="ode-Hidden"/>
                         <box:ViewerBox ui:field="viewerBox"/>
                         <g:FlowPanel ui:field="structureAndAssets">
                             <box:SourceStructureBox ui:field="sourceStructureBox"  addStyleNames="ode-Hidden"/>

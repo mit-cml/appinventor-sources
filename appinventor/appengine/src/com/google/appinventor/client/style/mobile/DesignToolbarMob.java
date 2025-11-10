@@ -46,9 +46,6 @@ public class DesignToolbarMob extends DesignToolbar {
     @UiField protected ToolbarItem switchToDesign;
     @UiField protected ToolbarItem switchToBlocks;
     @UiField protected ToolbarItem sendToGalleryItem;
-    @UiField protected DropDownButton designerActionDropdown;
-
-    private static final String DESIGNER_ACTION_DROPDOWN = "DesignerAction";
 
     @Override
     public void bindUI() {
@@ -63,36 +60,7 @@ public class DesignToolbarMob extends DesignToolbar {
         super.switchToBlocks = switchToBlocks;
         super.sendToGalleryItem = sendToGalleryItem;
 
-        designerActionDropdown.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                addPopupStyling();
-            }
-        }, ClickEvent.getType());
 
-        populateMobileDropdown();
-    }
-
-    // we need to refactor this method to use a more efficient method
-    private void addPopupStyling() {
-        NodeList<Element> allElements = Document.get().getElementsByTagName("div");
-        for (int i = 0; i < allElements.getLength(); i++) {
-            Element element = allElements.getItem(i);
-            if (element.getClassName().contains("gwt-PopupPanel")) {
-                String display = element.getStyle().getDisplay();
-
-                // Toggle popup visibility
-                if (display == null || display.equals("none")) {
-                    // Show popup
-                    element.addClassName("mobile-designer-popup");
-                    element.getStyle().setProperty("display", "block");
-                } else {
-                    // Hide popup
-                    element.removeClassName("mobile-designer-popup");
-                    element.getStyle().setProperty("display", "none");
-                }
-            }
-        }
     }
 
     /**
@@ -100,24 +68,6 @@ public class DesignToolbarMob extends DesignToolbar {
      * including editor switching, project management, and tutorial controls.
      * Groups related actions together with visual separators for better UX.
      */
-    private void populateMobileDropdown() {
-
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("SwitchToDesign", MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction(), "mobile-dropdown-button"));
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("SwitchToBlocks", MESSAGES.switchToBlocksEditorButton(), new SwitchToBlocksEditorAction(), "mobile-dropdown-button"));
-
-        // Project actions
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("ProjectSeparator", "─────────", null, "mobile-dropdown-separator"));
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("ProjectProperties", MESSAGES.projectPropertiesText(), new ProjectPropertiesAction(), "mobile-dropdown-button"));
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("SendToGallery", MESSAGES.publishToGalleryButton(), new SendToGalleryAction(), "mobile-dropdown-button"));
-        addDropDownButtonItem(DESIGNER_ACTION_DROPDOWN,
-                new DropDownItem("TutorialToggle", MESSAGES.toggleTutorialButton(), new ToggleTutorialAction(), "mobile-dropdown-button"));
-
-    }
 
     /**
      * Toggles between design and blocks editor views with mobile-specific behavior.
