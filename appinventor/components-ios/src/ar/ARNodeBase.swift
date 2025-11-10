@@ -81,7 +81,8 @@ open class ARNodeBase: NSObject, ARNode {
   public var _previewPlacementSurface: SIMD3<Float>?
   public var _hasPreviewSurface: Bool = false
   
-
+  /// How far in front of a marker the child should live (meters).
+  private let kMinForwardFromMarker: Float = 0.05 // 5 cm
 
   // MARK: - Initialization
   
@@ -892,77 +893,93 @@ open class ARNodeBase: NSObject, ARNode {
       return
     }
     if let marker = imageMarker as? ImageMarker {
-      reparentUnderMarker(marker, keepWorld: true)
+      reparentUnderMarkerPivot(marker, keepWorld: true)
     } else {
       // If only ARImageMarker protocol is available and no anchor yet, queue it
       imageMarker.attach(self) // queues
     }
-    
-    imageMarker.attach(self)
+
   }
   
-  @objc open func FollowWithOffset(_ imageMarker: ARImageMarker, _ x: Float, _ y: Float, _ z: Float) {
+  @objc open func FollowWithOffset(_ imageMarker: ARImageMarker,
+                                   _ x: Float, _ y: Float, _ z: Float) {
     guard _followingMarker == nil else {
-      _container?.form?.dispatchErrorOccurredEvent(self, "FollowWithOffset", ErrorMessage.ERROR_ALREADY_FOLLOWING_IMAGEMARKER.code)
+      _container?.form?.dispatchErrorOccurredEvent(self, "FollowWithOffset",
+                      ErrorMessage.ERROR_ALREADY_FOLLOWING_IMAGEMARKER.code)
       return
     }
-    
-    let xMeters: Float = UnitHelper.centimetersToMeters(x)
-    let yMeters: Float = UnitHelper.centimetersToMeters(y)
-    let zMeters: Float = UnitHelper.centimetersToMeters(z)
-    let offset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
+
+    let offsetM = SIMD3<Float>(
+      UnitHelper.centimetersToMeters(x),
+      UnitHelper.centimetersToMeters(y),
+      UnitHelper.centimetersToMeters(z)
+    )
+
     if let marker = imageMarker as? ImageMarker {
-      reparentUnderMarker(marker, keepWorld: true, offsetCM: offset)
-      if #available(iOS 18.0, *) {
-          // Yaw-only (stay upright while facing the camera)
-        self._modelEntity.components.set(BillboardComponent())
-      }
+      reparentUnderMarkerPivot(marker, keepWorld: true, offsetM: offsetM)
     } else {
-      // If only ARImageMarker protocol is available and no anchor yet, queue it
-      imageMarker.attach(self) // queues
+      imageMarker.attach(self) // queue if only protocol available
     }
   }
-  
-  
 
-  func reparentUnderMarker(_ marker: ImageMarker,
-                           keepWorld: Bool = true,
-                           offsetCM: SIMD3<Float>? = nil) {
-    // You can't be both geo-anchored and marker-following
-    _geoAnchor = nil
 
-    let worldMatrix = _modelEntity.transformMatrix(relativeTo: nil)
 
-    _modelEntity.removeFromParent()
-    _anchorEntity = nil
-
-    guard let markerAnchor = marker.Anchor else {
-      // Marker not detected yet → fall back to queued attachment
-      marker.attach(self)  // queues it; FirstDetected will parent it
+  func reparentUnderMarkerPivot(_ marker: ImageMarker,
+                                keepWorld: Bool = true,
+                                offsetM: SIMD3<Float>? = nil) {
+      _geoAnchor = nil
       _followingMarker = marker
-      return
-    }
 
-    // Compute local transform under marker (so we keep the pose visually)
-    let markerWorld = markerAnchor.transformMatrix(relativeTo: nil)
-    let localMatrix = markerWorld.inverse * worldMatrix
-    var localTransform = Transform(matrix: localMatrix)
+      guard let markerAnchor = marker.Anchor,
+            let pivot = marker._pivotOffset as Entity? else {
+          marker.attach(self) // queue until FirstDetected
+          return
+      }
 
-    if let off = offsetCM {
-      let m = SIMD3<Float>(UnitHelper.centimetersToMeters(off.x),
-                           UnitHelper.centimetersToMeters(off.y),
-                           UnitHelper.centimetersToMeters(off.z))
-      localTransform.translation += m
-    }
+      // (Optional but nice): remove from old parent to be explicit
+      _modelEntity.removeFromParent()
 
-    //set the local transform explicitly
-    markerAnchor.addChild(_modelEntity, preservingWorldTransform: false)
-    _modelEntity.transform = localTransform
+      let holder = Entity()
+      holder.name = "\(Name)_holder"
+      pivot.addChild(holder, preservingWorldTransform: true)
 
-    _followingMarker = marker
-    _anchorEntity = markerAnchor
+      // Parent the node under the holder, preserving world pose
+      holder.addChild(_modelEntity, preservingWorldTransform: true)
+
+      // --- FRONT CLAMP ---
+      // Place a few cm in front of the marker, along pivot -Z (its forward).
+      // Use -0.06m as a safe default (tune as needed).
+      var local = _modelEntity.position(relativeTo: holder)
+      local.z -= 0.06
+
+      // Apply requested user offset (meters) *after* the front clamp
+      if let off = offsetM {
+          local += off
+      }
+      _modelEntity.setPosition(local, relativeTo: holder)
+
+      // Ensure it’s actually visible
+      _modelEntity.isEnabled = true
+      holder.isEnabled = true
+      pivot.isEnabled = true
+      markerAnchor.isEnabled = true
+
+      // Keep physics off while following
+      _modelEntity.physicsBody = nil
+      _modelEntity.collision  = nil
+
+      // For thin text/planes, disable face culling to prevent vanishing at angles
+      if var sm = _modelEntity.model?.materials.first as? SimpleMaterial {
+        if #available(iOS 18.0, *) {
+          sm.faceCulling = .none
+        } else {
+          // Fallback on earlier versions
+        }
+          _modelEntity.model?.materials = [sm]
+      }
+
+      _anchorEntity = markerAnchor
   }
-  
 
   
   @objc open func StopFollowingImageMarker() {

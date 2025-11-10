@@ -5,6 +5,7 @@ import Foundation
 import RealityKit
 import ARKit
 import GLKit
+import Combine
 
 @available(iOS 14.0, *)
 open class ImageMarker: NSObject, ARImageMarker {
@@ -25,6 +26,9 @@ open class ImageMarker: NSObject, ARImageMarker {
   var _detecting: Bool = false
   var _widthSet: Bool = false
   var _imageSet: Bool = false
+  
+  var _pivotOffset: Entity? = nil
+  var _pivotUpdate: Cancellable?  // store the Update subscription
   
   // Override the protocol extension to provide actual storage
   open var Anchor: AnchorEntity? {
@@ -196,6 +200,8 @@ open class ImageMarker: NSObject, ARImageMarker {
     }
   }
   
+  
+  
   // MARK: Events
   @objc open func FirstDetected(_ imageAnchor: ARImageAnchor) {
     guard _anchorEntity != nil else {
@@ -278,6 +284,11 @@ extension ImageMarker: LifecycleDelegate {
     removeAllNodes()
     _container?.removeMarker(self)
     _container = nil
+    
+    _pivotUpdate?.cancel()
+    _pivotUpdate = nil
+    _pivotOffset = nil
+
   }
   
   @objc public func onDestroy() {

@@ -1356,14 +1356,54 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         else { continue }
 
         if marker.Anchor == nil {
-          let rkAnchor = AnchorEntity(anchor: imageAnchor)
-          DispatchQueue.main.async {
-            self._arView.scene.anchors.append(rkAnchor)
-            marker.Anchor = rkAnchor                           // store anchor on the marker
+          let imAnchor = AnchorEntity(anchor: imageAnchor)
+          DispatchQueue.main.async { [self] in
+            
+            self._arView.scene.anchors.append(imAnchor)
+            marker.Anchor = imAnchor
+            // In didAdd for ARImageAnchor, after you create pivot:
+            if marker._pivotOffset == nil {
+                let pivot = Entity()
+                pivot.name = "markerPivot"
+                imAnchor.addChild(pivot)   // the imageMarker's anchor is the ARImageAnchor and the pivot entity is attached to the ARImageAnchor
+                marker._pivotOffset = pivot
+                print("pivotOffset is \(pivot)")
+                // initialize yaw
+                if let cam = _arView.cameraTransform as Optional {
+                    let yaw = yawToFaceCamera(markerWorld: imAnchor.transformMatrix(relativeTo: nil),
+                                              cameraWorld: cam.matrix)
+                  let modelForwardFix = simd_quatf(angle: .pi/2, axis: [0,1,0])
+                  pivot.orientation = modelForwardFix
+                    //pivot.orientation = simd_quatf(angle: -yaw, axis: [0,1,0])
+                }
 
-            // Drain any queued nodes
-            for node in marker.AttachedNodes { // 
-              rkAnchor.addChild(node._modelEntity)
+                // subscribe once; keep cancellable on the marker
+                marker._pivotUpdate = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self, weak marker] _ in
+                    guard
+                      let self,
+                      let m = marker,
+                      let pivot = m._pivotOffset,
+                      let anchor = m.Anchor,
+                      let cam = self._arView.cameraTransform as Optional
+                    else { return }
+
+                    let yaw = self.yawToFaceCamera(
+                        markerWorld: anchor.transformMatrix(relativeTo: nil),
+                        cameraWorld: cam.matrix
+                    )
+                  
+                  let modelForwardFix = simd_quatf(angle: .pi/2, axis: [0,1,0]) // adjust if your mesh faces +X/+Z
+                  pivot.orientation = modelForwardFix
+                }
+            }
+
+            
+            if let pivot = marker._pivotOffset as Optional {
+              for node in marker.AttachedNodes {
+                if let n = node as? ARNodeBase {
+                  n.reparentUnderMarkerPivot(marker, keepWorld: true, offsetM: n._worldOffset /* or a default forward offset */)
+                }
+              }
             }
 
             marker._isTracking = true
@@ -1376,6 +1416,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
   }
+    
+    func yawToFaceCamera(markerWorld: float4x4, cameraWorld: float4x4) -> Float {
+      let mPos = SIMD3<Float>(markerWorld.columns.3.x, markerWorld.columns.3.y, markerWorld.columns.3.z)
+      let cPos = SIMD3<Float>(cameraWorld.columns.3.x, cameraWorld.columns.3.y, cameraWorld.columns.3.z)
+      var dir = cPos - mPos
+      dir.y = 0 // yaw-only
+      let f = simd_normalize(dir)
+      return atan2f(f.x, f.z) // yaw in world-up (Y)
+    }
 
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
     for anchor in anchors {
@@ -1388,9 +1437,47 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           let imageMarker = _imageMarkers[name]
         else { continue }
           if !imageAnchor.isTracked {
-              imageMarker.NoLongerInView()
-          } else if !imageMarker._isTracking {
-              imageMarker.AppearedInView()
+            guard let pivot  = imageMarker._pivotOffset else { return }
+
+                let worldM = pivot.transformMatrix(relativeTo: nil)
+
+                // 2) make a world anchor and move the pivot under it
+                let worldAnchor = AnchorEntity(world: .zero) // placeholder
+                worldAnchor.transform = Transform(matrix: worldM)
+                _arView.scene.addAnchor(worldAnchor)
+
+                // reparent while preserving world pose
+                worldAnchor.addChild(pivot, preservingWorldTransform: true)
+
+                // 3) stop the face-camera subscription while off-marker (optional)
+            //imageMarker._pivotUpdate?.cancel()
+
+                // store for later reattach
+            imageMarker._anchorEntity = worldAnchor
+             
+          } else {
+            guard let marker = _imageMarkers[name],
+                  let markerAnchor = marker.Anchor,
+                  let pivot = marker._pivotOffset else { return }
+
+            // move pivot back under the marker anchor
+            markerAnchor.addChild(pivot, preservingWorldTransform: true)
+
+            // revive the face-camera subscription (as you did in didAdd)
+            marker._pivotUpdate = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self, weak marker] _ in
+                guard let self, let m = marker,
+                      let pivot = m._pivotOffset,
+                      let cam = self._arView.cameraTransform as Optional else { return }
+
+                let yaw = self.yawToFaceCamera(
+                    markerWorld: (m.Anchor?.transformMatrix(relativeTo: nil))!,
+                    cameraWorld: cam.matrix
+                )
+                let faceToCam = simd_quatf(angle: -yaw, axis: [0,1,0])
+              let modelForwardFix = simd_quatf(angle: .pi/2, axis: [0,1,0]) // adjust if your mesh faces +X/+Z
+                let target = modelForwardFix * faceToCam
+                pivot.orientation = simd_slerp(pivot.orientation, target, 0.15)
+            }
           }
           let position = SIMD3<Float>(imageAnchor.transform.columns.3.x, imageAnchor.transform.columns.3.y, imageAnchor.transform.columns.3.z)
           let rotation = imageAnchor.transform.eulerAngles
@@ -1446,6 +1533,23 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
        self.clearView()
      }
    }
+  
+  
+  func keepVisibleWhenMarkerLost(_ node: ARNodeBase) {
+      let worldM = node._modelEntity.transformMatrix(relativeTo: nil)
+
+      let worldAnchor = AnchorEntity(world: .zero)
+      worldAnchor.transform = Transform(matrix: worldM)
+      _arView.scene.anchors.append(worldAnchor)
+
+      worldAnchor.addChild(node._modelEntity, preservingWorldTransform: true)
+      node._anchorEntity = worldAnchor
+      node._followingMarker = nil
+  }
+
+  func reattachToMarkerWhenFound(_ node: ARNodeBase, marker: ImageMarker) {
+      node.reparentUnderMarkerPivot(marker, keepWorld: true)
+  }
   
   //ARSessionObserver
   public func sessionWasInterrupted(_ session: ARSession) {
@@ -1742,8 +1846,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     @objc open func CreateModelNode(_ x: Float, _ y: Float, _ z: Float, _ modelObjString: String) -> ModelNode {
       let node:ModelNode = ModelNode(self)
       node.Name = "ModelNode"
-      node.Initialize()
       node.Model = modelObjString
+      node.Initialize()
       
       let xMeters: Float = UnitHelper.centimetersToMeters(x)
       let yMeters: Float = UnitHelper.centimetersToMeters(y)
@@ -2092,7 +2196,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       for (node, markerName, offCM) in pendingFollows {
         if let marker = markersByName[markerName] {
           if marker.Anchor != nil {
-            node.reparentUnderMarker(marker, keepWorld: true, offsetCM: offCM)
+            node.reparentUnderMarkerPivot(marker, offsetM: offCM)
           } else {
             // queue until FirstDetected (keeps a cm offset if you want)
             marker.attach(node)
