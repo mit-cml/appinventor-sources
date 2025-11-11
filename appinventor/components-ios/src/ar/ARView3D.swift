@@ -1304,6 +1304,104 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
 
+   private func startBillboarding(for marker: ImageMarker, arView: ARView) {
+      marker._pivotUpdate?.cancel()
+      var framesToSkip = 2
+
+      marker._pivotUpdate = arView.scene.subscribe(to: SceneEvents.Update.self) { [weak marker, weak arView] _ in
+        guard let arView, let m = marker,
+            let rotator = m._billboardRotator,
+            let cam = arView.cameraTransform as Optional else { return }
+
+        if framesToSkip > 0 { framesToSkip -= 1; return }
+
+        // Camera-heading billboard (faces camera)
+        let fwdCamWS = -SIMD3<Float>(cam.matrix.columns.2.x, cam.matrix.columns.2.y, cam.matrix.columns.2.z)
+        var f = SIMD3<Float>(fwdCamWS.x, 0, fwdCamWS.z);
+        if simd_length_squared(f) < 1e-8 { f = SIMD3<Float>(0,0,1) }
+        let yaw = atan2f(f.x, f.z)
+        let targetWorld = simd_quatf(angle: yaw + .pi, axis: [0,1,0]) // face camera
+
+        let currentRot = rotator.orientation(relativeTo: nil)
+        // shortest-arc slerp
+        let tgt = (simd_dot(currentRot.vector, targetWorld.vector) < 0)
+          ? simd_quatf(ix: -targetWorld.imag.x, iy: -targetWorld.imag.y, iz: -targetWorld.imag.z, r: -targetWorld.real)
+          : targetWorld
+
+        let smoothed = simd_slerp(currentRot, tgt, 0.12)
+        rotator.setOrientation(smoothed, relativeTo: nil)  // world-space write
+      }
+  }
+
+
+  private func stopBillboarding(for marker: ImageMarker) {
+      marker._pivotUpdate?.cancel()
+      marker._pivotUpdate = nil
+  }
+
+  private func ensureScaffold(for marker: ImageMarker, markerAnchor anchor: AnchorEntity) {
+    guard marker._pivot == nil || marker._billboardRotator == nil else { return }
+
+    let pivot   = Entity();  pivot.name   = "markerPivot"
+    let rotator = Entity();  rotator.name = "rotator"
+
+    pivot.transform   = .identity
+    rotator.transform = .identity
+
+    anchor.addChild(pivot,  preservingWorldTransform: false)
+    pivot.addChild(rotator, preservingWorldTransform: false)
+
+    marker._pivot            = pivot
+    marker._billboardRotator = rotator
+    marker._lastPivotWorld = pivot.transformMatrix(relativeTo: nil)
+
+  }
+
+  private func detachPivotToWorldIfNeeded(for marker: ImageMarker, arView: ARView) {
+      guard let pivot = marker._pivot else { return }
+    print("Detaching pivot to world \(pivot.transform)")
+      // 1) Capture pivot's world transform right now
+      let worldM = marker._lastPivotWorld ?? pivot.transformMatrix(relativeTo: nil)
+
+      // Create or update the world anchor at the cached pose
+      let wa: AnchorEntity
+      if let existing = marker._detachedPivotWorldAnchor {
+        wa = existing
+        wa.transform = Transform(matrix: worldM)
+      } else {
+        wa = AnchorEntity(world: .zero)
+        wa.transform = Transform(matrix: worldM)
+        arView.scene.anchors.append(wa)
+        marker._detachedPivotWorldAnchor = wa
+      }
+
+      // Force pivot back to cached world pose, then reparent preserving world
+      pivot.setTransformMatrix(worldM, relativeTo: nil)
+      pivot.parent?.removeChild(pivot)
+      wa.addChild(pivot, preservingWorldTransform: true)
+
+  }
+
+  private func reattachPivotUnderImageAnchorIfNeeded(for marker: ImageMarker) {
+
+    guard let pivot = marker._pivot, let img = marker.Anchor else { return }
+    let worldM = pivot.transformMatrix(relativeTo: nil)
+    pivot.parent?.removeChild(pivot)
+    img.addChild(pivot, preservingWorldTransform: true)
+    marker._lastPivotWorld = worldM
+    print("REATTACH: pivot local reset to identity under marker \(pivot.transformMatrix(relativeTo: nil))")
+  }
+
+
+
+  private func cleanupMarkerPivot(_ marker: ImageMarker) {
+    stopBillboarding(for: marker)
+    marker._pivot?.removeFromParent()
+    marker._pivot = nil
+    marker._anchorEntity?.removeFromParent()
+    marker._anchorEntity = nil
+  }
+  
   // MARK: ARSession Delegate Methods
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
     let newMeshes = anchors.compactMap { $0 as? ARMeshAnchor }.count
@@ -1348,84 +1446,34 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           }
         }
       } else if let imageAnchor = anchor as? ARImageAnchor {
-        print("🔁 didAdd imageAnchor \(imageAnchor)")
-  
-        guard
-          let name = imageAnchor.referenceImage.name,
-          let marker = _imageMarkers[name] as ImageMarker?
-        else { continue }
 
+          guard
+               let name = imageAnchor.referenceImage.name,
+               let marker = _imageMarkers[name] as ImageMarker?
+             else { continue }
+              print("➕ didAdd imageAnchor \(imageAnchor.transform)")
+        // Ensure anchor entity exists (once)
         if marker.Anchor == nil {
-          let imAnchor = AnchorEntity(anchor: imageAnchor)
-          DispatchQueue.main.async { [self] in
-            
-            self._arView.scene.anchors.append(imAnchor)
-            marker.Anchor = imAnchor
-            // In didAdd for ARImageAnchor, after you create pivot:
-            if marker._pivotOffset == nil {
-                let pivot = Entity()
-                pivot.name = "markerPivot"
-                imAnchor.addChild(pivot)   // the imageMarker's anchor is the ARImageAnchor and the pivot entity is attached to the ARImageAnchor
-                marker._pivotOffset = pivot
-                print("pivotOffset is \(pivot)")
-                // initialize yaw
-                if let cam = _arView.cameraTransform as Optional {
-                    let yaw = yawToFaceCamera(markerWorld: imAnchor.transformMatrix(relativeTo: nil),
-                                              cameraWorld: cam.matrix)
-                  let modelForwardFix = simd_quatf(angle: .pi/2, axis: [0,1,0])
-                  pivot.orientation = modelForwardFix
-                    //pivot.orientation = simd_quatf(angle: -yaw, axis: [0,1,0])
-                }
-
-                // subscribe once; keep cancellable on the marker
-                marker._pivotUpdate = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self, weak marker] _ in
-                    guard
-                      let self,
-                      let m = marker,
-                      let pivot = m._pivotOffset,
-                      let anchor = m.Anchor,
-                      let cam = self._arView.cameraTransform as Optional
-                    else { return }
-
-                    let yaw = self.yawToFaceCamera(
-                        markerWorld: anchor.transformMatrix(relativeTo: nil),
-                        cameraWorld: cam.matrix
-                    )
-                  
-                  let modelForwardFix = simd_quatf(angle: .pi/2, axis: [0,1,0]) // adjust if your mesh faces +X/+Z
-                  pivot.orientation = modelForwardFix
-                }
-            }
-
-            
-            if let pivot = marker._pivotOffset as Optional {
-              for node in marker.AttachedNodes {
-                if let n = node as? ARNodeBase {
-                  n.reparentUnderMarkerPivot(marker, keepWorld: true, offsetM: n._worldOffset /* or a default forward offset */)
-                }
-              }
-            }
-
-            marker._isTracking = true
-            marker._lastPushTime = Date()
-            marker.FirstDetected(imageAnchor)
-          }
+          let im = AnchorEntity(anchor: imageAnchor)
+          _arView.scene.anchors.append(im)
+          marker.Anchor = im
         }
+        ensureScaffold(for: marker, markerAnchor: marker.Anchor!)
+        marker._isTracking = imageAnchor.isTracked
+        // cache immediately
+        if let p = marker._pivot {
+          marker._lastPivotWorld = p.transformMatrix(relativeTo: nil)
+        }
+        marker.FirstDetected(imageAnchor)
+            
       } else if let geoAnchor = anchor as? ARGeoAnchor {
           handleGeoAnchorAdded(geoAnchor)
       }
     }
   }
-    
-    func yawToFaceCamera(markerWorld: float4x4, cameraWorld: float4x4) -> Float {
-      let mPos = SIMD3<Float>(markerWorld.columns.3.x, markerWorld.columns.3.y, markerWorld.columns.3.z)
-      let cPos = SIMD3<Float>(cameraWorld.columns.3.x, cameraWorld.columns.3.y, cameraWorld.columns.3.z)
-      var dir = cPos - mPos
-      dir.y = 0 // yaw-only
-      let f = simd_normalize(dir)
-      return atan2f(f.x, f.z) // yaw in world-up (Y)
-    }
 
+
+  
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
     for anchor in anchors {
       if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
@@ -1436,52 +1484,36 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           let name = imageAnchor.referenceImage.name,
           let imageMarker = _imageMarkers[name]
         else { continue }
-          if !imageAnchor.isTracked {
-            guard let pivot  = imageMarker._pivotOffset else { return }
+        guard
+          let name = imageAnchor.referenceImage.name,
+          let marker = _imageMarkers[name]
+        else { continue }
+       // print("➕ didUpdate imageAnchor \(imageAnchor.transform)")
+        if marker.Anchor == nil {
+          let imAnchor = AnchorEntity(anchor: imageAnchor)
+          _arView.scene.anchors.append(imAnchor)
+          marker.Anchor = imAnchor
+          ensureScaffold(for: marker, markerAnchor: imAnchor)
+        }
 
-                let worldM = pivot.transformMatrix(relativeTo: nil)
+        let wasTracked = marker._isTracking
+        let nowTracked = imageAnchor.isTracked
+        marker._isTracking = nowTracked
 
-                // 2) make a world anchor and move the pivot under it
-                let worldAnchor = AnchorEntity(world: .zero) // placeholder
-                worldAnchor.transform = Transform(matrix: worldM)
-                _arView.scene.addAnchor(worldAnchor)
-
-                // reparent while preserving world pose
-                worldAnchor.addChild(pivot, preservingWorldTransform: true)
-
-                // 3) stop the face-camera subscription while off-marker (optional)
-            //imageMarker._pivotUpdate?.cancel()
-
-                // store for later reattach
-            imageMarker._anchorEntity = worldAnchor
-             
-          } else {
-            guard let marker = _imageMarkers[name],
-                  let markerAnchor = marker.Anchor,
-                  let pivot = marker._pivotOffset else { return }
-
-            // move pivot back under the marker anchor
-            markerAnchor.addChild(pivot, preservingWorldTransform: true)
-
-            // revive the face-camera subscription (as you did in didAdd)
-            marker._pivotUpdate = _arView.scene.subscribe(to: SceneEvents.Update.self) { [weak self, weak marker] _ in
-                guard let self, let m = marker,
-                      let pivot = m._pivotOffset,
-                      let cam = self._arView.cameraTransform as Optional else { return }
-
-                let yaw = self.yawToFaceCamera(
-                    markerWorld: (m.Anchor?.transformMatrix(relativeTo: nil))!,
-                    cameraWorld: cam.matrix
-                )
-                let faceToCam = simd_quatf(angle: -yaw, axis: [0,1,0])
-              let modelForwardFix = simd_quatf(angle: .pi/2, axis: [0,1,0]) // adjust if your mesh faces +X/+Z
-                let target = modelForwardFix * faceToCam
-                pivot.orientation = simd_slerp(pivot.orientation, target, 0.15)
-            }
+        
+        if nowTracked {
+          // while tracked, continuously cache the REAL world pose
+          if let p = marker._pivot {
+            marker._lastPivotWorld = p.transformMatrix(relativeTo: nil)
           }
-          let position = SIMD3<Float>(imageAnchor.transform.columns.3.x, imageAnchor.transform.columns.3.y, imageAnchor.transform.columns.3.z)
-          let rotation = imageAnchor.transform.eulerAngles
-          imageMarker.pushUpdate(position, rotation)
+        } else if wasTracked && !nowTracked {
+          // tracked -> lost: detach using cached world pose
+          detachPivotToWorldIfNeeded(for: marker, arView: _arView)
+        } else if !wasTracked && nowTracked {
+          // lost -> tracked: reattach
+          reattachPivotUnderImageAnchorIfNeeded(for: marker)
+        }
+        
       } else if let geoAnchor = anchor as? ARGeoAnchor {
           handleGeoAnchorAdded(geoAnchor)
       }
@@ -1494,12 +1526,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         _detectedPlanesDict.removeValue(forKey: anchor)
         removedPlane.removed()
         DetectedPlaneRemoved(removedPlane)
-      } else if let imageAnchor = anchor as? ARImageAnchor {
-        guard let name = imageAnchor.referenceImage.name, let imageMarker = _imageMarkers[name] else { return }
-        imageMarker.Reset()
+      } else if let imageAnchor = anchor as? ARImageAnchor,
+          let name = imageAnchor.referenceImage.name,
+          let marker = _imageMarkers[name] {
+            cleanupMarkerPivot(marker)
+            marker.Reset()
       }
     }
   }
+  
   
   public func session(_ session: ARSession, didUpdate frame: ARFrame) {
 
@@ -1534,23 +1569,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      }
    }
   
-  
-  func keepVisibleWhenMarkerLost(_ node: ARNodeBase) {
-      let worldM = node._modelEntity.transformMatrix(relativeTo: nil)
 
-      let worldAnchor = AnchorEntity(world: .zero)
-      worldAnchor.transform = Transform(matrix: worldM)
-      _arView.scene.anchors.append(worldAnchor)
-
-      worldAnchor.addChild(node._modelEntity, preservingWorldTransform: true)
-      node._anchorEntity = worldAnchor
-      node._followingMarker = nil
-  }
-
-  func reattachToMarkerWhenFound(_ node: ARNodeBase, marker: ImageMarker) {
-      node.reparentUnderMarkerPivot(marker, keepWorld: true)
-  }
-  
   //ARSessionObserver
   public func sessionWasInterrupted(_ session: ARSession) {
       print("⚠️ ===== AR SESSION INTERRUPTED =====")

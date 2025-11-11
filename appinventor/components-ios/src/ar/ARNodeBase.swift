@@ -84,6 +84,8 @@ open class ARNodeBase: NSObject, ARNode {
   /// How far in front of a marker the child should live (meters).
   private let kMinForwardFromMarker: Float = 0.05 // 5 cm
 
+  public var _offsetHolder: Entity? = nil  // per-node offset entity
+  
   // MARK: - Initialization
   
   init(container: ARNodeContainer, mesh: MeshResource? = nil) {
@@ -923,64 +925,52 @@ open class ARNodeBase: NSObject, ARNode {
   }
 
 
-
   func reparentUnderMarkerPivot(_ marker: ImageMarker,
                                 keepWorld: Bool = true,
                                 offsetM: SIMD3<Float>? = nil) {
-      _geoAnchor = nil
-      _followingMarker = marker
+    _geoAnchor = nil
+    _followingMarker = marker
 
-      guard let markerAnchor = marker.Anchor,
-            let pivot = marker._pivotOffset as Entity? else {
-          marker.attach(self) // queue until FirstDetected
-          return
+    guard let pivot = marker._pivot, let rotator = marker._billboardRotator else { return }
+
+      // Make sure rotator is correctly parented
+      if rotator.parent !== pivot {
+        rotator.parent?.removeChild(rotator)
+        pivot.addChild(rotator, preservingWorldTransform: true)
       }
 
-      // (Optional but nice): remove from old parent to be explicit
+      // Build per-node offset holder (or reuse)
+      let offset = _offsetHolder ?? Entity()
+      if _offsetHolder == nil {
+        offset.name = "offset(\(Name))"
+        offset.transform = .identity
+        rotator.addChild(offset, preservingWorldTransform: false)
+        _offsetHolder = offset
+      }
+
+      // Desired world pose = what the model currently has
+      let desiredWorld = _modelEntity.transformMatrix(relativeTo: nil)
+
+      // Move model under per-node offset holder
       _modelEntity.removeFromParent()
+      offset.addChild(_modelEntity, preservingWorldTransform: false)
 
-      let holder = Entity()
-      holder.name = "\(Name)_holder"
-      pivot.addChild(holder, preservingWorldTransform: true)
-
-      // Parent the node under the holder, preserving world pose
-      holder.addChild(_modelEntity, preservingWorldTransform: true)
-
-      // --- FRONT CLAMP ---
-      // Place a few cm in front of the marker, along pivot -Z (its forward).
-      // Use -0.06m as a safe default (tune as needed).
-      var local = _modelEntity.position(relativeTo: holder)
-      local.z -= 0.06
-
-      // Apply requested user offset (meters) *after* the front clamp
-      if let off = offsetM {
-          local += off
-      }
-      _modelEntity.setPosition(local, relativeTo: holder)
-
-      // Ensure it’s actually visible
-      _modelEntity.isEnabled = true
-      holder.isEnabled = true
-      pivot.isEnabled = true
-      markerAnchor.isEnabled = true
-
-      // Keep physics off while following
-      _modelEntity.physicsBody = nil
-      _modelEntity.collision  = nil
-
-      // For thin text/planes, disable face culling to prevent vanishing at angles
-      if var sm = _modelEntity.model?.materials.first as? SimpleMaterial {
-        if #available(iOS 18.0, *) {
-          sm.faceCulling = .none
-        } else {
-          // Fallback on earlier versions
-        }
-          _modelEntity.model?.materials = [sm]
+      // Compute LOCAL so that world remains the same
+      let parentWorld = offset.transformMatrix(relativeTo: nil)
+      let localM      = parentWorld.inverse * desiredWorld
+      _modelEntity.transform = Transform(matrix: localM)
+    var forwardOffset:SIMD3<Float> = SIMD3<Float>(0,0, -0.06)
+      // Put the forward clamp + any per-node offset on the **offset holder**
+      // (assign, don't accumulate)
+      if let extra = offsetM {
+        offset.position = forwardOffset + extra
+      } else {
+        offset.position = forwardOffset
       }
 
-      _anchorEntity = markerAnchor
-  }
-
+      _followingMarker = marker
+      _anchorEntity    = marker.Anchor
+    }
   
   @objc open func StopFollowingImageMarker() {
     _followingMarker?.removeNode(self)
@@ -1241,7 +1231,7 @@ open class ARNodeBase: NSObject, ARNode {
     print("Finalizing node placement")
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-        self?.EnablePhysics(true)
+      self?.EnablePhysics(self!._enablePhysics)
     }
     
     if let container = _container {
@@ -1306,7 +1296,7 @@ extension ARNodeBase {
       )
       
       physicsBody.material = newMaterial
-      print("🎾 Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
+      print("Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
   }
 
   
@@ -1314,7 +1304,7 @@ extension ARNodeBase {
       guard var physicsBody = _modelEntity.physicsBody else { return }
       
       physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
-      print("🎾 Updated mass to: \(Mass)")
+      print(" Updated mass to: \(Mass)")
   }
   
   //assume sphere shape. can be overriden to be more accurate
