@@ -18,6 +18,8 @@ class ARNodeUtilities {
     let physics = keyvalue["physics"] as? Bool ?? true
     let canMove = keyvalue["canMove"] as? Bool ?? true
     let canScale = keyvalue["canScale"] as? Bool ?? true
+    let text = keyvalue["text"] as? String ?? ""
+    let fontSize = keyvalue["fontSize"] as? String ?? ""
     
     node.ModelUrl = model
     node.Texture = texture
@@ -25,6 +27,11 @@ class ARNodeUtilities {
     node.EnablePhysics = physics == true
     node.PanToMove = canMove == true
     node.PinchToScale = canScale == true
+    
+    if let n = node as? TextNode {
+      n.Text = text
+      n.FontSizeInCentimeters = Float(fontSize) ?? 0.2
+    }
   
   // this doesn't appear to be working
     print("node from yail: \(node.Name) \(physics) \(canMove) \(canScale)")

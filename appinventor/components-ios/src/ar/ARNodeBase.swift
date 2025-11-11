@@ -663,6 +663,11 @@ open class ARNodeBase: NSObject, ARNode {
     yailDict["physics"] = String(self._enablePhysics)
     yailDict["canMove"] = String(self._panToMove)
     yailDict["canScale"] = String(self._pinchToScale)
+    
+    if let tNode = self as? TextNode {
+      yailDict["text"] = tNode.Text
+      yailDict["fontSize"] = tNode.FontSizeInCentimeters
+    }
        
     if let marker = self._followingMarker as? ImageMarker,
        let markerAnchor = marker.Anchor {
@@ -683,7 +688,7 @@ open class ARNodeBase: NSObject, ARNode {
       offCM["y"] = local.translation.y
       offCM["z"] = local.translation.z
       follow["offsetCM"] = offCM
-      print("⚠️ node is following marker \(String(describing: marker.Name)) with offset: \(offCM)");
+      print("⚠️ node \(self.Name) is following marker \(String(describing: marker.Name)) with offset: \(offCM)");
       yailDict["follow"] = follow
     }
     return yailDict

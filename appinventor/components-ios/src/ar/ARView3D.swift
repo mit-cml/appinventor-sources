@@ -960,12 +960,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       guard let type = (d["type"] as? String)?.lowercased(), type == "imagemarker" else { return nil }
       let name = (d["name"] as? String) ?? "<unnamed>"
       let img  = (d["image"] as? String) ?? ""
-      let wCM  = (d["physicalWidthCM"] as? Float) ?? 0
+      let wCM  = (d["physicalWidthCM"] as? Float) ?? 15
       let vis  = (d["visible"] as? Bool) ?? true
-
-      let marker = ImageMarker(self) as ImageMarker   // your existing creation entry point
+    
+      let marker = ImageMarker(self) // your existing creation entry point
       marker.Name = name
       marker.Image = img
+    print("imagemarker created from yail is \(marker.Image)")
       marker.PhysicalWidthInCentimeters = wCM
       marker.Visible = vis
       return marker
@@ -2173,10 +2174,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           if let type = (d["type"] as? String)?.lowercased(), type == "imagemarker" {
             if let marker = CreateImageMarkerFromYail(d) {
               markersByName[marker.Name] = marker
+              
+              _imageMarkers[marker.Name] = marker
             }
           }
         }
-      print("⚠️ markers from yail '\(markersByName)");
+      print("⚠️ markers from yail '\(markersByName) and now \(_imageMarkers)");
+
       for obj in dictionaries {
         if obj is YailDictionary{
           
@@ -2215,7 +2219,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                let name = follow["markerName"] as? String,
                let off = follow["offsetCM"] as? YailDictionary,
                let ox = off["x"] as? Float, let oy = off["y"] as? Float, let oz = off["z"] as? Float {
-              print("⚠️ node \(node.Name) has marker follow '\(name)'");
+              print("⚠️ node \(node.Name) has marker follow '\(name)' and offset is \(off)");
               pendingFollows.append((node, name, SIMD3<Float>(ox, oy, oz)))
             }
           }
@@ -2230,11 +2234,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             // queue until FirstDetected (keeps a cm offset if you want)
             marker.attach(node)
             node._worldOffset = SIMD3<Float>(
-              UnitHelper.centimetersToMeters(offCM.x),
-              UnitHelper.centimetersToMeters(offCM.y),
-              UnitHelper.centimetersToMeters(offCM.z)
+              //UnitHelper.centimetersToMeters(offCM.x),
+              //UnitHelper.centimetersToMeters(offCM.y),
+              //UnitHelper.centimetersToMeters(offCM.z)
+              offCM.x,offCM.y,offCM.z
             )
-            print("⚠️ attached node to marker '\(markerName) \(node.Name)");
+            print("⚠️ attached node to marker '\(markerName) \(node.Name) \(node)");
           }
         } else {
           print("⚠️ Missing marker '\(markerName)'; leaving node in world space.")
