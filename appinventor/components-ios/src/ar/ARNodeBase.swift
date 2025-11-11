@@ -84,7 +84,8 @@ open class ARNodeBase: NSObject, ARNode {
   /// How far in front of a marker the child should live (meters).
   private let kMinForwardFromMarker: Float = 0.05 // 5 cm
 
-  public var _offsetHolder: Entity? = nil  // per-node offset entity
+  public var _frozenWorldTransform: Transform? = nil
+  public var _originalWorldPosition: SIMD3<Float>? = nil
   
   // MARK: - Initialization
   
@@ -895,7 +896,7 @@ open class ARNodeBase: NSObject, ARNode {
       return
     }
     if let marker = imageMarker as? ImageMarker {
-      reparentUnderMarkerPivot(marker, keepWorld: true)
+      reparentUnderMarker(marker, keepWorld: true)
     } else {
       // If only ARImageMarker protocol is available and no anchor yet, queue it
       imageMarker.attach(self) // queues
@@ -918,59 +919,65 @@ open class ARNodeBase: NSObject, ARNode {
     )
 
     if let marker = imageMarker as? ImageMarker {
-      reparentUnderMarkerPivot(marker, keepWorld: true, offsetM: offsetM)
+      reparentUnderMarker(marker, keepWorld: true, offsetM: offsetM)
     } else {
       imageMarker.attach(self) // queue if only protocol available
     }
   }
 
-
-  func reparentUnderMarkerPivot(_ marker: ImageMarker,
+  func reparentUnderMarker(_ marker: ImageMarker,
                                 keepWorld: Bool = true,
                                 offsetM: SIMD3<Float>? = nil) {
     _geoAnchor = nil
     _followingMarker = marker
 
-    guard let pivot = marker._pivot, let rotator = marker._billboardRotator else { return }
-
-      // Make sure rotator is correctly parented
-      if rotator.parent !== pivot {
-        rotator.parent?.removeChild(rotator)
-        pivot.addChild(rotator, preservingWorldTransform: true)
-      }
-
-      // Build per-node offset holder (or reuse)
-      let offset = _offsetHolder ?? Entity()
-      if _offsetHolder == nil {
-        offset.name = "offset(\(Name))"
-        offset.transform = .identity
-        rotator.addChild(offset, preservingWorldTransform: false)
-        _offsetHolder = offset
-      }
-
-      // Desired world pose = what the model currently has
-      let desiredWorld = _modelEntity.transformMatrix(relativeTo: nil)
-
-      // Move model under per-node offset holder
-      _modelEntity.removeFromParent()
-      offset.addChild(_modelEntity, preservingWorldTransform: false)
-
-      // Compute LOCAL so that world remains the same
-      let parentWorld = offset.transformMatrix(relativeTo: nil)
-      let localM      = parentWorld.inverse * desiredWorld
-      _modelEntity.transform = Transform(matrix: localM)
-    var forwardOffset:SIMD3<Float> = SIMD3<Float>(0,0, -0.06)
-      // Put the forward clamp + any per-node offset on the **offset holder**
-      // (assign, don't accumulate)
-      if let extra = offsetM {
-        offset.position = forwardOffset + extra
-      } else {
-        offset.position = forwardOffset
-      }
-
-      _followingMarker = marker
-      _anchorEntity    = marker.Anchor
+    guard let markerAnchor = marker.Anchor else {
+      print("⚠️ Marker anchor not ready")
+      return
     }
+
+    let currentWorldPos = _modelEntity.position(relativeTo: nil)
+    let currentWorldRot = _modelEntity.orientation(relativeTo: nil)
+    let currentWorldScale = _modelEntity.scale(relativeTo: nil)
+    
+    // ✅ CRITICAL: Store the original world position at first attachment
+    if _originalWorldPosition == nil {
+      _originalWorldPosition = currentWorldPos
+      print("💾 Stored ORIGINAL position: \(currentWorldPos)")
+    }
+    
+    print("📍 Attaching node \(Name) directly to marker")
+    print("   Current world pos: \(currentWorldPos)")
+    print("   Original world pos: \(_originalWorldPosition ?? .zero)")
+
+    // Remove from current parent
+    _modelEntity.removeFromParent()
+    
+    // Add directly to marker anchor with world preservation
+    markerAnchor.addChild(_modelEntity, preservingWorldTransform: true)
+
+    // Apply offset if provided
+    if let offset = offsetM {
+      let newPos = currentWorldPos + offset
+      _modelEntity.setPosition(newPos, relativeTo: nil)
+      print("   Applied offset: \(offset) and newpos is \(newPos)")
+    }
+
+    _followingMarker = marker
+    _anchorEntity = marker.Anchor
+    _frozenWorldTransform = nil
+
+    // Add to marker's attached nodes array
+    if !marker._attachedNodes.contains(where: { $0 === self }) {
+      marker._attachedNodes.append(self)
+      print("   ✅ Added to marker. Count: \(marker._attachedNodes.count)")
+    }
+    
+    let finalWorldPos = _modelEntity.position(relativeTo: nil)
+    print("   Final world pos: \(finalWorldPos)")
+    print("   Distance from original: \(simd_distance(_originalWorldPosition ?? .zero, finalWorldPos))m")
+  }
+ 
   
   @objc open func StopFollowingImageMarker() {
     _followingMarker?.removeNode(self)

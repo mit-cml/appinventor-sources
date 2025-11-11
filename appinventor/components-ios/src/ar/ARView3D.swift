@@ -1304,100 +1304,119 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
 
-   private func startBillboarding(for marker: ImageMarker, arView: ARView) {
-      marker._pivotUpdate?.cancel()
-      var framesToSkip = 2
-
-      marker._pivotUpdate = arView.scene.subscribe(to: SceneEvents.Update.self) { [weak marker, weak arView] _ in
-        guard let arView, let m = marker,
-            let rotator = m._billboardRotator,
-            let cam = arView.cameraTransform as Optional else { return }
-
-        if framesToSkip > 0 { framesToSkip -= 1; return }
-
-        // Camera-heading billboard (faces camera)
-        let fwdCamWS = -SIMD3<Float>(cam.matrix.columns.2.x, cam.matrix.columns.2.y, cam.matrix.columns.2.z)
-        var f = SIMD3<Float>(fwdCamWS.x, 0, fwdCamWS.z);
-        if simd_length_squared(f) < 1e-8 { f = SIMD3<Float>(0,0,1) }
-        let yaw = atan2f(f.x, f.z)
-        let targetWorld = simd_quatf(angle: yaw + .pi, axis: [0,1,0]) // face camera
-
-        let currentRot = rotator.orientation(relativeTo: nil)
-        // shortest-arc slerp
-        let tgt = (simd_dot(currentRot.vector, targetWorld.vector) < 0)
-          ? simd_quatf(ix: -targetWorld.imag.x, iy: -targetWorld.imag.y, iz: -targetWorld.imag.z, r: -targetWorld.real)
-          : targetWorld
-
-        let smoothed = simd_slerp(currentRot, tgt, 0.12)
-        rotator.setOrientation(smoothed, relativeTo: nil)  // world-space write
-      }
-  }
-
-
-  private func stopBillboarding(for marker: ImageMarker) {
-      marker._pivotUpdate?.cancel()
-      marker._pivotUpdate = nil
-  }
-
-  private func ensureScaffold(for marker: ImageMarker, markerAnchor anchor: AnchorEntity) {
-    guard marker._pivot == nil || marker._billboardRotator == nil else { return }
-
-    let pivot   = Entity();  pivot.name   = "markerPivot"
-    let rotator = Entity();  rotator.name = "rotator"
-
-    pivot.transform   = .identity
-    rotator.transform = .identity
-
-    anchor.addChild(pivot,  preservingWorldTransform: false)
-    pivot.addChild(rotator, preservingWorldTransform: false)
-
-    marker._pivot            = pivot
-    marker._billboardRotator = rotator
-    marker._lastPivotWorld = pivot.transformMatrix(relativeTo: nil)
-
-  }
-
   private func detachPivotToWorldIfNeeded(for marker: ImageMarker, arView: ARView) {
-      guard let pivot = marker._pivot else { return }
-    print("Detaching pivot to world \(pivot.transform)")
-      // 1) Capture pivot's world transform right now
-      let worldM = marker._lastPivotWorld ?? pivot.transformMatrix(relativeTo: nil)
-
-      // Create or update the world anchor at the cached pose
-      let wa: AnchorEntity
-      if let existing = marker._detachedPivotWorldAnchor {
-        wa = existing
-        wa.transform = Transform(matrix: worldM)
-      } else {
-        wa = AnchorEntity(world: .zero)
-        wa.transform = Transform(matrix: worldM)
-        arView.scene.anchors.append(wa)
-        marker._detachedPivotWorldAnchor = wa
+      print("📍 Marker \(marker.Name) lost - freezing nodes")
+      print("   Attached nodes count: \(marker._attachedNodes.count)")
+      
+      guard !marker._attachedNodes.isEmpty else {
+          print("   ⚠️ No attached nodes to freeze!")
+          return
       }
-
-      // Force pivot back to cached world pose, then reparent preserving world
-      pivot.setTransformMatrix(worldM, relativeTo: nil)
-      pivot.parent?.removeChild(pivot)
-      wa.addChild(pivot, preservingWorldTransform: true)
-
+      
+      for node in marker._attachedNodes {
+          let targetPos = node._modelEntity.position(relativeTo: nil)
+          let worldScale = node._modelEntity.scale(relativeTo: nil)
+          
+          print("  📌 Freezing \(node.Name) at CURRENT: \(targetPos)")
+          
+          node._frozenWorldTransform = Transform(
+              scale: worldScale,
+              translation: targetPos
+          )
+          
+          node._modelEntity.removeFromParent()
+          
+          // ✅ CORRECT: Anchor at target position
+          let frozenWorldAnchor = AnchorEntity(world: targetPos)
+          frozenWorldAnchor.name = "frozen_\(node.Name)"
+          arView.scene.addAnchor(frozenWorldAnchor)
+          
+          // ✅ CORRECT: preservingWorldTransform: false, then set to identity
+          frozenWorldAnchor.addChild(node._modelEntity, preservingWorldTransform: false)
+          node._modelEntity.position = .zero  // At anchor origin
+          node._modelEntity.orientation = .init(angle: 0, axis: [0,1,0])  // No rotation
+          node._modelEntity.scale = worldScale  // Keep scale
+          
+          node._anchorEntity = frozenWorldAnchor
+          
+          let actualPos = node._modelEntity.position(relativeTo: nil)
+          let distance = simd_distance(targetPos, actualPos)
+          
+          print("     Target: \(targetPos)")
+          print("     Actual: \(actualPos)")
+          print("     Distance: \(distance)m")
+      }
+      
+      print("✅ All nodes frozen")
   }
-
+  
+  
   private func reattachPivotUnderImageAnchorIfNeeded(for marker: ImageMarker) {
-
-    guard let pivot = marker._pivot, let img = marker.Anchor else { return }
-    let worldM = pivot.transformMatrix(relativeTo: nil)
-    pivot.parent?.removeChild(pivot)
-    img.addChild(pivot, preservingWorldTransform: true)
-    marker._lastPivotWorld = worldM
-    print("REATTACH: pivot local reset to identity under marker \(pivot.transformMatrix(relativeTo: nil))")
+      guard let markerAnchor = marker.Anchor else {
+          print("⚠️ Cannot reattach - no marker anchor")
+          return
+      }
+      
+      print("🔄 Marker \(marker.Name) reappeared - reattaching nodes")
+      print("   Marker position: \(markerAnchor.position(relativeTo: nil))")
+      print("   Attached nodes count: \(marker._attachedNodes.count)")
+      
+      guard !marker._attachedNodes.isEmpty else {
+          print("   ⚠️ No attached nodes to reattach!")
+          return
+      }
+      
+      for node in marker._attachedNodes {
+          guard let frozenTransform = node._frozenWorldTransform else {
+              print("  ⚠️ No frozen transform for \(node.Name)")
+              continue
+          }
+          
+          let frozenPos = frozenTransform.translation
+          let frozenScale = frozenTransform.scale
+          
+          print("  📌 Reattaching \(node.Name)")
+          print("     Frozen pos: \(frozenPos)")
+          
+          // Step 1: Remove from frozen anchor
+          if let frozenAnchor = node._anchorEntity,
+             frozenAnchor.name.starts(with: "frozen_") {
+              node._modelEntity.removeFromParent()
+              _arView.scene.removeAnchor(frozenAnchor)
+          }
+          
+          // Step 2: Set node to frozen world position
+          node._modelEntity.position = frozenPos
+          node._modelEntity.orientation = .init(angle: 0, axis: [0,1,0])
+          node._modelEntity.scale = frozenScale
+          
+          // Step 3: Add to marker with world preservation
+          markerAnchor.addChild(node._modelEntity, preservingWorldTransform: true)
+          
+          // Update anchor reference
+          node._anchorEntity = markerAnchor
+          
+          // Verify
+          let actualPos = node._modelEntity.position(relativeTo: nil)
+          let distance = simd_distance(frozenPos, actualPos)
+          
+          print("     Expected: \(frozenPos)")
+          print("     Actual: \(actualPos)")
+          print("     Distance: \(distance)m")
+          
+          if distance < 0.01 {
+              print("     ✅ Position maintained")
+          } else {
+              print("     ⚠️ Position drift!")
+          }
+          
+          node._frozenWorldTransform = nil
+      }
+      
+      print("✅ Reattach complete")
   }
-
-
-
+  
   private func cleanupMarkerPivot(_ marker: ImageMarker) {
-    stopBillboarding(for: marker)
-    marker._pivot?.removeFromParent()
-    marker._pivot = nil
     marker._anchorEntity?.removeFromParent()
     marker._anchorEntity = nil
   }
@@ -1458,12 +1477,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           _arView.scene.anchors.append(im)
           marker.Anchor = im
         }
-        ensureScaffold(for: marker, markerAnchor: marker.Anchor!)
+
         marker._isTracking = imageAnchor.isTracked
-        // cache immediately
-        if let p = marker._pivot {
-          marker._lastPivotWorld = p.transformMatrix(relativeTo: nil)
-        }
         marker.FirstDetected(imageAnchor)
             
       } else if let geoAnchor = anchor as? ARGeoAnchor {
@@ -1480,38 +1495,33 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           updatedPlane.updateFor(anchor: planeAnchor)
           DetectedPlaneUpdated(updatedPlane)
       } else if let imageAnchor = anchor as? ARImageAnchor {
-        guard
-          let name = imageAnchor.referenceImage.name,
-          let imageMarker = _imageMarkers[name]
-        else { continue }
+
         guard
           let name = imageAnchor.referenceImage.name,
           let marker = _imageMarkers[name]
         else { continue }
        // print("➕ didUpdate imageAnchor \(imageAnchor.transform)")
+        // Ensure anchor exists
         if marker.Anchor == nil {
-          let imAnchor = AnchorEntity(anchor: imageAnchor)
-          _arView.scene.anchors.append(imAnchor)
-          marker.Anchor = imAnchor
-          ensureScaffold(for: marker, markerAnchor: imAnchor)
+            let imAnchor = AnchorEntity(anchor: imageAnchor)
+            _arView.scene.anchors.append(imAnchor)
+            marker.Anchor = imAnchor
         }
 
         let wasTracked = marker._isTracking
         let nowTracked = imageAnchor.isTracked
         marker._isTracking = nowTracked
 
-        
         if nowTracked {
-          // while tracked, continuously cache the REAL world pose
-          if let p = marker._pivot {
-            marker._lastPivotWorld = p.transformMatrix(relativeTo: nil)
-          }
+            // ✅ If this is a transition from lost -> tracked, reattach
+            if !wasTracked {
+                print("🔄 Marker \(name) reappeared -  but notreattaching")
+                //reattachPivotUnderImageAnchorIfNeeded(for: marker)
+            }
         } else if wasTracked && !nowTracked {
-          // tracked -> lost: detach using cached world pose
-          detachPivotToWorldIfNeeded(for: marker, arView: _arView)
-        } else if !wasTracked && nowTracked {
-          // lost -> tracked: reattach
-          reattachPivotUnderImageAnchorIfNeeded(for: marker)
+            // ✅ Tracked -> Lost: Detach using the LAST CACHED world pose
+            print("⚠️ Marker \(name) lost - detaching to world space")
+            detachPivotToWorldIfNeeded(for: marker, arView: _arView)
         }
         
       } else if let geoAnchor = anchor as? ARGeoAnchor {
@@ -1807,7 +1817,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               
               //node.setPosition(x: xMeters, y: safeY, z: zMeters)
               node._modelEntity.setPosition(SIMD3<Float>(xMeters, safeY, zMeters), relativeTo: nil)
-              print("create node at y  \(yMeters) and safe is \(safeY)")
+              print("create node at x \(xMeters) y  \(yMeters) z \(zMeters) and safe is \(safeY)")
               node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
               node._creatorSessionStart = anchorLocation
               print("saved world coords for offset \(String(describing: node._worldOffset))")
@@ -2215,7 +2225,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       for (node, markerName, offCM) in pendingFollows {
         if let marker = markersByName[markerName] {
           if marker.Anchor != nil {
-            node.reparentUnderMarkerPivot(marker, offsetM: offCM)
+            node.reparentUnderMarker(marker, offsetM: offCM)
           } else {
             // queue until FirstDetected (keeps a cm offset if you want)
             marker.attach(node)

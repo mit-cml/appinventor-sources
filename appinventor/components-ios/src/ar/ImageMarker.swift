@@ -28,14 +28,6 @@ open class ImageMarker: NSObject, ARImageMarker {
   var _imageSet: Bool = false
   
   
-  // marker -> pivot -> rotation -> offset for being in front of marker
-  var _pivot: Entity? = nil
-  var _pivotUpdate: Cancellable?  // store the Update subscription
-  var _detachedPivotWorldAnchor: AnchorEntity? = nil
-  var _billboardRotator: Entity? = nil
-  var _offsetNode: Entity? = nil
-  var _lastPivotWorld: simd_float4x4?
-  
   // Override the protocol extension to provide actual storage
   open var Anchor: AnchorEntity? {
     get {
@@ -291,10 +283,6 @@ extension ImageMarker: LifecycleDelegate {
     _container?.removeMarker(self)
     _container = nil
     
-    _pivotUpdate?.cancel()
-    _pivotUpdate = nil
-    _pivot = nil
-
   }
   
   @objc public func onDestroy() {
