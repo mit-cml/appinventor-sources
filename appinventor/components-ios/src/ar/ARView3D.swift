@@ -1488,7 +1488,35 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
 
+  // In ImageMarker class - add update loop
+  private var _lastUpdateTime = Date()
 
+  func updateNodeTracking(marker: ImageMarker) {
+      guard marker._isTracking,
+            let markerAnchor = marker._anchorEntity else { return }
+
+      // Throttle updates
+      let now = Date()
+      guard now.timeIntervalSince(_lastUpdateTime) > 0.2 else { return }
+      _lastUpdateTime = now
+
+      for node in marker._attachedNodes {
+          // Save node’s pose relative to the *marker*, not to the shifting world
+          let localMatrix = node._modelEntity.transformMatrix(relativeTo: markerAnchor)
+          let markerWorldMatrix = markerAnchor.transformMatrix(relativeTo: nil)
+
+          // Combine them: marker→world × node→marker = node→world
+          let nodeWorldMatrix = simd_mul(markerWorldMatrix, localMatrix)
+
+          node._frozenWorldTransform = Transform(matrix: nodeWorldMatrix)
+          node._frozenMarkerMatrix = markerWorldMatrix // optional for debugging
+
+        print("updateNodeTracking \(node.Name): \(node._frozenWorldTransform!.translation)")
+      }
+  }
+
+
+  // Call this every frame in your ARView update
   
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
     for anchor in anchors {
@@ -1512,19 +1540,20 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         let wasTracked = marker._isTracking
         let nowTracked = imageAnchor.isTracked
         marker._isTracking = nowTracked
-
-        if nowTracked {
-            // ✅ If this is a transition from lost -> tracked, reattach
-            if !wasTracked {
-                print("🔄 Marker \(name) reappeared -  but notreattaching")
-                //reattachPivotUnderImageAnchorIfNeeded(for: marker)
-            }
-        } else if wasTracked && !nowTracked {
-            // ✅ Tracked -> Lost: Detach using the LAST CACHED world pose
-            print("⚠️ Marker \(name) lost - detaching to world space")
-            detachPivotToWorldIfNeeded(for: marker, arView: _arView)
-        }
-        
+        updateNodeTracking(marker: marker)
+          if nowTracked {
+            
+              // ✅ If this is a transition from lost -> tracked, reattach
+              if !wasTracked {
+                  print("🔄 Marker \(name) reappeared -  but notreattaching")
+                  //reattachPivotUnderImageAnchorIfNeeded(for: marker)
+              }
+          } else if wasTracked && !nowTracked {
+              // ✅ Tracked -> Lost: Detach using the LAST CACHED world pose
+              print("⚠️ Marker \(name) lost - detaching to world space")
+              detachPivotToWorldIfNeeded(for: marker, arView: _arView)
+          }
+          
       } else if let geoAnchor = anchor as? ARGeoAnchor {
           handleGeoAnchorAdded(geoAnchor)
       }
