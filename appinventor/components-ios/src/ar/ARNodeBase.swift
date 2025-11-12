@@ -84,10 +84,13 @@ open class ARNodeBase: NSObject, ARNode {
   /// How far in front of a marker the child should live (meters).
   private let kMinForwardFromMarker: Float = 0.05 // 5 cm
 
-  public var _frozenWorldTransform: Transform? = nil
+  var _frozenWorldTransform: Transform?      // Last known world pose (used to stay visible)
+  var _frozenLocalTransform: Transform? 
   public var _originalWorldPosition: SIMD3<Float>? = nil
   public var _queuedMarkerOffset: SIMD3<Float>? = nil
   var _frozenMarkerMatrix: simd_float4x4? = nil
+  var _localToMarkerMatrix: simd_float4x4? = nil
+  var _tempWorldAnchor: AnchorEntity? = nil
   
   // MARK: - Initialization
   

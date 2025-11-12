@@ -1304,132 +1304,56 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
-
-  private func detachPivotToWorldIfNeeded(for marker: ImageMarker, arView: ARView) {
-      print("📍 Marker \(marker.Name) lost - freezing nodes")
-      print("   Attached nodes count: \(marker._attachedNodes.count)")
-      
-      guard !marker._attachedNodes.isEmpty else {
-          print("   ⚠️ No attached nodes to freeze!")
-          return
-      }
-      
+  func detachPivotToWorldIfNeeded(for marker: ImageMarker) {
       for node in marker._attachedNodes {
-          let targetPos = node._modelEntity.position(relativeTo: nil)
-          let worldScale = node._modelEntity.scale(relativeTo: nil)
-          
-          print("  📌 Freezing \(node.Name) at CURRENT: \(targetPos)")
-          
-          node._frozenWorldTransform = Transform(
-              scale: worldScale,
-              translation: targetPos
-          )
-          
+          // Get the node’s current world transform
+          let worldTransform = node._modelEntity.transformMatrix(relativeTo: nil)
+          node._frozenWorldTransform = Transform(matrix: worldTransform)
+
+          // Remove from old parent first
           node._modelEntity.removeFromParent()
-          
-          // ✅ CORRECT: Anchor at target position
-          let frozenWorldAnchor = AnchorEntity(world: targetPos)
-          frozenWorldAnchor.name = "frozen_\(node.Name)"
-          arView.scene.addAnchor(frozenWorldAnchor)
-          
-          // ✅ CORRECT: preservingWorldTransform: false, then set to identity
-          frozenWorldAnchor.addChild(node._modelEntity, preservingWorldTransform: false)
-          node._modelEntity.position = .zero  // At anchor origin
-          node._modelEntity.orientation = .init(angle: 0, axis: [0,1,0])  // No rotation
-          node._modelEntity.scale = worldScale  // Keep scale
-          
-          node._anchorEntity = frozenWorldAnchor
-          
-          let actualPos = node._modelEntity.position(relativeTo: nil)
-          let distance = simd_distance(targetPos, actualPos)
-          
-          print("     Target: \(targetPos)")
-          print("     Actual: \(actualPos)")
-          print("     Distance: \(distance)m")
+
+          // ✅ Create and store a strong reference to a temp anchor
+          let tempAnchor = AnchorEntity(world: worldTransform)
+          tempAnchor.name = "\(node.Name)_tempAnchor"
+          tempAnchor.addChild(node._modelEntity)
+        print("🧩 Added temp anchor for \(node.Name) at \(tempAnchor.transform.translation)")
+        
+          // ✅ Add anchor to scene on main thread (next frame = ensures it's alive)
+          DispatchQueue.main.async {
+              self._arView.scene.addAnchor(tempAnchor)
+          }
+
+          // ✅ Keep a strong reference so it’s not GC’d
+          node._tempWorldAnchor = tempAnchor
       }
-      
-      print("✅ All nodes frozen")
   }
-  
-  
+
+
   @inline(__always)
   private func distance(_ a: SIMD3<Float>, _ b: SIMD3<Float>) -> Float {
     simd_length(a - b)
   }
 
-  // MARK: - Reattach to marker on rediscovery (follow marker again)
   func reattachNodesToMarker(_ marker: ImageMarker) {
-    guard marker._isTracking, let markerAnchor = marker._anchorEntity else {
-      print("🔄 Marker \(marker._name) reappeared - but anchor not ready / not tracking")
-      return
-    }
-    guard markerAnchor.scene != nil /*, markerAnchor.isAnchored */ else {
-      print("🔄 Marker \(marker._name) reappeared - anchor not anchored yet")
-      return
-    }
+      guard let markerAnchor = marker.Anchor else { return }
 
-    let markerWorldM = markerAnchor.transformMatrix(relativeTo: nil)
-    print("🔄 Marker \(marker._name) reappeared - reattaching nodes")
-    print("   Marker position: \(markerWorldM.translation3)")
-    print("   Attached nodes count: \(marker._attachedNodes.count)")
+      for node in marker._attachedNodes {
+          // Remove and clear temp anchor if any
+          node._tempWorldAnchor?.removeFromParent()
+          node._tempWorldAnchor = nil
 
-    for node in marker._attachedNodes {
-      print("  📌 Reattaching \(node.Name)")
-
-      // We need the node’s last good WORLD pose.
-      guard let frozen = node._frozenWorldTransform else {
-        print("   ⚠️ No frozen world transform for \(node.Name) — skipping")
-        continue
+          // Restore local transform
+          if let localT = node._frozenLocalTransform {
+              node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
+              node._modelEntity.transform = localT
+          } else if let worldT = node._frozenWorldTransform {
+              let markerWorldM = markerAnchor.transformMatrix(relativeTo: nil)
+              let localM = simd_mul(simd_inverse(markerWorldM), worldT.matrix)
+              node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
+              node._modelEntity.transform = Transform(matrix: localM)
+          }
       }
-      let nodeWorldM = frozen.matrix
-      let expectedWorldPos = nodeWorldM.translation3
-      print("     Frozen pos: \(expectedWorldPos)")
-
-      // Compute new LOCAL transform relative to the *current* marker pose:
-      // nodeLocal = inverse(markerWorld) * nodeWorld
-      let markerWorldInv = simd_inverse(markerWorldM)
-      let localM = simd_mul(markerWorldInv, nodeWorldM)
-
-      // If you support an optional marker-local offset previously queued, apply it here.
-      if let off = node._queuedMarkerOffset {
-        var adjusted = localM
-        adjusted.columns.3 += SIMD4<Float>(off, 0)
-        // Use the adjusted local
-        node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
-        node._modelEntity.transform = Transform(matrix: adjusted)
-        print("     Applied queued local offset: \(off)")
-      } else {
-        // Parent under marker using the freshly computed local
-        node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
-        node._modelEntity.transform = Transform(matrix: localM)
-      }
-
-      node._anchorEntity = markerAnchor
-
-      // Verify: compute actual world after assignment and compare to expected
-      let actualWorldPos = node._modelEntity.position(relativeTo: nil)
-      let targetWorldPos = (simd_mul(markerWorldM, node._modelEntity.transform.matrix)).translation3
-      let d1 = distance(actualWorldPos, expectedWorldPos)
-      let d2 = distance(actualWorldPos, targetWorldPos)
-
-      print("📍 Reattached \(node.Name) to marker \(marker._name)")
-      print("     Expected (frozen): \(expectedWorldPos)")
-      print("     Actual:            \(actualWorldPos)")
-      print("     Dist to frozen:    \(d1)m")
-      print("     Dist vs target:    \(d2)m")
-
-      if d1 < 0.01 {
-        print("     ✅ Position maintained (≈ \(String(format: "%.3f", d1)) m)")
-      } else {
-        print("     ⚠️ Small delta after reattach (≈ \(String(format: "%.3f", d1)) m) — likely pose refine")
-      }
-
-      // Refresh caches for next loss/reappear cycle
-      node._frozenWorldTransform = Transform(matrix: node._modelEntity.transformMatrix(relativeTo: nil))
-      node._frozenMarkerMatrix = markerWorldM
-    }
-
-    print("✅ Reattach complete")
   }
 
   
@@ -1508,33 +1432,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _lastUpdateTime = Date()
 
   func updateNodeTracking(marker: ImageMarker) {
-    guard marker._isTracking,
-          let markerAnchor = marker._anchorEntity ?? marker.Anchor else { return }
+      guard marker._isTracking,
+            let markerAnchor = marker.Anchor else { return }
 
-    let now = Date()
-    guard now.timeIntervalSince(_lastUpdateTime) > 0.2 else { return }
-    _lastUpdateTime = now
+      let now = Date()
+      guard now.timeIntervalSince(_lastUpdateTime) > 0.2 else { return }
+      _lastUpdateTime = now
 
-    for node in marker._attachedNodes {
-      // 🚫 Do not update frozen/detached nodes (prevents “sinking” cache)
-      if node._modelEntity.parent !== markerAnchor { continue }
-      if node._isFrozen == true { continue } // add this flag on loss
+      for node in marker._attachedNodes where node._modelEntity.parent === markerAnchor {
+          let localM = node._modelEntity.transformMatrix(relativeTo: markerAnchor)
+          node._frozenLocalTransform = Transform(matrix: localM)
 
-      // ✅ Only now: update local->world via current marker pose
-      let localM          = node._modelEntity.transformMatrix(relativeTo: markerAnchor)
-      let markerWorldM    = markerAnchor.transformMatrix(relativeTo: nil)
-      let nodeWorldMatrix = simd_mul(markerWorldM, localM)
-
-      node._frozenWorldTransform = Transform(matrix: nodeWorldMatrix)
-      node._frozenMarkerMatrix   = markerWorldM // optional
-
-      // Also useful: keep a stable local we can reuse on reattach
-      node._localToMarkerMatrix  = localM       // add this property once
-      // print("updateNodeTracking \(node.Name): \((node._frozenWorldTransform!).translation)")
-    }
+          let worldM = node._modelEntity.transformMatrix(relativeTo: nil)
+          node._frozenWorldTransform = Transform(matrix: worldM)
+      }
   }
-
-
 
   func ensureCurrentAnchorEntity(for marker: ImageMarker, imageAnchor: ARImageAnchor) {
     // If we already have an AnchorEntity, make sure it's for THIS ARImageAnchor id
@@ -1597,9 +1509,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         let wasTracked = marker._isTracking
         let nowTracked = imageAnchor.isTracked
         marker._isTracking = nowTracked
-        updateNodeTracking(marker: marker)
+        
           if nowTracked {
-            
+            updateNodeTracking(marker: marker)
               // ✅ If this is a transition from lost -> tracked, reattach
               if !wasTracked {
                   print("🔄 Marker \(name) reappeared - will reattach")
@@ -1608,7 +1520,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           } else if wasTracked && !nowTracked {
               // ✅ Tracked -> Lost: Detach using the LAST CACHED world pose
               print("⚠️ Marker \(name) lost - detaching to world space")
-              detachPivotToWorldIfNeeded(for: marker, arView: _arView)
+              detachPivotToWorldIfNeeded(for: marker)
           }
           
       } else if let geoAnchor = anchor as? ARGeoAnchor {
