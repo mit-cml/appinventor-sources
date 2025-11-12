@@ -9,6 +9,10 @@ import Combine
 
 @available(iOS 14.0, *)
 open class ImageMarker: NSObject, ARImageMarker {
+  public func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>) {
+    // nothing
+  }
+  
   //public var Anchor: AnchorEntity
   
 
@@ -54,10 +58,13 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
   
   public func attachNode(_ node: ARNodeBase) {
-    node._modelEntity.removeFromParent()
-    _attachedNodes.append(node)
+    if !_attachedNodes.contains(where: { $0 === node }) {
+          _attachedNodes.append(node)
+        }
+
     if let anchor = _anchorEntity {
-        anchor.addChild(node._modelEntity)
+      node._modelEntity.removeFromParent()
+      anchor.addChild(node._modelEntity)
     }
     node._followingMarker = self
   }
@@ -175,45 +182,30 @@ open class ImageMarker: NSObject, ARImageMarker {
       node._modelEntity.removeFromParent()
     }
   }
-  
-  open func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>) {
-    let elapsed = Date().timeIntervalSince(_lastPushTime)
-    /**
-     * As the worldmap gets updated, if the image is constantly in the frame, the position is constantly
-     * going through small micro changes.  Therefore, we only push a position changed at most every
-     * 50 milliseconds.
-     */
-    if elapsed > 0.050 {
-      _lastPushTime = Date()
-      PositionChanged(
-        UnitHelper.metersToCentimeters(position.x),
-        UnitHelper.metersToCentimeters(position.y),
-        UnitHelper.metersToCentimeters(position.z)
-      )
-      RotationChanged(
-        GLKMathRadiansToDegrees(angles.x),
-        GLKMathRadiansToDegrees(angles.y),
-        GLKMathRadiansToDegrees(angles.z)
-      )
-    }
-  }
-  
-  
-  
-  // MARK: Events
+
   @objc open func FirstDetected(_ imageAnchor: ARImageAnchor) {
-    guard _anchorEntity != nil else {
-      print("⚠️ ImageMarker.FirstDetected called before anchor assigned/added")
-      return
-    }
-    _isTracking = true
-    _lastPushTime = Date()
-    self.AppearedInView()
-    DispatchQueue.main.async {
-        EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
-    }
+      guard _anchorEntity != nil else { return }
+      
+      _isTracking = true
+    
+      for node in _attachedNodes where node._modelEntity.parent == nil {
+          /*if let offset = node._queuedMarkerOffset {
+              _anchorEntity!.addChild(node._modelEntity)
+              node._modelEntity.position = offset
+              node._queuedMarkerOffset = nil
+           } else*/ if let frozen = node._frozenWorldTransform {
+             _anchorEntity!.addChild(node._modelEntity)
+             node._modelEntity.setPosition(frozen.translation, relativeTo: nil)
+           }
+          
+          node._anchorEntity = _anchorEntity
+      }
+      
+      self.AppearedInView()
+      DispatchQueue.main.async {
+          EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
+      }
   }
-  
   @objc open func PositionChanged(_ x: Float, _ y: Float, _ z: Float) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: x as NSNumber, y as NSNumber, z as NSNumber)
