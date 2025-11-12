@@ -2219,7 +2219,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                let name = follow["markerName"] as? String,
                let off = follow["offsetCM"] as? YailDictionary,
                let ox = off["x"] as? Float, let oy = off["y"] as? Float, let oz = off["z"] as? Float {
-              print("⚠️ node \(node.Name) has marker follow '\(name)' and offset is \(off)");
+              
               pendingFollows.append((node, name, SIMD3<Float>(ox, oy, oz)))
             }
           }
@@ -2228,19 +2228,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       for (node, markerName, offCM) in pendingFollows {
         if let marker = markersByName[markerName] {
-          if marker.Anchor != nil {
-            node.reparentUnderMarker(marker, offsetM: offCM)
-          } else {
-            // queue until FirstDetected (keeps a cm offset if you want)
-            marker.attach(node)
-            node._worldOffset = SIMD3<Float>(
-              //UnitHelper.centimetersToMeters(offCM.x),
-              //UnitHelper.centimetersToMeters(offCM.y),
-              //UnitHelper.centimetersToMeters(offCM.z)
-              offCM.x,offCM.y,offCM.z
-            )
-            print("⚠️ attached node to marker '\(markerName) \(node.Name) \(node)");
-          }
+            node.reparentUnderMarker(marker, keepWorld: true, offsetM: nil)
         } else {
           print("⚠️ Missing marker '\(markerName)'; leaving node in world space.")
         }
