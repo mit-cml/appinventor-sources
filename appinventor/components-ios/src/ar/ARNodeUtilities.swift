@@ -20,6 +20,7 @@ class ARNodeUtilities {
     let canScale = keyvalue["canScale"] as? Bool ?? true
     let text = keyvalue["text"] as? String ?? ""
     let fontSize = keyvalue["fontSize"] as? String ?? ""
+    let followsMarker = keyvalue["follow"] as? YailDictionary
     
     node.ModelUrl = model
     node.Texture = texture
@@ -33,7 +34,6 @@ class ARNodeUtilities {
       n.FontSizeInCentimeters = Float(fontSize) ?? 0.2
     }
   
-  // this doesn't appear to be working
     print("node from yail: \(node.Name) \(physics) \(canMove) \(canScale)")
     print("node from yail: \(node.Name) \(node.EnablePhysics) \(node.PanToMove) \(node.PinchToScale)")
     
@@ -60,13 +60,16 @@ class ARNodeUtilities {
       
       // Check if we should use geo-anchoring
       var useGeoAnchor = false
-      if let lat = poseDict["lat"] as? Double,
+      
+      if followsMarker == nil,
+         let lat = poseDict["lat"] as? Double,
          let lng = poseDict["lng"] as? Double,
          let alt = poseDict["alt"] as? Double,
          let sessionStart = sessionStartLocation {
           
           let savedLocation = CLLocation(latitude: lat, longitude: lng)
           let distance = sessionStart.distance(from: savedLocation)
+          
           
           // Only use geo-anchor if FAR from session start
           useGeoAnchor = distance > 10.0  // 50+ meters = use GPS

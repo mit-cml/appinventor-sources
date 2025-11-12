@@ -671,6 +671,8 @@ open class ARNodeBase: NSObject, ARNode {
        
     if let marker = self._followingMarker as? ImageMarker,
        let markerAnchor = marker.Anchor {
+      
+      yailDict["name"] = self.Name
 
       // compute local offset of this node under marker (in meters)
       let nodeWorld   = _modelEntity.transformMatrix(relativeTo: nil)
@@ -688,7 +690,7 @@ open class ARNodeBase: NSObject, ARNode {
       offCM["y"] = local.translation.y
       offCM["z"] = local.translation.z
       follow["offsetCM"] = offCM
-      print("⚠️ node \(self.Name) is following marker \(String(describing: marker.Name)) with offset: \(offCM)");
+      print("⚠️ SAVESCENE node \(self.Name) is following marker \(String(describing: marker.Name)) with offset: \(offCM)");
       yailDict["follow"] = follow
     }
     return yailDict
@@ -705,38 +707,35 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   @objc open func PoseToYailDictionary() -> YailDictionary? {
+      let translationDict: YailDictionary = [:]
+      let rotationDict: YailDictionary = [:]
+      let yailDictSave: YailDictionary = [:]
+      
+      // use world coordinates
+      let worldPos = _modelEntity.position(relativeTo: nil)
+      let worldRot = _modelEntity.orientation(relativeTo: nil)
+      
+      translationDict["x"] = worldPos.x
+      translationDict["y"] = worldPos.y
+      translationDict["y_offset"] = worldPos.y - Float(ARView3D.SHARED_GROUND_LEVEL)
+      translationDict["z"] = worldPos.z
+      yailDictSave["t"] = translationDict
+      
+      rotationDict["x"] = worldRot.vector.x
+      rotationDict["y"] = worldRot.vector.y
+      rotationDict["z"] = worldRot.vector.z
+      rotationDict["w"] = worldRot.vector.w
+      yailDictSave["q"] = rotationDict
 
-    guard let p = self._modelEntity.transform as? Transform else {
-        os_log("pose is nil", log: .default, type: .info)
-        return nil
-    }
-    
-    print("pose is \(p)")
-    
-    let translationDict: YailDictionary = [:]
-    let rotationDict: YailDictionary = [:]
-    let yailDictSave: YailDictionary = [:]
-    
-    translationDict["x"] = p.translation.x
-    translationDict["y"] = p.translation.y
-    translationDict["y_offset"] = p.translation.y - Float(ARView3D.SHARED_GROUND_LEVEL)
-    translationDict["z"] = p.translation.z
-    yailDictSave["t"] = translationDict
-    
-    rotationDict["x"] = p.rotation.vector.x
-    rotationDict["y"] = p.rotation.vector.y
-    rotationDict["z"] = p.rotation.vector.z
-    rotationDict["w"] = p.rotation.vector.w
-    yailDictSave["q"] = rotationDict
-
-    yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
-    yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
-    yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
-    
-    os_log("exporting pose as YailDict with %@", log: .default, type: .info, String(describing: yailDictSave))
-    return yailDictSave
+      yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
+      yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
+      yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
+      
+      return yailDictSave
   }
   
+
+
   // MARK: - Material Management
   
   private func setupInitialMaterial() {
