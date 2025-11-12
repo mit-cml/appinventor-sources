@@ -31,6 +31,8 @@ open class ImageMarker: NSObject, ARImageMarker {
   var _widthSet: Bool = false
   var _imageSet: Bool = false
   
+  var _lastARAnchorId: UUID?
+  
   
   // Override the protocol extension to provide actual storage
   open var Anchor: AnchorEntity? {
