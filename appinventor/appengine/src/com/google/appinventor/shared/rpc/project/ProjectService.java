@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -422,5 +423,13 @@ public interface ProjectService extends RemoteService {
    * @return mapping from permission type to user emails who have the permission type to project `projectId`
    */
   HashMap<Integer, List<String>> getPermissionsInfo(long projectId);
+
+  /**
+   * get the link to use to share the project
+   * @param userEmail the email of the user trying to get the link
+   * @param projectId the id of the project
+   * @return shareId for the project
+   */
+  Long getShareLink(String userEmail, long projectId);
 
 }

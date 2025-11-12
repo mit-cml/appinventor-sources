@@ -4,6 +4,8 @@
 <!-- http://www.apache.org/licenses/LICENSE-2.0 -->
 <!--NewYoungAndroidProjectWizard.ui.xml -->
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
              xmlns:e="urn:import:com.google.appinventor.client.editor.youngandroid.properties"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:w="urn:import:com.google.appinventor.client.widgets"
@@ -25,10 +27,23 @@
       <!--Select gmails-->
       <!-- TODO: change in the future to work with SuggestBox possibly modify to add multiple at the same time?  -->
       <!-- <g:SuggestBox ui:field="usernames" /> -->
-      <w:LabeledTextBox ui:field="userNameTextBox" caption="{messages.userEmailsLabel}"
-                        stylePrimaryName="ode-LabeledTextBox"/>
+      <g:FlowPanel styleName="ode-ProjectRow" ui:field='newUserContainer'>
+        <w:LabeledTextBox ui:field="userNameTextBox" caption="{messages.userEmailsLabel}"
+                          stylePrimaryName="ode-LabeledTextBox"/>
+        <!-- <w:DropDownButton name="permissionDropdown" caption="Select Permission..."
+                       ui:field="permissionTypeButton" styleName="ode-ProjectListButton inline bleft primary">
+          <w:DropDownItem name="edit" caption="Edit"/>
+          <w:DropDownItem name="view" caption="View"/>
+        </w:DropDownButton> -->
+        <g:ListBox ui:field="permissionDropdown">
+            <g:item value="1"> Edit </g:item>
+            <g:item value="3"> View </g:item>
+          </g:ListBox>
+        <g:Button ui:field='okButton' text='Ok'/>
+      </g:FlowPanel>
       <!--People with Access-->
-      <g:FlowPanel styleName="ode-ProjectRowList ode-Project-FlexColumn" ui:field='usersContainer'/>
+      <g:FlowPanel styleName="ode-ProjectRowList ode-Project-FlexColumn" ui:field='usersContainer'>
+        </g:FlowPanel>
       <!-- checkbox to share with everyone -->
       <g:FlowPanel>
         <!-- <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text='{messages.shareAll}'/> -->

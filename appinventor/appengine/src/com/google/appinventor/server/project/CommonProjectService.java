@@ -351,13 +351,22 @@ public abstract class CommonProjectService {
   }
 
   /**
-   * Share project with others by email.
-   * @param userId the userId of the owner of the project
+   * Get permissions available to the project by other users
    * @param projectId the project id
-   * @param otherEmail the email address of other user
+   * @return permission type to email list mapping
    */
   public HashMap<StoredData.Permission, List<String>> getPermissionsInfo(long projectId) {
     return storageIo.getPermissionsInfo(projectId);
+  }
+
+  /**
+   * get the share link for the project
+   * @param userEmail the user email
+   * @param projectId the project id
+   * @return latest available share id
+   */
+  public Long getShareLink(String userEmail, long projectId){
+    return storageIo.getShareLink(userEmail, projectId);
   }
 
   /**
@@ -372,7 +381,7 @@ public abstract class CommonProjectService {
     Long projectId = storageIo.getProjectIdFromShareId(shareId);
     StoredData.Permission perm = storageIo.getPermission(userId, projectId);
     if (perm != StoredData.Permission.NONE) {
-      return storageIo.getSharedProject(storageIo.getUserFromEmail(userId).getUserEmail(), userId, projectId, perm);
+      return storageIo.getSharedProject(storageIo.getUser(userId).getUserEmail(), userId, projectId, perm);
     } else {
       throw new IllegalArgumentException("Need valid share link");
     }
@@ -387,7 +396,7 @@ public abstract class CommonProjectService {
   public ShareResponse shareProject(String userId, long projectId, String otherEmail,
                                     StoredData.Permission perm) {
     Status status = Status.UNAUTHORIZED;
-    String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+    String userEmail = storageIo.getUser(userId).getUserEmail();
     // Only the project owner can share.
     if (userId.equals(storageIo.getProjectOwner(projectId))) {
       StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
@@ -399,7 +408,7 @@ public abstract class CommonProjectService {
         status = Status.ALREADY_SHARED;
       } else {
         storageIo.addPermission(otherEmail, projectId, perm);
-        sendShareEmailNew(userId, projectId, otherEmail);
+        // sendShareEmailNew(userId, projectId, otherEmail);
         return new ShareResponse(Status.SHARED, projectId, otherEmail);
       }
     }
@@ -416,7 +425,7 @@ public abstract class CommonProjectService {
                                     StoredData.Permission perm) {
     List<ShareResponse> result = new ArrayList<>();
     Status status = Status.UNAUTHORIZED;
-    String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+    String userEmail = storageIo.getUser(userId).getUserEmail();
     // Only the project owner can share.
     if (userId.equals(storageIo.getProjectOwner(projectId))) {
       StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
@@ -430,7 +439,7 @@ public abstract class CommonProjectService {
           result.add(new ShareResponse(status));
         } else {
           storageIo.addPermission(otherEmail, projectId, perm);
-          sendShareEmailNew(userId, projectId, otherEmail);
+          // sendShareEmailNew(userId, projectId, otherEmail);
           result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
         }
       }
@@ -449,7 +458,7 @@ public abstract class CommonProjectService {
   //                                   StoredData.Permission perm) {
   //   List<ShareResponse> result = new ArrayList<>();
   //   Status status = Status.UNAUTHORIZED;
-  //   String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+  //   String userEmail = storageIo.getUser(userId).getUserEmail();
   //   // Only the project owner can share.
   //   if (userId.equals(storageIo.getProjectOwner(projectId))) {
   //     StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
@@ -480,7 +489,7 @@ public abstract class CommonProjectService {
   //  */
   // public ShareResponse shareProjectWithAll(String userId, long projectId, StoredData.Permission perm) {
   //   Status status = Status.UNAUTHORIZED;
-  //   String userEmail = storageIo.getUserFromEmail(userId).getUserEmail();
+  //   String userEmail = storageIo.getUser(userId).getUserEmail();
   //   // Only the project owner can share.
   //   if (userId.equals(storageIo.getProjectOwner(projectId))) {
   //     StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);

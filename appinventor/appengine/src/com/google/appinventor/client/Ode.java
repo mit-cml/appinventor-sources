@@ -605,6 +605,10 @@ public class Ode implements EntryPoint {
     projectService.getPermissionsInfo(projectId, callback);
   }
 
+  public void getShareLink(String userEmail, long projectId, OdeAsyncCallback<Long> callback) {
+    projectService.getShareLink(userEmail, projectId, callback);
+  }
+
   /**
    * Load the user's relation to the project
    *

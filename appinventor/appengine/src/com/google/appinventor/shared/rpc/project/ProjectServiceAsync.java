@@ -225,4 +225,9 @@ public interface ProjectServiceAsync {
    */
   void getPermissionsInfo(long projectId, AsyncCallback<HashMap<Integer, List<String>>> callback);
 
+  /**
+   * @see ProjectService#getShareLink(long)
+   */
+  void getShareLink(String userEmail, long projectId, AsyncCallback<Long> callback);
+
 }

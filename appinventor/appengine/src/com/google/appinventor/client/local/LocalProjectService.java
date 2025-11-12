@@ -528,6 +528,11 @@ public class LocalProjectService implements ProjectServiceAsync {
 
   }
 
+  @Override
+  public void getShareLink(String userEmail, long projectId, AsyncCallback<Long> callback){
+
+  }
+
 
   public Promise<String> exportProject(long projectId) {
     JSZip zip = new JSZip();

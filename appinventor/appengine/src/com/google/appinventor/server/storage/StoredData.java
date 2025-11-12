@@ -143,7 +143,7 @@ public class StoredData {
     // Auto-generated unique id
     @Id Long id;
     // key of project that this id shares
-    @Indexed Key<ProjectData> projectKey;
+    @Parent Key<ProjectData> projectKey;
 
     // The user (parent's) key
     // TODO: might wanna have email
@@ -159,7 +159,7 @@ public class StoredData {
     @Id Long id;
 
     // key of project that this id shares
-    @Indexed Key<ProjectData> projectKey;
+    @Parent Key<ProjectData> projectKey;
 
     // Whether link can be used by all
     Boolean isForAll;

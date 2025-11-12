@@ -689,6 +689,8 @@ public interface StorageIo {
 
   HashMap<StoredData.Permission, List<String>> getPermissionsInfo(long projectId);
 
+  Long getShareLink(String userEmail, long projectId);
+
   String getProjectOwner(long shareId);
 
   UserProject getSharedProject(String userEmail, String userId, long projectId, StoredData.Permission perm);

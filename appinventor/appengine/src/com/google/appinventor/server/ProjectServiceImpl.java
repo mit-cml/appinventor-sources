@@ -783,4 +783,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return newMap;
   }
 
+  public Long getShareLink(String userEmail, long projectId){
+    return youngAndroidProject.getShareLink(userEmail, projectId);
+  }
+
 }

@@ -28,9 +28,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.appinventor.client.wizards.ShareProjectUser;
 
-import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.ShareResponse;
@@ -39,7 +41,9 @@ import com.google.gwt.user.client.Window;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -63,6 +67,8 @@ public class ShareProjectsWizard {
   @UiField protected Button cancelButton;
   @UiField protected Label projectNameLabel;
   @UiField protected LabeledTextBox userNameTextBox;
+  @UiField protected ListBox permissionDropdown;
+  @UiField protected Button okButton;
   @UiField protected FlowPanel usersContainer;
   @UiField protected CheckBox checkBoxShareAll;
   @UiField protected CheckBox checkBoxSendEmail;
@@ -72,12 +78,14 @@ public class ShareProjectsWizard {
   @UiField protected Label linkForProject;
 
   private List<Long> projectsToShareIds = new ArrayList<>();
-  private List<String> projectsToShareNames = new ArrayList<>();
+  private Long projectToShareId = 0L;
+  private String projectToShareName = "";
+  private Long shareId = 0L;
   private List<String> readOnlyAccessList = new ArrayList<>();
-  private List<String> isSharedAllList = new ArrayList<>();
-  private List<Long> shareIds = new ArrayList<>();
   private Ode mainOde;
-  private boolean isSharedAll;
+  private Boolean isSharedAll;
+  private HashMap<Integer, List<String>> accessInfo = new HashMap<>();
+  private List<ShareProjectUser> usersContainerElements = new ArrayList<>();
 
   /**
    * Creates a share YoungAndroid project wizard.
@@ -140,48 +148,62 @@ public class ShareProjectsWizard {
 
     this.mainOde = Ode.getInstance();
     if (this.mainOde.getCurrentView() == Ode.PROJECTS) {
-      List<Project> selectedProjects =
+        List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
-      if (selectedProjects.size() > 0 || selectedFolders.size() > 0) {
-        for (Project project : selectedProjects) {
-          this.projectsToShareIds.add(project.getProjectId());
-          this.projectsToShareNames.add(project.getProjectName());
-        }
-        for (ProjectFolder f : selectedFolders) {
-          for (Project project : f.getNestedProjects()) {
-            this.projectsToShareIds.add(project.getProjectId());
-            this.projectsToShareNames.add(project.getProjectName());
-          }
-        }
-      } else {
+        if (selectedProjects.size() == 1) {
+            this.projectToShareId = selectedProjects.get(0).getProjectId();
+            this.projectToShareName = selectedProjects.get(0).getProjectName();
+        } else {
         // The user can select a project to resolve the
         // error.
-        ErrorReporter.reportInfo(MESSAGES.noProjectSelectedToShare());
-      }
+            ErrorReporter.reportInfo(MESSAGES.noProjectSelectedToShare());
+        }
     } else { //We are sharing a project in the designer view
       Project currentProject = this.mainOde.getProjectManager().getProject(Ode.getInstance().getCurrentYoungAndroidProjectId());
-      long currentProjectId = this.mainOde.getCurrentYoungAndroidProjectId();
-      this.projectsToShareIds.add(currentProjectId);
-      this.projectsToShareNames.add(currentProject.getProjectName());
+      this.projectToShareId = this.mainOde.getCurrentYoungAndroidProjectId();
+      this.projectToShareName = currentProject.getProjectName();
     }
-    for (long project : this.projectsToShareIds) {
-      this.mainOde.getAccessInfo(project, new OdeAsyncCallback<HashMap<Integer, List<String>>>() {
+    this.projectsToShareIds.add(this.projectToShareId);
+    this.mainOde.getAccessInfo(this.projectToShareId, new OdeAsyncCallback<HashMap<Integer, List<String>>>() {
         @Override
         public void onSuccess(HashMap<Integer, List<String>> result) {
-          readOnlyAccessList.addAll(result.get(3));
-          userNameTextBox.setText(String.join(", ", readOnlyAccessList));
-          shareIds.addAll(result.get("shareIds").stream()
-                  .map(Long::parseLong)
-                  .collect(Collectors.toList()));
-          isSharedAllList.addAll(result.get("isSharedAll"));
-          isSharedAll = isSharedAllList.stream()
-                              .allMatch(s -> s == "true");
+          accessInfo = result;
+          LOG.info("access" + result.toString());
+          if (result.containsKey(3)) {
+            readOnlyAccessList.addAll(result.get(3));
+            // userNameTextBox.setText(String.join(", ", readOnlyAccessList));
+          }
+          // update the users container;
+          updateUsersContainer(result);
+          isSharedAll = result.containsKey(4) && !result.get(4).isEmpty();
           checkBoxShareAll.setValue(isSharedAll);
         }
       });
+    
+    this.mainOde.getShareLink(this.mainOde.getUser().getUserEmail(), this.projectToShareId, new OdeAsyncCallback<Long>() {
+        @Override
+        public void onSuccess(Long result) {
+          LOG.info("link" + result.toString());
+          shareId = result;
+        }
+      });
+    projectNameLabel.setText(this.projectToShareName);
+  }
+
+  private void updateUsersContainer(HashMap<Integer, List<String>> accessInfo) {
+    for (Map.Entry<Integer, List<String>> entry : accessInfo.entrySet()) {
+        Integer permission = entry.getKey();
+        LOG.info("permission index " + permission);
+        List<String> users = entry.getValue();
+        for (String user: users) {
+            LOG.info("user " + user);
+            if (user != "") {
+              ShareProjectUser userPerm = new ShareProjectUser(user, permission);
+              usersContainerElements.add(userPerm);
+              usersContainer.add(userPerm);
+            }
+        }
     }
-    projectNameLabel.setText(String.join(", ", this.projectsToShareNames));
   }
 
   @UiHandler("checkBoxShareAll")
@@ -240,9 +262,7 @@ public class ShareProjectsWizard {
 
   @UiHandler("copyButton")
   protected void copyShareLink(ClickEvent e) {
-    String result = this.shareIds.stream()
-                                .map(String::valueOf)
-                                .collect(Collectors.joining(","));
+    String result = this.shareId.toString();
     String ourURL = Window.Location.getHref();
     Integer hashtagIdx = ourURL.indexOf("#");
     String locale = Window.Location.getParameter("locale");
@@ -264,16 +284,69 @@ public class ShareProjectsWizard {
 
   @UiHandler("shareButton")
   protected void shareProject(ClickEvent e) {
-    String[] users = userNameTextBox.getText().split(",");
-    List<String> validUsers = this.checkUsers();
+    HashMap<Integer, List<String>> newAccessInfo = new HashMap<>();
+    for (ShareProjectUser user : usersContainerElements) {
+      Integer perm = user.getPermInteger();
+      LOG.info("newEmail: " + user.getEmail() + " " + perm.toString());
 
-    if (users.length == validUsers.size()) {
+      if (newAccessInfo.get(perm) != null) { // Check if the key exists
+        List<String> emails = newAccessInfo.get(perm);
+        emails.add(user.getEmail());
+        newAccessInfo.put(perm, emails);
+      } else {
+        // Handle the case where the key doesn't exist yet
+        List<String> emails = new ArrayList<>();
+        emails.add(user.getEmail());
+        newAccessInfo.put(perm, emails);
+      }
+    }
+
+    LOG.info("access: " + newAccessInfo.toString());
+
+    for (Map.Entry<Integer, List<String>> entry : newAccessInfo.entrySet()) {
+      Integer perm = entry.getKey();
+      List<String> emails = entry.getValue();
+      List<String> validUsers = this.checkUsers(emails);
+      LOG.info("share emails " + emails.toString());
+      if (emails.size() == validUsers.size()) {
+        LOG.info("share emails " + validUsers.toString());
+        shareProjects(this.projectsToShareIds, validUsers, perm, true);
+      }
+    }
+
+
+    List<String> users = new ArrayList<>();
+
+    for (ShareProjectUser user : usersContainerElements) {
+      if (user.getPermInteger() == 3) {
+        users.add(user.getEmail());
+      }
+    }
+
+    List<String> validUsers = this.checkUsers(users);
+
+    if (users.size() == validUsers.size()) {
       shareProjects(this.projectsToShareIds, validUsers, 3, true);
     }
   }
 
-  private List<String> checkUsers() {
-    String[] users = userNameTextBox.getText().split(",");
+  @UiHandler("okButton")
+  protected void updatePermission(ClickEvent e) {
+    List<String> users = Arrays.asList(userNameTextBox.getText().split(","));
+    List<String> validUsers = this.checkUsers(users);
+
+    if (users.size() == validUsers.size() && users.size() == 1) {
+      ShareProjectUser user = new ShareProjectUser(validUsers.get(0), permissionDropdown.getSelectedIndex());
+      usersContainerElements.add(user);
+      usersContainer.add(user);
+      userNameTextBox.setText("");
+      permissionDropdown.setSelectedIndex(1);
+    //   permissionDropdown.setValue(0, "Edit");
+
+    }
+  }
+
+  private List<String> checkUsers(List<String> users) {
     List<String> validUsers = new ArrayList<String>();
     for (String user: users) {
       // check that users are valid
@@ -298,11 +371,8 @@ public class ShareProjectsWizard {
     // TODO when do we change access url?
     // get checkbox value for share all
     Long projectID = projectIDs.get(0);
-    Boolean shareAll = checkBoxShareAll.getValue();
-    if (shareAll) {
-        users.add("ALL");
-    }
-    OdeAsyncCallback<List<ShareResponse>> callback =
+    
+    OdeAsyncCallback<List<ShareResponse>> removeCallback =
         new OdeAsyncCallback<List<ShareResponse>>(
           // failure message
           MESSAGES.shareProjectError()) {
@@ -313,7 +383,40 @@ public class ShareProjectsWizard {
             }
           }
     };
-    this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), projectID, users, perm, callback);
+    List<String> addUsers = new ArrayList<>();
+    List<String> removeUsers = new ArrayList<>();
+    Boolean shareAll = checkBoxShareAll.getValue();
+    if (shareAll) {
+        addUsers.add("ALL");
+    }
+    
+    if (accessInfo.get(perm) != null) {
+        List<String> prevUsers = accessInfo.get(perm);
+        for (String user : users) {
+            if (!prevUsers.contains(user)) {
+                addUsers.add(user);
+            }
+        }
+        for (String user: prevUsers) {
+            if (!users.contains(user)) {
+                removeUsers.add(user);
+            }
+        }
+    } else {
+        addUsers.addAll(users);
+    }
+    OdeAsyncCallback<List<ShareResponse>> callback =
+        new OdeAsyncCallback<List<ShareResponse>>(
+          // failure message
+          MESSAGES.shareProjectError()) {
+          @Override
+          public void onSuccess(List<ShareResponse> result) {
+            mainOde.getProjectService().shareProject(mainOde.getUser().getUserId(), projectID, removeUsers, 5, removeCallback);
+          }
+    };
+    LOG.info("add " + addUsers.toString());
+    LOG.info("remove " + removeUsers.toString());
+    this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), projectID, addUsers, perm, callback);
   }
 
   @UiHandler("topInvisible")
