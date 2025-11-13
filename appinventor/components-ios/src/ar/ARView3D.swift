@@ -959,20 +959,68 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private func CreateImageMarkerFromYail(_ d: YailDictionary) -> ImageMarker? {
       guard let type = (d["type"] as? String)?.lowercased(), type == "imagemarker" else { return nil }
       let name = (d["name"] as? String) ?? "<unnamed>"
-      let img  = (d["image"] as? String) ?? ""
-      let wCM  = (d["physicalWidthCM"] as? Float) ?? 15
-      let vis  = (d["visible"] as? Bool) ?? true
+      var imgPath = (d["image"] as? String) ?? ""
+      let wCM = (d["physicalWidthCM"] as? Float) ?? 15
+      let vis = (d["visible"] as? Bool) ?? true
     
-      let marker = ImageMarker(self) // your existing creation entry point
+      print("🔍 Creating marker '\(name)' with image path: '\(imgPath)'")
+      
+      // ✅ If it's a full file:// URL but doesn't exist, try to find the file by name
+      if imgPath.hasPrefix("file://") {
+          let existingPath = AssetManager.shared.pathForExistingFileAsset(imgPath)
+          
+          if existingPath.isEmpty || !FileManager.default.fileExists(atPath: existingPath) {
+              print("   ⚠️ Old path invalid, searching for file by name...")
+              
+              // Extract filename from old path
+              if let filename = URL(string: imgPath)?.lastPathComponent {
+                  print("   Looking for: \(filename)")
+                  
+                  // Search in Documents directory
+                  let docsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                  let newPath = docsPath.appendingPathComponent(filename).path
+                  
+                  if FileManager.default.fileExists(atPath: newPath) {
+                      print("   ✅ Found file at new location: \(newPath)")
+                      imgPath = newPath
+                  } else {
+                      // Try AssetManager paths
+                      let publicPath = AssetManager.shared.pathForPublicAsset(filename)
+                      if FileManager.default.fileExists(atPath: publicPath) {
+                          print("   ✅ Found file in public assets: \(publicPath)")
+                          imgPath = publicPath
+                      } else {
+                          print("   ❌ Could not find file anywhere")
+                      }
+                  }
+              }
+          } else {
+              imgPath = existingPath
+          }
+      }
+      
+      // Now try to load the image
+      if let image = UIImage(contentsOfFile: imgPath) {
+          print("   ✅ Image loaded from: \(imgPath)")
+      } else {
+          print("   ❌ Still cannot load image from: \(imgPath)")
+      }
+    
+      let marker = ImageMarker(self)
       marker.Name = name
-      marker.Image = img
-    print("imagemarker created from yail is \(marker.Image)")
+      marker.Image = imgPath
       marker.PhysicalWidthInCentimeters = wCM
       marker.Visible = vis
+      
+      if marker._referenceImage != nil {
+          print("✅ Reference image created for '\(name)'")
+      } else {
+          print("❌ Reference image is NIL for '\(name)'")
+      }
+      
       return marker
-    }
-  
-  // These methods would need to be implemented based on your ARNode creation logic
+  }
+
   private func CreateCapsuleNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
     let capNode = CapsuleNode(self) as CapsuleNode
     let yailNodeObj: YailDictionary = yailNodeObj
