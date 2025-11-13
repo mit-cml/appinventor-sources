@@ -957,12 +957,7 @@ open class ARNodeBase: NSObject, ARNode {
       _geoAnchor = nil
     }
 
-    // Add to marker's attached nodes list
-    if !marker._attachedNodes.contains(where: { $0 === self }) {
-      marker._attachedNodes.append(self)
-      print("   📋 Added \(Name) to marker \(marker._name)")
-    }
-
+    // node was added to world, could be real or bogus
     let worldPos   = _modelEntity.position(relativeTo: nil)
     let worldRot   = _modelEntity.orientation(relativeTo: nil)
     let worldScale = _modelEntity.scale(relativeTo: nil)
@@ -970,18 +965,13 @@ open class ARNodeBase: NSObject, ARNode {
     if _originalWorldPosition == nil { _originalWorldPosition = worldPos }
 
     guard let markerAnchor = marker.Anchor else {
-      print("⚠️ Marker anchor not ready - queueing for later attachment")
+      print("⚠️ Marker anchor not ready - queueing for later attachment - Node current position is \(worldPos)")
       _frozenWorldTransform = Transform(scale: worldScale, rotation: worldRot, translation: worldPos)
-      
-      // ✅ Queue the offset for later attachment
       _queuedMarkerOffset = offsetM ?? SIMD3<Float>(0, 0, 0)
       print("   💾 Queued offset: \(_queuedMarkerOffset!)")
-      
-      // ✅ CRITICAL: Remove node from world while queued for marker
       _modelEntity.removeFromParent()
       _anchorEntity = nil
       print("   🗑️ Removed \(Name) from world - queued for marker attachment")
-      
       return
     }
 
@@ -996,17 +986,14 @@ open class ARNodeBase: NSObject, ARNode {
 
     print("📍 Attaching node \(Name) to marker immediately")
 
-    // Remove from current parent
     _modelEntity.removeFromParent()
-
-    // Attach to marker
     _modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
     
     if let offset = offsetM {
       _modelEntity.position = offset
       print("   ✅ Applied LOCAL offset: \(offset)")
     } else {
-      _modelEntity.position = SIMD3<Float>(0, 0, 0)
+      _modelEntity.position = SIMD3<Float>(0, 0, 0.2) // towards camera
       print("   ✅ Positioned at marker center")
     }
 
@@ -1025,7 +1012,7 @@ open class ARNodeBase: NSObject, ARNode {
       translation: finalWorldPos
     )
 
-    print("   ✅ Attached! World: \(finalWorldPos), Local: \(_modelEntity.position)")
+    print("   ✅ Attached to Marker! World: \(finalWorldPos), \(markerAnchor.position) Local: \(_modelEntity.position)")
   }
  
   
