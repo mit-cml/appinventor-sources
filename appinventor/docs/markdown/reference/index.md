@@ -10,3 +10,4 @@ other technical documentation.
 * [Built-in Blocks Reference](blocks/)
 * [Components Reference](components/)
 * [Technical and Other Guides](other/)
+  * [Publish to Google Play (Updated Guide)](other/publish-to-google-play-updated.md)
