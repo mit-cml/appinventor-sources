@@ -940,74 +940,83 @@ open class ARNodeBase: NSObject, ARNode {
                            offsetM: SIMD3<Float>? = nil)
   {
     _followingMarker = marker
-    if _geoAnchor != nil {
-      print("⚠️ Clearing geo anchor - switching to marker anchor")
-      _geoAnchor = nil
-    }
-    // Track in marker's list
+
     if !marker._attachedNodes.contains(where: { $0 === self }) {
       marker._attachedNodes.append(self)
-      print("   📋 Added \(Name) to marker \((marker._name))")
+      print("   📋 Added \(Name) to marker '\(marker._name)'")
+    } else {
+      print("   ⚠️ \(Name) already in marker '\(marker._name)' list")
+    }
+    
+    // ✅ Clear geo anchor if switching to marker
+    if let geoAnchor = _geoAnchor {
+      print("⚠️ Clearing geo anchor - switching to marker anchor")
+      if let container = _container as? ARView3D {
+        container._arView.session.remove(anchor: geoAnchor)
+      }
+      _geoAnchor = nil
     }
 
-    // Cache current world pose
+    // Add to marker's attached nodes list
+    if !marker._attachedNodes.contains(where: { $0 === self }) {
+      marker._attachedNodes.append(self)
+      print("   📋 Added \(Name) to marker \(marker._name)")
+    }
+
     let worldPos   = _modelEntity.position(relativeTo: nil)
     let worldRot   = _modelEntity.orientation(relativeTo: nil)
     let worldScale = _modelEntity.scale(relativeTo: nil)
-    print("   💾 Current world pos: \(worldPos)")
+    _modelEntity.orientation = simd_quatf(angle: 0, axis: [0, 1, 0])  // when added to marker, face up
     if _originalWorldPosition == nil { _originalWorldPosition = worldPos }
 
     guard let markerAnchor = marker.Anchor else {
-      print("⚠️ Marker anchor not ready - will attach when detected")
+      print("⚠️ Marker anchor not ready - queueing for later attachment")
       _frozenWorldTransform = Transform(scale: worldScale, rotation: worldRot, translation: worldPos)
       
-      // ✅ FIXED: Store the offset for later use
-      if let offset = offsetM {
-        _queuedMarkerOffset = offset
-        print("   💾 Queued offset: \(offset)")
-      }
+      // ✅ Queue the offset for later attachment
+      _queuedMarkerOffset = offsetM ?? SIMD3<Float>(0, 0, 0)
+      print("   💾 Queued offset: \(_queuedMarkerOffset!)")
       
-      // Keep node visible in world space until marker detected
+      // ✅ CRITICAL: Remove node from world while queued for marker
+      _modelEntity.removeFromParent()
+      _anchorEntity = nil
+      print("   🗑️ Removed \(Name) from world - queued for marker attachment")
+      
       return
     }
 
-    // Ensure anchor is actually in the scene
     guard markerAnchor.scene != nil, markerAnchor.isAnchored else {
-      print("⚠️ Marker anchor not anchored yet - queueing attach")
+      print("⚠️ Marker anchor not anchored yet - queueing")
       _frozenWorldTransform = Transform(scale: worldScale, rotation: worldRot, translation: worldPos)
-      
-      // ✅ FIXED: Store the offset for later use
-      if let offset = offsetM {
-        _queuedMarkerOffset = offset
-        print("   💾 Queued offset: \(offset)")
-      }
+      _queuedMarkerOffset = offsetM ?? SIMD3<Float>(0, 0, 0)
+      _modelEntity.removeFromParent()
+      _anchorEntity = nil
       return
     }
 
     print("📍 Attaching node \(Name) to marker immediately")
 
-    // Reparent to marker
-    _modelEntity.setParent(markerAnchor, preservingWorldTransform: keepWorld)
+    // Remove from current parent
+    _modelEntity.removeFromParent()
 
-    // ✅ Apply offset if provided
-    /*if let offset = offsetM {
-      // Apply LOCAL offset relative to the marker
-      var currentTransform = _modelEntity.transform
-      currentTransform.translation = offset
-      _modelEntity.transform = currentTransform
-      print("   ✅ Applied LOCAL offset: \(offset)")
-      
-      // Clear queued offset since we just applied it
-      _queuedMarkerOffset = nil
-    }*/
+    // Attach to marker
     _modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
-    _modelEntity.position = SIMD3<Float>(0, 0, 0)
+    
+    if let offset = offsetM {
+      _modelEntity.position = offset
+      print("   ✅ Applied LOCAL offset: \(offset)")
+    } else {
+      _modelEntity.position = SIMD3<Float>(0, 0, 0)
+      print("   ✅ Positioned at marker center")
+    }
 
     _anchorEntity = markerAnchor
+    _queuedMarkerOffset = nil
 
-    // Cache the local transform for future use
+    // Cache the local transform
     _frozenLocalTransform = _modelEntity.transform
-
+    print("   💾 Cached local transform: \(_modelEntity.position)")
+    
     // Update world transform cache
     let finalWorldPos = _modelEntity.position(relativeTo: nil)
     _frozenWorldTransform = Transform(
@@ -1016,8 +1025,7 @@ open class ARNodeBase: NSObject, ARNode {
       translation: finalWorldPos
     )
 
-    let localOffset = _modelEntity.position(relativeTo: markerAnchor)
-    print("   ✅ Attached! World: \(finalWorldPos), Local: \(localOffset)")
+    print("   ✅ Attached! World: \(finalWorldPos), Local: \(_modelEntity.position)")
   }
  
   

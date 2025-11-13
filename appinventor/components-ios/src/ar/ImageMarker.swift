@@ -186,40 +186,42 @@ open class ImageMarker: NSObject, ARImageMarker {
   }
 
   @objc open func FirstDetected(_ imageAnchor: ARImageAnchor) {
-      guard _anchorEntity != nil else { return }
-      
-      _isTracking = true
+    guard _anchorEntity != nil else { return }
     
-      for node in _attachedNodes where node._modelEntity.parent == nil {
-          // ✅ FIXED: Check for queued offset first
-          if let offset = node._queuedMarkerOffset {
-              //_anchorEntity!.addChild(node._modelEntity)
-              //node._modelEntity.position = offset
-              //node._queuedMarkerOffset = nil
-            _anchorEntity!.addChild(node._modelEntity)
-            node._modelEntity.position = SIMD3<Float>(0, 0, 0)
-              print("   ✅ Applied queued offset: \(offset) for \(node.Name)")
-          } else if let frozen = node._frozenLocalTransform {
-              // Use frozen local transform if available
-              _anchorEntity!.addChild(node._modelEntity)
-              node._modelEntity.transform = frozen
-              print("   ✅ Restored frozen local transform for \(node.Name)")
-          } else if let frozen = node._frozenWorldTransform {
-              // Fallback to world transform
-              _anchorEntity!.addChild(node._modelEntity)
-              node._modelEntity.setPosition(frozen.translation, relativeTo: nil)
-              print("   ✅ Used frozen world transform for \(node.Name)")
-          }
-          
-          node._anchorEntity = _anchorEntity
+    _isTracking = true
+
+    // ✅ Only process nodes that need attachment here (runtime nodes without queued offsets)
+    for node in _attachedNodes where node._modelEntity.parent == nil {
+      // Skip LoadScene nodes - they have queued offsets and will be attached in didUpdate
+      if node._queuedMarkerOffset != nil {
+        print("   ⏭️ Skipping \(node.Name) in FirstDetected - has queued offset")
+        continue
       }
       
-      self.AppearedInView()
-      DispatchQueue.main.async {
-          EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
+      // Attach runtime-created nodes using frozen transforms if available
+      if let frozen = node._frozenLocalTransform {
+        _anchorEntity!.addChild(node._modelEntity)
+        node._modelEntity.transform = frozen
+        print("   ✅ FirstDetected: Restored frozen local transform for \(node.Name)")
+      } else if let frozen = node._frozenWorldTransform {
+        _anchorEntity!.addChild(node._modelEntity)
+        node._modelEntity.setPosition(frozen.translation, relativeTo: nil)
+        print("   ✅ FirstDetected: Used frozen world transform for \(node.Name)")
+      } else {
+        // Default: attach at center
+        _anchorEntity!.addChild(node._modelEntity)
+        node._modelEntity.position = SIMD3<Float>(0, 0, 0)
+        print("   ✅ FirstDetected: Attached \(node.Name) at center")
       }
+      
+      node._anchorEntity = _anchorEntity
+    }
+    
+    self.AppearedInView()
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
+    }
   }
-  
   
   @objc open func PositionChanged(_ x: Float, _ y: Float, _ z: Float) {
     DispatchQueue.main.async {
