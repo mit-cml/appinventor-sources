@@ -1306,29 +1306,38 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   func detachPivotToWorldIfNeeded(for marker: ImageMarker) {
       for node in marker._attachedNodes {
-          // Get the node’s current world transform
+          // Get the node's current world transform
           let worldTransform = node._modelEntity.transformMatrix(relativeTo: nil)
+          let worldPos = SIMD3<Float>(
+              worldTransform.columns.3.x,
+              worldTransform.columns.3.y,
+              worldTransform.columns.3.z
+          )
+          
           node._frozenWorldTransform = Transform(matrix: worldTransform)
+          
+          print("🧊 Freezing \(node.Name) at world pos: \(worldPos)")
 
-          // Remove from old parent first
+          // Remove from old parent
           node._modelEntity.removeFromParent()
 
-          // ✅ Create and store a strong reference to a temp anchor
-          let tempAnchor = AnchorEntity(world: worldTransform)
+          // ✅ Create anchor at the ACTUAL world position
+          let tempAnchor = AnchorEntity(world: worldPos)
           tempAnchor.name = "\(node.Name)_tempAnchor"
           tempAnchor.addChild(node._modelEntity)
-        print("🧩 Added temp anchor for \(node.Name) at \(tempAnchor.transform.translation)")
-        
-          // ✅ Add anchor to scene on main thread (next frame = ensures it's alive)
+          
+          // ✅ CRITICAL: Reset node's local position to zero since anchor is at world pos
+          node._modelEntity.position = .zero
+          
+          print("🧩 Temp anchor for \(node.Name) at world \(worldPos), node at local zero")
+          
           DispatchQueue.main.async {
               self._arView.scene.addAnchor(tempAnchor)
           }
 
-          // ✅ Keep a strong reference so it’s not GC’d
           node._tempWorldAnchor = tempAnchor
       }
   }
-
 
   @inline(__always)
   private func distance(_ a: SIMD3<Float>, _ b: SIMD3<Float>) -> Float {
@@ -2189,6 +2198,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             continue
           }
           
+         
+          
           switch type.lowercased() {
           case "capsule", "geocapsulenode":
             loadNode = self.CreateCapsuleNodeFromYail(nodeDict)
@@ -2215,8 +2226,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             
             if let follow = nodeDict["follow"] as? YailDictionary,
                let name = follow["markerName"] as? String,
-               let off = follow["offsetCM"] as? YailDictionary,
-               let ox = off["x"] as? Float, let oy = off["y"] as? Float, let oz = off["z"] as? Float {
+               let offM = follow["offsetM"] as? YailDictionary,
+               let ox = offM["x"] as? Float, let oy = offM["y"] as? Float, let oz = offM["z"] as? Float {
               
               pendingFollows.append((node, name, SIMD3<Float>(ox, oy, oz)))
             }
@@ -2224,9 +2235,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
       }
       
-      for (node, markerName, offCM) in pendingFollows {
+      for (node, markerName, offM) in pendingFollows {  // storage in M
         if let marker = markersByName[markerName] {
-            node.reparentUnderMarker(marker, keepWorld: true, offsetM: nil)
+            node.reparentUnderMarker(marker, keepWorld: true, offsetM: offM)
         } else {
           print("⚠️ Missing marker '\(markerName)'; leaving node in world space.")
         }

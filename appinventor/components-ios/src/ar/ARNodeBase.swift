@@ -691,12 +691,12 @@ open class ARNodeBase: NSObject, ARNode {
       // if you also have a UUID on the marker, include it:
       // follow["markerId"] = marker.id
 
-      let offCM: YailDictionary = [:]
-      offCM["x"] = local.translation.x
-      offCM["y"] = local.translation.y
-      offCM["z"] = local.translation.z
-      follow["offsetCM"] = offCM
-      print("⚠️ SAVESCENE node \(self.Name) is following marker \(String(describing: marker.Name)) with offset: \(offCM)");
+      let offM: YailDictionary = [:]
+      offM["x"] = local.translation.x
+      offM["y"] = local.translation.y
+      offM["z"] = local.translation.z
+      follow["offsetM"] = offM
+      print("⚠️ SAVESCENE node \(self.Name) is following marker \(String(describing: marker.Name)) with offset: \(offM)");
       yailDict["follow"] = follow
     }
     return yailDict
@@ -940,14 +940,17 @@ open class ARNodeBase: NSObject, ARNode {
                            offsetM: SIMD3<Float>? = nil)
   {
     _followingMarker = marker
-
-    // Track in marker’s list
+    if _geoAnchor != nil {
+      print("⚠️ Clearing geo anchor - switching to marker anchor")
+      _geoAnchor = nil
+    }
+    // Track in marker's list
     if !marker._attachedNodes.contains(where: { $0 === self }) {
       marker._attachedNodes.append(self)
       print("   📋 Added \(Name) to marker \((marker._name))")
     }
 
-    // ⛳️ Cache full world pose (pos+rot+scale)
+    // Cache current world pose
     let worldPos   = _modelEntity.position(relativeTo: nil)
     let worldRot   = _modelEntity.orientation(relativeTo: nil)
     let worldScale = _modelEntity.scale(relativeTo: nil)
@@ -957,57 +960,65 @@ open class ARNodeBase: NSObject, ARNode {
     guard let markerAnchor = marker.Anchor else {
       print("⚠️ Marker anchor not ready - will attach when detected")
       _frozenWorldTransform = Transform(scale: worldScale, rotation: worldRot, translation: worldPos)
-      if let offset = offsetM { _queuedMarkerOffset = offset }
-      // Note: do NOT removeFromParent here; keep visuals stable until anchor is ready.
+      
+      // ✅ FIXED: Store the offset for later use
+      if let offset = offsetM {
+        _queuedMarkerOffset = offset
+        print("   💾 Queued offset: \(offset)")
+      }
+      
+      // Keep node visible in world space until marker detected
       return
     }
 
-    // Ensure anchor is actually in the scene / anchored (prevents snap while it’s settling)
+    // Ensure anchor is actually in the scene
     guard markerAnchor.scene != nil, markerAnchor.isAnchored else {
       print("⚠️ Marker anchor not anchored yet - queueing attach")
       _frozenWorldTransform = Transform(scale: worldScale, rotation: worldRot, translation: worldPos)
-      if let offset = offsetM { _queuedMarkerOffset = offset }
+      
+      // ✅ FIXED: Store the offset for later use
+      if let offset = offsetM {
+        _queuedMarkerOffset = offset
+        print("   💾 Queued offset: \(offset)")
+      }
       return
     }
 
     print("📍 Attaching node \(Name) to marker immediately")
 
-    // ✅ Preserve entire world transform on reparent
+    // Reparent to marker
     _modelEntity.setParent(markerAnchor, preservingWorldTransform: keepWorld)
 
-    if let offset = offsetM {
-      // Apply explicit LOCAL offset relative to the marker AFTER preserving world pose
-      var localT = _modelEntity.transformMatrix(relativeTo: markerAnchor)
-         //localT.columns.3 += SIMD4<Float>(offset, 0)
-         _modelEntity.transform = Transform(matrix: localT)
-         print("   NOT Applied LOCAL offset: \(offset)")
-    } else if !keepWorld {
-      // Caller prefers local semantics: reconstruct local transform from cached world pose
-      let cachedWorldT = Transform(scale: worldScale,
-                                   rotation: worldRot,
-                                   translation: worldPos)
-
-      // Convert the cached world transform into marker-local space
-      let localMatrix = markerAnchor.convert(transform: cachedWorldT, from: nil)
-
-      // Apply the converted local transform to the model entity
-      //TODO _modelEntity.transform = Transform(matrix: localMatrix)
-
-      print("   Restored local-from-world without keepWorld")
-    }
+    // ✅ Apply offset if provided
+    /*if let offset = offsetM {
+      // Apply LOCAL offset relative to the marker
+      var currentTransform = _modelEntity.transform
+      currentTransform.translation = offset
+      _modelEntity.transform = currentTransform
+      print("   ✅ Applied LOCAL offset: \(offset)")
+      
+      // Clear queued offset since we just applied it
+      _queuedMarkerOffset = nil
+    }*/
+    _modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
+    _modelEntity.position = SIMD3<Float>(0, 0, 0)
 
     _anchorEntity = markerAnchor
 
-    // Update cached transform for future restores
+    // Cache the local transform for future use
+    _frozenLocalTransform = _modelEntity.transform
+
+    // Update world transform cache
     let finalWorldPos = _modelEntity.position(relativeTo: nil)
-    _frozenWorldTransform = Transform(scale: _modelEntity.scale(relativeTo: nil),
-                                      rotation: _modelEntity.orientation(relativeTo: nil),
-                                      translation: finalWorldPos)
+    _frozenWorldTransform = Transform(
+      scale: _modelEntity.scale(relativeTo: nil),
+      rotation: _modelEntity.orientation(relativeTo: nil),
+      translation: finalWorldPos
+    )
 
     let localOffset = _modelEntity.position(relativeTo: markerAnchor)
     print("   ✅ Attached! World: \(finalWorldPos), Local: \(localOffset)")
   }
-
  
   
   @objc open func StopFollowingImageMarker() {

@@ -191,14 +191,25 @@ open class ImageMarker: NSObject, ARImageMarker {
       _isTracking = true
     
       for node in _attachedNodes where node._modelEntity.parent == nil {
-          /*if let offset = node._queuedMarkerOffset {
+          // ✅ FIXED: Check for queued offset first
+          if let offset = node._queuedMarkerOffset {
+              //_anchorEntity!.addChild(node._modelEntity)
+              //node._modelEntity.position = offset
+              //node._queuedMarkerOffset = nil
+            _anchorEntity!.addChild(node._modelEntity)
+            node._modelEntity.position = SIMD3<Float>(0, 0, 0)
+              print("   ✅ Applied queued offset: \(offset) for \(node.Name)")
+          } else if let frozen = node._frozenLocalTransform {
+              // Use frozen local transform if available
               _anchorEntity!.addChild(node._modelEntity)
-              node._modelEntity.position = offset
-              node._queuedMarkerOffset = nil
-           } else*/ if let frozen = node._frozenWorldTransform {
-             _anchorEntity!.addChild(node._modelEntity)
-             node._modelEntity.setPosition(frozen.translation, relativeTo: nil)
-           }
+              node._modelEntity.transform = frozen
+              print("   ✅ Restored frozen local transform for \(node.Name)")
+          } else if let frozen = node._frozenWorldTransform {
+              // Fallback to world transform
+              _anchorEntity!.addChild(node._modelEntity)
+              node._modelEntity.setPosition(frozen.translation, relativeTo: nil)
+              print("   ✅ Used frozen world transform for \(node.Name)")
+          }
           
           node._anchorEntity = _anchorEntity
       }
@@ -208,6 +219,8 @@ open class ImageMarker: NSObject, ARImageMarker {
           EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
       }
   }
+  
+  
   @objc open func PositionChanged(_ x: Float, _ y: Float, _ z: Float) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: x as NSNumber, y as NSNumber, z as NSNumber)
