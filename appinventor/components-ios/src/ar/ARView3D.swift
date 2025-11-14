@@ -1516,7 +1516,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           if node._modelEntity.parent !== marker.Anchor {
             node._modelEntity.removeFromParent()
             marker.Anchor!.addChild(node._modelEntity)
-            node._modelEntity.position = SIMD3<Float>(0, 0, 0.2)
+            node._modelEntity.position = SIMD3<Float>(0, 0, 0)
             node._anchorEntity = marker.Anchor
                         
             if node._frozenLocalTransform == nil {
@@ -1626,7 +1626,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             print("   🔗 Attaching LoadScene node \(node.Name)")
             node._modelEntity.removeFromParent()
             marker.Anchor!.addChild(node._modelEntity)
-            node._modelEntity.position = SIMD3<Float>(0, 0, 0.2)
+            node._modelEntity.position = SIMD3<Float>(0, 0, 0)
             node._queuedMarkerOffset = nil
             node._anchorEntity = marker.Anchor
             node.EnablePhysics(false) //seems to bounce around

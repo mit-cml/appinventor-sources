@@ -923,9 +923,10 @@ open class ARNodeBase: NSObject, ARNode {
     }
 
     let offsetM = SIMD3<Float>(
-      UnitHelper.centimetersToMeters(x),
-      UnitHelper.centimetersToMeters(y),
-      UnitHelper.centimetersToMeters(z)
+      //UnitHelper.centimetersToMeters(x),
+      //UnitHelper.centimetersToMeters(y),
+      //UnitHelper.centimetersToMeters(z)
+      x,y,z
     )
 
     if let marker = imageMarker as? ImageMarker {
@@ -993,7 +994,7 @@ open class ARNodeBase: NSObject, ARNode {
       _modelEntity.position = offset
       print("   ✅ Applied LOCAL offset: \(offset)")
     } else {
-      _modelEntity.position = SIMD3<Float>(0, 0, 0.2) // towards camera
+      _modelEntity.position = SIMD3<Float>(0, 0, 0) // towards camera
       print("   ✅ Positioned at marker center")
     }
 
