@@ -25,6 +25,7 @@ public final class ImageMarker implements ARImageMarker {
   protected ARView3D arView = null;
   protected String name = "";
   protected String imageUrl = "";
+  protected List<ARNode> arNodes =  new ArrayList<ARNode>();
 
   public ImageMarker(ARImageMarkerContainer container) {
     // added to container implicitly
@@ -117,6 +118,12 @@ public final class ImageMarker implements ARImageMarker {
     "and the ARView3D's TrackingType is WorldTracking or ImageTracking.")
   public void AppearedInView() {}
 
+
+  @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
+  public void removeAllNodes() {
+    Log.i("Removing all marker nodes", "");
+    arNodes.clear();
+  }
   @Override
   @SimpleEvent(description = "The ImageMarker's detection has been reset.  This is triggered by " +
   "calling ResetDetectedItems on the ARView3D or if the detection information is no longer saved by " +

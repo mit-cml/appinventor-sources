@@ -1662,6 +1662,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i("ADDED ARNODE", node.NodeType() + " and session is null? " + (session == null));
     }
 
+    @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
+    public void removeNode(ARNode node) {
+        Log.i("Removing ARNODE", "");
+        arNodes.remove(node);
+    }
+
     public boolean handlePinch(ScaleGestureDetector detector) {
         // Get the focus point of the pinch gesture
         float focusX = detector.getFocusX();
@@ -2089,6 +2095,37 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i("Create ImageMarker from snapshot", "");
         String url = "dummyimagestring";
         TakePicture(name, width);
+    }
+
+    @SimpleFunction(description = "Create a new ImageMarker from yail")
+    public ImageMarker CreateImageMarkerFromYail(YailDictionary yailObj) {
+
+        if (session != null) {
+            try {
+                Log.i(LOG_TAG, " creating block node from " + yailObj);
+
+                YailDictionary keyvalue = (YailDictionary)yailObj;
+
+                /*String  type = (String) keyvalue.get("type");
+                      String name = (String) keyvalue.get("name");
+                      String imgPath = (String) keyvalue.get("image");
+                      Float wCM = d["physicalWidthCM"]
+                       Float wCM = keyvalue.get("physicalWidthCM");
+                      Bool vis =  keyvalue.get("visible");
+
+                 */
+                ImageMarker imageMarker = new ImageMarker(this);
+
+                Log.i(LOG_TAG, "SUCCESS created image marker from json, anchor is" + imageMarker.toString());
+                return imageMarker;
+            } catch (JSONException e) {
+                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
+                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
+            }
+
+        }
+        Log.i("cannot create imageMarker from yail ", " since there is no session");
+        return null;
     }
 
     @SimpleFunction(description = "Create a new PlaneNode with geo coords")
