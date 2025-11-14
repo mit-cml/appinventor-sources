@@ -256,11 +256,10 @@ open class ImageMarker: NSObject, ARImageMarker {
     }
   }
   
-  public func removeAllNodes() {
+  @objc public func removeAllNodes() {
     for node in _attachedNodes {
       node.stopFollowing()
     }
-    
     _attachedNodes = []
   }
   

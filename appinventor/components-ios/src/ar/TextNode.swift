@@ -8,7 +8,9 @@ import UIKit
 @available(iOS 14.0, *)
 open class TextNode: ARNodeBase, ARText {
   private var _text: String = "TextNode"
+  private var _font: String = "Helvetica"
   private var _fontSize: Float = 6.0 // stored in points
+  private var _isMetallic: Bool = false
   private var _depth: Float = 1.0 // stored in centimeters
   private var _textAlignment: Int32 = Alignment.normal.rawValue
   private var _wrapText: Bool = false
@@ -17,8 +19,10 @@ open class TextNode: ARNodeBase, ARText {
   @objc init(_ container: ARNodeContainer) {
     // Create initial mesh from text
     let lineHeight: CGFloat = 0.05
-    let font = MeshResource.Font.systemFont(ofSize: lineHeight)
-    let textMesh = MeshResource.generateText(_text,extrusionDepth: UnitHelper.centimetersToMeters(_depth), font: font )
+    let textMesh = MeshResource.generateText(_text,extrusionDepth: UnitHelper.centimetersToMeters(_depth), font: .init(
+      name: _font, // Use the exact font name
+      size: CGFloat(_fontSize)
+  )!)
     super.init(container: container, mesh: textMesh)
     self.Name = "text"
     updateTextMesh()
@@ -41,7 +45,7 @@ open class TextNode: ARNodeBase, ARText {
           extrusionDepth: UnitHelper.centimetersToMeters(_depth),
           font: font
       )
-      let textMaterial = SimpleMaterial(color: argbToColor(FillColor), isMetallic: true)
+      let textMaterial = SimpleMaterial(color: argbToColor(FillColor), isMetallic: _isMetallic)
 
       // Update existing entity instead of creating new one
       _modelEntity.model = ModelComponent(mesh: textMesh, materials: [textMaterial])
@@ -71,6 +75,16 @@ open class TextNode: ARNodeBase, ARText {
     }
     set(text) {
       _text = text
+      updateTextMesh()
+    }
+  }
+  
+  @objc open var Font: String {
+    get {
+      return _font
+    }
+    set(fontFamily) {
+      _font = fontFamily
       updateTextMesh()
     }
   }

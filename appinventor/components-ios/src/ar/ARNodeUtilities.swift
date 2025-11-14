@@ -19,8 +19,11 @@ class ARNodeUtilities {
     let canMove = keyvalue["canMove"] as? Bool ?? true
     let canScale = keyvalue["canScale"] as? Bool ?? true
     let text = keyvalue["text"] as? String ?? ""
+    let font = keyvalue["font"] as? String ?? ""
     let fontSize = keyvalue["fontSize"] as? String ?? ""
     let followsMarker = keyvalue["follow"] as? YailDictionary
+    
+    let color = keyvalue["color"] as? Int32 ?? Int32(bitPattern: AIComponentKit.Color.red.rawValue)
     
     node.ModelUrl = model
     node.Texture = texture
@@ -29,8 +32,14 @@ class ARNodeUtilities {
     node.PanToMove = canMove == true
     node.PinchToScale = canScale == true
     
+    node.FillColor = Int32(color)
+    
     if let n = node as? TextNode {
-      n.Text = text
+      let normalizedText = n.Text
+        .precomposedStringWithCanonicalMapping  // Normalize Unicode
+        .replacingOccurrences(of: "'", with: "'")  // Smart apostrophe to straight
+        .replacingOccurrences(of: "'", with: "'")  // Opening smart quote
+      n.Text = normalizedText
       n.FontSizeInCentimeters = Float(fontSize) ?? 0.2
     }
   

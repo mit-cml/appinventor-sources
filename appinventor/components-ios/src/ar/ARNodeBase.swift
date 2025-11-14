@@ -669,9 +669,11 @@ open class ARNodeBase: NSObject, ARNode {
     yailDict["canMove"] = String(self._panToMove)
     yailDict["canScale"] = String(self._pinchToScale)
     
+    yailDict["color"] = self._color
     
     if let tNode = self as? TextNode {
       yailDict["text"] = tNode.Text
+      yailDict["font"] = tNode.Font
       yailDict["fontSize"] = tNode.FontSizeInCentimeters
     }
        
