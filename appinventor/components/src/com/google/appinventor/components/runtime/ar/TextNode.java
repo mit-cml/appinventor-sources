@@ -41,6 +41,7 @@ import com.google.ar.core.Trackable;
   private float length = 1.0f;
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";
   private String texture = "";
+  private String font = "";
 
   public TextNode(final ARNodeContainer container) {
     super(container);
@@ -59,6 +60,13 @@ import com.google.ar.core.Trackable;
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
     @SimpleProperty(category = PropertyCategory.APPEARANCE)
     public void Text(String txt) {text = txt;}
+
+    @SimpleProperty(description = "Font family.")
+    public String Font () { return font; }
+
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    public void Font(String f) {font = f;}
 
     @Override
     @SimpleProperty(description = "The font size in centimeters.  Values less than " +

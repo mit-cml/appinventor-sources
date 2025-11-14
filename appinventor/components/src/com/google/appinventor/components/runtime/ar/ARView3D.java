@@ -1662,7 +1662,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i("ADDED ARNODE", node.NodeType() + " and session is null? " + (session == null));
     }
 
-    @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
+    @SimpleFunction(description = "Remove a node ")
+    @SimpleEvent(description = "Remove a node ")
     public void removeNode(ARNode node) {
         Log.i("Removing ARNODE", "");
         arNodes.remove(node);

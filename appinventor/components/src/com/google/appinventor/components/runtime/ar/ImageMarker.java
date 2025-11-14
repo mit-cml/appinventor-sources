@@ -118,8 +118,8 @@ public final class ImageMarker implements ARImageMarker {
     "and the ARView3D's TrackingType is WorldTracking or ImageTracking.")
   public void AppearedInView() {}
 
-
-  @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
+  @SimpleFunction(description = "Remove all a marker's nodes")
+  @SimpleEvent(description = "Remove all a marker's nodes")
   public void removeAllNodes() {
     Log.i("Removing all marker nodes", "");
     arNodes.clear();
