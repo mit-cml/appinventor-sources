@@ -12,10 +12,17 @@ fileprivate let kListViewDefaultTextColor = Color.white
 fileprivate let kDefaultTableCell = "UITableViewCell"
 fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 
-open class ListView: ViewComponent, AbstractMethodsForViewComponent,
-    UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+let VERTICAL_LAYOUT = 0
+let HORIZONTAL_LAYOUT = 1
+
+  open class ListView: ViewComponent, AbstractMethodsForViewComponent,
+    UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,
+    UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
   fileprivate final var _view: UITableView
-  fileprivate var _horizontalTableView: UICollectionView?
+  fileprivate let _rootView = UIView()
+  fileprivate var _collectionView: UICollectionView
+  fileprivate let kDefaultItemSize = CGSize(width: 160, height: 56)
+    
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _elements = [String]()
   fileprivate var _selection = ""
@@ -33,7 +40,9 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _listViewLayoutMode = Int32(0)
   fileprivate var _fontTypeface: String = ""
   fileprivate var _fontTypefaceDetail: String = ""
-  fileprivate var _orientation = Int32(1)
+    
+  fileprivate var _orientation = Int32(VERTICAL_LAYOUT)
+  fileprivate let _horizontalLayout = UICollectionViewFlowLayout()
   fileprivate let filter = UISearchBar()
   fileprivate var _hint = "Search list..."
   fileprivate var _dividerColor = Int32(bitPattern: Color.default.rawValue)
@@ -44,10 +53,17 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   fileprivate var _imageHeight = Int32(200)
   fileprivate var _imageWidth = Int32(200)
 
+  let COMPANION_CORRECTION = 5
 
   public override init(_ parent: ComponentContainer) {
-    _view = UITableView(frame: CGRect.zero, style: .plain)
+    _view = UITableView(frame: .zero, style: .plain)
+    _collectionView = UICollectionView(frame: .zero, collectionViewLayout: _horizontalLayout)
     super.init(parent)
+
+    // Root container
+    _rootView.translatesAutoresizingMaskIntoConstraints = false
+
+    // Table setup (existing)
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.delegate = self
     _view.dataSource = self
@@ -58,20 +74,56 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     _view.backgroundView = nil
     _view.backgroundColor = preferredTextColor(parent.form)
 
-    // The intrinsic height of the ListView needs to be explicit because UITableView does not
-    // provide a value. We use a low priority constraint to configure the height, and size it based
-    // on the number of rows (min 1). Updates to the constant in the constraint are done in the
-    // Elements property setter.
+    // Auto height for the table (existing)
     _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
     _automaticHeightConstraint.priority = UILayoutPriority(1.0)
     _automaticHeightConstraint.isActive = true
+
+    // Create horizontal collection view
+    let layout = UICollectionViewFlowLayout()
+   
+    _horizontalLayout.scrollDirection = .horizontal
+    _horizontalLayout.minimumLineSpacing = 8
+    _horizontalLayout.minimumInteritemSpacing = 0
+    _horizontalLayout.sectionInset = .zero
+    _horizontalLayout.estimatedItemSize = .zero
+
+    _collectionView.backgroundColor = .clear
+    _collectionView.translatesAutoresizingMaskIntoConstraints = false
+    _collectionView.showsHorizontalScrollIndicator = true
+    _collectionView.showsVerticalScrollIndicator = false
+    _collectionView.alwaysBounceVertical = false
+    _collectionView.alwaysBounceHorizontal = true
+    _collectionView.dataSource = self
+    _collectionView.delegate = self
+    _collectionView.heightAnchor.constraint(equalToConstant: 60)
+  
+    _collectionView.register(HListCell.self, forCellWithReuseIdentifier: HListCell.reuseId)
+
+    // Assemble root: keep both, toggle visibility later
+    _rootView.addSubview(_view)
+    _rootView.addSubview(_collectionView)
+
+    
+    NSLayoutConstraint.activate([
+      _view.leadingAnchor.constraint(equalTo: _rootView.leadingAnchor),
+      _view.trailingAnchor.constraint(equalTo: _rootView.trailingAnchor),
+      _view.topAnchor.constraint(equalTo: _rootView.topAnchor),
+      _view.bottomAnchor.constraint(equalTo: _rootView.bottomAnchor),
+
+      _collectionView.leadingAnchor.constraint(equalTo: _rootView.leadingAnchor),
+      _collectionView.trailingAnchor.constraint(equalTo: _rootView.trailingAnchor),
+      _collectionView.topAnchor.constraint(equalTo: _rootView.topAnchor),
+      _collectionView.bottomAnchor.constraint(equalTo: _rootView.bottomAnchor),
+      // Give the horizontal list a reasonable intrinsic height like the table
+    
+    ])
+
+    updateOrientationUI()
   }
 
-  open override var view: UIView {
-    get {
-      return _view
-    }
-  }
+ 
+  open override var view: UIView { _rootView }
 
   // MARK: Properties
   @objc open var BackgroundColor: Int32 {
@@ -148,8 +200,10 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
     } else {
       _view.reloadData()
-    }    
-  }  
+    }
+    _collectionView.reloadData()
+    _collectionView.collectionViewLayout.invalidateLayout()
+  }
 
   @objc open var FontTypeface: String {
     get {
@@ -186,8 +240,11 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       return _dividerColor
     }
     set(dividerColor) {
-      _dividerColor = dividerColor
-      _view.reloadData()
+      if (dividerColor == Int32(bitPattern: Color.default.rawValue)) {
+        _dividerColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
+      } else {
+        _dividerColor = dividerColor
+      }
     }
   }
 
@@ -202,14 +259,16 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  // This property is not fully implemented in iOS
   @objc open var ElementColor: Int32 {
     get {
       return _elementColor
     }
     set(elementColor) {
-      _elementColor = elementColor
-      _view.reloadData()
+      if (elementColor == Int32(bitPattern: Color.default.rawValue)) {
+        _elementColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
+      } else {
+        _elementColor = elementColor
+      }
     }
   }
 
@@ -310,16 +369,47 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     }
   }
 
-  // This property is not fully implemented in iOS
   @objc open var Orientation: Int32 {
-    get {
-      return _orientation
-    }
+    get { return _orientation }
     set(orientation) {
       _orientation = orientation
-      _view.reloadData()
+      updateOrientationUI()
     }
   }
+    
+    private func updateOrientationUI() {
+      let isHorizontal = (_orientation == HORIZONTAL_LAYOUT)
+
+    // Show / hide views
+    _view.isHidden = isHorizontal
+    _collectionView.isHidden = !isHorizontal
+
+    if isHorizontal {
+      _automaticHeightConstraint?.isActive = false
+
+      // Ensure scroll direction stays horizontal
+      if let layout = _collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 8
+        layout.minimumInteritemSpacing = 0
+      }
+
+      _collectionView.backgroundColor =
+        (_backgroundColor == Int32(bitPattern: Color.default.rawValue))
+        ? preferredTextColor(_container?.form)
+        : argbToColor(_backgroundColor)
+
+      // ✅ Correct update order:
+      _collectionView.reloadData()
+      _collectionView.collectionViewLayout.invalidateLayout()
+
+    } else {
+      _automaticHeightConstraint?.isActive = true
+      _view.reloadData()
+    }
+
+  }
+
 
   @objc open var Selection: String {
     get {
@@ -750,12 +840,36 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
       return cell
     }
 
+    if _elementCornerRadius > 0 {
+      cell.layer.cornerRadius = CGFloat(_elementCornerRadius) / CGFloat(COMPANION_CORRECTION)
+      cell.layer.masksToBounds = true
+    }
+    
+    if _dividerThickness > 0 {
+      tableView.separatorStyle = .singleLine
+    }
+    if _dividerColor == Color.default.int32 {
+      tableView.separatorColor = preferredTextColor(form)
+    } else {
+      tableView.separatorColor =  argbToColor(_dividerColor)
+    }
+    
+    
     if _backgroundColor == Color.default.int32 {
       cell.backgroundColor = preferredTextColor(form)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
-
+    
+    if _elementColor != Color.none.int32 {
+      // if elementColor at the table cell level, laid over backgroundColor
+      if _elementColor == Color.default.int32 {
+        cell.backgroundColor = preferredTextColor(form)
+      } else {
+        cell.backgroundColor = argbToColor(_elementColor)
+      }
+    }
+    
     //maintext
     if _textColor == Color.default.int32 {
       cell.textLabel?.textColor = preferredBackgroundColor(form)
@@ -839,4 +953,159 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
   var elements: [String] {
     return _results ?? _elements
   }
+    
+  private final class HListCell: UICollectionViewCell {
+  static let reuseId = "HListCell"
+
+  let imageView = UIImageView()
+  let titleLabel = UILabel()
+  let detailLabel = UILabel()
+
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+
+    // The key difference from before:
+    backgroundColor = .clear  // don't fight our custom backgrounds
+    contentView.backgroundColor = .clear
+
+    // Prepare background + selection layers
+    let bg = UIView(frame: .zero)
+    bg.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    self.backgroundView = bg
+
+    let selectedBG = UIView(frame: .zero)
+    selectedBG.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    self.selectedBackgroundView = selectedBG
+
+    // Layout:
+    titleLabel.numberOfLines = 2
+    detailLabel.numberOfLines = 2
+    detailLabel.font = UIFont.systemFont(ofSize: 12)
+
+    let vstack = UIStackView(arrangedSubviews: [titleLabel, detailLabel])
+    vstack.axis = .vertical
+    vstack.spacing = 4
+
+    let hstack = UIStackView(arrangedSubviews: [imageView, vstack])
+    hstack.axis = .horizontal
+    hstack.alignment = .center
+    hstack.spacing = 8
+
+    contentView.addSubview(hstack)
+    hstack.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+        hstack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+        hstack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+        hstack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+        hstack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+        imageView.widthAnchor.constraint(equalToConstant: 50)
+    ])
+  }
+
+  required init?(coder: NSCoder) { fatalError() }
+  }
+
+  // UICollectionViewDataSource
+  public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    return _listData.isEmpty ? elements.count : _listData.count
+  }
+
+  public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HListCell.reuseId, for: indexPath) as! HListCell
+
+    let isData = !_listData.isEmpty
+    let mainText: String
+    let detailText: String
+    var image: UIImage? = nil
+
+    if isData {
+      let item = _listData[indexPath.item]
+      mainText = item["Text1"] ?? ""
+      detailText = item["Text2"] ?? ""
+      if let path = item["Image"], !path.isEmpty {
+        image = AssetManager.shared.imageFromPath(path: path)
+      }
+    } else {
+      mainText = elements[indexPath.item]
+      detailText = ""
+    }
+
+    
+    if _elementCornerRadius > 0 {
+      cell.layer.cornerRadius = CGFloat(_elementCornerRadius) / CGFloat(COMPANION_CORRECTION)
+      cell.layer.masksToBounds = true
+    }
+    
+    (cell.backgroundView as? UIView)?.backgroundColor =
+        (_elementColor != Color.none.int32)
+        ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
+        : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+
+    (cell.selectedBackgroundView as? UIView)?.backgroundColor =
+        (_selectionColor == Color.default.int32)
+        ? argbToColor(Int32(bitPattern: kListViewDefaultSelectionColor.rawValue))
+        : argbToColor(_selectionColor)
+    
+    _collectionView.backgroundColor =
+        (_backgroundColor == Color.default.int32)
+    ? preferredTextColor(_container?.form)
+        : argbToColor(_backgroundColor)
+
+    cell.titleLabel.text = mainText
+    cell.detailLabel.text = detailText
+    cell.titleLabel.font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
+    cell.detailLabel.font = UIFont.systemFont(ofSize: CGFloat(_fontSizeDetail))
+
+    // Typeface mapping similar to table
+    if _fontTypeface == "1" { cell.titleLabel.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize)) ?? cell.titleLabel.font }
+    else if _fontTypeface == "2" { cell.titleLabel.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSize)) ?? cell.titleLabel.font }
+    else if _fontTypeface == "3" { cell.titleLabel.font = UIFont(name: "Courier", size: CGFloat(_fontSize)) ?? cell.titleLabel.font }
+
+    if _fontTypefaceDetail == "1" { cell.detailLabel.font = UIFont(name: "Helvetica", size: CGFloat(_fontSizeDetail)) ?? cell.detailLabel.font }
+    else if _fontTypefaceDetail == "2" { cell.detailLabel.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSizeDetail)) ?? cell.detailLabel.font }
+    else if _fontTypefaceDetail == "3" { cell.detailLabel.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail)) ?? cell.detailLabel.font }
+
+    // Text colors
+    cell.titleLabel.textColor = (_textColor == Color.default.int32) ? preferredBackgroundColor(_container?.form) : argbToColor(_textColor)
+    cell.detailLabel.textColor = (_textColorDetail == Color.default.int32) ? preferredBackgroundColor(_container?.form) : argbToColor(_textColorDetail)
+
+    // Image
+    cell.imageView.image = image
+    cell.imageView.isHidden = (image == nil)
+
+    return cell
+  }
+
+  // UICollectionViewDelegate (selection → AfterPicking)
+  public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    if !_listData.isEmpty {
+      let item = _listData[indexPath.item]
+      _selectionIndex = Int32(indexPath.item) + 1
+      _selection = item["Text1"] ?? ""
+      _selectionDetailText = item["Text2"] ?? ""
+    } else {
+      _selectionIndex = Int32(indexPath.item) + 1
+      _selection = elements[indexPath.item]
+      _selectionDetailText = ""
+    }
+    AfterPicking()
+  }
+
+  // UICollectionViewDelegateFlowLayout (optional sizing)
+  public func collectionView(_ collectionView: UICollectionView,
+                             layout collectionViewLayout: UICollectionViewLayout,
+                             sizeForItemAt indexPath: IndexPath) -> CGSize {
+    // Make height roughly your rowHeight; width can scale with textSize
+    
+    //let h = max(CGFloat(_textSize) + 24, kDefaultItemSize.height)
+    let h = collectionView.bounds.height
+    let w: CGFloat
+    switch _listViewLayoutMode {
+      case 3, 4: w = 220   // room for image + text
+      case 2:   w = 200
+      default:  w = 160
+    }
+    return CGSize(width: w, height: h)
+  }
+
 }
