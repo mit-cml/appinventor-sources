@@ -964,7 +964,10 @@ open class ARNodeBase: NSObject, ARNode {
     let worldPos   = _modelEntity.position(relativeTo: nil)
     let worldRot   = _modelEntity.orientation(relativeTo: nil)
     let worldScale = _modelEntity.scale(relativeTo: nil)
-    _modelEntity.orientation = simd_quatf(angle: 0, axis: [0, 1, 0])  // when added to marker, face up
+    let pitchX = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // this gets written over, but for clarity
+    let yawY = simd_quatf(angle: 0, axis: [0, 1, 0])           // Rotate 0 around Y
+
+    _modelEntity.orientation = yawY * pitchX
     if _originalWorldPosition == nil { _originalWorldPosition = worldPos }
 
     guard let markerAnchor = marker.Anchor else {

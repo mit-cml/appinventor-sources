@@ -1385,7 +1385,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       // Reset node's local position to zero since anchor is at world pos
       node._modelEntity.position = .zero
       node._modelEntity.orientation = simd_quatf(angle: 0, axis: [0, 1, 0])  // face up when detached
-      print("🧩 Temp anchor for \(node.Name) at world \(worldPos), node at local zero")
+      print("🧩 Temp DetachedAnchor for \(node.Name) at world \(worldPos), node at local zero")
       
       DispatchQueue.main.async {
         self._arView.scene.addAnchor(tempAnchor)
@@ -1413,7 +1413,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
               node._modelEntity.transform = localT
          
-            node._modelEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+              //let pitchX = simd_quatf(angle: 0, axis: [1, 0, 0])  // top of x faces camera
+              let pitchX = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+              let yawY = simd_quatf(angle: 0, axis: [0, 1, 0])           // Rotate 0 around Y
+
+            node._modelEntity.orientation = yawY * pitchX
             print("reattaching node with local transform \(marker.Anchor!.transform) (\(localT))")
           } else if let worldT = node._frozenWorldTransform {
               let markerWorldM = markerAnchor.transformMatrix(relativeTo: nil)
@@ -1421,7 +1425,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
               node._modelEntity.transform = Transform(matrix: localM)
             
-            node._modelEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+              let pitchX = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+              let yawY = simd_quatf(angle: 0, axis: [0, 1, 0])           // Rotate 0 around Y
+
           
           
             
@@ -1489,12 +1495,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         
         // Create anchor entity if needed
         if marker.Anchor == nil {
-          let im = AnchorEntity(anchor: imageAnchor)
-          _arView.scene.addAnchor(im)
-          marker.Anchor = im
-          marker._anchorEntity = im
+          let imA = AnchorEntity(anchor: imageAnchor)
+          _arView.scene.addAnchor(imA)
+          marker.Anchor = imA
+          marker._anchorEntity = imA
           marker._lastARAnchorId = imageAnchor.identifier
-          let anchorPos = im.position(relativeTo: nil)
+          let anchorPos = imA.position(relativeTo: nil)
           print("   🎯 Created marker anchor at: \(anchorPos)")
         }
         
@@ -1565,10 +1571,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       if !sameId {
         // Old/stale AE → remove & replace
         ae.removeFromParent()
-        let fresh = AnchorEntity(anchor: imageAnchor)
-        _arView.scene.addAnchor(fresh)
-        marker.Anchor = fresh
-        marker._anchorEntity = fresh
+        let imA = AnchorEntity(anchor: imageAnchor)
+        _arView.scene.addAnchor(imA)
+        marker.Anchor = imA
+        marker._anchorEntity = imA
         marker._lastARAnchorId = imageAnchor.identifier
         print("🔁 Replaced STALE AnchorEntity with new one for id=\(imageAnchor.identifier)")
         return
@@ -1583,12 +1589,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
 
     // No AnchorEntity yet → create and add
-    let fresh = AnchorEntity(anchor: imageAnchor)
-    _arView.scene.addAnchor(fresh)
-    marker.Anchor = fresh
-    marker._anchorEntity = fresh
+    let imA = AnchorEntity(anchor: imageAnchor)
+    _arView.scene.addAnchor(imA)
+    marker.Anchor = imA
+    marker._anchorEntity = imA
     marker._lastARAnchorId = imageAnchor.identifier
-    print("➕ Created AnchorEntity for id=\(imageAnchor.identifier)")
+    print("➕ ensure AnchorEntity for id=\(imageAnchor.identifier) at \(imA.position)")
   }
 
   // Call this every frame in your ARView update
@@ -2182,7 +2188,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
     }
     
-    @objc open func TakePicture(_ name: String, _ width: Float = 15.0) {
+    @objc open func TakePicture(_ dummyName: String, _ width: Float = 15.0) {
       captureSnapshot { image in
         guard let image else {
           print("❌ Failed to make image for marker")
@@ -2190,14 +2196,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
         guard let imageUI = image as Optional else { return }
         do {
-          let url = try self.savePNG(imageUI, name)
+          let url = try self.savePNG(imageUI, dummyName)
           self._currentImageSnapshot = url
           
           let nsWidth: NSNumber = NSNumber(value: width)
           EventDispatcher.dispatchEvent(
               of: self,
               called: "AfterPicture",
-              arguments: url as NSString, name as NSString, width as NSNumber
+              arguments: url as NSString, dummyName as NSString, width as NSNumber
           )
         }catch {
             print("❌ Failed to save snapshot for marker: \(error)")
@@ -2209,23 +2215,46 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         return ref
     }
     
-    func savePNG(_ image: UIImage, _ name: String) throws -> String {
+    func savePNG(_ image: UIImage, _ dummyName: String) throws -> String {
       let data = image.pngData()!
       let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         .first!
-        .appendingPathComponent("\(name).png")
+        .appendingPathComponent("\(dummyName).png")
       try data.write(to: url, options: .atomic)
       return url.absoluteString
     }
     
-    @objc open func ImageForMarkerCreated(_ url: String, _ name: String, _ widthCm: Float = 15.0) -> ImageMarker {
+    func renameFile(urlString: String, to newName: String) throws -> String {
+      guard let oldURL = URL(string: urlString) else {
+        throw NSError(domain: "Invalid URL", code: -1, userInfo: nil)
+      }
+      
+      let directory = oldURL.deletingLastPathComponent()
+      let fileExtension = oldURL.pathExtension
+      let newURL = directory.appendingPathComponent("\(newName).\(fileExtension)")
+      
+      try FileManager.default.moveItem(at: oldURL, to: newURL)
+      
+      return newURL.absoluteString
+    }
+    
+    @objc open func ImageForMarkerCreated(_ urlString: String, _ newName: String, _ widthCm: Float = 15.0) -> ImageMarker {
       //marker.Name = "RoomMarker" + UUID().uuidString
       //marker.Image = imagePath
       let marker: ImageMarker = ImageMarker(self)
-      marker.Name = name
-      marker.Image = url
+      marker.Name = newName
+      
+      var newU = urlString
+      do {
+        newU = try renameFile(urlString: urlString, to: newName)
+      }catch {
+        print("Error renaming file: \(error)")
+        //return marker
+      }
+
+      marker.Image = newU
       marker.PhysicalWidthInCentimeters = widthCm // defaulting atm
-      print("returning IM \(marker.Name) \(url) \(widthCm)")
+      print("returning IM \(marker.Name) \(newU) \(widthCm)")
       return marker
     }
     
@@ -2656,9 +2685,10 @@ extension ARView3D: UIGestureRecognizerDelegate {
       // Check for node at press location
       if let entity = _arView.entity(at: tapLocation) as? ModelEntity,
          let node = findNodeForEntity(entity) {
+        isNodeAtPoint = true
         NodeLongClick(node)
         node.LongClick()
-        isNodeAtPoint = true
+        
       }
       
       // Check for detected plane at location
