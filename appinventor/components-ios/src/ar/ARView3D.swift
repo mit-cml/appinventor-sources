@@ -574,6 +574,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     return _invisibleFloor != nil
   }
   
+  @objc open var locationOfInvisibleFloorInCentimeters: Float {
+    get {
+      if (_invisibleFloor == nil) { return 0.0 }
+      return UnitHelper.metersToCentimeters(_invisibleFloor!.transform.translation.y)
+    }
+  }
+  
   @objc func ensureFloorExists() {
     if !hasInvisibleFloor {
         createInvisibleFloor()

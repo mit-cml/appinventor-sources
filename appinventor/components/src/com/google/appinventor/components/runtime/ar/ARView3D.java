@@ -189,6 +189,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final float[] lastProjMatrix = new float[16];
 
     private float GROUND_LEVEL = 1.0f;
+    private float invisibleFloor = -1.0f
     private boolean groundDetected = false;
     private float lastPhysicsUpdateTime = 0.0f;
 
@@ -1835,6 +1836,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleProperty
     public void EnableOcclusion(boolean occlusion) {
         enableOcclusion = occlusion;
+    }
+
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "get invisible floor at y in centimeters, if present")
+    public float locationOfInvisibleFloorInCentimeters() {
+        return invisibleFloor;
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether enable occlusion in world understanding. If true, objects will disappear behind walls, furniture and sometime floor")
