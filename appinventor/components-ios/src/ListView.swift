@@ -465,6 +465,7 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
     _listData.append(["Text1": mainText, "Text2": detailText, "Image": imageName])
+    _view.reloadData()
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {

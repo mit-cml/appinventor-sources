@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Handler;
 import android.text.Html;
 import android.text.InputType;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
@@ -366,6 +368,57 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     if (maskInput) {
       input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
+    alertDialog.setView(input);
+    // prevents the user from escaping the dialog by hitting the Back button
+    alertDialog.setCancelable(false);
+    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+            HideKeyboard((View) input);
+            AfterTextInput(input.getText().toString());
+          }
+        });
+
+    //If cancelable, then add the CANCEL button
+    if (cancelable)  {
+      final String cancelButtonText = activity.getString(android.R.string.cancel);
+      alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
+          new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+              HideKeyboard((View) input);
+              if (!TextInputCanceled()) {
+                //User pressed CANCEL. Raise AfterTextInput with CANCEL
+                AfterTextInput(cancelButtonText);
+              }
+            }
+          });
+    }
+    alertDialog.show();
+  }
+
+
+  @SimpleFunction(description = "Shows a dialog box where the user can provide an image and text")
+  public void ShowTextInputAndImageDialog(String message, String title, String url, boolean cancelable, boolean maskInput) {
+    showTextInputAndImageDialog(title, message, url, cancelable, maskInput);
+    // in case we end up also using the text dialog
+  }
+
+  private void showTextInputAndImageDialog(String message, String title, String url, boolean cancelable, boolean maskInput) {
+    final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+    alertDialog.setTitle(title);
+    alertDialog.setMessage(stringToHTML(message));
+    // Set an EditText view to get user input
+    final EditText input = new EditText(activity);
+    if (maskInput) {
+      input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    }
+
+    final ImageView imageView = new ImageView(activity);
+    if (url != null) {
+      imageView.setImageURI(Uri.parse(url));
+      alertDialog.setView(imageView);
+    }
+
     alertDialog.setView(input);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
