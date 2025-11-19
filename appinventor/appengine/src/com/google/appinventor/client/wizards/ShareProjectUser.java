@@ -7,6 +7,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+
+import java.util.HashMap;
+
 import com.google.gwt.core.client.GWT;
 
 
@@ -19,10 +22,15 @@ public class ShareProjectUser extends Composite{
     @UiField protected FocusPanel projectnameFocusPanel;
     @UiField protected ListBox permissionDropdown;
 
-    public ShareProjectUser(String userEmail, Integer permission) {
+    HashMap<String, Integer> permissionMap = new HashMap<String, Integer>() {{
+        put("1", 0);
+        put("3", 1);
+    }};
+
+    public ShareProjectUser(String userEmail, String permission) {
         bindUI();
         userEmailLabel.setText(userEmail);
-        permissionDropdown.setSelectedIndex(permission);
+        permissionDropdown.setSelectedIndex(permissionMap.get(permission));
     }
 
     public void bindUI() {
@@ -35,6 +43,6 @@ public class ShareProjectUser extends Composite{
     }
 
     public Integer getPermInteger() {
-        return permissionDropdown.getSelectedIndex();
+        return Integer.parseInt(permissionDropdown.getSelectedValue());
     }
 }

@@ -48,6 +48,8 @@
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
 
+    <g:Label ui:field="permissionLabel" styleName="ya-ProjectName" />
+
     <ai:ToolbarItem name ="Share Project" caption="{messages.shareProjectButton}" ui:field="shareProjectButton" align="right">
       <ca:ShareProjectsAction />
     </ai:ToolbarItem>

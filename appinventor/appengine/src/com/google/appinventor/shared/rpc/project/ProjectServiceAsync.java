@@ -201,14 +201,14 @@ public interface ProjectServiceAsync {
   void log(String message, AsyncCallback<Void> callback);
 
   /**
-   * @see ProjectService#shareProject(String, long, String, int)
+   * @see ProjectService#shareProject(String, String, long, String, int)
    */
-  void shareProject(String userId, long projectId, String otherEmail, int perm, AsyncCallback<ShareResponse> callback);
+  void shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm, AsyncCallback<ShareResponse> callback);
 
   /**
-   * @see ProjectService#shareProject(String, long, List<String>, int)
+   * @see ProjectService#shareProject(String, String, long, List<String>, int)
    */
-  void shareProject(String userId, long projectId, List<String> otherEmail, int perm, AsyncCallback<List<ShareResponse>> callback);
+  void shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm, AsyncCallback<List<ShareResponse>> callback);
 
   // /** 
   //  * @see ProjectService#updateProjectPermissionForUser(String, long, String, int)
@@ -216,14 +216,19 @@ public interface ProjectServiceAsync {
   // void updateProjectPermissionForUser(String userId, long projectId, String otherEmail, int perm, AsyncCallback<Integer> callback);
 
   /**
-   * @see ProjectService#getSharedProject(String, long)
+   * @see ProjectService#getSharedProject(String, String, long)
    */
-  void getSharedProject(String userId, long shareId, AsyncCallback<UserProject> callback);
+  void getSharedProject(String userId, String userEmail, long shareId, AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService#getPermissionsInfo(long)
    */
   void getPermissionsInfo(long projectId, AsyncCallback<HashMap<Integer, List<String>>> callback);
+
+  /**
+   * @see ProjectService#getPermissionType(String, long)
+   */
+  void getPermissionType(String userEmail, long projectId, AsyncCallback<String> callback);
 
   /**
    * @see ProjectService#getShareLink(long)

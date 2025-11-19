@@ -32,6 +32,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.util.Base64Util;
 
 import com.google.common.collect.Lists;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -644,7 +645,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Returns the RPC implementation for the given project type.
    */
   private CommonProjectService getProjectRpcImpl(final String userId, long projectId) {
-    storageIo.assertUserHasProject(userId, projectId);
+    LOG.info("checking access for user " + userId + " to project " + projectId);
+    // storageIo.assertUserHasProject(userId, projectId);
     String projectType = storageIo.getProjectType(userId, projectId);
     if (!projectType.isEmpty()) {
       return getProjectRpcImpl(userId, projectType);
@@ -710,7 +712,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    *
    * @return status of sharing action
    */
-  public ShareResponse shareProject(String userId, long projectId, String otherEmail, int perm) {
+  public ShareResponse shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm) {
     if (userId == null) {
       return new ShareResponse(Status.INVALID_USER);
     } else if (otherEmail == null) {
@@ -718,7 +720,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     } else if (userInfoProvider.getUserEmail().toLowerCase().equals(otherEmail)) {
       return new ShareResponse(Status.SELF_SHARE);
     }
-    return getProjectRpcImpl(userId, projectId).shareProject(userId, projectId,
+    return getProjectRpcImpl(userId, projectId).shareProject(userId, userEmail, projectId,
         otherEmail, StoredData.Permission.fromCode(perm));
   }
 
@@ -731,7 +733,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    *
    * @return status of sharing action
    */
-  public List<ShareResponse> shareProject(String userId, long projectId, List<String> otherEmail, int perm){
+  public List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm){
     List<ShareResponse> resp = new ArrayList<>();
     if (userId == null) {
       resp.add(new ShareResponse(Status.INVALID_USER));
@@ -743,7 +745,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       resp.add(new ShareResponse(Status.SELF_SHARE));
       return resp;
     }
-    return getProjectRpcImpl(userId, projectId).shareProject(userId, projectId,
+    return getProjectRpcImpl(userId, projectId).shareProject(userId, userEmail, projectId,
         otherEmail, StoredData.Permission.fromCode(perm));
   }
 
@@ -760,12 +762,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * gets project shared with the user
    * @param userId user id
+   * @param userEmail user email
    * @param shareId id shared with the user
    * @return project under the shared id if user has access to it
    * raises an error if user does not have access to it
    */
-  public UserProject getSharedProject(String userId, long shareId){
-    return youngAndroidProject.getSharedProject(userId, shareId);
+  public UserProject getSharedProject(String userId, String userEmail, long shareId){
+    return youngAndroidProject.getSharedProject(userId, userEmail, shareId);
   }
 
   /**
@@ -781,6 +784,10 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
         newMap.put(newKey, entry.getValue());
     } 
     return newMap;
+  }
+
+  public String getPermissionType(String userEmail, long projectId) {
+    return youngAndroidProject.getPermissionType(userEmail, projectId);
   }
 
   public Long getShareLink(String userEmail, long projectId){

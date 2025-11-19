@@ -379,24 +379,26 @@ public interface ProjectService extends RemoteService {
   /**
    * Share a project with others by email.
    * @param userId the user id of the owner of the project
+   * @param userEmail owner's email
    * @param projectId the project id
    * @param otherEmail the email of other user
    * @param perm permission
    *
    * @return status of sharing action
    */
-  ShareResponse shareProject(String userId, long projectId, String otherEmail, int perm);
+  ShareResponse shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm);
 
   /**
    * Share a project with others by email.
    * @param userId the user id of the owner of the project
+   * @param userEmail owner's email
    * @param projectId the project id
    * @param otherEmail the email of other user
    * @param perm permission
    *
    * @return status of sharing action
    */
-  List<ShareResponse> shareProject(String userId, long projectId, List<String> otherEmail, int perm);
+  List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm);
 
   // /**
   //  * Give `perm` permission to `userId` user's project to another user with `otherEmail` email
@@ -411,11 +413,12 @@ public interface ProjectService extends RemoteService {
   /**
    * gets project shared with the user
    * @param userId user id
+   * @param userEmail user email
    * @param shareId id shared with the user
    * @return project under the shared id if user has access to it
    * raises an error if user does not have access to it
    */
-  UserProject getSharedProject(String userId, long shareId);
+  UserProject getSharedProject(String userId, String userEmail, long shareId);
 
   /**
    * get access list for the given project
@@ -423,6 +426,14 @@ public interface ProjectService extends RemoteService {
    * @return mapping from permission type to user emails who have the permission type to project `projectId`
    */
   HashMap<Integer, List<String>> getPermissionsInfo(long projectId);
+
+  /**
+   * get the permission of a user for a given project
+   * @param userEmail the email of the user
+   * @param projectId the id of the project
+   * @return permission type of the user for the project
+   */
+  String getPermissionType(String userEmail, long projectId);
 
   /**
    * get the link to use to share the project

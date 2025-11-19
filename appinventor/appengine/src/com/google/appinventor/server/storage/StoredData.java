@@ -159,7 +159,7 @@ public class StoredData {
     @Id Long id;
 
     // key of project that this id shares
-    @Parent Key<ProjectData> projectKey;
+    @Indexed Long projectId;
 
     // Whether link can be used by all
     Boolean isForAll;

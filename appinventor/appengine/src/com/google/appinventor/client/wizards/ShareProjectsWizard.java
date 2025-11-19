@@ -175,7 +175,8 @@ public class ShareProjectsWizard {
           }
           // update the users container;
           updateUsersContainer(result);
-          isSharedAll = result.containsKey(4) && !result.get(4).isEmpty();
+          isSharedAll = (result.containsKey(4) && !result.get(4).isEmpty()) || (result.containsKey(3) && result.get(3).contains("ALL"));
+          LOG.info("is shared all: " + isSharedAll);
           checkBoxShareAll.setValue(isSharedAll);
         }
       });
@@ -197,8 +198,8 @@ public class ShareProjectsWizard {
         List<String> users = entry.getValue();
         for (String user: users) {
             LOG.info("user " + user);
-            if (user != "") {
-              ShareProjectUser userPerm = new ShareProjectUser(user, permission);
+            if (user != "" && permission != 0 && permission != 4 && user != "ALL") { // skip ALL entry
+              ShareProjectUser userPerm = new ShareProjectUser(user, permission.toString());
               usersContainerElements.add(userPerm);
               usersContainer.add(userPerm);
             }
@@ -336,11 +337,11 @@ public class ShareProjectsWizard {
     List<String> validUsers = this.checkUsers(users);
 
     if (users.size() == validUsers.size() && users.size() == 1) {
-      ShareProjectUser user = new ShareProjectUser(validUsers.get(0), permissionDropdown.getSelectedIndex());
+      ShareProjectUser user = new ShareProjectUser(validUsers.get(0), permissionDropdown.getSelectedValue());
       usersContainerElements.add(user);
       usersContainer.add(user);
       userNameTextBox.setText("");
-      permissionDropdown.setSelectedIndex(1);
+      permissionDropdown.setSelectedIndex(0);
     //   permissionDropdown.setValue(0, "Edit");
 
     }
@@ -411,12 +412,12 @@ public class ShareProjectsWizard {
           MESSAGES.shareProjectError()) {
           @Override
           public void onSuccess(List<ShareResponse> result) {
-            mainOde.getProjectService().shareProject(mainOde.getUser().getUserId(), projectID, removeUsers, 5, removeCallback);
+            mainOde.getProjectService().shareProject(mainOde.getUser().getUserId(), mainOde.getUser().getUserEmail(), projectID, removeUsers, 5, removeCallback);
           }
     };
     LOG.info("add " + addUsers.toString());
     LOG.info("remove " + removeUsers.toString());
-    this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), projectID, addUsers, perm, callback);
+    this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), this.mainOde.getUser().getUserEmail(), projectID, addUsers, perm, callback);
   }
 
   @UiHandler("topInvisible")

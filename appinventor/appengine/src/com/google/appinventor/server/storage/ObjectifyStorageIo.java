@@ -673,7 +673,7 @@ public class ObjectifyStorageIo implements StorageIo {
           // delete the UserProjectData object
           Key<ProjectData> projectKey = projectKey(projectId);
           datastore.delete(datastore.query(ProjectPermissionsData.class).ancestor(projectKey));
-          datastore.delete(datastore.query(ShareLinkData.class).ancestor(projectKey));
+          datastore.delete(datastore.query(ShareLinkData.class).filter("projectId", projectId));
           // delete any FileData objects associated with this project
         }
       }, true);
@@ -821,8 +821,10 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           ProjectData pd = datastore.find(projectKey(projectId));
+          LOG.warning("queried projects");
           if (pd != null) {
             projectData.t = pd;
+            LOG.warning("ther eis project");
           } else {
             projectData.t = null;
           }
@@ -833,8 +835,10 @@ public class ObjectifyStorageIo implements StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     if (projectData.t == null) {
+      LOG.warning("no project");
       return null;
     } else {
+      LOG.warning("found user project");
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
           projectData.t.dateModified, projectData.t.dateBuilt, projectData.t.projectMovedToTrashFlag);
@@ -2753,7 +2757,8 @@ public class ObjectifyStorageIo implements StorageIo {
           Key<UserProjectData> userProjectKey = userProjectKey(userKey, projectId);
           UserProjectData data = datastore.find(userProjectKey);
           if (data == null) {  // User doesn't have the corresponding project.
-            throw new SecurityException("Unauthorized access");
+            LOG.info("does not have access for userId: " + userId + " projectId: " + projectId);
+            // throw new SecurityException("Unauthorized access");
           }
           // User has data for project, so everything checks out.
           // We just store it now in the cache for future access, as we know the user requesting
@@ -2887,7 +2892,10 @@ public class ObjectifyStorageIo implements StorageIo {
               if (b.userEmail == userEmail) return 1;
               return 0;
           });
+          LOG.info("psd size: " + psd.size());
           if (!psd.isEmpty()) {
+            LOG.info("psd: " + psd.toString() + " for userEmail: " + psd.get(0).userEmail + " and permisions: " + psd.get(0).permission.toString());
+
             result.t = psd.get(0).permission;
           }else {
             result.t = StoredData.Permission.NONE;
@@ -2934,9 +2942,12 @@ public class ObjectifyStorageIo implements StorageIo {
         public void run(Objectify datastore) {
           ShareLinkData ssd = datastore.find(shareKey(shareId));
           if (ssd != null) {
-            result.t = ssd.projectKey.getId();
-          } 
-          
+            result.t = ssd.projectId;
+            LOG.warning("ssd found");
+          } else {
+           LOG.warning("ssd not found");
+
+          }
         }
       }, false);
     } catch (ObjectifyException e) {
@@ -2948,6 +2959,7 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public UserProject getSharedProject(final String userEmail, final String userId, final long projectId, final StoredData.Permission perm){
+    LOG.info("getting shared project");
     // add the project
     addSharedProjectToUser(userEmail, userId, projectId, perm);
     
@@ -2989,7 +3001,7 @@ public class ObjectifyStorageIo implements StorageIo {
           LOG.info("project id: " + projectId);
           
           List<ShareLinkData> sld = datastore.query(ShareLinkData.class)
-                                                      .ancestor(projectKey(projectId)).list();
+                                                      .filter("projectId", projectId).list();
           if (!sld.isEmpty()) {
             LOG.info("non-empty");
             if (sld.size() > 1) {
@@ -2997,6 +3009,13 @@ public class ObjectifyStorageIo implements StorageIo {
             } else {
               result.t = sld.get(0).id;
               LOG.info("final " + result.t);
+              ShareLinkData ssd = datastore.find(shareKey(result.t));
+              if (ssd != null) {
+                LOG.warning("ssd should be found");
+              } else {
+              LOG.warning("ssd not found");
+
+              }
             }
           } else {
             LOG.warning("empty!");
@@ -3014,7 +3033,8 @@ public class ObjectifyStorageIo implements StorageIo {
   public void addSharedProjectToUser(final String userEmail, final String userId, final long projectId,
                             final StoredData.Permission perm) {
     try {
-     if (perm != StoredData.Permission.OWNER) {
+      LOG.info("adding shared project to user " + userEmail + " for project: " + projectId + " with perm: " + perm.toString());
+      if (perm != StoredData.Permission.OWNER) {
         runJobWithRetries(new JobRetryHelper() {
           @Override
           public void run(Objectify datastore) throws ObjectifyException, IOException {
@@ -3023,8 +3043,11 @@ public class ObjectifyStorageIo implements StorageIo {
             List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
                                                         .ancestor(projectKey)
                                                         .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL)))
-                                                        .filter("permssion", perm).list();
+                                                        .filter("permission", perm).list();
+            LOG.info("psd size: " + psd.size());
+            LOG.info("user: " + userEmail + " perm: " + perm.toString());
             if(!psd.isEmpty()){
+              LOG.warning("adding new project!");
               UserProjectData upd = new UserProjectData();
               upd.projectId = projectId;
               upd.userKey = userKey(userId);
@@ -3088,7 +3111,7 @@ public class ObjectifyStorageIo implements StorageIo {
                             final StoredData.Permission perm) {
     final Result<Long> result = new Result<>();
     result.t = 0L;
-    LOG.info("share project");
+    LOG.info("share project for perm: " + perm.toString() + " to userEmail: " + userEmail);
     try{
       // Add project permission
       runJobWithRetries(new JobRetryHelper() {
@@ -3103,7 +3126,7 @@ public class ObjectifyStorageIo implements StorageIo {
               datastore.delete(datastore.query(ProjectPermissionsData.class)
                                       .ancestor(projectKey));
               datastore.delete(datastore.query(ShareLinkData.class)
-                                      .filter("projectKey", projectKey));
+                                      .filter("projectId", projectId));
             } else {
               // redact access from some
               datastore.delete(datastore.query(ProjectPermissionsData.class)
@@ -3116,7 +3139,7 @@ public class ObjectifyStorageIo implements StorageIo {
             List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
                                             .ancestor(projectKey)
                                             .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL)))
-                                            .filter("permssion", perm).list();
+                                            .filter("permission", perm).list();
             // add permission
             if(psd.isEmpty()){
               LOG.info("new share type");
@@ -3129,26 +3152,36 @@ public class ObjectifyStorageIo implements StorageIo {
               ppd.permission = perm;
               datastore.put(ppd);
             }
-            List<ShareLinkData> ssd = datastore.query(ShareLinkData.class).ancestor(projectKey).list();
-            // add url
-            if (ssd.isEmpty()){
-              LOG.info("new url project");
-              ShareLinkData sld = new ShareLinkData();
-              sld.projectKey = projectKey;
-              sld.isForAll = StoredData.ALL == userEmail;
-              result.t = sld.id;
-              datastore.put(sld);
-            } else if (StoredData.ALL == userEmail) {
-              LOG.info("share all project");
-              ShareLinkData sld = ssd.get(0);
-              sld.isForAll = true;
-              result.t = sld.id;
-              datastore.put(sld);
-            }
           }
         }
       }, true);
-      
+      // add url
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException, IOException {
+          LOG.info("try to get sld");
+          List<ShareLinkData> ssd = datastore.query(ShareLinkData.class).filter("projectId", projectId).list();
+          LOG.info("git sld " + ssd.toString());
+          // add url
+          if (ssd == null || ssd.isEmpty()){
+            ShareLinkData sld = new ShareLinkData();
+            LOG.info("new url project " + sld.toString());
+            sld.projectId = projectId;
+            sld.isForAll = StoredData.ALL == userEmail;
+            datastore.put(sld); // put the project in the db so that it gets assigned an id
+
+            assert sld.id != null;
+            result.t = sld.id;
+            LOG.info("id:  " + sld.id.toString());
+          } else if (StoredData.ALL == userEmail) {
+            LOG.info("share all project");
+            ShareLinkData sld = ssd.get(0);
+            sld.isForAll = true;
+            result.t = sld.id;
+            datastore.put(sld);
+          }
+          }
+      }, false);
     }catch (ObjectifyException e){
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }

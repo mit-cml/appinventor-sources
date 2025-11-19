@@ -509,23 +509,28 @@ public class LocalProjectService implements ProjectServiceAsync {
   }
 
   @Override
-  public void shareProject(String userId, long projectId, String otherEmail, int perm, AsyncCallback<ShareResponse> callback){
+  public void shareProject(String userId,  String userEmail, long projectId, String otherEmail, int perm, AsyncCallback<ShareResponse> callback){
 
   }
 
   @Override
-  public void shareProject(String userId, long projectId, List<String> otherEmail, int perm, AsyncCallback<List<ShareResponse>> callback){
+  public void shareProject(String userId,  String userEmail, long projectId, List<String> otherEmail, int perm, AsyncCallback<List<ShareResponse>> callback){
 
   }
 
   @Override
-  public void getSharedProject(String userId, long shareId, AsyncCallback<UserProject> callback){
+  public void getSharedProject(String userId, String userEmail, long shareId, AsyncCallback<UserProject> callback){
 
   }
 
   @Override
   public void getPermissionsInfo(long projectId, AsyncCallback<HashMap<Integer, List<String>>> callback){
 
+  }
+
+  @Override
+  public void getPermissionType(String userEmail, long projectId, AsyncCallback<String> callback) {
+    
   }
 
   @Override
