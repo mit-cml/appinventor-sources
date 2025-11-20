@@ -36,23 +36,23 @@ AI.Yail.YAIL_GLOBAL_VAR_TAG = 'g$';
 AI.Yail.YAIL_LOCAL_VAR_TAG = '$';
 
 // Global variable definition block
-AI.Yail['global_declaration'] = function() {
-  var name = AI.Yail.YAIL_GLOBAL_VAR_TAG + this.getFieldValue('NAME');
-  var argument0 = AI.Yail.valueToCode(this, 'VALUE', AI.Yail.ORDER_NONE) || '0';
+AI.Yail.forBlock['global_declaration'] = function(block, generator) {
+  var name = AI.Yail.YAIL_GLOBAL_VAR_TAG + block.getFieldValue('NAME');
+  var argument0 = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || '0';
   var code = AI.Yail.YAIL_DEFINE +  name + AI.Yail.YAIL_SPACER + argument0 + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // Global variable getter block
-AI.Yail['lexical_variable_get'] = function() {
+AI.Yail.forBlock['lexical_variable_get'] = function(block, generator) {
   var code = "";
-  var name = this.getFieldValue('VAR');
-  if (this.eventparam) {        // If this exists, its the english (default) value
-    name = this.eventparam;     // which is what we should use in the Yail
+  var name = block.getFieldValue('VAR');
+  if (block.eventparam) {        // If this exists, its the english (default) value
+    name = block.eventparam;     // which is what we should use in the Yail
   } else {
-    Blockly.LexicalVariable.getEventParam(this);
-    if (this.eventparam) {
-      name = this.eventparam;
+    Blockly.LexicalVariable.getEventParam(block);
+    if (block.eventparam) {
+      name = block.eventparam;
     }
   }
   var commandAndName = AI.Yail.getVariableCommandAndName(name);
@@ -64,16 +64,16 @@ AI.Yail['lexical_variable_get'] = function() {
 };
 
 // Global variable setter block
-AI.Yail['lexical_variable_set'] = function() {
-  var argument0 = AI.Yail.valueToCode(this, 'VALUE', AI.Yail.ORDER_NONE) || '0';
+AI.Yail.forBlock['lexical_variable_set'] = function(block, generator) {
+  var argument0 = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || '0';
   var code = "";
-  var name = this.getFieldValue('VAR');
-  if (this.eventparam) {        // If this exists, its the english (default) value
-    name = this.eventparam;     // which is what we should use in the Yail
+  var name = block.getFieldValue('VAR');
+  if (block.eventparam) {        // If this exists, its the english (default) value
+    name = block.eventparam;     // which is what we should use in the Yail
   } else {
-    Blockly.LexicalVariable.getEventParam(this);
-    if (this.eventparam) {
-      name = this.eventparam;
+    Blockly.LexicalVariable.getEventParam(block);
+    if (block.eventparam) {
+      name = block.eventparam;
     }
   }
   var commandAndName = AI.Yail.setVariableCommandAndName(name);
@@ -116,20 +116,20 @@ AI.Yail['setVariableCommandAndName'] = function(name){
   return [command,name]
 }
 
-AI.Yail['local_declaration_statement'] = function() {
-  return AI.Yail.local_variable(this,false);
-}
+AI.Yail.forBlock['local_declaration_statement'] = function(block, generator) {
+  return AI.Yail.local_variable(block, generator, false);
+};
 
-AI.Yail['local_declaration_expression'] = function() {
-  return AI.Yail.local_variable(this,true);
-}
+AI.Yail.forBlock['local_declaration_expression'] = function(block, generator) {
+  return AI.Yail.local_variable(block, generator, true);
+};
 
-AI.Yail['local_variable'] = function(block,isExpression) {
+AI.Yail['local_variable'] = function(block, generator, isExpression) {
   var code = AI.Yail.YAIL_LET;
   code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_SPACER;
   for(var i=0;block.getFieldValue("VAR" + i);i++){
     code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.usePrefixInYail ? "local_" : "") + block.getFieldValue("VAR" + i);
-    code += AI.Yail.YAIL_SPACER + ( AI.Yail.valueToCode(block, 'DECL' + i, AI.Yail.ORDER_NONE) || '0' );
+    code += AI.Yail.YAIL_SPACER + ( generator.valueToCode(block, 'DECL' + i, AI.Yail.ORDER_NONE) || '0' );
     code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
   }
   code += AI.Yail.YAIL_SPACER +  AI.Yail.YAIL_CLOSE_COMBINATION;
@@ -138,11 +138,17 @@ AI.Yail['local_variable'] = function(block,isExpression) {
     if(!block.getInputTargetBlock("RETURN")){
       code += AI.Yail.YAIL_SPACER + "0";
     } else {
-      code += AI.Yail.YAIL_SPACER + AI.Yail.valueToCode(block, 'RETURN', AI.Yail.ORDER_NONE);
+      code += AI.Yail.YAIL_SPACER + generator.valueToCode(block, 'RETURN', AI.Yail.ORDER_NONE);
     }
   } else {
-    code += AI.Yail.YAIL_SPACER +
-      (AI.Yail.statementToCode(block, 'STACK', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE);
+    var stackCode = '';
+    var stackBlock = block.getInputTargetBlock('STACK');
+    while (stackBlock) {
+      stackCode += generator.blockToCode(stackBlock);
+      stackBlock = stackBlock.getNextBlock();
+    }
+    stackCode = stackCode || AI.Yail.YAIL_FALSE;
+    code += AI.Yail.YAIL_SPACER + stackCode;
   }
   code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_CLOSE_COMBINATION;
   if(!isExpression){

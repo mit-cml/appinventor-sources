@@ -10,16 +10,16 @@
  */
 import './connection_checker.js';
 import type { Block } from './block.js';
+import { WorkspaceComment } from './comments/workspace_comment.js';
 import type { ConnectionDB } from './connection_db.js';
 import type { Abstract } from './events/events_abstract.js';
 import type { IASTNodeLocation } from './interfaces/i_ast_node_location.js';
 import type { IConnectionChecker } from './interfaces/i_connection_checker.js';
+import { IProcedureMap } from './interfaces/i_procedure_map.js';
 import { Options } from './options.js';
 import type * as toolbox from './utils/toolbox.js';
 import { VariableMap } from './variable_map.js';
 import type { VariableModel } from './variable_model.js';
-import type { WorkspaceComment } from './workspace_comment.js';
-import { IProcedureMap } from './interfaces/i_procedure_map.js';
 /**
  * Class for a workspace.  This is a data structure that contains blocks.
  * There is no UI, and can be created headlessly.
@@ -107,7 +107,7 @@ export declare class Workspace implements IASTNodeLocation {
      * @returns The comparison value. This tells Array.sort() how to change object
      *     a's index.
      */
-    private sortObjects_;
+    private sortObjects;
     /**
      * Adds a block to the list of top blocks.
      *
@@ -280,6 +280,14 @@ export declare class Workspace implements IASTNodeLocation {
      */
     newBlock(prototypeName: string, opt_id?: string): Block;
     /**
+     * Obtain a newly created comment.
+     *
+     * @param id Optional ID.  Use this ID if provided, otherwise create a new
+     *     ID.
+     * @returns The created comment.
+     */
+    newComment(id?: string): WorkspaceComment;
+    /**
      * The number of blocks that may be added to the workspace before reaching
      *     the maxBlocks.
      *
@@ -345,13 +353,13 @@ export declare class Workspace implements IASTNodeLocation {
      * @param func Function to call.
      * @returns Obsolete return value, ignore.
      */
-    addChangeListener(func: (e: Abstract) => void): Function;
+    addChangeListener(func: (e: Abstract) => void): (e: Abstract) => void;
     /**
      * Stop listening for this workspace's changes.
      *
      * @param func Function to stop calling.
      */
-    removeChangeListener(func: Function): void;
+    removeChangeListener(func: (e: Abstract) => void): void;
     /**
      * Fire a change event.
      *
@@ -385,7 +393,6 @@ export declare class Workspace implements IASTNodeLocation {
      *
      * @param id ID of comment to find.
      * @returns The sought after comment, or null if not found.
-     * @internal
      */
     getCommentById(id: string): WorkspaceComment | null;
     /**
