@@ -21,7 +21,6 @@ public class MediaPlayer {
 
   public MediaPlayer() {
     audio = createAudioElement();
-    System.err.println("Hello world");
   }
 
   public void load(String path) {
