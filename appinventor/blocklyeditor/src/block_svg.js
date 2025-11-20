@@ -31,25 +31,6 @@ Blockly.BlockSvg.prototype.error = null;
 Blockly.BlockSvg.prototype.isBad = false;
 
 /**
- * This is to prevent any recursive render calls. It is not elegant in the
- * least, but it is pretty future proof.
- * @type {boolean}
- */
-Blockly.BlockSvg.prototype.isRendering = false;
-
-/**
- * The language-neutral id given to the collapsed input.
- * @const {string}
- */
-Blockly.BlockSvg.COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
-
-/**
- * The language-neutral id given to the collapsed field.
- * @const {string}
- */
-Blockly.BlockSvg.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';
-
-/**
  * Set this block's warning text.
  * @param {?string} text The text, or null to delete.
  */
@@ -95,10 +76,10 @@ Blockly.BlockSvg.isRenderingOn = true;
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.getSvgRoot()),
                            'badBlock');
     // Move the selected block to the top of the stack.
-    this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+    this.getSvgRoot().parentNode.appendChild(this.getSvgRoot());
   }
 };
 
@@ -107,10 +88,10 @@ Blockly.BlockSvg.prototype.addBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.removeBadBlock = function() {
   if (this.rendered) {
-    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.getSvgRoot()),
                               'badBlock');
     // Move the selected block to the top of the stack.
-    this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+    this.getSvgRoot().parentNode.appendChild(this.getSvgRoot());
   }
 };
 
@@ -118,7 +99,11 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  * Check to see if the block is marked as bad.
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
-  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.svgGroup_),
+  // Return false for unrendered blocks - they can't be visually marked as bad
+  if (!this.getSvgRoot() || !this.rendered) {
+    return false;
+  }
+  return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.getSvgRoot()),
     'badBlock');
 };
 
@@ -129,7 +114,7 @@ Blockly.BlockSvg.prototype.badBlock = function() {
   this.isBad = true;
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block bad only if it is on the main workspace
-    goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
+    goog.asserts.assertObject(this.getSvgRoot(), 'Block is not rendered.');
     this.addBadBlock();
   }
 };
@@ -141,8 +126,12 @@ Blockly.BlockSvg.prototype.notBadBlock = function() {
   this.isBad = false;
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
-    goog.asserts.assertObject(this.svgGroup_, 'Block is not rendered.');
-    this.removeBadBlock();
+    // For Blockly v11 compatibility: allow unrendered blocks during XML loading
+    if (this.getSvgRoot()) {
+      this.removeBadBlock();
+    }
+    // If block is not rendered yet (during XML loading), skip visual updates
+    // The block will be properly rendered later in the loading process
   }
 };
 
@@ -168,88 +157,6 @@ Blockly.BlockSvg.prototype.dispose = (function(func) {
     return wrappedFunc;
   }
 })(Blockly.BlockSvg.prototype.dispose);
-
-/**
- * Set this block's error text.
- * @param {?string} text The text, or null to delete.
- * @param {string=} opt_id An optional ID for the warning text to be able to
- *     maintain multiple errors.
- */
-Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
-  if (!this.setErrorText.pid_) {
-    // Create a database of warning PIDs.
-    // Only runs once per block (and only those with warnings).
-    this.setErrorText.pid_ = Object.create(null);
-  }
-  var id = opt_id || '';
-  if (!id) {
-    // Kill all previous pending processes, this edit supercedes them all.
-    for (var n in this.setErrorText.pid_) {
-      clearTimeout(this.setErrorText.pid_[n]);
-      delete this.setErrorText.pid_[n];
-    }
-  } else if (this.setErrorText.pid_[id]) {
-    // Only queue up the latest change.  Kill any earlier pending process.
-    clearTimeout(this.setErrorText.pid_[id]);
-    delete this.setErrorText.pid_[id];
-  }
-  if (this.workspace && this.workspace.isDragging()) {
-    // Don't change the error text during a drag.
-    // Wait until the drag finishes.
-    var thisBlock = this;
-    this.setErrorText.pid_[id] = setTimeout(function() {
-      if (thisBlock.workspace) {  // Check block wasn't deleted.
-        delete thisBlock.setErrorText.pid_[id];
-        thisBlock.setErrorText(text, id);
-      }
-    }, 100);
-    return;
-  }
-  if (this.isInFlyout) {
-    text = null;
-  }
-
-  // Bubble up to add a error on top-most collapsed block.
-  var parent = this.getSurroundParent();
-  var collapsedParent = null;
-  while (parent) {
-    if (parent.isCollapsed()) {
-      collapsedParent = parent;
-    }
-    parent = parent.getSurroundParent();
-  }
-  if (collapsedParent) {
-    collapsedParent.setErrorText(text, 'collapsed ' + this.id + ' ' + id);
-  }
-
-  var changedState = false;
-  if (goog.isString(text)) {
-    if (!this.error) {
-      this.error = new AI.ErrorIcon(this);
-      changedState = true;
-    }
-    this.error.setText(/** @type {string} */ (text), id);
-  } else {
-    // Dispose all errors if no id is given.
-    if (this.error && !id) {
-      this.error.dispose();
-      changedState = true;
-    } else if (this.error) {
-      var oldText = this.error.getText();
-      this.error.setText('', id);
-      var newText = this.error.getText();
-      if (!newText) {
-        this.error.dispose();
-      }
-      changedState = oldText == newText;
-    }
-  }
-  if (changedState && this.rendered) {
-    this.render();
-    // Adding or removing a error icon will cause the block to change shape.
-    this.bumpNeighbours();
-  }
-};
 
 /**
  * Get the top-most workspace. Typically this is the current workspace except for flyout/flydowns.
