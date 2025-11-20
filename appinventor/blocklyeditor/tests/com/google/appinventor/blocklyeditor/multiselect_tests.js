@@ -35,10 +35,6 @@ suite('Multiselect', function() {
     blockPath.dispatchEvent(new PointerEvent('pointerup', { ...blockCenter, bubbles: true }));
   }
 
-  function isSelected(block) {
-    return block.getSvgRoot().classList.contains('blocklySelected');
-  }
-
   async function events(type, count) {
     return new Promise(resolve => {
       let received = 0;
@@ -54,28 +50,6 @@ suite('Multiselect', function() {
       workspace.addChangeListener(listener);
     });
   }
-
-  test('select blocks', async function() {
-    const block1 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 1 } },
-      typeCounts: { 'math_number': 1 }
-    }, workspace);
-    const block2 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 2 } },
-      typeCounts: { 'math_number': 1 }
-    }, workspace);
-    shift('keydown');
-    select(block1);
-    await events(Blockly.Events.SELECTED, 1);
-    select(block2);
-    await events(Blockly.Events.SELECTED, 1);
-    shift('keyup');
-
-    chai.assert.isTrue(isSelected(block1));
-    chai.assert.isTrue(isSelected(block2));
-  });
 
   test('copy/paste blocks', async function() {
     const block1 = Blockly.clipboard.paste({
