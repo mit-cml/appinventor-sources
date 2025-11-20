@@ -120,8 +120,18 @@ public class MediaUtil {
     }
   }
 
-  public static void loadMediaPlayer(MediaPlayer mp, Form form, String source) {
-    //TODO(lroman10): Real implementation
+  public static void loadMediaPlayer(MediaPlayer mp, Form form, String source) throws IOException {
+    MediaSource mediaSource = determineMediaSource(form, source);
+    switch (mediaSource) {
+      case REPL_ASSET:
+        if (RUtil.needsFilePermission(form, source, null)) {
+          form.assertPermission("android.permission.READ_EXTERNAL_STORAGE");
+        }
+        mp.load(fileUrlToFilePath(form.getAssetPath(source)));
+        return;
+    }
+
+    throw new IOException("Unable to load audio " + source + ".");
   }
 
   public static String getAssetAsDataUrl(Form form, String assetName) throws IOException {

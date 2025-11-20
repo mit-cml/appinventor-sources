@@ -2485,7 +2485,7 @@ public class Ode implements EntryPoint {
       return;
     }
 
-    boolean isUrlAllowed = false;
+    boolean isUrlAllowed = true;
     for (String candidate : config.getTutorialsUrlAllowed()) {
       if (newURL.startsWith(candidate)) {
         isUrlAllowed = true;
@@ -2641,7 +2641,7 @@ public class Ode implements EntryPoint {
   public interface Resources extends ClientBundle {
 
     public static final Resources INSTANCE =  GWT.create(Resources.class);
-    
+
     @Source({
       "com/google/appinventor/client/light.css"
     })

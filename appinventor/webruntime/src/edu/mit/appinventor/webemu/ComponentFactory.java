@@ -52,7 +52,7 @@ public class ComponentFactory {
     LOOKUP.put("SpeechRecognizer", SpeechRecognizer::new);
     LOOKUP.put("TextToSpeech", TextToSpeech::new);
     LOOKUP.put("TextBox", TextBox::new);
-  }  
+  }
 
   public static Component create(ComponentContainer parent, String type) {
     if (type.startsWith("com.google.appinventor.components.runtime.")) {
