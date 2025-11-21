@@ -1,0 +1,62 @@
+/* -*- mode: java; c-basic-offset: 2; -
+* Copyright 2023-2025 MIT, All rights reserved
+* Released under the Apache License, Version 2.0
+* http://www.apache.org/licenses/LICENSE-2.0
+*/
+
+@def logo-image                         url('static/images/codi-logo.svg');
+@def background-image                   url('static/images/squairy_light.png');
+@def closed-backpack                    url('../blocklyeditor/media/backpack-closed-copy.png');
+/* Greens */
+@def selected-color                     #8fc202;
+@def bar-color                          #d2e0a6;
+@def tab-bar-background-color           #eef2e0;
+
+/* Greys */
+@def v-white #ffffff;
+@def v-black #000000;
+@def v-black-shadow                     rgba(0, 0, 0, 0.025);
+@def container-shadow                   rgba(0,0,0,0.1);
+@def button-shadow-color                rgba(0, 0, 0, 0.15);
+@def gray-200 #eeeeee;
+@def gray-300 #ddd;
+@def gray-400 #bbb;
+@def gray-450 #aaa;
+@def gray-500 #999;
+@def gray-550 #888;
+@def gray-700 #555;
+@def gray-800 #444;
+@def gray-900 #333;
+
+@def  blockly-indicator #555;
+
+/* Colors */
+/* blue */
+@def explorer-border                    #D6E9F8;
+@def simple-panel-border                #67A7E3;
+@def simple-panel-shadow                rgba(82, 168, 236, 0.8);
+@def project-color                      #112abb;
+
+@def phoneLandscape                      url('static/images/phoneLandscapeModern.png');
+@def phonePortrait                       url('static/images/phonePortraitModern.png');
+@def phoneLandscapeTablet                url('static/images/phoneLandscapeTablet.png');
+@def phonePortraitTablet                 url('static/images/phonePortraitTablet.png');
+@def phoneLandscapeMonitor               url('static/images/phoneLandscapeMonitor.png');
+@def phonePortraitMonitor                url('static/images/phonePortraitMonitor.png');
+
+@def navigationbarPortrait               url('static/images/navigationbarPortrait.png');
+@def navigationbarLandscape              url('static/images/navigationbarLandscape.png');
+
+
+@def clr-primary-75 #f7f9f2;
+@def clr-primary #a5cf47;
+
+@def error   #ff6666;
+@def v-red   #ff0000;
+
+@def row-highlight  rgba(167, 36, 122, 0.21);
+@def text-highlight rgba(167, 36, 122, 1);
+
+
+
+
