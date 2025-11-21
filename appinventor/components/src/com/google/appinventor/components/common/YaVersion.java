@@ -1370,8 +1370,9 @@ public class YaVersion {
   // For PLAYER_COMPONENT_VERSION 6:
   // - The PlayInForeground property was added.
   // - The OtherPlayerStarted event was added.
-
-  public static final int PLAYER_COMPONENT_VERSION = 6;
+  // For PLAYER_COMPONENT_VERSION 7:
+  // - The PlayOnlyInForeground property default value was changed to True (was False).
+  public static final int PLAYER_COMPONENT_VERSION = 7;
 
   // For POLYGON_COMPONENT_VERSION 1:
   // - Initial Polygon implementation for Maps
