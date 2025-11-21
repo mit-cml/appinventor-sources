@@ -156,6 +156,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   fileprivate var _shapeLayers = [CALayer]()
   fileprivate var _textLayers = [CALayer]()
   fileprivate var _backgroundImageView = UIImageView(image: nil)
+  /// Layer that holds the rasterized drawing layer (points, lines, shapes)
+  fileprivate var _drawingLayer = CALayer()
 
   /// Old values are used to scale shapes when canvas size changes.
   fileprivate var _oldHeight = CGFloat(0)
@@ -187,6 +189,12 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _backgroundImageView.bottomAnchor.constraint(equalTo: _view.bottomAnchor).isActive = true
     _backgroundImageView.leftAnchor.constraint(equalTo: _view.leftAnchor).isActive = true
     _backgroundImageView.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
+
+    // Add drawing layer above the background image but below sprite layers.
+    _drawingLayer.frame = _view.bounds
+    _drawingLayer.contentsGravity = .resizeAspectFill
+    _drawingLayer.masksToBounds = true
+    _view.layer.addSublayer(_drawingLayer)
 
     // Configure default dimension constraints. These are set to low priority so that they can be overriden
     // by the user configuration.
@@ -591,6 +599,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _shapeLayers.removeAll()
     _textLayers.forEach{ $0.removeFromSuperlayer() }
     _textLayers.removeAll()
+    // clear raster drawing
+    _drawingLayer.contents = nil
   }
 
   @objc open func DrawArc(_ left: Int, _ top: Int, _ right: Int, _ bottom: Int, _ startAngle: Float,
@@ -692,19 +702,57 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   }
 
   fileprivate func addShapeWithFill(for path: CGPath, with fill: Bool, maskLayer: CAShapeLayer? = nil) {
-    let shapeLayer = CAShapeLayer()
-    shapeLayer.mask = maskLayer
+    // Rasterize shapes into the drawing layer so that we can support
+    // erasing (transparent paint) by using blend modes when compositing.
+    let size = _view.bounds.size == .zero ? CGSize(width: CGFloat(kCanvasPreferredWidth), height: CGFloat(kCanvasPreferredHeight)) : _view.bounds.size
 
-    if fill {
-      shapeLayer.fillColor = argbToColor(_paintColor).cgColor
-    } else {
-      shapeLayer.fillColor = nil
+    UIGraphicsBeginImageContextWithOptions(size, false, 0)
+    let ctx = UIGraphicsGetCurrentContext()
+    // Draw existing drawing contents if present
+    if let contents = _drawingLayer.contents as? CGImage {
+      UIImage(cgImage: contents).draw(in: CGRect(origin: .zero, size: size))
     }
 
-    shapeLayer.lineWidth = _lineWidth
-    shapeLayer.strokeColor = argbToColor(_paintColor).cgColor
+    // Prepare path and drawing parameters
+    let bezier = UIBezierPath(cgPath: path)
+    bezier.lineWidth = _lineWidth
+
+    // Determine paint alpha
+    let paintUIColor = argbToColor(_paintColor)
+    var alpha: CGFloat = 0
+    paintUIColor.getRed(nil, green: nil, blue: nil, alpha: &alpha)
+
+    ctx?.saveGState()
+    if alpha == 0 {
+      // Erase: use clear blend mode to remove pixels from drawing layer
+      ctx?.setBlendMode(.clear)
+    } else {
+      ctx?.setBlendMode(.normal)
+    }
+
+    if fill {
+      if alpha != 0 {
+        paintUIColor.setFill()
+      }
+      bezier.fill()
+    } else {
+      if alpha != 0 {
+        paintUIColor.setStroke()
+      }
+      bezier.stroke()
+    }
+    ctx?.restoreGState()
+
+    // Grab the composed image and set it as the drawing layer contents
+    if let image = UIGraphicsGetImageFromCurrentImageContext(), let cg = image.cgImage {
+      _drawingLayer.contents = cg
+    }
+    UIGraphicsEndImageContext()
+
+    // Keep a lightweight record for compatibility (not used for rendering now)
+    let shapeLayer = CAShapeLayer()
+    shapeLayer.mask = maskLayer
     shapeLayer.path = path
-    _view.layer.addSublayer(shapeLayer)
     _shapeLayers.append(shapeLayer)
   }
 
@@ -1166,6 +1214,18 @@ open class CanvasView: UIView {
           canvas.transformLayerHeight(s, yScale)
           canvas.transformLayerWidth(s, xScale)
         }
+
+        // Scale rasterized drawing layer contents if present
+        if let contents = canvas._drawingLayer.contents as? CGImage {
+          let oldImage = UIImage(cgImage: contents)
+          UIGraphicsBeginImageContextWithOptions(frame.size, false, 0)
+          oldImage.draw(in: CGRect(origin: .zero, size: frame.size))
+          if let newImage = UIGraphicsGetImageFromCurrentImageContext(), let cg = newImage.cgImage {
+            canvas._drawingLayer.contents = cg
+          }
+          UIGraphicsEndImageContext()
+        }
+        canvas._drawingLayer.frame = frame
       }
     }
     if frame.size != .zero {
