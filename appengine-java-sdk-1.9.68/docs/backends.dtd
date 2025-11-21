@@ -1,0 +1,10 @@
+<!ELEMENT backends (backend*)>
+<!ELEMENT backends (backend)*>
+<!ELEMENT backend (instances|class|max-concurrent-requests|options)*>
+<!ELEMENT instances (#PCDATA)>
+<!ELEMENT class (#PCDATA)>
+<!ELEMENT max-concurrent-requests (#PCDATA)>
+<!ELEMENT options (fail-fast|dynamic|public)*>
+<!ELEMENT fail-fast (#PCDATA)>
+<!ELEMENT dynamic (#PCDATA)>
+<!ELEMENT public (#PCDATA)>

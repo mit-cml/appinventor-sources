@@ -1,0 +1,76 @@
+<project name="shardedcounter" default="datanucleusenhance">
+  <property name="project.dir" location="." />
+  <property name="appengine.sdk" location="../.." />
+
+  <import file="${appengine.sdk}/config/user/ant-macros.xml" />
+
+  <path id="project.classpath">
+    <pathelement path="${project.dir}/war/WEB-INF/classes" />
+    <fileset dir="${project.dir}/war/WEB-INF/lib">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${appengine.sdk}/lib">
+      <include name="shared/**/*.jar" />
+    </fileset>
+  </path>
+
+  <target name="copyjars">
+    <copy
+        todir="${project.dir}/war/WEB-INF/lib">
+      <fileset dir="${appengine.sdk}/lib/user">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${appengine.sdk}/lib/user/orm">
+        <include name="*.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compile" depends="copyjars">
+    <javac
+        srcdir="${project.dir}/src"
+        destdir="${project.dir}/war/WEB-INF/classes"
+        classpathref="project.classpath"
+        debug="on" />
+  </target>
+
+  <path id="datanucleus.classpath">
+    <pathelement path="${project.dir}/war/WEB-INF/classes" />
+    <fileset dir="${appengine.sdk}/lib">
+      <include name="shared/**/*.jar" />
+      <include name="tools/**/*.jar" />
+    </fileset>
+  </path>
+
+  <target name="datanucleusenhance" depends="compile">
+    <taskdef
+       name="datanucleusenhancer"
+       classpathref="datanucleus.classpath"
+       classname="org.datanucleus.enhancer.tools.EnhancerTask" />
+
+    <datanucleusenhancer
+       classpathref="datanucleus.classpath"
+       failonerror="true">
+      <fileset dir="${project.dir}/war/WEB-INF/classes">
+        <include name="**/*.class" />
+      </fileset>
+    </datanucleusenhancer>
+  </target>
+
+  <target name="runserver" depends="datanucleusenhance"
+      description="Starts the development server.">
+    <dev_appserver war="${project.dir}/war" />
+  </target>
+
+  <target name="update" depends="datanucleusenhance"
+      description="Uploads the application to App Engine.">
+    <appcfg action="update" war="${project.dir}/war" />
+  </target>
+
+  <target name="rollback" depends="datanucleusenhance"
+      description="Rolls back an interrupted application update.">
+    <appcfg action="rollback" war="${project.dir}/war" />
+  </target>
+
+</project>
+
