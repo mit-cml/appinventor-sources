@@ -477,6 +477,21 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       return storageIo.getProjectDateModified(userId, projectId);
 
     } else {
+      // Check if this is a global asset and clean up the relationship
+      if (fileId.startsWith("assets/_global_/")) {
+        // Extract the asset filename from the path (e.g., "assets/_global_/folder/file.png" -> "file.png")
+        String assetFileName = fileId.substring(fileId.lastIndexOf('/') + 1);
+        
+        // Remove the ProjectGlobalAssetData relationship if it exists
+        try {
+          storageIo.removeProjectGlobalAssetRelation(projectId, assetFileName, userId);
+        } catch (Exception e) {
+          // Log warning but don't fail the deletion if cleanup fails
+          LOG.warning("Failed to clean up global asset relationship for " + assetFileName + 
+                     " in project " + projectId + ": " + e.getMessage());
+        }
+      }
+      
       return super.deleteFile(userId, projectId, fileId);
     }
   }
