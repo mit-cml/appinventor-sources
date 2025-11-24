@@ -181,9 +181,12 @@ public class Texting extends AndroidNonvisibleComponent
   public static final String TAG = "Texting Component";
 
   /**
-   * Magic number "TEXT" used to report when a text message has been sent.
+   * Magic number "TX" used to report when a text message has been sent.
+   * Changed from 0x54455854 ("TEXT") to 0x5458 ("TX") to fit within Android's
+   * 16-bit request code limit (0-65535). The original value caused
+   * "can only use lower 16 bits for request code" runtime error.
    */
-  public static final int TEXTING_REQUEST_CODE = 0x54455854;
+  public static final int TEXTING_REQUEST_CODE = 0x5458;
 
   public static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
   public static final String GV_SMS_RECEIVED = "com.google.android.apps.googlevoice.SMS_RECEIVED";
