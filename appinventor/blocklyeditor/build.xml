@@ -19,11 +19,6 @@
 
   <property name="release" value="false"/>
 
-  <condition property="blockly.config"
-             value="ploverConfig.js"
-             else="ploverConfig-dev.js">
-    <equals arg1="${release}" arg2="true"/>
-  </condition>
   <condition property="compilation_level"
 	     value="SIMPLE" else="BUNDLE">
     <equals arg1="${release}" arg2="true"/>
@@ -117,7 +112,6 @@
       <srcfiles dir="${blockly.src.dir}/" includes="*.js" />
       <srcfiles dir="${blockly.plugin.dir}/" includes="*.js" />
       <srcfiles dir="${lib.dir}/closure-library/" includes="closure/goog/**/*.js" />
-      <srcfiles dir="${basedir}" includes="${blockly.config}" />
     </uptodate>
   </target>
 
@@ -141,7 +135,7 @@
 			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
 			<arg value="--js='${blockly.src.dir}/blockly_compressed.js'"/>
-			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-3.0.1.min.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-3.0.2.min.js'"/>
 			<arg value="--js='blocklyeditor/src/**.js'"/>
 			<arg value="--js='${lib.dir}/closure-library/closure/goog/**.js'"/>
 			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_test.js'"/>

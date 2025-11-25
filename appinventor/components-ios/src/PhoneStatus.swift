@@ -12,11 +12,11 @@ open class PhoneStatus : NonvisibleComponent {
 
   // MARK: PhoneStatus Methods
   @objc open class func GetWifiIpAddress() -> String {
-    return NetworkUtils.getIPAddress()
+    return MAINetworkUtils.getIPAddress()
   }
 
   @objc open class func isConnected() -> Bool {
-    return NetworkUtils.getIPAddress() != "error"
+    return MAINetworkUtils.getIPAddress() != "error"
   }
 
   @objc open func setHmacSeedReturnCode(_ seed: String) -> String {

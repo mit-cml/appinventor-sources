@@ -9,7 +9,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
 
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
 
 import com.google.appinventor.client.explorer.project.Project;
 
@@ -64,9 +64,9 @@ public class YoungAndroidListViewAddDataPropertyEditor extends PropertyEditor {
   private List<JSONObject> items;
   private List<JSONObject> itemsCopy;
 
-  private YaFormEditor editor;
+  private final SimpleEditor editor;
 
-  public YoungAndroidListViewAddDataPropertyEditor(final YaFormEditor editor) {
+  public YoungAndroidListViewAddDataPropertyEditor(final SimpleEditor editor) {
     items = new ArrayList<JSONObject>();
     itemsCopy = new ArrayList<JSONObject>();
     addData = new Button("Click to Add/Delete Data");

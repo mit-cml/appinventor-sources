@@ -7,7 +7,7 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import com.android.sdklib.build.ApkBuilder;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;

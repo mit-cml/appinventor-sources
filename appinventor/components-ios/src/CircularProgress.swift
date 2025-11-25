@@ -31,6 +31,18 @@ public class CircularProgress: ViewComponent, AbstractMethodsForViewComponent {
       _view.progressLayer.strokeColor = argbToColor(argb).cgColor
     }
   }
+
+  @objc override open var Visible: Bool {
+    get {
+      super.Visible
+    }
+    set {
+      super.Visible = newValue
+      if newValue {
+        _view.setNeedsLayout()
+      }
+    }
+  }
 }
 
 class CircularProgressView: UIView {

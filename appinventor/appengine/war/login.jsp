@@ -12,6 +12,7 @@
    String autoload = StringEscapeUtils.escapeHtml4((String) request.getAttribute("autoload"));
    String galleryId = StringEscapeUtils.escapeHtml4((String) request.getAttribute("galleryId"));
    String newGalleryId = StringEscapeUtils.escapeHtml4(request.getParameter("ng"));
+   String uiPreference = StringEscapeUtils.escapeHtml4(request.getParameter("ui"));
    if (locale == null) {
        locale = "en";
    }
@@ -57,6 +58,10 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
    if (newGalleryId != null && !newGalleryId.equals("")) {
    %>
 <input type=hidden name=ng value="<%= newGalleryId %>">
+<% }
+   if (uiPreference != null && !uiPreference.equals("")) {
+   %>
+<input type=hidden name=ui value="<%= uiPreference %>">
 <% } %>
 <% if (redirect != null && !redirect.equals("")) {
    %>
@@ -74,6 +79,7 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
                               .add("repo", repo)
                               .add("galleryId", galleryId)
                               .add("ng", newGalleryId)
+                              .add("ui", uiPreference)
                               .add("redirect", redirect).build() %>" style="text-decoration:none;">Click Here to use your Google Account to login</a></p></center>
 <%    } %>
 <footer>
@@ -82,12 +88,14 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
                            .add("repo", repo)
                            .add("autoload", autoload)
                            .add("galleryId", galleryId)
+                           .add("ui", uiPreference)
                            .add("redirect", redirect).build() %>"  style="text-decoration:none;" >中文</a>&nbsp;
 <a href="<%= new UriBuilder("/login")
                            .add("locale", "pt")
                            .add("repo", repo)
                            .add("autoload", autoload)
                            .add("galleryId", galleryId)
+                           .add("ui", uiPreference)
                            .add("redirect", redirect).build() %>"  style="text-decoration:none;" >Português</a>&nbsp;
 <a href="<%= new UriBuilder("/login")
                    .add("locale", "en")
@@ -95,6 +103,7 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
                    .add("autoload", autoload)
                    .add("galleryId", galleryId)
                    .add("ng", newGalleryId)
+                   .add("ui", uiPreference)
                    .add("redirect", redirect).build() %>"  style="text-decoration:none;" >English</a></center>
 <p></p>
 <center>

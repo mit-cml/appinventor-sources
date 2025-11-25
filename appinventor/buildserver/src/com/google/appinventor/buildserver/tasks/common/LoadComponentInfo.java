@@ -5,7 +5,7 @@
 
 package com.google.appinventor.buildserver.tasks.common;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.CompilerContext;
 import com.google.appinventor.buildserver.interfaces.CommonTask;
@@ -39,7 +39,7 @@ import org.codehaus.jettison.json.JSONObject;
  * compiler.generateMinSdks();
  * compiler.generateBroadcastReceiver();
  */
-@BuildType(apk = true, aab = true)
+@BuildType(apk = true, aab = true, ipa = true, asc = true)
 public class LoadComponentInfo implements CommonTask {
   CompilerContext<?> context = null;
   private ConcurrentMap<String, Map<String, Map<String, Set<String>>>> conditionals;

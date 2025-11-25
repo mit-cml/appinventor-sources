@@ -138,9 +138,25 @@ public enum MapFeatureType: String {
   case TYPE_MULTIPOLYGON = "MultiPolygon"
 }
 
-enum MapType: Int32 {
-  case ROADS = 1
-  case AERIAL = 2
-  case TERRAIN = 3
-  case CUSTOM = 4
+@objc public class MapType: NSObject, OptionList {
+  @objc public static let Road = MapType(1)
+  @objc public static let Aerial = MapType(2)
+  @objc public static let Terrain = MapType(3)
+  @objc public static let Custom = MapType(4)
+
+  private static let LOOKUP: [Int32: MapType] = generateOptionsLookup(Road, Aerial, Terrain, Custom)
+
+  let value: Int32
+
+  @objc private init(_ value: Int32) {
+    self.value = value
+  }
+
+  @objc public class func fromUnderlyingValue(_ value: Int32) -> MapType? {
+    return LOOKUP[value]
+  }
+
+  @objc public func toUnderlyingValue() -> AnyObject {
+    return value as AnyObject
+  }
 }

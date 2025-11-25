@@ -14,6 +14,7 @@ public protocol AbstractMethodsForTextBox: AbstractMethodsForViewComponent {
   var placeholderColor: Int32 { get set }
   var text: String? { get set }
   var readOnly: Bool { get set }
+  var responder: UIResponder { get }
   func textFieldDidBeginEditing(_ textField: UITextField)
   func textFieldDidEndEditing(_ textfield: UITextField)
   func setTextbase(_ base: TextBoxBase)
@@ -308,9 +309,13 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   }
 
   @objc open func RequestFocus() {
-    _delegate?.view.becomeFirstResponder()
+    _delegate.responder.becomeFirstResponder()
   }
-  
+
+  @objc open func HideKeyboard() {
+    _delegate.responder.resignFirstResponder()
+  }
+
   // MARK: TextboxBase Events
   @objc open func GotFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "GotFocus")

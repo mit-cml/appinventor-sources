@@ -19,8 +19,10 @@ Please check off the part of the system that is affected by the bug.
 - [ ] Designer
 - [ ] Blocks editor
 - [ ] Projects Explorer
-- [ ] Companion
-- [ ] Compiled apps
+- [ ] Android Companion
+- [ ] iOS Companion
+- [ ] Android Compiled APK/AAB
+- [ ] iOS Compiled IPA
 - [ ] Buildserver
 - [ ] Debugging
 - [ ] Other... (please describe)

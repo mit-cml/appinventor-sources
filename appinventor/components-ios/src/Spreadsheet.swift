@@ -12,7 +12,6 @@ import GoogleAPIClientForREST
   private var _service = GTLRSheetsService()
   fileprivate var _columns: NSArray = []
   private let _workQueue = DispatchQueue(label: "Spreadsheet", qos: .userInitiated)
-  private var _initialized = false
   private var _spreadsheetId = ""
   // This gets changed to the name of the project by MockSpreadsheet by default
   private var _sheetIdDict: [String: Int] = [:]
@@ -43,7 +42,6 @@ import GoogleAPIClientForREST
   // MARK: Methods
   
   @objc func Initialize() {
-    _initialized = true
     authorize()
   }
   
@@ -1104,7 +1102,9 @@ import GoogleAPIClientForREST
   // Description: Triggered whenever an API call encounters an error. Details about the error are in `errorMessage`
   @objc func ErrorOccurred(_ errorMessage: String) {
     DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: errorMessage as AnyObject)
+      if (!EventDispatcher.dispatchEvent(of: self, called: "ErrorOccurred", arguments: errorMessage as AnyObject)) {
+        self._form?.dispatchErrorOccurredEvent(self, "ErrorOccurred", ErrorMessage.ERROR_SPREADSHEET_ERROR, errorMessage)
+      }
     }
   }
   
@@ -1422,9 +1422,6 @@ import GoogleAPIClientForREST
   
   // process credentials and authorize user
   private func authorize() {
-    guard _initialized else {
-      return
-    }
     guard !CredentialsJson.isEmpty else {
       _service.authorizer = nil
       return
@@ -1435,6 +1432,10 @@ import GoogleAPIClientForREST
       _service.authorizer = ServiceAccountAuthorizer(serviceAccountConfig: credentials, scopes: [
         kGTLRAuthScopeSheetsSpreadsheets,
       ])
+      guard _service.authorizer != nil else {
+        self.ErrorOccurred("Authorization failed due to bad credential.")
+        return
+      }
     } catch {
       self.ErrorOccurred("\(error)")
       return

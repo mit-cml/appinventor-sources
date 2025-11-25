@@ -786,13 +786,15 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="ListView.DividerColor" class="color"><em>DividerColor</em></dt>
   <dd>The color of the <code class="highlighter-rouge">ListView</code> divider.</dd>
   <dt id="ListView.DividerThickness" class="number"><em>DividerThickness</em></dt>
-  <dd>Specifies the divider thickness of list view</dd>
+  <dd>Specifies the divider thickness of list view.
+ If the thickness is 0, the divider is not visible.</dd>
   <dt id="ListView.ElementColor" class="color"><em>ElementColor</em></dt>
   <dd>The color of the <code class="highlighter-rouge">ListView</code> element.</dd>
   <dt id="ListView.ElementCornerRadius" class="number"><em>ElementCornerRadius</em></dt>
   <dd>Specifies the corner radius of the list view element.</dd>
   <dt id="ListView.ElementMarginsWidth" class="number"><em>ElementMarginsWidth</em></dt>
-  <dd>Specifies the width of the margins of a list view element</dd>
+  <dd>Specifies the width of the margins of a list view element.
+ If margins width &gt; 0, then the divider is not displayed.</dd>
   <dt id="ListView.Elements" class="list bo"><em>Elements</em></dt>
   <dd>Specifies the list of choices to display.</dd>
   <dt id="ListView.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
@@ -1128,6 +1130,22 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>The image used for your App’s display icon should be a square png or jpeg image with dimensions
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.</dd>
+  <dt id="Screen.NSBluetoothAlwaysUsageDescription" class="text wo do"><em>NSBluetoothAlwaysUsageDescription</em></dt>
+  <dd>Specifies the iOS privacy explanation of why the app needs access to
+ Bluetooth on iOS 13 and later.</dd>
+  <dt id="Screen.NSBluetoothPeripheralUsageDescription" class="text wo do"><em>NSBluetoothPeripheralUsageDescription</em></dt>
+  <dd>Specifies the iOS privacy explanation of why the app needs access to
+ Bluetooth peripherals prior to iOS 13.</dd>
+  <dt id="Screen.NSCameraUsageDescription" class="text wo do"><em>NSCameraUsageDescription</em></dt>
+  <dd>Specifies the iOS privacy explanation of why the app needs access to the camera.</dd>
+  <dt id="Screen.NSContactsUsageDescription" class="text wo do"><em>NSContactsUsageDescription</em></dt>
+  <dd>Specifies the iOS privacy explanation of why the app needs access to Contacts.</dd>
+  <dt id="Screen.NSLocationWhenInUseUsageDescription" class="text wo do"><em>NSLocationWhenInUseUsageDescription</em></dt>
+  <dd>Specifies the iOS privacy explanation of why the app needs access to user location.</dd>
+  <dt id="Screen.NSMicrophoneUsageDescription" class="text wo do"><em>NSMicrophoneUsageDescription</em></dt>
+  <dd>Specifies the iOS privacy explanation of why the app needs access to the microphone.</dd>
+  <dt id="Screen.NSSpeechRecognitionUsageDescription" class="text wo do"><em>NSSpeechRecognitionUsageDescription</em></dt>
+  <dd>Specifies the iOS privacy explanation of why the app needs access to speech recognition.</dd>
   <dt id="Screen.OpenScreenAnimation" class="text"><em>OpenScreenAnimation</em></dt>
   <dd>Sets the animation type for the transition of this form opening.</dd>
   <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>

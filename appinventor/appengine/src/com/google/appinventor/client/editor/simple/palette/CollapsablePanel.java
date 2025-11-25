@@ -7,12 +7,12 @@ package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
 import com.google.appinventor.components.common.ComponentCategory;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class CollapsablePanel extends Composite {
@@ -72,12 +72,16 @@ public class CollapsablePanel extends Composite {
     panel.insert(innerPanel, insertIdx);
   }
 
-  public VerticalPanel getCategory(ComponentCategory category) {
+  public VerticalPanel getCategoryPanel(ComponentCategory category) {
     if (categoryPanels.containsKey(category)) {
       return (VerticalPanel) categoryPanels.get(category).getContent();
     } else {
       return null;
     }
+  }
+
+  public Set<ComponentCategory> getCategories() {
+    return categoryPanels.keySet();
   }
 
   /**
@@ -109,5 +113,9 @@ public class CollapsablePanel extends Composite {
    */
   public void show(int idx) {
     ((DisclosurePanel) panel.getWidget(idx)).setOpen(true);
+  }
+
+  public void close(int idx) {
+    ((DisclosurePanel) panel.getWidget(idx)).setOpen(false);
   }
 }

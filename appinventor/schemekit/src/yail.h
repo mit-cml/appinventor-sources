@@ -83,8 +83,6 @@ YailList *yail_list_objc(pic_state *pic, pic_value o);
  */
 YailDictionary *yail_dict_objc(pic_state *pic, pic_value o);
 
-#ifdef MEMDEBUG
-
 /**
  * Gets the corresponding Scheme value for the @c object if the object is
  * present in the system. If the @c object is not already present, the
@@ -95,7 +93,5 @@ YailDictionary *yail_dict_objc(pic_state *pic, pic_value o);
  * @return the corresponding Scheme value, or nil if the object isn't present
  */
 pic_value yail_get_native_instance(pic_state *pic, id object);
-
-#endif
 
 #endif /* yail_h */

@@ -68,7 +68,7 @@ open class ProxiedComponent<
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.httpBody = try body.serializedData()
-    _urlSession.dataTask(with: request) { data, response, error in
+    let task = _urlSession.dataTask(with: request) { data, response, error in
       if let response = response as? HTTPURLResponse, let data = data {
         let statusCode = Int32(response.statusCode)
         if response.statusCode == 200 {
@@ -83,7 +83,9 @@ open class ProxiedComponent<
       } else {
         handler(-2, nil, ProxyError(message: "Unknown path"))
       }
-    }.resume()
+    }
+    task.priority = 1.0
+    task.resume()
   }
 
   // MARK: URLSessionDelegate Implementation
