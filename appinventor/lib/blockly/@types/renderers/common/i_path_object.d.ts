@@ -3,10 +3,11 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { BlockStyle } from '../../theme.js';
 import type { BlockSvg } from '../../block_svg.js';
+import type { RenderedConnection } from '../../rendered_connection.js';
+import type { BlockStyle } from '../../theme.js';
+import type { Coordinate } from '../../utils/coordinate.js';
 import type { ConstantProvider } from './constants.js';
-import { RenderedConnection } from '../../rendered_connection.js';
 /**
  * An interface for a block's path object.
  *
@@ -101,21 +102,11 @@ export interface IPathObject {
      * @param enable True if the block is movable, false otherwise.
      */
     updateMovable(enabled: boolean): void;
+    /** Adds the given path as a connection highlight for the given connection. */
+    addConnectionHighlight?(connection: RenderedConnection, connectionPath: string, offset: Coordinate, rtl: boolean): void;
     /**
-     * Add or remove styling that shows that if the dragging block is dropped,
-     * this block will be replaced.  If a shadow block, it will disappear.
-     * Otherwise it will bump.
-     *
-     * @param enable True if styling should be added.
+     * Removes any highlight associated with the given connection, if it exists.
      */
-    updateReplacementFade(enabled: boolean): void;
-    /**
-     * Add or remove styling that shows that if the dragging block is dropped,
-     * this block will be connected to the input.
-     *
-     * @param conn The connection on the input to highlight.
-     * @param enable True if styling should be added.
-     */
-    updateShapeForInputHighlight(conn: RenderedConnection, enable: boolean): void;
+    removeConnectionHighlight?(connection: RenderedConnection): void;
 }
 //# sourceMappingURL=i_path_object.d.ts.map
