@@ -150,7 +150,7 @@ public final class Player extends AndroidNonvisibleComponent
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
-    playOnlyInForeground = false;
+    playOnlyInForeground = true;
     focusOn = false;
     am = (audioFocusSupported) ? FroyoUtil.setAudioManager(activity) : null;
     afChangeListener = (audioFocusSupported) ? FroyoUtil.setAudioFocusChangeListener(this) : null;
@@ -326,15 +326,15 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * If true, the `Player` will pause playing when leaving the current screen; if false
-   * (default option), the `Player` continues playing whenever the current screen is displaying or
+   * If true (the default option), the `Player` will pause playing when leaving the current screen;
+   * if false, the `Player` continues playing whenever the current screen is displaying or
    * not.
    *
    * @param shouldForeground determines whether plays only in foreground or always.
    */
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+      defaultValue = "True")
   @SimpleProperty
   public void PlayOnlyInForeground(boolean shouldForeground) {
     playOnlyInForeground = shouldForeground;
