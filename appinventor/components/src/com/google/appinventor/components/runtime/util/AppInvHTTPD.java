@@ -317,7 +317,21 @@ public class AppInvHTTPD extends NanoHTTPD {
       }
     }
 
-    return serveFile( uri, header, rootDir, true );
+    // Since rootDir already ends with "/assets/", we need to strip "assets/" from the beginning of URI
+    String adjustedUri = uri;
+    Log.d(LOG_TAG, "=== ASSET DEBUG === Original URI: " + uri);
+    Log.d(LOG_TAG, "Root directory: " + rootDir.getAbsolutePath());
+    
+    if (adjustedUri.startsWith("/assets/")) {
+      adjustedUri = adjustedUri.substring(8); // Remove "/assets/" (8 characters)
+      Log.d(LOG_TAG, "Stripped /assets/, adjusted URI: " + adjustedUri);
+    } else if (adjustedUri.startsWith("assets/")) {
+      adjustedUri = adjustedUri.substring(7); // Remove "assets/" (7 characters)
+      Log.d(LOG_TAG, "Stripped assets/, adjusted URI: " + adjustedUri);
+    }
+    
+    Log.d(LOG_TAG, "Final adjusted URI: " + adjustedUri + " ===");
+    return serveFile( adjustedUri, header, rootDir, true );
   }
 
   private boolean copyFile(File infile, File outfile) {
