@@ -12,8 +12,12 @@
 goog.provide('AI.Yail.color');
 
 AI.Yail.color = function() {
-  // Convert hex value to numeric value
-  var code = -1 * (window.Math.pow(16,6) - window.parseInt("0x" + this.getFieldValue('COLOR').substr(1)));
+  var hex = this.getFieldValue('COLOR').substr(1); // RRGGBBAA
+  hex = hex.substr(6,2) + hex.substr(0,6); // AARRGGBB
+  var code = parseInt(hex, 16);
+  if (code > 0x7FFFFFFF) {
+    code = code - 0x100000000;
+  }
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
