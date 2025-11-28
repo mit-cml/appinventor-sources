@@ -14,6 +14,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.PlaybackParams;
 import android.os.Vibrator;
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -338,6 +339,44 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty
   public void PlayOnlyInForeground(boolean shouldForeground) {
     playOnlyInForeground = shouldForeground;
+  }
+
+  /**
+   * Sets the playback speed of the `Player` component.
+   * playback speed is only supported for API level >= 23
+   *
+   * @param speed float value of playback speed.
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+      defaultValue = "1.0")
+  @SimpleProperty
+  public void PlaybackSpeed(float speed) {
+    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_MARSHMALLOW) {
+      PlaybackParams playbackParams = player.getPlaybackParams();
+      playbackParams.setSpeed(speed);
+      player.setPlaybackParams(playbackParams);
+    } else {
+      PlayerError("Playback speed setting not supported");
+    }
+  }
+
+  /**
+   * Returns the playback speed of the `Player` component.
+   * playback speed is only supported for API level >= 23, for lower version of android and
+   * if playback speed is not set in that case it returns 1.0(Normal Speed) and raised PlayerError event
+   * with exception message.
+   *
+   * @return the float value of the playback speed
+   */
+  @SimpleProperty(description = "Sets the speed factor of the Player.")
+  public float PlaybackSpeed()  {
+    try {
+      return player.getPlaybackParams().getSpeed();
+    } catch (IllegalStateException illegalStateException) {
+      PlayerError(illegalStateException.getMessage());
+    }
+    return 1.0f;
   }
 
   /**
