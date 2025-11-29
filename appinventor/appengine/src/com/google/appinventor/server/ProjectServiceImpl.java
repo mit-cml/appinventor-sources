@@ -39,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -180,6 +181,50 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     }
     return json + "]";
   }
+
+  /**
+   * update access for users for the given project
+   * @param projectId the id of the project
+   * @param isShareAll whether to give acces to everyone
+   * @param userEmails a list of user emails
+   */
+  public void updateProjectPermissions(final long projectId, Boolean isShareAll, List<String> userEmails){
+    storageIo.updateProjectPermissions(projectId, isShareAll, userEmails);
+  }
+  
+  /**
+   * provide access to users for the given project
+   * @param projectId the id of the project
+   * @param isShareAll whether to give acces to everyone
+   * @param userEmails a list of user emails
+   */
+  public void shareProjectWithUsers(long projectId, Boolean isShareAll, List<String> userEmails){
+    storageIo.updateProjectPermissions(projectId, isShareAll, userEmails);
+  }
+
+  /**
+   * retract access from users for the given project
+   * @param projectId the id of the project
+   * @param userIds a list of user emails
+   */
+  public void retractAccessFromUsers(long projectId, List<String> userEmails){
+    storageIo.updateProjectPermissions(projectId, false, userEmails);
+  }
+
+  /**
+   * get access list for the given project
+   * @param projectId the id of the project
+   * @return the list of users who have read access 
+   * TODO: list of users who can edit + creator?
+   */
+  public HashMap<String, List<String>> getAccessInfo(long projectId) {
+    return storageIo.getAccessInfo(projectId);
+  }
+
+  public UserProject getSharedProject(String userId, long shareId){
+    return storageIo.getSharedProject(userId, shareId);
+  }
+
 
   /**
    * Copies a project with a new name.
