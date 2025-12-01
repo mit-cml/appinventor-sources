@@ -188,8 +188,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final float[] lastViewMatrix = new float[16];
     private final float[] lastProjMatrix = new float[16];
 
-    private float GROUND_LEVEL = 1.0f;
-    private float invisibleFloor = -1.0f
+    private float GROUND_LEVEL = 1.0f;  
+    private float invisibleFloor = -1.0f;
     private boolean groundDetected = false;
     private float lastPhysicsUpdateTime = 0.0f;
 
