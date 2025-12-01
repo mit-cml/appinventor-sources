@@ -19,10 +19,7 @@
     </ai:ToolbarItem>
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName"/>
     <!-- Donate Button items -->
-    <g:Label ui:field="donateButtonNameLabel"
-             styleName="ya-DonateButtonNameLabel"
-             text="Donate to App Inventor" />
-    <ai:ToolbarItem name="Donate" caption="Donate Now"
+    <ai:ToolbarItem name="Donate" caption="Donate To App Inventor"
                     ui:field="donateButton"
                     styleName="ode-ProjectListButton"
                     tooltip="Please Donate to App Inventor" align="left">

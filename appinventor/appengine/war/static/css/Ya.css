@@ -908,17 +908,6 @@ div.StatusPanel {
   text-shadow: 0 0 1px #404040;
 }
 
-.ya-Toolbar .ya-DonateButtonNameLabel {
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  padding-top: 2px;
-  padding-left: 8px;
-  text-shadow: 0 0 1px #404040;
-  border-left: 1px solid #FFFFFF;
-  margin-left: 8px;
-}
-
 .ode-TextButton,
 .gwt-Button {
   display: inline-block;
@@ -3396,10 +3385,6 @@ div.dropdiv p {
 }
 
 .ya-ProjectName {
-  display: inline-block;
-}
-
-.ya-DonateButtonNameLabel {
   display: inline-block;
 }
 
