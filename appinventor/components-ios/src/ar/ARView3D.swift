@@ -3334,6 +3334,37 @@ extension ARView3D {
   
   // ✅ Keep existing methods but with improvements
   
+  @objc func getCameraLook() -> YailDictionary {
+    let screenCenter = CGPoint(x: _arView.bounds.midX, y: _arView.bounds.midY)
+    
+    let raycastResults = _arView.raycast(
+        from: screenCenter,
+        allowing: .estimatedPlane,
+        alignment: .horizontal
+    )
+    
+    guard let result = raycastResults.first else {
+      print("⚠️ No surface found where camera is looking")
+      return [:]
+    }
+    
+    let worldPosition = SIMD3<Float>(
+        result.worldTransform.columns.3.x,
+        result.worldTransform.columns.3.y,
+        result.worldTransform.columns.3.z
+    )
+    
+    
+    print("📍 Placed object where camera was looking: \(worldPosition.x)")
+   
+      let d: YailDictionary = [:]
+      d["x"] = worldPosition.x
+      d["y"] = worldPosition.y
+      d["z"] = worldPosition.z
+    
+    return d
+  }
+  
   private func projectFingerRaycast(fingerLocation: CGPoint, fingerMovement: CGPoint) -> SIMD3<Float>? {
     guard let draggedNode = _currentDraggedObject else { return nil }
     

@@ -1722,6 +1722,46 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     }
 
+    @SimpleFunction(description = "Get where camera is currently looking")
+    public YailDictionary getCameraLook() {
+        float[] cameraMatrix = new float[16];
+        lastCamera.getPose().toMatrix(cameraMatrix, 0);
+
+        float[] cameraPosition = {
+            cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]
+        };
+
+        float[] cameraForward = {
+            -cameraMatrix[8], -cameraMatrix[9], -cameraMatrix[10]
+        };
+
+        /* todo csb List<HitResult> hits = lastFrame.hitTest(
+            lastCamera.getViewMatrix(),
+            cameraForward[0], cameraForward[1], cameraForward[2]
+        );
+
+        if (!hits.isEmpty()) {
+            HitResult hit = hits.get(0);
+            Pose hitPose = hit.getHitPose();
+            float[] hitPosition = hitPose.getTranslation();
+
+            // Now hitPosition is equivalent to Swift's worldPosition
+            Log.d("Camera", "Looking at: " + Arrays.toString(hitPosition));
+            EventDispatcher.dispatchEvent(this, "CameraIsLookingAt", hitPosition);
+            return;
+        }*/
+        YailDictionary yDict = new YailDictionary();
+        yDict.put("x", cameraForward[0]);
+        yDict.put("y", cameraForward[1]);
+        yDict.put("z", cameraForward[2]);
+        return yDict;
+    }
+
+    /*@SimpleEvent(description = "Position camera is currently looking")
+    public void gotCameraLook(float x, float y, float z) {
+
+    }*/
+
     //@Override
     @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is " +
         "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
