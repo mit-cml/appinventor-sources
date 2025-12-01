@@ -12,8 +12,9 @@ open class PlaneNode: ARNodeBase, ARPlane {
   
   @objc init(_ container: ARNodeContainer) {
     // Create initial plane mesh
-    let mesh = MeshResource.generatePlane(width: 0.06, depth: 0.02)
+    let mesh = MeshResource.generatePlane(width: _width, depth: _height)
     super.init(container: container, mesh: mesh)
+    _modelEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0])
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -30,10 +31,24 @@ open class PlaneNode: ARNodeBase, ARPlane {
     
     // Preserve existing materials when updating mesh
     let existingMaterials = _modelEntity.model?.materials ?? []
+    var twoSidedMaterial: Material!
+    if #available(iOS 15.0, *) {
+      var mat = PhysicallyBasedMaterial()
+      mat.faceCulling = .none
+      twoSidedMaterial = mat
+    } else {
+      twoSidedMaterial = SimpleMaterial()
+    }
+    
+    
     _modelEntity.model = ModelComponent(
       mesh: mesh,
-      materials: existingMaterials.isEmpty ? [SimpleMaterial()] : existingMaterials
+      materials: existingMaterials.isEmpty ? [twoSidedMaterial] : existingMaterials
     )
+    
+   
+    print("🔷 PlaneNode updatePlaneMesh ")
+    print("   Current orientation: \(_modelEntity.orientation)")
   }
   
   @objc open var WidthInCentimeters: Float {
