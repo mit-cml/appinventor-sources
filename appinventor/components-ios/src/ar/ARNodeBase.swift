@@ -84,13 +84,14 @@ open class ARNodeBase: NSObject, ARNode {
   /// How far in front of a marker the child should live (meters).
   private let kMinForwardFromMarker: Float = 0.05 // 5 cm
 
-  var _frozenWorldTransform: Transform?      // Last known world pose (used to stay visible)
-  var _frozenLocalTransform: Transform? 
   public var _originalWorldPosition: SIMD3<Float>? = nil
-  public var _queuedMarkerOffset: SIMD3<Float>? = nil
-  var _frozenMarkerMatrix: simd_float4x4? = nil
-  var _localToMarkerMatrix: simd_float4x4? = nil
+  var _nodeWorldTransform: Transform? = nil     // Last known world pose (used to stay visible)
+  var _nodeLocalTransform: Transform? = nil
+
+  var _offsetToMarkerMatrix: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
   var _tempWorldAnchor: AnchorEntity? = nil
+  
+  public var _queuedMarkerOffset: SIMD3<Float>? = nil
   
   // MARK: - Initialization
   
@@ -647,6 +648,10 @@ open class ARNodeBase: NSObject, ARNode {
   
   open func rotateByGesture(radians: Float) {
     if RotateWithGesture {
+      /*    let radians = GLKMathDegreesToRadians(degrees)
+       var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
+       euler.z += radians
+       */
       var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
       euler.y -= radians * 180.0 / .pi //geometeryUtil
       _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
@@ -938,6 +943,10 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
 
+  
+  /* store the original position
+    and the offset of the tap from the marker
+   */
   func reparentUnderMarker(_ marker: ImageMarker,
                            keepWorld: Bool = true,
                            offsetM: SIMD3<Float>? = nil)
@@ -946,81 +955,78 @@ open class ARNodeBase: NSObject, ARNode {
 
     if !marker._attachedNodes.contains(where: { $0 === self }) {
       marker._attachedNodes.append(self)
-      print("   📋 Added \(Name) to marker '\(marker._name)'")
-    } else {
-      print("   ⚠️ \(Name) already in marker '\(marker._name)' list")
+      print("   📋 Reparent: Added '\(Name)' to marker '\(marker._name)'")
     }
     
-    // ✅ Clear geo anchor if switching to marker
     if let geoAnchor = _geoAnchor {
-      print("⚠️ Clearing geo anchor - switching to marker anchor")
       if let container = _container as? ARView3D {
         container._arView.session.remove(anchor: geoAnchor)
       }
       _geoAnchor = nil
     }
 
-    // node was added to world, could be real or bogus
-    let worldPos   = _modelEntity.position(relativeTo: nil)
-    let worldRot   = _modelEntity.orientation(relativeTo: nil)
-    let worldScale = _modelEntity.scale(relativeTo: nil)
-    let pitchX = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // this gets written over, but for clarity
-    let yawY = simd_quatf(angle: 0, axis: [0, 1, 0])           // Rotate 0 around Y
+    //original position before parented
+    let tapWorldPos = _modelEntity.position(relativeTo: nil)
+    let tapWorldRot = _modelEntity.orientation(relativeTo: nil) //orientation relative to the world/scene
+    let tapWorldScale = _modelEntity.scale(relativeTo: nil)
+   
 
-    _modelEntity.orientation = yawY * pitchX
-    if _originalWorldPosition == nil { _originalWorldPosition = worldPos }
+    if _originalWorldPosition == nil { _originalWorldPosition = tapWorldPos }
 
     guard let markerAnchor = marker.Anchor else {
-      print("⚠️ Marker anchor not ready - queueing for later attachment - Node current position is \(worldPos)")
-      _frozenWorldTransform = Transform(scale: worldScale, rotation: worldRot, translation: worldPos)
+      print("⚠️ Marker anchor not ready - queueing")
+      _nodeWorldTransform = Transform(scale: tapWorldScale, rotation: tapWorldRot, translation: tapWorldPos) //_modelEntity.transform
       _queuedMarkerOffset = offsetM ?? SIMD3<Float>(0, 0, 0)
-      print("   💾 Queued offset: \(_queuedMarkerOffset!)")
       _modelEntity.removeFromParent()
       _anchorEntity = nil
-      print("   🗑️ Removed \(Name) from world - queued for marker attachment")
       return
     }
 
     guard markerAnchor.scene != nil, markerAnchor.isAnchored else {
       print("⚠️ Marker anchor not anchored yet - queueing")
-      _frozenWorldTransform = Transform(scale: worldScale, rotation: worldRot, translation: worldPos)
+      _nodeWorldTransform = Transform(scale: tapWorldScale, rotation: tapWorldRot, translation: tapWorldPos)
       _queuedMarkerOffset = offsetM ?? SIMD3<Float>(0, 0, 0)
       _modelEntity.removeFromParent()
       _anchorEntity = nil
       return
     }
 
-    print("📍 Attaching node \(Name) to marker immediately")
+    // subtract positions to get offset along x,y,z so it can be repositioned accurately if marker lost/founbd
+    _offsetToMarkerMatrix = markerAnchor.position - _modelEntity.position
 
+    //_offsetToMarkerMatrix = simd_distance(markerAnchor.transform.translation,  _modelEntity.transform.translation)
     _modelEntity.removeFromParent()
-    _modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
-    
+    _modelEntity.setParent(markerAnchor, preservingWorldTransform: true)
+
     if let offset = offsetM {
-      _modelEntity.position = offset
-      print("   ✅ Applied LOCAL offset: \(offset)")
+      _modelEntity.setPosition(tapWorldPos, relativeTo: nil)
+
+      print("   ✅ Applied LOCAL offset: \(_modelEntity.position)")
     } else {
-      _modelEntity.position = SIMD3<Float>(0, 0, 0) // towards camera
+      _modelEntity.position = SIMD3<Float>(0, 0, 0) // relative to marker
       print("   ✅ Positioned at marker center")
     }
-
+    
     _anchorEntity = markerAnchor
     _queuedMarkerOffset = nil
 
-    // Cache the local transform
-    _frozenLocalTransform = _modelEntity.transform
-    print("   💾 Cached local transform: \(_modelEntity.position)")
-    
-    // Update world transform cache
-    let finalWorldPos = _modelEntity.position(relativeTo: nil)
-    _frozenWorldTransform = Transform(
-      scale: _modelEntity.scale(relativeTo: nil),
-      rotation: _modelEntity.orientation(relativeTo: nil),
-      translation: finalWorldPos
-    )
+    // Cache the transform
 
-    print("   ✅ Attached to Marker! World: \(finalWorldPos), \(markerAnchor.position) Local: \(_modelEntity.position)")
+    print("   💾 Model at marker pos=\(_modelEntity.position), rot=\(_modelEntity.orientation)")
+
+    _nodeLocalTransform = Transform(
+        scale: _modelEntity.scale,
+        rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),  // ✅ Explicit identity
+        translation: _modelEntity.position  // Local position relative to marker
+    )
+    
+    _nodeWorldTransform = Transform(
+      scale: _modelEntity.scale,
+      rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),  // Don't save rotation!
+      translation: _modelEntity.position(relativeTo: nil)   // Only save position
+    )
+    print("   ✅ Attached! node is at \(_nodeWorldTransform)")
   }
- 
   
   @objc open func StopFollowingImageMarker() {
     _followingMarker?.removeNode(self)
@@ -1288,10 +1294,23 @@ open class ARNodeBase: NSObject, ARNode {
       container.hidePlacementPreview()
     }
     
+    let newWorldPosition = self._modelEntity.position(relativeTo: nil)
+    
+    self._nodeWorldTransform = Transform(
+                scale: self._modelEntity.scale(relativeTo: nil),
+                rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),
+                translation: newWorldPosition
+            )
+    print("   📍 Updated cached world position after drag: \(newWorldPosition)")
+    self._nodeLocalTransform = Transform(
+                    scale: self._modelEntity.scale,
+                    rotation: self._modelEntity.transform.rotation, //simd_quatf(angle: 0, axis: [0, 1, 0]),
+                    translation: self._modelEntity.position  // Local position relative to tempAnchor
+                )
     // Clear local preview data
     _previewPlacementSurface = nil
     
-    print("node placement complete at: \(_modelEntity.transform.translation)")
+    print("node placement complete at: \(_modelEntity.transform.translation) and storing in local transform")
   }
   
 
