@@ -455,6 +455,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
     }
     
+    if let existingConfig = _arView.session.configuration as? ARWorldTrackingConfiguration,
+       _trackingType == .worldTracking {
+        // Update existing config instead of creating new
+        existingConfig.detectionImages = getReferenceImages()
+        existingConfig.maximumNumberOfTrackedImages = max(4, getReferenceImages().count)
+        return existingConfig
+    }
+    
     switch _trackingType {
       case .worldTracking:
         let worldTrackingConfiguration = ARWorldTrackingConfiguration()
@@ -767,7 +775,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   // MARK: - Wireframe Refresh Helpers
   private var meshArrivalToken: Cancellable?
 
-  @objc open func startTrackingWithOptions(_ options: ARSession.RunOptions = []) {
+  @objc open func startTrackingWithOptions(_ options: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]) {
     
     if _isStarting {
         print("⛔️ startTracking re-entry blocked");
@@ -776,10 +784,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _isStarting = true
     defer { _isStarting = false }
     
-    if _sessionRunning && options.isEmpty {
+    /*if _sessionRunning && options.isEmpty {
         print("⚠️ Session already running, skipping start")
         return
-    }
+    }*/
     
     if !CameraGuard.shared.tryAcquire(.arkit) {
         print("🚫 seems that Camera in use by another component")
@@ -788,20 +796,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
     print("▶️ STARTTRACKING WITH OPTIONS: \(options)")
     print("ARView instance:", ObjectIdentifier(_arView))
-    let startOptions: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]//options
-    
     
     
     DispatchQueue.main.async {
 
       print("ARView instance inside startrackingoptions async:", ObjectIdentifier(self._arView))
       self._arView.session.pause()
-      self._arView.automaticallyConfigureSession = false
       
       self._arView.session.delegate = self
       self._arView.automaticallyConfigureSession = false
       
       let config = self.setupConfiguration()
+      
       /*if self.shouldAttemptRelocalization {
         if let map = self.loadWorldMapFromDisk() {
           print("✅ Restoring with saved world map")
@@ -813,7 +819,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
       }*/
       
-      self._arView.session.run(config, options: !options.isEmpty ? options : startOptions)
+      self._arView.session.run(config, options: options)
       self.armRelocalizationWatchdog(enabled: self.shouldAttemptRelocalization)
       self._sessionRunning = true
       
@@ -2838,8 +2844,7 @@ extension ARView3D: ARImageMarkerContainer {
     }
 
     _imageMarkers[marker.Name] = marker
-    setupConfiguration()  //to load in detected markers
-    //requestRestart([.resetTracking])
+    requestRestart([])
   
   }
 
