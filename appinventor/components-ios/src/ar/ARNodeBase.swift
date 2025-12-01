@@ -1304,7 +1304,7 @@ open class ARNodeBase: NSObject, ARNode {
     print("   📍 Updated cached world position after drag: \(newWorldPosition)")
     self._nodeLocalTransform = Transform(
                     scale: self._modelEntity.scale,
-                    rotation: self._modelEntity.transform.rotation, //simd_quatf(angle: 0, axis: [0, 1, 0]),
+                    rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),
                     translation: self._modelEntity.position  // Local position relative to tempAnchor
                 )
     // Clear local preview data
