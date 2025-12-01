@@ -1,0 +1,133 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2017 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+    xmlns:g='urn:import:com.google.gwt.user.client.ui'
+    ui:generateFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+    ui:generateKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+    ui:baseMessagesInterface="com.google.appinventor.client.OdeMessages"
+    ui:generateLocales="default">
+
+  <ui:with type="com.google.appinventor.client.Images" field="res"/>
+
+  <g:HTMLPanel>
+    <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
+    <div class="ode-noDialogDivHeader">
+      <div class="ode-noDialogDivInnerHeader">
+        <h3 class="ode-headerTitle">
+          <ui:msg key="welcome"
+                  description="Welcome text preceding the App Inventor logo">Welcome to
+          </ui:msg>
+        </h3>
+
+        <div id='ode-codiLogoDiv'>
+          <g:Image resource="{res.logo}" altText="MIT App Inventor" height="64px" width="120px"/>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="ode-tutorialsTitle">
+      <ui:msg key="getStarted"
+              description="The header text instructing the new user to get started.">
+        Get started with some tutorials
+      </ui:msg>
+    </h3>
+
+    <div class="ode-noDialogExampleDivs">
+      <div class="ode-noDialogExampleDiv">
+        <div class='ode-noDialogUpperDiv'>
+          <h4 class="ode-noDialogExampleTitle">
+            <ui:msg key="helloPurrTitle"
+                    description="Title of the Hello Purr app">Hello Purr
+            </ui:msg>
+          </h4>
+          <div class="ode-noDialogExampleImage">
+            <g:Image resource="{res.wilson}" altText="Wilson Logo"/>
+          </div>
+          <p class="ode-noDialogExampleAbout">
+            <ui:msg key="helloPurrDescription" description="Description of the Hello Purr app">
+              HelloPurr is a simple app that you can build in a very short time.
+              You create a button that has a picture of a cat on it, and then
+              program the button so that when it is clicked a "meow" sound
+              plays.
+            </ui:msg>
+          </p>
+        </div>
+
+        <g:Button ui:field='goToPurr' styleName='ode-tutorialButton'>
+          <ui:msg key="startTutorialButton"
+                  description="Text of the button to open a tutorial">Go to Tutorial
+          </ui:msg>
+        </g:Button>
+      </div>
+
+      <div class="ode-noDialogExampleDiv">
+        <div class='ode-noDialogUpperDiv'>
+          <h4 class="ode-noDialogExampleTitle">
+            <ui:msg key="simpleChatbotTitle"
+                description="Title of the Chatbot app">Simple Chatbot
+            </ui:msg>
+          </h4>
+          <div class="ode-noDialogExampleImage">
+            <g:Image resource="{res.talkToMeLogo}" altText="Talk to Me Logo"/>
+          </div>
+
+          <p class="ode-noDialogExampleAbout">
+            <ui:msg key="simpleChatbotDescription" description="Description of the Simple Chatbot app">
+              Create your very own ChatGPT app that will allow you, wherever you are, to connect to ChatGPT, ask questions, and have a conversation.
+            </ui:msg>
+          </p>
+        </div>
+
+        <g:Button ui:field='goToChat' styleName='ode-tutorialButton'>
+          <ui:msg key="startTutorialButton">Go to Tutorial</ui:msg>
+        </g:Button>
+      </div>
+
+      <div class="ode-noDialogExampleDiv">
+        <div class='ode-noDialogUpperDiv'>
+          <h4 class="ode-noDialogExampleTitle">
+            <ui:msg key="translateAppTitle"
+                    description="Title of the Translate App">Translate App
+            </ui:msg>
+          </h4>
+          <div class="ode-noDialogExampleImage">
+            <g:Image resource="{res.YRLogo}" altText="YR Media Logo"/>
+          </div>
+          <p class="ode-noDialogExampleAbout">
+            <ui:msg key="translateAppDescription" description="Description of the Translate app">
+              Quickly translate English to Spanish (and other languages too!)
+              You're challenged with creating an app that could act as an aid
+              for immigrant parents who need a little extra help in
+              English-speaking situations. Inspired by YR Media story
+              <a href="https://yr.media/news/what-its-like-to-be-a-translator/" target="_blank"
+                 ui:ph="yrMediaLink">What It's Like to be a Translator</a>.
+            </ui:msg>
+          </p>
+        </div>
+
+        <g:Button ui:field='goToYR' styleName='ode-tutorialButton'>
+          <ui:msg key="startTutorialButton">Go to Tutorial</ui:msg>
+        </g:Button>
+      </div>
+    </div>
+
+    <div class="ode-bottomRow">
+      <g:Button ui:field='noDialogNewProject' styleName="ode-noDialogNewProject">
+        <ui:msg key="startProjectButton" description="Text of the button to start a new project"
+        >Start a blank project
+        </ui:msg>
+      </g:Button>
+      <g:Button ui:field='closeDialogBox' styleName='ode-closeDialogBox'>
+        <ui:msg key="closeButton" description="Text of the button to close the dialog box"
+        >Close
+        </ui:msg>
+      </g:Button>
+    </div>
+
+  <g:Button ui:field='bottomInvisible' styleName="FocusTrap"/>
+  </g:HTMLPanel>
+
+</ui:UiBinder>
