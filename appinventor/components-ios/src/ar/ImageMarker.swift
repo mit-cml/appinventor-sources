@@ -12,10 +12,11 @@ open class ImageMarker: NSObject, ARImageMarker {
   public func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>) {
     // nothing
   }
-  
-  //public var Anchor: AnchorEntity
-  
 
+  var _consecutiveLostFrames = 0
+  var _consecutiveTrackedFrames = 0
+  let _lostFrameThreshold = 5  // Adjust as needed
+  
   weak var _container: ARImageMarkerContainer?
   open var _referenceImage: ARReferenceImage? = nil
   public var _attachedNodes: [ARNodeBase] = []
@@ -199,11 +200,11 @@ open class ImageMarker: NSObject, ARImageMarker {
       }
       
       // Attach runtime-created nodes using frozen transforms if available
-      if let frozen = node._frozenLocalTransform {
+      if let frozen = node._nodeLocalTransform {
         _anchorEntity!.addChild(node._modelEntity)
         node._modelEntity.transform = frozen
         print("   ✅ FirstDetected: Restored frozen local transform for \(node.Name)")
-      } else if let frozen = node._frozenWorldTransform {
+      } else if let frozen = node._nodeWorldTransform as Optional {
         _anchorEntity!.addChild(node._modelEntity)
         node._modelEntity.setPosition(frozen.translation, relativeTo: nil)
         print("   ✅ FirstDetected: Used frozen world transform for \(node.Name)")
