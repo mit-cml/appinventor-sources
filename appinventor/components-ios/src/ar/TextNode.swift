@@ -51,6 +51,10 @@ open class TextNode: ARNodeBase, ARText {
       _modelEntity.model = ModelComponent(mesh: textMesh, materials: [textMaterial])
   }
   
+  override open func defaultCameraFacingOrientation() -> simd_quatf {
+      return simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // Pitch -90°
+  }
+  
   public func calculateTextBoundsNoScale() -> (width: Float, height: Float) {
     let font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
     let textSize = _text.size(withAttributes: [.font: font])
