@@ -195,39 +195,101 @@ open class ARNodeBase: NSObject, ARNode {
     set(z) { _modelEntity.transform.translation.z = UnitHelper.centimetersToMeters(z) }
   }
   
+  
+  // Helper function to decompose quaternion around an axis
+  func swingTwist(_ q: simd_quatf, whichAxis: String) -> ( swing: simd_quatf, twist: simd_quatf) {
+      var axis: SIMD3<Float>
+      var projection: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
+    
+      if whichAxis == "x" {
+        axis = SIMD3<Float>(1, 0, 0)
+        projection = dot(q.imag, axis) * axis
+        
+        if projection.x == 0 {
+          return (q, simd_quatf(real: 1, imag: SIMD3<Float>(0, 0, 0)))
+        }
+      } else if whichAxis == "y" {
+        axis = SIMD3<Float>(0, 1, 0)
+        projection = dot(q.imag, axis) * axis
+        
+        if projection.y == 0 {
+          return (q, simd_quatf(real: 1, imag: SIMD3<Float>(0, 0, 0)))
+        }
+      } else if whichAxis == "z"{
+        axis = SIMD3<Float>(0, 0, 1)
+        projection = dot(q.imag, axis) * axis
+        
+        if projection.z == 0 {
+          return (q, simd_quatf(real: 1, imag: SIMD3<Float>(0, 0, 0)))
+        }
+      }
+      // Project quaternion's imaginary part onto axis
+      // Twist = normalized quaternion with only axis component
+      let twist = simd_normalize(simd_quatf(real: q.real, imag: projection))
+      
+      // Swing = q * twist^(-1)
+      let swing = q * twist.inverse
+      
+      return (swing, twist)
+  }
+  
   @objc open var XRotation: Float {
     get {
-      let euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      return GLKMathRadiansToDegrees(euler.x)
+      let (_, twist) = swingTwist(_modelEntity.transform.rotation, whichAxis: "x")
+      let angle = 2 * atan2(twist.imag.x, twist.real)
+      return GLKMathRadiansToDegrees(angle)
     }
     set(degrees) {
-      var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      euler.x = GLKMathDegreesToRadians(degrees)
-      _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+      let xRadians = degrees * .pi / 180.0
+      
+      let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "x")
+      
+      // Create new rotation
+      let newTwist = simd_quatf(angle: xRadians, axis: [1, 0, 0])
+      
+      // Recombine: swing * twist
+      _modelEntity.transform.rotation = swing * newTwist
     }
   }
   
   @objc open var YRotation: Float {
-    get {
-      let euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      return GLKMathRadiansToDegrees(euler.y)
-    }
-    set(degrees) {
-      var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      euler.y = GLKMathDegreesToRadians(degrees)
-      _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
-    }
+      get {
+        let (_, twist) = swingTwist(_modelEntity.transform.rotation, whichAxis: "y")
+        let angle = 2 * atan2(twist.imag.y, twist.real)
+        return GLKMathRadiansToDegrees(angle)
+      }
+      set(degrees) {
+        let yRadians = degrees * .pi / 180.0
+        
+        // Decompose current rotation into swing (X&Z) and twist (Y)
+        let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "y")
+        
+        // Create new Y rotation
+        let newTwist = simd_quatf(angle: yRadians, axis: [0, 1, 0])
+        
+        // Recombine: swing * twist
+        _modelEntity.transform.rotation = swing * newTwist
+      }
   }
+
   
   @objc open var ZRotation: Float {
     get {
-      let euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      return GLKMathRadiansToDegrees(euler.z)
+      let (_, twist) = swingTwist(_modelEntity.transform.rotation, whichAxis: "z")
+      let angle = 2 * atan2(twist.imag.z, twist.real)
+      return GLKMathRadiansToDegrees(angle)
     }
     set(degrees) {
-      var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      euler.z = GLKMathDegreesToRadians(degrees)
-      _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+      let zRadians = degrees * .pi / 180.0
+      
+      // Decompose current rotation into swing (X&Z) and twist (Y)
+      let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "z")
+      
+      // Create new z rotation
+      let newTwist = simd_quatf(angle: zRadians, axis: [0, 0, 1])
+      
+      // Recombine: swing * twist
+      _modelEntity.transform.rotation = swing * newTwist
     }
   }
   
@@ -647,16 +709,17 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
   open func rotateByGesture(radians: Float) {
-    if RotateWithGesture {
-      /*    let radians = GLKMathDegreesToRadians(degrees)
-       var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-       euler.z += radians
-       */
-      var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-      euler.y -= radians * 180.0 / .pi //geometeryUtil
-      _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
-      print("node rotation \(radians)")
-    }
+      if RotateWithGesture {
+          // Decompose current rotation into swing (X&Z) and twist (Y)
+          let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "y")
+          
+          // Create new Y rotation
+          let newTwist = simd_quatf(angle: radians, axis: [0, 1, 0])
+          
+          // Recombine: swing * twist
+          _modelEntity.transform.rotation = swing * newTwist
+      }
+    
   }
   
   // MARK: - Serialization Methods
