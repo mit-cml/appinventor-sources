@@ -33,6 +33,7 @@ open class ImageMarker: NSObject, ARImageMarker {
   var _imageSet: Bool = false
   
   var _lastARAnchorId: UUID?
+  var _billboardNodes = false
   
   
   // Override the protocol extension to provide actual storage
@@ -52,7 +53,12 @@ open class ImageMarker: NSObject, ARImageMarker {
   public var anchorMatrix: simd_float4x4 {
     get { _anchorEntity!.transform.matrix }
     set { _anchorEntity!.transform.matrix = newValue }
-    }
+  }
+  
+  @objc open var billboardNodes: Bool {
+    get { _billboardNodes }
+    set (newValue) { _billboardNodes = newValue }
+  }
   
   @objc init(_ container: ARImageMarkerContainer) {
     _container = container

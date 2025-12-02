@@ -26,6 +26,7 @@ public final class ImageMarker implements ARImageMarker {
   protected String name = "";
   protected String imageUrl = "";
   protected List<ARNode> arNodes =  new ArrayList<ARNode>();
+  protected Boolean billboardNodes = false;
 
   public ImageMarker(ARImageMarkerContainer container) {
     // added to container implicitly
@@ -58,6 +59,13 @@ public final class ImageMarker implements ARImageMarker {
       defaultValue = "")
   @SimpleProperty(description = "ImageURL")
   public void Image(String image) { this.imageUrl = image; }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
+      defaultValue = "")
+  @SimpleProperty(description = "Billboard attached nodes",
+      category = PropertyCategory.APPEARANCE)
+  public void Billboard(Boolean bd) { this.billboardNodes = bd; }
+
 
   @Override
   @SimpleProperty(category = PropertyCategory.APPEARANCE,

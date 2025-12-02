@@ -1399,6 +1399,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         node._modelEntity.position = .zero
         
         let finalOrientation = node._modelEntity.orientation(relativeTo: nil)
+        marker.NoLongerInView()
         print("   📍 Final world orientation: \(finalOrientation)")
         print("⚠️ node local pos: \(node._modelEntity.position)")
 
@@ -1418,27 +1419,36 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       if nodesToReattach.isEmpty {
           return
       }
-    for node in marker._attachedNodes {
-      guard let localOffset = node._nodeLocalTransform else {
-            print("⚠️ No local transform for \(node.Name)")
-            continue
-        }
-      node._tempWorldAnchor?.removeFromParent()
-      node._tempWorldAnchor = nil
-        
-      node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
-      node._modelEntity.position = localOffset.translation
-      node._modelEntity.orientation = simd_quatf(real: 1.0, imag: SIMD3<Float>(0, 0, 0))
-
-      // ✅ Set orientation once at reattachment
-      if let cameraTransform = _arView.cameraTransform as Optional {
-          node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
-      }
       
-      print("reattaching: Set orientation for \(node.Name)")
-    }
+      for node in marker._attachedNodes {
+          guard let localOffset = node._nodeLocalTransform else {
+              print("⚠️ No local transform for \(node.Name)")
+              continue
+          }
+          
+          node._tempWorldAnchor?.removeFromParent()
+          node._tempWorldAnchor = nil
+          
+          node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
+          node._modelEntity.position = localOffset.translation
+          
+          // CSB for now, leave orientation alone until we can solve for billboarding
+          if marker._billboardNodes {
+            /*node._modelEntity.orientation = localOffset.rotation
+             
+             print("   💾 Restored local orientation for \(node.Name): \(localOffset.rotation)")
+             
+             // ✅ THEN apply camera-facing orientation (which will preserve the restored orientation)
+             if let cameraTransform = _arView.cameraTransform as Optional {
+             node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+             }*/
+          }
+        
+          marker.AppearedInView()
+          
+          print("reattaching: Set orientation for \(node.Name)")
+      }
   }
-
   private func cleanupMarkerPivot(_ marker: ImageMarker) {
     marker._anchorEntity?.removeFromParent()
     marker._anchorEntity = nil
@@ -1604,8 +1614,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
     for anchor in anchors {
       if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
-          updatedPlane.updateFor(anchor: planeAnchor)
-          DetectedPlaneUpdated(updatedPlane)
+        updatedPlane.updateFor(anchor: planeAnchor)
+        DetectedPlaneUpdated(updatedPlane)
       } else if let imageAnchor = anchor as? ARImageAnchor {
         guard
           let name = imageAnchor.referenceImage.name,
@@ -1659,10 +1669,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         else if wasTracked && !nowTracked && !anchorWillBeReplaced {
           _consecutiveLostFrames += 1
           
-          //if _consecutiveLostFrames >= 2 {
-            print("⚠️ Marker \(name) lost - detaching to world space")
-            detachToWorldIfNeeded(for: marker)
-            _consecutiveLostFrames = 0
+          //csb - this throttling doesn't seem necessary atm if _consecutiveLostFrames >= 2 {
+          print("⚠️ Marker \(name) lost - detaching to world space")
+          detachToWorldIfNeeded(for: marker)
+          _consecutiveLostFrames = 0
           //}
         }
         
