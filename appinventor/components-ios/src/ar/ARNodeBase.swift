@@ -1028,6 +1028,45 @@ open class ARNodeBase: NSObject, ARNode {
     print("   ✅ Attached! node is at \(_nodeWorldTransform)")
   }
   
+  @objc open func defaultCameraFacingOrientation() -> simd_quatf {
+      // Default: just yaw (for 3D objects)
+      return simd_quatf(angle: 0, axis: [1, 0, 0])
+  }
+
+  func applyCameraFacingOrientation(cameraPosition: SIMD3<Float>) {
+      let modelPosition = _modelEntity.position(relativeTo: nil)
+      
+      let dx = cameraPosition.x - modelPosition.x
+      let dz = cameraPosition.z - modelPosition.z
+      let distance = sqrt(dx * dx + dz * dz)
+      
+      guard distance > 0.001 else { return }
+      
+      let yaw = atan2(dx, dz)
+      let yawQuat = simd_quatf(angle: yaw, axis: [0, 1, 0])
+      
+      let desiredWorldOrientation: simd_quatf
+      if self is TextNode {
+          let pitchQuat = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+          desiredWorldOrientation = yawQuat * pitchQuat
+      } else {
+          desiredWorldOrientation = yawQuat
+      }
+      
+      // ✅ Account for parent orientation
+      if let parent = _modelEntity.parent {
+          let parentWorldQuat = parent.orientation(relativeTo: nil)
+          let localOrientation = parentWorldQuat.inverse * desiredWorldOrientation
+          _modelEntity.orientation = localOrientation
+          
+          print("📍 \(Name) - parent world quat: \(parentWorldQuat)")
+          print("📍 \(Name) - desired world: \(desiredWorldOrientation)")
+          print("📍 \(Name) - set local: \(localOrientation)")
+      } else {
+          _modelEntity.setOrientation(desiredWorldOrientation, relativeTo: nil)
+      }
+  }
+
   @objc open func StopFollowingImageMarker() {
     _followingMarker?.removeNode(self)
     stopFollowing()
@@ -1295,6 +1334,11 @@ open class ARNodeBase: NSObject, ARNode {
     }
     
     let newWorldPosition = self._modelEntity.position(relativeTo: nil)
+    
+    if let container = self._container as? ARView3D,
+       let cameraTransform = container._arView.cameraTransform as Optional {
+        self.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+    }
     
     self._nodeWorldTransform = Transform(
                 scale: self._modelEntity.scale(relativeTo: nil),

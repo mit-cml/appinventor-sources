@@ -457,10 +457,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     if let existingConfig = _arView.session.configuration as? ARWorldTrackingConfiguration,
        _trackingType == .worldTracking {
-        // Update existing config instead of creating new
-        existingConfig.detectionImages = getReferenceImages()
-        existingConfig.maximumNumberOfTrackedImages = max(4, getReferenceImages().count)
-        return existingConfig
+      existingConfig.detectionImages = getReferenceImages()
+      existingConfig.maximumNumberOfTrackedImages = max(4, getReferenceImages().count)
+      print("re-using configuration")
+      return existingConfig
     }
     
     switch _trackingType {
@@ -784,10 +784,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _isStarting = true
     defer { _isStarting = false }
     
-    /*if _sessionRunning && options.isEmpty {
-        print("⚠️ Session already running, skipping start")
-        return
-    }*/
     
     if !CameraGuard.shared.tryAcquire(.arkit) {
         print("🚫 seems that Camera in use by another component")
@@ -1382,7 +1378,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
         // ✅ Get world position BEFORE removing from parent
         let worldPosition = cachedWorld.translation
-                
+        let worldOrientation = node._modelEntity.orientation(relativeTo: nil)
+        let worldScale = node._modelEntity.scale(relativeTo: nil)
+        
+        print("   📍 Preserving world orientation: \(worldOrientation)")
         // ✅ Create anchor at the world position directly
         let tempAnchor = AnchorEntity(world: worldPosition)
         tempAnchor.name = "\(node.Name)_tempAnchor"
@@ -1396,23 +1395,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         // ✅ Now remove and parent
         node._modelEntity.removeFromParent()
         node._modelEntity.setParent(tempAnchor, preservingWorldTransform: false)
+        node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
         node._modelEntity.position = .zero
-        //node._modelEntity.transform.rotation = simd_quatf(angle: 0, axis: [0, 1, 0])
         
-        print("⚠️ node pos is \(node._modelEntity.position)")
-        print("⚠️ node should be at local zero or close: \(node._modelEntity.position)")
-
-          // Set clean camera-facing orientation in world space
-        /*  if let cameraTransform = _arView.cameraTransform as Optional{
-              let cameraPosition = cameraTransform.translation
-              let direction = SIMD3<Float>(
-                  cameraPosition.x - worldPosition.x,
-                  0,
-                  cameraPosition.z - worldPosition.z
-              )
-              let angle = atan2(direction.x, direction.z)
-              //node._modelEntity.setOrientation(simd_quatf(angle: angle, axis: [0, 1, 0]), relativeTo: nil)
-          }*/
+        let finalOrientation = node._modelEntity.orientation(relativeTo: nil)
+        print("   📍 Final world orientation: \(finalOrientation)")
+        print("⚠️ node local pos: \(node._modelEntity.position)")
 
           
       }
@@ -1425,43 +1413,30 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   func reattachNodesToMarker(_ marker: ImageMarker) {
       guard let markerAnchor = marker.Anchor else { return }
 
-      for node in marker._attachedNodes {
-        // Remove and clear temp anchor if any
-
-
-        guard let localOffset = node._nodeLocalTransform else {
-              print("⚠️ No local transform for \(node.Name)")
-              continue
-          }
-        node._tempWorldAnchor?.removeFromParent()
-        node._tempWorldAnchor = nil
-          
-        print("reattaching: Local offset from temp anchor: \(localOffset.translation)")
-        print("reattaching: Marker position: \(markerAnchor.position(relativeTo: nil))")
-        
-        // Parent to marker (resets to origin)
-        node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
-        
-        // ✅ Apply the same local offset that node had relative to tempAnchor
-        node._modelEntity.position = localOffset.translation
-  
-
-        /*if let cameraTransform = _arView.cameraTransform as Optional {
-          let cameraPosition = cameraTransform.translation
-          let modelPosition = node._modelEntity.position(relativeTo: nil)
-           
-           let direction = SIMD3<Float>(
-               cameraPosition.x - modelPosition.x,
-               0,
-               cameraPosition.z - modelPosition.z
-           )
-           let angle = atan2(direction.x, direction.z)
-           node._modelEntity.setOrientation(simd_quatf(angle: angle, axis: [0, 1, 0]), relativeTo: nil)
-        }*/
-       
-        print("reattaching: Marker translation is \(marker.Anchor!.transform.translation) should be same as position: \(marker.Anchor!.position) and local translation is (\(localOffset.translation))")
-        
+      let nodesToReattach = marker._attachedNodes.filter { $0._modelEntity.parent !== markerAnchor }
+      
+      if nodesToReattach.isEmpty {
+          return
       }
+    for node in marker._attachedNodes {
+      guard let localOffset = node._nodeLocalTransform else {
+            print("⚠️ No local transform for \(node.Name)")
+            continue
+        }
+      node._tempWorldAnchor?.removeFromParent()
+      node._tempWorldAnchor = nil
+        
+      node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
+      node._modelEntity.position = localOffset.translation
+      node._modelEntity.orientation = simd_quatf(real: 1.0, imag: SIMD3<Float>(0, 0, 0))
+
+      // ✅ Set orientation once at reattachment
+      if let cameraTransform = _arView.cameraTransform as Optional {
+          node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+      }
+      
+      print("reattaching: Set orientation for \(node.Name)")
+    }
   }
 
   private func cleanupMarkerPivot(_ marker: ImageMarker) {
@@ -1653,6 +1628,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         
         // ✅ FIRST: Attach any LoadScene nodes with queued offsets
         if nowTracked {
+          _consecutiveLostFrames = 0
           for node in marker._attachedNodes where node._queuedMarkerOffset != nil {
             print("   🔗 Attaching LoadScene node \(node.Name)")
             node._modelEntity.removeFromParent()
@@ -1683,10 +1659,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         else if wasTracked && !nowTracked && !anchorWillBeReplaced {
           _consecutiveLostFrames += 1
           
-          if _consecutiveLostFrames >= 10 {
+          //if _consecutiveLostFrames >= 2 {
             print("⚠️ Marker \(name) lost - detaching to world space")
             detachToWorldIfNeeded(for: marker)
-          }
+            _consecutiveLostFrames = 0
+          //}
         }
         
         // ✅ Update world transforms while tracked (for smooth fallback)
