@@ -16,6 +16,6 @@ public class DonateAction implements Command {
 
   @Override
   public void execute() {
-    Window.open("https://giving.appinventor.mit.edu", WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
+    Window.open("https://giving.appinventor.mit.edu/button", WINDOW_OPEN_LOCATION, WINDOW_OPEN_FEATURES);
   }
 }
