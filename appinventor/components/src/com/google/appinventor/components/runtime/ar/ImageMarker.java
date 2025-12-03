@@ -64,7 +64,7 @@ public final class ImageMarker implements ARImageMarker {
       defaultValue = "")
   @SimpleProperty(description = "Billboard attached nodes",
       category = PropertyCategory.APPEARANCE)
-  public void Billboard(Boolean bd) { this.billboardNodes = bd; }
+  public void Billboard(boolean bd) { this.billboardNodes = bd; }
 
 
   @Override
