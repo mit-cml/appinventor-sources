@@ -1366,18 +1366,19 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   func detachToWorldIfNeeded(for marker: ImageMarker) {
       for node in marker._attachedNodes {
           // Cache LOCAL transform on first detach
+        
         if node._nodeLocalTransform == nil {
               let localTransform = node._modelEntity.transformMatrix(relativeTo: marker.Anchor)
               node._nodeLocalTransform = Transform(matrix: localTransform)
               print("   💾 First-time cache of local transform for \(node.Name): \(node._nodeLocalTransform!.translation)")
         }
          
-        guard let cachedWorld = node._nodeWorldTransform else {
+        guard let localOffset = node._nodeWorldTransform else {
             print("⚠️ No cached world position for \(node.Name)")
             continue
         }
         // ✅ Get world position BEFORE removing from parent
-        let worldPosition = cachedWorld.translation
+        let worldPosition = localOffset.translation
         let worldOrientation = node._modelEntity.orientation(relativeTo: nil)
         let worldScale = node._modelEntity.scale(relativeTo: nil)
         
@@ -1395,11 +1396,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         // ✅ Now remove and parent
         node._modelEntity.removeFromParent()
         node._modelEntity.setParent(tempAnchor, preservingWorldTransform: false)
-        node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
         node._modelEntity.position = .zero
         
         let finalOrientation = node._modelEntity.orientation(relativeTo: nil)
-        marker.NoLongerInView()
         print("   📍 Final world orientation: \(finalOrientation)")
         print("⚠️ node local pos: \(node._modelEntity.position)")
 
@@ -1425,13 +1424,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               print("⚠️ No local transform for \(node.Name)")
               continue
           }
-          
+
           node._tempWorldAnchor?.removeFromParent()
           node._tempWorldAnchor = nil
           
           node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
+          //node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
           node._modelEntity.position = localOffset.translation
-          
+
           // CSB for now, leave orientation alone until we can solve for billboarding
           if marker._billboardNodes {
             /*node._modelEntity.orientation = localOffset.rotation
@@ -1444,7 +1444,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
              }*/
           }
         
-          marker.AppearedInView()
+          
           
           print("reattaching: Set orientation for \(node.Name)")
       }
@@ -1663,6 +1663,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           } else {
             //print("🔄 Marker \(name) reappeared - reattaching nodes")
           }
+          marker.AppearedInView()
           reattachNodesToMarker(marker)
         }
         // ✅ THIRD: Handle detachment when marker is lost
@@ -1671,6 +1672,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           
           //csb - this throttling doesn't seem necessary atm if _consecutiveLostFrames >= 2 {
           print("⚠️ Marker \(name) lost - detaching to world space")
+          marker.NoLongerInView()
           detachToWorldIfNeeded(for: marker)
           _consecutiveLostFrames = 0
           //}
