@@ -1397,6 +1397,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         node._modelEntity.removeFromParent()
         node._modelEntity.setParent(tempAnchor, preservingWorldTransform: false)
         node._modelEntity.position = .zero
+        node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
+        node._modelEntity.scale = worldScale
         
         let finalOrientation = node._modelEntity.orientation(relativeTo: nil)
         print("   📍 Final world orientation: \(finalOrientation)")
@@ -1431,17 +1433,18 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
           //node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
           node._modelEntity.position = localOffset.translation
-
-          // CSB for now, leave orientation alone until we can solve for billboarding
-          if marker._billboardNodes {
-            /*node._modelEntity.orientation = localOffset.rotation
-             
+          node._modelEntity.orientation = localOffset.rotation
+          if node is TextNode {
+            node._modelEntity.orientation = simd_quatf(angle: -90, axis: [1,0,0])
+          }
+          // CSB for now, we are billboarding during attachment
+          if marker._billboardNodes { // this doesn't do anything
              print("   💾 Restored local orientation for \(node.Name): \(localOffset.rotation)")
              
              // ✅ THEN apply camera-facing orientation (which will preserve the restored orientation)
              if let cameraTransform = _arView.cameraTransform as Optional {
-             node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
-             }*/
+             //node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+             }
           }
         
           

@@ -51,6 +51,10 @@ open class PlaneNode: ARNodeBase, ARPlane {
     print("   Current orientation: \(_modelEntity.orientation)")
   }
   
+  override open func defaultCameraFacingOrientation() -> simd_quatf {
+      return simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // Pitch -90°
+  }
+  
   @objc open var WidthInCentimeters: Float {
     get {
       return UnitHelper.metersToCentimeters(_width)
