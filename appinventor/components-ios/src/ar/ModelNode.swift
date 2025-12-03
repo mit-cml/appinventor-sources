@@ -531,14 +531,28 @@ open class ModelNode: ARNodeBase, ARModel {
     
     _isFlying = false
     
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-        self?.EnablePhysics(true)
-    }
+    self.EnablePhysics(self._enablePhysics)
 
     if let container = _container {
       container.hidePlacementPreview()
     }
     
+    if let container = self._container as? ARView3D,
+       let cameraTransform = container._arView.cameraTransform as Optional {
+
+    }
+    let newWorldPosition = self._modelEntity.position(relativeTo: nil)
+    self._nodeWorldTransform = Transform(
+                scale: self._modelEntity.scale(relativeTo: nil),
+                rotation: self._modelEntity.transform.rotation,
+                translation: newWorldPosition
+            )
+    print("   📍 Updated cached world position after drag: \(newWorldPosition)")
+    self._nodeLocalTransform = Transform(
+                    scale: self._modelEntity.scale,
+                    rotation: self._modelEntity.transform.rotation,
+                    translation: self._modelEntity.position  // Local position relative to tempAnchor
+                )
     // Clear local preview data
     _previewPlacementSurface = nil
     
