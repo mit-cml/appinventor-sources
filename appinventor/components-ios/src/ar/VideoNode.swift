@@ -225,10 +225,16 @@ open class VideoNode: ARNodeBase, ARVideo {
       print("🔧 Removed observer after video ready")
     }
     
+    
     // Create VideoMaterial only when player is ready
     _videoMaterial = VideoMaterial(avPlayer: _player)
-    _modelEntity.model?.materials = [_videoMaterial!]
     
+
+    if #available(iOS 18.0, *) {  // csb we may or may not want to do this - make user choice
+      _videoMaterial?.faceCulling = .none
+    }
+    _modelEntity.model?.materials = [_videoMaterial!]
+   
     print("✅ VideoMaterial created and applied")
   }
   
