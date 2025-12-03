@@ -762,20 +762,27 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
       let task = DispatchWorkItem { [weak self] in
           guard let self = self else { return }
-          let frame = self._arView.session.currentFrame
-          let status = frame?.worldMappingStatus
-          let meshes = frame?.anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
+          
+          // ✅ Extract data in autoreleasepool without retaining frame
+          let (status, meshCount) = autoreleasepool { () -> (ARFrame.WorldMappingStatus?, Int) in
+              guard let frame = self._arView.session.currentFrame else {
+                  return (nil, 0)
+              }
+              let status = frame.worldMappingStatus
+              let meshes = frame.anchors.compactMap { $0 as? ARMeshAnchor }.count
+              return (status, meshes)
+          }
 
-          // Not relocalized AND no meshes → fall back
           let notRelocalized = (status == .notAvailable || status == .limited || status == nil)
-          if meshes == 0 && notRelocalized {
+          if meshCount == 0 && notRelocalized {
               self.forceFreshMapping()
           }
       }
       relocalizationTimer = task
       DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: task)
   }
-
+  
+  
   private func forceFreshMapping() {
       print("⏩ Fallback: dropping initialWorldMap to unblock mesh reconstruction")
 
@@ -868,12 +875,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         self.parseNodes()
         //self.refreshWireframeAndSU()
 
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-          let meshes = self?._arView.session.currentFrame?.anchors.compactMap { $0 as? ARMeshAnchor }.count ?? 0
-          let status = self?._arView.session.currentFrame?.worldMappingStatus
-          print("🧪 startTracking mesh anchors:", meshes, "mapping:", String(describing: status))
-        }
         for (anchorEntity, light) in self._lights {
           self._arView.scene.addAnchor(anchorEntity)
         }
@@ -955,9 +956,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
 
   @objc func onAppDidBecomeActive() {
-      print("📱 ===== APP BECAME ACTIVE =====")
+    print("📱 ===== APP BECAME ACTIVE =====")
       
-    if !_sessionRunning || _arView.session.currentFrame == nil {
+    let hasFrame = autoreleasepool { () -> Bool in
+        return _arView.session.currentFrame != nil
+    }
+    
+    if !_sessionRunning || !hasFrame {
         requestRestart([.resetTracking, .removeExistingAnchors])
     }
   }
@@ -969,7 +974,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     removeInvisibleFloor()
     
     pauseTracking(!_shouldRestartSession)
-    requestRestart([])
+    requestRestart([.removeExistingAnchors])
   }
   
   @objc func verifyFloorState() {
@@ -980,68 +985,69 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   private func CreateImageMarkerFromYail(_ d: YailDictionary) -> ImageMarker? {
-      guard let type = (d["type"] as? String)?.lowercased(), type == "imagemarker" else { return nil }
-      let name = (d["name"] as? String) ?? "<unnamed>"
-      var imgPath = (d["image"] as? String) ?? ""
-      let wCM = (d["physicalWidthCM"] as? Float) ?? 15
-      let vis = (d["visible"] as? Bool) ?? true
+    guard let type = (d["type"] as? String)?.lowercased(), type == "imagemarker" else { return nil }
+    let name = (d["name"] as? String) ?? "<unnamed>"
+    var imgPath = (d["image"] as? String) ?? ""
+    let wCM = (d["physicalWidthCM"] as? Float) ?? 15
+    let vis = (d["visible"] as? Bool) ?? true
+  
+    print("🔍 Creating marker '\(name)' with image path: '\(imgPath)'")
     
-      print("🔍 Creating marker '\(name)' with image path: '\(imgPath)'")
-      
-      // ✅ If it's a full file:// URL but doesn't exist, try to find the file by name
-      if imgPath.hasPrefix("file://") {
-          let existingPath = AssetManager.shared.pathForExistingFileAsset(imgPath)
+    // ✅ If it's a full file:// URL but doesn't exist, try to find the file by name
+    if imgPath.hasPrefix("file://") || imgPath.hasPrefix("/var") {
+        
+      let existingFileMgrPath = FileManager.default.fileExists(atPath: imgPath)
+      let existingAMPath = AssetManager.shared.pathForExistingFileAsset(imgPath)
+      if !existingFileMgrPath || existingAMPath.isEmpty  {
+          print("   ⚠️ Old path invalid, searching for file by name...")
           
-          if existingPath.isEmpty || !FileManager.default.fileExists(atPath: existingPath) {
-              print("   ⚠️ Old path invalid, searching for file by name...")
-              
-              // Extract filename from old path
-              if let filename = URL(string: imgPath)?.lastPathComponent {
-                  print("   Looking for: \(filename)")
-                  
-                  // Search in Documents directory
-                  let docsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                  let newPath = docsPath.appendingPathComponent(filename).path
-                  
-                  if FileManager.default.fileExists(atPath: newPath) {
-                      print("   ✅ Found file at new location: \(newPath)")
-                      imgPath = newPath
-                  } else {
-                      // Try AssetManager paths
-                      let publicPath = AssetManager.shared.pathForPublicAsset(filename)
-                      if FileManager.default.fileExists(atPath: publicPath) {
-                          print("   ✅ Found file in public assets: \(publicPath)")
-                          imgPath = publicPath
-                      } else {
-                          print("   ❌ Could not find file anywhere")
-                      }
-                  }
+          // Extract filename from old path
+          if let filename = URL(string: imgPath)?.lastPathComponent {
+            print("   Looking for: \(filename)")
+            
+            // Search in Documents directory
+            let docsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let newPath = docsPath.appendingPathComponent(filename).path
+            
+            if FileManager.default.fileExists(atPath: newPath) {
+              print("   ✅ Found file at new location: \(newPath)")
+              imgPath = newPath
+            } else {
+              // Try AssetManager paths
+              let publicPath = AssetManager.shared.pathForPublicAsset(filename)
+              if FileManager.default.fileExists(atPath: publicPath) {
+                  print("   ✅ Found file in public assets: \(publicPath)")
+                  imgPath = publicPath
+              } else {
+                  print("   ❌ Could not find file anywhere")
               }
-          } else {
-              imgPath = existingPath
+            }
           }
-      }
-      
-      // Now try to load the image
-      if let image = UIImage(contentsOfFile: imgPath) {
-          print("   ✅ Image loaded from: \(imgPath)")
-      } else {
-          print("   ❌ Still cannot load image from: \(imgPath)")
-      }
+        } else {
+            //imgPath = existingFileMgrPath
+        }
+    }
     
-      let marker = ImageMarker(self)
-      marker.Name = name
-      marker.Image = imgPath
-      marker.PhysicalWidthInCentimeters = wCM
-      marker.Visible = vis
-      
-      if marker._referenceImage != nil {
-          print("✅ Reference image created for '\(name)'")
-      } else {
-          print("❌ Reference image is NIL for '\(name)'")
-      }
-      
-      return marker
+    // Now try to load the image
+    if let image = UIImage(contentsOfFile: imgPath) {
+        print("   ✅ Image loaded from: \(imgPath)")
+    } else {
+        print("   ❌ Still cannot load image from: \(imgPath)")
+    }
+  
+    let marker = ImageMarker(self)
+    marker.Name = name
+    marker.Image = imgPath
+    marker.PhysicalWidthInCentimeters = wCM
+    marker.Visible = vis
+    
+    if marker._referenceImage != nil {
+        print("✅ Reference image created for '\(name)'")
+    } else {
+        print("❌ Reference image is NIL for '\(name)'")
+    }
+    
+    return marker
   }
 
   private func CreateCapsuleNodeFromYail(_ yailNodeObj: YailDictionary) -> ARNodeBase? {
@@ -2320,17 +2326,54 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     func renameFile(urlString: String, to newName: String) throws -> String {
-      guard let oldURL = URL(string: urlString) else {
-        throw NSError(domain: "Invalid URL", code: -1, userInfo: nil)
-      }
-      
-      let directory = oldURL.deletingLastPathComponent()
-      let fileExtension = oldURL.pathExtension
-      let newURL = directory.appendingPathComponent("\(newName).\(fileExtension)")
-      
-      try FileManager.default.moveItem(at: oldURL, to: newURL)
-      
-      return newURL.absoluteString
+        // Handle both path strings and file:// URLs
+        let oldURL: URL
+        if urlString.hasPrefix("file://") {
+            // Remove file:// prefix and create file URL
+            let path = urlString.replacingOccurrences(of: "file://", with: "")
+            oldURL = URL(fileURLWithPath: path)
+        } else if urlString.hasPrefix("/") {
+            // Already a path
+            oldURL = URL(fileURLWithPath: urlString)
+        } else {
+            // Assume it's just a filename in Documents
+            guard let documentsURL = FileManager.default.urls(
+                for: .documentDirectory,
+                in: .userDomainMask
+            ).first else {
+                throw NSError(domain: "Cannot access Documents", code: -1, userInfo: nil)
+            }
+            oldURL = documentsURL.appendingPathComponent(urlString)
+        }
+        
+        // Verify source file exists
+        guard FileManager.default.fileExists(atPath: oldURL.path) else {
+            print("❌ Source file doesn't exist: \(oldURL.path)")
+            throw NSError(
+                domain: "Source file not found",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "File doesn't exist at \(oldURL.path)"]
+            )
+        }
+        
+        let directory = oldURL.deletingLastPathComponent()
+        let fileExtension = oldURL.pathExtension
+        let newURL = directory.appendingPathComponent("\(newName).\(fileExtension)")
+        
+        // Check if destination already exists
+        if FileManager.default.fileExists(atPath: newURL.path) {
+            print("⚠️ Destination file already exists, removing old file")
+            try FileManager.default.removeItem(at: newURL)
+        }
+        
+        try FileManager.default.moveItem(at: oldURL, to: newURL)
+        
+        let filename = newURL.lastPathComponent
+        print("✅ Renamed: \(oldURL.lastPathComponent) → \(filename)")
+        print("   Path: \(newURL.path)")
+        
+       //keep path
+        return newURL.path
     }
     
     @objc open func ImageForMarkerCreated(_ urlString: String, _ newName: String, _ widthCm: Float = 15.0) -> ImageMarker {
