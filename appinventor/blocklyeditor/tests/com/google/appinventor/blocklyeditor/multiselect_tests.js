@@ -62,18 +62,15 @@ suite('Multiselect', function() {
       blockState: { type: 'math_number', fields: { NUM: 2 } },
       typeCounts: { 'math_number': 1 }
     }, workspace);
+
     shift('keydown');
     select(block1);
-    await events(Blockly.Events.SELECTED, 1);
     select(block2);
-    await events(Blockly.Events.SELECTED, 1);
     shift('keyup');
+    await events(Blockly.Events.SELECTED, 2);
     ctrl('c');
-
-    chai.assert.equal(workspace.getAllBlocks().length, 2);
-
     ctrl('v');
-
+    await events(Blockly.Events.BLOCK_CREATE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 4);
   });
 
@@ -88,18 +85,17 @@ suite('Multiselect', function() {
       blockState: { type: 'math_number', fields: { NUM: 2 } },
       typeCounts: { 'math_number': 1 }
     }, workspace);
+
     shift('keydown');
     select(block1);
-    await events(Blockly.Events.SELECTED, 1);
     select(block2);
-    await events(Blockly.Events.SELECTED, 1);
     shift('keyup');
+    await events(Blockly.Events.SELECTED, 2);
     ctrl('x');
-
+    await events(Blockly.Events.BLOCK_DELETE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 0);
-
     ctrl('v');
-
+    await events(Blockly.Events.BLOCK_CREATE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 2);
   });
 
@@ -114,14 +110,14 @@ suite('Multiselect', function() {
       blockState: { type: 'math_number', fields: { NUM: 2 } },
       typeCounts: { 'math_number': 1 }
     }, workspace);
+
     shift('keydown');
     select(block1);
-    await events(Blockly.Events.SELECTED, 1);
     select(block2);
-    await events(Blockly.Events.SELECTED, 1);
     shift('keyup');
+    await events(Blockly.Events.SELECTED, 2);
     del();
-
+    await events(Blockly.Events.BLOCK_DELETE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 0);
   });
 
@@ -136,24 +132,19 @@ suite('Multiselect', function() {
       blockState: { type: 'math_number', fields: { NUM: 2 } },
       typeCounts: { 'math_number': 1 }
     }, workspace);
+
     shift('keydown');
     select(block1);
-    await events(Blockly.Events.SELECTED, 1);
     select(block2);
-    await events(Blockly.Events.SELECTED, 1);
     shift('keyup');
+    await events(Blockly.Events.SELECTED, 2);
     del();
-
-    chai.assert.equal(workspace.getAllBlocks().length, 0);
-
     await events(Blockly.Events.BLOCK_DELETE, 2);
     ctrl('z');
-
-    chai.assert.equal(workspace.getAllBlocks().length, 2);
-
     await events(Blockly.Events.BLOCK_CREATE, 2);
+    chai.assert.equal(workspace.getAllBlocks().length, 2);
     ctrl('y');
-
+    await events(Blockly.Events.BLOCK_DELETE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 0);
   });
 });
