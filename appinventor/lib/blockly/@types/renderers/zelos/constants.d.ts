@@ -5,8 +5,8 @@
  */
 import type { RenderedConnection } from '../../rendered_connection.js';
 import type { Theme } from '../../theme.js';
-import { ConstantProvider as BaseConstantProvider } from '../common/constants.js';
 import type { Shape } from '../common/constants.js';
+import { ConstantProvider as BaseConstantProvider } from '../common/constants.js';
 /** An object containing sizing and path information about inside corners. */
 export interface InsideCorners {
     width: number;
