@@ -1472,24 +1472,14 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         let tempAnchor = AnchorEntity(world: worldPosition)
         tempAnchor.name = "\(node.Name)_tempAnchor"
         node._tempWorldAnchor = tempAnchor
-                
-        print("⚠️ TEMP anchor transform.translation: \(tempAnchor.transform.translation)")
-                
-        // ✅ Add anchor to scene BEFORE parenting
+
         _arView.scene.addAnchor(tempAnchor)
         
-        // ✅ Now remove and parent
         node._modelEntity.removeFromParent()
         node._modelEntity.setParent(tempAnchor, preservingWorldTransform: false)
         node._modelEntity.position = .zero
         node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
         node._modelEntity.scale = worldScale
-        
-        let finalOrientation = node._modelEntity.orientation(relativeTo: nil)
-        print("   📍 Final world orientation: \(finalOrientation)")
-        print("⚠️ node local pos: \(node._modelEntity.position)")
-
-          
       }
   }
   @inline(__always)
@@ -1519,7 +1509,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           //node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
           node._modelEntity.position = localOffset.translation
           node._modelEntity.orientation = localOffset.rotation
-          if node is TextNode {
+          if node is TextNode || node is VideoNode {
             node._modelEntity.orientation = simd_quatf(angle: -90, axis: [1,0,0])
           }
           // CSB for now, we are billboarding during attachment
@@ -1531,10 +1521,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
              //node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
              }
           }
-        
-          
-          
-          print("reattaching: Set orientation for \(node.Name)")
+     
+        print("reattaching: Set orientation for \(node.Name)")
       }
   }
   private func cleanupMarkerPivot(_ marker: ImageMarker) {
@@ -1751,8 +1739,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           } else {
             //print("🔄 Marker \(name) reappeared - reattaching nodes")
           }
-          marker.AppearedInView()
+          
           reattachNodesToMarker(marker)
+          marker.AppearedInView()
         }
         // ✅ THIRD: Handle detachment when marker is lost
         else if wasTracked && !nowTracked && !anchorWillBeReplaced {
@@ -2055,11 +2044,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
               
               let groundLevel = GROUND_LEVEL
               let bounds = node._modelEntity.visualBounds(relativeTo: nil as Entity?)
-              let halfHeight = (bounds.max.y - bounds.min.y)/2
-
-              let safeY = max(
-                  yMeters + halfHeight + ARView3D.VERTICAL_OFFSET,  // detected surface + radius + clearance
-                  groundLevel + ARView3D.VERTICAL_OFFSET + halfHeight  // fallback floor position
+              
+              let scale = node.Scale
+              let scaledHeight = (bounds.max.y - bounds.min.y) * scale
+              let halfHeight = scaledHeight / 2
+              let safeY = min(yMeters + halfHeight + ARView3D.VERTICAL_OFFSET ,
+                              max(groundLevel + ARView3D.VERTICAL_OFFSET,
+                                  yMeters  + ARView3D.VERTICAL_OFFSET)
               )
               
               //node.setPosition(x: xMeters, y: safeY, z: zMeters)
