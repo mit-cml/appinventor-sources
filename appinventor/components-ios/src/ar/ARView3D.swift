@@ -1637,15 +1637,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     guard marker._isTracking,
           let markerAnchor = marker.Anchor else { return }
     let now = Date()
-    guard now.timeIntervalSince(_lastUpdateTime) > 0.2 else { return }
+    guard now.timeIntervalSince(_lastUpdateTime) > 0.35 else { return }
     _lastUpdateTime = now
 
-    
-    // node position in world coordinates
-    for node in marker._attachedNodes where node._modelEntity.parent === markerAnchor {
-      let worldM = node._modelEntity.transformMatrix(relativeTo: nil)
-      node._nodeWorldTransform = Transform(matrix: worldM)
-    }
+    // ✅ Batch all transforms in one pass - don't iterate node by node
+        let transforms: [(ARNodeBase, Transform)] = marker._attachedNodes
+            .filter { $0._modelEntity.parent === markerAnchor }
+            .map { node in
+                let worldM = node._modelEntity.transformMatrix(relativeTo: nil)
+                return (node, Transform(matrix: worldM))
+            }
+        
+        // ✅ Apply all at once outside the transform extraction
+        for (node, transform) in transforms {
+            node._nodeWorldTransform = transform
+        }
   }
 
   func ensureCurrentAnchorEntity(for marker: ImageMarker, imageAnchor: ARImageAnchor) {
@@ -3397,16 +3403,18 @@ extension ARView3D {
   
   
   private func projectFingerIncrementally(_ currentPos: SIMD3<Float>, fingerMovement: CGPoint) -> SIMD3<Float> {
-    guard let frame = _arView.session.currentFrame else {
-      let scale: Float = 0.002
-      return SIMD3<Float>(
-        currentPos.x + Float(fingerMovement.x) * scale,
-        currentPos.y,
-        currentPos.z + Float(fingerMovement.y) * scale
-      )
-    }
+    
     
     return autoreleasepool {
+      
+      guard let frame = _arView.session.currentFrame else {
+        let scale: Float = 0.002
+        return SIMD3<Float>(
+          currentPos.x + Float(fingerMovement.x) * scale,
+          currentPos.y,
+          currentPos.z + Float(fingerMovement.y) * scale
+        )
+      }
       let cameraTransform = frame.camera.transform
       let cameraForward = -SIMD3<Float>(
         cameraTransform.columns.2.x,
