@@ -20,7 +20,7 @@ open class VideoNode: ARNodeBase, ARVideo {
     _player = AVPlayer()
     super.init(container: container)
     setupVideoNode()
-    
+    self.Name = "video"
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(playerItemDidPlayToEndTime),
@@ -32,6 +32,10 @@ open class VideoNode: ARNodeBase, ARVideo {
   
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  override open func defaultCameraFacingOrientation() -> simd_quatf {
+    return simd_quatf(angle: .pi, axis: [1, 0, 0])  // Pitch -90°
   }
   
   @objc private func setupVideoNode() {
@@ -346,7 +350,7 @@ open class VideoNode: ARNodeBase, ARVideo {
       StaticFriction = savedFriction
       Restitution = savedRestitution
       
-      EnablePhysics(true)
+      EnablePhysics(_enablePhysics)
     } else {
         Scale = newScale
     }

@@ -14,6 +14,7 @@ open class PlaneNode: ARNodeBase, ARPlane {
     // Create initial plane mesh
     let mesh = MeshResource.generatePlane(width: _width, depth: _height)
     super.init(container: container, mesh: mesh)
+    self.Name = "image"
     _modelEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0])
   }
   
