@@ -1,0 +1,335 @@
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
+
+import Foundation
+import RealityKit
+import ARKit
+import GLKit
+import Combine
+
+@available(iOS 14.0, *)
+open class ImageMarker: NSObject, ARImageMarker {
+  public func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>) {
+    // nothing
+  }
+
+  var _consecutiveLostFrames = 0
+  var _consecutiveTrackedFrames = 0
+  let _lostFrameThreshold = 5  // Adjust as needed
+  
+  weak var _container: ARImageMarkerContainer?
+  open var _referenceImage: ARReferenceImage? = nil
+  public var _attachedNodes: [ARNodeBase] = []
+  var _imagePath: String = ""
+  var _anchorEntity: AnchorEntity? = nil
+  var _physicalWidth: Float = 0
+  var _name: String = "<unknown>"
+  var _lastPushTime = Date()
+  open var _isTracking = false
+  
+  var _initialized: Bool = false
+  var _detecting: Bool = false
+  var _widthSet: Bool = false
+  var _imageSet: Bool = false
+  
+  var _lastARAnchorId: UUID?
+  var _billboardNodes = false
+  
+  
+  // Override the protocol extension to provide actual storage
+  open var Anchor: AnchorEntity? {
+    get {
+      if let anchor = _anchorEntity {
+        return anchor
+      }
+      //CSB NOTE: unlike other 'nodes', we don't create an anchor here b/c it is created upon detection in ARView3D.session.didAdd
+      return _anchorEntity
+    }
+    set(a) {
+      _anchorEntity = a
+    }
+  }
+  
+  public var anchorMatrix: simd_float4x4 {
+    get { _anchorEntity!.transform.matrix }
+    set { _anchorEntity!.transform.matrix = newValue }
+  }
+  
+  @objc open var billboardNodes: Bool {
+    get { _billboardNodes }
+    set (newValue) { _billboardNodes = newValue }
+  }
+  
+  @objc init(_ container: ARImageMarkerContainer) {
+    _container = container
+    super.init()
+    setupReferenceImage()
+  }
+  
+  public func attachNode(_ node: ARNodeBase) {
+    if !_attachedNodes.contains(where: { $0 === node }) {
+          _attachedNodes.append(node)
+        }
+
+    if let anchor = _anchorEntity {
+      node._modelEntity.removeFromParent()
+      anchor.addChild(node._modelEntity)
+    }
+    node._followingMarker = self
+  }
+
+  public func detachNode(_ node: ARNodeBase) {
+    node._modelEntity.removeFromParent()
+  }
+  
+  //@objc open var Anchor: AnchorEntity { get set }
+  @objc open var Name: String {
+    get {
+      return _name
+    }
+    set(name) {
+      if !_initialized  {
+        guard _container?.markerNameIsAvailable(name) ?? true else {
+          return
+        }
+        _referenceImage?.name = name
+        _name = name
+        
+      } else if _referenceImage?.name != name, let oldName = _referenceImage?.name {
+        guard _container?.updateMarker(self, for: oldName, with: name) ?? false else {
+          return
+        }
+        _referenceImage?.name = name
+        _name = name
+      }
+    }
+  }
+  
+  @objc open var Image: String {
+    get {
+      return _imagePath
+    }
+    set(path) {
+      _imagePath = path
+      
+      guard let _ = AssetManager.shared.imageFromPath(path: _imagePath)?.cgImage else {
+        if !path.isEmpty {
+          _container?.form?.dispatchErrorOccurredEvent(self, "Image", ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code)
+        }
+        return
+      }
+      
+      if !_initialized  {
+        _imageSet = !_imagePath.isEmpty
+      }
+      
+      setupReferenceImage()
+    }
+  }
+  
+  @objc open var PhysicalWidthInCentimeters: Float {
+    get {
+      return UnitHelper.metersToCentimeters(_physicalWidth)
+    }
+    set(width) {
+      _physicalWidth = UnitHelper.centimetersToMeters(abs(width))
+      
+      if !_initialized {
+        _widthSet = _physicalWidth > 0
+      }
+      
+      setupReferenceImage()
+    }
+  }
+  
+  @objc open var PhysicalHeightInCentimeters: Float {
+    get {
+      return UnitHelper.metersToCentimeters(_referenceImage?.physicalSize.height ?? 0)
+    }
+  }
+  
+  @objc open var AttachedNodes: [ARNodeBase] {
+    get {
+      return _attachedNodes
+    }
+  }
+  
+  private func setupReferenceImage() {
+    _initialized = _widthSet && _imageSet
+    
+    guard _initialized else { return }
+    
+    guard let image = AssetManager.shared.imageFromPath(path: _imagePath)?.cgImage else {
+      return
+    }
+    
+    _referenceImage = ARReferenceImage(image, orientation: .up, physicalWidth: CGFloat(_physicalWidth))
+    _referenceImage?.name = _name
+    
+    if _detecting {
+      _container?.updateMarker(self, for: _name, with: _name)
+    } else {
+      _container?.addMarker(self)
+      _detecting = true
+    }
+  }
+  
+  open func attach(_ node: ARNodeBase) {
+    // Remove from previous parent
+    node._modelEntity.removeFromParent()
+    _attachedNodes.append(node)
+    
+    // Attach to our anchor entity if it exists
+    if let anchorEntity = _anchorEntity {
+      anchorEntity.addChild(node._modelEntity)
+    }
+  }
+  
+  open func removeNode(_ node: ARNodeBase) {
+    if let index = _attachedNodes.firstIndex(of: node) {
+      _attachedNodes.remove(at: index)
+      node._modelEntity.removeFromParent()
+    }
+  }
+
+  @objc open func FirstDetected(_ imageAnchor: ARImageAnchor) {
+    guard _anchorEntity != nil else { return }
+    
+    _isTracking = true
+
+    // ✅ Only process nodes that need attachment here (runtime nodes without queued offsets)
+    for node in _attachedNodes where node._modelEntity.parent == nil {
+      // Skip LoadScene nodes - they have queued offsets and will be attached in didUpdate
+      if node._queuedMarkerOffset != nil {
+        print("   ⏭️ Skipping \(node.Name) in FirstDetected - has queued offset")
+        continue
+      }
+      
+      // Attach runtime-created nodes using frozen transforms if available
+      if let frozen = node._nodeLocalTransform {
+        _anchorEntity!.addChild(node._modelEntity)
+        node._modelEntity.transform = frozen
+        print("   ✅ FirstDetected: Restored frozen local transform for \(node.Name)")
+      } else if let frozen = node._nodeWorldTransform as Optional {
+        _anchorEntity!.addChild(node._modelEntity)
+        node._modelEntity.setPosition(frozen.translation, relativeTo: nil)
+        print("   ✅ FirstDetected: Used frozen world transform for \(node.Name)")
+      } else {
+        // Default: attach at center
+        _anchorEntity!.addChild(node._modelEntity)
+        node._modelEntity.position = SIMD3<Float>(0, 0, 0)
+        print("   ✅ FirstDetected: Attached \(node.Name) at center")
+      }
+      
+      node._anchorEntity = _anchorEntity
+    }
+    
+    self.AppearedInView()
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "FirstDetected")
+    }
+  }
+  
+  @objc open func PositionChanged(_ x: Float, _ y: Float, _ z: Float) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "PositionChanged", arguments: x as NSNumber, y as NSNumber, z as NSNumber)
+    }
+  }
+  
+  @objc open func RotationChanged(_ x: Float, _ y: Float, _ z: Float) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "RotationChanged", arguments: x as NSNumber, y as NSNumber, z as NSNumber)
+    }
+  }
+  
+  @objc public func NoLongerInView() {
+    _isTracking = false
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "NoLongerInView")
+    }
+  }
+  
+  @objc public func AppearedInView() {
+    _isTracking = true
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "AppearedInView")
+    }
+  }
+  
+  @objc public func Reset() {
+    _isTracking = false
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "Reset")
+    }
+  }
+  
+  @objc public func removeAllNodes() {
+    for node in _attachedNodes {
+      node.stopFollowing()
+    }
+    _attachedNodes = []
+  }
+  
+  @objc open var Visible: Bool {
+    get { return _anchorEntity != nil && ((_anchorEntity?.isEnabled) != nil) ? (_anchorEntity?.isEnabled)! : false }
+    set(visible) { if _anchorEntity != nil { _anchorEntity?.isEnabled = visible }}
+  }
+  
+  @objc open func ImageMarkerToYail() -> YailDictionary {
+    let d: YailDictionary = [:]
+    d["type"] = "imagemarker"
+    d["schemaVersion"] = 1 as NSNumber
+    d["name"] = self.Name
+    d["image"] = self.Image
+    d["physicalWidthCM"] = self.PhysicalWidthInCentimeters
+    d["visible"] = self.Visible
+    return d
+  }
+}
+
+@available(iOS 14.0, *)
+extension ImageMarker: LifecycleDelegate {
+  @objc public func onResume() {}
+  
+  @objc public func onPause() {}
+  
+  @objc public func onDelete() {
+    removeAllNodes()
+    _container?.removeMarker(self)
+    _container = nil
+    
+  }
+  
+  @objc public func onDestroy() {
+    removeAllNodes()
+    _container?.removeMarker(self)
+    _container = nil
+  }
+}
+
+@available(iOS 14.0, *)
+extension ImageMarker: VisibleComponent {
+  public var Width: Int32 {
+    get {
+      return 0
+    }
+    set {}
+  }
+  
+  public var Height: Int32 {
+    get {
+      return 0
+    }
+    set {}
+  }
+  
+  public var dispatchDelegate: HandlesEventDispatching? {
+    get {
+      return _container!.form?.dispatchDelegate
+    }
+  }
+  
+  public func copy(with zone: NSZone? = nil) -> Any { return (Any).self }
+  public func setWidthPercent(_ toPercent: Int32) {}
+  public func setHeightPercent(_ toPercent: Int32) {}
+}
