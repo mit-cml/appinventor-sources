@@ -76,6 +76,11 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
       public void addItem(String item) {
         assetsList.addItem(item);
       }
+
+      @Override
+      public int getItemCount() {
+        return assetsList.getItemCount();
+      }
     });
 
     // Fill choices with assets.
