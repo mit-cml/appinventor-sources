@@ -7,7 +7,7 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-
+import com.google.gwt.user.client.Command;
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.actions.SetFontDyslexicAction;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -31,6 +31,7 @@ import java.util.logging.Logger;
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
  */
 public class TopToolbar extends Composite {
+  private MenuItem companionUpdateItem;
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
   private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
@@ -115,10 +116,21 @@ public class TopToolbar extends Composite {
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
 
-    bindUI();
-    if (iamChromebook) {
-      RootPanel.getBodyElement().addClassName("onChromebook");
-    }
+bindUI();
+connectDropDown.addSeparator(); 
+connectDropDown.addItem(MESSAGES.companionUpdate(), new com.google.gwt.user.client.Command() {
+  @Override
+  public void execute() {
+    replUpdate();  
+  }
+});
+
+if (iamChromebook) {
+  RootPanel.getBodyElement().addClassName("onChromebook");
+}
+
+
+// --------------------------------------------------------
 
     if (!AppInventorFeatures.allowIosBuilds() && !AppInventorFeatures.allowAppStoreBuilds()) {
       fileDropDown.removeItemById(WIDGET_NAME_DOWNLOAD_CSR);
@@ -214,28 +226,31 @@ public class TopToolbar extends Composite {
     fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), present);
   }
 
-  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
+private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
       boolean isUsbRunning) {
-    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
-      if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
-      } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
-      }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
+  if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
+    connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
+    if (iamChromebook) {
+      connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
     } else {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
-      if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
-      } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
-      }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
     }
+    connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
+    connectDropDown.setItemEnabled(MESSAGES.companionUpdate(), isEmulatorRunning);
+  } else {
+    connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
+    if (iamChromebook) {
+      connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
+    } else {
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+    }
+    connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
+    connectDropDown.setItemEnabled(MESSAGES.companionUpdate(), isEmulatorRunning);
   }
+}
+
 
   /**
    * Indicate that we are no longer connected to the Companion, adjust
