@@ -401,9 +401,9 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
     if (block.category === 'Procedures') {
       // sort procedure definitions before calls
       if (block.type.indexOf('procedures_def') === 0) {
-        return ('b,a:' + (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+        return ('b,a:' + (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME') || block.category));
       } else {
-        return ('b,b:'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+        return ('b,b:'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME') || block.category));
       }
     }
     if (block.category == 'Component') {
