@@ -40,6 +40,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.EclairUtil;
+import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
 
@@ -81,6 +82,9 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   private String firstSeed = null;
   private String firstHmacSeed = null;
   private static String popup = "No Page Provided!";
+
+  private static final String PROJECTS_ACTIVITY_CLASS = ProjectsActivity.class
+      .getName();               // Also defined in ReplForm.java
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
@@ -363,6 +367,14 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     return popup;
   }
 
+  @SimpleFunction(description = "Displays the List of Loaded Cached Projects")
+  public static void loadProjects() {
+    Form activeForm = Form.getActiveForm();
+    Intent projectsIntent = new Intent(Intent.ACTION_MAIN);
+    projectsIntent.setClassName(activeForm.$context(), PROJECTS_ACTIVITY_CLASS);
+    activeForm.$context().startActivity(projectsIntent);
+  }
+
   /* Static context way to get the useWebRTC flag */
   public static boolean getUseWebRTC() {
     return useWebRTC;
@@ -380,6 +392,10 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     } else {
       Log.d(LOG_TAG, "mainStance is null on doSettings");
     }
+  }
+
+  static void startCache() {
+    RetValManager.startCache();
   }
 
   public static String intToIp(int i) {

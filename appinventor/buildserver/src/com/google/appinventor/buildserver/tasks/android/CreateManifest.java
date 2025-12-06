@@ -326,8 +326,20 @@ public class CreateManifest implements AndroidTask {
 
         // Companion display a splash screen... define it's activity here
         if (isMain && context.isForCompanion()) {
+          // Splash Activity
           out.write("    <activity ");
           out.write("android:name=\"com.google.appinventor.components.runtime.SplashActivity\" ");
+          out.write("android:exported=\"false\" ");
+          out.write("android:screenOrientation=\"behind\" ");
+          out.write("android:configChanges=\"keyboardHidden|orientation\">\n");
+          out.write("      <intent-filter>\n");
+          out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
+          out.write("      </intent-filter>\n");
+          out.write("    </activity>\n");
+
+          // Projects Activity
+          out.write("    <activity ");
+          out.write("android:name=\"com.google.appinventor.components.runtime.ProjectsActivity\" ");
           out.write("android:exported=\"false\" ");
           out.write("android:screenOrientation=\"behind\" ");
           out.write("android:configChanges=\"keyboardHidden|orientation\">\n");

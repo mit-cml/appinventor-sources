@@ -119,17 +119,36 @@
                                 (lookup-in-current-form-environment component-name)))
             component-names))
 
+(define (call-Initialize-of-components-library)
+  (begin
+    (android-log (format #f "*init-thunk-list* = ~A" *init-thunk-list*))
+    (apply call-Initialize-of-components *init-thunk-list*)))
+
 (define *init-thunk-environment* (gnu.mapping.Environment:make 'init-thunk-environment))
 
+(define *init-thunk-list* '())
+
+(define (setup-thunk-list)
+  (let ((form-name *this-form-name*))
+    (android-log (format #f "Setting *init-thunk-list* Screen  to ~A" form-name))
+    (if (string? form-name)
+        (set! *init-thunk-list* (list (string->symbol form-name)))
+        (set! *init-thunk-list* (list form-name))))) ;; Screen1 is a symbol
+
 (define (add-init-thunk component-name thunk)
-  (gnu.mapping.Environment:put *init-thunk-environment* component-name thunk))
+  (begin
+    (set! *init-thunk-list* (append *init-thunk-list* (list component-name)))
+    (android-log (format #f "add-init-thunk: *init-thunk-list* = ~A" *init-thunk-list*))
+    (gnu.mapping.Environment:put *init-thunk-environment* component-name thunk)))
 
 (define (get-init-thunk component-name)
   (and (gnu.mapping.Environment:isBound *init-thunk-environment* component-name)
        (gnu.mapping.Environment:get *init-thunk-environment* component-name)))
 
 (define (clear-init-thunks)
-  (set! *init-thunk-environment* (gnu.mapping.Environment:make 'init-thunk-environment)))
+  (begin
+    (setup-thunk-list)
+    (set! *init-thunk-environment* (gnu.mapping.Environment:make 'init-thunk-environment))))
 
 ;;; (get-component comp1)
 ;;; ==> (lookup-in-current-form-environment 'comp1)
@@ -3591,11 +3610,16 @@ Dictionary implementation.
 ;; Calls on report are also generated for code from the blocks compiler
 ;; when a block is being watched.
 ;; send-to-block sends the result of the expression or an error message to the block editor
+;;
+;; If blockid is -2, we are running from the App Library (aka offline) and have no
+;; browser to send the return value to
 (define (send-to-block blockid message)
-  (let* ((good (car message))
-         (value (cadr message)))
-    (com.google.appinventor.components.runtime.util.RetValManager:appendReturnValue blockid good value)
-    ))
+  (if (not (= blockid -2))
+      (let* ((good (car message))
+             (value (cadr message)))
+        (com.google.appinventor.components.runtime.util.RetValManager:appendReturnValue blockid good value)
+        ))
+  )
 
 (define (clear-current-form)
   (when (not (eq? *this-form* #!null))
@@ -3606,8 +3630,10 @@ Dictionary implementation.
     (*:clear *this-form*)))
 
 ;; Used by the repl to set the name of the form
+(define *this-form-name* "Screen1")
 (define (set-form-name form-name)
-  (*:setFormName *this-form* form-name))
+  (begin (set! *this-form-name* form-name)
+         (*:setFormName *this-form* form-name)))
 
 (define (remove-component component-name)
   (let* ((component-symbol (string->symbol component-name))
