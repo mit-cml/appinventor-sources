@@ -153,12 +153,6 @@ public class StoredData {
   @Unindexed
   static final class FileData implements Serializable {
     // The role that file play: source code, build target or temporary file
-    enum RoleEnum {
-      SOURCE,
-      TARGET,
-      TEMPORARY
-    }
-
     // The file name
     @Id String fileName;
 
@@ -166,7 +160,7 @@ public class StoredData {
     @Parent Key<ProjectData> projectKey;
 
     // File role
-    RoleEnum role;
+    FileDataRoleEnum role;
 
     // File content, these are raw bytes. Note that Objectify automatically
     // converts byte[] to an App Engine Datastore Blob (which is not the same thing as a Blobstore
@@ -200,34 +194,6 @@ public class StoredData {
     String userId;              // The userId which owns this file
                                 // if null or the empty string, we haven't initialized
                                 // it yet
-  }
-
-  // MOTD data.
-  @Unindexed
-  static final class MotdData {
-    // Unique Id - for now we expect there to be only 1 MotdData object.
-    @Id Long id;
-
-    // Caption for the MOTD
-    String caption;
-
-    // More MOTD detail, if any
-    String content;
-  }
-
-  // Rendezvous Data -- Only used when memcache is unavailable
-  @Unindexed
-  static final class RendezvousData {
-    @Id Long id;
-
-    // Six character key entered by user (or scanned).
-    @Indexed public String key;
-
-    // Ip Address of phone
-    public String ipAddress;
-
-    public Date used;           // Used during (manual) cleanup to determine if this entry can be pruned
-
   }
 
   @Unindexed

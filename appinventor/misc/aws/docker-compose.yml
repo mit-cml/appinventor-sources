@@ -1,0 +1,76 @@
+services:
+  # Redis service
+  redis:
+    image: redis:7-alpine
+    container_name: local-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # MinIO S3-compatible object storage
+  minio:
+    image: minio/minio:latest
+    container_name: local-minio
+    ports:
+      - "9000:9000"      # API port
+      - "9001:9001"      # Console port
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # DynamoDB Local
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: local-dynamodb
+    ports:
+      - "8000:8000"
+    volumes:
+      - dynamodb_data:/home/dynamodblocal/data
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "./data"]
+    working_dir: /home/dynamodblocal
+    user: root
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: DynamoDB Admin UI
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin:latest
+    container_name: local-dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      DYNAMO_ENDPOINT: http://dynamodb:8000
+      AWS_REGION: us-east-1
+    depends_on:
+      - dynamodb
+
+volumes:
+  # Ephemeral Docker volumes (data persists only while containers exist)
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  dynamodb_data:
+    driver: local
+
+networks:
+  default:
+    name: local-dev-network
