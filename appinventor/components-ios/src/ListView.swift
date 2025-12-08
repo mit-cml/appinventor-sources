@@ -145,16 +145,16 @@ let HORIZONTAL_LAYOUT = 1
       return ""
     }
     set(elements) {
-      Elements = elements.split(",") as [AnyObject]
+      Elements = YailList(array: elements.split(","))
     }
   }
 
-  @objc open var Elements: [AnyObject] {
+  @objc open var Elements: YailList<AnyObject> {
     get {
       if _listData.count > 0 {
-        return _listData as [AnyObject]
+        return YailList(array: _listData)
       } else {
-        return _elements as [AnyObject]
+        return YailList(array: _elements)
       }
     }
     set(elements) {
@@ -164,11 +164,11 @@ let HORIZONTAL_LAYOUT = 1
         _view.reloadData()
         return
       }
-      addElements(elements)
+      addElements(Array<AnyObject>((elements as [AnyObject]).dropFirst()))
     }
-  }  
+  }
 
-  func addElements(_ elements: [AnyObject]) {
+  private func addElements(_ elements: [AnyObject]) {
     if !elements.isEmpty {
       if elements.first is YailDictionary {
         for item in elements {
@@ -179,7 +179,7 @@ let HORIZONTAL_LAYOUT = 1
           } else if let row = item as? String {
             _listData.append(["Text1": row, "Text2": "", "Image": ""])
           } else {
-            // Hmm...
+            _listData.append(["Text1": String(describing: item), "Text2": "", "Image": ""])
           }
         }
       } else {
@@ -562,11 +562,11 @@ let HORIZONTAL_LAYOUT = 1
     _listData.insert(["Text1": mainText, "Text2": detailText, "Image": imageName], at: Int(addIndex - 1))
   }
 
-  @objc open func AddItems(_ items: [AnyObject]) {
+  @objc open func AddItems(_ items: YailList<AnyObject>) {
     guard !elements.isEmpty else {
         return
     }
-    addElements(items)
+    addElements(Array<AnyObject>((items as [AnyObject]).dropFirst()))
   }
 
   @objc open func AddItemsAtIndex(_ addIndex: Int32, _ elements: [AnyObject]) {
