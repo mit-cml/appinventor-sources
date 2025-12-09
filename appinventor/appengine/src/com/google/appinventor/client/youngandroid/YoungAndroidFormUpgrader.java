@@ -1685,11 +1685,23 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 5;
     }
     if (srcCompVersion < 6) {
-        // The PlayInForeground method was added.
-        // The OtherPlayerStarted event was added.
-        // Properties related to this component have now been upgraded to version  6.
-        srcCompVersion = 6;
+      // The PlayInForeground method was added.
+      // The OtherPlayerStarted event was added.
+      // Properties related to this component have now been upgraded to version  6.
+      srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // The PlayOnlyInForeground property default value was changed to True from False.
+      if (componentProperties.containsKey("PlayOnlyInForeground")) {
+        String value = ((ClientJsonString)componentProperties.get("PlayOnlyInForeground")).getString();
+        if ("True".equals(value)) {
+          componentProperties.remove("PlayOnlyInForeground");
+        }
+      } else {
+        componentProperties.put("PlayOnlyInForeground", new ClientJsonString("False"));
       }
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 

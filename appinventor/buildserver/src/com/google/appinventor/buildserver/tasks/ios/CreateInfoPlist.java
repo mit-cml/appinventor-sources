@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Collection;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.xml.sax.SAXException;
@@ -63,7 +64,11 @@ public class CreateInfoPlist implements IosTask {
           project.getProperty("NSSpeechRecognitionUsageDescription", DEFAULT_MESSAGE));
       root.put("NSLocationWhenInUseUsageDescription",
           project.getProperty("NSLocationWhenInUseUsageDescription", DEFAULT_MESSAGE));
-      if (context.getCompTypes().contains(PLAYER)) {
+      Collection<String> blocks = context.getCompBlocks().get(PLAYER);
+      if (blocks != null && blocks.contains("PlayOnlyInForeground")) {
+        // The default value for PlayOnlyInForeground is True, so if we see this present it means
+        // they are changing the value, which likely means it is False. Playing in the background
+        // requires the audio background mode on iOS.
         NSArray backgroundModes = new NSArray(new NSString("audio"));
         root.put("UIBackgroundModes", backgroundModes);
       }
