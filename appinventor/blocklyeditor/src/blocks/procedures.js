@@ -684,7 +684,7 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
       this.appendDummyInput('HEADER')
           .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
       this.horizontalParameters = true;
-      this.appendInputFromRegistry('indented_input', 'STACK')
+      this.appendStatementInput('STACK')
           .appendField(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_DO);
       this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.OUTPUT));
       this.setTooltip(Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP);
@@ -848,9 +848,102 @@ Blockly.Blocks['procedures_defanonreturn'] = {
     this.arguments_ = [];
     this.warnings = [{name:"checkEmptySockets",sockets:["RETURN"]}];
   },
+  // Define a custom updateParams_ specifically for anonymous procedures
+  updateParams_: function(opt_params) {
+    if (opt_params) {
+      this.arguments_ = opt_params;
+    }
+
+    // Check for duplicates (same as original)
+    var badArg = false;
+    var hash = {};
+    for (var x = 0; x < this.arguments_.length; x++) {
+      if (hash['arg_' + this.arguments_[x].toLowerCase()]) {
+        badArg = true;
+        break;
+      }
+      hash['arg_' + this.arguments_[x].toLowerCase()] = true;
+    }
+    if (badArg) {
+      this.setWarningText(Blockly.Msg.LANG_PROCEDURES_DEF_DUPLICATE_WARNING);
+    } else {
+      this.setWarningText(null);
+    }
+
+    // --- CHANGE 1: Do not try to get 'NAME' ---
+    // var procName = this.getFieldValue('NAME');
+
+    var bodyInput = this.inputList[this.inputList.length - 1];
+
+    var savedRendered = this.rendered;
+    this.rendered = false;
+
+    var thisBlock = this;
+    Blockly.FieldParameterFlydown.withChangeHanderDisabled(
+        function() {thisBlock.removeInput('HEADER');}
+    );
+
+    var oldArgCount = this.inputList.length - 1;
+    if (oldArgCount > 0) {
+      var paramInput0 = this.getInput('VAR0');
+      if (paramInput0) {
+        for (var i = 0; i < oldArgCount; i++)
+        {
+          try
+          {
+            Blockly.FieldParameterFlydown.withChangeHanderDisabled(
+                function() {thisBlock.removeInput('VAR' + i);}
+            );
+          }
+          catch(err)
+          {
+            console.log(err);
+          }
+        }
+      }
+    }
+
+    this.inputList = [];
+
+    // --- CHANGE 2: Reconstruct header WITHOUT the name field ---
+    var headerInput =
+        this.appendDummyInput('HEADER')
+            .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
+            // Removed: .appendField(new AI.Blockly.FieldProcedureName(procName), 'NAME');
+
+    if (this.horizontalParameters) {
+      for (var i = 0; i < this.arguments_.length; i++) {
+        headerInput.appendField(' ')
+                   .appendField(this.parameterFlydown(i),
+                                'VAR' + i);
+      }
+    } else {
+      for (var i = 0; i < this.arguments_.length; i++) {
+        this.appendDummyInput('VAR' + i)
+          .appendField(this.parameterFlydown(i), 'VAR' + i)
+          .setAlign(Blockly.inputs.Align.RIGHT);
+      }
+    }
+
+    this.inputList = this.inputList.concat(bodyInput);
+
+    this.rendered = savedRendered;
+    for (var i = 0; i < this.inputList.length; i++) {
+      this.inputList[i].init();
+    }
+    if (this.rendered) {
+      this.render();
+    }
+    // Note: mutateCallers might throw an error if it expects a name,
+    // but for anonymous functions usually nothing calls them by name.
+    // We can keep it or remove it depending on if Procedure.mutateCallers checks for null names.
+    if (this.workspace.loadCompleted) {
+       // Blockly.Procedures.mutateCallers(this); // You likely want to comment this out for Anon functions
+    }
+  },
+  // Keep the rest of the inherited methods
   withLexicalVarsAndPrefix: Blockly.Blocks.procedures_defnoreturn.withLexicalVarsAndPrefix,
   onchange: Blockly.Blocks.procedures_defnoreturn.onchange,
-  updateParams_: Blockly.Blocks.procedures_defnoreturn.updateParams_,
   parameterFlydown: Blockly.Blocks.procedures_defnoreturn.parameterFlydown,
   setParameterOrientation: Blockly.Blocks.procedures_defnoreturn.setParameterOrientation,
   mutationToDom: Blockly.Blocks.procedures_defnoreturn.mutationToDom,
