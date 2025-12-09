@@ -671,6 +671,7 @@
       <arg line="-logLevel INFO"/>
       <arg value="-extra"/>
       <arg value="${build.extra.dir}"/>
+      <arg value="-generateJsInteropExports"/> 
       <arg line="-setProperty local.services=${local.services}"/>
       <arg line="-setProperty locale=${locale}" if:set="locale"/>
       <arg line="-draftCompile" if:blank="release"/>

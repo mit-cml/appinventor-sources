@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * Abstract superclass for all container mock components.
  *
@@ -130,9 +132,14 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   /**
    * Adds a new component to the end of this container.
    *
-   * @param component  component to be added
+   * @param component to be added
    */
+  @JsMethod
   public final void addComponent(MockComponent component) {
+    MockContainer oldParent = component.getContainer();
+    if (oldParent != null) {
+        oldParent.removeComponent(component, false); //Does not permanently delete
+    }
     addComponent(component, -1);
   }
 
@@ -143,6 +150,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeVisibleIndex  visible-index at which the inserted component will appear,
    *                            or {@code -1} to insert the component at the end
    */
+  @JsMethod
   public final void addVisibleComponent(MockComponent component, int beforeVisibleIndex) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
@@ -159,7 +167,10 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       // Insert before the specified visible component
       beforeActualIndex = getChildren().indexOf(visibleChildren.get(beforeVisibleIndex));
     }
-
+    MockContainer oldParent = component.getContainer();
+    if (oldParent != null) {
+        oldParent.removeComponent(component, false);
+    }
     addComponent(component, beforeActualIndex);
   }
 
@@ -212,6 +223,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param left left margin of the component inside the container
    * @param top top margin of the component inside the container
    */
+  @JsMethod(name = "addComponentAtMargins")
   public final void addComponent(MockComponent component, int left, int top) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
@@ -223,7 +235,10 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       beforeActualIndex = getChildren().indexOf(visibleChildren.get(visibleChildren.size() - 1))
           + 1;
     }
-
+    MockContainer oldParent = component.getContainer();
+    if (oldParent != null) {
+        oldParent.removeComponent(component, false); //Does not permanently delete
+    }
     component.setContainer(this);
     children.add(beforeActualIndex, component);
 

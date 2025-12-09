@@ -91,6 +91,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * Abstract superclass for all components in the visual designer.
  *
@@ -661,6 +663,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param name  property name
    * @param value  new property value
    */
+  @JsMethod
   public void changeProperty(String name, String value) {
     properties.changePropertyValue(name, value);
   }
@@ -669,6 +672,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Renames the component to {@code newName}.
    * @param newName The new name for the component.
    */
+  @JsMethod
   public void rename(String newName) {
     String oldName = getPropertyValue(PROPERTY_NAME_NAME);
     properties.changePropertyValue(PROPERTY_NAME_NAME, newName);
@@ -1204,7 +1208,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   {
 
   }
-
+  
+  @JsMethod
   public void delete() {
     this.editor.getProjectEditor().clearLocation(getName());
     getRoot().select(null);

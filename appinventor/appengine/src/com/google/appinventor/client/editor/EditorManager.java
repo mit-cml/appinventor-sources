@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * Manager class for opened project editors.
  *
@@ -135,6 +137,20 @@ public final class EditorManager {
   public ProjectEditor getOpenProjectEditor(long projectId) {
     return openProjectEditors.get(projectId);
   }
+
+  /**
+   * Gets the open project editor of the given project ID.
+   * Long data type can't be represented in java script
+   * so this verion takes in string
+   *
+   * @param projectId the project ID
+   * @return the ProjectEditor of the specified project, or null
+   */
+  @JsMethod
+  public ProjectEditor getOpenProjectEditorFromString(String projectIdStr) {
+    long projectId = Long.parseLong(projectIdStr);
+    return openProjectEditors.get(projectId);
+  } 
 
   /**
    * Closes the file editors for the specified files, without saving.
