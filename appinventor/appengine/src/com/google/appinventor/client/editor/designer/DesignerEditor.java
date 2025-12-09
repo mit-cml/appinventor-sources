@@ -382,6 +382,14 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     return map;
   }
 
+  public Map<String, MockComponent> getComponentsByUUID() {
+    Map<String, MockComponent> map = Maps.newHashMap();
+    if (loadComplete) {
+      populateComponentsMapUUID(root.asMockComponent(), map);
+    }
+    return map;
+  }
+
   @Override
   public List<String> getComponentNames() {
     return new ArrayList<>(getComponents().keySet());
@@ -576,6 +584,15 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     List<MockComponent> children = component.getChildren();
     for (MockComponent child : children) {
       populateComponentsMap(child, map);
+    }
+  }
+
+  private void populateComponentsMapUUID(MockComponent component, Map<String, MockComponent> map) {
+    EditableProperties properties = component.getProperties();
+    map.put(properties.getPropertyValue("Uuid"), component);
+    List<MockComponent> children = component.getChildren();
+    for (MockComponent child : children) {
+      populateComponentsMapUUID(child, map);
     }
   }
 

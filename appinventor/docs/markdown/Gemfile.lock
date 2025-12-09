@@ -9,7 +9,7 @@ GEM
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0)
     eventmachine (1.2.7)
-    ffi (1.17.1)
+    ffi (1.17.2-arm64-darwin)
     forwardable-extended (2.6.0)
     http_parser.rb (0.8.0)
     i18n (0.9.5)
@@ -60,7 +60,7 @@ GEM
       rb-inotify (~> 0.9, >= 0.9.7)
 
 PLATFORMS
-  ruby
+  arm64-darwin-24
 
 DEPENDENCIES
   jekyll (~> 3.8.5)
@@ -68,4 +68,4 @@ DEPENDENCIES
   tzinfo-data
 
 BUNDLED WITH
-   2.4.22
+   2.4.5

@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
@@ -48,6 +49,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import jsinterop.annotations.JsMethod;
 
 /**
  * Editor for Young Android Form (.scm) files.
@@ -530,4 +533,40 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     }
   }
 
+  /**
+   * Gets the mock component of the given UUID.
+   * 
+   * Note: a little hacky, creating a new component map each time
+   * 
+   * @param UUID the component UUID
+   * @return the MockComponent of the specified UUID
+   */
+  @JsMethod
+  public MockComponent getComponent(String uuid) {
+    Map<String, MockComponent> componentMap = getComponentsByUUID();
+    return componentMap.get(uuid);
+  }
+
+  /**
+   * Converts JSON string to JSON object needed to create component.
+   * 
+   * @param JSON string of component properties
+   * @return the JSON object of JSON string
+   */
+  @JsMethod 
+  public JSONObject parseJsonString(String jsonString) {
+    return JSON_PARSER.parse(jsonString).asObject();
+  }
+
+  /**
+   * Creates mock component from JSON propeties object.
+   * 
+   * @param JSON object of component properties
+   * @return Mock Component with properties in JSON object
+   */
+  @JsMethod
+  public MockComponent createMockComponentFromJson(JSONObject propertiesObject) {
+    MockForm rootForm = getForm();
+    return createMockComponent(propertiesObject, rootForm, MockForm.TYPE);
+  }
 }

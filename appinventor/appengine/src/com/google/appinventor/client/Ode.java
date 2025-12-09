@@ -127,6 +127,8 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * Main entry point for Ode. Defines the startup UI elements in
  * {@link #onModuleLoad()}.
@@ -317,6 +319,7 @@ public class Ode implements EntryPoint {
    *
    * @return  global Ode instance
    */
+  @JsMethod
   public static Ode getInstance() {
     return instance;
   }
@@ -1102,6 +1105,7 @@ public class Ode implements EntryPoint {
    *
    * @return  {@link EditorManager}
    */
+  @JsMethod
   public EditorManager getEditorManager() {
     return editorManager;
   }
