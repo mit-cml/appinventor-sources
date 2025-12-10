@@ -843,7 +843,7 @@ public class ObjectifyStorageIo implements StorageIo {
       LOG.warning("found user project");
       return new UserProject(projectId, projectData.t.name,
           projectData.t.type, projectData.t.dateCreated,
-          projectData.t.dateModified, projectData.t.dateBuilt, projectData.t.projectMovedToTrashFlag);
+          projectData.t.dateModified, projectData.t.dateBuilt, projectData.t.projectMovedToTrashFlag, projectData.t.shared);
     }
   }
 
@@ -877,7 +877,7 @@ public class ObjectifyStorageIo implements StorageIo {
         LOG.info("getUserProjects processing project " + projectData.id + " name " + projectData.name);
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
-            projectData.dateModified, projectData.dateBuilt, projectData.projectMovedToTrashFlag));
+            projectData.dateModified, projectData.dateBuilt, projectData.projectMovedToTrashFlag, projectData.shared));
       }
       LOG.info("user projects: " + uProjects.toString());
       return uProjects;
@@ -2895,11 +2895,14 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) throws ObjectifyException, IOException {
           String onwerID = getProjectOwner(projectId);
-          String userID = findUserByEmail(userEmail);
-          if (onwerID.equals(userID)) {
-            LOG.info("must be the owner");
-            result.t = StoredData.Permission.OWNER;
-          } else {
+          try {
+            String userID = findUserByEmail(userEmail);
+            if (onwerID.equals(userID)) {
+              LOG.info("must be the owner");
+              result.t = StoredData.Permission.OWNER;
+            }
+          } catch (NoSuchElementException e) {
+            LOG.warning(userEmail + " user email does not exist");
             List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
                                                         .ancestor(projectKey(projectId))
                                                         .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL))).list();
