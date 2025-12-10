@@ -17,6 +17,7 @@
     <g:ListBox ui:field="permissionDropdown">
             <g:item value="1"> Edit </g:item>
             <g:item value="3"> View </g:item>
+            <g:item value="5"> None </g:item>
     </g:ListBox>
   </g:FlowPanel>
 </ui:UiBinder>

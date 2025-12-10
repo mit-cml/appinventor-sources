@@ -584,7 +584,7 @@ public class Ode implements EntryPoint {
       LoadGalleryProject.openProjectFromGallery(newGalleryId, callback);
       return true;
     } else if (sharedProjectLoadingFlag) {
-      openSharedProject(projectService, user.getUserEmail(), Long.parseLong(sharedProjectId), true);
+      openSharedProject(projectService, user.getUserId(), Long.parseLong(sharedProjectId), true);
       return true;
     }
     return false;
@@ -617,6 +617,7 @@ public class Ode implements EntryPoint {
   }
 
   public void getPermissionType(long projectId, OdeAsyncCallback<String> callback) {
+    LOG.info("getting permission type for user " + user.getUserEmail() + " for project " + projectId);
     projectService.getPermissionType(user.getUserEmail(), projectId, callback);
   }
 
@@ -631,6 +632,7 @@ public class Ode implements EntryPoint {
    */
   // userId here is email
   private void openSharedProject(ProjectServiceAsync projectService, String userId, long shareId, boolean openInReadOnlyMode) {
+    LOG.info("user id being used is: " + userId + " share id is " + shareId);
     projectService.getSharedProject(userId, getUser().getUserEmail(), shareId, new AsyncCallback<UserProject>() {
         @Override
         public void onFailure(Throwable caught) {
@@ -647,6 +649,7 @@ public class Ode implements EntryPoint {
             getPermissionType(sharedProjectId, new OdeAsyncCallback<String>() {
               @Override
               public void onSuccess(String result) {
+                LOG.info("Shared project access type: " + result);
                 Ode.getInstance().setPermission(result);
                 if (result == "Full") {
                   Project loadedProject = projectManager.getProject(sharedProjectId);
@@ -703,6 +706,7 @@ public class Ode implements EntryPoint {
         // nothing happens since if the listener eventually fires
         // it will not match the projectId.
         projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+          LOG.info("ODE Loaded projects from server: " + projects.size());
           Project loadedProject = projectManager.getProject(projectId);
           if (loadedProject != null) {
             openYoungAndroidProjectInDesigner(loadedProject);
@@ -710,7 +714,7 @@ public class Ode implements EntryPoint {
             // switchToProjectsView();  // the user will need to select a project...
             // ErrorReporter.reportInfo(MESSAGES.chooseProject());
             // TODO: FIRST check whether its owned by someone else?
-            openSharedProject(projectService, user.getUserEmail(), projectId, true);
+            openSharedProject(projectService, user.getUserId(), projectId, true);
           }
           return null;
         });
@@ -1131,6 +1135,7 @@ public class Ode implements EntryPoint {
 
     // TODO: Tidy up user preference variable
     projectListbox = ProjectListBox.create(uiFactory);
+    LOG.info("projectListbox created " + projectListbox.toString());
     String layout;
     if (Ode.getUserNewLayout()) {
       layout = "modern";
@@ -2470,21 +2475,23 @@ public class Ode implements EntryPoint {
   }
 
   public String getPermission() {
-    return permission;
+    return this.permission;
   }
 
   private void setPermission(String perm) {
-    permission = perm;
+    LOG.info("should set perm to : " + perm);
+    this.permission = perm;
+    LOG.info("set permission to " + permission);
   }
 
   public boolean isReadOnly() {
-    return isReadOnly;
+    return this.isReadOnly;
   }
 
   // This is called from AdminUserList when we are switching users
   // See the comment there...
   public void setReadOnly() {
-    isReadOnly = true;
+    this.isReadOnly = true;
   }
 
   // Code to lock out certain screen and project switching code

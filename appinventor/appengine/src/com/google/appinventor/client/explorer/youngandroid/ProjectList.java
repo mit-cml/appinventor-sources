@@ -226,8 +226,9 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   // implementation of.
 
   public void refresh(boolean needToSort) {
-    LOG.info("Refresh ProjectList");
+    LOG.info("Refresh ProjectList" + folder.getName());
     List<Project> projects = folder.getProjects();
+    LOG.info("Number of projects: " + projects.size() + projects.toString());
     refreshSortIndicators();
 
     container.clear();

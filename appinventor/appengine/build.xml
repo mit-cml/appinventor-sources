@@ -291,8 +291,9 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-lang3/commons-lang3-3.10.jar" />
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/javax-mail/activation-1.1.jar"/>  <!-- For mail -->
-    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/javax-mail/javax.mail-1.6.2.jar"/>  <!-- For mail -->
+    <copy todir="${build.war.dir}/WEB-INF/lib">  <!-- For mail -->
+      <fileset dir="${lib.dir}/javax-mail" includes="*.jar"/>
+    </copy>
     <!-- Bouncycastle for keystore generation -->
     <copy todir="${build.war.dir}/WEB-INF/lib">
       <fileset dir="${lib.dir}/bouncycastle">

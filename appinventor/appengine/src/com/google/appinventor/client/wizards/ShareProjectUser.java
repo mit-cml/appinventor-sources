@@ -25,6 +25,7 @@ public class ShareProjectUser extends Composite{
     HashMap<String, Integer> permissionMap = new HashMap<String, Integer>() {{
         put("1", 0);
         put("3", 1);
+        put("5", 2);
     }};
 
     public ShareProjectUser(String userEmail, String permission) {

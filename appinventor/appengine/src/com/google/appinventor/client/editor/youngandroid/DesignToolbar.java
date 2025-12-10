@@ -162,6 +162,7 @@ public class DesignToolbar extends Toolbar {
   public DesignToolbar() {
     super();
     bindUI();
+    LOG.info("access type " + Ode.getInstance().getPermission());
     permissionLabel.setText(Ode.getInstance().getPermission() + " Access");
     if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
       setVisibleItem(addFormItem, false);
@@ -229,6 +230,8 @@ public class DesignToolbar extends Toolbar {
     currentProject.setCurrentScreen(newScreenName);
     setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, newScreenName);
     LOG.info("Setting currentScreen to " + newScreenName);
+    LOG.info("access type during switching " + Ode.getInstance().getPermission());
+    permissionLabel.setText(Ode.getInstance().getPermission() + " Access");
     if (currentView == View.DESIGNER) {
       projectEditor.selectFileEditor(screen.designerEditor);
       toggleEditor(false);

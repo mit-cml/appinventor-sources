@@ -676,7 +676,7 @@ public class ObjectifyStorageIo implements StorageIo {
           datastore.delete(datastore.query(ShareLinkData.class).filter("projectId", projectId));
           // delete any FileData objects associated with this project
         }
-      }, true);
+      }, false);
       // have to delete the blobs outside of the user and project jobs
       for (String blobKeyString: blobKeys) {
         deleteBlobstoreFile(blobKeyString);
@@ -723,6 +723,7 @@ public class ObjectifyStorageIo implements StorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<UserData> userKey = userKey(userId);
+          LOG.info("upds when getting projects: " + datastore.query(UserProjectData.class).ancestor(userKey(userId)).list().toString());
           for (UserProjectData upd : datastore.query(UserProjectData.class).ancestor(userKey)) {
             projects.add(upd.projectId);
           }
@@ -731,7 +732,8 @@ public class ObjectifyStorageIo implements StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
-
+    LOG.info("getProjects for user " + userId + " found " + projects.size() + " projects.");
+    LOG.info(projects.toString());
     return projects;
   }
 
@@ -855,6 +857,7 @@ public class ObjectifyStorageIo implements StorageIo {
           Map<Long,ProjectData> pd = datastore.get(ProjectData.class, projectIds);
           if (pd != null) {
             projectDatas.t = pd;
+            LOG.info("getUserProjects found " + projectDatas.t.size() + " projects for user " + userId + pd.toString());
           } else {
             projectDatas.t = null;
           }
@@ -871,10 +874,12 @@ public class ObjectifyStorageIo implements StorageIo {
     } else {
       List<UserProject> uProjects = Lists.newArrayListWithExpectedSize(projectDatas.t.size());
       for (ProjectData projectData : projectDatas.t.values()) {
+        LOG.info("getUserProjects processing project " + projectData.id + " name " + projectData.name);
         uProjects.add(new UserProject(projectData.id, projectData.name,
             projectData.type, projectData.dateCreated,
             projectData.dateModified, projectData.dateBuilt, projectData.projectMovedToTrashFlag));
       }
+      LOG.info("user projects: " + uProjects.toString());
       return uProjects;
     }
   }
@@ -1694,13 +1699,16 @@ public class ObjectifyStorageIo implements StorageIo {
     // read the blob/GCS File outside of the job
     FileData fileData = fd.t;
     if (fileData != null) {
-      if (fileData.userId != null && !fileData.userId.equals("")) {
-        if (!fileData.userId.equals(userId)) {
-          throw CrashReport.createAndLogError(LOG, null,
-            collectUserProjectErrorInfo(userId, projectId),
-            new UnauthorizedAccessException(userId, projectId, null));
-        }
-      }
+      // TODO: ASK EVAN do we also need to check userId here?
+      // if (fileData.userId != null && !fileData.userId.equals("")) {
+      //   if (!fileData.userId.equals(userId)) {
+      //     LOG.log(Level.WARNING, "try Unauthorized access attempt by user " + userId +
+      //       " on project " + projectId + " for file " + fileName);
+      //     throw CrashReport.createAndLogError(LOG, null,
+      //       collectUserProjectErrorInfo(userId, projectId),
+      //       new UnauthorizedAccessException(userId, projectId, null));
+      //   }
+      // }
       if (isTrue(fileData.isGCS)) {     // It's in the Cloud Store
         try {
           int count;
@@ -2759,6 +2767,8 @@ public class ObjectifyStorageIo implements StorageIo {
           if (data == null) {  // User doesn't have the corresponding project.
             LOG.info("does not have access for userId: " + userId + " projectId: " + projectId);
             // throw new SecurityException("Unauthorized access");
+          } else {
+            LOG.info("hass to project " + projectId + " for user " + userId);
           }
           // User has data for project, so everything checks out.
           // We just store it now in the cache for future access, as we know the user requesting
@@ -2959,7 +2969,7 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public UserProject getSharedProject(final String userEmail, final String userId, final long projectId, final StoredData.Permission perm){
-    LOG.info("getting shared project");
+    LOG.info("getting shared project for userId " + userId);
     // add the project
     addSharedProjectToUser(userEmail, userId, projectId, perm);
     
@@ -3033,7 +3043,7 @@ public class ObjectifyStorageIo implements StorageIo {
   public void addSharedProjectToUser(final String userEmail, final String userId, final long projectId,
                             final StoredData.Permission perm) {
     try {
-      LOG.info("adding shared project to user " + userEmail + " for project: " + projectId + " with perm: " + perm.toString());
+      LOG.info("adding shared project to user " + userEmail + " for project: " + projectId + " with perm: " + perm.toString() + " for userid " + userId);
       if (perm != StoredData.Permission.OWNER) {
         runJobWithRetries(new JobRetryHelper() {
           @Override
@@ -3042,21 +3052,31 @@ public class ObjectifyStorageIo implements StorageIo {
             ProjectData pd = datastore.find(projectKey);
             List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
                                                         .ancestor(projectKey)
-                                                        .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL)))
-                                                        .filter("permission", perm).list();
+                                                        .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL))).list();
+            Key<UserProjectData> userProjectKey = userProjectKey(userKey(userId), projectId);
+            UserProjectData available_upd = datastore.find(userProjectKey);
             LOG.info("psd size: " + psd.size());
             LOG.info("user: " + userEmail + " perm: " + perm.toString());
-            if(!psd.isEmpty()){
+            if (!psd.isEmpty() && available_upd == null) {
               LOG.warning("adding new project!");
               UserProjectData upd = new UserProjectData();
               upd.projectId = projectId;
-              upd.userKey = userKey(userId);
               upd.settings = pd.settings;
               upd.state = UserProjectData.StateEnum.CLOSED;
+              upd.userKey = userKey(userId);
               datastore.put(upd);
+
+              // UserProjectData upd = new UserProjectData();
+              // upd.projectId = projectId.t;
+              // upd.settings = projectSettings;
+              // upd.state = UserProjectData.StateEnum.OPEN;
+              // upd.userKey = userKey(userId);
+              // datastore.put(upd);
             }
+            List<UserProjectData> latest_upd = datastore.query(UserProjectData.class).ancestor(userKey(userId)).list();
+            LOG.info("upds after adding new: " + latest_upd.toString() + " with id " + latest_upd.get(0).projectId + " user key " + latest_upd.get(0).userKey);
           }
-        }, true);
+        }, false);
       }
     } catch (ObjectifyException e){
       throw CrashReport.createAndLogError(LOG, null, null, e);

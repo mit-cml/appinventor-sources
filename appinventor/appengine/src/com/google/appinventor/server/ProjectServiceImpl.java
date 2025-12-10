@@ -283,6 +283,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public long[] getProjects() {
     List<Long> projects = storageIo.getProjects(userInfoProvider.getUserId());
+    LOG.info("getProjects found " + projects.size() + " projects.");
     long[] projectIds = new long[projects.size()];
     int i = 0;
     for (Long project : projects) {
@@ -300,6 +301,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public List<UserProject> getProjectInfos() {
     String userId = userInfoProvider.getUserId();
     List<Long> projectIds = storageIo.getProjects(userId);
+    LOG.info("getProjectInfos found " + projectIds.size() + " projects.");
     return makeUserProjects(userId, projectIds);
   }
 
@@ -638,6 +640,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   // Bulk fetch UserProjects -- efficiently get all project infos asked for
   // using a minimum number of datastore API calls
   private List<UserProject> makeUserProjects(String userId, List<Long> projectIds) {
+    LOG.info("being called in make user project");
     return storageIo.getUserProjects(userId, projectIds);
   }
 
@@ -648,7 +651,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     LOG.info("checking access for user " + userId + " to project " + projectId);
     // storageIo.assertUserHasProject(userId, projectId);
     String projectType = storageIo.getProjectType(userId, projectId);
+    LOG.info("project type for project " + projectId + " is " + projectType);
     if (!projectType.isEmpty()) {
+      LOG.info("NOT CRASH found project type " + projectType + " for project " + projectId);
       return getProjectRpcImpl(userId, projectType);
     } else {
       throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(),
@@ -659,6 +664,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   private CommonProjectService getProjectRpcImpl(final String userId, String projectType) {
     if (projectType.equals(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE)) {
+      LOG.info(youngAndroidProject.toString());
       return youngAndroidProject;
     } else {
       throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
@@ -709,10 +715,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @param projectId the project id
    * @param otherEmail the email of other user
    * @param perm permission
+   * @param bool sendEmail
    *
    * @return status of sharing action
    */
-  public ShareResponse shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm) {
+  public ShareResponse shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm, boolean sendEmail) {
     if (userId == null) {
       return new ShareResponse(Status.INVALID_USER);
     } else if (otherEmail == null) {
@@ -721,7 +728,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       return new ShareResponse(Status.SELF_SHARE);
     }
     return getProjectRpcImpl(userId, projectId).shareProject(userId, userEmail, projectId,
-        otherEmail, StoredData.Permission.fromCode(perm));
+        otherEmail, StoredData.Permission.fromCode(perm), sendEmail);
   }
 
   /**
@@ -730,10 +737,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @param projectId the project id
    * @param otherEmail the email of other user
    * @param perm permission
+   * @param bool sendEmail
    *
    * @return status of sharing action
    */
-  public List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm){
+  public List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm, boolean sendEmail){
     List<ShareResponse> resp = new ArrayList<>();
     if (userId == null) {
       resp.add(new ShareResponse(Status.INVALID_USER));
@@ -746,7 +754,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       return resp;
     }
     return getProjectRpcImpl(userId, projectId).shareProject(userId, userEmail, projectId,
-        otherEmail, StoredData.Permission.fromCode(perm));
+        otherEmail, StoredData.Permission.fromCode(perm), sendEmail);
   }
 
   // /**

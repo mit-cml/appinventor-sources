@@ -509,12 +509,12 @@ public class LocalProjectService implements ProjectServiceAsync {
   }
 
   @Override
-  public void shareProject(String userId,  String userEmail, long projectId, String otherEmail, int perm, AsyncCallback<ShareResponse> callback){
+  public void shareProject(String userId,  String userEmail, long projectId, String otherEmail, int perm, boolean sendEmail, AsyncCallback<ShareResponse> callback){
 
   }
 
   @Override
-  public void shareProject(String userId,  String userEmail, long projectId, List<String> otherEmail, int perm, AsyncCallback<List<ShareResponse>> callback){
+  public void shareProject(String userId,  String userEmail, long projectId, List<String> otherEmail, int perm, boolean sendEmail, AsyncCallback<List<ShareResponse>> callback){
 
   }
 

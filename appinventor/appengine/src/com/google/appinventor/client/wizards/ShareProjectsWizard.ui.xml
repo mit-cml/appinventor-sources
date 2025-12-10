@@ -45,21 +45,26 @@
       <g:FlowPanel styleName="ode-ProjectRowList ode-Project-FlexColumn" ui:field='usersContainer'>
         </g:FlowPanel>
       <!-- checkbox to share with everyone -->
-      <g:FlowPanel>
+      <g:FlowPanel styleName="ode-ProjectRow">
         <!-- <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text='{messages.shareAll}'/> -->
         <g:CheckBox ui:field='checkBoxShareAll' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.shareAll}'/>
+        <g:ListBox ui:field="permissionDropdownForAll">
+            <g:item value="1"> Edit </g:item>
+            <g:item value="3"> View </g:item>
+            <g:item value="5"> None </g:item>
+          </g:ListBox>
       </g:FlowPanel>
       
       <!-- checkbox to send email with link -->
        <!-- TODO: make visible once emailing is implemented -->
-      <g:FlowPanel visible="false">
-        <!-- <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/> -->
+      <g:FlowPanel visible="true">
+        <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text="Send Email to Updated Users"/>
         <g:CheckBox ui:field='checkBoxSendEmail' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.sendEmail}'/>
       </g:FlowPanel>
       <!-- copy link -->
       <g:FlowPanel>
         <g:Button ui:field='copyButton' text='{messages.copyButton}'/>
-        <g:Label ui:field='linkForProject' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' visible="false" text='Copied!'/>
+        <g:Label ui:field='linkForProject' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' visible="false" text='Copied URL!'/>
       </g:FlowPanel>
       
       <!-- cancel/done -->

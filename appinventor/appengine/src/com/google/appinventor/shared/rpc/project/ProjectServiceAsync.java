@@ -201,14 +201,14 @@ public interface ProjectServiceAsync {
   void log(String message, AsyncCallback<Void> callback);
 
   /**
-   * @see ProjectService#shareProject(String, String, long, String, int)
+   * @see ProjectService#shareProject(String, String, long, String, int, bool)
    */
-  void shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm, AsyncCallback<ShareResponse> callback);
+  void shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm, boolean sendEmail, AsyncCallback<ShareResponse> callback);
 
   /**
-   * @see ProjectService#shareProject(String, String, long, List<String>, int)
+   * @see ProjectService#shareProject(String, String, long, List<String>, int, bool)
    */
-  void shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm, AsyncCallback<List<ShareResponse>> callback);
+  void shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm, boolean sendEmail, AsyncCallback<List<ShareResponse>> callback);
 
   // /** 
   //  * @see ProjectService#updateProjectPermissionForUser(String, long, String, int)

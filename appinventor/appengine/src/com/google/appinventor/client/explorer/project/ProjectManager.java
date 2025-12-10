@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * This class manages projects.
@@ -30,6 +31,8 @@ public final class ProjectManager {
 
   // List of listeners for any project manager events.
   private final List<ProjectManagerEventListener> projectManagerEventListeners;
+  private static final Logger LOG = Logger.getLogger(ProjectManager.class.getName());
+
 
   private Promise<List<Project>> loadProjectPromise = null;
 
@@ -55,14 +58,20 @@ public final class ProjectManager {
    * @return a Promise to load the user's projects
    */
   public Promise<List<Project>> ensureProjectsLoadedFromServer(ProjectServiceAsync projectService) {
+    LOG.info("ensureProjectsLoadedFromServer called");
     if (loadProjectPromise == null) {
+      LOG.info("Loading projects from server");
       loadProjectPromise = Promise.call(MESSAGES.projectInformationRetrievalError(),
               projectService::getProjectInfos)
           .then(projectInfos -> {
+            LOG.info("Received " + projectInfos.size() + " projects from server");
             for (UserProject projectInfo : projectInfos) {
+              LOG.info("Loading project: " + projectInfo.getProjectName() + " (ID: "
+                  + projectInfo.getProjectId() + ")");
               addProject(projectInfo);
             }
             projectsLoaded = true;
+            LOG.info("project map in manager is " + projectsMap.toString());
             return resolve(new ArrayList<>(projectsMap.values()));
           });
     }
@@ -152,6 +161,7 @@ public final class ProjectManager {
    */
   public Project addProject(UserProject projectInfo) {
     Project project = new Project(projectInfo);
+    LOG.info("new project add" + project.toString());
     projectsMap.put(projectInfo.getProjectId(), project);
     fireProjectAdded(project);
     return project;

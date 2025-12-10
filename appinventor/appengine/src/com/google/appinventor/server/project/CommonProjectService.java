@@ -402,14 +402,14 @@ public abstract class CommonProjectService {
    */
   public UserProject getSharedProject(String userId, String userEmail, long shareId){
     // add to the user projects if not there already
-    LOG.warning("userEmail " + userEmail);
+    LOG.warning("userEmail " + userEmail + " USER ID" + userId);
     Long projectId = storageIo.getProjectIdFromShareId(shareId);
     if (projectId == null) {
       LOG.severe("No project found for shareId=" + shareId);
       throw new IllegalArgumentException("Invalid share link: " + shareId);
     }
     LOG.warning("projectID: " + projectId.toString());
-    StoredData.Permission perm = storageIo.getPermission(userId, projectId);
+    StoredData.Permission perm = storageIo.getPermission(userEmail, projectId);
     LOG.warning("permission: " + perm.toString());
     if (perm != StoredData.Permission.NONE) {
       if (storageIo.getSharedProject(userEmail, userId, projectId, perm) == null) {
@@ -427,9 +427,10 @@ public abstract class CommonProjectService {
    * @param userEmail the owner email
    * @param projectId the project id
    * @param otherEmail the email address of other user
+   * @param sendEmail whether to send email to new users
    */
   public ShareResponse shareProject(String userId, String userEmail, long projectId, String otherEmail,
-                                    StoredData.Permission perm) {
+                                    StoredData.Permission perm, boolean sendEmail) {
     Status status = Status.UNAUTHORIZED;
     // Only the project owner can share.
     if (userId.equals(storageIo.getProjectOwner(projectId))) {
@@ -442,6 +443,9 @@ public abstract class CommonProjectService {
         status = Status.ALREADY_SHARED;
       } else {
         storageIo.addPermission(otherEmail, projectId, perm);
+        // jz todo
+        Long shareLink = getShareLink(otherEmail, projectId);
+        sendShareEmailNew(userId, shareLink, otherEmail);
         // sendShareEmailNew(userId, projectId, otherEmail);
         return new ShareResponse(Status.SHARED, projectId, otherEmail);
       }
@@ -455,9 +459,10 @@ public abstract class CommonProjectService {
    * @param userEmail the owner email
    * @param projectId the project id
    * @param otherEmails the email addresses of other users
+   * @param sendEmail whether to send email to new users
    */
   public List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmails,
-                                    StoredData.Permission perm) {
+                                    StoredData.Permission perm, boolean sendEmail) {
     List<ShareResponse> result = new ArrayList<>();
     Status status = Status.UNAUTHORIZED;
     // Only the project owner can share.
@@ -467,12 +472,16 @@ public abstract class CommonProjectService {
       if (owner != StoredData.Permission.OWNER) {
         storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
       }
+      LOG.info("adding rest: " + otherEmails.toString() + " to give perm " + perm);
       for (String otherEmail : otherEmails){
         if (storageIo.getPermission(otherEmail, projectId) == perm) {
           status = Status.ALREADY_SHARED;
           result.add(new ShareResponse(status));
         } else {
+          LOG.info("try to add new mail "+ otherEmail);
           storageIo.addPermission(otherEmail, projectId, perm);
+          Long shareLink = getShareLink(otherEmail, projectId);
+          sendShareEmailNew(userId, shareLink, otherEmail);
           // sendShareEmailNew(userId, projectId, otherEmail);
           result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
         }

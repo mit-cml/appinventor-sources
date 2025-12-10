@@ -100,12 +100,16 @@ public class ProjectFolder extends Composite {
     this.projects = new ArrayList<>();
     this.folders = new HashMap<>();
     JSONArray projectsJson = json.get(FolderJSONKeys.PROJECTS).isArray();
+    LOG.info("json is : " + projectsJson.toString());
     for (int i = 0; i < projectsJson.size(); i++) {
       long projectId = Long.parseLong(projectsJson.get(i).isString().stringValue());
+      LOG.info("project id in json is " + projectId);
       Project project = Ode.getInstance().getProjectManager().getProject(projectId);
+      LOG.info("json found project " + project);
       // If users switch back and forth between old and new explorer, the projects
       // may have changed
       if (project != null) {
+        LOG.info("adding project");
         addProject(project);
       }
     }
