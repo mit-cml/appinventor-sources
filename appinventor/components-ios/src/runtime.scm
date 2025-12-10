@@ -322,6 +322,7 @@
      ((equal? type 'pair) (coerce-to-pair arg))
      ((equal? type 'key) (coerce-to-key arg))
      ((equal? type 'dictionary) (coerce-to-dictionary arg))
+     ((equal? type 'matrix) (coerce-to-matrix arg))
      ((equal? type 'any) arg)
      ((enum-type? type) (coerce-to-enum arg type))
      (else (coerce-to-component-of-type arg type)))))
@@ -408,6 +409,9 @@
         ((string? arg) arg)
         ((number? arg) (appinventor-number->string arg))
         ((boolean? arg) (boolean->string arg))
+        ((or (yail-matrix? arg)
+             (yail:isa arg SchemeKit.YailMatrix))
+          (yail:invoke arg 'toString))
         ((yail-list? arg) (coerce-to-string (yail-list->kawa-list arg)))
         ((or (yail-dictionary? arg)
              (yail:isa arg NSDictionary))
@@ -513,6 +517,21 @@
             *non-coercible-value*))
       (exception java.lang.Exception *non-coercible-value*)))))
 
+(define (coerce-to-matrix arg)
+  (cond
+    ((yail-matrix? arg) arg)
+    ((yail-list? arg)
+      (let* ((rows (length arg))
+             (is-valid-matrix (and (> rows 0)
+                                   (every (lambda (row)
+                                            (and (yail-list? row)
+                                                 (= (length (car arg)) (length row))))
+                                          arg))))
+        (if is-valid-matrix
+            (make-yail-matrix rows (length (car arg)) arg)
+            *non-coercible-value*)))
+    (else *non-coercible-value*))) ; Cannot coerce
+
 (define (coerce-to-boolean arg)
   (cond
    ((boolean? arg) arg)
@@ -553,6 +572,27 @@
                (generate-runtime-type-error method-name arglist))))
       ;; TODO(markf): this should probably be generalized but for now this is OK, I think
       (sanitize-component-data result))))
+
+(define (call-component-method-with-continuation component-name method-name arglist typelist k)
+  (let* ((coerced-args (coerce-args method-name arglist typelist))
+         (component (lookup-in-current-form-environment component-name))
+         (continuation (lambda (v) (k (sanitize-return-value component method-name v)))))
+    (if (all-coercible? coerced-args)
+        (try-catch
+         (apply invoke
+                `(,component
+                  ,method-name
+                  ,@coerced-args
+                  ,continuation))
+         (exception PermissionException
+           (*:dispatchPermissionDeniedEvent (SimpleForm:getActiveForm) component method-name exception)))
+      (generate-runtime-type-error method-name arglist))))
+
+(define (call-component-method-with-blocking-continuation component-name method-name arglist typelist)
+  (let ((result #f))
+    (call-component-method-with-continuation component-name method-name arglist typelist
+      (lambda (v) (set! result v)))
+    result))
 
 (define (call-component-type-method possible-component component-type method-name arglist typelist)
   ;; Note that we use the cdr of the typelist because it contains the generic
@@ -1673,6 +1713,75 @@ Dictionary implementation.
 ;;;; End of Dictionary implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#|
+Matrix implementation.
+
+- make matrix           (make-yail-matrix . dataValues)
+- get matrix row        (yail-matrix-get-row yail-matrix row)
+- get matrix column     (yail-matrix-get-column yail-matrix col)
+- get matrix cell       (yail-matrix-get-cell yail-matrix row col)
+- set matrix cell       (yail-matrix-set-cell yail-matrix row col value)
+- is YailMatrix?        (yail-matrix? x)
+- get matrix inverse    (yail-matrix-inverse matrix)
+- get matrix transpose  (yail-matrix-transpose matrix)
+- matrix add            (yail-matrix-add matrix1 matrix2)
+- matrix subtract       (yail-matrix-subtract matrix1 matrix2)
+- matrix multiply       (yail-matrix-multiply matrix1 matrix2-or-scalar)
+- matrix power          (yail-matrix-power matrix exponent)
+- turn matrix to alist  (yail-matrix-to-alist matrix)
+- matrix equal?         (yail-matrix-equal? m1 m2)
+
+|#
+
+(define (make-yail-matrix . dataValues)
+  (invoke 'SchemeKit.YailMatrix 'makeMatrix:error: (apply make-yail-list dataValues)))
+
+(define (yail-matrix-get-row matrix row)
+  (invoke matrix 'getRow:error: row))
+
+(define (yail-matrix-get-column matrix col)
+  (invoke matrix 'getCol:error: col))
+
+(define (yail-matrix-get-cell matrix row col)
+  (invoke matrix 'getCell row col))
+
+(define (yail-matrix-set-cell! matrix row col value)
+  (invoke matrix 'setCell:::error: row col value))
+
+(define (yail-matrix? x)
+  (instance? x SchemeKit.YailMatrix))
+
+(define (yail-matrix-inverse matrix)
+  (invoke 'SchemeKit.YailMatrix 'inverse:error: matrix))
+
+(define (yail-matrix-transpose matrix)
+  (invoke 'SchemeKit.YailMatrix 'transpose matrix))
+
+(define (yail-matrix-add matrix1 matrix2)
+  (invoke 'SchemeKit.YailMatrix 'add::error: matrix1 matrix2))
+
+(define (yail-matrix-subtract matrix1 matrix2)
+  (invoke 'SchemeKit.YailMatrix 'subtract::error: matrix1 matrix2))
+
+(define (yail-matrix-multiply matrix1 matrix2-or-scalar)
+  (if (number? matrix2-or-scalar)
+      (invoke 'SchemeKit.YailMatrix 'scalarMultiply:: matrix1 matrix2-or-scalar)
+      (invoke 'SchemeKit.YailMatrix 'multiply::error: matrix1 matrix2-or-scalar)))
+
+(define (yail-matrix-power matrix exponent)
+  (invoke 'SchemeKit.YailMatrix 'power::error: matrix exponent))
+
+(define (yail-matrix-to-alist matrix)
+  (YailMatrix:matrixToAlist matrix))
+
+(define (yail-matrix-equal? matrix1 matrix2)
+  (YailMatrix:matrixEqual matrix1 matrix2))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Matrix implementation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;Text implementation
@@ -1795,6 +1904,17 @@ Dictionary implementation.
              (b3 (bitwise-and (bitwise-ior (bitwise-arithmetic-shift-left b2 8) b) 255))
              (b4 (bitwise-and (bitwise-xor b3 (char->integer (string-ref lc i))) 255)))
         (set! acc (cons b4 acc))))))
+
+;;; Mappings so we can replace substrings within strings
+(define (string-replace-mappings-dictionary text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsDictionary text mappings))
+
+(define (string-replace-mappings-longest-string text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsLongestString text mappings))
+
+(define (string-replace-mappings-earliest-occurrence text mappings)
+  (yail:invoke AIComponentKit.StringUtil 'replaceAllMappingsEarliestOccurrence text mappings))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Text implementation

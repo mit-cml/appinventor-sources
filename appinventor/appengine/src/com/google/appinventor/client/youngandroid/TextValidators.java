@@ -52,6 +52,9 @@ public final class TextValidators {
 
   protected static final List<String> SCHEME_NAMES = Arrays.asList("begin", "def", "foreach", "forrange", "JavaStringUtils", "quote");
 
+  private static final String ID_DISALLOWED_CHARS = "^-!&%^/>=<`'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ";
+  private static final String ID_DISALLOWED_STARTCHARS = ID_DISALLOWED_CHARS + "0-9";
+
   // This class should never be instantiated.
   private TextValidators() {}
 
@@ -203,8 +206,7 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isValidComponentIdentifier(String text) {
-    return text.matches("^[^-0-9!&%^/>=<`'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]" +
-        "[^-!&%^/>=<'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ]*$");
+    return text.matches("^[" + ID_DISALLOWED_STARTCHARS + "][" + ID_DISALLOWED_CHARS + "]*$");
   }
 
   /**
