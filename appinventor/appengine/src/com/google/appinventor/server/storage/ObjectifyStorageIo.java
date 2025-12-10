@@ -1606,7 +1606,8 @@ public class ObjectifyStorageIo implements StorageIo {
           FileData fileData = datastore.find(fileKey);
           if (fileData != null) {
             if (fileData.userId != null && !fileData.userId.equals("")) {
-              if (!fileData.userId.equals(userId)) {
+              User user = getUser(userId);
+              if (!fileData.userId.equals(userId) && getPermission(user.getUserEmail(), projectId) == StoredData.Permission.NONE) {
                 throw CrashReport.createAndLogError(LOG, null,
                   collectUserProjectErrorInfo(userId, projectId),
                   new UnauthorizedAccessException(userId, projectId, null));
@@ -1699,16 +1700,16 @@ public class ObjectifyStorageIo implements StorageIo {
     // read the blob/GCS File outside of the job
     FileData fileData = fd.t;
     if (fileData != null) {
-      // TODO: ASK EVAN do we also need to check userId here?
-      // if (fileData.userId != null && !fileData.userId.equals("")) {
-      //   if (!fileData.userId.equals(userId)) {
-      //     LOG.log(Level.WARNING, "try Unauthorized access attempt by user " + userId +
-      //       " on project " + projectId + " for file " + fileName);
-      //     throw CrashReport.createAndLogError(LOG, null,
-      //       collectUserProjectErrorInfo(userId, projectId),
-      //       new UnauthorizedAccessException(userId, projectId, null));
-      //   }
-      // }
+      if (fileData.userId != null && !fileData.userId.equals("")) {
+        User user = getUser(userId);
+        if (!fileData.userId.equals(userId) && getPermission(user.getUserEmail(), projectId) == StoredData.Permission.NONE) {
+          LOG.log(Level.WARNING, "try when shared Unauthorized access attempt by user " + userId +
+            " on project " + projectId + " for file " + fileName);
+          throw CrashReport.createAndLogError(LOG, null,
+            collectUserProjectErrorInfo(userId, projectId),
+            new UnauthorizedAccessException(userId, projectId, null));
+        }
+      }
       if (isTrue(fileData.isGCS)) {     // It's in the Cloud Store
         try {
           int count;
@@ -2893,22 +2894,38 @@ public class ObjectifyStorageIo implements StorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) throws ObjectifyException, IOException {
-          List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
-                                                      .ancestor(projectKey(projectId))
-                                                      .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL))).list();
-          psd.sort((a, b) -> {
-              if (a.userEmail == b.userEmail) return 0;
-              if (a.userEmail == userEmail) return -1;
-              if (b.userEmail == userEmail) return 1;
-              return 0;
-          });
-          LOG.info("psd size: " + psd.size());
-          if (!psd.isEmpty()) {
-            LOG.info("psd: " + psd.toString() + " for userEmail: " + psd.get(0).userEmail + " and permisions: " + psd.get(0).permission.toString());
+          String onwerID = getProjectOwner(projectId);
+          String userID = findUserByEmail(userEmail);
+          if (onwerID.equals(userID)) {
+            LOG.info("must be the owner");
+            result.t = StoredData.Permission.OWNER;
+          } else {
+            List<ProjectPermissionsData> psd = datastore.query(ProjectPermissionsData.class)
+                                                        .ancestor(projectKey(projectId))
+                                                        .filter("userEmail in", new ArrayList<>(Arrays.asList(userEmail, StoredData.ALL))).list();
+            psd.sort((a, b) -> {
+                // First, sort by permission level (lower code = higher permission)
+                int permissionComparison = Integer.compare(a.permission.getCode(), b.permission.getCode());
+                if (permissionComparison != 0) {
+                    return permissionComparison;
+                }
+                // If permissions are equal, prioritize specific userEmail over ALL
+                if (a.userEmail.equals(userEmail) && !b.userEmail.equals(userEmail)) {
+                    return -1;
+                }
+                if (b.userEmail.equals(userEmail) && !a.userEmail.equals(userEmail)) {
+                    return 1;
+                }
+                return 0;
+            });
+            LOG.info("psd size: " + psd.size());
+            if (!psd.isEmpty()) {
+              LOG.info("psd: " + psd.toString() + " for userEmail: " + psd.get(0).userEmail + " and permisions: " + psd.get(0).permission.toString());
 
-            result.t = psd.get(0).permission;
-          }else {
-            result.t = StoredData.Permission.NONE;
+              result.t = psd.get(0).permission;
+            }else {
+              result.t = StoredData.Permission.NONE;
+            }
           }
         }
       }, false);

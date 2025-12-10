@@ -475,8 +475,7 @@ public abstract class CommonProjectService {
       LOG.info("adding rest: " + otherEmails.toString() + " to give perm " + perm);
       for (String otherEmail : otherEmails){
         if (storageIo.getPermission(otherEmail, projectId) == perm) {
-          status = Status.ALREADY_SHARED;
-          result.add(new ShareResponse(status));
+          result.add(new ShareResponse(Status.ALREADY_SHARED));
         } else {
           LOG.info("try to add new mail "+ otherEmail);
           storageIo.addPermission(otherEmail, projectId, perm);
@@ -487,7 +486,9 @@ public abstract class CommonProjectService {
         }
       }
     }
-    result.add(new ShareResponse(status));
+    if (result.isEmpty()) {
+      result.add(new ShareResponse(status));
+    }
     return result;
   }
 

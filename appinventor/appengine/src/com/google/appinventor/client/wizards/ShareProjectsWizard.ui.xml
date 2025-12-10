@@ -20,10 +20,10 @@
     <g:FlowPanel>
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <!--ProjectName-->
-      <g:FlowPanel>
-        <g:Label ui:field='projectNameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text='test'/>
+      <!-- <g:FlowPanel>
+        <g:Label ui:field='projectNameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text='test'/> -->
         <!-- add ? icon though using property help widget would not be possible so?-->
-      </g:FlowPanel>
+      <!-- </g:FlowPanel> -->
       <!--Select gmails-->
       <!-- TODO: change in the future to work with SuggestBox possibly modify to add multiple at the same time?  -->
       <!-- <g:SuggestBox ui:field="usernames" /> -->
@@ -47,7 +47,9 @@
       <!-- checkbox to share with everyone -->
       <g:FlowPanel styleName="ode-ProjectRow">
         <!-- <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text='{messages.shareAll}'/> -->
-        <g:CheckBox ui:field='checkBoxShareAll' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.shareAll}'/>
+        <g:FocusPanel styleName='ode-ProjectNameFocusPanel'>
+          <g:CheckBox ui:field='checkBoxShareAll' styleName='gwt-CheckBox' text='{messages.shareAll}'/>
+        </g:FocusPanel>
         <g:ListBox ui:field="permissionDropdownForAll">
             <g:item value="1"> Edit </g:item>
             <g:item value="3"> View </g:item>
@@ -57,13 +59,20 @@
       
       <!-- checkbox to send email with link -->
        <!-- TODO: make visible once emailing is implemented -->
-      <g:FlowPanel visible="true">
-        <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text="Send Email to Updated Users"/>
+      <g:FlowPanel visible="true" styleName="ode-ProjectRow">
+        <g:FocusPanel styleName='ode-ProjectNameFocusPanel'>
+            <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text="Send Email to Updated Users"/>
+        </g:FocusPanel>
         <g:CheckBox ui:field='checkBoxSendEmail' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.sendEmail}'/>
       </g:FlowPanel>
       <!-- copy link -->
       <g:FlowPanel>
-        <g:Button ui:field='copyButton' text='{messages.copyButton}'/>
+        <g:FlowPanel styleName="ode-ProjectRow">
+          <g:FocusPanel styleName='ode-ProjectNameFocusPanel'>
+            <g:Button ui:field='copyButton' text='{messages.copyButton}'/>
+          </g:FocusPanel>
+          <g:Label ui:field='updatedUsersLabel' styleName='gwt-Label' visible="false" text='Pending Changes'/>
+        </g:FlowPanel>
         <g:Label ui:field='linkForProject' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' visible="false" text='Copied URL!'/>
       </g:FlowPanel>
       

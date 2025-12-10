@@ -3542,7 +3542,7 @@ div.dropdiv p {
 }
 
 .myHiddenImage {
-  display: none;
+  visibility: hidden;
 }
 .myInlineImage {
   display: inline;

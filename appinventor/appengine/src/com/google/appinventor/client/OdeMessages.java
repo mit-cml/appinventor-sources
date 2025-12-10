@@ -2411,7 +2411,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Alt text for the project shared icon")
   String projectSharedAltText();
 
-  @DefaultMessage("Share App Inventor projects")
+  @DefaultMessage("Share project")
   @Description("Caption for the wizard to share Young Android projects")
   String shareProjectsWizardCaption();
 
@@ -2438,6 +2438,26 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Anyone with the link")
   @Description("Label for the share all checkbox")
   String shareAll();
+
+  @DefaultMessage("Project shared successfully.")
+  @Description("Message shown when the user successfully shares a project with another user.")
+  String projectSharedSuccessfully();
+
+  @DefaultMessage("You cannot share a project with yourself.")
+  @Description("Message shown when the user attempts to share a project with themselves.")
+  String cannotSelfShareProject();
+
+  @DefaultMessage("No users exists with the given email address.")
+  @Description("")
+  String sharedUserDoesNotExist();
+
+  @DefaultMessage("You have already shared this project with this user.")
+  @Description("")
+  String alreadySharedProject();
+
+  @DefaultMessage("You are not authorized to share this project.")
+  @Description("")
+  String sharingUnauthorized();
 
   @DefaultMessage("Email people")
   @Description("Label for the send email checkbox")

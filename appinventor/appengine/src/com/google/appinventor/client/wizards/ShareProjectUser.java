@@ -7,6 +7,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 
 import java.util.HashMap;
 
@@ -28,10 +30,17 @@ public class ShareProjectUser extends Composite{
         put("5", 2);
     }};
 
-    public ShareProjectUser(String userEmail, String permission) {
+    public ShareProjectUser(String userEmail, String permission, Runnable handlePermissionChange) {
         bindUI();
         userEmailLabel.setText(userEmail);
         permissionDropdown.setSelectedIndex(permissionMap.get(permission));
+        permissionDropdown.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                // Call your function here
+                handlePermissionChange.run();
+            }
+        });
     }
 
     public void bindUI() {

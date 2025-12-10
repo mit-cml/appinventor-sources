@@ -625,6 +625,10 @@ public class Ode implements EntryPoint {
     projectService.getShareLink(userEmail, projectId, callback);
   }
 
+  public void getLatestPermissionForProject(long projectId, OdeAsyncCallback<String> callback) {
+    getPermissionType(projectId, callback);
+  }
+
   /**
    * Load the user's relation to the project
    *
@@ -2478,7 +2482,7 @@ public class Ode implements EntryPoint {
     return this.permission;
   }
 
-  private void setPermission(String perm) {
+  public void setPermission(String perm) {
     LOG.info("should set perm to : " + perm);
     this.permission = perm;
     LOG.info("set permission to " + permission);
