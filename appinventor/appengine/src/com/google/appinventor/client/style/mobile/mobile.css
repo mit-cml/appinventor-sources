@@ -1432,6 +1432,7 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-noDialogDiv {
   box-shadow: 0 0 10px gray-500;
   background-color: v-white;
+  z-index: 1001;
 }
 
 .ode-noDialogDivHeader {
@@ -1449,6 +1450,9 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-noDialogExampleDiv {
   box-shadow: 0 0 2px gray-550;
+    width: 95%;
+    min-width: 182px;
+    min-height: 0px;
 }
 
 /* Start of NoProjectsDialogBox. */

@@ -6,6 +6,7 @@
 package com.google.appinventor.client.style.mobile;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
@@ -26,13 +27,13 @@ import com.google.gwt.user.client.ui.Widget;
  * project from scratch. Should appear when the user currently has no projects
  * in their projects list.
  */
-public class NoProjectDialogBox extends DialogBox {
+public class NoProjectDialogBoxMob extends DialogBox {
 
-  private static NoProjectDialogBoxUiBinder uiBinder =
-      GWT.create(NoProjectDialogBoxUiBinder.class);
-  private static NoProjectDialogBox lastDialog = null;
+  private static NoProjectDialogBoxUiBinderMob uiBinder =
+      GWT.create(NoProjectDialogBoxUiBinderMob.class);
+  private static NoProjectDialogBoxMob lastDialog = null;
 
-  interface NoProjectDialogBoxUiBinder extends UiBinder<Widget, NoProjectDialogBox> {
+  interface NoProjectDialogBoxUiBinderMob extends UiBinder<Widget, NoProjectDialogBoxMob> {
   }
 
   /**
@@ -65,7 +66,7 @@ public class NoProjectDialogBox extends DialogBox {
    * projects list. This will give them an option to open a tutorial project or
    * create their own project.
    */
-  public NoProjectDialogBox() {
+  public NoProjectDialogBoxMob() {
     this.setStylePrimaryName("ode-noDialogDiv");
     add(uiBinder.createAndBindUi(this));
     this.center();
@@ -111,7 +112,7 @@ public class NoProjectDialogBox extends DialogBox {
 
   public static void closeIfOpen() {
     if (lastDialog != null) {
-      lastDialog.removeFromParent();;
+      lastDialog.removeFromParent();
       lastDialog = null;
     }
   }

@@ -1628,23 +1628,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Creates, visually centers, and optionally displays the dialog box
-   * that informs the user how to start learning about using App Inventor
-   * or create a new project.
-   * @param showDialog Convenience variable to show the created DialogBox.
-   * @return The created and optionally displayed Dialog box.
-   */
-  public DialogBox createNoProjectsDialog(boolean showDialog) {
-    final NoProjectDialogBox dialogBox = new NoProjectDialogBox();
-
-    if (showDialog) {
-      dialogBox.show();
-    }
-
-    return dialogBox;
-  }
-
-  /**
    * Creates a dialog box to show empty trash list message.
    * @param showDialog Convenience variable to show the created DialogBox.
    * @return The created and optionally displayed Dialog box.
@@ -1788,7 +1771,7 @@ public class Ode implements EntryPoint {
       }
       if (!templateLoadingFlag && !newGalleryLoadingFlag) {
         ErrorReporter.hide();  // hide the "Please choose a project" message
-        createNoProjectsDialog(true);
+        uiFactory.createNoProjectsDialog(true);
       }
       return null;
     });

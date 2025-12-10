@@ -7,12 +7,17 @@ import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.YaNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.ui.DialogBox;
+
+import java.util.logging.Logger;
 
 
 public class UiFactoryMobile extends UiStyleFactory {
+  private static final Logger LOG = Logger.getLogger(UiFactoryMobile.class.getName());
 
     @Override
     public ProjectList createProjectList() {
@@ -40,4 +45,21 @@ public class UiFactoryMobile extends UiStyleFactory {
     return new YaVisibleComponentsPanelMobile(editor, nonVisPanel);
   }
 
+  /**
+   * Creates, visually centers, and optionally displays the dialog box
+   * that informs the user how to start learning about using App Inventor
+   * or create a new project.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+  @Override
+  public DialogBox createNoProjectsDialog(boolean showDialog) {
+    LOG.warning("Creating mobile no projects dialog");
+    final NoProjectDialogBoxMob dialogBox = new NoProjectDialogBoxMob();
+
+    if (showDialog) {
+      dialogBox.show();
+    }
+    return dialogBox;
+  }
 }

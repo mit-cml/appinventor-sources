@@ -8,6 +8,7 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.YaNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -15,6 +16,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.logging.Logger;
@@ -71,4 +73,23 @@ public class UiStyleFactory {
       (ProjectEditor editor, YaNonVisibleComponentsPanel nonVisPanel) {
     return new YaVisibleComponentsPanel(editor, nonVisPanel);
   }
+
+
+  /**
+   * Creates, visually centers, and optionally displays the dialog box
+   * that informs the user how to start learning about using App Inventor
+   * or create a new project.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+  public DialogBox createNoProjectsDialog(boolean showDialog) {
+    final NoProjectDialogBox dialogBox = new NoProjectDialogBox();
+
+    if (showDialog) {
+      dialogBox.show();
+    }
+
+    return dialogBox;
+  }
+
 }
