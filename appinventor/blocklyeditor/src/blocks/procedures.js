@@ -854,7 +854,6 @@ Blockly.Blocks['procedures_defanonreturn'] = {
       this.arguments_ = opt_params;
     }
 
-    // Check for duplicates (same as original)
     var badArg = false;
     var hash = {};
     for (var x = 0; x < this.arguments_.length; x++) {
@@ -869,9 +868,6 @@ Blockly.Blocks['procedures_defanonreturn'] = {
     } else {
       this.setWarningText(null);
     }
-
-    // --- CHANGE 1: Do not try to get 'NAME' ---
-    // var procName = this.getFieldValue('NAME');
 
     var bodyInput = this.inputList[this.inputList.length - 1];
 
@@ -905,11 +901,9 @@ Blockly.Blocks['procedures_defanonreturn'] = {
 
     this.inputList = [];
 
-    // --- CHANGE 2: Reconstruct header WITHOUT the name field ---
     var headerInput =
         this.appendDummyInput('HEADER')
             .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
-            // Removed: .appendField(new AI.Blockly.FieldProcedureName(procName), 'NAME');
 
     if (this.horizontalParameters) {
       for (var i = 0; i < this.arguments_.length; i++) {
@@ -938,7 +932,7 @@ Blockly.Blocks['procedures_defanonreturn'] = {
     // but for anonymous functions usually nothing calls them by name.
     // We can keep it or remove it depending on if Procedure.mutateCallers checks for null names.
     if (this.workspace.loadCompleted) {
-       // Blockly.Procedures.mutateCallers(this); // You likely want to comment this out for Anon functions
+       // Blockly.Procedures.mutateCallers(this); // comment this out for Anon functions
     }
   },
   // Keep the rest of the inherited methods
@@ -951,7 +945,9 @@ Blockly.Blocks['procedures_defanonreturn'] = {
   decompose: Blockly.Blocks.procedures_defnoreturn.decompose,
   compose: Blockly.Blocks.procedures_defnoreturn.compose,
   dispose: Blockly.Blocks.procedures_defnoreturn.dispose,
-  getProcedureDef: Blockly.Blocks.procedures_defnoreturn.getProcedureDef,
+  getProcedureDef: function() {
+    return ["", this.arguments_, true];
+  },
   getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
   declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
   declaredVariables: Blockly.Blocks.procedures_defnoreturn.declaredVariables,
