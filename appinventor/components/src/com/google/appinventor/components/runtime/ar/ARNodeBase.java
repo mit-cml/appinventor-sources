@@ -27,7 +27,7 @@ import android.view.MotionEvent;
 
 import java.util.List;
 import java.util.Collection;
-
+import java.util.UUID;
 
 
 @SimpleObject
@@ -815,6 +815,12 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void Model(String model) {
     this.objectModel = model;
     updateModel();
+  }
+
+  @SimpleProperty(description = "The node's unique Id.",
+      category = PropertyCategory.APPEARANCE)
+  public String ID() {
+    return anchor.getCloudAnchorId();
   }
 
   protected void updateModel() {

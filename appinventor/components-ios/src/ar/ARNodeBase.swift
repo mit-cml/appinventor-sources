@@ -180,6 +180,10 @@ open class ARNodeBase: NSObject, ARNode {
     set(modelStr) { _objectModel = modelStr }
   }
   
+  @objc open var ID: String {
+    get { return "\(_modelEntity.id)"}
+  }
+  
   @objc open var XPosition: Float {
     get { return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.x) }
     set(x) { _modelEntity.transform.translation.x = UnitHelper.centimetersToMeters(x) }
@@ -1069,28 +1073,32 @@ open class ARNodeBase: NSObject, ARNode {
       _modelEntity.position = SIMD3<Float>(0, 0, 0) // relative to marker
       print("   ✅ Positioned at marker center")
     }
-    
+      
     _anchorEntity = markerAnchor
     _queuedMarkerOffset = nil
 
     // Cache the transform
 
     print("   💾 Model at marker pos=\(_modelEntity.position), rot=\(_modelEntity.orientation)")
-
+    var rotation = simd_quatf(angle: 0, axis: [0, 1, 0])
+    if self is TextNode {
+     // rotation = simd_quatf(angle: -90, axis: [1, 0, 0])
+    }
     _nodeLocalTransform = Transform(
         scale: _modelEntity.scale,
-        rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),  // ✅ Explicit identity
+        rotation: rotation,
         translation: _modelEntity.position  // Local position relative to marker
     )
     
     _nodeWorldTransform = Transform(
       scale: _modelEntity.scale,
-      rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),  // Don't save rotation!
+      rotation: rotation,
       translation: _modelEntity.position(relativeTo: nil)   // Only save position
     )
     print("   ✅ Attached! node is at \(_nodeWorldTransform)")
   }
   
+  //not being using currently
   @objc open func defaultCameraFacingOrientation() -> simd_quatf {
       // Default: just yaw (for 3D objects)
       return simd_quatf(angle: 0, axis: [1, 0, 0])
@@ -1397,7 +1405,7 @@ open class ARNodeBase: NSObject, ARNode {
   }
   
 
-  private func finalizeModelPlacement() {
+  public func finalizeModelPlacement() {
     print("Finalizing node placement")
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
