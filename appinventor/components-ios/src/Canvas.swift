@@ -19,6 +19,7 @@ fileprivate let FINGER_HEIGHT = CGFloat(24)
 fileprivate let HALF_FINGER_WIDTH: CGFloat = FINGER_WIDTH / 2
 fileprivate let HALF_FINGER_HEIGHT: CGFloat = FINGER_HEIGHT / 2
 
+
 private class CanvasGestureRecognizer: UIGestureRecognizer {
   static let UNSET = CGFloat(-1)
   weak var canvas: Canvas?
@@ -153,11 +154,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   
   /// Layers are split into four categories. There may be multiple layers in shapeLayers and textLayers.
   /// There is always just one background image layer and one background color layer.
-  fileprivate var _shapeLayers = [CALayer]()
-  fileprivate var _textLayers = [CALayer]()
+  fileprivate var _drawingImageView = UIImageView()
   fileprivate var _backgroundImageView = UIImageView(image: nil)
-  /// Layer that holds the rasterized drawing layer (points, lines, shapes)
-  fileprivate var _drawingLayer = CALayer()
 
   /// Old values are used to scale shapes when canvas size changes.
   fileprivate var _oldHeight = CGFloat(0)
@@ -190,12 +188,6 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _backgroundImageView.leftAnchor.constraint(equalTo: _view.leftAnchor).isActive = true
     _backgroundImageView.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
 
-    // Add drawing layer above the background image but below sprite layers.
-    _drawingLayer.frame = _view.bounds
-    _drawingLayer.contentsGravity = .resizeAspectFill
-    _drawingLayer.masksToBounds = true
-    _view.layer.addSublayer(_drawingLayer)
-
     // Configure default dimension constraints. These are set to low priority so that they can be overriden
     // by the user configuration.
     let baseWidthConstraint = _view.widthAnchor.constraint(equalToConstant: CGFloat(kCanvasPreferredWidth))
@@ -207,9 +199,52 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     baseHeightConstraint.isActive = true
 
     BackgroundColor = Int32(bitPattern: kCanvasDefaultBackgroundColor)
+    PaintColor = Int32(bitPattern: kCanvasDefaultPaintColor)
+  }
+  
+  
+  
+  func updateDrawingLayer(block: (CGContext, CGSize) -> Void) {
+    let size = _view.bounds.size
+    if size.width == 0 || size.height == 0 { return }
+    
+    
+    UIGraphicsBeginImageContextWithOptions(size, false, 0.0) 
+    guard let context = UIGraphicsGetCurrentContext() else {
+      UIGraphicsEndImageContext()
+      return
+    }
+    
+    // Draw existing image
+    _drawingImageView.image?.draw(in: CGRect(origin: .zero, size: size))
+    
+    // Setup context for drawing
+    let color = argbToColor(_paintColor)
+    context.setStrokeColor(color.cgColor)
+    context.setFillColor(color.cgColor)
+    context.setLineWidth(_lineWidth)
+    context.setLineCap(.round)
+    context.setLineJoin(.round)
+  
+
+    if _paintColor == Color.default.int32 || _paintColor == Color.none.int32 || (_paintColor & 0xFF000000) == 0 {
+       context.setBlendMode(.clear)
+    } else {
+       context.setBlendMode(.normal)
+    }
+    
+    
+    block(context, size)
+    
+
+    let newImage = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    
+    _drawingImageView.image = newImage
   }
 
-  // Returns a UIImage filled with the current background color
+
+  
   @objc private func backgroundColorImage() -> UIImage? {
     let color = argbToColor(_backgroundColor)
     let width = floor(_view.bounds.width) == 0 ? kCanvasPreferredWidth : Int(_view.bounds.width)
@@ -224,7 +259,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     return image
   }
 
-  // MARK: Properties
+
   override open var view: UIView {
     get {
       return _view
@@ -242,10 +277,10 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       return _backgroundColor
     }
     set(backgroundColor) {
-      // Canvas is cleared whenever BackgroundColor is set.
+  
       Clear()
       
-      // The color 'none' is rendered as white
+   
       let newColor = backgroundColor != Int32(bitPattern: Color.default.rawValue) ? backgroundColor : Int32(bitPattern: Color.white.rawValue)
       if newColor != _backgroundColor {
         _backgroundImageView.backgroundColor = argbToColor(newColor)
@@ -259,16 +294,14 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       return _backgroundImage
     }
     set(path) {
-      // Canvas is cleared whenever BackgroundImage is set.
+
       Clear()
 
       guard path != _backgroundImage else {
         return
       }
 
-      // There are two possibilities when the backgroud image is changed:
-      // 1) the provided path is valid, so the background image is updated or
-      // 2) the provided path is invalid, so the background color is shown
+      
       if let image = AssetManager.shared.imageFromPath(path: path) {
         _backgroundImage = path
         _imageSize = image.size
@@ -374,9 +407,9 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   @objc open var TextAlignment: Int32 {
     get {
       switch _textAlignment {
-        case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right): // ending at the specified point
+        case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right): 
           return Alignment.opposite.rawValue
-        case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left): // starting at the specified point
+        case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left): 
           return Alignment.normal.rawValue
         default:
           return Alignment.center.rawValue
@@ -394,22 +427,9 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     }
   }
 
-  fileprivate func transformLayerWidth(_ s: CALayer, _ xScaleFactor: CGFloat) {
-    s.transform.m11 *= xScaleFactor
-    s.transform.m12 *= xScaleFactor
-    s.transform.m13 *= xScaleFactor
-    s.transform.m14 *= xScaleFactor
-  }
-  
-  fileprivate func transformLayerHeight(_ s: CALayer, _ yScaleFactor: CGFloat) {
-    s.transform.m21 *= yScaleFactor
-    s.transform.m22 *= yScaleFactor
-    s.transform.m23 *= yScaleFactor
-    s.transform.m24 *= yScaleFactor
-  }
 
-  // MARK: Events
-  // Returns bounding box within canvas borders centered at the start of the gesture.
+
+  
   @objc func getGestureBoundingBox(_ x: CGFloat, _ y: CGFloat) -> CGRect {
     let startX = max(0, x - HALF_FINGER_WIDTH)
     let startY = max(0, y - HALF_FINGER_HEIGHT)
@@ -422,7 +442,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     return CGRect(origin: origin, size: size)
   }
   
-  // Allow drag and fling gestures to be recognized simultaneously
+
   public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     return (gestureRecognizer is CanvasGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) || (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is CanvasGestureRecognizer)
   }
@@ -482,7 +502,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     EventDispatcher.dispatchEvent(of: self, called: "TouchUp", arguments: x as NSNumber, y as NSNumber)
   }
 
-  // Fling and Gesture are simultaneously recognized.
+  
   @objc open func onFling(gesture: UIPanGestureRecognizer) {
     var velocity = gesture.velocity(in: _view)
     velocity.x = velocity.x / FLING_INTERVAL
@@ -490,7 +510,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
 
     switch gesture.state {
     case .began:
-      // save starting position
+     
       _flingStartX = gesture.location(in: _view).x
       _flingStartY = gesture.location(in: _view).y
 
@@ -560,7 +580,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _view.layer.addSublayer(sprite.DisplayLayer)
   }
   
-  // Re-render the sprite imageLayer when change has been registered.
+  
   @objc func registerChange(_ sprite: Sprite) {
     sprite.updateDisplayLayer()
     findSpriteCollisions(sprite)
@@ -570,15 +590,15 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     for sprite in _sprites {
       if sprite != movedSprite {
         let bothSpritesActive = movedSprite.Visible && movedSprite.Enabled && sprite.Visible && sprite.Enabled
-        // Check whether we already raised an event for their collision.
+       event for their collision.
         if movedSprite.CollidingWith(sprite) {
-          // If they no longer conflict, make modifications.
+    
           if !bothSpritesActive || !Sprite.colliding(movedSprite, sprite) {
             movedSprite.NoLongerCollidingWith(sprite)
             sprite.NoLongerCollidingWith(movedSprite)
           }
         } else {
-          // Check if they now conflict.
+        
           if bothSpritesActive && Sprite.colliding(movedSprite, sprite) {
             movedSprite.CollidedWith(sprite)
             sprite.CollidedWith(movedSprite)
@@ -588,7 +608,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     }
   }
 
-  //MARK: Drawing methods
+  
   fileprivate func isInCanvasBoundaries(_ x: CGFloat, _ y: CGFloat) -> Bool {
     return x >= 0 && x <= _view.frame.size.width && y >= 0 && y <= _view.frame.size.height
   }
@@ -599,13 +619,11 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _shapeLayers.removeAll()
     _textLayers.forEach{ $0.removeFromSuperlayer() }
     _textLayers.removeAll()
-    // clear raster drawing
-    _drawingLayer.contents = nil
   }
 
   @objc open func DrawArc(_ left: Int, _ top: Int, _ right: Int, _ bottom: Int, _ startAngle: Float,
                           _ sweepAngle: Float, _ useCenter: Bool, _ fill: Bool) {
-    // on Android, we only draw the Arc if right > left and bottom > top
+   
     guard right > left, bottom > top else { return }
     
     let horizontalAxis = CGFloat(abs(right-left))
@@ -613,20 +631,33 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     let startingAngle = CGFloat(GLKMathDegreesToRadians(startAngle))
     let endingAngle = CGFloat(GLKMathDegreesToRadians(sweepAngle + startAngle))
     
-    // on Android, the path is closed when using center or, when not using center, when fill is set.
-    let ellipticalArc = UIBezierPath(ellipseArcIn: CGRect(x: CGFloat(left), y: CGFloat(top), width:horizontalAxis, height: verticalAxis), startAngle: startingAngle, endAngle: endingAngle, useCenter: useCenter, closePath: useCenter || fill)
-    
-    addShapeWithFill(for: ellipticalArc.cgPath, with: fill)
+    updateDrawingLayer { (context, size) in
+      let rect = CGRect(x: CGFloat(left), y: CGFloat(top), width: horizontalAxis, height: verticalAxis)
+      let path = UIBezierPath(ellipseArcIn: rect, startAngle: startingAngle, endAngle: endingAngle, useCenter: useCenter, closePath: useCenter || fill)
+      
+      context.addPath(path.cgPath)
+      if fill {
+        context.fillPath()
+      } else {
+        context.strokePath()
+      }
+    }
   }
 
   @objc open func DrawCircle(_ centerX: Float, _ centerY: Float, _ radius: Float, _ fill: Bool) {
     guard isInCanvasBoundaries(CGFloat(centerX), CGFloat(centerY)) else {
       return
     }
-
-    let point = UIBezierPath(arcCenter: CGPoint(x: CGFloat(centerX), y: CGFloat(centerY)), radius: CGFloat(radius), startAngle: 0, endAngle:CGFloat(Double.pi * 2), clockwise: true)
-
-    addShapeWithFill(for: point.cgPath, with: fill)
+    
+    updateDrawingLayer { (context, size) in
+      let rect = CGRect(x: CGFloat(centerX) - CGFloat(radius), y: CGFloat(centerY) - CGFloat(radius), width: CGFloat(radius) * 2, height: CGFloat(radius) * 2)
+      context.addEllipse(in: rect)
+      if fill {
+        context.fillPath()
+      } else {
+        context.strokePath()
+      }
+    }
   }
 
   @objc open func DrawLine(_ x1: Float, _ y1: Float, _ x2: Float, _ y2: Float) {
@@ -637,41 +668,51 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       return
     }
 
-    // Setting finalX2 and finalY2 to be within the canvas bounds (between 0 and the view's width/height).
+ 
     finalX2 = max(0, min(finalX2, _view.frame.size.width))
     finalY2 = max(0, min(finalY2, _view.frame.size.height))
 
-
-    let line = UIBezierPath()
-    line.move(to: CGPoint(x: finalX1, y: finalY1))
-    line.addLine(to: CGPoint(x: finalX2, y: finalY2))
-    line.close()
-
-    addShapeWithFill(for: line.cgPath, with: false)
+    updateDrawingLayer { (context, size) in
+      context.move(to: CGPoint(x: finalX1, y: finalY1))
+      context.addLine(to: CGPoint(x: finalX2, y: finalY2))
+      context.strokePath()
+    }
   }
   
   @objc open func DrawPoint(_ x: Float, _ y: Float) {
     guard isInCanvasBoundaries(CGFloat(x), CGFloat(y)) else {
       return
     }
-
-    let point = UIBezierPath(arcCenter: CGPoint(x: CGFloat(x), y: CGFloat(y)), radius: 1.0, startAngle: 0, endAngle:CGFloat(Float.pi * 2), clockwise: true)
-
-    addShapeWithFill(for: point.cgPath, with: true)
+    
+    updateDrawingLayer { (context, size) in
+       // Android DrawPoint uses the Paint's stroke width.
+       let diameter = CGFloat(_lineWidth)
+       let radius = diameter / 2.0
+       let rect = CGRect(x: CGFloat(x) - radius, y: CGFloat(y) - radius, width: diameter, height: diameter)
+       context.addEllipse(in: rect)
+       context.fillPath()
+    }
   }
 
   @objc open func DrawShape(_ pointList: YailList<YailList<NSNumber>>, _ fill: Bool) {
     do {
       let pathPoints = try parsePointList(pointList)
-      let shape = UIBezierPath()
-
-      pathPoints.enumerated().forEach { index, point in
-        index == 0 ? shape.move(to: point) : shape.addLine(to: point)
+      
+      updateDrawingLayer { (context, size) in
+        if pathPoints.count > 0 {
+          context.move(to: pathPoints[0])
+          for i in 1..<pathPoints.count {
+            context.addLine(to: pathPoints[i])
+          }
+          context.closePath()
+          
+          if fill {
+            context.fillPath()
+          } else {
+            context.strokePath()
+          }
+        }
       }
-      shape.close()
-
-      addShapeWithFill(for: shape.cgPath, with: fill)
-
     } catch {
       form?.dispatchErrorOccurredEvent(self, "DrawShape",
          ErrorMessage.ERROR_CANVAS_DRAW_SHAPE_BAD_ARGUMENT.code,
@@ -687,7 +728,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     var points = [CGPoint]()
 
     for (index, pointObject) in pointList.enumerated() {
-      //In order to throw an error if it is not a list, we now attempt to convert it to an NSNumber
+     
       if let point = pointObject as? YailList<NSNumber> {
         guard point.length == 2 else {
           throw YailRuntimeError("length of item YailList \(index) is not 2", "IllegalArgument")
@@ -702,131 +743,147 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   }
 
   fileprivate func addShapeWithFill(for path: CGPath, with fill: Bool, maskLayer: CAShapeLayer? = nil) {
-    // Rasterize shapes into the drawing layer so that we can support
-    // erasing (transparent paint) by using blend modes when compositing.
-    let size = _view.bounds.size == .zero ? CGSize(width: CGFloat(kCanvasPreferredWidth), height: CGFloat(kCanvasPreferredHeight)) : _view.bounds.size
-
-    UIGraphicsBeginImageContextWithOptions(size, false, 0)
-    let ctx = UIGraphicsGetCurrentContext()
-    // Draw existing drawing contents if present
-    if let contents = _drawingLayer.contents as? CGImage {
-      UIImage(cgImage: contents).draw(in: CGRect(origin: .zero, size: size))
-    }
-
-    // Prepare path and drawing parameters
-    let bezier = UIBezierPath(cgPath: path)
-    bezier.lineWidth = _lineWidth
-
-    // Determine paint alpha
-    let paintUIColor = argbToColor(_paintColor)
-    var alpha: CGFloat = 0
-    paintUIColor.getRed(nil, green: nil, blue: nil, alpha: &alpha)
-
-    ctx?.saveGState()
-    if alpha == 0 {
-      // Erase: use clear blend mode to remove pixels from drawing layer
-      ctx?.setBlendMode(.clear)
-    } else {
-      ctx?.setBlendMode(.normal)
-    }
-
-    if fill {
-      if alpha != 0 {
-        paintUIColor.setFill()
-      }
-      bezier.fill()
-    } else {
-      if alpha != 0 {
-        paintUIColor.setStroke()
-      }
-      bezier.stroke()
-    }
-    ctx?.restoreGState()
-
-    // Grab the composed image and set it as the drawing layer contents
-    if let image = UIGraphicsGetImageFromCurrentImageContext(), let cg = image.cgImage {
-      _drawingLayer.contents = cg
-    }
-    UIGraphicsEndImageContext()
-
-    // Keep a lightweight record for compatibility (not used for rendering now)
     let shapeLayer = CAShapeLayer()
     shapeLayer.mask = maskLayer
+
+    if fill {
+      shapeLayer.fillColor = argbToColor(_paintColor).cgColor
+    } else {
+      shapeLayer.fillColor = nil
+    }
+
+    shapeLayer.lineWidth = _lineWidth
+    shapeLayer.strokeColor = argbToColor(_paintColor).cgColor
     shapeLayer.path = path
+    _view.layer.addSublayer(shapeLayer)
     _shapeLayers.append(shapeLayer)
   }
 
   @objc open func DrawText(_ text: String, _ x: Float, _ y: Float) {
     if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
-      let textLayer = makeTextLayer(text: text, x: x, y: y)
-      _view.layer.addSublayer(textLayer)
-      _textLayers.append(textLayer)
+      drawTextAtPoint(text, x, y, 0)
     }
   }
 
   @objc open func DrawTextAtAngle(_ text: String, _ x: Float, _ y: Float, _ angle: Float) {
     if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
-      let textLayer = makeTextLayer(text: text, x: x, y: y)
-
-      // this is counterclockwise, same as Android.
-      let radians = CGFloat(angle * Float.pi / 180)
-      textLayer.transform = CATransform3DMakeRotation(-radians, 0, 0, 1.0)
-      _view.layer.addSublayer(textLayer)
-      _textLayers.append(textLayer)
+      drawTextAtPoint(text, x, y, angle)
     }
   }
 
-  fileprivate func makeTextLayer(text: String, x: Float, y: Float) -> CATextLayer {
-    let textLayer = CATextLayer()
-    textLayer.frame = _view.bounds
-    textLayer.string = text
-    textLayer.fontSize = CGFloat(_fontSize)
-    textLayer.anchorPoint = CGPoint(x: 0, y: 0)
-
-    switch _textAlignment {
-    case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right): // text layer ends at x,y
-      textLayer.anchorPoint = CGPoint(x: 1, y:0)
-    case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left): // text layer starts at x,y
-      textLayer.anchorPoint = CGPoint(x: 0, y:0)
-    default: // text layer is centered at x,y
-      textLayer.anchorPoint = CGPoint(x: 0.5, y: 0)
+  fileprivate func drawTextAtPoint(_ text: String, _ x: Float, _ y: Float, _ angle: Float) {
+    updateDrawingLayer { (context, size) in
+      let uiFont = UIFont.systemFont(ofSize: CGFloat(_fontSize))
+      let attributes: [NSAttributedString.Key: Any] = [
+        .font: uiFont,
+        .foregroundColor: argbToColor(_paintColor)
+      ]
+      let string = text as NSString
+      let textSize = string.size(withAttributes: attributes)
+      
+      context.saveGState()
+      context.translateBy(x: CGFloat(x), y: CGFloat(y))
+      
+      if angle != 0 {
+       
+        let radians = CGFloat(angle * Float.pi / 180)
+        context.rotate(by: -radians)
+      }
+      // Handle Alignment
+      var xOffset: CGFloat = 0
+      var yOffset: CGFloat = 0 
+      
+      // Android drawText draws at the Baseline. 
+      // iOS string.draw(at:) draws at Top-Left of the bounding box.
+      // We need to shift yOffset down by the ascender height (approx) to treat y as baseline?
+      // Or rather: If input y is baseline, and we draw at y, we are drawing text BELOW y (top-left).
+      // So we need to subtract the ascender/height to move the text UP so that its baseline is at y.
+      // font.ascender gives the distance from top to baseline.
+      yOffset = -uiFont.ascender
+      
+      switch _textAlignment {
+      case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right):
+        xOffset = -textSize.width
+      case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.center):
+        xOffset = -textSize.width / 2.0
+      default: // left
+        xOffset = 0
+      }
+      
+      string.draw(at: CGPoint(x: xOffset, y: yOffset), withAttributes: attributes)
+      context.restoreGState()
     }
-
-    textLayer.position = CGPoint(x: CGFloat(x), y: CGFloat(y))
-    textLayer.foregroundColor = argbToColor(_paintColor).cgColor
-    textLayer.alignmentMode = convertToCATextLayerAlignmentMode(_textAlignment)
-    return textLayer
   }
 
-  /**
-   * Gets the color of the specified point. This includes the background
-   * and any drawn points, lines, or circles but not sprites.
-   */
+  
   @objc open func GetBackgroundPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
-    var pixel: [CUnsignedChar] = [0, 0, 0, 0]
-
-    let colorSpace = CGColorSpaceCreateDeviceRGB()
-    let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
-
-    if let context = CGContext(data: &pixel, width: 1, height: 1, bitsPerComponent: 8,
-                               bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmapInfo.rawValue) {
-      context.translateBy(x: -CGFloat(x), y: -CGFloat(y))
-      _view.layer.render(in: context)
-    } else {
-      return Int32(Color.none.rawValue)
+    let x = CGFloat(x)
+    let y = CGFloat(y)
+    
+   
+    if let image = _drawingImageView.image, let pixelColor = getPixelColorFromImage(image, x: x, y: y) {
+        if pixelColor != Color.none.int32 && (pixelColor & 0xFF000000) != 0 {
+            return pixelColor
+        }
+    }
+    
+ 
+    if let image = _backgroundImageView.image, let pixelColor = getPixelColorFromImage(image, x: x, y: y) {
+        if pixelColor != Color.none.int32 && (pixelColor & 0xFF000000) != 0 {
+            return pixelColor
+        }
     }
 
-    let red: CGFloat   = CGFloat(pixel[0]) / 255.0
-    let green: CGFloat = CGFloat(pixel[1]) / 255.0
-    let blue: CGFloat  = CGFloat(pixel[2]) / 255.0
-    let alpha: CGFloat = CGFloat(pixel[3]) / 255.0
-    let color = UIColor(red:red, green: green, blue:blue, alpha:alpha)
-    return colorToArgb(color)
+    return _backgroundColor
+  }
+  
+  private func getPixelColorFromImage(_ image: UIImage, x: CGFloat, y: CGFloat) -> Int32? {
+     guard let cgImage = image.cgImage else { return nil }
+     
+ 
+     
+     let viewWidth = _view.bounds.width
+     let viewHeight = _view.bounds.height
+     if viewWidth == 0 || viewHeight == 0 { return nil }
+     
+     let imageWidth = CGFloat(cgImage.width)
+     let imageHeight = CGFloat(cgImage.height)
+     
+     let imageX = Int(x * (imageWidth / viewWidth))
+     let imageY = Int(y * (imageHeight / viewHeight))
+     
+     if imageX < 0 || imageX >= Int(imageWidth) || imageY < 0 || imageY >= Int(imageHeight) { return nil }
+
+     guard let dataProvider = cgImage.dataProvider, let data = dataProvider.data else { return nil }
+     
+     let pixelData = CFDataGetBytePtr(data)
+     let bytesPerPixel = cgImage.bitsPerPixel / 8
+     if bytesPerPixel != 4 { return nil } 
+     let bytesPerRow = cgImage.bytesPerRow
+     
+     let pixelIndex = (imageY * bytesPerRow) + (imageX * bytesPerPixel)
+     
+     if pixelIndex < 0 || pixelIndex >= CFDataGetLength(data) - 4 { return nil }
+
+    
+     
+     var pixel: [CUnsignedChar] = [0, 0, 0, 0]
+     let colorSpace = CGColorSpaceCreateDeviceRGB()
+     let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+     guard let context = CGContext(data: &pixel, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else { return nil }
+     
+     context.translateBy(x: -CGFloat(imageX), y: -CGFloat(imageY))
+     context.draw(cgImage, in: CGRect(x: 0, y: 0, width: imageWidth, height: imageHeight))
+     
+     let r = CGFloat(pixel[0]) / 255.0
+     let g = CGFloat(pixel[1]) / 255.0
+     let b = CGFloat(pixel[2]) / 255.0
+     let a = CGFloat(pixel[3]) / 255.0
+     
+     return colorToArgb(UIColor(red: r, green: g, blue: b, alpha: a))
   }
 
-  /**
-   * Gets the color of the specified point. This includes sprites.
-   */
+  
   @objc open func GetPixelColor(_ x: Int32, _ y: Int32) -> Int32 {
     guard isInCanvasBoundaries(CGFloat(x), CGFloat(y)) else {
       return Int32(Color.none.rawValue)
@@ -866,19 +923,19 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     guard isInCanvasBoundaries(CGFloat(x), CGFloat(y)) else {
       return
     }
-
-    let point = UIBezierPath(arcCenter: CGPoint(x: CGFloat(x), y: CGFloat(y)), radius: 0.5, startAngle: 0, endAngle:CGFloat(Float.pi * 2), clockwise: true)
-
-    let shapeLayer = CAShapeLayer()
-    shapeLayer.fillColor = argbToColor(color).cgColor
-    shapeLayer.lineWidth = _lineWidth
-    shapeLayer.path = point.cgPath
-    _view.layer.addSublayer(shapeLayer)
-    _shapeLayers.append(shapeLayer)
+    
+    updateDrawingLayer { (context, size) in
+        let c = argbToColor(color)
+        context.setFillColor(c.cgColor)
+     
+        let rect = CGRect(x: CGFloat(x) - 0.5, y: CGFloat(y) - 0.5, width: 1.0, height: 1.0)
+        context.addEllipse(in: rect)
+        context.fillPath()
+    }
   }
 
   @objc open func Save() -> String {
-    // get image data
+    
     UIGraphicsBeginImageContextWithOptions(_view.bounds.size, true, 1)
     _view.drawHierarchy(in: _view.bounds, afterScreenUpdates: true)
 
@@ -891,7 +948,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
 
     let data = image.pngData()
 
-    // save data to fileURL
+   
     do {
       let filePath = try FileUtil.getPictureFile("png")
       let fileURL = URL(fileURLWithPath: filePath)
@@ -917,7 +974,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       return ""
     }
     
-    // Get image data in the correct format
+  
     var finalFileName = ""
     var data: Data?
     let lowercaseFileName = fileName.lowercased()
@@ -938,13 +995,13 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       return ""
     }
     
-    // Get finalFileName
+  
     finalFileName = AssetManager.shared.pathForPublicAsset(finalFileName)
     if let encoded = finalFileName.addingPercentEncoding(withAllowedCharacters:NSCharacterSet.urlPathAllowed) {
       finalFileName = "file://" + encoded
     }
     
-    // Save image data to finalImageURL
+   
     do {
       if let finalImageURL = URL(string: finalFileName) {
         try data?.write(to: finalImageURL)
@@ -961,7 +1018,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   }
 }
 
-//MARK: LifeCycleDelegate methods
+
 extension Canvas: LifecycleDelegate {
   @objc public func onResume() {
     for s in _sprites {
@@ -990,7 +1047,7 @@ extension Canvas: LifecycleDelegate {
   }
 }
 
-//MARK: Container methods
+
 extension Canvas: ComponentContainer {
   public var container: ComponentContainer? {
     get {
@@ -999,24 +1056,24 @@ extension Canvas: ComponentContainer {
   }
 
   public func add(_ component: ViewComponent) {
-    // unsupported
+    
   }
 
   public func setChildWidth(of component: ViewComponent, to width: Int32) {
-    // unsupported
+    
   }
 
   public func setChildHeight(of component: ViewComponent, to height: Int32) {
-    // unsupported
+    
   }
 
   public func isVisible(component: ViewComponent) -> Bool {
-    // unsupported
+    
     return false
   }
 
   public func setVisible(component: ViewComponent, to visibility: Bool) {
-    // unsupported
+  
   }
   
   open func getChildren() -> [Component] {
@@ -1024,7 +1081,6 @@ extension Canvas: ComponentContainer {
   }
 }
 
-// MARK: Custom Drag Gesture Recognizer
 
 struct LocationSample {
   let location: CGPoint
@@ -1214,18 +1270,6 @@ open class CanvasView: UIView {
           canvas.transformLayerHeight(s, yScale)
           canvas.transformLayerWidth(s, xScale)
         }
-
-        // Scale rasterized drawing layer contents if present
-        if let contents = canvas._drawingLayer.contents as? CGImage {
-          let oldImage = UIImage(cgImage: contents)
-          UIGraphicsBeginImageContextWithOptions(frame.size, false, 0)
-          oldImage.draw(in: CGRect(origin: .zero, size: frame.size))
-          if let newImage = UIGraphicsGetImageFromCurrentImageContext(), let cg = newImage.cgImage {
-            canvas._drawingLayer.contents = cg
-          }
-          UIGraphicsEndImageContext()
-        }
-        canvas._drawingLayer.frame = frame
       }
     }
     if frame.size != .zero {
@@ -1234,12 +1278,11 @@ open class CanvasView: UIView {
   }
 }
 
-// Helper function inserted by Swift 4.2 migrator.
+
 fileprivate func convertFromCATextLayerAlignmentMode(_ input: CATextLayerAlignmentMode) -> String {
 	return input.rawValue
 }
 
-// Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertToCATextLayerAlignmentMode(_ input: String) -> CATextLayerAlignmentMode {
 	return CATextLayerAlignmentMode(rawValue: input)
 }
