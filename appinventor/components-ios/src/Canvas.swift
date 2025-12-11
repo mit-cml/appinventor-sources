@@ -227,7 +227,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     context.setLineJoin(.round)
   
 
-    if _paintColor == Color.default.int32 || _paintColor == Color.none.int32 || (_paintColor & 0xFF000000) == 0 {
+    if _paintColor == Color.default.int32 || _paintColor == Color.none.int32 || (_paintColor & Int32(bitPattern: 0xFF000000)) == 0 {
        context.setBlendMode(.clear)
     } else {
        context.setBlendMode(.normal)
@@ -285,6 +285,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       if newColor != _backgroundColor {
         _backgroundImageView.backgroundColor = argbToColor(newColor)
         _backgroundImageView.layer.zPosition = CGFloat(-Float.greatestFiniteMagnitude)
+        _backgroundColor = newColor
       }
     }
   }
@@ -590,7 +591,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     for sprite in _sprites {
       if sprite != movedSprite {
         let bothSpritesActive = movedSprite.Visible && movedSprite.Enabled && sprite.Visible && sprite.Enabled
-       event for their collision.
+        // event for their collision.
         if movedSprite.CollidingWith(sprite) {
     
           if !bothSpritesActive || !Sprite.colliding(movedSprite, sprite) {
@@ -615,10 +616,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   
   @objc open func Clear() {
     // background image and background color are not cleared
-    _shapeLayers.forEach{ $0.removeFromSuperlayer() }
-    _shapeLayers.removeAll()
-    _textLayers.forEach{ $0.removeFromSuperlayer() }
-    _textLayers.removeAll()
+    _drawingImageView.image = nil
   }
 
   @objc open func DrawArc(_ left: Int, _ top: Int, _ right: Int, _ bottom: Int, _ startAngle: Float,
@@ -742,22 +740,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     return points
   }
 
-  fileprivate func addShapeWithFill(for path: CGPath, with fill: Bool, maskLayer: CAShapeLayer? = nil) {
-    let shapeLayer = CAShapeLayer()
-    shapeLayer.mask = maskLayer
 
-    if fill {
-      shapeLayer.fillColor = argbToColor(_paintColor).cgColor
-    } else {
-      shapeLayer.fillColor = nil
-    }
-
-    shapeLayer.lineWidth = _lineWidth
-    shapeLayer.strokeColor = argbToColor(_paintColor).cgColor
-    shapeLayer.path = path
-    _view.layer.addSublayer(shapeLayer)
-    _shapeLayers.append(shapeLayer)
-  }
 
   @objc open func DrawText(_ text: String, _ x: Float, _ y: Float) {
     if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
@@ -822,14 +805,14 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     
    
     if let image = _drawingImageView.image, let pixelColor = getPixelColorFromImage(image, x: x, y: y) {
-        if pixelColor != Color.none.int32 && (pixelColor & 0xFF000000) != 0 {
+        if pixelColor != Color.none.int32 && (pixelColor & Int32(bitPattern: 0xFF000000)) != 0 {
             return pixelColor
         }
     }
     
  
     if let image = _backgroundImageView.image, let pixelColor = getPixelColorFromImage(image, x: x, y: y) {
-        if pixelColor != Color.none.int32 && (pixelColor & 0xFF000000) != 0 {
+        if pixelColor != Color.none.int32 && (pixelColor & Int32(bitPattern: 0xFF000000)) != 0 {
             return pixelColor
         }
     }
@@ -1255,22 +1238,12 @@ open class CanvasView: UIView {
   open override func layoutSubviews() {
     super.layoutSubviews()
     if let canvas = _canvas, _oldSize != .zero {
-      if _oldSize != frame.size {
-        let xScale = frame.width / _oldSize.width
-        let yScale = frame.height / _oldSize.height
-
-        for s in canvas._shapeLayers {
-          canvas.transformLayerHeight(s, yScale)
-          canvas.transformLayerWidth(s, xScale)
-        }
-
-        for s in canvas._textLayers {
-          s.position.x *= xScale
-          s.position.y *= yScale
-          canvas.transformLayerHeight(s, yScale)
-          canvas.transformLayerWidth(s, xScale)
-        }
-      }
+//      if _oldSize != frame.size {
+//        let xScale = frame.width / _oldSize.width
+//        let yScale = frame.height / _oldSize.height
+//
+//        // Vector scaling removed in favor of bitmap
+//      }
     }
     if frame.size != .zero {
       _oldSize = frame.size

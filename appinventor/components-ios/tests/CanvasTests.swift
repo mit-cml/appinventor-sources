@@ -1,15 +1,19 @@
 import XCTest
-@testable import AppInventor
+@testable import AIComponentKit
 
-class CanvasTests: XCTestCase {
+class CanvasTests: AppInventorTestCase {
   var canvas: Canvas!
   var view: CanvasView!
 
   override func setUp() {
     super.setUp()
-    view = CanvasView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-    canvas = Canvas(view)
-    // Initialize with a known background color (e.g., Red)
+    super.setUp()
+    canvas = Canvas(form)
+    view = canvas.canvasView
+    // Force layout to set bounds
+    view.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+    canvas.Width = 100
+    canvas.Height = 100
     canvas.BackgroundColor = Int32(bitPattern: 0xFFFF0000) // Red (ARGB)
   }
 
