@@ -1118,26 +1118,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       // Check for node first
       if let node = findClosestNode(tapLocation: screenPoint) {
           let worldPos = node._modelEntity.convert(position: .zero, to: nil)
-          // Estimate normal from node's top surface
           let upNormal = SIMD3<Float>(0, 1, 0)
           return .node(node, worldPos, upNormal)
       }
       
-      // ✅ Check for BOTH horizontal AND vertical planes
       let raycastResults = _arView.raycast(
           from: screenPoint,
           allowing: .existingPlaneGeometry,
-          alignment: .any  // This allows both horizontal and vertical
+          alignment: .any
       )
       
-      if let bestResult = getBestSurfaceRaycast(rayCastResults: raycastResults) {
+      // ✅ Pass dragged object position to filter nearby surfaces
+      let draggedPos = _currentDraggedObject?._modelEntity.transform.translation
+      
+      if let bestResult = getBestSurfaceRaycast(rayCastResults: raycastResults, nearPosition: draggedPos) {
           let worldPosition = SIMD3<Float>(
               bestResult.worldTransform.columns.3.x,
               bestResult.worldTransform.columns.3.y,
               bestResult.worldTransform.columns.3.z
           )
           
-          // ✅ Extract surface normal from the raycast result
           let surfaceNormal = SIMD3<Float>(
               bestResult.worldTransform.columns.1.x,
               bestResult.worldTransform.columns.1.y,
@@ -1179,10 +1179,31 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return .empty(SIMD3<Float>(0, 0, 0))
   }
   
-  private func getBestSurfaceRaycast(rayCastResults: [ARRaycastResult]) -> ARRaycastResult? {
+  
+  private func getBestSurfaceRaycast(rayCastResults: [ARRaycastResult], nearPosition: SIMD3<Float>? = nil, maxDistance: Float = 2.0) -> ARRaycastResult? {
       guard !rayCastResults.isEmpty else { return nil }
       
-      // ✅ Extract camera position immediately without retaining frame
+      // ✅ If we have a reference position (dragged object), filter by distance from it
+      if let refPos = nearPosition {
+          let nearbyResults = rayCastResults.filter { result in
+              let hitPos = SIMD3<Float>(
+                  result.worldTransform.columns.3.x,
+                  result.worldTransform.columns.3.y,
+                  result.worldTransform.columns.3.z
+              )
+              // Check horizontal distance only
+              let distance = simd_distance(
+                  SIMD2<Float>(refPos.x, refPos.z),
+                  SIMD2<Float>(hitPos.x, hitPos.z)
+              )
+              return distance < maxDistance
+          }
+          
+          // Prefer detected planes, otherwise return closest
+          return nearbyResults.first(where: { $0.anchor is ARPlaneAnchor }) ?? nearbyResults.first
+      }
+      
+      // ✅ Original behavior: sort by camera distance
       let cameraPosition: SIMD3<Float>? = autoreleasepool {
           guard let frame = _arView.session.currentFrame else { return nil }
           let transform = frame.camera.transform
@@ -1194,11 +1215,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
       
       guard let cameraPos = cameraPosition else {
-          // Fallback: prefer detected planes, then first result
           return rayCastResults.first(where: { $0.anchor is ARPlaneAnchor }) ?? rayCastResults.first
       }
       
-      // Helper to get distance
       func distanceFromCamera(_ result: ARRaycastResult) -> Float {
           let position = SIMD3<Float>(
               result.worldTransform.columns.3.x,
@@ -1208,15 +1227,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           return simd_distance(cameraPos, position)
       }
       
-      // ✅ Sort by distance from camera
       let sortedByDistance = rayCastResults.sorted { distanceFromCamera($0) < distanceFromCamera($1) }
       
-      // ✅ Prioritize detected planes over estimated surfaces
       if let detectedPlane = sortedByDistance.first(where: { $0.anchor is ARPlaneAnchor }) {
           return detectedPlane
       }
       
-      // Fallback to closest surface
       return sortedByDistance.first
   }
   
@@ -2936,7 +2952,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
 extension ARView3D: ARImageMarkerContainer {
   @objc public var ImageMarkers: [ARImageMarker] {
     get {
-      return _imageMarkers.values.map { $0 }
+      return _imageMarkers.values.map { $0 } //CSB this doesn't appear to be working?
     }
   }
 
@@ -3533,7 +3549,8 @@ extension ARView3D {
       }
       
     case .detectedPlane(_, let hitPosition, let normal):
-      let safeY = max(hitPosition.y + 0.01, Float(GROUND_LEVEL) + 0.01)
+      print("hit is on plane \(hitPosition)")
+      let safeY = max(hitPosition.y + 0.001, Float(GROUND_LEVEL) + 0.01)
       let surface = SIMD3<Float>(hitPosition.x, safeY, hitPosition.z)
       showPlacementPreview(at: surface, surfaceNormal: normal, isStacking: false)
       return surface
