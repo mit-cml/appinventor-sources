@@ -31,7 +31,7 @@
   }
   String cachePostfix = "@blocklyeditor_isRelease@".equals("true") ? "cache" : "nocache";
   String locale = request.getParameter("locale");
-  if (locale == null || locale.isEmpty()) {
+  if (locale == null || locale.isEmpty() || !i18n.mapping.containsKey(locale)) {
     locale = "en";
   }
   String hash = i18n.mapping.getOrDefault(locale, "");
