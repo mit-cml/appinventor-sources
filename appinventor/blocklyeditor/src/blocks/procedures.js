@@ -1179,7 +1179,6 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME}]
 };
 
-
 Blockly.Blocks['procedures_callreturn'] = {
   // Call a procedure with a return value.
   category: 'Procedures',  // Procedures are handled specially.
@@ -1233,14 +1232,9 @@ Blockly.Blocks['procedures_callanonnoreturn'] = {
           return items.length > 0 ? items : [' ',' '];
         };
 
-        this.procDropDown = new AI.Blockly.ProcedureNameDropdown(this.procNamesFxn, AI.Blockly.FieldProcedure.onChange);
-        this.procDropDown.block = this;
-        this.appendDummyInput()
-            .appendField(Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL)
-            .appendField(this.procDropDown,"PROCNAME");
-//    this.appendValueInput('PROCEDURE')
-//        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
-//        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_CALL_ANON);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_TOOLTIP);
