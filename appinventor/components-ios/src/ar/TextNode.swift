@@ -38,17 +38,18 @@ open class TextNode: ARNodeBase, ARText {
    * Note: RealityKit doesn't have built-in 3D text like SceneKit, so we create it from a 2D representation
    */
   private func updateTextMesh() {
-      let lineHeight: CGFloat = 0.05 * CGFloat(Scale)
-      let font = MeshResource.Font.systemFont(ofSize: lineHeight)
-      let textMesh = MeshResource.generateText(
-          _text,
-          extrusionDepth: UnitHelper.centimetersToMeters(_depth),
-          font: font
-      )
-      let textMaterial = SimpleMaterial(color: argbToColor(FillColor), isMetallic: _isMetallic)
+    let lineHeight: CGFloat = 0.05 * CGFloat(Scale)
+    let font = MeshResource.Font.systemFont(ofSize: lineHeight)
+    let textMesh = MeshResource.generateText(
+        _text,
+        extrusionDepth: UnitHelper.centimetersToMeters(_depth),
+        font: font
+    )
+    let textMaterial = SimpleMaterial(color: argbToColor(FillColor), isMetallic: _isMetallic)
 
-      // Update existing entity instead of creating new one
-      _modelEntity.model = ModelComponent(mesh: textMesh, materials: [textMaterial])
+    // Update existing entity instead of creating new one
+    _modelEntity.model = ModelComponent(mesh: textMesh, materials: [textMaterial])
+     
   }
   
   override open func defaultCameraFacingOrientation() -> simd_quatf {
