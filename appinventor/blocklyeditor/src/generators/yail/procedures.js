@@ -51,6 +51,36 @@ AI.Yail['procedures_defnoreturn'] = function() {
   return code;
 };
 
+// Generator code for yail procedure
+AI.Yail['procedures_defanonnoreturn'] = function() {
+  var argPrefix = AI.Yail.YAIL_LOCAL_VAR_TAG
+                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
+  var args = this.getVars().map(function (arg) {return argPrefix + arg;}).join(' ');
+  var body = AI.Yail.statementToCode(this, 'STACK', AI.Yail.ORDER_NONE)  || AI.Yail.YAIL_FALSE;
+  var code = AI.Yail.YailCallYialPrimitive(
+    "create-yail-procedure",
+    AI.Yail.YAIL_LAMBDA
+      + AI.Yail.YAIL_OPEN_COMBINATION + args + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER
+      + body + AI.Yail.YAIL_CLOSE_COMBINATION,
+    "any", "create procedure");
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+};
+
+// Generator code for yail procedure (with return)
+AI.Yail['procedures_defanonreturn'] = function() {
+  var argPrefix = AI.Yail.YAIL_LOCAL_VAR_TAG
+                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
+  var args = this.getVars().map(function (arg) {return argPrefix + arg;}).join(' ');
+  var returnVal = AI.Yail.valueToCode(this, 'RETURN', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var code = AI.Yail.YailCallYialPrimitive(
+    "create-yail-procedure",
+    AI.Yail.YAIL_LAMBDA
+      + AI.Yail.YAIL_OPEN_COMBINATION + args + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER
+      + returnVal + AI.Yail.YAIL_CLOSE_COMBINATION,
+    "any", "create procedure");
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+};
+
 AI.Yail['procedure_lexical_variable_get'] = function() {
   return AI.Yail.lexical_variable_get.call(this);
 }
@@ -85,3 +115,76 @@ AI.Yail['procedures_callreturn'] = function() {
       + AI.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, AI.Yail.ORDER_ATOMIC ];
 };
+
+// Generator code for yail procedure call with no return
+AI.Yail['procedures_callanonnoreturn'] = function() {
+  var argCode = [];
+  var argTypes = [];
+  argCode.push(AI.Yail.valueToCode(this, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE);
+  argTypes.push("any");
+  for (var x=0; this.getInput("ARG" + x); x++) {
+    argCode.push(AI.Yail.valueToCode(this, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE);
+    argTypes.push('any');
+  }
+  var code = AI.Yail.YailCallYialPrimitive("call-yail-procedure", argCode, argTypes, "call procedure");
+  return code;
+};
+
+// Generator code for yail procedure call with return
+AI.Yail['procedures_callanonreturn'] = function() {
+  var argCode = [];
+  var argTypes = [];
+  argCode.push(AI.Yail.valueToCode(this, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE);
+  argTypes.push("any");
+  for (var x=0; this.getInput("ARG" + x); x++) {
+    argCode.push(AI.Yail.valueToCode(this, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE);
+    argTypes.push('any');
+  }
+  var code = AI.Yail.YailCallYialPrimitive("call-yail-procedure", argCode, argTypes, "call procedure");
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+};
+
+// Generator code for yail procedure call with no return (input list version)
+AI.Yail['procedures_callanonnoreturn_inputlist'] = function() {
+  var code = AI.Yail.YailCallYialPrimitive(
+      "call-yail-procedure-input-list",
+      [ AI.Yail.valueToCode(this, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE,
+        AI.Yail.valueToCode(this, 'INPUTLIST', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE ], 
+      ["any","any"],
+      "call procedure(with input list)");
+  return code;
+};
+
+// Generator code for yail procedure call with return (input list version)
+AI.Yail['procedures_callanonreturn_inputlist'] = function() {
+  var code = AI.Yail.YailCallYialPrimitive(
+      "call-yail-procedure-input-list",
+      [ AI.Yail.valueToCode(this, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE,
+        AI.Yail.valueToCode(this, 'INPUTLIST', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE ], 
+      ["any","any"],
+      "call procedure(with input list)");
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+};
+
+AI.Yail['procedures_numArgs'] = function() {
+  var code = AI.Yail.YailCallYialPrimitive(
+      "num-args-yail-procedure",
+      AI.Yail.valueToCode(this, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE,
+      "any", "get number of arguments");
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+}
+
+AI.Yail['procedures_getWithName'] = function() {
+  var procName = AI.Yail.valueToCode(this, 'PROCEDURENAME', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var code = AI.Yail.YailCallYialPrimitive(
+      "create-yail-procedure-with-name", procName, "any", "get procedure");
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+}
+
+AI.Yail['procedures_getWithDropdown'] = function() {
+  var procedure = AI.Yail.YAIL_GET_VARIABLE +
+      AI.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME') + AI.Yail.YAIL_CLOSE_COMBINATION;
+  var code = AI.Yail.YailCallYialPrimitive(
+    "create-yail-procedure", procedure, "any", "get procedure");
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+}

@@ -3055,6 +3055,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return "component";
     }
 
+    // YailProcedure -> procedure
+    if (type.equals("com.google.appinventor.components.runtime.util.YailProcedure")) {
+      return "procedure";
+    }
+
     // Check if it's a component.
     if (componentTypes.contains(typeString)) {
       return "component";
