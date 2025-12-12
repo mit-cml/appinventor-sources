@@ -3611,7 +3611,7 @@ extension ARView3D {
     
     // Create indicator entity
     let indicatorEntity = ModelEntity()
-    let geometry = MeshResource.generatePlane(width: 0.15, depth: 0.15)
+    let geometry = MeshResource.generatePlane(width: 0.25, depth: 0.25)
     var material = SimpleMaterial()
     
     // ✅ Check if this is a vertical surface (wall)
@@ -3619,12 +3619,12 @@ extension ARView3D {
     
     // Different visual feedback
     if isStacking {
-      material.color = .init(tint: .blue.withAlphaComponent(0.7))
-      material.baseColor = MaterialColorParameter.color(.blue)
+      material.color = .init(tint: .red.withAlphaComponent(0.7))
+      material.baseColor = MaterialColorParameter.color(.red)
     } else if isVertical {
       // ✅ Yellow indicator for walls
-      material.color = .init(tint: .yellow.withAlphaComponent(0.7))
-      material.baseColor = MaterialColorParameter.color(.yellow)
+      material.color = .init(tint: .blue.withAlphaComponent(0.7))
+      material.baseColor = MaterialColorParameter.color(.blue)
     } else {
       material.color = .init(tint: .green.withAlphaComponent(0.7))
       material.baseColor = MaterialColorParameter.color(.green)
@@ -3635,7 +3635,10 @@ extension ARView3D {
     let rotation = simd_quatf(from: defaultUp, to: surfaceNormal)
     
     // ✅ Offset position slightly along normal to avoid z-fighting
-    let offsetPosition = position + surfaceNormal * 0.001
+    var offsetPosition = position + surfaceNormal * 0.002
+    if isVertical {
+      offsetPosition.z += 0.005
+    }
     
     let anchor = AnchorEntity(world: offsetPosition)
     indicatorEntity.model = ModelComponent(mesh: geometry, materials: [material])
