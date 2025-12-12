@@ -1469,30 +1469,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           // Cache LOCAL transform on first detach
         
         if node._nodeLocalTransform == nil {
-              let localTransform = node._modelEntity.transformMatrix(relativeTo: marker.Anchor)
-              node._nodeLocalTransform = Transform(matrix: localTransform)
-              print("   💾 First-time cache of local transform for \(node.Name): \(node._nodeLocalTransform!.translation)")
+          node._nodeLocalTransform = node._modelEntity.transform  // Already relative to marker
+          print("   💾 First-time cache of local transform for \(node.Name): \(node._nodeLocalTransform!.translation)")
         }
-         
-        guard let localOffset = node._nodeWorldTransform else {
-            print("⚠️ No cached world position for \(node.Name)")
-            continue
-        }
+
         // ✅ Get world position BEFORE removing from parent
-        let worldPosition = localOffset.translation
+        let worldPosition = node._modelEntity.position(relativeTo: nil)
         let worldOrientation = node._modelEntity.orientation(relativeTo: nil)
         let worldScale = node._modelEntity.scale(relativeTo: nil)
         
-        print("   📍 Preserving world orientation: \(worldOrientation)")
+        print("   📍 Preserving world position: \(worldPosition)  and world orientation: \(worldOrientation)")
         // ✅ Create anchor at the world position directly
         let tempAnchor = AnchorEntity(world: worldPosition)
         tempAnchor.name = "\(node.Name)_tempAnchor"
-        node._tempWorldAnchor = tempAnchor
 
+        node._tempWorldAnchor = tempAnchor
         _arView.scene.addAnchor(tempAnchor)
         
         node._modelEntity.removeFromParent()
         node._modelEntity.setParent(tempAnchor, preservingWorldTransform: false)
+        // manual setup
         node._modelEntity.position = .zero
         node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
         node._modelEntity.scale = worldScale
@@ -1519,6 +1515,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           }
 
           node._tempWorldAnchor?.removeFromParent()
+          node._modelEntity.removeFromParent()
           node._tempWorldAnchor = nil
           
           node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
@@ -1537,8 +1534,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
              //node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
              }
           }
-     
-        print("reattaching: Set orientation for \(node.Name)")
+   
+        print("reattaching: orientation for \(node.Name) world: \(node._nodeWorldTransform) but setting local: \(node._modelEntity.orientation)")
       }
   }
   private func cleanupMarkerPivot(_ marker: ImageMarker) {
@@ -1709,83 +1706,89 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
   private var _consecutiveLostFrames = 0
   private let _lostFrameThreshold = 5
+
   public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
     for anchor in anchors {
-      if let planeAnchor = anchor as? ARPlaneAnchor, let updatedPlane = _detectedPlanesDict[anchor] {
-        updatedPlane.updateFor(anchor: planeAnchor)
-        DetectedPlaneUpdated(updatedPlane)
-      } else if let imageAnchor = anchor as? ARImageAnchor {
-        guard
-          let name = imageAnchor.referenceImage.name,
-          let marker = _imageMarkers[name]
-        else { continue }
-
-        // Check if anchor will be replaced BEFORE calling ensureCurrentAnchorEntity
-        let anchorWillBeReplaced = (marker._lastARAnchorId != nil &&
-                                    marker._lastARAnchorId != imageAnchor.identifier)
-        
-        // Ensure we have current anchor entity
-        ensureCurrentAnchorEntity(for: marker, imageAnchor: imageAnchor)
-        
-        // Capture tracking state
-        let wasTracked = marker._isTracking
-        let nowTracked = imageAnchor.isTracked
-        
-        // Update tracking state
-        marker._isTracking = nowTracked
-        
-        // ✅ FIRST: Attach any LoadScene nodes with queued offsets
-        if nowTracked {
-          _consecutiveLostFrames = 0
-          for node in marker._attachedNodes where node._queuedMarkerOffset != nil {
-            print("   🔗 Attaching LoadScene node \(node.Name)")
-            node._modelEntity.removeFromParent()
-            marker.Anchor!.addChild(node._modelEntity)
-            
-            node._queuedMarkerOffset = nil
-            node._anchorEntity = marker.Anchor
-            node.EnablePhysics(false) //seems to bounce around
-            
-            //node._modelEntity.orientation = simd_quatf(angle: 0, axis: [0, 1, 0])  // no tipping
-            
-            if node._nodeLocalTransform == nil {
-              node._nodeLocalTransform = node._modelEntity.transform
-              print("     💾 Cached local transform (anchor pos): \(node._modelEntity.position)")
-            }
-          }
-        }
-        
-        if anchorWillBeReplaced || (nowTracked && !wasTracked) {
-          if anchorWillBeReplaced {
-            //print("🔁 Anchor replaced for \(name) - about to reattach nodes")
-          } else {
-            //print("🔄 Marker \(name) reappeared - reattaching nodes")
-          }
-          
-          reattachNodesToMarker(marker)
-          marker.AppearedInView()
-        }
-        // ✅ THIRD: Handle detachment when marker is lost
-        else if wasTracked && !nowTracked && !anchorWillBeReplaced {
-          _consecutiveLostFrames += 1
-          
-          //csb - this throttling doesn't seem necessary atm if _consecutiveLostFrames >= 2 {
-          print("⚠️ Marker \(name) lost - detaching to world space")
-          marker.NoLongerInView()
-          detachToWorldIfNeeded(for: marker)
-          _consecutiveLostFrames = 0
-          //}
-        }
-        
-        // ✅ Update world transforms while tracked (for smooth fallback)
-        if nowTracked {
-          updateNodeTracking(marker: marker)
-        }
-          
-      } else if let geoAnchor = anchor as? ARGeoAnchor {
+      switch anchor {
+      case let planeAnchor as ARPlaneAnchor:
+          handlePlaneUpdate(planeAnchor)
+      case let imageAnchor as ARImageAnchor:
+          handleImageAnchorUpdate(imageAnchor)
+      case let geoAnchor as ARGeoAnchor:
           handleGeoAnchorAdded(geoAnchor)
+      default:
+          break
       }
     }
+  }
+
+  // MARK: - Plane Handling
+  private func handlePlaneUpdate(_ planeAnchor: ARPlaneAnchor) {
+      guard let updatedPlane = _detectedPlanesDict[planeAnchor] else { return }
+      updatedPlane.updateFor(anchor: planeAnchor)
+      DetectedPlaneUpdated(updatedPlane)
+  }
+
+  private func handleImageAnchorUpdate(_ imageAnchor: ARImageAnchor) {
+    guard
+        let name = imageAnchor.referenceImage.name,
+        let marker = _imageMarkers[name]
+    else { return }
+    
+    let anchorWasReplaced = (marker._lastARAnchorId != nil &&
+                             marker._lastARAnchorId != imageAnchor.identifier)
+    ensureCurrentAnchorEntity(for: marker, imageAnchor: imageAnchor)
+    
+    let wasTracked = marker._isTracking
+    let nowTracked = imageAnchor.isTracked
+    marker._isTracking = nowTracked
+    
+    if nowTracked {
+        handleMarkerTracked(marker, anchorWasReplaced: anchorWasReplaced, wasTracked: wasTracked)
+    } else if wasTracked {
+        handleMarkerLost(marker, name: name, anchorWasReplaced: anchorWasReplaced)
+    }
+  }
+
+  private func handleMarkerTracked(_ marker: ImageMarker, anchorWasReplaced: Bool, wasTracked: Bool) {
+    _consecutiveLostFrames = 0
+    
+    // Attach LoadScene nodes
+    for node in marker._attachedNodes where node._queuedMarkerOffset != nil {
+      print("   🔗 Attaching LoadScene node \(node.Name)")
+      node._modelEntity.removeFromParent()
+      marker.Anchor!.addChild(node._modelEntity)
+      
+      node._queuedMarkerOffset = nil
+      node._anchorEntity = marker.Anchor
+      node.EnablePhysics(false)
+      
+      if node._nodeLocalTransform == nil {
+          node._nodeLocalTransform = node._modelEntity.transform
+          print("     💾 Cached local transform (anchor pos): \(node._modelEntity.position)")
+      }
+    }
+    
+    // Reattach if anchor replaced or marker just appeared
+    if anchorWasReplaced || !wasTracked {
+      reattachNodesToMarker(marker)
+      marker.AppearedInView()
+      updateNodeTracking(marker: marker)
+    }
+    
+    
+  }
+
+  private func handleMarkerLost(_ marker: ImageMarker, name: String, anchorWasReplaced: Bool) {
+    guard !anchorWasReplaced else { return }
+    
+    _consecutiveLostFrames += 1
+    updateNodeTracking(marker: marker)
+    print("⚠️ Marker \(name) lost - detaching to world space")
+    marker.NoLongerInView()
+    
+    detachToWorldIfNeeded(for: marker)
+    _consecutiveLostFrames = 0
   }
   
   public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
