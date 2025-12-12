@@ -1350,28 +1350,11 @@ open class ARNodeBase: NSObject, ARNode {
     let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
     let halfHeight = (bounds.max.y - bounds.min.y) / 2
-    
+   
     _hasPreviewSurface = true
-    /*if let cachedSurface = getPreviewPlacementSurface() {
-        print("Using cached preview surface: \(cachedSurface)")
-        //var correctedY = cachedSurface.y + halfHeight + ARView3D.VERTICAL_OFFSET
-        let correctedSurface = SIMD3<Float>(
-            cachedSurface.x,
-            cachedSurface.y,  // Use corrected Y, not cached surface Y
-            cachedSurface.z
-        )
+
+
         
-        print("📍  surface is \(cachedSurface.y)")
-        
-        
-        
-        animateToPosition(correctedSurface) {
-            self.finalizeModelPlacement()
-            self.clearPreviewPlacementSurface()
-        }
-        return
-    }*/
-    
     
     // Fallback: find surface from current position
     let currentPos = _modelEntity.transform.translation
