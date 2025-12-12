@@ -2297,30 +2297,37 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     
     
     func captureSnapshot(_ onDone: @escaping (UIImage?) -> Void) {
-      self._arView.snapshot(saveToHDR: false) { image in
-        onDone(image)
-      }
+        self._arView.snapshot(saveToHDR: false) { [weak self] image in
+            onDone(image)
+        }
     }
     
     @objc open func TakePicture(_ dummyName: String, _ width: Float = 15.0) {
-      captureSnapshot { image in
-        guard let image else {
-          print("❌ Failed to make image for marker")
-          return
+      captureSnapshot { [weak self] image in
+        guard let self = self, let image = image else {
+            print("❌ Failed to make image for marker")
+            return
         }
-        guard let imageUI = image as Optional else { return }
-        do {
-          let url = try self.savePNG(imageUI, dummyName)
-          self._currentImageSnapshot = url
           
-          let nsWidth: NSNumber = NSNumber(value: width)
-          EventDispatcher.dispatchEvent(
-              of: self,
-              called: "AfterPicture",
-              arguments: url as NSString, dummyName as NSString, width as NSNumber
-          )
-        }catch {
-            print("❌ Failed to save snapshot for marker: \(error)")
+        // Move to background thread immediately
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+          guard let self = self else { return }
+          
+          do {
+            let url = try self.savePNG(image, dummyName)
+            
+            // Dispatch event on main thread
+            DispatchQueue.main.async {
+              self._currentImageSnapshot = url
+              EventDispatcher.dispatchEvent(
+                of: self,
+                called: "AfterPicture",
+                arguments: url as NSString, dummyName as NSString, width as NSNumber
+              )
+            }
+          } catch {
+              print("❌ Failed to save snapshot: \(error)")
+          }
         }
       }
     }
