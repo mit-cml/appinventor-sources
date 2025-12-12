@@ -162,6 +162,7 @@ import Foundation
 
   // ListView Errors
   case ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS = 4601
+  case ERROR_LISTVIEW_MISSING_REQUIRED_ITEM = 4602
 
   //BaseAiComponent error
   case ERROR_MODEL_AI = 4701
@@ -453,7 +454,8 @@ import Foundation
     // ListView Errors
     case .ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS:
       return "The index %d is out of bounds for the list view."
-
+    case .ERROR_LISTVIEW_MISSING_REQUIRED_ITEM:
+      return "The list view dictionary entry is missing a required property. You need to provide 'Text1', 'Text2', or 'Image' for each entry."
     // iOS Specific Errors
     case .ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED:
       return "Installing packages from URLs is not supported on iOS"
