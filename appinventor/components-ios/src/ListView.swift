@@ -183,9 +183,9 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     
   private func makeListItem(text1: String = "", text2: String = "", image: String = "") -> [String: AnyObject] {
     return [
-        "Text1": text1 as AnyObject,
-        "Text2": text2 as AnyObject,
-        "Image": image as AnyObject
+      "Text1": text1 as AnyObject,
+      "Text2": text2 as AnyObject,
+      "Image": image as AnyObject
     ]
   }
   
@@ -193,16 +193,21 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     if !elements.isEmpty {
       for item in elements {
         if let rowDict = item as? NSDictionary,
-          rowDict.isValidListItem,
+           rowDict.isValidListItem,
            let stoDict = rowDict as? [String: AnyObject] {
-              _listData.append(stoDict)
-            }
-
-        } // else throw an error or fail silently?
+          _listData.append(stoDict)
+        } else if let row = item as? String {
+          _listData.append(makeListItem(text1: row, text2: "", image: ""))
+        } else {
+          _container?.form?.dispatchErrorOccurredEvent(self, "AddItems",
+                                                       ErrorMessage.ERROR_LISTVIEW_MISSING_REQUIRED_ITEM.code)
+         return
+        }
+      }
+      elementsCount()
     }
-    elementsCount()
   }
-
+  
   func elementsCount() {
     let rows = max(_elements.count, _listData.count)
     _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
@@ -306,21 +311,21 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
 
   @objc open var ImageHeight: Int32 {
     get {
-        return _imageHeight
+      return _imageHeight
     }
     set(height) {
-        _imageHeight = height
-        _view.reloadData()
+      _imageHeight = height
+      _view.reloadData()
     }
 }
 
   @objc open var ImageWidth: Int32 {
     get {
-        return _imageWidth
+      return _imageWidth
     }
     set(width) {
-        _imageWidth = width
-        _view.reloadData()
+      _imageWidth = width
+      _view.reloadData()
     }
   }
 
@@ -579,35 +584,38 @@ open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     addElements(Array<AnyObject>((items as [AnyObject]).dropFirst()))
   }
 
+  /* insert element to ListView as Dictionary or as String */
   @objc open func AddItemsAtIndex(_ addIndex: Int32, _ elements: [AnyObject]) {
     if elements.isEmpty {
       return
     }
     if addIndex < 1 || addIndex - 1 > max(_listData.count, _elements.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
-           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
+                                                   ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
-    let index = Int(addIndex - 1)
-    if elements.first is YailDictionary {
+    
+    if !elements.isEmpty {
+      let index = Int(addIndex - 1)
       var newItems: [[String: AnyObject]] = []
       for item in elements {
-        if let row = item as? YailDictionary {
-          if let rowDict = row as? [String:AnyObject] {
-            newItems.append(rowDict)
-          }
+        if let rowDict = item as? NSDictionary,
+           rowDict.isValidListItem,
+           let stoDict = rowDict as? [String: AnyObject] {
+          newItems.append(stoDict)
         } else if let row = item as? String {
           newItems.append(makeListItem(text1: row, text2: "", image: ""))
         } else {
-          // Hmm...
+          _container?.form?.dispatchErrorOccurredEvent(self, "AddItemAtIndex",
+               ErrorMessage.ERROR_LISTVIEW_MISSING_REQUIRED_ITEM, index)
+          return
         }
+        _listData.insert(contentsOf: newItems, at: index)
       }
-      _listData.insert(contentsOf: newItems, at: index)
-    } else {
-      _elements.insert(contentsOf: elements.toStringArray(), at: index)
+      elementsCount()
     }
-    elementsCount()
   }
+
 
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
     return [
