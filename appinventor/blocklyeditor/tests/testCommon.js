@@ -1,3 +1,14 @@
+// For test environment compatibility, ensure FieldColour is available
+// The plugin registration happens via the loaded plugin file
+if (typeof window.FieldColour === 'function') {
+  Blockly.FieldColour = window.FieldColour;
+  console.log('Using real FieldColour plugin from window.FieldColour');
+} else if (typeof registerFieldColour === 'function') {
+  registerFieldColour();
+  console.log('Registered FieldColour plugin via registerFieldColour');
+} else {
+  console.log('Note: FieldColour plugin should be loaded via plugin file');
+}
 
 var componentTypes = {};
 var YOUNG_ANDROID_VERSION;
@@ -202,6 +213,10 @@ function compareDefinitions(expected, given) {
   for (var i = expectedDefs.length - 1; i >= 0; i--) {
     if (smoosh(expectedDefs[i]) != smoosh(givenDefs[i])) {
       console.log("Failed to match: " + findDefName(expectedDefs[i]), (smoosh(expectedDefs[i]) == smoosh(givenDefs[i])));
+      console.log("EXPECTED: " + expectedDefs[i]);
+      console.log("ACTUAL:   " + givenDefs[i]);
+      console.log("EXPECTED SMOOSHED: " + smoosh(expectedDefs[i]));
+      console.log("ACTUAL SMOOSHED:   " + smoosh(givenDefs[i]));
       flag = false;
     }
   }
