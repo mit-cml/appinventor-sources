@@ -56,7 +56,7 @@ Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
       changedState = true;
     }
   }
-  if (this.rendered && changedState) {
+  if (changedState) {
     // Adding or removing a warning icon will cause the block to change shape so we need to re-render.
     this.workspace.requestRender(this);
   }
@@ -75,7 +75,7 @@ Blockly.BlockSvg.isRenderingOn = true;
  * Mark this block as bad.  Highlight it visually in red.
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
-  if (this.rendered) {
+  if (this.getSvgRoot() && this.getSvgRoot().parentNode) {
     Blockly.utils.dom.addClass(/** @type {!Element} */ (this.getSvgRoot()),
                            'badBlock');
     // Move the selected block to the top of the stack.
@@ -87,7 +87,7 @@ Blockly.BlockSvg.prototype.addBadBlock = function() {
  * Unmark this block as bad.
  */
 Blockly.BlockSvg.prototype.removeBadBlock = function() {
-  if (this.rendered) {
+  if (this.getSvgRoot() && this.getSvgRoot().parentNode) {
     Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.getSvgRoot()),
                               'badBlock');
     // Move the selected block to the top of the stack.
@@ -99,10 +99,6 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  * Check to see if the block is marked as bad.
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
-  // Return false for unrendered blocks - they can't be visually marked as bad
-  if (!this.getSvgRoot() || !this.rendered) {
-    return false;
-  }
   return Blockly.utils.dom.hasClass(/** @type {!Element} */ (this.getSvgRoot()),
     'badBlock');
 };
@@ -126,12 +122,8 @@ Blockly.BlockSvg.prototype.notBadBlock = function() {
   this.isBad = false;
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
-    // For Blockly v11 compatibility: allow unrendered blocks during XML loading
-    if (this.getSvgRoot()) {
-      this.removeBadBlock();
-    }
-    // If block is not rendered yet (during XML loading), skip visual updates
-    // The block will be properly rendered later in the loading process
+    goog.asserts.assertObject(this.getSvgRoot(), 'Block is not rendered.');
+    this.removeBadBlock();
   }
 };
 
