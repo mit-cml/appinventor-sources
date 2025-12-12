@@ -390,13 +390,13 @@ open class ModelNode: ARNodeBase, ARModel {
     let currentPos = _modelEntity.transform.translation
     if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
       animateToPosition(placementPosition) {
-          self.finalizeModelPlacement()
+        super.finalizeModelPlacement()
       }
     } else {
       // Final fallback to ground level
       let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
       animateToPosition(groundPosition) {
-          self.finalizeModelPlacement()
+        super.finalizeModelPlacement()
       }
     }
   }
