@@ -6,7 +6,7 @@
 
 /**
  * @fileoverview FieldColor with alpha support, extending FieldColour
- * @author Patryk_F
+ * @author patryk84a
  */
 
 "use strict";
@@ -50,7 +50,6 @@ Blockly.FieldColor = class extends Blockly.FieldColour {
       this.disposePickr_();
       return;
     }
-
     this.createPickrTrigger_();
     this.isPickerOpen_ = true;
     const currentValue = this.getValue();
@@ -66,20 +65,20 @@ Blockly.FieldColor = class extends Blockly.FieldColour {
         closeOnScroll: true,
         autoReposition: false,
         swatches: {
-          "#00000000": "None",
-          "#000000FF": "Black",
-          "#0000FFFF": "Blue",
-          "#00FFFFFF": "Cyan",
-          "#444444FF": "Dark Gray",
-          "#888888FF": "Gray",
-          "#00FF00FF": "Green",
-          "#CCCCCCFF": "Light Gray",
-          "#FF00FFFF": "Magenta",
-          "#FFC800FF": "Orange",
-          "#FFAFAFFF": "Pink",
-          "#FF0000FF": "Red",
-          "#FFFFFFFF": "White",
-          "#FFFF00FF": "Yellow",
+          "#00000000": Blockly.Msg.LANG_COLOUR_NONE,
+          "#000000FF": Blockly.Msg.LANG_COLOUR_BLACK,
+          "#0000FFFF": Blockly.Msg.LANG_COLOUR_BLUE,
+          "#00FFFFFF": Blockly.Msg.LANG_COLOUR_CYAN,
+          "#444444FF": Blockly.Msg.LANG_COLOUR_DARK_GRAY,
+          "#888888FF": Blockly.Msg.LANG_COLOUR_GRAY,
+          "#00FF00FF": Blockly.Msg.LANG_COLOUR_GREEN,
+          "#CCCCCCFF": Blockly.Msg.LANG_COLOUR_LIGHT_GRAY,
+          "#FF00FFFF": Blockly.Msg.LANG_COLOUR_MAGENTA,
+          "#FFC800FF": Blockly.Msg.LANG_COLOUR_ORANGE,
+          "#FFAFAFFF": Blockly.Msg.LANG_COLOUR_PINK,
+          "#FF0000FF": Blockly.Msg.LANG_COLOUR_RED,
+          "#FFFFFFFF": Blockly.Msg.LANG_COLOUR_WHITE,
+          "#FFFF00FF": Blockly.Msg.LANG_COLOUR_YELLOW,
         },
         components: {
           preview: true,

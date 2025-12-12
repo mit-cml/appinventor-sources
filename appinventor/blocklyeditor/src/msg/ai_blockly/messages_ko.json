@@ -83,6 +83,7 @@
 	"Blockly.Msg.LANG_COLOUR_LIGHT_GRAY": "밝은 회색",
 	"Blockly.Msg.LANG_COLOUR_DARK_GRAY": "짙은 회색",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "회색",
+	"Blockly.Msg.LANG_COLOUR_NONE": "없음",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "색상 분리하기",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP": "각각 0에서 255사이의 빨강, 초록, 파랑색과 투명도값을 가지는 리스트를 반환합니다.",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "색상 만들기",

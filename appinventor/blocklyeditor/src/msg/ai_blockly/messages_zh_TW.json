@@ -66,6 +66,7 @@
 	"Blockly.Msg.LANG_COLOUR_LIGHT_GRAY": "淺灰",
 	"Blockly.Msg.LANG_COLOUR_DARK_GRAY": "深灰",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "灰色",
+	"Blockly.Msg.LANG_COLOUR_NONE": "無",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "分解顏色",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP": "回傳包含紅、綠、藍色以及透明度值（0-255）的清單。",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "合成顏色",
