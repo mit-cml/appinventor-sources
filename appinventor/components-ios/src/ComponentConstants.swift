@@ -30,3 +30,9 @@ let kMapPreferredWidth: Int32 = 176
 let kMapPreferredHeight: Int32 = 144
 let kCanvasPreferredWidth = 32
 let kCanvasPreferredHeight = 48
+
+/**
+ * Augmented Reality Components
+ */
+let kARViewPreferredWidth: Int32 = 250
+let kARViewPreferredHeight: Int32 = 300

@@ -1106,7 +1106,9 @@ yail_isa(pic_state *pic) {
   } else if (pic_sym_p(pic, native_class)) {
     // We have a symbol representing a FQCN
     NSString *name = [NSString stringWithUTF8String:pic_str(pic, pic_sym_name(pic, native_class))];
-    if ([name hasPrefix:@"com.google.appinventor.components.runtime."]) {
+    if ([name hasPrefix:@"com.google.appinventor.components.runtime.ar."]) {
+        name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime.ar." withString:@"AIComponentKit."];
+    } else if ([name hasPrefix:@"com.google.appinventor.components.runtime."]) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.runtime." withString:@"AIComponentKit."];
     } else if ([name hasPrefix:@"com.google.appinventor.components.common."]) {
       name = [name stringByReplacingOccurrencesOfString:@"com.google.appinventor.components.common." withString:@"AIComponentKit."];
@@ -1406,6 +1408,8 @@ pic_value yail_get_simple_name(pic_state *pic) {
     const NSString *className = NSStringFromClass(yail_native_class_ptr(pic, native_class)->class_);
     const char *name = [className UTF8String];
     size_t lastDot = 0;
+    if (name == NULL)
+        return pic_undef_value(pic);
     for (size_t i = 0; name[i] != 0; i++) {
       if (name[i] == '.') {
         lastDot = i + 1;

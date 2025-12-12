@@ -111,6 +111,9 @@
     <!-- host[:port] to use for the iOS build server -->
     <property name="ios.build.server.host" value="localhost:9990" />
 
+    <!-- host[:port] to use for the iOS build server -->
+    <property name="ios.build.server.host" value="localhost:9990" />
+
     <!-- host[:port] to tell build server the app host url to callback
          when deploy AppInventor on other GAE implementation such as
          AppScale.Keep it blank when deploy on GAE -->
@@ -124,12 +127,12 @@
 
     <!-- The time at which the server should show an expiration notice,
          specified in ISO 8601 format, e.g., 2021-12-31T11:59:59Z -->
-    <property name="service.expires.time" value="" />
+    <property name="service.expires.time" value="2025-12-31T11:59:59Z" />
 
     <!-- Set this to false if we should not send the Git build version with build requests.
          This is useful when testing new servers where we don't want to require the
          buildserver to match -->
-    <property name="build.send.git.version" value="true" />
+    <property name="build.send.git.version" value="false" />
 
     <!-- Session Management Variables. -->
     <!-- We define three variables here.

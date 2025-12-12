@@ -5823,4 +5823,101 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
   @Description("Message shown in the info popup when the user first opens the Neo UI.")
   String neoWelcomeMessage();
+
+
+  // Augmented Reality
+
+  @DefaultMessage("WorldTracking")
+  @Description("World tracking AR tracking type")
+  String arTrackingTypeWorldTracking();
+
+  @DefaultMessage("OrientationTracking")
+  @Description("Orientation tracking AR tracking type")
+  String arTrackingTypeOrientationTracking();
+
+  @DefaultMessage("ImageTracking")
+  @Description("Image tracking AR tracking type")
+  String arTrackingTypeImageTracking();
+
+  @DefaultMessage("GeoTracking")
+  @Description("Geo tracking type")
+  String arTrackingTypeGeoTracking();
+
+  @DefaultMessage("Heavy")
+  @Description("AR Object behavior heavy")
+  String arBehaviorTypeHeavy();
+
+  @DefaultMessage("Light")
+  @Description("AR Object behavior light")
+  String arBehaviorTypeLight();
+
+  @DefaultMessage("Bouncy")
+  @Description("AR Object behavior bouncy")
+  String arBehaviorTypeBouncy();
+
+  @DefaultMessage("Wet")
+  @Description("AR Object behavior wet")
+  String arBehaviorTypeWet();
+
+  @DefaultMessage("Sticky")
+  @Description("AR Object behavior sticky")
+  String arBehaviorTypeSticky();
+
+  @DefaultMessage("Slippery")
+  @Description("AR Object behavior slippery")
+  String arBehaviorTypeSlippery();
+
+  @DefaultMessage("Floating")
+  @Description("AR Object behavior floating")
+  String arBehaviorTypeFloating();
+
+  @DefaultMessage("None")
+  @Description("AR Object behavior none")
+  String arBehaviorTypeNone();
+
+
+  @DefaultMessage("None")
+  @Description("No plane detection")
+  String arPlaneDetectionTypeNone();
+
+  @DefaultMessage("Horizontal")
+  @Description("Detect horizontal planes")
+  String arPlaneDetectionTypeHorizontal();
+
+  @DefaultMessage("Vertical")
+  @Description("Detect vertical planes")
+  String arPlaneDetectionTypeVertical();
+
+  @DefaultMessage("Both")
+  @Description("Detect both horizontal and vertical planes")
+  String arPlaneDetectionTypeBoth();
+
+  @DefaultMessage("None")
+  @Description("No text truncation")
+  String truncationTypeNone();
+
+  @DefaultMessage("End")
+  @Description("Truncate the end of the text")
+  String truncationTypeEnd();
+
+  @DefaultMessage("Middle")
+  @Description("Truncate the middle of the text")
+  String truncationTypeMiddle();
+
+  @DefaultMessage("Start")
+  @Description("Truncate the beginning of the text")
+  String truncationTypeStart();
+
+  @DefaultMessage("None")
+  @Description("No falloff for the light intensity.")
+  String arFalloffTypeNone();
+
+  @DefaultMessage("Linear")
+  @Description("Linear light intensity falloff.")
+  String arFalloffTypeLinear();
+
+  @DefaultMessage("Quadratic")
+  @Description("Further the distance, the greater the light intensity falloff")
+  String arFalloffTypeQuadratic();
+
 }
