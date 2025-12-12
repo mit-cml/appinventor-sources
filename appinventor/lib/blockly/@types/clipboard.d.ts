@@ -3,19 +3,11 @@
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { ICopyData, ICopyable } from './interfaces/i_copyable.js';
 import { BlockPaster } from './clipboard/block_paster.js';
-import { WorkspaceSvg } from './workspace_svg.js';
 import * as registry from './clipboard/registry.js';
+import type { ICopyData, ICopyable } from './interfaces/i_copyable.js';
 import { Coordinate } from './utils/coordinate.js';
-/**
- * Copy a copyable element onto the local clipboard.
- *
- * @param toCopy The copyable element to be copied.
- * @deprecated v11. Use `myCopyable.toCopyData()` instead. To be removed v12.
- * @internal
- */
-export declare function copy<T extends ICopyData>(toCopy: ICopyable<T>): T | null;
+import { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Private version of copy for stubbing in tests.
  */
@@ -35,17 +27,6 @@ export declare function paste<T extends ICopyData>(copyData: T, workspace: Works
  * @returns the pasted thing if the paste was successful, null otherwise.
  */
 export declare function paste(): ICopyable<ICopyData> | null;
-/**
- * Duplicate this copy-paste-able element.
- *
- * @param toDuplicate The element to be duplicated.
- * @returns The element that was duplicated, or null if the duplication failed.
- * @deprecated v11. Use
- *     `Blockly.clipboard.paste(myCopyable.toCopyData(), myWorkspace)` instead.
- *     To be removed v12.
- * @internal
- */
-export declare function duplicate<U extends ICopyData, T extends ICopyable<U> & IHasWorkspace>(toDuplicate: T): T | null;
 /**
  * Private version of duplicate for stubbing in tests.
  */
