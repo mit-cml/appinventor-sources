@@ -20,6 +20,9 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // user email address
   private String email;
 
+  // user display name
+  private String name;
+
   // whether user has accepted terms of service
   private boolean tosAccepted;
 
@@ -36,6 +39,15 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   private String sessionId;        // Used to ensure only one account active at a time
 
   private String password;      // Hashed password (if using local login system)
+
+  private long oneProjectId;    // If we are explicitly opening only one project
+                                // store it here.
+
+  private long dueDate;         // non-zero if this is a problem set. The value
+                                // is then the date it is due as a UNIX timestamp
+
+  private String fauxProjectName = null;
+                                // if non-null, use this as the project name
 
   private String backPackId = null; // If non-null we have a shared backpack
 
@@ -124,6 +136,26 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   /**
+   * Returns the user's name.
+   * If user's name is missing (not set yet), return email instead.
+   * @return user name
+   */
+  public String getUserName() {
+    if (name != null) {
+      return name;
+    } else {
+      return email;
+    }
+  }
+
+  /**
+   * Sets the user's name.
+   */
+  public void setUserName(String name) {
+    this.name = name;
+  }
+
+  /**
    * Sets whether the user has accepted the terms of service.
    *
    * @param tos {@code true} if the user has accepted the terms of service,
@@ -180,6 +212,18 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return id.hashCode();
   }
 
+  public static String getDefaultName(String email)
+  {
+    if (email==null)
+      return "user";
+    String[] parts = email.split("@");
+    if (parts.length>1) {
+      return parts[0];
+    } else {
+      return email;
+    }
+  }
+
   /**
    * Get the unique session id associated with this user
    * This is used to ensure that only one session is opened
@@ -206,6 +250,29 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return isReadOnly;
   }
 
+  public void setOneProjectId(long projectId) {
+    this.oneProjectId = projectId;
+  }
+
+  public long getOneProjectId() {
+    return oneProjectId;
+  }
+
+  public long getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(long dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public String getFauxProjectName() {
+    return fauxProjectName;
+  }
+
+  public void setFauxProjectName(String fauxProjectName) {
+    this.fauxProjectName = fauxProjectName;
+  }
 
   public String getBackpackId() {
     return backPackId;
@@ -222,7 +289,12 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     // limit the places where we have to have knowledge of it to just those places that care
     User retval =  new User(id, email, tosAccepted, isAdmin, sessionId);
     retval.setReadOnly(isReadOnly);
+    retval.setOneProjectId(oneProjectId);
+    // We also set the dueDate and fauxProjectName explicitly instead of in the constructor
+    retval.setDueDate(this.dueDate);
+    retval.setFauxProjectName(this.fauxProjectName);
     retval.setBackpackId(this.backPackId);
+    retval.name = this.name;
     return retval;
   }
 }

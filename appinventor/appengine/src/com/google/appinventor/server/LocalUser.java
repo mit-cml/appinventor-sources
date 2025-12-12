@@ -118,4 +118,42 @@ public class LocalUser implements UserInfoProvider {
     }
   }
 
+  @Override
+  public void setOneProjectId(long projectId) {
+    try {
+      user.get().setOneProjectId(projectId);
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override public long getOneProjectId() {
+    try {
+      return user.get().getOneProjectId();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override public String getFauxProjectName() {
+    try {
+      return user.get().getFauxProjectName();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override public void setFauxProjectName(String fauxProjectName) {
+    try {
+      user.get().setFauxProjectName(fauxProjectName);
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+
 }
