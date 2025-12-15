@@ -36,6 +36,8 @@
     "Blockly.Msg.LANG_COLOUR_RED": "赤",
     "Blockly.Msg.LANG_COLOUR_WHITE": "白",
     "Blockly.Msg.LANG_COLOUR_BLACK": "黒",
+    "Blockly.Msg.LANG_COLOUR_NONE": "なし",
+    "Blockly.Msg.LANG_COLOUR_DEFAULT": "デフォルト",
     "Blockly.Msg.GENERICIZE_BLOCK": "汎用にする",
     "Blockly.Msg.BACKPACK_CONFIRM_EMPTY": "本当にバックパックを空にしていいですか？",
     "Blockly.Msg.COPY_ALLBLOCKS": "ブロックを全てバックパックにコピーし入れる",

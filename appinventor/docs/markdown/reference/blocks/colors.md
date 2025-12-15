@@ -19,7 +19,7 @@ Internally, App Inventor stores each color as a single number. When you use `mak
 
 This is a basic color block. It has a small square shape and has a color in the middle that represents the color stored internally in this block.
 
-If you click on the color in the middle, a pop-up appears on the screen with a table of 70 colors that you can choose from. Clicking on a new color will change the current color of your basic color block.
+If you click on the color in the middle, a pop-up appears with an advanced color picker. You can select any color, including transparency (alpha channel). The color picker allows you to choose from swatches or use sliders for precise color and transparency selection. Clicking on a new color and saving will change the current color of your basic color block.
 
 ![](images/colors/colorblock.gif)
 
