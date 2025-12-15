@@ -85,6 +85,7 @@
 	"Blockly.Msg.LANG_COLOUR_DARK_GRAY": "Tamsiai pilka",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "Pilka",
 	"Blockly.Msg.LANG_COLOUR_NONE": "Nėra",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Numatytasis",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "padalinti spalvą",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP": "Keturių elementų sąrašas (reikšmės nuo 0 iki 255), nurodantis raudoną, žalią, mėlyną ir alfa komponentus.",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "sukurti spalvą",

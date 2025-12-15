@@ -231,6 +231,7 @@
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT": "tekst",
     "Blockly.Msg.LANG_COLOUR_GRAY": "Grijs",
     "Blockly.Msg.LANG_COLOUR_NONE": "Geen",
+    "Blockly.Msg.LANG_COLOUR_DEFAULT": "Standaard",
     "Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Netwerk Communicatie Fout met de AI Companion. <br />Probeer de smartphone te herstarten en opnieuw aan te sluiten",
     "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO": "doe",
     "Blockly.Msg.LANG_LISTS_PICK_RANDOM_TITLE_PICK_RANDOM": "kies een willekeurig item",

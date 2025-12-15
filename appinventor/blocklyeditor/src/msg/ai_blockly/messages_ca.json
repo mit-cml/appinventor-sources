@@ -194,6 +194,7 @@
     "Blockly.Msg.LANG_COLOUR_DARK_GRAY": "Gris fosc",
     "Blockly.Msg.LANG_COLOUR_GRAY": "Gris",
     "Blockly.Msg.LANG_COLOUR_NONE": "Cap",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Per defecte",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "crea color",
     "Blockly.Msg.LANG_CATEGORY_CONTROLS": "Control",
     "Blockly.Msg.LANG_CONTROLS_IF_TOOLTIP_1": "Si un valor és cert, executa els blocs encaixats.",

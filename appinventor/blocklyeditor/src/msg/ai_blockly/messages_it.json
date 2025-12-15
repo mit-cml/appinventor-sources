@@ -44,6 +44,7 @@
 	"Blockly.Msg.LANG_COLOUR_DARK_GRAY": "Grigio scuro",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "Grigio",
 	"Blockly.Msg.LANG_COLOUR_NONE": "Nessuno",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Predefinito",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "componenti colore",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP": "Una lista di quattro elementi che rappresentano i componenti rosso, verde, blu e alfa. Possono assumere un valore tra 0 e 255.",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "crea colore",

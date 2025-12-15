@@ -84,6 +84,7 @@
 	"Blockly.Msg.LANG_COLOUR_DARK_GRAY": "Ciemny szary",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "Szary",
 	"Blockly.Msg.LANG_COLOUR_NONE": "Brak",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Domyślny",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "złóż kolor",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP": "Lista czterech elementów, z których każdy mieści się w zakresie od 0 do 255, reprezentujących składniki czerwony, zielony, niebieski i alfa.",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "stwórz kolor",

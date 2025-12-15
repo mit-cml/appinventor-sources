@@ -168,11 +168,37 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return this.projectColors;
   }
 
+  //public List<String> getProjectColorsList() {
+   // return this.projectColors;
+  //}
+
+  private native void updateWindowProjectColors()/*-{
+    if ($wnd.top) {
+      var that = this;
+      $wnd.top.projectColors = {};
+      var colors = this.@com.google.appinventor.client.editor.youngandroid.YaProjectEditor::getProjectColors()();
+      for (var i = 0; i < colors.@java.util.List::size()(); i++) {
+        var color = colors.@java.util.List::get(I)(i);
+        var hexColor = "#" + color;
+        var displayName = "#" + color.substring(6, 8) + color.substring(0, 6);
+        $wnd.top.projectColors[hexColor] = displayName;
+      }
+      $wnd.top.addProjectColorBlockly = function(color) {
+        that.@com.google.appinventor.client.editor.youngandroid.YaProjectEditor::addColor(Ljava/lang/String;)(color.substring(1));
+      };
+      $wnd.top.removeProjectColorBlockly = function(color) {
+        that.@com.google.appinventor.client.editor.youngandroid.YaProjectEditor::removeColor(Ljava/lang/String;)(color.substring(1));
+      };
+    }
+  }-*/;
+
   public void addColor(String color) {
     colorFrequency.put(color, colorFrequency.getOrDefault(color, 0) + 1);
     sortColors();
 
     storeProjectColors();
+    updateWindowProjectColors();
+    saveProject();
   }
 
   private void storeProjectColors() {
@@ -191,6 +217,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       sortColors();
 
       storeProjectColors();
+      updateWindowProjectColors();
+      saveProject();
     }
   }
 
@@ -225,6 +253,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         defaultCloudDBToken = result;
       }
     });
+  //  getProjectColors();
+    updateWindowProjectColors();
   }
 
   public String getDefaultCloudDBToken() {

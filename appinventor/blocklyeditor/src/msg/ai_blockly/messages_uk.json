@@ -638,6 +638,7 @@
     "Blockly.Msg.LANG_COLOUR_WHITE": "Білий",
     "Blockly.Msg.LANG_COLOUR_BLACK": "Чорний",
     "Blockly.Msg.LANG_COLOUR_NONE": "Немає",
+    "Blockly.Msg.LANG_COLOUR_DEFAULT": "За замовчуванням",
     "Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Клацніть квадрат, щоб вибрати колір.",
     "Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "Цей текстовий блок не містить дійсний номер",
     "Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "Блок \"Вихід з циклу\" слід використовувати лише в межах циклів",

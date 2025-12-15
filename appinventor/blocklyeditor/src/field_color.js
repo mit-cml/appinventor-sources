@@ -13,6 +13,24 @@
 
 goog.provide("AI.Blockly.FieldColor");
 
+const defaultColors = {
+  "#FFFFFF00": Blockly.Msg.LANG_COLOUR_NONE,
+  "#000000FF": Blockly.Msg.LANG_COLOUR_BLACK,
+  "#0000FFFF": Blockly.Msg.LANG_COLOUR_BLUE,
+  "#00FFFFFF": Blockly.Msg.LANG_COLOUR_CYAN,
+  "#444444FF": Blockly.Msg.LANG_COLOUR_DARK_GRAY,
+  "#00000000": Blockly.Msg.LANG_COLOUR_DEFAULT,
+  "#888888FF": Blockly.Msg.LANG_COLOUR_GRAY,
+  "#00FF00FF": Blockly.Msg.LANG_COLOUR_GREEN,
+  "#CCCCCCFF": Blockly.Msg.LANG_COLOUR_LIGHT_GRAY,
+  "#FF00FFFF": Blockly.Msg.LANG_COLOUR_MAGENTA,
+  "#FFC800FF": Blockly.Msg.LANG_COLOUR_ORANGE,
+  "#FFAFAFFF": Blockly.Msg.LANG_COLOUR_PINK,
+  "#FF0000FF": Blockly.Msg.LANG_COLOUR_RED,
+  "#FFFFFFFF": Blockly.Msg.LANG_COLOUR_WHITE,
+  "#FFFF00FF": Blockly.Msg.LANG_COLOUR_YELLOW,
+};
+
 Blockly.FieldColor = class extends Blockly.FieldColour {
   constructor(opt_value, opt_validator) {
     const inputValue = opt_value;
@@ -53,92 +71,39 @@ Blockly.FieldColor = class extends Blockly.FieldColour {
     this.createPickrTrigger_();
     this.isPickerOpen_ = true;
     const currentValue = this.getValue();
-    try {
-      this.pickr_ = Pickr.create({
-        el: this.widget_,
-        useAsButton: true,
-        theme: "nano",
-        showAlways: false,
-        default: currentValue,
-        defaultRepresentation: "HEXA",
-        position: "bottom-start",
-        closeOnScroll: true,
-        autoReposition: false,
-        swatches: {
-          "#00000000": Blockly.Msg.LANG_COLOUR_NONE,
-          "#000000FF": Blockly.Msg.LANG_COLOUR_BLACK,
-          "#0000FFFF": Blockly.Msg.LANG_COLOUR_BLUE,
-          "#00FFFFFF": Blockly.Msg.LANG_COLOUR_CYAN,
-          "#444444FF": Blockly.Msg.LANG_COLOUR_DARK_GRAY,
-          "#888888FF": Blockly.Msg.LANG_COLOUR_GRAY,
-          "#00FF00FF": Blockly.Msg.LANG_COLOUR_GREEN,
-          "#CCCCCCFF": Blockly.Msg.LANG_COLOUR_LIGHT_GRAY,
-          "#FF00FFFF": Blockly.Msg.LANG_COLOUR_MAGENTA,
-          "#FFC800FF": Blockly.Msg.LANG_COLOUR_ORANGE,
-          "#FFAFAFFF": Blockly.Msg.LANG_COLOUR_PINK,
-          "#FF0000FF": Blockly.Msg.LANG_COLOUR_RED,
-          "#FFFFFFFF": Blockly.Msg.LANG_COLOUR_WHITE,
-          "#FFFF00FF": Blockly.Msg.LANG_COLOUR_YELLOW,
+    
+    this.pickr_ = Pickr.create({
+      el: this.widget_,
+      useAsButton: true,
+      theme: "nano",
+      showAlways: false,
+      default: currentValue,
+      defaultRepresentation: "HEXA",
+      position: "bottom-start",
+      closeOnScroll: true,
+      autoReposition: false,
+      swatches: defaultColors,
+      swatches2: {...(window.top.projectColors || {})},
+      components: {
+        preview: true,
+        opacity: true,
+        hue: true,
+        interaction: {
+          hex: true,
+          rgba: true,
+          hsla: false,
+          hsva: false,
+          cmyk: false,
+          input: true,
+          clear: false,
+          cancel: true,
+          save: true,
         },
-        components: {
-          preview: true,
-          opacity: true,
-          hue: true,
-          interaction: {
-            hex: true,
-            rgba: true,
-            hsla: false,
-            hsva: false,
-            cmyk: false,
-            input: true,
-            clear: false,
-            cancel: true,
-            save: true,
-          },
-        },
-      });
-
-      if (this.pickr_) {
-        this.setupPickrEvents_();
-        const hideProjectColorsStyle = document.createElement("style");
-        hideProjectColorsStyle.textContent = `
-          .colorPickerHeading,
-          .colorPickerHeading2,
-          .pcr-swatches.project-colors {
-            display: none !important;
-          }
-
-          .pcr-app .pcr-swatches .pcr-swatch,
-          .pcr-app .pcr-swatches .pcr-swatch::before,
-          .pcr-app .pcr-swatches .pcr-swatch::after,
-          .pcr-app .swatch-container button,
-          .pcr-app .swatch-container button::before,
-          .pcr-app .swatch-container button::after {
-            border-radius: 0 !important;
-            width: 35px !important;
-            height: 15px !important;
-            min-width: 0 !important;
-            min-height: 0 !important;
-            max-width: none !important;
-            max-height: none !important;
-            box-sizing: border-box !important;
-          }
-        `;
-        document.head.appendChild(hideProjectColorsStyle);
-
-        setTimeout(() => {
-          try {
-            this.pickr_.show();
-          } catch (e) {
-            console.error("Pickr show failed", e);
-            this.disposePickr_();
-          }
-        }, 50);
-      }
-    } catch (e) {
-      console.error("Pickr.create failed", e);
-      this.disposePickr_();
-    }
+      },
+    });    
+    this.pickr_.setColor(currentValue);
+    this.setupPickrEvents_();
+    this.pickr_.show();
   }
 
   createPickrTrigger_() {
@@ -148,41 +113,54 @@ Blockly.FieldColor = class extends Blockly.FieldColour {
     trigger.style.height = "1px";
     trigger.style.opacity = "0";
     trigger.style.pointerEvents = "auto";
-    trigger.className = "field-test-color-trigger";
-
+    trigger.className = "field-color-trigger";
     const fieldRect = this.getClickTarget_().getBoundingClientRect();
     trigger.style.left = fieldRect.left + "px";
     trigger.style.top = fieldRect.top + "px";
-
     document.body.appendChild(trigger);
     this.widget_ = trigger;
   }
 
   setupPickrEvents_() {
-    if (!this.pickr_) return;
+    if (!this.pickr_) {
+      return;
+    }
+    window.top.projectColorDeleted = (color) => {
+      if (window.top.projectColors) {
+        delete window.top.projectColors[color];
+      }
+      if (window.top.removeProjectColorBlockly) {
+        window.top.removeProjectColorBlockly(color);
+      }
+    };
 
     this.pickr_.on("save", (color) => {
       if (color) {
-        const rgba = color.toRGBA();
-        const r = Math.round(rgba[0])
-          .toString(16)
-          .padStart(2, "0")
-          .toUpperCase();
-        const g = Math.round(rgba[1])
-          .toString(16)
-          .padStart(2, "0")
-          .toUpperCase();
-        const b = Math.round(rgba[2])
-          .toString(16)
-          .padStart(2, "0")
-          .toUpperCase();
-        const a = Math.round(rgba[3] * 255)
-          .toString(16)
-          .padStart(2, "0")
-          .toUpperCase();
-        const hexa = `#${r}${g}${b}${a}`;
-        this.setValue(hexa);
+        let hexa = color.toHEXA().toString();
+        if (hexa.length === 7) {
+          hexa += "FF";
+        }
+        let finalHexa = hexa;
+        if (hexa === "#00000000") {
+          const block = this.sourceBlock_;          
+          if (block.data) {
+            finalHexa = block.data;
+          }
+        }
+        this.setValue(finalHexa);
         this.forceRerender();
+
+        if (
+          !(hexa in defaultColors) &&
+          window.top.projectColors &&
+          !(hexa in window.top.projectColors)
+        ) {
+          const displayName = hexa.substring(7, 9) + hexa.substring(1, 7);
+          this.pickr_.addSwatch2(hexa, "#" + displayName);
+          if (window.top.addProjectColorBlockly) {
+            window.top.addProjectColorBlockly(hexa);
+          }
+        }
       }
       this.disposePickr_();
     });

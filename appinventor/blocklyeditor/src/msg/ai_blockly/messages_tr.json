@@ -454,6 +454,7 @@
     "Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP": "Bu bloğun yalnızca bu bölümünde erişilebilen değişkenler oluşturmanıza izin verir.",
     "Blockly.Msg.LANG_COLOUR_GRAY": "Gri",
     "Blockly.Msg.LANG_COLOUR_NONE": "Hiçbiri",
+    "Blockly.Msg.LANG_COLOUR_DEFAULT": "Varsayılan",
     "Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP": "Bir metin bloğu gibi metin üretir. Aradaki fark, uygulamanın APK'sını inceleyerek metnin kolayca bulunamayacağıdır. Gizli bilgileri içeren, örneğin API anahtarlarını dağıtmak için uygulamalar oluştururken bunu kullanın. Uyarı: Bu, uzman düşmanlarına karşı çok düşük güvenlik sağlar.",
     "Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT_REPLACEMENT": "Değiştir",
     "Blockly.Msg.LANG_TEXT_APPEND_TOOLTIP": "'%1' değişkenine bir metin ekleyin.",

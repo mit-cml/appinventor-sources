@@ -35,6 +35,8 @@ function createColorBlock(name, color, lang) {
     init: function() {
       this.setColour(Blockly.COLOR_CATEGORY_HUE);
       this.appendDummyInput().appendField(new Blockly.FieldColor(color), 'COLOR');
+      this.data = this.data || "";
+      this.data = color;
       this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.OUTPUT));
       this.setTooltip(Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP);
     },

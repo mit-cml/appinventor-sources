@@ -156,6 +156,7 @@
     "Blockly.Msg.LANG_COLOUR_CYAN": "ցիան",
     "Blockly.Msg.LANG_COLOUR_BLACK": "սև",
     "Blockly.Msg.LANG_COLOUR_NONE": "Ոչինչ",
+    "Blockly.Msg.LANG_COLOUR_DEFAULT": "Լռելյայն",
     "Blockly.Msg.LANG_COLOUR_PICKER_TOOLTIP": "Գույնը ընտրելու համար սեղմեք քառակուսու վրա:",
     "Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "break բլոկը պետք է օգտագործվի միայն ցիկլի ներսում",
     "Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED": "Բլոկը սահմանված չէ: Ջնջե'ք Բլոկը:",

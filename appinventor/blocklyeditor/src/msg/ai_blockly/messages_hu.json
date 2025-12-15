@@ -80,6 +80,7 @@
 	"Blockly.Msg.LANG_COLOUR_DARK_GRAY": "Sötétszürke",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "Szürke",
 	"Blockly.Msg.LANG_COLOUR_NONE": "Nincs",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Alapértelmezett",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "szín felbontása",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP": "Négy elemből álló lista, mindegyik egy 0 és 255 szám, amelyek a vörös, zöld, kék és átlátszósági komponensei a színnek.",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "szín létrehozása",

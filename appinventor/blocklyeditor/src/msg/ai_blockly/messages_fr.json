@@ -64,6 +64,7 @@
 	"Blockly.Msg.LANG_COLOUR_WHITE": "Blanc",
 	"Blockly.Msg.LANG_COLOUR_YELLOW": "Jaune",
 	"Blockly.Msg.LANG_COLOUR_NONE": "Aucun",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Par défaut",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT": "de composant",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL": "appeler ",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT": "pour composant",

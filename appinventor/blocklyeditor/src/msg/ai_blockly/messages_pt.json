@@ -233,6 +233,7 @@
 	"Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT": "texto",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "Cinza",
 	"Blockly.Msg.LANG_COLOUR_NONE": "Nenhum",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Padrão",
 	"Blockly.Msg.REPL_NETWORK_ERROR_RESTART": "Erro de Comunicação em Rede com o Assistente.<br />Reinicie o Assistente e reconecte",
 	"Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_DO": "repete",
 	"Blockly.Msg.LANG_LISTS_PICK_RANDOM_TITLE_PICK_RANDOM": "escolher um elemento ao acaso",

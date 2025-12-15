@@ -76,6 +76,7 @@
 	"Blockly.Msg.LANG_COLOUR_DARK_GRAY": "Dunkelgrau",
 	"Blockly.Msg.LANG_COLOUR_GRAY": "Grau",
 	"Blockly.Msg.LANG_COLOUR_NONE": "Keine",
+	"Blockly.Msg.LANG_COLOUR_DEFAULT": "Standard",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR": "Farbe aufteilen",
 	"Blockly.Msg.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP": "Eine Liste mit vier Elementen, je im Bereich 0 bis 255, die die Rot-, Grün-, Blau- und Alpha-Komponenten repräsentieren.",
 	"Blockly.Msg.LANG_COLOUR_MAKE_COLOUR": "Farbe erstellen",
