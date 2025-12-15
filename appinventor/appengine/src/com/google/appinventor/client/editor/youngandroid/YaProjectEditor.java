@@ -168,10 +168,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return this.projectColors;
   }
 
-  //public List<String> getProjectColorsList() {
-   // return this.projectColors;
-  //}
-
   private native void updateWindowProjectColors()/*-{
     if ($wnd.top) {
       var that = this;
