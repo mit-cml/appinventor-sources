@@ -249,7 +249,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         defaultCloudDBToken = result;
       }
     });
-  //  getProjectColors();
     updateWindowProjectColors();
   }
 
