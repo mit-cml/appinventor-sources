@@ -608,6 +608,50 @@ Blockly.Blocks['controls_do_then_return'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_DO_THEN_RETURN_TITLE}]
 };
 
+Blockly.Blocks['controls_run_in_background'] = {
+  //category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_HELPURL,
+  init: function () {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE)
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    this.appendValueInput('CALLBACK')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_CALLBACK)
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_TITLE}]
+};
+
+Blockly.Blocks['controls_run_after_period'] = {
+  //category: 'Control',
+  helpUrl: Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_HELPURL,
+  init: function () {
+    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+    this.appendDummyInput('HEADER')
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TITLE);
+    this.appendValueInput('MILLIS')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_MILLIS)
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    this.appendValueInput('PROCEDURE')
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_CONTROLS_RUN_IN_BACKGROUND_PROCEDURE)
+        .setAlign(Blockly.inputs.Align.RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_RUN_AFTER_PERIOD_TITLE}]
+};
+
 // [lyn, 01/15/2013] Added
 Blockly.Blocks['controls_eval_but_ignore'] = {
   category: 'Control',

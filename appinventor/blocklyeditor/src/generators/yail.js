@@ -75,6 +75,7 @@ AI.Yail.YAIL_OR_DELAYED = "(or-delayed ";
 AI.Yail.YAIL_IF = "(if ";
 AI.Yail.YAIL_INIT_RUNTIME = "(init-runtime)";
 AI.Yail.YAIL_INITIALIZE_COMPONENTS = "(call-Initialize-of-components";
+AI.Yail.YAIL_LAMBDA = "(lambda ";
 AI.Yail.YAIL_LET = "(let ";
 AI.Yail.YAIL_LEXICAL_VALUE = "(lexical-value ";
 AI.Yail.YAIL_SET_LEXICAL_VALUE = "(set-lexical! ";
@@ -731,6 +732,36 @@ AI.Yail.blockToCode1 = function(block) {
     }
     return this.scrub_(block, code, true);
   }
+};
+
+/**
+ * construct (call-yail-primitive procedureName (\*list-for-runtime\* argCodes) '(argTypes) diaplayName)
+ * 
+ * TODO: replace codes that referenced AI.Yail.YAIL_CALL_YAIL_PRIMITIVE with this.
+ * 
+ * @param procedureName
+ * @param argCodes string / array of arguments
+ * @param argTypes string / array of arg types
+ * @param displayName can be left null, and it would be equal to procedureName
+ */
+AI.Yail.YailCallYialPrimitive = function(procedureName, argCodes, argTypes, displayName) {
+  if (!displayName) {
+    displayName = procedureName;
+  }
+  if (typeof argCodes == "string") {
+    argCodes = [ argCodes ];
+  }
+  if (typeof argTypes == "string") {
+    argTypes = [ argTypes ];
+  }
+  return AI.Yail.YAIL_CALL_YAIL_PRIMITIVE
+      + procedureName + AI.Yail.YAIL_SPACER
+      + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER
+        + argCodes.join(' ') + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER
+      + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION
+        + argTypes.join(' ') + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER
+      + AI.Yail.YAIL_DOUBLE_QUOTE + displayName + AI.Yail.YAIL_DOUBLE_QUOTE
+    + AI.Yail.YAIL_CLOSE_COMBINATION;
 };
 
 /**

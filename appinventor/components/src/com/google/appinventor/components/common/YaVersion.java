@@ -705,7 +705,10 @@ public class YaVersion {
   // - Added "every component" block.
   // For BLOCKS_LANGUAGE_VERSION 37
   // - Add pull-downs for the ChatBot provider and model
-  public static final int BLOCKS_LANGUAGE_VERSION = 37;
+  // For BLOCKS_LANGUAGE_VERSION 38
+  // - Control: run-in-background & run-after-period were added.
+  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 38;
 
   // ................................. Target SDK Version Number ..................................
 
