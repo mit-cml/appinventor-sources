@@ -9,9 +9,10 @@
  * @class
  */
 import type { Block } from '../block.js';
+import { Workspace } from '../workspace.js';
 import { AbstractEventJson } from './events_abstract.js';
 import { UiBase } from './events_ui_base.js';
-import { Workspace } from '../workspace.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when a block is being manually dragged/dropped.
  */
@@ -25,7 +26,7 @@ export declare class BlockDrag extends UiBase {
      * with the block ID) being dragged.
      */
     blocks?: Block[];
-    type: string;
+    type: EventType;
     /**
      * @param opt_block The top block in the stack that is being dragged.
      *     Undefined for a blank event.
