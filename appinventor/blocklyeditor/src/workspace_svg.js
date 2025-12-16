@@ -705,27 +705,6 @@ Blockly.WorkspaceSvg.prototype.markFocused = function() {
   }
 };
 
-Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, forRepl, compileUnattachedBlocks) {
-  var map = {components: {}, globals: []};
-  var blocks = this.getTopBlocks(/* ordered */ true);
-  for (var i = 0, block; block = blocks[i]; ++i) {
-    if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn' || block.type == 'global_declaration') {
-      map.globals.push(block);
-    } else if (block.category == 'Component' && block.type == 'event') {
-      if (block.isGeneric) {
-        map.globals.push(block);
-        continue;
-      }
-      var instanceName = block.instanceName;
-      if (!map.components[instanceName]) {
-        map.components[instanceName] = [];
-      }
-      map.components[instanceName].push(block);
-    }
-  }
-  return map;
-};
-
 Blockly.WorkspaceSvg.prototype.resize = (function(resize) {
   return function() {
     resize.call(this);
@@ -862,6 +841,17 @@ Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, fo
       map.components[instanceName].push(block);
     }
   }
+  // --- NEW SORTING LOGIC ---
+    // sort that the procedures goes first
+    map.globals.sort(function(a, b) {
+      var isProcA = (a.type == 'procedures_defnoreturn' || a.type == 'procedures_defreturn');
+      var isProcB = (b.type == 'procedures_defnoreturn' || b.type == 'procedures_defreturn');
+
+      if (isProcA && !isProcB) return -1;
+      if (!isProcA && isProcB) return 1;
+      return 0;
+    });
+    // -------------------------
   return map;
 };
 

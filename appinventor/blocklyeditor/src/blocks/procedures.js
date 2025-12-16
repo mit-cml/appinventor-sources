@@ -1389,7 +1389,7 @@ Blockly.Blocks['procedures_getWithDropdown'] = {
         .appendField(this.procDropDown, "PROCNAME");
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_TOOLTIP);
     this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("procedure", AI.BlockUtils.OUTPUT));
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
+    this.errors = [{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
     // ensure errors are checked
     this.setFieldValue(this.getFieldValue('PROCNAME'), 'PROCNAME');
   },
