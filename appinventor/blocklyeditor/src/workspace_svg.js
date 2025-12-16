@@ -841,17 +841,19 @@ Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, fo
       map.components[instanceName].push(block);
     }
   }
-  // --- NEW SORTING LOGIC ---
-    // sort that the procedures goes first
-    map.globals.sort(function(a, b) {
-      var isProcA = (a.type == 'procedures_defnoreturn' || a.type == 'procedures_defreturn');
-      var isProcB = (b.type == 'procedures_defnoreturn' || b.type == 'procedures_defreturn');
 
-      if (isProcA && !isProcB) return -1;
-      if (!isProcA && isProcB) return 1;
-      return 0;
-    });
-    // -------------------------
+  /*
+    Sorts out the globals so that procedures proceed global variables.
+    This is necessary so that procedures can be defined as a variable
+  */
+  map.globals.sort(function(a, b) {
+    var isProcA = (a.type == 'procedures_defnoreturn' || a.type == 'procedures_defreturn');
+    var isProcB = (b.type == 'procedures_defnoreturn' || b.type == 'procedures_defreturn');
+
+    if (isProcA && !isProcB) return -1;
+    if (!isProcA && isProcB) return 1;
+    return 0;
+  });
   return map;
 };
 
