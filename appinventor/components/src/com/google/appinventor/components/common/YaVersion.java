@@ -1311,6 +1311,8 @@ public class YaVersion {
   public static final int EV3_UI_COMPONENT_VERSION = 1;
 
   public static final int EV3_COMMANDS_COMPONENT_VERSION = 1;
+  
+  public static final int EV3_MAILBOX_COMPONENT_VERSION = 1;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.
