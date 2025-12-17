@@ -2324,6 +2324,27 @@
           (sqrt (length lst)))))
 )
 
+;;; Calculate the median of the list
+(define (yail-median l)
+  (let ((l-content (yail-list-contents l)))
+    ;; Check if the list is empty
+    (if (null? l-content)
+      (signal-runtime-error
+        "The list cannot be empty to find the median."
+        "List is empty")
+      (let* ((sorted-content
+               (yail-list-contents (yail-list-sort l)))
+              (len (length sorted-content))
+              (mid (quotient len 2)))
+        (if (odd? len)
+          ;; Odd length -> middle element
+          (list-ref sorted-content mid)
+          ;; Even length -> average of two middle elements
+          (yail-divide
+            (+ (list-ref sorted-content (- mid 1))
+              (list-ref sorted-content mid))
+            2))))))
+
 ;;; END of MATH OPERATIONS ON LIST ;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
