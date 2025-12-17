@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.res.ColorStateList;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -15,6 +16,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * ![Example of a CheckBox](images/checkbox.png)
@@ -33,6 +35,12 @@ import com.google.appinventor.components.common.YaVersion;
 @SimpleObject
 public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
 
+  // Backing for CheckBox checked state color
+  int checkedColor = Component.COLOR_PINK;
+
+  // Backing for CheckBox unchecked state color
+  int unCheckedColor = Component.COLOR_GRAY;
+
   /**
    * Creates a new CheckBox component.
    *
@@ -43,6 +51,7 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
     view = new android.widget.CheckBox(container.$context());
     Checked(false);
     initToggle();
+    setColorStateList(this.unCheckedColor, this.checkedColor);
   }
 
   /**
@@ -69,6 +78,62 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
   public void Checked(boolean value) {
     view.setChecked(value);
     view.invalidate();
+  }
+
+  /**
+   * Sets `CheckBox` Un-Checked state color.
+   *
+   * @param unCheckedColor int value of the Un-Checked state color
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_GRAY)
+  @SimpleProperty
+  public void UnCheckedColor(int unCheckedColor)  {
+    this.unCheckedColor = unCheckedColor;
+    setColorStateList(this.unCheckedColor, this.checkedColor);
+  }
+
+  /**
+   * Returns `CheckBox` Un-Checked state color.
+   *
+   * @return int vale of the Un-Checked state color
+   */
+  @SimpleProperty(description = "Sets the CheckBox un-checked state color.")
+  public int UnCheckedColor() {
+    return unCheckedColor;
+  }
+
+  /**
+   * Sets `CheckBox` Checked state color.
+   *
+   * @param checkedColor int value of the Checked state color
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+          defaultValue = Component.DEFAULT_VALUE_COLOR_PINK)
+  @SimpleProperty
+  public void CheckedColor(int checkedColor)  {
+    this.checkedColor = checkedColor;
+    setColorStateList(this.unCheckedColor, this.checkedColor);
+  }
+
+  /**
+   * Returns `CheckBox` Checked state color.
+   *
+   * @return int vale of the Checked state color
+   */
+  @SimpleProperty(description = "Sets the CheckBox checked state color.")
+  public int CheckedColor() {
+    return checkedColor;
+  }
+
+  private void setColorStateList(int unCheckedColor, int checkedColor)  {
+    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_LOLLIPOP)  {
+      int[][] stateList = new int[][]{new int[]{-android.R.attr.state_checked}, new int[]{android.R.attr.state_checked}};
+      int[] stateColors = new int[]{unCheckedColor, checkedColor};
+      ColorStateList colorStateList = new ColorStateList(stateList, stateColors);
+      view.setButtonTintList(colorStateList);
+      view.invalidate();
+    }
   }
 
 }
