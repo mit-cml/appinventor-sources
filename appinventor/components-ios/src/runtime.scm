@@ -2209,6 +2209,26 @@ Dictionary implementation.
           (sqrt (length lst)))))
 )
 
+;;; Calculate the median of the list
+(define (yail-median l)
+  (let ((l-content (yail-list-contents l)))
+    ;; Check if the list is empty. If so, signal an error.
+    (if (null? l-content)
+      (signal-runtime-error
+        "The list cannot be empty to find the median."
+        "List is empty")
+      (let* ((sorted-list (sort l-content <))
+              (len (length sorted-list)))
+        ;; Check if the length is odd
+        (if (odd? len)
+          ;; If odd, the median is the middle element
+          (list-ref sorted-list (floor (/ len 2)))
+          ;; If even, the median is the average of the two middle elements
+          (let* ((mid1 (- (/ len 2) 1))
+                  (mid2 (/ len 2)))
+            (yail-divide (+ (list-ref sorted-list mid1) (list-ref sorted-list mid2)) 2))))))
+)
+
 ;;; END of MATH OPERATIONS ON LIST ;;;;
 
 (define (yail-list-map proc yail-list)
