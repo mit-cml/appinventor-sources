@@ -1,0 +1,1677 @@
+// -*- mode: swift; swift-mode:basic-offset: 2; -*-
+// Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
+
+import Foundation
+import RealityKit
+import ARKit
+import GLKit
+import os.log
+
+// MARK: - Supporting Types and Enums
+
+enum SceneEntityType: String {
+    case floor = "floor"
+    case wall = "wall"
+    case ceiling = "ceiling"
+    case furniture = "furniture"
+    case unknown = "unknown"
+}
+
+enum CollisionType {
+    case floor
+    case wall
+    case object
+    case none
+}
+
+// MARK: - ARNodeBase Class
+
+@available(iOS 14.0, *)
+open class ARNodeBase: NSObject, ARNode {
+
+  weak var _container: ARNodeContainer?
+  public var _modelEntity: ModelEntity
+  
+  private var _color: Int32 = Int32(bitPattern: AIComponentKit.Color.red.rawValue)
+  
+  public var hasTexture = false
+  public var _texture: String = ""
+  
+  public var _enablePhysics: Bool = false
+  private var _pinchToScale: Bool = false
+  private var _panToMove: Bool = false
+  private var _rotateWithGesture: Bool = false
+  public var _showShadow: Bool = true
+  
+  public var _rotateByDelta: SIMD3<Float> = .zero
+  
+  public let DRAG_HEIGHT_OFFSET: Float = 0.001 // Hover above surfaces during drag
+  public var _isBeingDragged = false
+  private var _dragStartLocation: CGPoint = .zero
+  private var _lastDragLocation: CGPoint = .zero
+  private var _originalMaterial: Material?
+  
+  private var _gravityScale = Float(0.5)
+  private var _dragSensitivity = Float(2.0)  // Better default for responsiveness
+  private var _releaseForceMultiplier = Float(0.0)
+  
+  private var _currentVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
+  private var _momentumTask: Task<Void, Never>?
+  private var _isCurrentlyColliding = false
+  private var _collisionEffectTask: Task<Void, Never>?
+  
+  public var _linearDamping  = Float(0.0)
+  public var _angularDamping  = Float(0.0)
+  private var _rollingForce = Float(0.0)
+  private var _impulseScale = Float(0.0)
+  private var _dampingTask = Task {}
+
+  private var _collisionWidth = Float(0.0)
+  private var _collisionHeight = Float(0.0)
+  private var _collisionDepth = Float(0.0)
+  private var _collisionRadius = Float(0.0)
+
+  public var _anchorEntity: AnchorEntity?
+  public var _followingMarker: ARImageMarker? = nil
+  public var _fromPropertyPosition = "0.0,0.0,0.0"
+  public var _fromPropertyRotation = "0.0,0.0,0.0,1.0"
+  public var _objectModel: String = ""
+  public var _geoAnchor: ARGeoAnchor?
+  public var _worldOffset: SIMD3<Float>?
+  public var _creatorSessionStart: CLLocation?
+  
+  public var _previewPlacementSurface: SIMD3<Float>?
+  public var _hasPreviewSurface: Bool = false
+  
+  /// How far in front of a marker the child should live (meters).
+  private let kMinForwardFromMarker: Float = 0.05 // 5 cm
+
+  public var _originalWorldPosition: SIMD3<Float>? = nil
+  var _nodeWorldTransform: Transform? = nil     // Last known world pose (used to stay visible)
+  var _nodeLocalTransform: Transform? = nil
+
+  var _offsetToMarkerMatrix: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
+  var _tempWorldAnchor: AnchorEntity? = nil
+  
+  public var _queuedMarkerOffset: SIMD3<Float>? = nil
+  
+  // MARK: - Initialization
+  
+  init(container: ARNodeContainer, mesh: MeshResource? = nil) {
+    _container = container
+    _modelEntity = ModelEntity()
+    
+    super.init()
+    setupInitialMaterial()
+    XPosition = 0
+    YPosition = 0
+    ZPosition = -1
+    
+    if let mesh = mesh {
+      _modelEntity.model = ModelComponent(mesh: mesh, materials: [])
+    }
+  }
+  
+  @objc open func Initialize() {
+    self._container?.addNode(self)
+  }
+  
+  open func syncInitialize() {
+    self._container?.addNode(self)
+  }
+  
+  @objc init(modelNodeContainer: ARNodeContainer) {
+    _container = modelNodeContainer
+    _modelEntity = ModelEntity()
+    super.init()
+  }
+  
+  required public init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  
+  
+  // MARK: - Anchor Management
+  
+  open var Anchor: AnchorEntity? {
+    get {
+      if let anchor = _anchorEntity {
+        return anchor
+      }
+      _anchorEntity = createAnchor()
+      return _anchorEntity
+    }
+    set(a) {
+      _anchorEntity = a
+    }
+  }
+  
+  func setGeoAnchor(_ geoAnchor: ARGeoAnchor) {
+      _geoAnchor = geoAnchor
+  }
+
+  func getGeoAnchor() -> ARGeoAnchor? {
+      return _geoAnchor
+  }
+  
+  @objc open var IsGeoAnchored: Bool {
+      return getGeoAnchor() != nil
+  }
+  
+  @objc open var GeoCoordinates: [Double] {
+      guard let geoAnchor = getGeoAnchor() else {
+          return []
+      }
+    return [geoAnchor.coordinate.latitude, geoAnchor.coordinate.longitude, Double(geoAnchor.altitude!)]
+  }
+  
+  // MARK: - Properties
+  
+  @objc open var Name: String {
+    get { return _modelEntity.name }
+    set(name) { _modelEntity.name = name }
+  }
+  
+  @objc open var NodeType: String {
+    get { return String(describing: type(of: self)) }
+  }
+  
+  @objc open var Model: String {
+    get { return _objectModel }
+    set(modelStr) { _objectModel = modelStr }
+  }
+  
+  @objc open var ID: String {
+    get { return "\(_modelEntity.id)"}
+  }
+  
+  @objc open var XPosition: Float {
+    get { return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.x) }
+    set(x) { _modelEntity.transform.translation.x = UnitHelper.centimetersToMeters(x) }
+  }
+  
+  @objc open var YPosition: Float {
+    get { return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.y) }
+    set(y) { _modelEntity.transform.translation.y = UnitHelper.centimetersToMeters(y) }
+  }
+  
+  @objc open var ZPosition: Float {
+    get { return UnitHelper.metersToCentimeters(_modelEntity.transform.translation.z) }
+    set(z) { _modelEntity.transform.translation.z = UnitHelper.centimetersToMeters(z) }
+  }
+  
+  
+  // Helper function to decompose quaternion around an axis
+  func swingTwist(_ q: simd_quatf, whichAxis: String) -> ( swing: simd_quatf, twist: simd_quatf) {
+      var axis: SIMD3<Float>
+      var projection: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
+    
+      if whichAxis == "x" {
+        axis = SIMD3<Float>(1, 0, 0)
+        projection = dot(q.imag, axis) * axis
+        
+        if projection.x == 0 {
+          return (q, simd_quatf(real: 1, imag: SIMD3<Float>(0, 0, 0)))
+        }
+      } else if whichAxis == "y" {
+        axis = SIMD3<Float>(0, 1, 0)
+        projection = dot(q.imag, axis) * axis
+        
+        if projection.y == 0 {
+          return (q, simd_quatf(real: 1, imag: SIMD3<Float>(0, 0, 0)))
+        }
+      } else if whichAxis == "z"{
+        axis = SIMD3<Float>(0, 0, 1)
+        projection = dot(q.imag, axis) * axis
+        
+        if projection.z == 0 {
+          return (q, simd_quatf(real: 1, imag: SIMD3<Float>(0, 0, 0)))
+        }
+      }
+      // Project quaternion's imaginary part onto axis
+      // Twist = normalized quaternion with only axis component
+      let twist = simd_normalize(simd_quatf(real: q.real, imag: projection))
+      
+      // Swing = q * twist^(-1)
+      let swing = q * twist.inverse
+      
+      return (swing, twist)
+  }
+  
+  @objc open var XRotation: Float {
+    get {
+      let (_, twist) = swingTwist(_modelEntity.transform.rotation, whichAxis: "x")
+      let angle = 2 * atan2(twist.imag.x, twist.real)
+      return GLKMathRadiansToDegrees(angle)
+    }
+    set(degrees) {
+      let xRadians = degrees * .pi / 180.0
+      
+      let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "x")
+      
+      // Create new rotation
+      let newTwist = simd_quatf(angle: xRadians, axis: [1, 0, 0])
+      
+      // Recombine: swing * twist
+      _modelEntity.transform.rotation = swing * newTwist
+    }
+  }
+  
+  @objc open var YRotation: Float {
+      get {
+        let (_, twist) = swingTwist(_modelEntity.transform.rotation, whichAxis: "y")
+        let angle = 2 * atan2(twist.imag.y, twist.real)
+        return GLKMathRadiansToDegrees(angle)
+      }
+      set(degrees) {
+        let yRadians = degrees * .pi / 180.0
+        
+        // Decompose current rotation into swing (X&Z) and twist (Y)
+        let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "y")
+        
+        // Create new Y rotation
+        let newTwist = simd_quatf(angle: yRadians, axis: [0, 1, 0])
+        
+        // Recombine: swing * twist
+        _modelEntity.transform.rotation = swing * newTwist
+      }
+  }
+
+  
+  @objc open var ZRotation: Float {
+    get {
+      let (_, twist) = swingTwist(_modelEntity.transform.rotation, whichAxis: "z")
+      let angle = 2 * atan2(twist.imag.z, twist.real)
+      return GLKMathRadiansToDegrees(angle)
+    }
+    set(degrees) {
+      let zRadians = degrees * .pi / 180.0
+      
+      // Decompose current rotation into swing (X&Z) and twist (Y)
+      let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "z")
+      
+      // Create new z rotation
+      let newTwist = simd_quatf(angle: zRadians, axis: [0, 0, 1])
+      
+      // Recombine: swing * twist
+      _modelEntity.transform.rotation = swing * newTwist
+    }
+  }
+  
+  @objc open var RotateXBy: Float {
+    get {
+      return _rotateByDelta.x
+    }
+    set(degrees) {
+      _rotateByDelta.x = degrees
+      XRotation = degrees
+    }
+  }
+  
+  @objc open var RotateYBy: Float {
+    get {
+      return _rotateByDelta.y
+    }
+    set(degrees) {
+      _rotateByDelta.y = degrees
+      YRotation = degrees
+    }
+  }
+  
+  @objc open var RotateZBy: Float {
+    get {
+      return _rotateByDelta.z
+    }
+    set(degrees) {
+      _rotateByDelta.z = degrees
+      ZRotation = degrees
+    }
+  }
+
+  
+  @objc open var ModelUrl: String {
+    get { return _objectModel }
+    set(model) { _objectModel = model }
+  }
+  
+  @objc open var Scale: Float {
+    get { return _modelEntity.transform.scale.x }
+    set(scalar) {
+      let scale = abs(scalar)
+      _modelEntity.transform.scale = SIMD3<Float>(scale, scale, scale)
+    }
+  }
+  
+  @objc open var PoseFromPropertyPosition: String {
+    get { return _fromPropertyPosition }
+    set(pose) { _fromPropertyPosition = pose }
+  }
+  
+  @objc open var FromPropertyRotation: String {
+    get { return _fromPropertyRotation }
+    set(rotation) { _fromPropertyRotation = rotation }
+  }
+  
+  @objc open var FillColor: Int32 {
+    get { return _color }
+    set(color) {
+      _color = color
+      updateMaterial()
+    }
+  }
+  
+  @objc @available(iOS 14.0, *)
+  open var FillColorOpacity: Int32 {
+    get { return 100 }
+    set(opacity) {
+      let alpha = Float(min(max(0, opacity), 100)) / 100.0
+      if #available(iOS 15.0, *) {
+        updateMaterialOpacity(alpha)
+      }
+    }
+  }
+  
+  @objc open var Texture: String {
+    get { return _texture }
+    set(path) {
+      if let image = AssetManager.shared.imageFromPath(path: path) {
+        _texture = path
+        if #available(iOS 15.0, *) {
+          updateTextureFromImage(image)
+        } else {
+          updateMaterial()
+        }
+        hasTexture = true
+      } else {
+        if !path.isEmpty {
+          _container?.form?.dispatchErrorOccurredEvent(self, "Texture", ErrorMessage.ERROR_MEDIA_IMAGE_FILE_FORMAT.code)
+        }
+        hasTexture = false
+        _texture = ""
+        updateMaterial()
+      }
+    }
+  }
+  
+  @objc open var TextureOpacity: Int32 {
+    get { return FillColorOpacity }
+    set(opacity) { FillColorOpacity = opacity }
+  }
+  
+  @objc open var Visible: Bool {
+    get { return _modelEntity.isEnabled }
+    set(visible) { _modelEntity.isEnabled = visible }
+  }
+  
+  @objc open var ShowShadow: Bool {
+    get { return _showShadow }
+    set(showShadow) {
+      _showShadow = showShadow
+      updateShadowSettings()
+    }
+  }
+  
+  @objc open var Opacity: Int32 {
+    get { return FillColorOpacity }
+    set(opacity) { FillColorOpacity = opacity }
+  }
+  
+  // MARK: - Physics Properties
+  
+  @objc open var EnablePhysics: Bool {
+    get { return _enablePhysics }
+    set(enablePhysics) { EnablePhysics(enablePhysics) }
+  }
+  
+  @objc open var StaticFriction: Float = 0.6 {
+      didSet { updatePhysicsMaterial() }
+  }
+  
+  @objc open var DynamicFriction: Float = 0.6 {
+      didSet { updatePhysicsMaterial() }
+  }
+  
+  @objc open var Restitution: Float = 0.3 {
+      didSet { updatePhysicsMaterial() }
+  }
+  
+  @objc open var Mass: Float = 1.0 {
+      didSet { updateMassProperties() }
+  }
+  
+  @objc open var GravityScale: Float {
+      get { return _gravityScale }
+      set { _gravityScale = newValue }
+  }
+  
+  @objc open var isBeingDragged: Bool {
+      get { return _isBeingDragged }
+      set {_isBeingDragged = newValue }
+  }
+  
+  @objc open var DragSensitivity: Float {
+      get { return _dragSensitivity }
+      set { _dragSensitivity = newValue }
+  }
+  
+  @objc open var ReleaseForceMultiplier: Float {
+      get { return _releaseForceMultiplier }
+      set { _releaseForceMultiplier = newValue }
+  }
+  
+  // MARK: - Gesture Properties
+  
+  @objc open var PinchToScale: Bool {
+    get { return _pinchToScale }
+    set(pinchToScale) { _pinchToScale = pinchToScale }
+  }
+  
+  @objc open var PanToMove: Bool {
+    get { return _panToMove }
+    set(panToMove) { _panToMove = panToMove }
+  }
+  
+  @objc open var RotateWithGesture: Bool {
+    get { return _rotateWithGesture }
+    set(rotate) { _rotateWithGesture = rotate }
+  }
+  
+  @objc open var CollisionShape: String = "box" {
+    didSet { updateCollisionShape() }
+  }
+  
+  @objc open var IsFollowingImageMarker: Bool {
+    get { return _followingMarker != nil }
+  }
+  
+  // MARK: - Drag Properties
+  
+  public var OriginalMaterial: Material? {
+      get { return _originalMaterial }
+      set(newValue) { _originalMaterial = newValue }
+  }
+  
+  // MARK: - Component Protocol Implementation
+  
+  @objc open var Width: Int32 {
+    get { return 0 }
+    set { }
+  }
+  
+  @objc open var Height: Int32 {
+    get { return 0 }
+    set { }
+  }
+  
+  @objc open var dispatchDelegate: HandlesEventDispatching? {
+    get { return _container?.form?.dispatchDelegate }
+  }
+  
+  public func copy(with zone: NSZone? = nil) -> Any {
+    return self
+  }
+  
+  public func setWidthPercent(_ toPercent: Int32) {}
+  public func setHeightPercent(_ toPercent: Int32) {}
+  
+  // MARK: - Movement Methods
+  //TODO CSB remove
+  @objc open func RotateXBy(_ degrees: Float) {
+    let radians = GLKMathDegreesToRadians(degrees)
+    var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
+    euler.x += radians
+    _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+  }
+  //TODO CSB remove
+  @objc open func RotateYBy(_ degrees: Float) {
+    let radians = GLKMathDegreesToRadians(degrees)
+    var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
+    euler.y += radians
+    _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+  }
+  //TODO CSB remove
+  @objc open func RotateZBy(_ degrees: Float) {
+    let radians = GLKMathDegreesToRadians(degrees)
+    var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
+    euler.z += radians
+    _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+  }
+
+  
+  @objc open func MoveBy(_ x: Float, _ y: Float, _ z: Float) {
+    let xMeters: Float = UnitHelper.centimetersToMeters(x)
+    let yMeters: Float = UnitHelper.centimetersToMeters(y)
+    let zMeters: Float = UnitHelper.centimetersToMeters(z)
+    _modelEntity.transform.translation += SIMD3<Float>(xMeters, yMeters, zMeters)
+  }
+  
+  @objc open func MoveTo(_ x: Float, _ y: Float, _ z: Float) {
+    let xMeters: Float = UnitHelper.centimetersToMeters(x)
+    let yMeters: Float = UnitHelper.centimetersToMeters(y)
+    let zMeters: Float = UnitHelper.centimetersToMeters(z)
+    _modelEntity.transform.translation = SIMD3<Float>(xMeters, yMeters, zMeters)
+  }
+  
+  // MARK: - Distance Methods
+  
+  @objc open func DistanceToNode(_ node: ARNode) -> Float {
+    let myPos = _modelEntity.transform.translation
+    let otherPos = node.getPosition()
+    return UnitHelper.metersToCentimeters(simd_distance(myPos, otherPos))
+  }
+  
+  @objc open func DistanceToSpotlight(_ light: ARSpotlight) -> Float {
+    let myPos = _modelEntity.transform.translation
+    let lightPos = light.getPosition()
+    return UnitHelper.metersToCentimeters(simd_distance(myPos, lightPos))
+  }
+  
+  @objc open func DistanceToPointLight(_ light: ARPointLight) -> Float {
+    let myPos = _modelEntity.transform.translation
+    let lightPos = light.getPosition()
+    return UnitHelper.metersToCentimeters(simd_distance(myPos, lightPos))
+  }
+  
+  @objc open func DistanceToDetectedPlane(_ detectedPlane: ARDetectedPlane) -> Float {
+    let myPos = _modelEntity.transform.translation
+    let planePos = detectedPlane.getPosition()
+    return UnitHelper.metersToCentimeters(simd_distance(myPos, planePos))
+  }
+  
+  // MARK: - Position Methods
+  
+  open func getPosition() -> SIMD3<Float> {
+    return _modelEntity.transform.translation
+  }
+  
+  open func setPosition(x: Float, y: Float, z: Float) {
+    _modelEntity.transform.translation = SIMD3<Float>(x, y, z)
+  }
+  
+  // MARK: - Gesture Response Methods
+  
+  
+  open func ScaleBy(_ scalar: Float) {
+    print("🔄 Scaling OBJECT \(Name) by \(scalar)")
+    
+    let oldScale = Scale
+
+    let hadPhysics = _modelEntity.physicsBody != nil
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let halfHeight = (bounds.max.y - bounds.min.y) / 2.0
+    let newScale = oldScale * abs(scalar)
+    // ✅ Update physics immediately if it was enabled before we change the scale
+    if hadPhysics {
+      let previousSize = halfHeight * Scale
+      _modelEntity.position.y = _modelEntity.position.y - (previousSize) + (halfHeight * newScale)
+    }
+  
+    Scale = newScale
+    print("Scale complete - bottom position maintained")
+  }
+  
+  open func scaleByPinch(scalar: Float) {
+    let oldScale = Scale
+    let newScale = oldScale * abs(scalar)
+    
+    let hadPhysics = _modelEntity.physicsBody != nil
+    
+    if hadPhysics {
+      let savedMass = Mass
+      let savedFriction = StaticFriction
+      let savedRestitution = Restitution
+      
+      _modelEntity.physicsBody = nil
+      _modelEntity.collision = nil
+        
+      //remember bounds already has scale. Behavior is inconsistent w/r to RealityKit scaling itself
+      let bounds = _modelEntity.visualBounds(relativeTo: nil)
+      let halfHeight = (bounds.max.x - bounds.min.x) / 2.0
+      let previousSize = halfHeight * oldScale
+      _modelEntity.position.y = _modelEntity.position.y - previousSize + (halfHeight * newScale)
+      
+      // Apply scale
+      Scale = newScale
+
+      // Restore physics
+      Mass = savedMass
+      StaticFriction = savedFriction
+      Restitution = savedRestitution
+    
+      EnablePhysics(true)
+    } else {
+        Scale = newScale
+    }
+  }
+
+ open func EnablePhysics(_ isDynamic: Bool = true) {
+    let currentPos = _modelEntity.transform.translation
+    var groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+    
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let sizeX = bounds.max.x - bounds.min.x
+    let sizeY = bounds.max.y - bounds.min.y
+    let sizeZ = bounds.max.z - bounds.min.z
+    let halfHeight = sizeY / 2
+    var bottomY = currentPos.y - halfHeight
+    
+    /*print("🎾 Box size: \(sizeY)")
+    print("🎾 Half height: \(halfHeight)")
+    print("🎾 Bottom Y: \(bottomY)")
+    print("🎾 Bottom vs floor: \(bottomY - groundLevel)")
+     */
+   
+   _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = false
+
+      // don't scale the collision shape
+    let shape: ShapeResource = ShapeResource.generateBox(width: sizeX, height: sizeY, depth: sizeZ)
+    _modelEntity.collision = CollisionComponent(shapes: [shape])
+
+    _enablePhysics = isDynamic
+    
+    // Create mass properties separately
+    let massProperties = PhysicsMassProperties(mass: Mass)
+    
+    // Create a custom physics material for gentle collisions
+    let gentleMaterial = PhysicsMaterialResource.generate(
+      staticFriction: StaticFriction,
+      dynamicFriction: DynamicFriction,
+      restitution: Restitution
+    )
+    
+    _modelEntity.physicsBody = PhysicsBodyComponent(
+      massProperties: massProperties,
+      material: gentleMaterial,
+      mode: isDynamic ? .dynamic : .static
+    )
+    
+    _modelEntity.physicsMotion = PhysicsMotionComponent()
+    
+    if #available(iOS 15.0, *) {
+        updateShadowSettings()
+    }
+  }
+  
+  @objc open func debugCollisionShape() {
+     let visualScale = _modelEntity.transform.scale.x
+     
+     print("=== COLLISION SHAPE DEBUG ===")
+     //print("Internal radius: \(_radius)m")
+     print("Visual scale: \(visualScale), and Scale is \(Scale)")
+     print("Has collision: \(_modelEntity.collision != nil)")
+     print("Has physics: \(_modelEntity.physicsBody != nil)")
+
+     // Visual bounds check
+     let bounds = _modelEntity.visualBounds(relativeTo: nil)
+     let visualBoundRadius = (bounds.max.x - bounds.min.x) / 2.0
+     print("Visual bounds radius: \(visualBoundRadius)m")
+     print("==========================")
+   }
+
+  private func updatePhysicsCollisionShape() {
+    guard _modelEntity.physicsBody != nil else { return }
+    
+    let currentScale = _modelEntity.transform.scale.x
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let scaledSize = (bounds.max - bounds.min) * currentScale
+    
+    let safeSize = SIMD3<Float>(
+      max(scaledSize.x, 0.05) * 1.1,
+      max(scaledSize.y, 0.05) * 1.1,
+      max(scaledSize.z, 0.05) * 1.1
+    )
+    
+    let newShape = ShapeResource.generateBox(size: safeSize)
+    
+    _modelEntity.collision = CollisionComponent(
+      shapes: [newShape],
+      filter: _modelEntity.collision?.filter ?? CollisionFilter(
+        group: ARView3D.CollisionGroups.arObjects,
+        mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
+      )
+    )
+    
+    if var physicsBody = _modelEntity.physicsBody {
+      physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
+      _modelEntity.physicsBody = physicsBody
+    }
+  }
+
+  
+  open func moveByPan(x: Float, y: Float) {
+    if PanToMove {
+      _modelEntity.transform.translation += SIMD3<Float>(x, y, 0.0)
+    }
+  }
+  
+  open func rotateByGesture(radians: Float) {
+      if RotateWithGesture {
+          // Decompose current rotation into swing (X&Z) and twist (Y)
+          let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "y")
+          
+          // Create new Y rotation
+          let newTwist = simd_quatf(angle: radians, axis: [0, 1, 0])
+          
+          // Recombine: swing * twist
+          _modelEntity.transform.rotation = swing * newTwist
+      }
+    
+  }
+  
+  // MARK: - Serialization Methods
+  
+  @objc open func ARNodeToYail() -> YailDictionary {
+    let yailDict: YailDictionary = [:]
+    let transformDict: YailDictionary = PoseToYailDictionary() ?? [:]
+
+    yailDict["model"] = self.ModelUrl
+    yailDict["texture"] = self.Texture
+    yailDict["scale"] = self.Scale
+    yailDict["pose"] = transformDict
+    yailDict["type"] = self.Name
+    yailDict["physics"] = String(self._enablePhysics)
+    yailDict["canMove"] = String(self._panToMove)
+    yailDict["canScale"] = String(self._pinchToScale)
+    
+    yailDict["color"] = self._color
+    
+    if let tNode = self as? TextNode {
+      yailDict["text"] = tNode.Text
+      yailDict["font"] = tNode.Font
+      yailDict["fontSize"] = tNode.FontSizeInCentimeters
+    }
+       
+    if let marker = self._followingMarker as? ImageMarker,
+       let markerAnchor = marker.Anchor {
+      
+      yailDict["name"] = self.Name
+
+      // compute local offset of this node under marker (in meters)
+      let nodeWorld   = _modelEntity.transformMatrix(relativeTo: nil)
+      let markerWorld = markerAnchor.transformMatrix(relativeTo: nil)
+      let localMtx    = markerWorld.inverse * nodeWorld
+      let local       = Transform(matrix: localMtx)
+
+      let follow: YailDictionary = [:]
+      follow["markerName"] = marker.Name
+      // if you also have a UUID on the marker, include it:
+      // follow["markerId"] = marker.id
+
+      let offM: YailDictionary = [:]
+      offM["x"] = local.translation.x
+      offM["y"] = local.translation.y
+      offM["z"] = local.translation.z
+      follow["offsetM"] = offM
+      print("⚠️ SAVESCENE node \(self.Name) is following marker \(String(describing: marker.Name)) with offset: \(offM)");
+      yailDict["follow"] = follow
+    }
+    return yailDict
+  }
+     
+  open func CoordinatesToYailDictionary() -> YailDictionary? {
+    let yailDictSave: YailDictionary = [:]
+    yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
+    yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
+    yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
+    
+    print("creator coordinates are \(yailDictSave)")
+    return yailDictSave
+  }
+  
+  @objc open func PoseToYailDictionary() -> YailDictionary? {
+      let translationDict: YailDictionary = [:]
+      let rotationDict: YailDictionary = [:]
+      let yailDictSave: YailDictionary = [:]
+      
+      // use world coordinates
+      let worldPos = _modelEntity.position(relativeTo: nil)
+      let worldRot = _modelEntity.orientation(relativeTo: nil)
+      
+      translationDict["x"] = worldPos.x
+      translationDict["y"] = worldPos.y
+      translationDict["y_offset"] = worldPos.y - Float(ARView3D.SHARED_GROUND_LEVEL)
+      translationDict["z"] = worldPos.z
+      yailDictSave["t"] = translationDict
+      
+      rotationDict["x"] = worldRot.vector.x
+      rotationDict["y"] = worldRot.vector.y
+      rotationDict["z"] = worldRot.vector.z
+      rotationDict["w"] = worldRot.vector.w
+      yailDictSave["q"] = rotationDict
+
+      yailDictSave["lat"] = self.getGeoAnchor()?.coordinate.latitude ?? 0.0
+      yailDictSave["lng"] = self.getGeoAnchor()?.coordinate.longitude ?? 0.0
+      yailDictSave["alt"] = self.getGeoAnchor()?.altitude ?? 0.0
+      
+      return yailDictSave
+  }
+  
+
+
+  // MARK: - Material Management
+  
+  private func setupInitialMaterial() {
+    updateMaterial()
+  }
+  
+  private func updateMaterial() {
+    guard _modelEntity.model != nil else { return }
+    
+    var material = SimpleMaterial()
+    
+    if _color == AIComponentKit.Color.none.rawValue {
+      material.baseColor = MaterialColorParameter.color(.clear)
+    } else {
+      material.baseColor = MaterialColorParameter.color(argbToColor(_color))
+    }
+    
+    _modelEntity.model?.materials = [material]
+  }
+  
+  @available(iOS 15.0, *)
+  private func updateMaterialOpacity(_ alpha: Float) {
+    guard var material = _modelEntity.model?.materials.first as? SimpleMaterial else { return }
+    
+    let currentColor = material.color.tint
+    let newColor = UIColor(
+      red: currentColor.cgColor.components![0],
+      green: currentColor.cgColor.components![1],
+      blue: currentColor.cgColor.components![2],
+      alpha: CGFloat(alpha)
+    )
+    material.baseColor = MaterialColorParameter.color(newColor)
+    _modelEntity.model?.materials = [material]
+  }
+  
+  @available(iOS 15.0, *)
+  private func updateTextureFromImage(_ image: UIImage) {
+    guard _modelEntity.model != nil else { return }
+    
+    var material = SimpleMaterial()
+    
+    do {
+      let texture = try TextureResource.generate(from: image.cgImage!, options: .init(semantic: .color))
+      material.baseColor = MaterialColorParameter.texture(texture)
+    } catch {
+      print("Failed to create texture: \(error)")
+      return
+    }
+    
+    _modelEntity.model?.materials = [material]
+  }
+  
+  // MARK: - Anchor Management
+  
+  func createAnchor() -> AnchorEntity {
+    if let geoAnchor = getGeoAnchor() {
+        if let existingAnchor = _anchorEntity {
+            return existingAnchor
+        }
+        
+        let placeholderAnchor = AnchorEntity(world: SIMD3<Float>(0, 0, 0))
+        _anchorEntity = placeholderAnchor
+        return placeholderAnchor
+    }
+    
+    if let existingAnchor = _anchorEntity {
+      return existingAnchor
+    }
+    
+    let anchor: AnchorEntity
+    
+    if let followingMarker = _followingMarker { //only works for asset-catalog images
+      anchor = AnchorEntity(.image(group: "ARResources", name: followingMarker.Name))
+    } else {
+      let worldTransform = _modelEntity.transformMatrix(relativeTo: nil)
+      anchor = AnchorEntity(world: worldTransform)
+    }
+    
+    _anchorEntity = anchor
+    if _anchorEntity != nil {
+      anchor.addChild(_modelEntity)
+    }
+    return anchor
+  }
+  
+  func createAnchorWithPose(pose: Transform) -> AnchorEntity {
+    if let existingAnchor = _anchorEntity {
+      return existingAnchor
+    }
+    
+    let anchor = AnchorEntity(components: pose)
+    _anchorEntity = anchor
+    if _anchorEntity != nil {
+      anchor.addChild(_modelEntity)
+    }
+    return anchor
+  }
+  
+  func removeFromAnchor() {
+    _modelEntity.removeFromParent()
+    _anchorEntity = nil
+  }
+  
+  // MARK: - Quaternion/Euler Conversion
+  
+  func quaternionToEulerAngles(_ q: simd_quatf) -> SIMD3<Float> {
+    let w = q.vector.w
+    let x = q.vector.x
+    let y = q.vector.y
+    let z = q.vector.z
+    
+    let sinr_cosp = 2 * (w * x + y * z)
+    let cosr_cosp = 1 - 2 * (x * x + y * y)
+    let roll = atan2(sinr_cosp, cosr_cosp)
+    
+    let sinp = 2 * (w * y - z * x)
+    let pitch: Float
+    if abs(sinp) >= 1 {
+      pitch = copysign(Float.pi / 2, sinp)
+    } else {
+      pitch = asin(sinp)
+    }
+    
+    let siny_cosp = 2 * (w * z + x * y)
+    let cosy_cosp = 1 - 2 * (y * y + z * z)
+    let yaw = atan2(siny_cosp, cosy_cosp)
+    
+    return SIMD3<Float>(roll, pitch, yaw)
+  }
+  
+  func eulerAnglesToQuaternion(_ euler: SIMD3<Float>) -> simd_quatf {
+    let cx = cos(euler.x * 0.5)
+    let sx = sin(euler.x * 0.5)
+    let cy = cos(euler.y * 0.5)
+    let sy = sin(euler.y * 0.5)
+    let cz = cos(euler.z * 0.5)
+    let sz = sin(euler.z * 0.5)
+    
+    let w = cx * cy * cz + sx * sy * sz
+    let x = sx * cy * cz - cx * sy * sz
+    let y = cx * sy * cz + sx * cy * sz
+    let z = cx * cy * sz - sx * sy * cz
+    
+    return simd_quatf(ix: x, iy: y, iz: z, r: w)
+  }
+  
+  // MARK: - Event Methods
+  
+  @objc open func Click() {
+    EventDispatcher.dispatchEvent(of: self, called: "Click")
+  }
+  
+  @objc open func LongClick() {
+    EventDispatcher.dispatchEvent(of: self, called: "LongClick")
+  }
+  
+  // MARK: - Image Marker Following
+  
+  @objc open func Follow(_ imageMarker: ARImageMarker) {
+    guard _followingMarker == nil else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "Follow", ErrorMessage.ERROR_ALREADY_FOLLOWING_IMAGEMARKER.code)
+      return
+    }
+    if let marker = imageMarker as? ImageMarker {
+      reparentUnderMarker(marker, keepWorld: true)
+    } else {
+      // If only ARImageMarker protocol is available and no anchor yet, queue it
+      imageMarker.attach(self) // queues
+    }
+
+  }
+  
+  @objc open func FollowWithOffset(_ imageMarker: ARImageMarker,
+                                   _ x: Float, _ y: Float, _ z: Float) {
+    guard _followingMarker == nil else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "FollowWithOffset",
+                      ErrorMessage.ERROR_ALREADY_FOLLOWING_IMAGEMARKER.code)
+      return
+    }
+
+    let offsetM = SIMD3<Float>(
+      //UnitHelper.centimetersToMeters(x),
+      //UnitHelper.centimetersToMeters(y),
+      //UnitHelper.centimetersToMeters(z)
+      x,y,z
+    )
+
+    if let marker = imageMarker as? ImageMarker {
+      reparentUnderMarker(marker, keepWorld: true, offsetM: offsetM)
+    } else {
+      imageMarker.attach(self) // queue if only protocol available
+    }
+  }
+
+  
+  /* store the original position
+    and the offset of the tap from the marker
+   */
+  func reparentUnderMarker(_ marker: ImageMarker,
+                           keepWorld: Bool = true,
+                           offsetM: SIMD3<Float>? = nil)
+  {
+    _followingMarker = marker
+
+    if !marker._attachedNodes.contains(where: { $0 === self }) {
+      marker._attachedNodes.append(self)
+      print("   📋 Reparent: Added '\(Name)' to marker '\(marker._name)'")
+    }
+    
+    if let geoAnchor = _geoAnchor {
+      if let container = _container as? ARView3D {
+        container._arView.session.remove(anchor: geoAnchor)
+      }
+      _geoAnchor = nil
+    }
+
+    //original position before parented
+    let tapWorldPos = _modelEntity.position(relativeTo: nil)
+    let tapWorldRot = _modelEntity.orientation(relativeTo: nil) //orientation relative to the world/scene
+    let tapWorldScale = _modelEntity.scale(relativeTo: nil)
+   
+
+    if _originalWorldPosition == nil { _originalWorldPosition = tapWorldPos }
+
+    guard let markerAnchor = marker.Anchor else {
+      print("⚠️ Marker anchor not ready - queueing")
+      _nodeWorldTransform = Transform(scale: tapWorldScale, rotation: tapWorldRot, translation: tapWorldPos) //_modelEntity.transform
+      _queuedMarkerOffset = offsetM ?? SIMD3<Float>(0, 0, 0)
+      _modelEntity.removeFromParent()
+      _anchorEntity = nil
+      return
+    }
+
+    guard markerAnchor.scene != nil, markerAnchor.isAnchored else {
+      print("⚠️ Marker anchor not anchored yet - queueing")
+      _nodeWorldTransform = Transform(scale: tapWorldScale, rotation: tapWorldRot, translation: tapWorldPos)
+      _queuedMarkerOffset = offsetM ?? SIMD3<Float>(0, 0, 0)
+      _modelEntity.removeFromParent()
+      _anchorEntity = nil
+      return
+    }
+
+    // subtract positions to get offset along x,y,z so it can be repositioned accurately if marker lost/founbd
+    _offsetToMarkerMatrix = markerAnchor.position - _modelEntity.position
+
+    //_offsetToMarkerMatrix = simd_distance(markerAnchor.transform.translation,  _modelEntity.transform.translation)
+    _modelEntity.removeFromParent()
+    _modelEntity.setParent(markerAnchor, preservingWorldTransform: true)
+
+    if let offset = offsetM {
+      _modelEntity.setPosition(tapWorldPos, relativeTo: nil)
+
+      print("   ✅ Applied LOCAL offset: \(_modelEntity.position)")
+    } else {
+      _modelEntity.position = SIMD3<Float>(0, 0, 0) // relative to marker
+      print("   ✅ Positioned at marker center")
+    }
+      
+    _anchorEntity = markerAnchor
+    _queuedMarkerOffset = nil
+
+    print("   💾 Model at marker pos=\(_modelEntity.position), rot=\(_modelEntity.orientation)")
+    var rotation = simd_quatf(angle: 0, axis: [0, 1, 0])
+    if self is TextNode {
+     // rotation = simd_quatf(angle: -90, axis: [1, 0, 0])
+    }
+    _nodeLocalTransform = Transform(
+        scale: _modelEntity.scale,
+        rotation: rotation,
+        translation: _modelEntity.position  // Local position relative to marker
+    )
+    
+    _nodeWorldTransform = Transform(
+      scale: _modelEntity.scale,
+      rotation: rotation,
+      translation: _modelEntity.position(relativeTo: nil)   // Only save position
+    )
+    print("   ✅ Attached! node is at \(_nodeWorldTransform)")
+  }
+  
+  //not being using currently
+  @objc open func defaultCameraFacingOrientation() -> simd_quatf {
+      // Default: just yaw (for 3D objects)
+      return simd_quatf(angle: 0, axis: [1, 0, 0])
+  }
+
+  /* csb will use at some point */
+  func applyCameraFacingOrientation(cameraPosition: SIMD3<Float>) {
+      let modelPosition = _modelEntity.position(relativeTo: nil)
+      
+      let dx = cameraPosition.x - modelPosition.x
+      let dz = cameraPosition.z - modelPosition.z
+      let distance = sqrt(dx * dx + dz * dz)
+      
+      guard distance > 0.001 else { return }
+      
+
+    // ✅ Build right-handed orthonormal basis
+    let forward = normalize(SIMD3<Float>(dx, 0, dz))  // Towards camera (horizontal)
+    let worldUp = SIMD3<Float>(0, 1, 0)
+    let right = normalize(cross(forward, worldUp))    // ✅ Fixed order for right-handed system
+    let up = cross(right, forward)
+    
+      let desiredWorldOrientation: simd_quatf
+      if self is TextNode {
+
+          // Build rotation matrix from basis vectors
+        let matrix = simd_float3x3(
+                    right,    // Text X-axis
+                    forward,  // Text Y-axis (top points at camera)
+                    -up        // Text Z-axis (out of text points up)
+                )
+          desiredWorldOrientation = simd_quatf(matrix)
+      } else {
+          // Just face camera horizontally
+          let matrix = simd_float3x3(right, up, forward)
+          desiredWorldOrientation = simd_quatf(matrix)
+      }
+      
+      // Convert to local space relative to marker anchor
+      if let parent = _modelEntity.parent {
+          let parentWorldQuat = parent.orientation(relativeTo: nil)
+          let localOrientation = parentWorldQuat.inverse * desiredWorldOrientation
+          _modelEntity.orientation = localOrientation
+          
+          print("📍 \(Name) - built from vectors (no tilt)")
+          print("📍 \(Name) - forward: \(forward), right: \(right), up: \(up)")
+      } else {
+          _modelEntity.setOrientation(desiredWorldOrientation, relativeTo: nil)
+      }
+  }
+  
+  @objc open func StopFollowingImageMarker() {
+    _followingMarker?.removeNode(self)
+    stopFollowing()
+  }
+  
+  open func stopFollowing() {
+    let worldTransform = _modelEntity.transformMatrix(relativeTo: nil)
+    
+    _modelEntity.removeFromParent()
+    _followingMarker?.removeNode(self)
+    _followingMarker = nil
+    
+    _modelEntity.transform = Transform(matrix: worldTransform)
+    _container?.addNode(self)
+    
+    StoppedFollowingMarker()
+  }
+  
+  @objc open func StoppedFollowingMarker() {
+    EventDispatcher.dispatchEvent(of: self, called: "StoppedFollowingMarker")
+  }
+
+  // MARK: - Lifecycle Methods
+  
+  @objc open func onResume() { }
+  
+  @objc open func onPause() { }
+  
+  @objc open func onDelete() {
+    stopFollowing()
+    _container?.removeNode(self)
+    _container = nil
+  }
+  
+  @objc open func onDestroy() {
+    stopFollowing()
+    _container?.removeNode(self)
+    _container = nil
+  }
+
+  // MARK: - Physics Methods
+  
+  @objc open func DisablePhysics() {
+      _modelEntity.collision = nil
+      _modelEntity.physicsBody = nil
+  }
+  
+  // MARK: - Collision Handling Methods
+  
+  @objc open func CollisionDetected() {}
+  
+  @objc open func ObjectCollidedWithScene(_ node: ARNodeBase) {
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: node)
+  }
+
+  @objc open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
+    // Default collision behavior for all AR objects
+    //print("🔥 \(Name) collided with another node \(otherNode.Name) at y \(String(_modelEntity.transform.translation.y))")
+    // CSB todo something to ignore additional collisions
+    // Show collision effect if available
+    if #available(iOS 15.0, *) {
+        showCollisionEffect(type: .object)
+    }
+    
+    // Dispatch event to app level
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: otherNode)
+  }
+
+  
+  // Handle collision with another AR node (we know it's a node)
+  @objc open func handleNodeCollision(with otherNode: ARNodeBase, event: Any) {
+      print("🔥 \(Name) collision with AR node: \(otherNode.Name)")
+      
+      // Call the main collision method that subclasses can override
+      ObjectCollidedWithObject(otherNode)
+  }
+  
+  // Handle collision with scene element (we know what type of scene element)
+  @objc open func handleSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
+      guard let sceneTypeEnum = sceneType as? SceneEntityType else { return }
+      
+      print("🏠 \(Name) collided with scene: \(sceneTypeEnum.rawValue)")
+      
+      // Show different collision effect based on scene type
+      if #available(iOS 15.0, *) {
+          let collisionType: CollisionType = sceneTypeEnum == .floor ? .floor : .wall
+          showCollisionEffect(type: collisionType)
+      }
+      
+      // Dispatch scene collision event
+      EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithScene", arguments: sceneTypeEnum.rawValue as AnyObject)
+  }
+
+  // Override this in subclasses for custom scene collision behavior
+  @objc open func respondToSceneCollision(sceneEntity: Any, sceneType: Any, event: Any) {
+      print("🔥 \(Name) base scene collision response with \(sceneType) - override in subclass")
+      
+      guard let sceneTypeEnum = sceneType as? SceneEntityType else { return }
+      
+      let collisionType: CollisionType
+      switch sceneTypeEnum {
+      case .floor:
+          collisionType = .floor
+      case .wall, .ceiling, .furniture:
+          collisionType = .wall
+      case .unknown:
+          collisionType = .wall
+      }
+      
+      if #available(iOS 15.0, *) {
+          showCollisionEffect(type: collisionType)
+      }
+  }
+
+  // Enhanced collision effect method
+  @available(iOS 15.0, *)
+  private func showCollisionEffect(type: CollisionType) {
+
+    if OriginalMaterial == nil {
+        OriginalMaterial = _modelEntity.model?.materials.first
+    }
+    _isCurrentlyColliding = true
+    
+    var collidedMaterial = SimpleMaterial()
+    
+    // Different colors for different collision types
+    switch type {
+    case .object:
+        collidedMaterial.color = .init(tint: .red.withAlphaComponent(0.7))
+    case .floor:
+        collidedMaterial.color = .init(tint: .blue.withAlphaComponent(0.6))
+    case .wall:
+        collidedMaterial.color = .init(tint: .orange.withAlphaComponent(0.7))
+    case .none:
+        collidedMaterial.color = .init(tint: .white.withAlphaComponent(0.5))
+    }
+      
+    // Apply collision color
+    _modelEntity.model?.materials = [collidedMaterial]
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+      if let original = self?.OriginalMaterial {
+          self?._modelEntity.model?.materials = [original]
+      }
+    }
+  }
+  
+  // MARK: - Drag Methods
+  
+  @objc open func startDrag() {
+    _isBeingDragged = true
+    _originalMaterial = _modelEntity.model?.materials.first
+    
+    if #available(iOS 16.0, *) {
+        _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = false
+    }
+    
+    if var physicsBody = _modelEntity.physicsBody {
+      physicsBody.mode = .kinematic
+      _modelEntity.physicsBody = physicsBody
+    }
+    
+    print("🎯 \(Name) started being dragged")
+  }
+  
+  @objc open func updateDrag(fingerWorldPosition: SIMD3<Float>) {
+      guard _isBeingDragged else { return }
+      let constrainedPosition = SIMD3<Float>(
+        fingerWorldPosition.x,
+        max(fingerWorldPosition.y + DRAG_HEIGHT_OFFSET, ARView3D.SHARED_GROUND_LEVEL + ARView3D.VERTICAL_OFFSET),
+        fingerWorldPosition.z
+      )
+      // Direct position control
+      _modelEntity.transform.translation = constrainedPosition
+    }
+
+  @objc open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
+
+    _isBeingDragged = false
+    if let original = _originalMaterial {
+      _modelEntity.model?.materials = [original]
+      _originalMaterial = nil
+    }
+    
+    _modelEntity.physicsBody = nil
+    if #available(iOS 15.0, *) {
+      placeOnNearestSurface()
+    } else {
+      // will follow finger
+    }
+    
+    print("🎯 \(Name) drag ended - override in subclass")
+  }
+  
+  @available(iOS 15.0, *)
+  private func placeOnNearestSurface() {
+    print("Placing on nearest surface")
+    let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    let halfHeight = (bounds.max.y - bounds.min.y) / 2
+   
+    _hasPreviewSurface = true
+
+
+        
+    
+    // Fallback: find surface from current position
+    let currentPos = _modelEntity.transform.translation
+    if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
+    let correctedY = placementPosition.y + halfHeight + ARView3D.VERTICAL_OFFSET
+      let correctedSurface = SIMD3<Float>(
+        placementPosition.x,
+        correctedY,  // Use corrected Y, not cached surface Y
+        placementPosition.z
+      )
+      print("Using horizontal surface: \(placementPosition)")
+      animateToPosition(correctedSurface) {
+          self.finalizeModelPlacement()
+      }
+    } else {
+      // Final fallback to ground level
+      let correctedY = currentPos.y + halfHeight + ARView3D.VERTICAL_OFFSET
+      let groundPosition = SIMD3<Float>(currentPos.x, correctedY, currentPos.z)
+      
+      print("Using groundPosition: \(groundPosition)")
+      animateToPosition(groundPosition) {
+          self.finalizeModelPlacement()
+      }
+    }
+  }
+  
+  private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
+    guard let container = _container else { return nil }
+    print("best surface for node dragged from \(position)")
+    return container.getARView().findBestSurfaceForPlacement()
+  }
+  
+
+  public func finalizeModelPlacement() {
+    print("Finalizing node placement")
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+      self?.EnablePhysics(self!._enablePhysics)
+    }
+    
+    if let container = _container {
+      container.hidePlacementPreview()
+    }
+    
+    let newWorldPosition = self._modelEntity.position(relativeTo: nil)
+    
+    if let container = self._container as? ARView3D,
+       let cameraTransform = container._arView.cameraTransform as Optional {
+        //self.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+      //self._modelEntity.orientation = simd_quatf(angle: -90, axis: [1,0,0])
+    }
+    
+    self._nodeWorldTransform = Transform(
+                scale: self._modelEntity.scale(relativeTo: nil),
+                rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),
+                translation: newWorldPosition
+            )
+    print("   📍 Updated cached world position after drag: \(newWorldPosition)")
+    self._nodeLocalTransform = Transform(
+                    scale: self._modelEntity.scale,
+                    rotation: simd_quatf(angle: 0, axis: [0, 1, 0]),
+                    translation: self._modelEntity.position  // Local position relative to tempAnchor
+                )
+    // Clear local preview data
+    _previewPlacementSurface = nil
+    
+    print("node placement complete at: \(_modelEntity.transform.translation) and storing in local transform")
+  }
+  
+
+  /// Animates the node to a target position smoothly
+  @available(iOS 15.0, *)
+  @available(iOS 15.0, *)
+  private func animateToPosition(_ targetWorld: SIMD3<Float>, completion: @escaping () -> Void) {
+      print("📍 Animating to WORLD position: \(targetWorld)")
+
+      // Pause physics while we reposition
+      let hadPhysics = (_modelEntity.physicsBody != nil)
+      _modelEntity.physicsBody = nil
+
+      // Preserve current world rotation & scale
+      let worldRot   = _modelEntity.orientation(relativeTo: nil)
+      let worldScale = _modelEntity.scale(relativeTo: nil)
+
+      // Animate directly in WORLD space
+      _modelEntity.move(
+          to: Transform(scale: worldScale, rotation: worldRot, translation: targetWorld),
+          relativeTo: nil,            // <- WORLD frame is the reference
+          duration: 0.30,
+          timingFunction: .easeOut
+      )
+
+      // Call completion after the animation has settled
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+          // Optionally restore physics here; or let finalizeModelPlacement() do it.
+          if hadPhysics {
+              // If you want to keep physics off until finalizeModelPlacement, omit this.
+              // self.EnablePhysics(true)
+          }
+          completion()
+      }
+  }
+
+
+} // end ARNodeBase class
+
+// MARK: - ARNodeBase Extension
+
+@available(iOS 14.0, *)
+extension ARNodeBase {
+  
+  private func updatePhysicsMaterial() {
+      guard var physicsBody = _modelEntity.physicsBody else { return }
+      
+      let newMaterial = PhysicsMaterialResource.generate(
+          staticFriction: StaticFriction,
+          dynamicFriction: DynamicFriction,
+          restitution: Restitution
+      )
+      
+      physicsBody.material = newMaterial
+      print("Updated physics material: friction(\(StaticFriction), \(DynamicFriction)), bounce(\(Restitution))")
+  }
+
+  
+  private func updateMassProperties() {
+      guard var physicsBody = _modelEntity.physicsBody else { return }
+      
+      physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
+      print(" Updated mass to: \(Mass)")
+  }
+  
+  //assume sphere shape. can be overriden to be more accurate
+  private func updateCollisionShape() {
+      let shape: ShapeResource
+      let bounds = _modelEntity.visualBounds(relativeTo: nil)
+      let autoSize = bounds.max - bounds.min
+      let safeSize = SIMD3<Float>(
+          max(autoSize.x, 0.05) + 0.001,
+          max(autoSize.y, 0.05) + 0.001,
+          max(autoSize.z, 0.05) + 0.001
+      )
+    
+    shape = ShapeResource.generateBox(size: safeSize)
+    _modelEntity.collision = CollisionComponent(shapes: [shape])
+      
+    // Update physics body if it exists
+    if _modelEntity.physicsBody != nil {
+        // Update mass based on new volume (realistic)
+        let volumeScale = Scale
+        let newMass = Mass * volumeScale
+        
+        let material = PhysicsMaterialResource.generate(
+            staticFriction: StaticFriction,
+            dynamicFriction: DynamicFriction,
+            restitution: Restitution
+        )
+        
+        _modelEntity.physicsBody = PhysicsBodyComponent(
+            massProperties: PhysicsMassProperties(mass: newMass),
+            material: material,
+            mode: .dynamic
+        )
+        
+        print("🎾 Collision updated: mass=\(newMass)")
+    }
+  }
+
+
+  
+  public func debugVisualState() {
+      print("=== VISUAL STATE DEBUG ===")
+      print("Model materials count: \(_modelEntity.model?.materials.count ?? 0)")
+    if #available(iOS 18.0, *) {
+      print("Entity opacity: \(_modelEntity.components[OpacityComponent.self]?.opacity ?? 1.0)")
+    } else {
+      // Fallback on earlier versions
+    }
+      print("Transform scale: \(_modelEntity.transform.scale)")
+      print("==========================")
+  }
+  
+
+  @objc open func handleAdvancedGestureUpdate(
+    fingerLocation: CGPoint,
+    fingerMovement: CGPoint,
+    fingerVelocity: CGPoint,
+    groundProjection: Any?,
+    camera3DProjection: Any?,
+    gesturePhase: UIGestureRecognizer.State
+  ) {
+    var groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
+
+    switch gesturePhase {
+    case .began:
+      startDrag()
+        
+    case .changed:
+      if let worldPos = groundPos {
+        updateDrag(fingerWorldPosition:worldPos)
+      } else {
+        print("⚠️ No groundProjection available during drag")
+      }
+        
+    case .ended, .cancelled:
+      endDrag(releaseVelocity: fingerVelocity, camera3DProjection: camera3DProjection!)
+        
+    default:
+        break
+    }
+  }
+  
+  // Add these methods to ModelNode class
+  @objc public func setPreviewPlacementSurface(_ surface: SIMD3<Float>) {
+      _previewPlacementSurface = surface
+      _hasPreviewSurface = true
+  }
+
+  @objc public func clearPreviewPlacementSurface() {
+      _previewPlacementSurface = nil
+      _hasPreviewSurface = false
+  }
+
+  public func getPreviewPlacementSurface() -> SIMD3<Float>? {
+      return _previewPlacementSurface
+  }
+
+  public func hasPreviewSurface() -> Bool {
+      return _hasPreviewSurface
+  }
+  
+  /// Updates shadow casting and receiving for the sphere
+  public func updateShadowSettings() {
+      guard #available(iOS 15.0, *) else {
+          print("⚠️ Shadow control requires iOS 15.0+")
+          return
+      }
+      
+      // Enable/disable shadow casting and receiving
+      if _showShadow {
+          enableShadows()
+      } else {
+          disableShadows()
+      }
+  }
+  
+  // Add convenience methods for shadow control
+  @objc open func enableShadowCasting() {
+      ShowShadow = true
+  }
+
+  @objc open func disableShadowCasting() {
+      ShowShadow = false
+  }
+
+  // Add shadow-specific behavior methods
+  @objc open func setShadowIntensity(_ intensity: Float) {
+      guard #available(iOS 15.0, *) else { return }
+      
+      // Note: RealityKit doesn't have direct shadow intensity control per object
+      // This would typically be controlled at the scene lighting level
+      print("⚠️ Shadow intensity is controlled by scene lighting in RealityKit")
+  }
+
+  @objc open func setShadowColor(_ color: Int32) {
+      guard #available(iOS 15.0, *) else { return }
+      
+      // Note: RealityKit doesn't have direct shadow color control per object
+      // This would typically be controlled at the scene lighting level
+      print("⚠️ Shadow color is controlled by scene lighting in RealityKit")
+  }
+  
+  @available(iOS 15.0, *)
+  private func enableShadows() {
+      // Enable shadow casting
+    if #available(iOS 18.0, *) {
+      _modelEntity.components.set(GroundingShadowComponent(castsShadow: true))
+    }
+  }
+
+  @available(iOS 15.0, *)
+  private func disableShadows() {
+      // Disable shadow casting
+    if #available(iOS 18.0, *) {
+      _modelEntity.components.set(GroundingShadowComponent(castsShadow: false))
+    }
+  }
+
+}

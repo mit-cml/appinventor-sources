@@ -60,6 +60,7 @@ class OnboardViewController: UIViewController {
 
     for x in 0..<titles.count {
       let pageView = UIView()
+    
       pageView.translatesAutoresizingMaskIntoConstraints = false
       scrollView.addSubview(pageView)
       pageView.widthAnchor.constraint(equalTo: holderView.widthAnchor).isActive = true

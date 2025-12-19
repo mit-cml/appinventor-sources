@@ -66,6 +66,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
@@ -1188,7 +1190,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public int getMaxJobSizeBytes() {
     // TODO(user): what should this mean?
-    return 5 * 1024 * 1024;
+    return 10 * 1024 * 1024;
   }
 
   @Override

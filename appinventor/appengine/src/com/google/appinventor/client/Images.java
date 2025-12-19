@@ -724,15 +724,15 @@ public interface Images extends Resources {
   /**
    * Codi Logo
    */
-   @Source("com/google/appinventor/images/logo.png")
-   ImageResource logo();
+  @Source("com/google/appinventor/images/logo.png")
+  ImageResource logo();
 
   /**
    * Designer palette item: Arduino component
    */
   @Source("com/google/appinventor/images/arduino.png")
   ImageResource arduino();
-  
+
   /**
    * Media icon: image
    */
@@ -834,4 +834,178 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/trendline.png")
   ImageResource trendline();
+
+  /**
+   * Designer palette item: CapsuleNode
+   */
+  @Source("com/google/appinventor/images/capsuleNode.png")
+  ImageResource capsuleNode();
+
+  /**
+   * Designer palette item: ConeNode
+   */
+  @Source("com/google/appinventor/images/coneNode.png")
+  ImageResource coneNode();
+
+  /**
+   * Designer palette item: BoxNode
+   */
+  @Source("com/google/appinventor/images/boxNode.png")
+  ImageResource boxNode();
+
+  /**
+   * Designer palette item: CylinderNode
+   */
+  @Source("com/google/appinventor/images/cylinderNode.png")
+  ImageResource cylinderNode();
+
+  /**
+   * Designer palette item: PlaneNode
+   */
+  @Source("com/google/appinventor/images/planeNode.png")
+  ImageResource planeNode();
+
+  /**
+   * Designer palette item: PyramidNode
+   */
+  @Source("com/google/appinventor/images/pyramidNode.png")
+  ImageResource pyramidNode();
+
+  /**
+   * Designer palette item: SphereNode
+   */
+  @Source("com/google/appinventor/images/sphereNode.png")
+  ImageResource sphereNode();
+
+  /**
+   * Designer palette item: TextNode
+   */
+  @Source("com/google/appinventor/images/textNode.png")
+  ImageResource textNode();
+
+  /**
+   * Designer palette item: TorusNode
+   */
+  @Source("com/google/appinventor/images/torusNode.png")
+  ImageResource torusNode();
+
+  /**
+   * Designer palette item: TubeNode
+   */
+  @Source("com/google/appinventor/images/tubeNode.png")
+  ImageResource tubeNode();
+
+  /**
+   * Designer palette item: VideoNode
+   */
+  @Source("com/google/appinventor/images/videoNode.png")
+  ImageResource videoNode();
+
+  /**
+   * Designer palette item: VideoNode component in designer
+   */
+  @Source("com/google/appinventor/images/videoNodeBig.png")
+  ImageResource videoNodeBig();
+
+  /**
+   * Designer palette item: WebViewNode
+   */
+  @Source("com/google/appinventor/images/webViewNode.png")
+  ImageResource webViewNode();
+
+  /**
+   * Designer palette item: WebViewNode component in designer
+   */
+  @Source("com/google/appinventor/images/webViewNodeBig.png")
+  ImageResource webViewNodeBig();
+
+  /**
+   * Designer palette item: AmbientLight
+   */
+  @Source("com/google/appinventor/images/ambientLight.png")
+  ImageResource ambientLight();
+
+  /**
+   * Designer palette item: AmbientLight component in designer
+   */
+  @Source("com/google/appinventor/images/ambientLightBig.png")
+  ImageResource ambientLightBig();
+
+  /**
+   * Designer palette item: ARView3D
+   */
+  @Source("com/google/appinventor/images/arView3D.png")
+  ImageResource arView3D();
+
+  /**
+   * Designer palette item: ARView3D component in designer
+   */
+  @Source("com/google/appinventor/images/arView3DBig.png")
+  ImageResource arView3DBig();
+
+  /**
+   * Designer palette item: DetectedPlane
+   */
+  @Source("com/google/appinventor/images/detectedPlane.png")
+  ImageResource detectedPlane();
+
+  /**
+   * Designer palette item: DirectionalLight
+   */
+  @Source("com/google/appinventor/images/directionalLight.png")
+  ImageResource directionalLight();
+
+  /**
+   * Designer palette item: DirectionalLight component in designer
+   */
+  @Source("com/google/appinventor/images/directionalLightBig.png")
+  ImageResource directionalLightBig();
+
+  /**
+   * Designer palette item: ImageMarker
+   */
+  @Source("com/google/appinventor/images/imageMarker.png")
+  ImageResource imageMarker();
+
+  /**
+   * Designer palette item: ImageMarker component in designer
+   */
+  @Source("com/google/appinventor/images/imageMarkerBig.png")
+  ImageResource imageMarkerBig();
+
+  /**
+   * Designer palette item: ModelNode
+   */
+  @Source("com/google/appinventor/images/modelNode.png")
+  ImageResource modelNode();
+
+  /**
+   * Designer palette item: ModelNode compoennt in designer
+   */
+  @Source("com/google/appinventor/images/modelNodeBig.png")
+  ImageResource modelNodeBig();
+
+  /**
+   * Designer palette item: PointLight
+   */
+  @Source("com/google/appinventor/images/pointLight.png")
+  ImageResource pointLight();
+
+  /**
+   * Designer palette item: PointLight component in designer
+   */
+  @Source("com/google/appinventor/images/pointLightBig.png")
+  ImageResource pointLightBig();
+
+  /**
+   * Designer palette item: Spotlight
+   */
+  @Source("com/google/appinventor/images/spotlight.png")
+  ImageResource spotlight();
+
+  /**
+   * Designer palette item: Spotlight component in designer
+   */
+  @Source("com/google/appinventor/images/spotlightBig.png")
+  ImageResource spotlightBig();
 }

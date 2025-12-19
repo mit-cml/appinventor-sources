@@ -1,0 +1,26 @@
+# Simple plane OBJ file
+# 4 vertices forming a square plane on the XZ axis
+
+# Vertices (x, y, z)
+v -1.0 0.0 -1.0
+v  1.0 0.0 -1.0
+v  1.0 0.0  1.0
+v -1.0 0.0  1.0
+
+# Texture coordinates (u, v)
+vt 0.0 0.0
+vt 1.0 0.0
+vt 1.0 1.0
+vt 0.0 1.0
+
+# Normals (pointing up in Y direction)
+vn 0.0 1.0 0.0
+vn 0.0 1.0 0.0
+vn 0.0 1.0 0.0
+vn 0.0 1.0 0.0
+
+# Faces (vertex/texture/normal indices)
+# Triangle 1
+f 1/1/1 2/2/2 3/3/3
+# Triangle 2
+f 1/1/1 3/3/3 4/4/4

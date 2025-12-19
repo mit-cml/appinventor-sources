@@ -15,7 +15,19 @@ fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 let VERTICAL_LAYOUT = 0
 let HORIZONTAL_LAYOUT = 1
 
-  open class ListView: ViewComponent, AbstractMethodsForViewComponent,
+extension NSDictionary {
+  func hasAnyOf(fields: [String]) -> Bool {
+      return fields.contains { self[$0] != nil }
+  }
+  
+  var isValidListItem: Bool {
+      return self["Text1"] != nil ||
+             self["Text2"] != nil ||
+             self["Image"] != nil
+  }
+}
+
+open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,
     UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
   fileprivate final var _view: UITableView
@@ -36,7 +48,7 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
-  fileprivate var _listData: [[String: String]] = []   //ListData
+  fileprivate var _listData: [[String: AnyObject]] = []   //ListData
   fileprivate var _listViewLayoutMode = Int32(0)
   fileprivate var _fontTypeface: String = ""
   fileprivate var _fontTypefaceDetail: String = ""
@@ -54,7 +66,7 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _imageWidth = Int32(200)
 
   let COMPANION_CORRECTION = 5
-
+    
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: .zero, style: .plain)
     _collectionView = UICollectionView(frame: .zero, collectionViewLayout: _horizontalLayout)
@@ -121,6 +133,7 @@ let HORIZONTAL_LAYOUT = 1
 
     updateOrientationUI()
   }
+    
 
  
   open override var view: UIView { _rootView }
@@ -145,16 +158,16 @@ let HORIZONTAL_LAYOUT = 1
       return ""
     }
     set(elements) {
-      Elements = elements.split(",") as [AnyObject]
+      Elements = YailList(array: elements.split(","))
     }
   }
 
-  @objc open var Elements: [AnyObject] {
+  @objc open var Elements: YailList<AnyObject> {
     get {
       if _listData.count > 0 {
-        return _listData as [AnyObject]
+        return YailList(array: _listData)
       } else {
-        return _elements as [AnyObject]
+        return YailList(array: _elements)
       }
     }
     set(elements) {
@@ -164,35 +177,37 @@ let HORIZONTAL_LAYOUT = 1
         _view.reloadData()
         return
       }
-      addElements(elements)
+      addElements(Array<AnyObject>((elements as [AnyObject]).dropFirst()))
     }
-  }  
-
-  func addElements(_ elements: [AnyObject]) {
+  }
+    
+  private func makeListItem(text1: String = "", text2: String = "", image: String = "") -> [String: AnyObject] {
+    return [
+      "Text1": text1 as AnyObject,
+      "Text2": text2 as AnyObject,
+      "Image": image as AnyObject
+    ]
+  }
+  
+  private func addElements(_ elements: [AnyObject]) {
     if !elements.isEmpty {
-      if elements.first is YailDictionary {
-        for item in elements {
-          if let row = item as? YailDictionary {
-            if let rowDict = row as? [String:String] {
-              _listData.append(rowDict)
-            }
-          } else if let row = item as? String {
-            _listData.append(["Text1": row, "Text2": "", "Image": ""])
-          } else {
-            // Hmm...
-          }
-        }
-      } else {
-        if _elements.isEmpty {
-          _elements = elements.toStringArray()
+      for item in elements {
+        if let rowDict = item as? NSDictionary,
+           rowDict.isValidListItem,
+           let stoDict = rowDict as? [String: AnyObject] {
+          _listData.append(stoDict)
+        } else if let row = item as? String {
+          _listData.append(makeListItem(text1: row, text2: "", image: ""))
         } else {
-          _elements.append(contentsOf: elements.toStringArray())
-        }       
+          _container?.form?.dispatchErrorOccurredEvent(self, "AddItems",
+                                                       ErrorMessage.ERROR_LISTVIEW_MISSING_REQUIRED_ITEM.code)
+         return
+        }
       }
       elementsCount()
     }
   }
-
+  
   func elementsCount() {
     let rows = max(_elements.count, _listData.count)
     _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
@@ -296,21 +311,21 @@ let HORIZONTAL_LAYOUT = 1
 
   @objc open var ImageHeight: Int32 {
     get {
-        return _imageHeight
+      return _imageHeight
     }
     set(height) {
-        _imageHeight = height
-        _view.reloadData()
+      _imageHeight = height
+      _view.reloadData()
     }
 }
 
   @objc open var ImageWidth: Int32 {
     get {
-        return _imageWidth
+      return _imageWidth
     }
     set(width) {
-        _imageWidth = width
-        _view.reloadData()
+      _imageWidth = width
+      _view.reloadData()
     }
   }
 
@@ -327,20 +342,20 @@ let HORIZONTAL_LAYOUT = 1
     }
     set(jsonString) {
       do {
-        if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
+        if let dictionaries = try getObjectFromJson(jsonString) as? [[String: AnyObject]] {
           _listData = dictionaries.compactMap { dictionary in
-            var item: [String: String] = [:]
+            var item: [String: AnyObject] = [:]
 
             if let text1 = dictionary["Text1"] as? String {
-              item["Text1"] = text1
+              item["Text1"] = text1 as AnyObject
             }
 
             if let text2 = dictionary["Text2"] as? String {
-              item["Text2"] = text2
+              item["Text2"] = text2 as AnyObject
             }
 
             if let image = dictionary["Image"] as? String {
-              item["Image"] = image
+              item["Image"] = image as AnyObject
             }
 
             // Check if any of the required values is missing and skip the entry if needed
@@ -423,7 +438,7 @@ let HORIZONTAL_LAYOUT = 1
         _selectionIndex = Int32(index) + 1
         _selection = selection
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else if let index = _listData.firstIndex(where: { $0["Text1"] == selection }) {
+      } else if let index = _listData.firstIndex(where: { $0["Text1"] as! String == selection }) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
@@ -442,7 +457,7 @@ let HORIZONTAL_LAYOUT = 1
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _listData.firstIndex(where: { $0["Text2"] == selectionDetailText }) {
+      if let index = _listData.firstIndex(where: { $0["Text2"] as! String == selectionDetailText }) {
         _selectionIndex = Int32(index) + 1
         _selectionDetailText = selectionDetailText
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
@@ -554,49 +569,53 @@ let HORIZONTAL_LAYOUT = 1
   // MARK: Methods
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
-    _listData.append(["Text1": mainText, "Text2": detailText, "Image": imageName])
+    _listData.append(makeListItem(text1: mainText, text2: detailText, image: imageName))
+    _view.reloadData()
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
-    _listData.insert(["Text1": mainText, "Text2": detailText, "Image": imageName], at: Int(addIndex - 1))
+    _listData.insert(makeListItem(text1: mainText, text2: detailText, image: imageName), at: Int(addIndex - 1))
   }
 
-  @objc open func AddItems(_ items: [AnyObject]) {
-    guard !elements.isEmpty else {
+  @objc open func AddItems(_ items: YailList<AnyObject>) {
+    guard !items.isEmpty else {
         return
     }
-    addElements(items)
+    addElements(Array<AnyObject>((items as [AnyObject]).dropFirst()))
   }
 
+  /* insert element to ListView as Dictionary or as String */
   @objc open func AddItemsAtIndex(_ addIndex: Int32, _ elements: [AnyObject]) {
     if elements.isEmpty {
       return
     }
     if addIndex < 1 || addIndex - 1 > max(_listData.count, _elements.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
-           ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
+                                                   ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
-    let index = Int(addIndex - 1)
-    if elements.first is YailDictionary {
-      var newItems: [[String: String]] = []
+    
+    if !elements.isEmpty {
+      let index = Int(addIndex - 1)
+      var newItems: [[String: AnyObject]] = []
       for item in elements {
-        if let row = item as? YailDictionary {
-          if let rowDict = row as? [String:String] {
-            newItems.append(rowDict)
-          }
+        if let rowDict = item as? NSDictionary,
+           rowDict.isValidListItem,
+           let stoDict = rowDict as? [String: AnyObject] {
+          newItems.append(stoDict)
         } else if let row = item as? String {
-          newItems.append(["Text1": row, "Text2": "", "Image": ""])
+          newItems.append(makeListItem(text1: row, text2: "", image: ""))
         } else {
-          // Hmm...
+          _container?.form?.dispatchErrorOccurredEvent(self, "AddItemAtIndex",
+               ErrorMessage.ERROR_LISTVIEW_MISSING_REQUIRED_ITEM, index)
+          return
         }
+        _listData.insert(contentsOf: newItems, at: index)
       }
-      _listData.insert(contentsOf: newItems, at: index)
-    } else {
-      _elements.insert(contentsOf: elements.toStringArray(), at: index)
+      elementsCount()
     }
-    elementsCount()
   }
+
 
   @objc open func CreateElement(_ mainText: String, _ detailText: String, _ imageName: String) -> YailDictionary {
     return [
@@ -658,14 +677,19 @@ let HORIZONTAL_LAYOUT = 1
       if _listViewLayoutMode == 1{
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+        if let txt = _listData[listDataIndex][("Text1" as String)] {
+          cell.textLabel?.text = String(describing: txt)
+        }
+        if let txt = _listData[listDataIndex][("Text2" as String)] {
+          cell.detailTextLabel?.text = String(describing: txt)
+        }
       } else if _listViewLayoutMode == 2 {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-
+        
+        if let txt = _listData[listDataIndex][("Text2" as String)] {
+          cell.detailTextLabel?.text = String(describing: txt)
+        }
         // Configure the layout
         cell.layoutMargins = UIEdgeInsets.zero
         cell.separatorInset = UIEdgeInsets.zero
@@ -695,9 +719,21 @@ let HORIZONTAL_LAYOUT = 1
       } else if _listViewLayoutMode == 3 {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-           let image = AssetManager.shared.imageFromPath(path: imagePath) {
+        if let txt = _listData[listDataIndex][("Text1" as String)] {
+          cell.textLabel?.text = String(describing: txt)
+        }
+        if let txt = _listData[listDataIndex][("Text2" as String)] {
+          cell.detailTextLabel?.text = String(describing: txt)
+        }
+        if let imagePath = _listData[listDataIndex][("Image" as String)] {
+          let path = String(describing:imagePath)
+          var image = AssetManager.shared.imageFromPath(path: path)
+          if image == nil { //csb
+            if FileManager.default.fileExists(atPath: path) {
+              print("   ✅ Found file at location: \(path)")
+              image =  UIImage(contentsOfFile: path)
+            }
+          }
           cell.imageView?.image = image
           cell.imageView?.contentMode = .scaleAspectFit
 
@@ -734,10 +770,14 @@ let HORIZONTAL_LAYOUT = 1
       } else if _listViewLayoutMode == 4 {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-           let image = AssetManager.shared.imageFromPath(path: imagePath) {
+        if let txt = _listData[listDataIndex][("Text1" as String)] {
+          cell.textLabel?.text = String(describing: txt)
+        }
+        if let txt = _listData[listDataIndex][("Text2" as String)] {
+          cell.detailTextLabel?.text = String(describing: txt)
+        }
+        if let imagePath = _listData[listDataIndex][("Image" as String)] {
+          let image = AssetManager.shared.imageFromPath(path: String(describing:imagePath))
           cell.imageView?.image = image
           cell.imageView?.contentMode = .scaleAspectFit
 
@@ -785,10 +825,14 @@ let HORIZONTAL_LAYOUT = 1
       } else if _listViewLayoutMode == 5 {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 120
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
-        cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
-        if let imagePath = _listData[listDataIndex]["Image"],
-          let image = AssetManager.shared.imageFromPath(path: imagePath) {
+        if let txt = _listData[listDataIndex][("Text1" as String)] {
+          cell.textLabel?.text = String(describing: txt)
+        }
+        if let txt = _listData[listDataIndex][("Text2" as String)] {
+          cell.detailTextLabel?.text = String(describing: txt)
+        }
+        if let imagePath = _listData[listDataIndex][("Image" as String)] {
+          let image = AssetManager.shared.imageFromPath(path: String(describing:imagePath))
           cell.imageView?.image = image
           cell.imageView?.contentMode = .scaleAspectFit
 
@@ -826,7 +870,9 @@ let HORIZONTAL_LAYOUT = 1
       } else {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
-        cell.textLabel?.text = _listData[listDataIndex]["Text1"]
+        if let txt = _listData[listDataIndex][("Text1" as String)] {
+          cell.textLabel?.text = String(describing: txt)
+        }
       }
 
       cell.textLabel?.numberOfLines = 0
@@ -923,8 +969,10 @@ let HORIZONTAL_LAYOUT = 1
     } else if indexPath.row < _elements.count + _listData.count {
       let listDataIndex = indexPath.row - _elements.count
       _selectionIndex = Int32(indexPath.row) + 1
-      _selection = _listData[listDataIndex]["Text1"] ?? ""
-      _selectionDetailText = _listData[listDataIndex]["Text2"] ?? ""
+      if let txt = _listData[listDataIndex][("Text1" as String)] {
+        _selection = String(describing: txt)
+      }
+      _selectionDetailText = String(describing:_listData[listDataIndex]["Text2"])
     }
     AfterPicking()
   }
@@ -1014,16 +1062,20 @@ let HORIZONTAL_LAYOUT = 1
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HListCell.reuseId, for: indexPath) as! HListCell
 
     let isData = !_listData.isEmpty
-    let mainText: String
-    let detailText: String
+    var mainText: String = ""
+    var detailText: String = ""
     var image: UIImage? = nil
 
     if isData {
       let item = _listData[indexPath.item]
-      mainText = item["Text1"] ?? ""
-      detailText = item["Text2"] ?? ""
-      if let path = item["Image"], !path.isEmpty {
-        image = AssetManager.shared.imageFromPath(path: path)
+      if let txt = item[("Text1" as String)] {
+        mainText = String(describing: txt)
+      }
+      if let txt = item[("Text2" as String)] {
+        detailText = String(describing: txt)
+      }
+      if let imageText = item[("Image" as String)] {
+        image = AssetManager.shared.imageFromPath(path: String(describing: imageText))
       }
     } else {
       mainText = elements[indexPath.item]
@@ -1081,8 +1133,12 @@ let HORIZONTAL_LAYOUT = 1
     if !_listData.isEmpty {
       let item = _listData[indexPath.item]
       _selectionIndex = Int32(indexPath.item) + 1
-      _selection = item["Text1"] ?? ""
-      _selectionDetailText = item["Text2"] ?? ""
+      if let txt = item[("Text1" as String)] {
+        _selection  = String(describing: txt)
+      }
+      if let txt = item[("Text2" as String)] {
+        _selectionDetailText  = String(describing: txt)
+      }
     } else {
       _selectionIndex = Int32(indexPath.item) + 1
       _selection = elements[indexPath.item]

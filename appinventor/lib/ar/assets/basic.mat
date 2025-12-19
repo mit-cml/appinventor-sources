@@ -1,0 +1,15 @@
+material {
+    name : basic,
+    shadingModel : unlit,
+    doubleSided : true,
+    parameters : [
+        { name : baseColor, type : float4, default : [1.0, 1.0, 1.0, 1.0] }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        material.baseColor = materialParams.baseColor;
+    }
+}

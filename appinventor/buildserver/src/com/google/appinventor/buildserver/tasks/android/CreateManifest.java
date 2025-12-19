@@ -99,6 +99,10 @@ public class CreateManifest implements AndroidTask {
             + "android:required=\"false\" />\n");
         out.write("  <uses-feature android:name=\"android.hardware.camera.autofocus\" "
             + "android:required=\"false\" />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.camera.ar\" "
+            + "android:required=\"true\"/>\n");
+        out.write("  <uses-feature android:glEsVersion=\"0x00020000\" "
+            + "android:required=\"true\"/>\n");
         if (context.isForEmulator()) {
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" "
               + "android:required=\"false\" />\n"); // We actually require wifi
