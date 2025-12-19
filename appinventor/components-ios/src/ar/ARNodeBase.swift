@@ -43,6 +43,8 @@ open class ARNodeBase: NSObject, ARNode {
   private var _rotateWithGesture: Bool = false
   public var _showShadow: Bool = true
   
+  public var _rotateByDelta: SIMD3<Float> = .zero
+  
   public let DRAG_HEIGHT_OFFSET: Float = 0.001 // Hover above surfaces during drag
   public var _isBeingDragged = false
   private var _dragStartLocation: CGPoint = .zero
@@ -297,6 +299,37 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
+  @objc open var RotateXBy: Float {
+    get {
+      return _rotateByDelta.x
+    }
+    set(degrees) {
+      _rotateByDelta.x = degrees
+      XRotation = degrees
+    }
+  }
+  
+  @objc open var RotateYBy: Float {
+    get {
+      return _rotateByDelta.y
+    }
+    set(degrees) {
+      _rotateByDelta.y = degrees
+      YRotation = degrees
+    }
+  }
+  
+  @objc open var RotateZBy: Float {
+    get {
+      return _rotateByDelta.z
+    }
+    set(degrees) {
+      _rotateByDelta.z = degrees
+      ZRotation = degrees
+    }
+  }
+
+  
   @objc open var ModelUrl: String {
     get { return _objectModel }
     set(model) { _objectModel = model }
@@ -483,21 +516,21 @@ open class ARNodeBase: NSObject, ARNode {
   public func setHeightPercent(_ toPercent: Int32) {}
   
   // MARK: - Movement Methods
-  
+  //TODO CSB remove
   @objc open func RotateXBy(_ degrees: Float) {
     let radians = GLKMathDegreesToRadians(degrees)
     var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
     euler.x += radians
     _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
   }
-  
+  //TODO CSB remove
   @objc open func RotateYBy(_ degrees: Float) {
     let radians = GLKMathDegreesToRadians(degrees)
     var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
     euler.y += radians
     _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
   }
-  
+  //TODO CSB remove
   @objc open func RotateZBy(_ degrees: Float) {
     let radians = GLKMathDegreesToRadians(degrees)
     var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
@@ -1076,8 +1109,6 @@ open class ARNodeBase: NSObject, ARNode {
       
     _anchorEntity = markerAnchor
     _queuedMarkerOffset = nil
-
-    // Cache the transform
 
     print("   💾 Model at marker pos=\(_modelEntity.position), rot=\(_modelEntity.orientation)")
     var rotation = simd_quatf(angle: 0, axis: [0, 1, 0])

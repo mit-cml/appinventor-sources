@@ -1772,7 +1772,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    @SimpleEvent(description = "all world and geo coords if avail")
+    @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is \" +\n" +
+        "        \"the real-world coordinate of the point. Use this event if you want geoCoordinates to also be determined if available. " +
+        "       \" isANoteAtPoint is true if a node is already at that point and false otherwise.")
     public void TapAtLocation(float x, float y, float z,
                               double lat, double lng, double alt,
                               boolean hasGeoCoordinates, boolean isANodeAtPoint) {
@@ -2190,7 +2192,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    @SimpleFunction(description = "Create a new CapsuleNode with geo coords")
+    @SimpleFunction(description = "Create a new CapsuleNode with geo coords, if available")
     public SphereNode CreateSphereNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         Log.i("creating Sphere node", "with geo location");
 
@@ -2302,7 +2304,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return capNode;
     }
 
-    @SimpleFunction(description = "Create a new CapsuleNode with geo coords")
+    @SimpleFunction(description = "Create a new CapsuleNode with geo coords, if available")
     public CapsuleNode CreateCapsuleNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         Log.i("creating Capsule node", "with geo location");
 
@@ -2396,9 +2398,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return modelNode;
     }
 
-    @SimpleFunction(description = "Create a new ModelNode with geo coords")
+    @SimpleFunction(description = "Create a new ModelNode with geo coords, if available")
     public ModelNode CreateModelNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint, String modelObjectString) {
-        Log.i("creating ModelNode ", "with geo location");
         if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
         ModelNode modelNode = new ModelNode(this);
         modelNode.Model(modelObjectString);
@@ -2426,7 +2427,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
 
-    @SimpleFunction(description = "Create a new TextNode with geo coords")
+    @SimpleFunction(description = "Create a new TextNode with geo coords, if available")
     public TextNode CreateTextNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         Log.i("creating text node", "with geo location");
 
@@ -2536,7 +2537,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return null;
     }
 
-    @SimpleFunction(description = "Create a new VideoNode with geo coords")
+    @SimpleFunction(description = "Create a new VideoNode with geo coords, if available")
     public VideoNode CreateVideoNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
         Log.i("creating text node", "with geo location");
 
@@ -2600,8 +2601,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public WebViewNode CreateWebViewNodeFromYail(YailDictionary yailNodeObj) {
         if (session != null) {
             try {
-                Log.i(LOG_TAG," from blocks yailDict is " + yailNodeObj);
-
                 WebViewNode webNode = new WebViewNode(this);
                 ARUtils.parseYailToNode(webNode, yailNodeObj, session);
 

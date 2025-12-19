@@ -526,7 +526,7 @@ open class ModelNode: ARNodeBase, ARModel {
   }
 
   /// Finalizes the model placement with physics restoration
-  private func finalizeModelPlacement() {
+  override public func finalizeModelPlacement() {
     print("Finalizing model placement")
     
     _isFlying = false

@@ -138,6 +138,7 @@ import Foundation
   case ERROR_INVALID_COORDINATES = 3714
   case ERROR_WEBVIEWNODE_LOAD_FAILED = 3715
   case ERROR_IMAGEMARKER_MISSING_NAME = 3716
+  case ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT = 3718
 
   // Navigation Errors
   case ERROR_INVALID_API_KEY = 4001
@@ -419,6 +420,8 @@ import Foundation
       return "Failed to load web page."
     case .ERROR_IMAGEMARKER_MISSING_NAME:
       return "An image marker does not exist with name %s."
+    case .ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT:
+      return "ARKit could not detect a surface at the tapped location. Try tapping a different location or moving closer to the point."
 
     // Navigation Errors
     case .ERROR_INVALID_API_KEY:

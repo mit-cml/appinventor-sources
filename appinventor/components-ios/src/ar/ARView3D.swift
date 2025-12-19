@@ -457,8 +457,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private func setupConfiguration() -> ARConfiguration {
     
     // Check geo tracking support only when needed
-    if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported {
-      self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code, "Geo tracking not supported on this device")
+    if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported && ARView3D.SHARED_GROUND_LEVEL == -1.0 { // floor not initialized
+      self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED)
      
     }
     
@@ -1176,6 +1176,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           return .invisibleFloor(worldPosition, surfaceNormal)
       }
       
+      _container?.form?.dispatchErrorOccurredEvent(self, "finding plane", ErrorMessage.ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT)
       return .empty(SIMD3<Float>(0, 0, 0))
   }
   
@@ -1299,8 +1300,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           
       case .empty (let position):
         print("Tap hit nothing, but floating at position: \(position)")
-        TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
-        TapAtPoint(position.x, position.y, position.z, false)
+        //TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
+        //TapAtPoint(position.x, position.y, position.z, false)
       }
   }
   

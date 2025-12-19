@@ -1431,6 +1431,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @SimpleFunction(description = "Changes the node's x rotation by the given degrees.")
+  @SimpleProperty(description = "Changes the node's x rotation by the given degrees.")
   public void RotateXBy(float degrees) {
     float currentX = XRotation();
     XRotation(currentX + degrees);
@@ -1438,6 +1439,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @SimpleFunction(description = "Changes the node's y rotation by the given degrees.")
+  @SimpleProperty(description = "Changes the node's y rotation by the given degrees.")
   public void RotateYBy(float degrees) {
     float currentY = YRotation();
     YRotation(currentY + degrees);
@@ -1445,6 +1447,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   @SimpleFunction(description = "Changes the node's z rotation by the given degrees.")
+  @SimpleProperty(description = "Changes the node's z rotation by the given degrees.")
   public void RotateZBy(float degrees) {
     float currentZ = ZRotation();
     ZRotation(currentZ + degrees);
