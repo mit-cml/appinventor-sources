@@ -457,7 +457,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private func setupConfiguration() -> ARConfiguration {
     
     // Check geo tracking support only when needed
-    if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported && ARView3D.SHARED_GROUND_LEVEL == -1.0 { // floor not initialized
+    if _trackingType == .geoTracking && !ARGeoTrackingConfiguration.isSupported { // floor not initialized
       self._container?.form?.dispatchErrorOccurredEvent(self, "Geotracking", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED)
      
     }
@@ -2106,10 +2106,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreateBoxNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> BoxNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreateBoxNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
       
       let node = BoxNode(self)
       node.Name = "GeoBoxNode"
@@ -2121,10 +2117,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreateCapsuleNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> CapsuleNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreateCapsuleNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
       
       let node = CapsuleNode(self)
       node.Name = "GeoCapsuleNode"
@@ -2155,10 +2147,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreateModelNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool, _ modelObjString: String) -> ModelNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreatModelNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
       
       let node:ModelNode = ModelNode(self)
       node.Name = "GeoModelNode"
@@ -2170,10 +2158,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreatePlaneNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> PlaneNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreatePlaneNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
       
       let node = PlaneNode(self)
       node.Name = "GeoPlaneNode"
@@ -2185,10 +2169,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreateSphereNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> SphereNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreateSphereNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
+
 
       let node = SphereNode(self)
       node.Name = "GeoSphereNode"
@@ -2200,10 +2181,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreateTextNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> TextNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreateTextNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
       
       let node = TextNode(self)
       node.Name = "GeoTextNode"
@@ -2215,10 +2192,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreateVideoNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> VideoNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreateVideoNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
       
       let node = VideoNode(self)
       node.Name = "GeoVideoNode"
@@ -2653,7 +2626,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       guard let sessionStart = sessionStartLocation else { return nil }
       
       guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "worldToGPS", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
+        //_container?.form?.dispatchErrorOccurredEvent(self, "worldToGPS", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
         return nil
       }
       
