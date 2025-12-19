@@ -1267,6 +1267,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             TapAtLocation(position.x, position.y, position.z,
                   geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
                   true, true) // isANodeAtPoint = true
+            TapAtPoint(position.x, position.y, position.z, true)
         } else {
           TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, true)
           TapAtPoint(position.x, position.y, position.z, false)
@@ -1281,6 +1282,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             TapAtLocation(position.x, position.y, position.z,
                   geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
                   true, false)
+            TapAtPoint(position.x, position.y, position.z, false)
         } else {
           TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
           TapAtPoint(position.x, position.y, position.z, false)
@@ -1292,6 +1294,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             TapAtLocation(position.x, position.y, position.z,
                          geoData.coordinate.latitude, geoData.coordinate.longitude, geoData.altitude,
                          true, false)
+            TapAtPoint(position.x, position.y, position.z, false)
         } else {
           TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
           TapAtPoint(position.x, position.y, position.z, false)
@@ -1300,8 +1303,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           
       case .empty (let position):
         print("Tap hit nothing, but floating at position: \(position)")
-        //TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
-        //TapAtPoint(position.x, position.y, position.z, false)
       }
   }
   
