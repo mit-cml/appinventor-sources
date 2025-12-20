@@ -11,6 +11,12 @@ import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;          // New import
+import com.google.gwt.user.client.ui.VerticalPanel;    // New import
+import com.google.gwt.event.dom.client.KeyUpEvent;     // New import
+import com.google.gwt.event.dom.client.KeyUpHandler;   // New import
+import java.util.ArrayList;                            // New import
+import java.util.List;                                 // New  import
 
 /**
  * Context menu widget implementation.
@@ -21,6 +27,8 @@ public final class ContextMenu {
   // UI elements
   private final PopupPanel popupPanel;
   private final MenuBar menuBar;
+  private final List<MenuItem> items = new ArrayList<>(); // All items  list
+  private final List<MenuItemSeparator> separators = new ArrayList<>(); // New list for separators
 
   /**
    * Creates a new context menu.
@@ -32,7 +40,52 @@ public final class ContextMenu {
     popupPanel.setGlassStyleName("none"); //No style is passed (the default grays out the window)
     menuBar = new MenuBar(true);
     menuBar.setStylePrimaryName("ode-ContextMenu");
-    popupPanel.add(menuBar);
+    //popupPanel.add(menuBar);
+     
+     //Add line from 45-49
+    // make a  VerticalPanel,which hold Search Box and MenuBar 
+    VerticalPanel container = new VerticalPanel();
+    container.add(menuBar); // first add menuBar 
+    
+    popupPanel.add(container);
+    addSearchFilter();
+  }
+
+  //add line from 54-79
+
+  public void addSearchFilter() {
+    final TextBox searchBox = new TextBox();
+    searchBox.getElement().setAttribute("placeholder", "Search language...");
+    searchBox.setStyleName("ode-ContextMenuItem");
+    searchBox.getElement().getStyle().setProperty("width", "100%");
+
+    searchBox.addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) {
+        String query = searchBox.getText().toLowerCase().trim();
+        boolean isSearching = !query.isEmpty();
+        //filter language
+        for (MenuItem item : items) {
+          boolean matches = item.getText().toLowerCase().contains(query);
+          item.getElement().getStyle().setProperty("display", matches ? "" : "none");
+        }
+
+        // 2.  handle Separators  
+    for (MenuItemSeparator sep : separators) {
+      // if search then show seperator otherwise hide it
+      sep.getElement().getStyle().setProperty("display", isSearching ? "none" : "");
+    }
+      }
+    });
+
+    VerticalPanel container = (VerticalPanel) popupPanel.getWidget();
+    container.insert(searchBox, 0); 
+    
+    popupPanel.addAttachHandler(event -> {
+      if (event.isAttached()) {
+        searchBox.setFocus(true);
+      }
+    });
   }
 
   /**
@@ -52,6 +105,7 @@ public final class ContextMenu {
     });
     menuItem.setStylePrimaryName("ode-ContextMenuItem");
     menuBar.addItem(menuItem);
+    items.add(menuItem); // <--  line add 
     return menuItem;
   }
 
@@ -90,6 +144,7 @@ public final class ContextMenu {
       menuItem.setStylePrimaryName("ode-ContextMenuItem");
     }
     menuBar.addItem(menuItem);
+    items.add(menuItem); // <-- line add 
     return menuItem;
   }
 
@@ -100,6 +155,7 @@ public final class ContextMenu {
    */
   public void removeItem(MenuItem item) {
     menuBar.removeItem(item);
+    items.remove(item); // <--  line add 
   }
 
   /**
@@ -108,6 +164,7 @@ public final class ContextMenu {
   public MenuItemSeparator addSeparator() {
     MenuItemSeparator menuItemSeparator = menuBar.addSeparator();
     menuItemSeparator.setStylePrimaryName("ode-ContextMenuItemSeparator");
+    separators.add(menuItemSeparator); //  add line
     return menuItemSeparator;
   }
 

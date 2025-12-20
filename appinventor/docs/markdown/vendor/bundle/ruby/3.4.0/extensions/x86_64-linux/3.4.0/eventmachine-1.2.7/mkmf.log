@@ -1,0 +1,780 @@
+pkg_config: checking for pkg-config for openssl... -------------------- [" ", "", "-lssl -lcrypto"]
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 pkg-config --exists openssl
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 pkg-config --libs openssl |
+=> "-lssl -lcrypto \n"
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.    -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed     -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lm -lpthread  -lc"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.    -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed -lssl -lcrypto    -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lm -lpthread  -lc"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 pkg-config --cflags-only-I openssl |
+=> "\n"
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 pkg-config --cflags-only-other openssl |
+=> "\n"
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 pkg-config --libs-only-l openssl |
+=> "-lssl -lcrypto \n"
+package configuration for openssl
+incflags: 
+cflags: 
+ldflags: 
+libs: -lssl -lcrypto
+
+--------------------
+
+have_library: checking for -lcrypto... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: 
+15: int t(void) { ; return 0; }
+/* end */
+
+--------------------
+
+have_library: checking for -lssl... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: 
+15: int t(void) { ; return 0; }
+/* end */
+
+--------------------
+
+have_header: checking for openssl/ssl.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <openssl/ssl.h>
+/* end */
+
+--------------------
+
+have_header: checking for openssl/err.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <openssl/err.h>
+/* end */
+
+--------------------
+
+have_var: checking for rb_trap_immediate in ruby.h,rubysig.h... -------------------- no
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+conftest.c:4:10: fatal error: rubysig.h: No such file or directory
+    4 | #include <rubysig.h>
+      |          ^~~~~~~~~~~
+compilation terminated.
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: #include <rubysig.h>
+ 5: 
+ 6: /*top*/
+ 7: extern int t(void);
+ 8: int main(int argc, char **argv)
+ 9: {
+10:   if (argc > 1000000) {
+11:     int (* volatile tp)(void)=(int (*)(void))&t;
+12:     printf("%d", (*tp)());
+13:   }
+14: 
+15:   return !!argv[argc];
+16: }
+17: int t(void) { const volatile void *volatile p; p = &(&rb_trap_immediate)[0]; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_thread_blocking_region()... -------------------- no
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+conftest.c: In function ‘t’:
+conftest.c:14:57: error: ‘rb_thread_blocking_region’ undeclared (first use in this function)
+   14 | int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_blocking_region; return !p; }
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+conftest.c:14:57: note: each undeclared identifier is reported only once for each function it appears in
+At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_blocking_region; return !p; }
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+/usr/bin/ld: /tmp/ccPCru8O.o: in function `t':
+/workspaces/appinventor-sources/appinventor/docs/markdown/vendor/bundle/ruby/3.4.0/gems/eventmachine-1.2.7/ext/conftest.c:15:(.text+0xb): undefined reference to `rb_thread_blocking_region'
+collect2: error: ld returned 1 exit status
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: extern void rb_thread_blocking_region();
+15: int t(void) { rb_thread_blocking_region(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_thread_call_without_gvl() in ruby/thread.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby/thread.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_call_without_gvl; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_thread_fd_select()... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_fd_select; return !p; }
+/* end */
+
+--------------------
+
+have_type: checking for rb_fdset_t in ruby/intern.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <ruby/intern.h>
+4: 
+5: /*top*/
+6: typedef rb_fdset_t conftest_type;
+7: int conftestval[sizeof(conftest_type)?1:-1];
+/* end */
+
+--------------------
+
+have_func: checking for rb_wait_for_single_fd()... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+conftest.c: In function ‘t’:
+conftest.c:14:57: error: ‘rb_wait_for_single_fd’ undeclared (first use in this function)
+   14 | int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_wait_for_single_fd; return !p; }
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~
+conftest.c:14:57: note: each undeclared identifier is reported only once for each function it appears in
+At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_wait_for_single_fd; return !p; }
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: extern void rb_wait_for_single_fd();
+15: int t(void) { rb_wait_for_single_fd(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_enable_interrupt()... -------------------- no
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+conftest.c: In function ‘t’:
+conftest.c:14:57: error: ‘rb_enable_interrupt’ undeclared (first use in this function); did you mean ‘rb_eInterrupt’?
+   14 | int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_enable_interrupt; return !p; }
+      |                                                         ^~~~~~~~~~~~~~~~~~~
+      |                                                         rb_eInterrupt
+conftest.c:14:57: note: each undeclared identifier is reported only once for each function it appears in
+At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_enable_interrupt; return !p; }
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+/usr/bin/ld: /tmp/ccxzLEit.o: in function `t':
+/workspaces/appinventor-sources/appinventor/docs/markdown/vendor/bundle/ruby/3.4.0/gems/eventmachine-1.2.7/ext/conftest.c:15:(.text+0xb): undefined reference to `rb_enable_interrupt'
+collect2: error: ld returned 1 exit status
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: extern void rb_enable_interrupt();
+15: int t(void) { rb_enable_interrupt(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_time_new()... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_time_new; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for inotify_init() in sys/inotify.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <sys/inotify.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))inotify_init; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for writev() in sys/uio.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <sys/uio.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))writev; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for pipe2() in unistd.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <unistd.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))pipe2; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for accept4() in sys/socket.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <sys/socket.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))accept4; return !p; }
+/* end */
+
+--------------------
+
+have_const: checking for SOCK_CLOEXEC in sys/socket.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <sys/socket.h>
+4: 
+5: /*top*/
+6: typedef int conftest_type;
+7: conftest_type conftestval = (int)SOCK_CLOEXEC;
+/* end */
+
+--------------------
+
+have_header: checking for sys/event.h... -------------------- no
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+conftest.c:3:10: fatal error: sys/event.h: No such file or directory
+    3 | #include <sys/event.h>
+      |          ^~~~~~~~~~~~~
+compilation terminated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <sys/event.h>
+/* end */
+
+--------------------
+
+have_func: checking for epoll_create() in sys/epoll.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <sys/epoll.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))epoll_create; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for clock_gettime()... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby  -lssl -lcrypto -lcrypto -lssl -lm -lpthread  -lc"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     int (* volatile tp)(void)=(int (*)(void))&t;
+ 9:     printf("%d", (*tp)());
+10:   }
+11: 
+12:   return !!argv[argc];
+13: }
+14: int t(void) { void ((*volatile p)()); p = (void ((*)()))clock_gettime; return !p; }
+/* end */
+
+--------------------
+
+have_const: checking for CLOCK_MONOTONIC_RAW in time.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <time.h>
+4: 
+5: /*top*/
+6: typedef int conftest_type;
+7: conftest_type conftestval = (int)CLOCK_MONOTONIC_RAW;
+/* end */
+
+--------------------
+
+have_const: checking for CLOCK_MONOTONIC in time.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "gcc -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC    -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <time.h>
+4: 
+5: /*top*/
+6: typedef int conftest_type;
+7: conftest_type conftestval = (int)CLOCK_MONOTONIC;
+/* end */
+
+--------------------
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "g++ -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby -Wall -lm -lpthread  -lc"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/anyargs.h:83,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from conftest.c:1:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main() {return 0;}
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "g++ -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby -Wextra -lm -lpthread  -lc"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/anyargs.h:83,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from conftest.c:1:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main() {return 0;}
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "g++ -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby -Wno-deprecated-declarations -lm -lpthread  -lc"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/anyargs.h:83,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from conftest.c:1:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main() {return 0;}
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "g++ -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby -Wno-ignored-qualifiers -lm -lpthread  -lc"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/anyargs.h:83,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from conftest.c:1:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main() {return 0;}
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "g++ -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby -Wno-unused-result -lm -lpthread  -lc"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/anyargs.h:83,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from conftest.c:1:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main() {return 0;}
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "g++ -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby -Wno-address -lm -lpthread  -lc"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/anyargs.h:83,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from conftest.c:1:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main() {return 0;}
+/* end */
+
+LD_LIBRARY_PATH=.:/usr/local/rvm/rubies/ruby-3.4.7/lib ASAN_OPTIONS=detect_leaks=0 "g++ -o conftest -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/x86_64-linux -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward -I/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0 -I.     -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC  conftest.c -L. -L/usr/local/rvm/rubies/ruby-3.4.7/lib -Wl,-rpath,/usr/local/rvm/rubies/ruby-3.4.7/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed      -lssl -lcrypto -lcrypto -lssl -Wl,-rpath,'/../lib' -Wl,-rpath,'/../lib' -lruby -lstdc++ -lm -lpthread  -lc"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/anyargs.h:83,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from conftest.c:1:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+conftest.c: In function ‘int main()’:
+conftest.c:5:35: warning: variable ‘tuple’ set but not used [-Wunused-but-set-variable]
+    5 |   int main(){ pair<const int,int> tuple = make_pair(1,2); }
+      |                                   ^~~~~
+At global scope:
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3:   #include <utility>
+4:   using namespace std;
+5:   int main(){ pair<const int,int> tuple = make_pair(1,2); }
+/* end */
+

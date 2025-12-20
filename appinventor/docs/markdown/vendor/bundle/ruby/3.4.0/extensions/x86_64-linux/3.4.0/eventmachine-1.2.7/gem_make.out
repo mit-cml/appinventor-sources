@@ -1,0 +1,113 @@
+current directory: /workspaces/appinventor-sources/appinventor/docs/markdown/vendor/bundle/ruby/3.4.0/gems/eventmachine-1.2.7/ext/fastfilereader
+/usr/local/rvm/rubies/ruby-3.4.7/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /workspaces/appinventor-sources/appinventor/docs/markdown/vendor/bundle/ruby/3.4.0/gems/eventmachine-1.2.7/ext/fastfilereader
+make DESTDIR\= sitearchdir\=./.gem.20251220-23356-f9ymfn sitelibdir\=./.gem.20251220-23356-f9ymfn clean
+
+current directory: /workspaces/appinventor-sources/appinventor/docs/markdown/vendor/bundle/ruby/3.4.0/gems/eventmachine-1.2.7/ext/fastfilereader
+make DESTDIR\= sitearchdir\=./.gem.20251220-23356-f9ymfn sitelibdir\=./.gem.20251220-23356-f9ymfn
+compiling mapper.cpp
+compiling rubymain.cpp
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core.h:27,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:29,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby.h:38,
+                 from rubymain.cpp:25:
+rubymain.cpp: In function ‘VALUE mapper_new(VALUE, VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:199:24: warning: ‘VALUE rb_data_object_wrap_warning(VALUE, void*, RUBY_DATA_FUNC, RUBY_DATA_FUNC)’ is deprecated: by TypedData [-Wdeprecated-declarations]
+  199 |     rb_data_object_wrap(                          \
+      |                        ^
+rubymain.cpp:53:19: note: in expansion of macro ‘Data_Wrap_Struct’
+   53 |         VALUE v = Data_Wrap_Struct (Mapper, 0, mapper_dt, (void*)m);
+      |                   ^~~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:293:1: note: declared here
+  293 | rb_data_object_wrap_warning(VALUE klass, void *ptr, RUBY_DATA_FUNC mark, RUBY_DATA_FUNC free)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/assume.h:29,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/backward/2/assume.h:24,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/defines.h:72,
+                 from /usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/ruby.h:25:
+rubymain.cpp: In function ‘VALUE mapper_get_chunk(VALUE, VALUE, VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:275:52: warning: ‘void* rb_data_object_get_warning(VALUE)’ is deprecated: by TypedData [-Wdeprecated-declarations]
+  275 |     ((sval) = RBIMPL_CAST((type*)rb_data_object_get(obj)))
+      |                                                    ^
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/cast.h:36:29: note: in definition of macro ‘RBIMPL_CAST’
+   36 | # define RBIMPL_CAST(expr) (expr)
+      |                             ^~~~
+rubymain.cpp:65:9: note: in expansion of macro ‘Data_Get_Struct’
+   65 |         Data_Get_Struct (self, Mapper_t, m);
+      |         ^~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:325:1: note: declared here
+  325 | rb_data_object_get_warning(VALUE obj)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~
+rubymain.cpp: In function ‘VALUE mapper_close(VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:275:52: warning: ‘void* rb_data_object_get_warning(VALUE)’ is deprecated: by TypedData [-Wdeprecated-declarations]
+  275 |     ((sval) = RBIMPL_CAST((type*)rb_data_object_get(obj)))
+      |                                                    ^
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/cast.h:36:29: note: in definition of macro ‘RBIMPL_CAST’
+   36 | # define RBIMPL_CAST(expr) (expr)
+      |                             ^~~~
+rubymain.cpp:88:9: note: in expansion of macro ‘Data_Get_Struct’
+   88 |         Data_Get_Struct (self, Mapper_t, m);
+      |         ^~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:325:1: note: declared here
+  325 | rb_data_object_get_warning(VALUE obj)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~
+rubymain.cpp: In function ‘VALUE mapper_size(VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:275:52: warning: ‘void* rb_data_object_get_warning(VALUE)’ is deprecated: by TypedData [-Wdeprecated-declarations]
+  275 |     ((sval) = RBIMPL_CAST((type*)rb_data_object_get(obj)))
+      |                                                    ^
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/cast.h:36:29: note: in definition of macro ‘RBIMPL_CAST’
+   36 | # define RBIMPL_CAST(expr) (expr)
+      |                             ^~~~
+rubymain.cpp:102:9: note: in expansion of macro ‘Data_Get_Struct’
+  102 |         Data_Get_Struct (self, Mapper_t, m);
+      |         ^~~~~~~~~~~~~~~
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:325:1: note: declared here
+  325 | rb_data_object_get_warning(VALUE obj)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~
+rubymain.cpp: In function ‘VALUE mapper_new(VALUE, VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:199:24: warning: call to ‘rb_data_object_wrap_warning’ declared with attribute warning: untyped Data is unsafe; use TypedData instead [-Wattribute-warning]
+  199 |     rb_data_object_wrap(                          \
+      |                        ^
+rubymain.cpp:53:19: note: in expansion of macro ‘Data_Wrap_Struct’
+   53 |         VALUE v = Data_Wrap_Struct (Mapper, 0, mapper_dt, (void*)m);
+      |                   ^~~~~~~~~~~~~~~~
+rubymain.cpp: In function ‘VALUE mapper_get_chunk(VALUE, VALUE, VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:275:52: warning: call to ‘rb_data_object_get_warning’ declared with attribute warning: untyped Data is unsafe; use TypedData instead [-Wattribute-warning]
+  275 |     ((sval) = RBIMPL_CAST((type*)rb_data_object_get(obj)))
+      |                                                    ^
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/cast.h:36:29: note: in definition of macro ‘RBIMPL_CAST’
+   36 | # define RBIMPL_CAST(expr) (expr)
+      |                             ^~~~
+rubymain.cpp:65:9: note: in expansion of macro ‘Data_Get_Struct’
+   65 |         Data_Get_Struct (self, Mapper_t, m);
+      |         ^~~~~~~~~~~~~~~
+rubymain.cpp: In function ‘VALUE mapper_close(VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:275:52: warning: call to ‘rb_data_object_get_warning’ declared with attribute warning: untyped Data is unsafe; use TypedData instead [-Wattribute-warning]
+  275 |     ((sval) = RBIMPL_CAST((type*)rb_data_object_get(obj)))
+      |                                                    ^
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/cast.h:36:29: note: in definition of macro ‘RBIMPL_CAST’
+   36 | # define RBIMPL_CAST(expr) (expr)
+      |                             ^~~~
+rubymain.cpp:88:9: note: in expansion of macro ‘Data_Get_Struct’
+   88 |         Data_Get_Struct (self, Mapper_t, m);
+      |         ^~~~~~~~~~~~~~~
+rubymain.cpp: In function ‘VALUE mapper_size(VALUE)’:
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/core/rdata.h:275:52: warning: call to ‘rb_data_object_get_warning’ declared with attribute warning: untyped Data is unsafe; use TypedData instead [-Wattribute-warning]
+  275 |     ((sval) = RBIMPL_CAST((type*)rb_data_object_get(obj)))
+      |                                                    ^
+/usr/local/rvm/rubies/ruby-3.4.7/include/ruby-3.4.0/ruby/internal/cast.h:36:29: note: in definition of macro ‘RBIMPL_CAST’
+   36 | # define RBIMPL_CAST(expr) (expr)
+      |                             ^~~~
+rubymain.cpp:102:9: note: in expansion of macro ‘Data_Get_Struct’
+  102 |         Data_Get_Struct (self, Mapper_t, m);
+      |         ^~~~~~~~~~~~~~~
+linking shared-object fastfilereaderext.so
+
+current directory: /workspaces/appinventor-sources/appinventor/docs/markdown/vendor/bundle/ruby/3.4.0/gems/eventmachine-1.2.7/ext/fastfilereader
+make DESTDIR\= sitearchdir\=./.gem.20251220-23356-f9ymfn sitelibdir\=./.gem.20251220-23356-f9ymfn install
+/usr/bin/install -m 0755 fastfilereaderext.so ./.gem.20251220-23356-f9ymfn
+
+current directory: /workspaces/appinventor-sources/appinventor/docs/markdown/vendor/bundle/ruby/3.4.0/gems/eventmachine-1.2.7/ext/fastfilereader
+make DESTDIR\= sitearchdir\=./.gem.20251220-23356-f9ymfn sitelibdir\=./.gem.20251220-23356-f9ymfn clean
