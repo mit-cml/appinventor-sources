@@ -42,9 +42,9 @@ public final class ContextMenu {
     //popupPanel.add(menuBar);
      
      //Add line from 45-49
-    // Ek VerticalPanel banate hain jo Search Box aur MenuBar dono ko hold karega
+    // make a  VerticalPanel,which hold Search Box and MenuBar 
     VerticalPanel container = new VerticalPanel();
-    container.add(menuBar); // Pehle sirf menuBar add karte hain
+    container.add(menuBar); // first add menuBar 
     
     popupPanel.add(container);
     addSearchFilter();
