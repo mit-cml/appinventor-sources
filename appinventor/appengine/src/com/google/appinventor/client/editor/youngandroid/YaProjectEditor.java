@@ -425,7 +425,23 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       formName = ((YoungAndroidBlocksNode) node).getFormName();
       removeBlocksEditor(formName);
     }
-  }
+    if (formName != null) {
+      Ode.getInstance().getDesignToolbar()
+          .removeScreen(project.getProjectId(), formName);
+
+      String lastOpened = getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED);
+
+      if (formName.equals(lastOpened)) {
+        setProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED,
+            YoungAndroidSourceNode.SCREEN1_FORM_NAME);
+        saveProjectSettings();
+      }
+    }
+ }
 
   /*
    * Returns the BlocksEditor for the given form name in this project
@@ -842,10 +858,30 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return formName.equals(YoungAndroidSourceNode.SCREEN1_FORM_NAME);
   }
 
-  private boolean isLastOpened(String formName) {
-    String lastOpened = this.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+  private String getValidLastOpenedScreen() {
+    String lastOpened = getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED);
-    return lastOpened.equals(formName);
+
+    if (lastOpened == null || lastOpened.isEmpty()) {
+      return YoungAndroidSourceNode.SCREEN1_FORM_NAME;
+    }
+
+    boolean exists = false;
+    for (ProjectNode source : projectRootNode.getAllSourceNodes()) {
+      if (source instanceof YoungAndroidFormNode) {
+        if (((YoungAndroidFormNode) source).getFormName().equals(lastOpened)) {
+          exists = true;
+          break;
+        }
+      }
+    }
+
+    return exists ? lastOpened : YoungAndroidSourceNode.SCREEN1_FORM_NAME;
+  }
+
+  private boolean isLastOpened(String formName) {
+    return getValidLastOpenedScreen().equals(formName);
   }
 
   private void switchToForm(String entityName, long projectId) {
