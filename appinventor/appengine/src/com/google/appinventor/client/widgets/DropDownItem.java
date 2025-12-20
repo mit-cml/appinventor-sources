@@ -20,6 +20,7 @@ public class DropDownItem {
   boolean visible = true;
   Image icon = null;
   boolean beta = false;
+  boolean isSearchBox = false; // New field  for finding search box 
 
   @SuppressWarnings("unused")  // invoked by GWT
   public DropDownItem() {
@@ -102,6 +103,15 @@ public class DropDownItem {
 
   public boolean isBeta() {
     return beta;
+  }
+
+  // New methods  for search feature 
+  public void setIsSearchBox(boolean isSearchBox) {
+    this.isSearchBox = isSearchBox;
+  }
+
+  public boolean isSearchBox() {
+    return isSearchBox;
   }
 
 }
