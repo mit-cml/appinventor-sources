@@ -28,6 +28,7 @@ public final class ContextMenu {
   private final PopupPanel popupPanel;
   private final MenuBar menuBar;
   private final List<MenuItem> items = new ArrayList<>(); // All items  list
+  private final List<MenuItemSeparator> separators = new ArrayList<>(); // New list for separators
 
   /**
    * Creates a new context menu.
@@ -62,10 +63,18 @@ public final class ContextMenu {
       @Override
       public void onKeyUp(KeyUpEvent event) {
         String query = searchBox.getText().toLowerCase().trim();
+        boolean isSearching = !query.isEmpty();
+        //filter language
         for (MenuItem item : items) {
           boolean matches = item.getText().toLowerCase().contains(query);
           item.getElement().getStyle().setProperty("display", matches ? "" : "none");
         }
+
+        // 2.  handle Separators  
+    for (MenuItemSeparator sep : separators) {
+      // if search then show seperator otherwise hide it
+      sep.getElement().getStyle().setProperty("display", isSearching ? "none" : "");
+    }
       }
     });
 
@@ -155,6 +164,7 @@ public final class ContextMenu {
   public MenuItemSeparator addSeparator() {
     MenuItemSeparator menuItemSeparator = menuBar.addSeparator();
     menuItemSeparator.setStylePrimaryName("ode-ContextMenuItemSeparator");
+    separators.add(menuItemSeparator); //  add line
     return menuItemSeparator;
   }
 

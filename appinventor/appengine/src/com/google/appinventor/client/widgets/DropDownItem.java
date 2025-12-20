@@ -112,6 +112,7 @@ public class DropDownItem {
 
   public boolean isSearchBox() {
     return isSearchBox;
+    
   }
 
 }
