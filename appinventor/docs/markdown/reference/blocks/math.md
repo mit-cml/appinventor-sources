@@ -52,6 +52,7 @@ layout: documentation
 * [list max](#maxl)
 * [mode](#mode)
 * [geometric mean](#gm)
+* [median](#median)
 * [standard deviation](#sd)
 * [standard error](#se)
 
@@ -420,6 +421,10 @@ Returns the most frequent element in a list.
 ![](images/math/gm.png)
 
 Calculates the geometric mean of the elements in a list.
+
+![](images/math/median.png)
+
+Calculates the median (middle value) of the elements in a list.
 
 ![](images/math/sd.png)
 
