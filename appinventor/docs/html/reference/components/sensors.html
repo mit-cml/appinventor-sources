@@ -319,6 +319,8 @@ created using the <a href="#Clock.MakeInstant"><code class="highlighter-rouge">M
     <p><strong>Note</strong>: Drift may occur over time and that the system may not honor the
  timing specified here if the app or another process on the phone is busy.</p>
   </dd>
+  <dt id="Clock.Timezones" class="list"><em>Timezones</em></dt>
+  <dd>List of available timezones</dd>
 </dl>
 
 <h3 id="Clock-Events">Events</h3>
@@ -347,6 +349,8 @@ created using the <a href="#Clock.MakeInstant"><code class="highlighter-rouge">M
   <dd>Returns An instant in time some weeks after the given instant.</dd>
   <dt id="Clock.AddYears" class="method returns InstantInTime"><i></i> AddYears(<em class="InstantInTime">instant</em>,<em class="number">quantity</em>)</dt>
   <dd>Returns an instant in time some years after the given instant.</dd>
+  <dt id="Clock.ChangeTimezone" class="method returns InstantInTime"><i></i> ChangeTimezone(<em class="InstantInTime">instant</em>,<em class="string">timezone</em>)</dt>
+  <dd>Applies a timezone conversion in the given instant to the given timezone, returning the changed instant</dd>
   <dt id="Clock.DayOfMonth" class="method returns number"><i></i> DayOfMonth(<em class="InstantInTime">instant</em>)</dt>
   <dd>Returns the day of the month.</dd>
   <dt id="Clock.Duration" class="method returns number"><i></i> Duration(<em class="InstantInTime">start</em>,<em class="InstantInTime">end</em>)</dt>
