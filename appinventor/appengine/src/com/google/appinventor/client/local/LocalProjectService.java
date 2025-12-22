@@ -41,7 +41,9 @@ import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.ShareResponse;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
@@ -505,6 +507,37 @@ public class LocalProjectService implements ProjectServiceAsync {
   public void log(String message, AsyncCallback<Void> callback) {
 
   }
+
+  @Override
+  public void shareProject(String userId,  String userEmail, long projectId, String otherEmail, int perm, boolean sendEmail, AsyncCallback<ShareResponse> callback){
+
+  }
+
+  @Override
+  public void shareProject(String userId,  String userEmail, long projectId, List<String> otherEmail, int perm, boolean sendEmail, AsyncCallback<List<ShareResponse>> callback){
+
+  }
+
+  @Override
+  public void getSharedProject(String userId, String userEmail, long shareId, AsyncCallback<UserProject> callback){
+
+  }
+
+  @Override
+  public void getPermissionsInfo(long projectId, AsyncCallback<HashMap<Integer, List<String>>> callback){
+
+  }
+
+  @Override
+  public void getPermissionType(String userEmail, long projectId, AsyncCallback<String> callback) {
+    
+  }
+
+  @Override
+  public void getShareLink(String userEmail, long projectId, AsyncCallback<Long> callback){
+
+  }
+
 
   public Promise<String> exportProject(long projectId) {
     JSZip zip = new JSZip();

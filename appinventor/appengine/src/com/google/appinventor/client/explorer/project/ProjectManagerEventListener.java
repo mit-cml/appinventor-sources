@@ -56,4 +56,9 @@ public interface ProjectManagerEventListener {
    */
   void onProjectsLoaded();
 
+  /**
+   * Invoked after a project is shared or sharing is revoked.
+   */
+  void onProjectSharedOrUnshared();
+
 }

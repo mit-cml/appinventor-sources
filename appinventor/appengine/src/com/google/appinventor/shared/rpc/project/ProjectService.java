@@ -10,10 +10,12 @@ import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -373,5 +375,64 @@ public interface ProjectService extends RemoteService {
    * @param message message to log
    */
   void log(String message);
+
+  /**
+   * Share a project with others by email.
+   * @param userId the user id of the owner of the project
+   * @param userEmail owner's email
+   * @param projectId the project id
+   * @param otherEmail the email of other user
+   * @param perm permission
+   * @param sendEmail whether to send email to new users
+   * 
+   * @return status of sharing action
+   */
+  ShareResponse shareProject(String userId, String userEmail, long projectId, String otherEmail, int perm, boolean sendEmail);
+
+  /**
+   * Share a project with others by email.
+   * @param userId the user id of the owner of the project
+   * @param userEmail owner's email
+   * @param projectId the project id
+   * @param otherEmail the email of other user
+   * @param perm permission
+   * @param sendEmail whether to send email to new users
+   *
+   * @return status of sharing action
+   */
+  List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm, boolean sendEmail);
+
+  /**
+   * gets project shared with the user
+   * @param userId user id
+   * @param userEmail user email
+   * @param shareId id shared with the user
+   * @return project under the shared id if user has access to it
+   * raises an error if user does not have access to it
+   */
+  UserProject getSharedProject(String userId, String userEmail, long shareId);
+
+  /**
+   * get access list for the given project
+   * @param projectId the id of the project
+   * @return mapping from permission type to user emails who have the permission type to project `projectId`
+   */
+  HashMap<Integer, List<String>> getPermissionsInfo(long projectId);
+
+  /**
+   * get the permission of a user for a given project
+   * @param userEmail the email of the user
+   * @param projectId the id of the project
+   * @return permission type of the user for the project
+   */
+  String getPermissionType(String userEmail, long projectId);
+
+  /**
+   * get the link to use to share the project
+   * @param userEmail the email of the user trying to get the link
+   * @param projectId the id of the project
+   * @return shareId for the project
+   */
+  Long getShareLink(String userEmail, long projectId);
 
 }
