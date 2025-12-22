@@ -283,7 +283,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public long[] getProjects() {
     List<Long> projects = storageIo.getProjects(userInfoProvider.getUserId());
-    LOG.info("getProjects found " + projects.size() + " projects.");
     long[] projectIds = new long[projects.size()];
     int i = 0;
     for (Long project : projects) {
@@ -301,7 +300,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public List<UserProject> getProjectInfos() {
     String userId = userInfoProvider.getUserId();
     List<Long> projectIds = storageIo.getProjects(userId);
-    LOG.info("getProjectInfos found " + projectIds.size() + " projects.");
     return makeUserProjects(userId, projectIds);
   }
 

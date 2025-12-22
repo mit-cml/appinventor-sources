@@ -8,8 +8,6 @@ package com.google.appinventor.shared.rpc.project;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
-import java.util.logging.Logger;
-
 import java.io.ObjectStreamClass;
 
 /**
@@ -31,8 +29,6 @@ public class ChecksumedLoadFile implements Serializable {
 
   // For serialization
   private static final long serialVersionUID = -6859774089621971672L;
-  private static final Logger LOG = Logger.getLogger(ChecksumedLoadFile.class.getName());
-
 
   private String content;
   private String checksum;
@@ -44,7 +40,6 @@ public class ChecksumedLoadFile implements Serializable {
       byte [] retval = md.digest(content.getBytes("UTF-8"));
       String hexval = byteArrayToHexString(retval);
       if (!hexval.equals(checksum)) {
-        LOG.info("ChecksumedLoadFile: checksum mismatch " + hexval + " " + checksum);
         throw new ChecksumedFileException("Checksum doesn't match " + hexval + " " + checksum);
       }
       return content;

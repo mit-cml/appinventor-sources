@@ -31,16 +31,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.appinventor.client.components.Icon;
 
 import java.util.Date;
-import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 
 public class ProjectListItem extends Composite {
   interface ProjectListItemUiBinder extends UiBinder<FlowPanel, ProjectListItem> {}
-
-  private static final Logger LOG = Logger.getLogger(ProjectListItem.class.getName());
-
 
   @UiField protected FlowPanel container;
   @UiField protected Label nameLabel;

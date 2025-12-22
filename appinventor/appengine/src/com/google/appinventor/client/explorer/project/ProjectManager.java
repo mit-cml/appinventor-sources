@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * This class manages projects.
@@ -31,8 +30,6 @@ public final class ProjectManager {
 
   // List of listeners for any project manager events.
   private final List<ProjectManagerEventListener> projectManagerEventListeners;
-  private static final Logger LOG = Logger.getLogger(ProjectManager.class.getName());
-
 
   private Promise<List<Project>> loadProjectPromise = null;
 

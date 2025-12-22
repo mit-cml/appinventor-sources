@@ -41,9 +41,6 @@ public final class Project {
 
   private ProjectFolder homeFolder = null;
 
-  private static final Logger LOG = Logger.getLogger(Project.class.getName());
-
-
   /**
    * Creates a new project.
    *
@@ -82,7 +79,6 @@ public final class Project {
 
             @Override
             public void onFailure(Throwable caught) {
-              LOG.info("Failed to load project nodes for project id: " + getProjectId());
               loadingInProgress = false;
               super.onFailure(caught);
             }
