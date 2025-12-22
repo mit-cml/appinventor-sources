@@ -156,10 +156,6 @@ public class ShareProjectsWizard {
     permissionDropdownForAll.setSelectedIndex(2);
 
     // TODO ADD THE ? ICON
-    // PropertyHelpWidget themeHelpWidget = new PropertyHelpWidget(theme);
-    // PropertyHelpWidget blocksHelpWidget = new PropertyHelpWidget(toolkit);
-    // horizontalThemePanel.add(themeHelpWidget);
-    // horizontalBlocksPanel.add(blocksHelpWidget);
 
     this.mainOde = Ode.getInstance();
     if (this.mainOde.getCurrentView() == Ode.PROJECTS) {
@@ -183,43 +179,33 @@ public class ShareProjectsWizard {
         @Override
         public void onSuccess(HashMap<Integer, List<String>> result) {
           accessInfo = result;
-          LOG.info("access" + result.toString());
           if (result.containsKey(3)) {
             readOnlyAccessList.addAll(result.get(3));
-            // userNameTextBox.setText(String.join(", ", readOnlyAccessList));
           }
           // update the users container;
           updateUsersContainer(result);
-          // isSharedAll = (result.containsKey(4) && !result.get(4).isEmpty()) || (result.containsKey(3) && result.get(3).contains("ALL")) || result.toString().contains("ALL");
-          // LOG.info("is shared all: " + isSharedAll);
-          // checkBoxShareAll.setValue(isSharedAll);
         }
       });
     
     this.mainOde.getShareLink(this.mainOde.getUser().getUserEmail(), this.projectToShareId, new OdeAsyncCallback<Long>() {
         @Override
         public void onSuccess(Long result) {
-          LOG.info("link" + result.toString());
           shareId = result;
         }
       });
     shareDialog.setText("Share Project " + this.projectToShareName);
-    // projectNameLabel.setText(this.projectToShareName);
   }
 
   private void updateUsersContainer(HashMap<Integer, List<String>> accessInfo) {
     for (Map.Entry<Integer, List<String>> entry : accessInfo.entrySet()) {
         Integer permission = entry.getKey();
-        LOG.info("permission index " + permission);
         List<String> users = entry.getValue();
         for (String user: users) {
-            LOG.info("user " + user);
             if (user != "" && permission != 0 && permission != 4 && user != "ALL") { // skip ALL entry
               ShareProjectUser userPerm = new ShareProjectUser(user, permission.toString(), this::handlePermissionChange);
               usersContainerElements.add(userPerm);
               usersContainer.add(userPerm);
             } else if (user == "ALL") {
-              LOG.info("should become all");
               isSharedAll = true;
               checkBoxShareAll.setValue(isSharedAll);
               permissionDropdownForAll.setSelectedIndex(permissionMap.get(permission));
@@ -310,7 +296,6 @@ public class ShareProjectsWizard {
     HashMap<Integer, List<String>> newAccessInfo = new HashMap<>();
     for (ShareProjectUser user : usersContainerElements) {
       Integer perm = user.getPermInteger();
-      LOG.info("newEmail: " + user.getEmail() + " " + perm.toString());
 
       if (newAccessInfo.get(perm) != null) { // Check if the key exists
         List<String> emails = newAccessInfo.get(perm);
@@ -324,7 +309,6 @@ public class ShareProjectsWizard {
       }
     }
 
-    LOG.info("access: " + newAccessInfo.toString());
     Boolean updatedWithOthers = false;
     Integer permForAll = Integer.parseInt(permissionDropdownForAll.getSelectedValue());
     Boolean shareAll = checkBoxShareAll.getValue();
@@ -333,13 +317,11 @@ public class ShareProjectsWizard {
       Integer perm = entry.getKey();
       List<String> emails = entry.getValue();
       List<String> validUsers = this.checkUsers(emails);
-      LOG.info("share emails " + emails.toString());
       if (emails.size() == validUsers.size()) {
         if (shareAll && permForAll == perm) {
           validUsers.add("ALL");
           updatedWithOthers = true;
         }
-        LOG.info("share emails " + validUsers.toString() + " with perm " + perm);
         shareProjects(this.projectsToShareIds, validUsers, perm, true);
       }
     }
@@ -347,21 +329,6 @@ public class ShareProjectsWizard {
     if (shareAll && !updatedWithOthers) {
       shareProjects(this.projectsToShareIds, (new ArrayList<>(Arrays.asList("ALL"))), permForAll, true);
     }
-
-
-    // List<String> users = new ArrayList<>();
-
-    // for (ShareProjectUser user : usersContainerElements) {
-    //   if (user.getPermInteger() == 3) {
-    //     users.add(user.getEmail());
-    //   }
-    // }
-
-    // List<String> validUsers = this.checkUsers(users);
-
-    // if (users.size() == validUsers.size()) {
-    //   shareProjects(this.projectsToShareIds, validUsers, 3, true);
-    // }
   }
 
   @UiHandler("okButton")
@@ -434,8 +401,6 @@ public class ShareProjectsWizard {
   }
 
   public void shareProjects(List<Long> projectIDs, List<String> users, Integer perm, Boolean hide) {
-    // TODO when do we change access url?
-    // get checkbox value for share all
     Long projectID = projectIDs.get(0);
     
     OdeAsyncCallback<List<ShareResponse>> removeCallback =
@@ -447,9 +412,7 @@ public class ShareProjectsWizard {
             if (hide) {
               shareDialog.hide();
             }
-            LOG.info("results: " + result.toString());
             for (ShareResponse r: result) {
-              LOG.info("result: " + r.getStatus());
               switch (r.getStatus()) {
                 case SHARED:
                   Project project = Ode.getInstance().getProjectManager().getProject(r.getProjectId());
@@ -491,16 +454,31 @@ public class ShareProjectsWizard {
           MESSAGES.shareProjectError()) {
           @Override
           public void onSuccess(List<ShareResponse> result) {
-            LOG.info("giving access");
-            // mainOde.getProjectService().shareProject(mainOde.getUser().getUserId(), mainOde.getUser().getUserEmail(), projectID, removeUsers, 5, removeCallback);
-            mainOde.getProjectService().shareProject(mainOde.getUser().getUserId(), mainOde.getUser().getUserEmail(), projectID, addUsers, perm, checkBoxSendEmail.getValue(), removeCallback);
+            if (!addUsers.isEmpty()) {
+              mainOde.getProjectService().shareProject(mainOde.getUser().getUserId(), mainOde.getUser().getUserEmail(), projectID, addUsers, perm, checkBoxSendEmail.getValue(), removeCallback);
+            } else {
+              if (hide) {
+                shareDialog.hide();
+              }
+              for (ShareResponse r: result) {
+                switch (r.getStatus()) {
+                  case SHARED:
+                    Project project = Ode.getInstance().getProjectManager().getProject(r.getProjectId());
+                    project.setShared(true);
+                    ProjectListBox.getProjectListBox().getProjectList().onProjectSharedOrUnshared();
+                  default:
+                    showMessageForResponse(r);
+                    break;
+                }
+              }
+            }
           }
     };
-    LOG.info("add " + addUsers.toString());
-    LOG.info("remove " + removeUsers.toString());
-    LOG.info("giving access " + perm);
-    // this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), this.mainOde.getUser().getUserEmail(), projectID, addUsers, perm, callback);
-    this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), this.mainOde.getUser().getUserEmail(), projectID, removeUsers, 5, false, callback);
+    if (!removeUsers.isEmpty()) {
+      this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), this.mainOde.getUser().getUserEmail(), projectID, removeUsers, 5, false, callback);
+    } else {
+      this.mainOde.getProjectService().shareProject(this.mainOde.getUser().getUserId(), this.mainOde.getUser().getUserEmail(), projectID, addUsers, perm, checkBoxSendEmail.getValue(), removeCallback);
+    }
   }
 
   @UiHandler("topInvisible")

@@ -145,8 +145,6 @@ public class StoredData {
     // key of project that this id shares
     @Parent Key<ProjectData> projectKey;
 
-    // The user (parent's) key
-    // TODO: might wanna have email
     @Indexed String userEmail;
 
     // Permission type

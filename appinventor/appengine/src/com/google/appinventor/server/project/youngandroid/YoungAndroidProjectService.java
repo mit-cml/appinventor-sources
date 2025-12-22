@@ -1021,7 +1021,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         .add("locale", "end")
         .add("shared", Long.toString(shareId))
         .build();
-    LOG.info("the url is " + url);
     String username = storageIo.getUser(userId).getUserEmail();
     try {
       MailUtil.sendMail(otherEmail, String.format("%s shared a project with you - MIT App Inventor", username),

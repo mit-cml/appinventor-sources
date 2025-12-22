@@ -617,7 +617,6 @@ public class Ode implements EntryPoint {
   }
 
   public void getPermissionType(long projectId, OdeAsyncCallback<String> callback) {
-    LOG.info("getting permission type for user " + user.getUserEmail() + " for project " + projectId);
     projectService.getPermissionType(user.getUserEmail(), projectId, callback);
   }
 
@@ -636,7 +635,6 @@ public class Ode implements EntryPoint {
    */
   // userId here is email
   private void openSharedProject(ProjectServiceAsync projectService, String userId, long shareId, boolean openInReadOnlyMode) {
-    LOG.info("user id being used is: " + userId + " share id is " + shareId);
     projectService.getSharedProject(userId, getUser().getUserEmail(), shareId, new AsyncCallback<UserProject>() {
         @Override
         public void onFailure(Throwable caught) {
@@ -653,11 +651,10 @@ public class Ode implements EntryPoint {
             getPermissionType(sharedProjectId, new OdeAsyncCallback<String>() {
               @Override
               public void onSuccess(String result) {
-                LOG.info("Shared project access type: " + result);
                 Ode.getInstance().setPermission(result);
                 if (result == "Full") {
                   Project loadedProject = projectManager.getProject(sharedProjectId);
-                  // Window.Location.assign(Window.Location.createUrlBuilder().removeParameter("shared").setHash(String.valueOf(sharedProjectId)).buildString());
+                  loadedProject.setShared(true);
                   UrlBuilder builder = Window.Location.createUrlBuilder();
                   builder.setPath(Window.Location.getPath());  // Ensures "/" is preserved
                   builder.removeParameter("shared");
@@ -670,15 +667,12 @@ public class Ode implements EntryPoint {
                   Window.Location.assign(finalUrl);
                   openYoungAndroidProjectInDesigner(loadedProject);
                 } else {
-                  // if (openInReadOnlyMode) {
-                  //   Ode.getInstance().setReadOnly();
-                  // }
                   projectManager.addProject(sharedProject);
                   projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
-                    LOG.info("Shared project loaded with " + projects.size() + " total projects.");
                     Project loadedProject = projectManager.getProject(sharedProjectId);
                     if (loadedProject != null) {
-                      LOG.info("try to open shared project id: " + sharedProjectId);
+                      LOG.info("try to open shared project");
+                      loadedProject.setShared(true);
                       openYoungAndroidProjectInDesigner(loadedProject);
                     } else {
                       switchToProjectsView();  // the user will need to select a project...
@@ -730,24 +724,20 @@ public class Ode implements EntryPoint {
   public void openYoungAndroidProjectInDesigner(final Project project) {
     ProjectRootNode projectRootNode = project.getRootNode();
     if (projectRootNode == null) {
-      LOG.info("Loaded root node: " + project.getProjectId());
       // The project nodes haven't been loaded yet.
       // Add a ProjectChangeListener so we'll be notified when they have been loaded.
       project.addProjectChangeListener(new ProjectChangeAdapter() {
         @Override
         public void onProjectLoaded(Project glass) {
-          LOG.info("trying to use listener: " + project.getProjectId());
           project.removeProjectChangeListener(this);
           openYoungAndroidProjectInDesigner(project);
         }
       });
-      LOG.info("load node: " + project.getProjectId());
       project.loadProjectNodes();
     } else {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
-      LOG.info("trying to open project id: " + project.getProjectId());
       viewerBox.show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
@@ -757,9 +747,7 @@ public class Ode implements EntryPoint {
         // insert token into history but do not trigger listener event
         History.newItem(projectIdString, false);
       }
-      LOG.info("Loading assets for project id: " + project.getProjectId());
       assetManager.loadAssets(project.getProjectId());
-      LOG.info("Refreshing asset list box for project id: " + project.getProjectId());
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
@@ -1139,7 +1127,6 @@ public class Ode implements EntryPoint {
 
     // TODO: Tidy up user preference variable
     projectListbox = ProjectListBox.create(uiFactory);
-    LOG.info("projectListbox created " + projectListbox.toString());
     String layout;
     if (Ode.getUserNewLayout()) {
       layout = "modern";
@@ -2483,9 +2470,7 @@ public class Ode implements EntryPoint {
   }
 
   public void setPermission(String perm) {
-    LOG.info("should set perm to : " + perm);
     this.permission = perm;
-    LOG.info("set permission to " + permission);
   }
 
   public boolean isReadOnly() {

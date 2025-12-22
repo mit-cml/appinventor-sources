@@ -402,16 +402,6 @@ public interface ProjectService extends RemoteService {
    */
   List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmail, int perm, boolean sendEmail);
 
-  // /**
-  //  * Give `perm` permission to `userId` user's project to another user with `otherEmail` email
-  //  * @param userId owner's id
-  //  * @param projectId project id
-  //  * @param otherEmail the other user's email
-  //  * @param perm type of permission
-  //  * @return share id
-  //  */
-  // long updateProjectPermissionForUser(String userId, long projectId, String otherEmail, int perm);
-
   /**
    * gets project shared with the user
    * @param userId user id

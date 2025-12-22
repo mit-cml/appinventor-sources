@@ -640,7 +640,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   // Bulk fetch UserProjects -- efficiently get all project infos asked for
   // using a minimum number of datastore API calls
   private List<UserProject> makeUserProjects(String userId, List<Long> projectIds) {
-    LOG.info("being called in make user project");
     return storageIo.getUserProjects(userId, projectIds);
   }
 
@@ -648,12 +647,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Returns the RPC implementation for the given project type.
    */
   private CommonProjectService getProjectRpcImpl(final String userId, long projectId) {
-    LOG.info("checking access for user " + userId + " to project " + projectId);
-    // storageIo.assertUserHasProject(userId, projectId);
     String projectType = storageIo.getProjectType(userId, projectId);
-    LOG.info("project type for project " + projectId + " is " + projectType);
     if (!projectType.isEmpty()) {
-      LOG.info("NOT CRASH found project type " + projectType + " for project " + projectId);
       return getProjectRpcImpl(userId, projectType);
     } else {
       throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(),
@@ -664,7 +659,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   private CommonProjectService getProjectRpcImpl(final String userId, String projectType) {
     if (projectType.equals(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE)) {
-      LOG.info(youngAndroidProject.toString());
       return youngAndroidProject;
     } else {
       throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
@@ -756,16 +750,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return getProjectRpcImpl(userId, projectId).shareProject(userId, userEmail, projectId,
         otherEmail, StoredData.Permission.fromCode(perm), sendEmail);
   }
-
-  // /**
-  //  * Give `perm` permission to `userId` user's project to another user with `otherEmail` email
-  //  * @param userId owner's id
-  //  * @param projectId project id
-  //  * @param otherEmail the other user's email
-  //  * @param perm type of permission
-  //  * @return share id
-  //  */
-  // long updateProjectPermissionForUser(String userId, long projectId, String otherEmail, int perm);
 
   /**
    * gets project shared with the user

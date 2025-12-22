@@ -5,8 +5,6 @@
 
 package com.google.appinventor.server.project.utils;
 
-import com.google.appinventor.server.CrashReport;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,7 +57,6 @@ public class MailUtil {
   public static void sendMail(String email, String subject, String message, String html) throws IOException {
     Properties props = new Properties();
     Session session = Session.getDefaultInstance(props, null);
-
     try {
       Message msg = new MimeMessage(session);
       msg.setFrom(new InternetAddress("noreply@appinventor.mit.edu", "MIT App Inventor"));
@@ -85,6 +82,6 @@ public class MailUtil {
       Transport.send(msg);
     } catch(MessagingException|UnsupportedEncodingException e) {
       throw new IOException("Unable to send email to " + email, e);
-    }
+    } 
   }
 }

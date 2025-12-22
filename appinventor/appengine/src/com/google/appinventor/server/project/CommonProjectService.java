@@ -370,6 +370,9 @@ public abstract class CommonProjectService {
    * @return
    */
   public String getPermissionType(String userEmail, long projectId) {
+    if (projectId == 0) {
+      return "No Access";
+    }
     StoredData.Permission perm = storageIo.getPermission(userEmail, projectId);
     if (perm == StoredData.Permission.OWNER) {
       return "Full";
@@ -402,18 +405,14 @@ public abstract class CommonProjectService {
    */
   public UserProject getSharedProject(String userId, String userEmail, long shareId){
     // add to the user projects if not there already
-    LOG.warning("userEmail " + userEmail + " USER ID" + userId);
     Long projectId = storageIo.getProjectIdFromShareId(shareId);
     if (projectId == null) {
-      LOG.severe("No project found for shareId=" + shareId);
       throw new IllegalArgumentException("Invalid share link: " + shareId);
     }
-    LOG.warning("projectID: " + projectId.toString());
     StoredData.Permission perm = storageIo.getPermission(userEmail, projectId);
-    LOG.warning("permission: " + perm.toString());
     if (perm != StoredData.Permission.NONE) {
       if (storageIo.getSharedProject(userEmail, userId, projectId, perm) == null) {
-        LOG.warning("returned null!!");
+        LOG.warning("returned no shared project!!");
       }
       return storageIo.getSharedProject(userEmail, userId, projectId, perm);
     } else {
@@ -444,9 +443,10 @@ public abstract class CommonProjectService {
       } else {
         storageIo.addPermission(otherEmail, projectId, perm);
         // jz todo
-        Long shareLink = getShareLink(otherEmail, projectId);
-        sendShareEmailNew(userId, shareLink, otherEmail);
-        // sendShareEmailNew(userId, projectId, otherEmail);
+        if (sendEmail) {
+          Long shareLink = getShareLink(otherEmail, projectId);
+          sendShareEmailNew(userId, shareLink, otherEmail);
+        }
         return new ShareResponse(Status.SHARED, projectId, otherEmail);
       }
     }
@@ -472,85 +472,24 @@ public abstract class CommonProjectService {
       if (owner != StoredData.Permission.OWNER) {
         storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
       }
-      LOG.info("adding rest: " + otherEmails.toString() + " to give perm " + perm);
       for (String otherEmail : otherEmails){
         if (storageIo.getPermission(otherEmail, projectId) == perm) {
           result.add(new ShareResponse(Status.ALREADY_SHARED));
         } else {
-          LOG.info("try to add new mail "+ otherEmail);
           storageIo.addPermission(otherEmail, projectId, perm);
-          Long shareLink = getShareLink(otherEmail, projectId);
-          sendShareEmailNew(userId, shareLink, otherEmail);
-          // sendShareEmailNew(userId, projectId, otherEmail);
+          if (sendEmail) {
+            Long shareLink = getShareLink(otherEmail, projectId);
+            sendShareEmailNew(userId, shareLink, otherEmail);
+          }
           result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
         }
       }
     }
-    if (result.isEmpty()) {
+    if (result.isEmpty() && otherEmails.size() > 0) {
       result.add(new ShareResponse(status));
     }
     return result;
   }
-
-  /**
-  //  * Unshare project with others by email.
-  //  * @param userId the userId of the owner of the project
-  //  * @param projectId the project id
-  //  * @param otherEmails the email addresses of other users
-  //  */
-  // public List<ShareResponse> unShareProject(String userId, long projectId, List<String> otherEmails,
-  //                                   StoredData.Permission perm) {
-  //   List<ShareResponse> result = new ArrayList<>();
-  //   Status status = Status.UNAUTHORIZED;
-  //   String userEmail = storageIo.getUser(userId).getUserEmail();
-  //   // Only the project owner can share.
-  //   if (userId.equals(storageIo.getProjectOwner(projectId))) {
-  //     StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
-  //     // add owner permission first
-  //     if (owner != StoredData.Permission.OWNER) {
-  //       storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
-  //     }
-  //     for (String otherEmail : otherEmails){
-  //       if (storageIo.getPermission(otherEmail, projectId) == perm) {
-  //         status = Status.ALREADY_SHARED;
-  //         result.add(new ShareResponse(status));
-  //       } else {
-  //         storageIo.addPermission(otherEmail, projectId, perm);
-  //         sendShareEmailNew(userId, projectId, otherEmail);
-  //         result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
-  //       }
-  //     }
-  //   }
-  //   result.add(new ShareResponse(status));
-  //   return result;
-  // }
-
-  // /**
-  //  * Share project with others by email.
-  //  * @param userId the userId of the owner of the project
-  //  * @param projectId the project id
-  //  * @param otherEmails the email addresses of other users
-  //  */
-  // public ShareResponse shareProjectWithAll(String userId, long projectId, StoredData.Permission perm) {
-  //   Status status = Status.UNAUTHORIZED;
-  //   String userEmail = storageIo.getUser(userId).getUserEmail();
-  //   // Only the project owner can share.
-  //   if (userId.equals(storageIo.getProjectOwner(projectId))) {
-  //     StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
-  //     // add owner permission first
-  //     if (owner != StoredData.Permission.OWNER) {
-  //       storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
-  //     }
-  //     if (storageIo.getPermission(StoredData.ALL, projectId) == perm) {
-  //       status = Status.ALREADY_SHARED;
-  //     } else {
-  //       storageIo.addPermission(StoredData.ALL, projectId, perm);
-  //       sendShareEmailNew(userId, projectId, otherEmail);
-  //       result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
-  //     }
-  //   }
-  //   return new ShareResponse(status);
-  // }
 
   public abstract void sendShareEmailNew(String userId, long shareId, String otherEmail);
 

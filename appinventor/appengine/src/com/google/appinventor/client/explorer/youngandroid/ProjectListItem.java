@@ -66,7 +66,6 @@ public class ProjectListItem extends Composite {
 
     nameLabel.setText(project.getProjectName());
     if (AppInventorFeatures.enableGroupProject()) {
-      LOG.info("project seeting has shared as " + project.isShared());
       sharedIcon.addStyleName(project.isShared() ? "myInlineImage" : "myHiddenImage");
     }
     dateModifiedLabel.setText(dateTimeFormat.format(dateModified));

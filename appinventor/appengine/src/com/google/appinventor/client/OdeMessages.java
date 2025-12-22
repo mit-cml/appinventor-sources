@@ -2448,15 +2448,16 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String cannotSelfShareProject();
 
   @DefaultMessage("No users exists with the given email address.")
-  @Description("")
+  @Description("Error shown when the user tries to share a project with a non-existent user")
   String sharedUserDoesNotExist();
 
   @DefaultMessage("You have already shared this project with this user.")
-  @Description("")
+  @Description("Error shown when the user tries to share a project with a user who " +
+      "already has access to the project")
   String alreadySharedProject();
 
   @DefaultMessage("You are not authorized to share this project.")
-  @Description("")
+  @Description("Error shown when the user tries to share a project they don't own")
   String sharingUnauthorized();
 
   @DefaultMessage("Email people")
