@@ -44,6 +44,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
+import android.view.View;
+import android.view.WindowManager;
+import com.google.appinventor.components.common.DisplayMode;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
@@ -872,6 +875,7 @@ public class Form extends AppInventorCompatActivity
    */
   protected void $define() {    // This must be declared protected because we are called from Screen1 which subclasses
                                 // us and isn't in our package.
+    applyDisplayMode();
     throw new UnsupportedOperationException();
   }
 
@@ -1517,6 +1521,27 @@ public class Form extends AppInventorCompatActivity
     return showStatusBar;
   }
 
+  private DisplayMode displayMode = DisplayMode.Safe;
+
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Controls how the app displays relative to system bars. Safe: Standard layout. EdgeToEdge: Full screen content. BackgroundEdgeToEdge: Full screen background, but content stays safe.")
+  public String DisplayMode() {
+    return displayMode.toUnderlyingValue();
+  }
+
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_CHOICES,
+      defaultValue = "safe",
+      editorArgs = {"Safe", "EdgeToEdge", "BackgroundEdgeToEdge"})
+  @SimpleProperty
+  public void DisplayMode(@Options(DisplayMode.class) String mode) {
+    DisplayMode newMode = DisplayMode.fromUnderlyingValue(mode);
+    if (newMode != null) {
+      this.displayMode = newMode;
+      applyDisplayMode();
+    }
+  }
   /**
    * The status bar is the topmost bar on the screen. This property reports whether the status bar
    * is visible.
@@ -3086,5 +3111,29 @@ public class Form extends AppInventorCompatActivity
   public void setComponentName(String componentName) {
     // Note this here will have the same value as formName, but formName is specific to only Forms
     this.componentName = componentName;
+  }
+  private void applyDisplayMode() {
+    View contentView = findViewById(android.R.id.content);
+    if (contentView == null) return;
+
+    if (this.displayMode == DisplayMode.Safe) {
+      getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+      contentView.setFitsSystemWindows(true);
+    } else {
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+      getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+      getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
+
+      int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE 
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN 
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+      getWindow().getDecorView().setSystemUiVisibility(flags);
+
+      if (this.displayMode == DisplayMode.BackgroundEdgeToEdge) {
+        contentView.setFitsSystemWindows(true);
+      } else {
+        contentView.setFitsSystemWindows(false);
+      }
+    }
   }
 }
