@@ -6,6 +6,7 @@
 import Foundation
 import UIKit
 import MobileCoreServices
+import UniformTypeIdentifiers
 
 @available(iOS 14.0, *)
 @objc open class FilePicker: Picker, AbstractMethodsForPicker, UIDocumentPickerDelegate, LifecycleDelegate {
@@ -38,10 +39,9 @@ import MobileCoreServices
       case .PickExistingFile:
         documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: docTypes)
       case .PickNewFile:
-        // TODO: This implementation is a placeholder. The actual behavior on iOS is more complex
-        // so we will need to expand the component's functionality
-        documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: docTypes)
-        break
+        // iOS does not have a direct equivalent to ACTION_CREATE_DOCUMENT for picking a destination
+        // without a source file. We map this to picking a folder where the app can then write.
+        documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder])
       case .PickDirectory:
         documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder])
       default:
@@ -55,22 +55,13 @@ import MobileCoreServices
     get {
       return mimeType
     }
-    set (mimeType){
+    set (mimeType) {
       self.mimeType = mimeType
-      let mimeLower = mimeType.lowercased()
-      if mimeLower.starts(with: "image/") {
-        docTypes = [.image]
-      } else if mimeLower.starts(with: "video/") {
-        docTypes = [.video]
-      } else if mimeLower.starts(with: "audio/") {
-        docTypes = [.audio]
-      } else if mimeLower.starts(with: "text/") {
-        docTypes = [.text]
-      } else if mimeLower == "application/pdf" {
-        docTypes = [.pdf]
+      if let type = UTType(mimeType: mimeType) {
+        docTypes = [type]
       } else {
-        // Fall back to all possible types.
-        docTypes = [.image, .pdf, .text, .video, .audio]
+        // Fall back to all possible types if MIME type is invalid or unknown
+        docTypes = [.image, .pdf, .text, .video, .audio, .data, .archive]
       }
       Action = action
     }
@@ -126,4 +117,3 @@ import MobileCoreServices
     url.stopAccessingSecurityScopedResource()
   }
 }
-
