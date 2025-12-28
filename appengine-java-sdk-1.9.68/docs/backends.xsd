@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="backends" type="backendsType"/>
+
+  <xs:complexType name="backendsType">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element type="backendType" name="backend" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="backendType">
+    <xs:all>
+      <xs:element type="xs:integer" name="instances" minOccurs="0"/>
+      <xs:element type="classType" name="class" minOccurs="0"/>
+      <xs:element type="xs:integer" name="max-concurrent-requests" minOccurs="0"/>
+      <xs:element type="optionsType" name="options" minOccurs="0"/>
+    </xs:all>
+    <xs:attribute type="xs:string" name="name" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="classType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="B[0-8]|B4_1G"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="optionsType">
+    <xs:all>
+      <xs:element type="xs:boolean" name="dynamic" minOccurs="0"/>
+      <xs:element type="xs:boolean" name="fail-fast" minOccurs="0"/>
+      <xs:element type="xs:boolean" name="public" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>
+

@@ -1,0 +1,43 @@
+Google App Engine Java Runtime SDK - JDO Examples
+
+Four simple samples which illustrate JDO entity relationships and queries.
+
+To compile and execute the samples, execute:
+
+ant runserver
+
+and visit the samples at the following URLs:
+
+http://localhost:8080/guestbook.jsp
+http://localhost:8080/namedcounter.jsp
+http://localhost:8080/friends.jsp
+http://localhost:8080/addressbook.jsp
+
+-- Guest Book --
+
+The Guestbook sample shows a simple entry structure with simple queries.
+
+-- Named Counter --
+
+Next we'll look at the Named Counter, which uses a key name to efficiently
+lookup a counter entry.
+
+-- Friends --
+
+The Friends sample illustrates many to many
+relationships between entities. There are two options for modeling a many to
+many relationship:
+1) Use a String as the @PrimaryKey, which will give you compatibility with
+   other JDO containers. 
+2) Use a Datastore Key as the @PrimaryKey; this ties you closer to App Engine
+   but makes some of the syntax easier.
+This example demonstrates the first option.
+
+-- Address Book --
+
+Lastly, the Address Book example illustrates an Embedded field in JDO.
+
+JDO will automatically add the persistent fields of embedded objects into the entity
+representation of the object in which the embedded object is contained.
+This lets you capture a whole graph of object dependencies into
+a single Datastore Entity, allowing you to easily query across the fields.

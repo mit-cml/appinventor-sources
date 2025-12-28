@@ -1,0 +1,46 @@
+/* Annotated CSS styles for TaskDetails.java */
+@sprite .back {
+  gwt-image: "back";
+  right: 90px;
+  width: 40px;
+  height: 30px;
+}
+
+.taskDetails {
+  padding: 10px;
+  height: 311px;
+  overflow: hidden;
+}
+
+.fieldGroup {
+  position: relative;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.label {
+  position: absolute;
+  width: 70px;
+}
+
+.field {
+  position: relative;
+  left: 80px;
+}
+
+textArea {
+  width: 60%;
+  height: 80px;
+}
+
+input {
+  width: 60%;
+  height: 2.0em;
+}
+
+button {
+  height: 35px;
+  width: 100px;
+  font-size: 10px;
+  float: left;
+}

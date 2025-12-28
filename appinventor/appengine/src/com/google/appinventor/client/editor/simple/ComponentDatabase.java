@@ -386,7 +386,8 @@ public class ComponentDatabase implements ComponentDatabaseInterface {
       // Extensions may not have a category set on the designer property, so we have to be
       // conservative here.
       categoryMap.put(name, optString(properties.get("category"), "Uncategorized"));
-      descriptions.put(name, properties.get("description").asString().getString());
+     // descriptions.put(name, properties.get("description").asString().getString());
+     descriptions.put(name, optString(properties.get("description"), ""));
     }
     for (JSONValue propertyValue : propertiesArray.getElements()) {
       Map<String, JSONValue> properties = propertyValue.asObject().getProperties();
@@ -420,7 +421,7 @@ public class ComponentDatabase implements ComponentDatabaseInterface {
     for (JSONValue blockPropertyValue : blockPropertiesArray.getElements()) {
       Map<String, JSONValue> blockProperties = blockPropertyValue.asObject().getProperties();
       component.add(new BlockPropertyDefinition(blockProperties.get("name").asString().getString(),
-          blockProperties.get("description").asString().getString(), blockProperties.get("type")
+          blockProperties.optString(blockProperties.get("description") ,""), blockProperties.get("type")
               .asString().getString(), blockProperties.get("rw").asString().getString()));
     }
   }
@@ -443,12 +444,12 @@ public class ComponentDatabase implements ComponentDatabaseInterface {
       component.add(
           new EventDefinition(
               event.get("name").asString().getString(),
-              event.get("description").asString().getString(),
+             optString(event.get("description"), ""),
               new Boolean(event.get("deprecated").asString().getString()),
               paramList));
     }
   }
-
+//event.get("description").asString().getString(),
   /*
    * Enters method information into the component descriptor.
    */
@@ -467,7 +468,7 @@ public class ComponentDatabase implements ComponentDatabaseInterface {
       component.add(
           new MethodDefinition(
               method.get("name").asString().getString(),
-              method.get("description").asString().getString(),
+              optString(method.get("description"), ""),
               new Boolean(method.get("deprecated").asString().getString()),
               paramList));
     }

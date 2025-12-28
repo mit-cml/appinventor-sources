@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="cronentries" type="cronentries-Type"/>
+
+  <xs:complexType name="cronentries-Type">
+    <xs:sequence>
+      <xs:element type="cron-Type" name="cron" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="cron-Type">
+    <xs:all>
+      <xs:element type="xs:string" name="url"/>
+      <xs:element type="xs:string" name="description" minOccurs="0"/>
+      <xs:element type="xs:string" name="schedule"/>
+      <xs:element type="xs:string" name="timezone" minOccurs="0"/>
+      <xs:element type="target-Type" name="target" minOccurs="0"/>
+      <xs:element type="retry-parameters-Type" name="retry-parameters" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="retry-parameters-Type">
+    <xs:all>
+      <xs:element type="xs:nonNegativeInteger" name="job-retry-limit" maxOccurs="1" minOccurs="0"/>
+      <xs:element type="job-age-limit-Type" name="job-age-limit" maxOccurs="1" minOccurs="0"/>
+      <xs:element type="nonNegativeDouble" name="min-backoff-seconds" maxOccurs="1" minOccurs="0"/>
+      <xs:element type="nonNegativeDouble" name="max-backoff-seconds" maxOccurs="1" minOccurs="0"/>
+      <xs:element type="xs:nonNegativeInteger" name="max-doublings" maxOccurs="1" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:simpleType name="job-age-limit-Type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([0-9]+(\.?[0-9]*([eE][\-+]?[0-9]+)?)?)([smhd])"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="nonNegativeDouble">
+    <xs:restriction base="xs:double">
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="target-Type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-z\d\-]{1,100}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
