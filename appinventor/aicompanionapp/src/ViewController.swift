@@ -16,18 +16,28 @@ class MenuViewController: UITableViewController {
   weak var delegate: ViewController?
 
   public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 1
+    return SystemVariables.inConnectedApp ? 2 : 1
   }
 
   public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = UITableViewCell()
-    cell.textLabel?.text = "Close Project"
-    cell.textLabel?.textColor = UIColor.red
+    if indexPath.row == 0 {
+      cell.textLabel?.text = "Close Project"
+      cell.textLabel?.textColor = UIColor.red
+    } else {
+      cell.textLabel?.text = "Download Project"
+      cell.textLabel?.textColor = UIColor.blue
+    }
     return cell
   }
 
   public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    delegate?.reset()
+    if indexPath.row == 0 {
+      delegate?.reset()
+    } else {
+      RetValManager.shared().startCache()
+      dismiss(animated: true)
+    }
   }
 }
 
@@ -67,6 +77,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   @objc var notifier1: Notifier!
   private var onboardingScreen: OnboardViewController? = nil
   private var didWifiCheck = false
+  private var menuButton: UIBarButtonItem?
 
   private static var _interpreterInitialized = false
 
@@ -78,6 +89,10 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
     self.delegate = self
     SystemVariables.inConnectedApp = false
+    menuButton = viewControllers.first?.navigationItem.rightBarButtonItem
+    menuButton?.target = self
+    menuButton?.action = #selector(openMenu(caller:))
+    showHelpButton()
   }
 
   @objc func settingsChanged(_ sender: AnyObject?) {
@@ -134,12 +149,19 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     return interpreter
   }
 
-  public override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    if let menuButton = viewControllers.last?.navigationItem.rightBarButtonItem {
+  public override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+    super.pushViewController(viewController, animated: animated)
+    if let menuButton = viewController.navigationItem.rightBarButtonItem {
       menuButton.action = #selector(openMenu(caller:))
       menuButton.target = self
+      if #available(iOS 13.0, *) {
+        menuButton.image = UIImage(systemName: "book")
+      }
     }
+  }
+
+  public override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     if (form == nil) {
       let interpreter = initializeInterpreter()
       form = self.viewControllers[self.viewControllers.count - 1] as? ReplForm
@@ -173,7 +195,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
       libraryButton = form.view.viewWithTag(7) as! UIButton?
       legacyCheckbox.Text = "Use Legacy Connection"
-      let ipaddr: String! = NetworkUtils.getIPAddress()
+      let ipaddr: String! = MAINetworkUtils.getIPAddress()
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
       let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
       ipAddrLabel?.text = "IP Address: \(ipaddr!)"
@@ -186,7 +208,35 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       navigationBar.isTranslucent = false
       form.updateNavbar()
       form.Initialize()
+      showHelpButton()
     }
+  }
+  
+  @objc func goBackToOnboarding(caller: UIBarButtonItem) {
+      NSLog("goBackToOnboarding called")
+      let vc = storyboard?.instantiateViewController(withIdentifier: "onboard") as! OnboardViewController
+      vc.modalPresentationStyle = .fullScreen
+      present(vc, animated: true)
+    }
+  
+  func showHelpButton() {
+    guard let menuButton = menuButton else {
+      return
+    }
+    let helpMenuButton: UIBarButtonItem
+    if #available(iOS 13, *) {
+      helpMenuButton = UIBarButtonItem(image: UIImage(systemName: "questionmark.circle"), style: .plain, target: self, action: #selector(goBackToOnboarding(caller:)))
+    } else {
+      helpMenuButton = UIBarButtonItem(title: "?", style: .plain, target: self, action: #selector(goBackToOnboarding(caller:)))
+    }
+    self.topViewController?.navigationItem.rightBarButtonItem = helpMenuButton
+  }
+
+  func showMenuButton() {
+    guard let menuButton = menuButton else {
+      return
+    }
+    self.topViewController?.navigationItem.rightBarButtonItem = menuButton
   }
 
   public override func didReceiveMemoryWarning() {
@@ -219,6 +269,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       notifier1.ShowAlert("Invalid code: Code must be 6 characters")
       return
     }
+    showMenuButton()
     phoneStatus.WebRTC = !(legacyCheckbox?.Checked ?? true)
     RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
     form.startHTTPD(false)
@@ -242,7 +293,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     var request = URLRequest(url: url!)
     let values = [
       "key": code,
-      "ipaddr": NetworkUtils.getIPAddress(),
+      "ipaddr": MAINetworkUtils.getIPAddress(),
       "port": "9987",
       "webrtc": phoneStatus.WebRTC ? "true" : "false",
       "version": phoneStatus.GetVersionName(),
@@ -281,7 +332,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           self.phoneStatus.startWebRTC(kDefaultRendezvousServer, responseContent, self)
         }
       } else {
-        self.connectProgressDialog?.dismiss(animated: true)
+        DispatchQueue.main.async {
+            self.connectProgressDialog?.dismiss(animated: true)
+        }
         var responseContent = ""
         if let data = data {
           guard let responseContentStr = String(data: data, encoding: .utf8) else {
@@ -299,18 +352,45 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
   }
   
   @objc func showBarcodeScanner(_ sender: UIButton?) {
+    let cameraStatus = checkCameraPermission()
+
+    if cameraStatus == .denied || cameraStatus == .restricted {
+      showSettingsAlert()
+      return
+    }
+
     form.interpreter.evalForm("(call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '())")
     if let exception = form.interpreter.exception {
       NSLog("Exception: \(exception.name) (\(exception))")
     }
   }
-  
+
   @objc func openLibrary() {
     guard let libraryVC = storyboard?.instantiateViewController(withIdentifier: "library") as? AppLibraryViewController else {
       return
     }
     libraryVC.form = self.form
     self.pushViewController(libraryVC, animated:true)
+  }
+
+  func checkCameraPermission() -> AVAuthorizationStatus {
+    return AVCaptureDevice.authorizationStatus(for: .video)
+  }
+
+  private func showSettingsAlert() {
+    let alert = UIAlertController(
+        title: "Camera Permission Required",
+        message: "Please enable camera access in Settings to use the barcode scanner.",
+        preferredStyle: .alert
+    )
+
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+    alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+      if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+        UIApplication.shared.open(settingsUrl)
+      }
+    })
+    ViewController.controller?.present(alert, animated: true)
   }
 
   @objc public class func gotText(_ text: String) {
@@ -351,7 +431,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let menu = MenuViewController()
       menu.modalPresentationStyle = .popover
       menu.delegate = self
-      menu.preferredContentSize = UITableViewCell().frame.size
+      var size = UITableViewCell().frame.size
+      if SystemVariables.inConnectedApp {
+        size.height = size.height * 2.0 + 1.0
+      }
+      menu.preferredContentSize = size
       menu.popoverPresentationController?.barButtonItem = caller
       self.present(menu, animated: true)
     }
@@ -387,7 +471,15 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     self.viewControllers = []
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     if let newRoot = storyboard.instantiateInitialViewController() {
-      UIApplication.shared.delegate?.window??.rootViewController = newRoot
+      if #available(iOS 13, *) {
+        UIApplication.shared.connectedScenes.forEach { UIScene in
+          if let windowScene = UIScene as? UIWindowScene {
+            windowScene.windows.first?.rootViewController = newRoot
+          }
+        }
+      } else {
+        UIApplication.shared.delegate?.window??.rootViewController = newRoot
+      }
     }
   }
 
@@ -396,6 +488,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       let newapp = BundledApp(named: name, at: "samples/\(name)/")
       newapp.makeCurrent()
       newapp.loadScreen1(form)
+      showMenuButton()
     } else {
       view.makeToast("Unable to locate project \(name)")
     }

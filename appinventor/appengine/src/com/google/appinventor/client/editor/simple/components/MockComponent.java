@@ -1063,7 +1063,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // the drag widget itself isn't hidden.
     setVisible(false);
 
+    onDragWidgetCreated(w);
+
     return w;
+  }
+
+  protected void onDragWidgetCreated(Widget dragWidget) {
+    // Do nothing by default. Subclasses may override.
   }
 
   @Override
