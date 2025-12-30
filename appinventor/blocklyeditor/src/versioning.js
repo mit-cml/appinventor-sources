@@ -2912,7 +2912,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: - The PlayInForeground property was added.
     // - The OtherPlayerStarted event was added.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: - The PlayOnlyInForeground default value was changed. No upgrade w.r.t. blocks.
+    7: "noUpgrade"
 
   }, // End Player upgraders
 
