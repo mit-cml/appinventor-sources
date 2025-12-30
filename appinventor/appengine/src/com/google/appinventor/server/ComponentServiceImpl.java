@@ -87,7 +87,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     Map<String, byte[]> contents;
     String fileNameToDelete = null;
     try {
-      if (fileOrUrl.startsWith("__TEMP__")) {
+      if (fileOrUrl.startsWith(StorageIo.TEMP_PREFIX)) {
         fileNameToDelete = fileOrUrl;
         contents = extractContents(storageIo.openTempFile(fileOrUrl));
       } else {
