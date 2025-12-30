@@ -34,7 +34,7 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
   fileprivate var _sourcePath: String = ""
   private var _player: AVAudioPlayer? = nil
   fileprivate var _loop: Bool = false
-  fileprivate var _playOnlyInForeground: Bool = false
+  fileprivate var _playOnlyInForeground: Bool = true
   fileprivate var _wasPlaying = false
   private var state = PlayerState.Initial
   private var pendingPlay = false
