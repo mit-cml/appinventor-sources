@@ -10,14 +10,15 @@
  */
 import type { Block } from '../block.js';
 import * as blocks from '../serialization/blocks.js';
-import { BlockBase, BlockBaseJson } from './events_block_base.js';
 import { Workspace } from '../workspace.js';
+import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when a block (or connected stack of blocks) is
  * created.
  */
 export declare class BlockCreate extends BlockBase {
-    type: string;
+    type: EventType;
     /** The XML representation of the created block(s). */
     xml?: Element | DocumentFragment;
     /** The JSON respresentation of the created block(s). */

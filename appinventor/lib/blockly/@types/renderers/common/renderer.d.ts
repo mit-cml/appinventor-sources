@@ -141,6 +141,9 @@ export declare class Renderer implements IRegistrable {
      * @param local The connection currently being dragged.
      * @param topBlock The block currently being dragged.
      * @returns The preview type to display.
+     *
+     * @deprecated v10 - This function is no longer respected. A custom
+     *    IConnectionPreviewer may be able to fulfill the functionality.
      */
     getConnectionPreviewMethod(closest: RenderedConnection, local: RenderedConnection, topBlock: BlockSvg): PreviewType;
     /**

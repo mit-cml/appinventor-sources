@@ -3,13 +3,8 @@
  * Copyright 2011 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * Object representing a trash can icon.
- *
- * @class
- */
-import './events/events_trashcan_open.js';
 import { DeleteArea } from './delete_area.js';
+import './events/events_trashcan_open.js';
 import type { IAutoHideable } from './interfaces/i_autohideable.js';
 import type { IDraggable } from './interfaces/i_draggable.js';
 import type { IFlyout } from './interfaces/i_flyout.js';

@@ -39,7 +39,7 @@ import { Renderer } from './renderer.js';
  * @param rendererClass The new renderer class to register.
  * @throws {Error} if a renderer with the same name has already been registered.
  */
-export declare function register(name: string, rendererClass: Function): void;
+export declare function register(name: string, rendererClass: new (name: string) => Renderer): void;
 /**
  * Unregisters the renderer registered with the given name.
  *
@@ -59,33 +59,6 @@ export declare function unregister(name: string): void;
 export declare function init(name: string, theme: Theme, opt_rendererOverrides?: {
     [rendererConstant: string]: any;
 }): Renderer;
-export { BottomRow };
-export { Connection };
-export { Drawer };
-export { ExternalValueInput };
-export { Field };
-export { Hat };
-export { Icon };
-export { InRowSpacer };
-export { InlineInput };
-export { InputConnection };
-export { InputRow };
-export { IPathObject };
-export { JaggedEdge };
-export { MarkerSvg };
-export { Measurable };
-export { NextConnection };
-export { OutputConnection };
-export { PathObject };
-export { PreviousConnection };
-export { Renderer };
-export { RenderInfo };
-export { RoundCorner };
-export { Row };
-export { SpacerRow };
-export { SquareCorner };
-export { StatementInput };
-export { TopRow };
-export { Types };
-export { OutsideCorners, InsideCorners, StartHat, Notch, PuzzleTab, JaggedTeeth, BaseShape, DynamicShape, ConstantProvider, } from './constants.js';
+export { BottomRow, Connection, Drawer, ExternalValueInput, Field, Hat, Icon, InlineInput, InputConnection, InputRow, InRowSpacer, IPathObject, JaggedEdge, MarkerSvg, Measurable, NextConnection, OutputConnection, PathObject, PreviousConnection, Renderer, RenderInfo, RoundCorner, Row, SpacerRow, SquareCorner, StatementInput, TopRow, Types, };
+export { BaseShape, ConstantProvider, DynamicShape, InsideCorners, JaggedTeeth, Notch, OutsideCorners, PuzzleTab, StartHat, } from './constants.js';
 //# sourceMappingURL=block_rendering.d.ts.map

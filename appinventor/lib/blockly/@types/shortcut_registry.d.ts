@@ -30,13 +30,13 @@ export declare class ShortcutRegistry {
      * Registers a keyboard shortcut.
      *
      * @param shortcut The shortcut for this key code.
-     * @param opt_allowOverrides True to prevent a warning when overriding an
+     * @param allowOverrides True to prevent a warning when overriding an
      *     already registered item.
      * @throws {Error} if a shortcut with the same name already exists.
      */
-    register(shortcut: KeyboardShortcut, opt_allowOverrides?: boolean): void;
+    register(shortcut: KeyboardShortcut, allowOverrides?: boolean): void;
     /**
-     * Unregisters a keyboard shortcut registered with the given key code. This
+     * Unregisters a keyboard shortcut registered with the given name. This
      * will also remove any key mappings that reference this shortcut.
      *
      * @param shortcutName The name of the shortcut to unregister.
@@ -46,16 +46,23 @@ export declare class ShortcutRegistry {
     /**
      * Adds a mapping between a keycode and a keyboard shortcut.
      *
+     * Normally only one shortcut can be mapped to any given keycode,
+     * but setting allowCollisions to true allows a keyboard to be
+     * mapped to multiple shortcuts.  In that case, when onKeyDown is
+     * called with the given keystroke, it will process the mapped
+     * shortcuts in reverse order, from the most- to least-recently
+     * mapped).
+     *
      * @param keyCode The key code for the keyboard shortcut. If registering a key
      *     code with a modifier (ex: ctrl+c) use
      *     ShortcutRegistry.registry.createSerializedKey;
      * @param shortcutName The name of the shortcut to execute when the given
      *     keycode is pressed.
-     * @param opt_allowCollision True to prevent an error when adding a shortcut
+     * @param allowCollision True to prevent an error when adding a shortcut
      *     to a key that is already mapped to a shortcut.
      * @throws {Error} if the given key code is already mapped to a shortcut.
      */
-    addKeyMapping(keyCode: string | number | KeyCodes, shortcutName: string, opt_allowCollision?: boolean): void;
+    addKeyMapping(keyCode: string | number | KeyCodes, shortcutName: string, allowCollision?: boolean): void;
     /**
      * Removes a mapping between a keycode and a keyboard shortcut.
      *
@@ -64,11 +71,11 @@ export declare class ShortcutRegistry {
      *     ShortcutRegistry.registry.createSerializedKey;
      * @param shortcutName The name of the shortcut to execute when the given
      *     keycode is pressed.
-     * @param opt_quiet True to not console warn when there is no shortcut to
+     * @param quiet True to not console warn when there is no shortcut to
      *     remove.
      * @returns True if a key mapping was removed, false otherwise.
      */
-    removeKeyMapping(keyCode: string, shortcutName: string, opt_quiet?: boolean): boolean;
+    removeKeyMapping(keyCode: string, shortcutName: string, quiet?: boolean): boolean;
     /**
      * Removes all the key mappings for a shortcut with the given name.
      * Useful when changing the default key mappings and the key codes registered
@@ -105,6 +112,21 @@ export declare class ShortcutRegistry {
     /**
      * Handles key down events.
      *
+     * - Any `KeyboardShortcut`(s) mapped to the keycodes that cause
+     *   event `e` to be fired will be processed, in order from least-
+     *   to most-recently registered.
+     * - If the shortcut's `preconditionFn` exists it will be called.
+     *   If `preconditionFn` returns false the shortcut's `callback`
+     *   function will be skipped.  Processing will continue with the
+     *   next shortcut, if any.
+     * - The shortcut's `callback` function will then be called.  If it
+     *   returns true, processing will terminate and `onKeyDown` will
+     *   return true.  If it returns false, processing will continue
+     *   with with the next shortcut, if any.
+     * - If all registered shortcuts for the given keycode have been
+     *   processed without any having returned true, `onKeyDown` will
+     *   return false.
+     *
      * @param workspace The main workspace where the event was captured.
      * @param e The key down event.
      * @returns True if the event was handled, false otherwise.
@@ -132,31 +154,69 @@ export declare class ShortcutRegistry {
      * @param e A key down event.
      * @returns The serialized key code for the given event.
      */
-    private serializeKeyEvent_;
+    private serializeKeyEvent;
     /**
      * Checks whether any of the given modifiers are not valid.
      *
      * @param modifiers List of modifiers to be used with the key.
      * @throws {Error} if the modifier is not in the valid modifiers list.
      */
-    private checkModifiers_;
+    private checkModifiers;
     /**
      * Creates the serialized key code that will be used in the key map.
      *
      * @param keyCode Number code representing the key.
      * @param modifiers List of modifier key codes to be used with the key. All
-     *     valid modifiers can be found in the ShortcutRegistry.modifierKeys.
+     *     valid modifiers can be found in the `ShortcutRegistry.modifierKeys`.
      * @returns The serialized key code for the given modifiers and key.
      */
     createSerializedKey(keyCode: number, modifiers: KeyCodes[] | null): string;
 }
 export declare namespace ShortcutRegistry {
+    /** Interface defining a keyboard shortcut. */
     interface KeyboardShortcut {
-        callback?: (p1: WorkspaceSvg, p2: Event, p3: KeyboardShortcut) => boolean;
+        /**
+         * The function to be called when the shorctut is invoked.
+         *
+         * @param workspace The `WorkspaceSvg` when the shortcut was
+         *     invoked.
+         * @param e The event that caused the shortcut to be activated.
+         * @param shortcut The `KeyboardShortcut` that was activated
+         *     (i.e., the one this callback is attached to).
+         * @returns Returning true ends processing of the invoked keycode.
+         *     Returning false causes processing to continue with the
+         *     next-most-recently registered shortcut for the invoked
+         *     keycode.
+         */
+        callback?: (workspace: WorkspaceSvg, e: Event, shortcut: KeyboardShortcut) => boolean;
+        /** The name of the shortcut.  Should be unique. */
         name: string;
-        preconditionFn?: (p1: WorkspaceSvg) => boolean;
+        /**
+         * A function to be called when the shortcut is invoked, before
+         * calling `callback`, to decide if this shortcut is applicable in
+         * the current situation.
+         *
+         * @param workspace The `WorkspaceSvg` where the shortcut was
+         *     invoked.
+         * @returns True iff `callback` function should be called.
+         */
+        preconditionFn?: (workspace: WorkspaceSvg) => boolean;
+        /** Optional arbitray extra data attached to the shortcut. */
         metadata?: object;
+        /**
+         * Optional list of key codes to be bound (via
+         * ShortcutRegistry.prototype.addKeyMapping) to this shortcut.
+         */
         keyCodes?: (number | string)[];
+        /**
+         * Value of `allowCollision` to pass to `addKeyMapping` when
+         * binding this shortcut's `.keyCodes` (if any).
+         *
+         * N.B.: this is only used for binding keycodes at the time this
+         * shortcut is initially registered, not for any subsequent
+         * `addKeyMapping` calls that happen to reference this shortcut's
+         * name.
+         */
         allowCollision?: boolean;
     }
     /** Supported modifiers. */

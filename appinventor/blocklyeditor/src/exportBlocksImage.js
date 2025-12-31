@@ -464,7 +464,7 @@ Blockly.exportBlockAsPng = function(block) {
   var xml = document.createElement('xml');
   xml.appendChild(Blockly.Xml.blockToDom(block, true));
   var code = Blockly.Xml.domToText(xml);
-  svgAsDataUri(block.svgGroup_, block.workspace.getMetrics(), null, function(uri) {
+  svgAsDataUri(block.getSvgRoot(), block.workspace.getMetrics(), null, function(uri) {
     var img = new Image();
     img.src = uri;
     img.onload = function() {

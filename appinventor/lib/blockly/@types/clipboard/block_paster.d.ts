@@ -20,9 +20,11 @@ export declare class BlockPaster implements IPaster<BlockCopyData, BlockSvg> {
  * Exported for testing.
  *
  * @param block The block to move to an unambiguous location.
+ * @param originalPosition The initial coordinate to start searching from,
+ *    likely the position of the copied block.
  * @internal
  */
-export declare function moveBlockToNotConflict(block: BlockSvg): void;
+export declare function moveBlockToNotConflict(block: BlockSvg, originalPosition: Coordinate): void;
 export interface BlockCopyData extends ICopyData {
     blockState: State;
     typeCounts: {

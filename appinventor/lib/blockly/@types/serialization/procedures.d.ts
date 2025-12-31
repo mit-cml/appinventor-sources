@@ -7,63 +7,65 @@ import { IParameterModel } from '../interfaces/i_parameter_model.js';
 import { IProcedureModel } from '../interfaces/i_procedure_model.js';
 import type { ISerializer } from '../interfaces/i_serializer.js';
 import type { Workspace } from '../workspace.js';
-/**
- * Representation of a procedure data model.
- */
+/** Represents the state of a procedure model. */
 export interface State {
     id: string;
     name: string;
     returnTypes: string[] | null;
     parameters?: ParameterState[];
+    [key: string]: unknown;
 }
-/**
- * Representation of a parameter data model.
- */
+/** Represents the state of a parameter model. */
 export interface ParameterState {
     id: string;
     name: string;
     types?: string[];
+    [key: string]: unknown;
 }
 /**
  * A newable signature for an IProcedureModel.
  *
  * Refer to
- * https://www.typescriptlang.org/docs/handbook/2/generics.html#using-class-types-in-generics
+ * https://www.typescriptlang.org/docs/handbook/interfaces.html#difference-between-the-static-and-instance-sides-of-classes
  * for what is going on with this.
  */
-type ProcedureModelConstructor<ProcedureModel extends IProcedureModel> = new (workspace: Workspace, name: string, id: string) => ProcedureModel;
+interface ProcedureModelConstructor<ProcedureModel extends IProcedureModel> {
+    new (workspace: Workspace, name: string, id: string): ProcedureModel;
+    /**
+     * Deserializes the JSON state and returns a procedure model.
+     *
+     * @param state The state to deserialize.
+     * @param workspace The workspace to load the procedure model into.
+     * @returns The constructed procedure model.
+     */
+    loadState(state: object, workspace: Workspace): ProcedureModel;
+}
 /**
  * A newable signature for an IParameterModel.
  *
  * Refer to
- * https://www.typescriptlang.org/docs/handbook/2/generics.html#using-class-types-in-generics
+ * https://www.typescriptlang.org/docs/handbook/interfaces.html#difference-between-the-static-and-instance-sides-of-classes
  * for what is going on with this.
  */
-type ParameterModelConstructor<ParameterModel extends IParameterModel> = new (workspace: Workspace, name: string, id: string) => ParameterModel;
+interface ParameterModelConstructor<ParameterModel extends IParameterModel> {
+    new (workspace: Workspace, name: string, id: string): ParameterModel;
+    /**
+     * Deserializes the JSON state and returns a parameter model.
+     *
+     * @param state The state to deserialize.
+     * @param workspace The workspace to load the parameter model into.
+     * @returns The constructed parameter model.
+     */
+    loadState(state: object, workspace: Workspace): ParameterModel;
+}
 /**
  * Serializes the given IProcedureModel to JSON.
- *
- * @internal
  */
 export declare function saveProcedure(proc: IProcedureModel): State;
 /**
- * Serializes the given IParameterModel to JSON.
- *
- * @internal
- */
-export declare function saveParameter(param: IParameterModel): ParameterState;
-/**
  * Deserializes the given procedure model State from JSON.
- *
- * @internal
  */
 export declare function loadProcedure<ProcedureModel extends IProcedureModel, ParameterModel extends IParameterModel>(procedureModelClass: ProcedureModelConstructor<ProcedureModel>, parameterModelClass: ParameterModelConstructor<ParameterModel>, state: State, workspace: Workspace): ProcedureModel;
-/**
- * Deserializes the given ParameterState from JSON.
- *
- * @internal
- */
-export declare function loadParameter<ParameterModel extends IParameterModel>(parameterModelClass: ParameterModelConstructor<ParameterModel>, state: ParameterState, workspace: Workspace): ParameterModel;
 /** Serializer for saving and loading procedure state. */
 export declare class ProcedureSerializer<ProcedureModel extends IProcedureModel, ParameterModel extends IParameterModel> implements ISerializer {
     private readonly procedureModelClass;

@@ -12,13 +12,14 @@
 import type { Block } from '../block.js';
 import { Workspace } from '../workspace.js';
 import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when the value of a block's field has changed but the
  * change is not yet complete, and is expected to be followed by a block change
  * event.
  */
 export declare class BlockFieldIntermediateChange extends BlockBase {
-    type: string;
+    type: EventType;
     recordUndo: boolean;
     /** The name of the field that changed. */
     name?: string;
