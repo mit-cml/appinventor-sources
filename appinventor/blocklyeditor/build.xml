@@ -135,7 +135,8 @@
 			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
 			<arg value="--js='${blockly.src.dir}/blockly_compressed.js'"/>
-			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-3.0.2.min.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-62b3583.min.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/typeblocking-josmas-pr1-671c91f.min.js'"/>
 			<arg value="--js='blocklyeditor/src/**.js'"/>
 			<arg value="--js='${lib.dir}/closure-library/closure/goog/**.js'"/>
 			<arg value="--js='!${lib.dir}/closure-library/closure/goog/**_test.js'"/>
@@ -152,7 +153,7 @@
 
 	<target name="BlocklyTestbed"
 		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser"
-		      depends="components_AndroidRuntime, common_CommonTestUtils">
+		      depends="BlocklyTranslationGenerator, components_AndroidRuntime, common_CommonTestUtils">
 		<mkdir dir="${run.lib.dir}" />
 
 		<echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />

@@ -7,7 +7,6 @@ import type { Block } from './block.js';
 import type { BlockSvg } from './block_svg.js';
 import type { ContextMenuOption, LegacyContextMenuOption } from './contextmenu_registry.js';
 import * as serializationBlocks from './serialization/blocks.js';
-import { WorkspaceCommentSvg } from './workspace_comment_svg.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Gets the block the context menu is currently attached to.
@@ -27,8 +26,9 @@ export declare function setCurrentBlock(block: Block | null): void;
  * @param e Mouse event.
  * @param options Array of menu options.
  * @param rtl True if RTL, false if LTR.
+ * @param workspace The workspace associated with the context menu, if any.
  */
-export declare function show(e: Event, options: (ContextMenuOption | LegacyContextMenuOption)[], rtl: boolean): void;
+export declare function show(e: PointerEvent, options: (ContextMenuOption | LegacyContextMenuOption)[], rtl: boolean, workspace?: WorkspaceSvg): void;
 /**
  * Hide the context menu.
  */
@@ -46,35 +46,4 @@ export declare function dispose(): void;
  * @returns Function that creates a block.
  */
 export declare function callbackFactory(block: Block, state: Element | serializationBlocks.State): () => BlockSvg;
-/**
- * Make a context menu option for deleting the current workspace comment.
- *
- * @param comment The workspace comment where the
- *     right-click originated.
- * @returns A menu option,
- *     containing text, enabled, and a callback.
- * @internal
- */
-export declare function commentDeleteOption(comment: WorkspaceCommentSvg): LegacyContextMenuOption;
-/**
- * Make a context menu option for duplicating the current workspace comment.
- *
- * @param comment The workspace comment where the
- *     right-click originated.
- * @returns A menu option,
- *     containing text, enabled, and a callback.
- * @internal
- */
-export declare function commentDuplicateOption(comment: WorkspaceCommentSvg): LegacyContextMenuOption;
-/**
- * Make a context menu option for adding a comment on the workspace.
- *
- * @param ws The workspace where the right-click
- *     originated.
- * @param e The right-click mouse event.
- * @returns A menu option, containing text, enabled, and a callback.
- *     comments are not bundled in.
- * @internal
- */
-export declare function workspaceCommentOption(ws: WorkspaceSvg, e: Event): ContextMenuOption;
 //# sourceMappingURL=contextmenu.d.ts.map

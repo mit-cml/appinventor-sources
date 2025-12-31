@@ -12,8 +12,8 @@ import type { WorkspaceSvg } from './workspace_svg.js';
  */
 export declare class WorkspaceDragger {
     private workspace;
-    private readonly horizontalScrollEnabled_;
-    private readonly verticalScrollEnabled_;
+    private readonly horizontalScrollEnabled;
+    private readonly verticalScrollEnabled;
     protected startScrollXY_: Coordinate;
     /** @param workspace The workspace to drag. */
     constructor(workspace: WorkspaceSvg);

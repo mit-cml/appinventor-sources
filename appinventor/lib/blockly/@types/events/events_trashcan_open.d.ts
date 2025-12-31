@@ -3,9 +3,10 @@
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { Workspace } from '../workspace.js';
 import { AbstractEventJson } from './events_abstract.js';
 import { UiBase } from './events_ui_base.js';
-import type { Workspace } from '../workspace.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when the trashcan is opening or closing.
  */
@@ -15,7 +16,7 @@ export declare class TrashcanOpen extends UiBase {
      * False if it is currently closing (previously open).
      */
     isOpen?: boolean;
-    type: string;
+    type: EventType;
     /**
      * @param opt_isOpen Whether the trashcan flyout is opening (false if
      *     opening). Undefined for a blank event.

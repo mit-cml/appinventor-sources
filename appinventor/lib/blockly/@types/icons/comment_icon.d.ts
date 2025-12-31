@@ -4,28 +4,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Block } from '../block.js';
-import { IconType } from './icon_types.js';
-import { Coordinate } from '../utils.js';
-import { Icon } from './icon.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import type { ISerializable } from '../interfaces/i_serializable.js';
+import { Coordinate } from '../utils.js';
 import { Size } from '../utils/size.js';
+import { Icon } from './icon.js';
+import { IconType } from './icon_types.js';
 /**
  * An icon which allows the user to add comment text to a block.
  */
 export declare class CommentIcon extends Icon implements IHasBubble, ISerializable {
     protected readonly sourceBlock: Block;
     /** The type string used to identify this icon. */
-    static readonly TYPE: IconType<CommentIcon>;
+    static readonly TYPE: IconType<import("../interfaces/i_comment_icon.js").ICommentIcon>;
     /**
      * The weight this icon has relative to other icons. Icons with more positive
      * weight values are rendered farther toward the end of the block.
      */
     static readonly WEIGHT = 3;
-    /** The bubble used to show editable text to the user. */
+    /** The bubble used to show comment text to the user. */
     private textInputBubble;
-    /** The bubble used to show non-editable text to the user. */
-    private textBubble;
     /** The text of this comment. */
     private text;
     /** The size of this comment (which is applied to the editable bubble). */
@@ -49,7 +47,7 @@ export declare class CommentIcon extends Icon implements IHasBubble, ISerializab
      * Updates the state of the bubble (editable / noneditable) to reflect the
      * state of the bubble if the bubble is currently shown.
      */
-    updateEditable(): void;
+    updateEditable(): Promise<void>;
     onLocationChange(blockOrigin: Coordinate): void;
     /** Sets the text of this comment. Updates any bubbles if they are visible. */
     setText(text: string): void;
@@ -82,7 +80,7 @@ export declare class CommentIcon extends Icon implements IHasBubble, ISerializab
      */
     onSizeChange(): void;
     bubbleIsVisible(): boolean;
-    setBubbleVisible(visible: boolean): void;
+    setBubbleVisible(visible: boolean): Promise<void>;
     /**
      * Shows the editable text bubble for this comment, and adds change listeners
      * to update the state of this icon in response to changes in the bubble.
@@ -90,6 +88,7 @@ export declare class CommentIcon extends Icon implements IHasBubble, ISerializab
     private showEditableBubble;
     /** Shows the non editable text bubble for this comment. */
     private showNonEditableBubble;
+    protected createBubble(): void;
     /** Hides any open bubbles owned by this comment. */
     private hideBubble;
     /**
@@ -103,10 +102,15 @@ export declare class CommentIcon extends Icon implements IHasBubble, ISerializab
      */
     private getBubbleOwnerRect;
 }
+/** The save state format for a comment icon. */
 export interface CommentState {
+    /** The text of the comment. */
     text?: string;
+    /** True if the comment is open, false otherwise. */
     pinned?: boolean;
+    /** The height of the comment bubble. */
     height?: number;
+    /** The width of the comment bubble. */
     width?: number;
 }
 //# sourceMappingURL=comment_icon.d.ts.map

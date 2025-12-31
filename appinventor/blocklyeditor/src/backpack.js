@@ -384,8 +384,10 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
           if (contents === undefined || contents.length === 0) {
             return;
           }
+          let headlessWorkspace = null;
           let lastPastedBlock = null;
           try {
+            headlessWorkspace = new Blockly.Workspace();
             Blockly.Events.setGroup(true);
             for (let i = 0; i < contents.length; i++) {
               const xml = Blockly.utils.xml.textToDom(contents[i]);
@@ -401,7 +403,17 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
                 }
               }
               if (ok) {
-                const newBlock = this.workspace_.paste(blk);
+                const tempBlock = Blockly.Xml.domToBlock(blk, headlessWorkspace);
+                // Manually construct BlockCopyData since headless blocks don't have toCopyData()
+                // See: https://github.com/google/blockly/blob/blockly-v11.2.2/core/block_svg.ts#L851-L868
+                const copyData = {
+                  paster: Blockly.clipboard.BlockPaster.TYPE,
+                  blockState: Blockly.serialization.blocks.save(tempBlock, {
+                    addNextBlocks: false,
+                  }),
+                  typeCounts: Blockly.common.getBlockTypeCounts(tempBlock, true)
+                };
+                const newBlock = Blockly.clipboard.paste(copyData, this.workspace_);
                 if (newBlock) {
                   lastPastedBlock = newBlock;
                 }
@@ -412,9 +424,10 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
             }
           } finally {
             Blockly.Events.setGroup(false);
+            headlessWorkspace.dispose();
           }
           if (lastPastedBlock) {
-            lastPastedBlock.select();
+            Blockly.common.setSelected(lastPastedBlock);
           }
         });
   }
