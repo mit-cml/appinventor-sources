@@ -1280,8 +1280,9 @@ Top-level component containing all other components in the program.
 : When checked, there will be high contrast mode turned on.
 
 {:id="Screen.Icon" .text .wo .do} *Icon*
-: The image used for your App's display icon should be a square png or jpeg image with dimensions
- up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
+: 
+: The image used for your App's display icon should be a square PNG image with dimensions up to 1024x1024 pixels. JPEG images are not supported. Larger images may cause compiling or installing the app to fail.
+
  The build server will generate images of standard dimensions for Android devices.
 
 {:id="Screen.NSBluetoothAlwaysUsageDescription" .text .wo .do} *NSBluetoothAlwaysUsageDescription*
