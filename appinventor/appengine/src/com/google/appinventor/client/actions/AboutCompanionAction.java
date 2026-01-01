@@ -33,28 +33,80 @@ public class AboutCompanionAction implements Command {
     db.setAnimationEnabled(true);
     db.center();
 
-    String downloadinfo = "";
-    //noinspection ConstantValue
-    if (!YaVersion.COMPANION_UPDATE_URL1.isEmpty()) {
-      String baseUrl = GWT.getHostPageBaseURL();
-      baseUrl = baseUrl.substring(0, baseUrl.length() - 1);  // strip trailing slash
-      String url = baseUrl + YaVersion.COMPANION_UPDATE_URL1;
-      downloadinfo = "<br/>\n<a href=" + url + ">" + MESSAGES.companionDownloadUrl(url)
-          + "</a><br/>\n" + BlocklyPanel.getQRCode(url);
-    }
-
     VerticalPanel dialogBoxContents = new VerticalPanel();
-    HTML message = new HTML(
-        MESSAGES.companionVersion(BlocklyPanel.getCompVersion()) + downloadinfo
-    );
+
+    HTML message = new HTML("<b>Select your Companion App:</b><br/><br/>");
+
+    Button androidBtn = new Button("Android Companion");
+    Button iosBtn = new Button("iOS Companion");
+
+    androidBtn.addClickHandler((e) -> showAndroidPopup());
+    iosBtn.addClickHandler((e) -> showIosPopup());
+
+    dialogBoxContents.add(message);
+    dialogBoxContents.add(androidBtn);
+    dialogBoxContents.add(iosBtn);
 
     SimplePanel holder = new SimplePanel();
     Button ok = new Button(MESSAGES.hdrClose());
     ok.addClickHandler((e) -> db.hide());
     holder.add(ok);
-    dialogBoxContents.add(message);
+
     dialogBoxContents.add(holder);
+
     db.setWidget(dialogBoxContents);
     db.show();
+  }
+
+  private void showAndroidPopup() {
+    DialogBox adb = new DialogBox(false, true);
+    adb.setText("Android Companion");
+    adb.setStyleName("ode-DialogBox");
+    adb.setGlassEnabled(true);
+    adb.setAnimationEnabled(true);
+
+    String baseUrl = GWT.getHostPageBaseURL();
+    baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+    String url = baseUrl + YaVersion.COMPANION_UPDATE_URL1;
+
+    HTML content = new HTML(
+        "Download Android Companion:<br/><a href='" + url + "'>" + url + "</a><br/><br/>"
+            + BlocklyPanel.getQRCode(url));
+
+    VerticalPanel vp = new VerticalPanel();
+    vp.add(content);
+
+    Button close = new Button(MESSAGES.hdrClose());
+    close.addClickHandler((e) -> adb.hide());
+    vp.add(close);
+
+    adb.setWidget(vp);
+    adb.center();
+    adb.show();
+  }
+
+  private void showIosPopup() {
+    DialogBox idb = new DialogBox(false, true);
+    idb.setText("iOS Companion");
+    idb.setStyleName("ode-DialogBox");
+    idb.setGlassEnabled(true);
+    idb.setAnimationEnabled(true);
+
+    String iosUrl = "https://appinventor.mit.edu/ios";
+
+    HTML content = new HTML(
+        "Download iOS Companion:<br/><a href='" + iosUrl + "'>" + iosUrl + "</a><br/><br/>"
+            + BlocklyPanel.getQRCode(iosUrl));
+
+    VerticalPanel vp = new VerticalPanel();
+    vp.add(content);
+
+    Button close = new Button(MESSAGES.hdrClose());
+    close.addClickHandler((e) -> idb.hide());
+    vp.add(close);
+
+    idb.setWidget(vp);
+    idb.center();
+    idb.show();
   }
 }
