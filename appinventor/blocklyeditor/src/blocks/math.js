@@ -729,6 +729,12 @@ Blockly.Blocks['math_on_list2'] = {
     dropDown: {
       titleName: 'OP',
       value: 'SE'
+    },
+  }, {
+    translatedName: Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN,
+    dropDown: {
+      titleName: 'OP',
+      value: 'MED'
     }
   }]
 };
@@ -741,7 +747,8 @@ Blockly.Blocks.math_on_list2.OPERATORS = function () {
       //[Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE,'MODE'],
       [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_GM,'GM'],
       [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SD,'SD'],
-      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SE,'SE']
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_SE,'SE'],
+      [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN, 'MED']
   ]
 };
 
@@ -753,7 +760,8 @@ Blockly.Blocks.math_on_list2.TOOLTIPS = function () {
     //MODE: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE,
     GM: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_GM,
     SD: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SD,
-    SE: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SE
+    SE: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SE,
+    MED: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN
   }
 };
 
@@ -765,7 +773,8 @@ Blockly.Blocks.math_on_list2.HELPURLS = function () {
     //MODE: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MODE,
     GM: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_GM,
     SD: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_SD,
-    SE: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_SE
+    SE: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_SE,
+    MED: Blockly.Msg.LANG_MATH_ONLIST_HELPURL_MEDIAN
   }
 };
 
