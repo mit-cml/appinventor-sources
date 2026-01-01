@@ -479,7 +479,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Name of Projects tab")
   String projectsTabName();
 
-  @DefaultMessage("My projects")
+  @DefaultMessage("My Projects")
   @Description("Name of My projects menuitem")
   String projectMenuItem();
 
@@ -519,7 +519,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of folder selector for move project wizard.")
   String moveProjectWizard();
 
-  @DefaultMessage("Move To Trash")
+  @DefaultMessage("Move to Trash")
   @Description("Name of Move To Trash menuitem")
   String trashProjectMenuItem();
 
