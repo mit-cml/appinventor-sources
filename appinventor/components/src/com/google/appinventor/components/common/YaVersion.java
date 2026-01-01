@@ -610,7 +610,7 @@ public class YaVersion {
   // - CHART_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 233:
   // - CHATBOT_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 233;
+  public static final int YOUNG_ANDROID_VERSION = 234;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1068,7 +1068,7 @@ public class YaVersion {
   // - Add DefaultFileScope designer property.
   // For FORM_COMPONENT_VERSION 31:
   // - The default theme was changed to Device Default.
-  public static final int FORM_COMPONENT_VERSION = 31;
+  public static final int FORM_COMPONENT_VERSION = 32;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

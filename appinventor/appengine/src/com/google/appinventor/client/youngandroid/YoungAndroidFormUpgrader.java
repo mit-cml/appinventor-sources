@@ -1251,7 +1251,10 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 31;
     }
-
+    // Upgrade: Add DisplayMode property (Issue #3596)
+    if (srcCompVersion < 32) {
+      componentProperties.put("DisplayMode", new ClientJsonString("safe"));
+    }
     return srcCompVersion;
   }
 
