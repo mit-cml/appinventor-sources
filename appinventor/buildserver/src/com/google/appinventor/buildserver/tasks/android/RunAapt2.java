@@ -60,6 +60,13 @@ public class RunAapt2 implements AndroidTask {
     aapt2CommandLine.add("-o");
     aapt2CommandLine.add(resourcesZip.getAbsolutePath());
     aapt2CommandLine.add("--no-crunch");
+    context.getReporter().log(
+    "AAPT2 COMPILE CMD: " +
+    aapt2Tool + " compile --dir " +
+    context.getPaths().getMergedResDir().getAbsolutePath() +
+    " -o " + resourcesZip.getAbsolutePath() +
+    " --no-crunch"
+);
     String[] aapt2CompileCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2CompileCommandLine,
@@ -95,6 +102,12 @@ public class RunAapt2 implements AndroidTask {
     aapt2CommandLine.add("--no-auto-version");
     aapt2CommandLine.add("--no-version-transitions");
     aapt2CommandLine.add("--no-resource-deduping");
+    context.getReporter().log("resources.zip exists: " + resourcesZip.exists());
+context.getReporter().log("assetsDir: " + context.getPaths().getAssetsDir().getAbsolutePath());
+context.getReporter().log("manifest: " + context.getPaths().getManifest().getAbsolutePath());
+context.getReporter().log("android.jar: " + context.getResources().getAndroidRuntime());
+context.getReporter().log("AAPT2 CMD: " + String.join(" ", aapt2CommandLine));
+
     String[] aapt2LinkCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2LinkCommandLine,
