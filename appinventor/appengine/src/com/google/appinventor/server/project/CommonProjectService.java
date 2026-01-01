@@ -155,6 +155,22 @@ public abstract class CommonProjectService {
    * @return modification date for project
    */
   public long deleteFile(String userId, long projectId, String fileId) {
+    // Check if this is a global asset and clean up the relationship
+    if (fileId.startsWith("assets/_global_/")) {
+      // Extract the asset filename from the path (e.g., "assets/_global_/folder/file.png" -> "file.png")
+      String assetFileName = fileId.substring(fileId.lastIndexOf('/') + 1);
+      
+      // Remove the ProjectGlobalAssetData relationship if it exists
+      try {
+        storageIo.removeProjectGlobalAssetRelation(projectId, assetFileName, userId);
+      } catch (Exception e) {
+        // Log warning but don't fail the deletion if cleanup fails
+        java.util.logging.Logger.getLogger(CommonProjectService.class.getName())
+            .warning("Failed to clean up global asset relationship for " + assetFileName + 
+                    " in project " + projectId + ": " + e.getMessage());
+      }
+    }
+    
     final long date = storageIo.deleteFile(userId, projectId, fileId);
     storageIo.removeSourceFilesFromProject(userId, projectId, false, fileId);
     return date;
@@ -172,8 +188,8 @@ public abstract class CommonProjectService {
     // TODO(user): This is not efficient.
     for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
       if (fileId.startsWith(directory + '/') && fileId.indexOf('/', directory.length() + 1) == -1) {
-        storageIo.deleteFile(userId, projectId, fileId);
-        storageIo.removeSourceFilesFromProject(userId, projectId, false, fileId);
+        // Use the deleteFile method to ensure proper cleanup for global assets
+        deleteFile(userId, projectId, fileId);
       }
     }
     return storageIo.getProjectDateModified(userId, projectId);
@@ -189,8 +205,8 @@ public abstract class CommonProjectService {
     // TODO(user) : This is also not efficient
     for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
       if (fileId.startsWith(directory)) {
-        storageIo.deleteFile(userId, projectId, fileId);
-        storageIo.removeSourceFilesFromProject(userId, projectId, false, fileId);
+        // Use the deleteFile method to ensure proper cleanup for global assets
+        deleteFile(userId, projectId, fileId);
       }
     }
     return storageIo.getProjectDateCreated(userId, projectId);

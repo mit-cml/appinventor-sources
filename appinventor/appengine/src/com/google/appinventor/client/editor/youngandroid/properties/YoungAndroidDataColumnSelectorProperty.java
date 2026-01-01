@@ -143,6 +143,11 @@ public class YoungAndroidDataColumnSelectorProperty
       public void setSelectedIndex(int index) {
         columnsList.setSelectedIndex(index);
       }
+
+      @Override
+      public int getItemCount() {
+        return columnsList.getItemCount();
+      }
     });
   }
 

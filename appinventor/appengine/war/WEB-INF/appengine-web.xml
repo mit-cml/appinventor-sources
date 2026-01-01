@@ -6,6 +6,7 @@
   <!-- Configure serving/caching of GWT files -->
   <static-files>
     <include path="/companions/*" />
+     <include path="/test.html" />
     <include path="/about/*" expiration="1d" />
     <include path="/static/**" />
     <include path="/static/fonts/*" expiration="365d">

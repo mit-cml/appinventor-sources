@@ -21,6 +21,7 @@ final class ListWithNone {
     String getItem(int index);
     void removeItem(int index);
     void setSelectedIndex(int index);
+    int getItemCount();
   }
 
   private final ListBoxWrapper listBoxWrapper;
@@ -135,5 +136,27 @@ final class ListWithNone {
       return listBoxWrapper.getItem(index);
     }
     throw new IllegalArgumentException("Illegal value: " + value);
+  }
+
+  /**
+   * Removes the 'None' entry if present as the first item.
+   */
+  void clearNoneItem() {
+    if (!values.isEmpty() && values.get(0).equals("")) {
+      values.remove(0);
+      if (listBoxWrapper.getItemCount() > 0) {
+        listBoxWrapper.removeItem(0);
+      }
+    }
+  }
+
+  /**
+   * Ensures the 'None' entry is present as the first item.
+   */
+  void updateNoneItem() {
+    if (values.isEmpty() || !values.get(0).equals("")) {
+      values.add(0, "");
+      listBoxWrapper.addItem(noneDisplayItem);
+    }
   }
 }
