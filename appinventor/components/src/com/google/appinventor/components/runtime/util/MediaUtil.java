@@ -15,9 +15,11 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -552,8 +554,32 @@ public class MediaUtil {
           bis.mark(read);
           BitmapFactory.Options options = getBitmapOptions(form, bis, mediaPath);
           bis.reset();
+          Bitmap bitmap = decodeStream(bis, null, options);
+          try{
+            if(mediaSource == MediaSource.SDCARD || mediaSource == MediaSource.FILE_URL){
+              ExifInterface exif = null;
+              String filePath = null;
+              if(mediaSource == MediaSource.FILE_URL && mediaPath != null){
+                filePath = fileUrlToFilePath(mediaPath);
+              }
+              else if(mediaPath!= null){
+                filePath = mediaPath;
+              }
+                try {
+                  exif = new ExifInterface(filePath);
+                  int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                          ExifInterface.ORIENTATION_UNDEFINED);
+                  bitmap = rotateBitmap(bitmap,orientation);
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+            }
+          }
+          catch (Exception e) {
+            Log.w(LOG_TAG, "Failed to read EXIF or rotate: " + e.getMessage());
+          }
           BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(),
-              decodeStream(bis, null, options));
+              bitmap);
           // If options.inSampleSize == 1, then the image was not unreasonably large and may represent
           // the actual size the user intended for the image. However we still have to scale it by
           // the device density.
@@ -607,6 +633,55 @@ public class MediaUtil {
     };
     AsynchUtil.runAsynchronously(loadImage);
   }
+
+  // Source - https://stackoverflow.com/a/20480741
+// Posted by ramaral, modified by community. See post 'Timeline' for change history
+// Retrieved 2025-12-23, License - CC BY-SA 3.0
+
+  public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+
+    Matrix matrix = new Matrix();
+    switch (orientation) {
+      case ExifInterface.ORIENTATION_NORMAL:
+        return bitmap;
+      case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+        matrix.setScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_180:
+        matrix.setRotate(180);
+        break;
+      case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+        matrix.setRotate(180);
+        matrix.postScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_TRANSPOSE:
+        matrix.setRotate(90);
+        matrix.postScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_90:
+        matrix.setRotate(90);
+        break;
+      case ExifInterface.ORIENTATION_TRANSVERSE:
+        matrix.setRotate(-90);
+        matrix.postScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_270:
+        matrix.setRotate(-90);
+        break;
+      default:
+        return bitmap;
+    }
+    try {
+      Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+      bitmap.recycle();
+      return bmRotated;
+    }
+    catch (OutOfMemoryError e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
 
   private static Bitmap decodeStream(InputStream is, Rect outPadding, BitmapFactory.Options opts) {
     // We wrap a FlushedInputStream around the given InputStream. This works around a problem in
