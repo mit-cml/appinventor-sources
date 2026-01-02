@@ -10,6 +10,8 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectSelectionChangeHandler;
+import com.google.appinventor.client.wizards.ShareProjectsWizard;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -26,6 +28,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.appinventor.client.components.Icon;
 
 import java.util.Date;
 
@@ -37,6 +40,7 @@ public class ProjectListItem extends Composite {
 
   @UiField protected FlowPanel container;
   @UiField protected Label nameLabel;
+  @UiField protected Icon sharedIcon;
   @UiField protected Label dateModifiedLabel;
   @UiField protected Label dateCreatedLabel;
   @UiField protected CheckBox checkBox;
@@ -57,6 +61,9 @@ public class ProjectListItem extends Composite {
     Date dateModified = new Date(project.getDateModified());
 
     nameLabel.setText(project.getProjectName());
+    if (AppInventorFeatures.enableGroupProject()) {
+      sharedIcon.addStyleName(project.isShared() ? "myInlineImage" : "myHiddenImage");
+    }
     dateModifiedLabel.setText(dateTimeFormat.format(dateModified));
     dateCreatedLabel.setText(dateTimeFormat.format(dateCreated));
     this.project = project;

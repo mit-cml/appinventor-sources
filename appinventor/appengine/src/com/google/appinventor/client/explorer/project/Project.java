@@ -18,6 +18,7 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * This class represents a project.
@@ -186,6 +187,24 @@ public final class Project {
    */
   public ProjectRootNode getRootNode() {
     return projectRoot;
+  }
+
+  /**
+   * Returns if the project is shared with others
+   *
+   * @return shared
+   */
+  public boolean isShared() {
+    return projectInfo.isShared();
+  }
+
+  /**
+   * Set if the project is shared.
+   *
+   * @param shared
+   */
+  public void setShared(boolean shared) {
+    projectInfo.setShared(shared);
   }
 
   /**

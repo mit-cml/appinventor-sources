@@ -1,0 +1,72 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<!--NewYoungAndroidProjectWizard.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             xmlns:e="urn:import:com.google.appinventor.client.editor.youngandroid.properties"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:w="urn:import:com.google.appinventor.client.widgets"
+             xmlns:s="urn:import:com.google.appinventor.client.widgets.properties"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <wiz:Dialog ui:field="shareDialog" caption="{messages.shareProjectsWizardCaption}"
+              styleName="ode-DialogBox" width="340px" height="40px">
+    <g:FlowPanel>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
+      <g:FlowPanel styleName="ode-ProjectRow" ui:field='newUserContainer'>
+        <w:LabeledTextBox ui:field="userNameTextBox" caption="{messages.userEmailsLabel}"
+                          stylePrimaryName="ode-LabeledTextBox"/>
+        <g:ListBox ui:field="permissionDropdown">
+            <g:item value="1"> Edit </g:item>
+            <g:item value="3"> View </g:item>
+          </g:ListBox>
+        <g:Button ui:field='okButton' text='Ok'/>
+      </g:FlowPanel>
+      <!--People with Access-->
+      <g:FlowPanel styleName="ode-ProjectRowList ode-Project-FlexColumn" ui:field='usersContainer'>
+        </g:FlowPanel>
+      <!-- checkbox to share with everyone -->
+      <g:FlowPanel styleName="ode-ProjectRow">
+        <g:FocusPanel styleName='ode-ProjectNameFocusPanel'>
+          <g:CheckBox ui:field='checkBoxShareAll' styleName='gwt-CheckBox' text='{messages.shareAll}'/>
+        </g:FocusPanel>
+        <g:ListBox ui:field="permissionDropdownForAll">
+            <g:item value="1"> Edit </g:item>
+            <g:item value="3"> View </g:item>
+            <g:item value="5"> None </g:item>
+          </g:ListBox>
+      </g:FlowPanel>
+      
+      <!-- checkbox to send email with link -->
+      <g:FlowPanel visible="true" styleName="ode-ProjectRow">
+        <g:FocusPanel styleName='ode-ProjectNameFocusPanel'>
+            <g:Label styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' text="Send Email to Updated Users"/>
+        </g:FocusPanel>
+        <g:CheckBox ui:field='checkBoxSendEmail' styleName='gwt-CheckBox ode-ProjectCheckBox' text='{messages.sendEmail}'/>
+      </g:FlowPanel>
+      <!-- copy link -->
+      <g:FlowPanel>
+        <g:FlowPanel styleName="ode-ProjectRow">
+          <g:FocusPanel styleName='ode-ProjectNameFocusPanel'>
+            <g:Button ui:field='copyButton' text='{messages.copyButton}'/>
+          </g:FocusPanel>
+          <g:Label ui:field='updatedUsersLabel' styleName='gwt-Label' visible="false" text='Pending Changes'/>
+        </g:FlowPanel>
+        <g:Label ui:field='linkForProject' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel' visible="false" text='Copied URL!'/>
+      </g:FlowPanel>
+      
+      <!-- cancel/done -->
+      <g:FlowPanel styleName="buttonRow">
+        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'/>
+        <g:Button ui:field='shareButton' text='{messages.okButton}'/>
+      </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

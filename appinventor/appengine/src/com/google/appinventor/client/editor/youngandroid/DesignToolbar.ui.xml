@@ -42,6 +42,10 @@
     <ai:ToolbarItem name ="Console Toggle" caption="{messages.toggleConsoleButton}" ui:field="toggleConsoleItem" align="right">
       <ya:ToggleConsoleAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name ="Share Project" caption="{messages.shareProjectButton}" ui:field="shareProjectButton" align="right">
+      <actions:ShareProjectsAction />
+    </ai:ToolbarItem>
+    <g:Label ui:field="permissionLabel" styleName="ya-ProjectName" />
     <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
                     ui:field="switchToDesign" align="right">
       <ya:SwitchToFormEditorAction />

@@ -7,6 +7,8 @@
 package com.google.appinventor.shared.rpc.project;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Bundles user specific information about a project to send it over an RPC.
@@ -14,6 +16,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author lizlooney@google.com (Liz Looney)
  */
 public class UserProject implements IsSerializable {
+  public enum Permission{
+    OWNER,
+    WRITE,
+    COMMENT,
+    READ,
+    SHARE_ALL,
+    NONE
+  };
   /**
    * The project's ID.
    */
@@ -53,6 +63,16 @@ public class UserProject implements IsSerializable {
   private long buildDate;
 
   private static final String DELIM = "#DELIM#";
+
+  /**
+   * Whether project is shared
+   */
+  private boolean shared;
+
+  /**
+   * Who has access to the project
+   */
+  private Map<String, Permission> userPermissions = new HashMap<>();
 
   /**
    * Default constructor. This constructor is required by GWT.
@@ -102,6 +122,26 @@ public class UserProject implements IsSerializable {
     this.modificationDate = modificationDate;
     this.projectMovedToTrashFlag = projectMovedToTrashFlag;
     this.buildDate = buildDate;
+  }
+
+  /**
+   * Creates a new project info object.
+   *
+   * @param projectId the project id
+   * @param projectName the project name
+   * @param projectType the project type
+   * @param shared whether project is shared
+   */
+  public UserProject(long projectId, String projectName, String projectType, long creationDate,
+      long modificationDate, long buildDate, boolean projectMovedToTrashFlag, boolean shared) {
+    this.projectId = projectId;
+    this.projectName = projectName;
+    this.projectType = projectType;
+    this.creationDate = creationDate;
+    this.modificationDate = modificationDate;
+    this.projectMovedToTrashFlag = projectMovedToTrashFlag;
+    this.buildDate = buildDate;
+    this.shared = shared;
   }
 
   /**
@@ -208,5 +248,17 @@ public class UserProject implements IsSerializable {
     userProject.modificationDate = Long.parseLong(parts[4]);
     userProject.buildDate = Long.parseLong(parts[5]);
     return userProject;
+  }
+
+  public void setShared(boolean shared) {
+    this.shared = shared;
+  }
+
+  public boolean isShared() {
+    return shared;
+  }
+
+  public Map<String, Permission> getUserPermissions() {
+    return userPermissions;
   }
 }

@@ -3540,3 +3540,11 @@ div.dropdiv p {
   color: red;
   font-weight: bolder;
 }
+
+.myHiddenImage {
+  visibility: hidden;
+}
+.myInlineImage {
+  display: inline;
+}
+

@@ -6,8 +6,11 @@
 
 package com.google.appinventor.server.project;
 
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
+import com.google.appinventor.server.storage.ObjectifyStorageIo;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.server.util.CsvParser;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -18,6 +21,8 @@ import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.ShareResponse;
+import com.google.appinventor.shared.rpc.project.ShareResponse.Status;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
@@ -31,8 +36,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.logging.Logger;
+
 import org.json.JSONException;
 
 /**
@@ -44,6 +53,8 @@ import org.json.JSONException;
 public abstract class CommonProjectService {
   protected final String projectType;
   protected final StorageIo storageIo;
+
+  private static final Logger LOG = Logger.getLogger(CommonProjectService.class.getName());
 
   protected CommonProjectService(String projectType, StorageIo storageIo) {
     this.projectType = projectType;
@@ -342,6 +353,145 @@ public abstract class CommonProjectService {
     }
     return RpcResult.createSuccessfulRpcResult("", "");
   }
+
+  /**
+   * Get permissions available to the project by other users
+   * @param projectId the project id
+   * @return permission type to email list mapping
+   */
+  public HashMap<StoredData.Permission, List<String>> getPermissionsInfo(long projectId) {
+    return storageIo.getPermissionsInfo(projectId);
+  }
+
+  /**
+   * Get the permission level for a user on a project
+   * @param userEmail 
+   * @param projectId
+   * @return
+   */
+  public String getPermissionType(String userEmail, long projectId) {
+    if (projectId == 0) {
+      return "No Access";
+    }
+    StoredData.Permission perm = storageIo.getPermission(userEmail, projectId);
+    if (perm == StoredData.Permission.OWNER) {
+      return "Full";
+    } else if (perm == StoredData.Permission.WRITE) {
+      return "Edit";
+    } else if (perm == StoredData.Permission.READ) {
+      return "Read";
+    } else {
+      return "No Access";
+    }
+  }
+
+  /**
+   * get the share link for the project
+   * @param userEmail the user email
+   * @param projectId the project id
+   * @return latest available share id
+   */
+  public Long getShareLink(String userEmail, long projectId){
+    return storageIo.getShareLink(userEmail, projectId);
+  }
+
+  /**
+   * gets project shared with the user
+   * @param userId user id
+   * @param shareId id shared with the user
+   * @param userEmail user email
+   * @return project under the shared id if user has access to it
+   * raises an error if user does not have access to it
+   */
+  public UserProject getSharedProject(String userId, String userEmail, long shareId){
+    // add to the user projects if not there already
+    Long projectId = storageIo.getProjectIdFromShareId(shareId);
+    if (projectId == null) {
+      throw new IllegalArgumentException("Invalid share link: " + shareId);
+    }
+    StoredData.Permission perm = storageIo.getPermission(userEmail, projectId);
+    if (perm != StoredData.Permission.NONE) {
+      if (storageIo.getSharedProject(userEmail, userId, projectId, perm) == null) {
+        LOG.warning("returned no shared project!!");
+      }
+      return storageIo.getSharedProject(userEmail, userId, projectId, perm);
+    } else {
+      throw new IllegalArgumentException("Need valid share link");
+    }
+  }
+
+  /**
+   * Share project with others by email.
+   * @param userId the userId of the owner of the project
+   * @param userEmail the owner email
+   * @param projectId the project id
+   * @param otherEmail the email address of other user
+   * @param sendEmail whether to send email to new users
+   */
+  public ShareResponse shareProject(String userId, String userEmail, long projectId, String otherEmail,
+                                    StoredData.Permission perm, boolean sendEmail) {
+    Status status = Status.UNAUTHORIZED;
+    // Only the project owner can share.
+    if (userId.equals(storageIo.getProjectOwner(projectId))) {
+      StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
+      // add owner permission first
+      if (owner != StoredData.Permission.OWNER) {
+        storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
+      }
+      if (storageIo.getPermission(otherEmail, projectId) != StoredData.Permission.NONE) {
+        status = Status.ALREADY_SHARED;
+      } else {
+        storageIo.addPermission(otherEmail, projectId, perm);
+        // jz todo
+        if (sendEmail) {
+          Long shareLink = getShareLink(otherEmail, projectId);
+          sendShareEmailNew(userId, shareLink, otherEmail);
+        }
+        return new ShareResponse(Status.SHARED, projectId, otherEmail);
+      }
+    }
+    return new ShareResponse(status);
+  }
+
+    /**
+   * Share project with others by email.
+   * @param userId the userId of the owner of the project
+   * @param userEmail the owner email
+   * @param projectId the project id
+   * @param otherEmails the email addresses of other users
+   * @param sendEmail whether to send email to new users
+   */
+  public List<ShareResponse> shareProject(String userId, String userEmail, long projectId, List<String> otherEmails,
+                                    StoredData.Permission perm, boolean sendEmail) {
+    List<ShareResponse> result = new ArrayList<>();
+    Status status = Status.UNAUTHORIZED;
+    // Only the project owner can share.
+    if (userId.equals(storageIo.getProjectOwner(projectId))) {
+      StoredData.Permission owner = storageIo.getPermission(userEmail, projectId);
+      // add owner permission first
+      if (owner != StoredData.Permission.OWNER) {
+        storageIo.addPermission(userEmail, projectId, StoredData.Permission.OWNER);
+      }
+      for (String otherEmail : otherEmails){
+        if (storageIo.getPermission(otherEmail, projectId) == perm) {
+          result.add(new ShareResponse(Status.ALREADY_SHARED));
+        } else {
+          storageIo.addPermission(otherEmail, projectId, perm);
+          if (sendEmail) {
+            Long shareLink = getShareLink(otherEmail, projectId);
+            sendShareEmailNew(userId, shareLink, otherEmail);
+          }
+          result.add(new ShareResponse(Status.SHARED, projectId, otherEmail));
+        }
+      }
+    }
+    if (result.isEmpty() && otherEmails.size() > 0) {
+      result.add(new ShareResponse(status));
+    }
+    return result;
+  }
+
+  public abstract void sendShareEmailNew(String userId, long shareId, String otherEmail);
 
   /**
    * Sets the moved to trash flag for a project.

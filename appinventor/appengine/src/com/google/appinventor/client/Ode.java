@@ -6,8 +6,6 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.utils.Promise.RejectCallback;
-import static com.google.appinventor.client.utils.Promise.ResolveCallback;
 import static com.google.appinventor.client.utils.Promise.reject;
 import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
@@ -51,6 +49,8 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.Promise.RejectCallback;
+import com.google.appinventor.client.utils.Promise.ResolveCallback;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.TutorialPopup;
@@ -69,6 +69,7 @@ import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
@@ -92,6 +93,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -123,6 +125,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -170,6 +174,12 @@ public class Ode implements EntryPoint {
   private boolean newGalleryLoadingFlag = false;
   private String newGalleryId;
 
+  // collaboration path if set by /?shared=
+  // Set to true if we are loading shared project
+  private boolean sharedProjectLoadingFlag = false;
+  private String sharedProjectId;
+  private boolean openingProjectFromURLFlag = false;
+
   // Nonce Information
   private String nonce;
 
@@ -177,6 +187,8 @@ public class Ode implements EntryPoint {
   // write requests
 
   private boolean isReadOnly;
+
+  private String permission = "Full"; // Default to full access
 
   private String sessionId = generateUuid(); // Create new session id
 
@@ -571,6 +583,9 @@ public class Ode implements EntryPoint {
         };
       LoadGalleryProject.openProjectFromGallery(newGalleryId, callback);
       return true;
+    } else if (sharedProjectLoadingFlag) {
+      openSharedProject(projectService, user.getUserId(), Long.parseLong(sharedProjectId), true);
+      return true;
     }
     return false;
   }
@@ -597,6 +612,83 @@ public class Ode implements EntryPoint {
     }
   }
 
+  public void getAccessInfo(long projectId, OdeAsyncCallback<HashMap<Integer, List<String>>> callback) {
+    projectService.getPermissionsInfo(projectId, callback);
+  }
+
+  public void getPermissionType(long projectId, OdeAsyncCallback<String> callback) {
+    projectService.getPermissionType(user.getUserEmail(), projectId, callback);
+  }
+
+  public void getShareLink(String userEmail, long projectId, OdeAsyncCallback<Long> callback) {
+    projectService.getShareLink(userEmail, projectId, callback);
+  }
+
+  public void getLatestPermissionForProject(long projectId, OdeAsyncCallback<String> callback) {
+    getPermissionType(projectId, callback);
+  }
+
+  /**
+   * Load the user's relation to the project
+   *
+   * @return a Promise to load the user's access type to project
+   */
+  // userId here is email
+  private void openSharedProject(ProjectServiceAsync projectService, String userId, long shareId, boolean openInReadOnlyMode) {
+    projectService.getSharedProject(userId, getUser().getUserEmail(), shareId, new AsyncCallback<UserProject>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          // Handle error here (e.g., show a message to the user)
+          LOG.warning("Failed to load project: " + caught.getMessage());
+          switchToProjectsView();  // the user will need to select a project...
+          ErrorReporter.reportInfo(MESSAGES.chooseProject());
+        }
+    
+        @Override
+        public void onSuccess(UserProject sharedProject) {
+          if (sharedProject != null) {
+            final long sharedProjectId = sharedProject.getProjectId();
+            getPermissionType(sharedProjectId, new OdeAsyncCallback<String>() {
+              @Override
+              public void onSuccess(String result) {
+                Ode.getInstance().setPermission(result);
+                if (result == "Full") {
+                  Project loadedProject = projectManager.getProject(sharedProjectId);
+                  loadedProject.setShared(true);
+                  UrlBuilder builder = Window.Location.createUrlBuilder();
+                  builder.setPath(Window.Location.getPath());  // Ensures "/" is preserved
+                  builder.removeParameter("shared");
+                  builder.setHash(String.valueOf(sharedProjectId));
+                  String finalUrl = builder.buildString();
+                  if (!finalUrl.contains("/?")) {
+                    // Inject the slash if it's missing (quick patch)
+                    finalUrl = finalUrl.replace("?", "/?");
+                  }
+                  Window.Location.assign(finalUrl);
+                  openYoungAndroidProjectInDesigner(loadedProject);
+                } else {
+                  projectManager.addProject(sharedProject);
+                  projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+                    Project loadedProject = projectManager.getProject(sharedProjectId);
+                    if (loadedProject != null) {
+                      LOG.info("try to open shared project");
+                      loadedProject.setShared(true);
+                      openYoungAndroidProjectInDesigner(loadedProject);
+                    } else {
+                      switchToProjectsView();  // the user will need to select a project...
+                      ErrorReporter.reportInfo(MESSAGES.chooseProject());
+                    }
+                    return null;
+                  });
+                }
+              }
+            });
+          }
+        }
+      });
+  }
+
+
   private void openProject(String projectIdString) {
     if (projectIdString.equals("")) {
       openPreviousProject();
@@ -612,12 +704,15 @@ public class Ode implements EntryPoint {
         // nothing happens since if the listener eventually fires
         // it will not match the projectId.
         projectManager.ensureProjectsLoadedFromServer(projectService).then(projects -> {
+          LOG.info("ODE Loaded projects from server: " + projects.size());
           Project loadedProject = projectManager.getProject(projectId);
           if (loadedProject != null) {
             openYoungAndroidProjectInDesigner(loadedProject);
           } else {
-            switchToProjectsView();  // the user will need to select a project...
-            ErrorReporter.reportInfo(MESSAGES.chooseProject());
+            // switchToProjectsView();  // the user will need to select a project...
+            // ErrorReporter.reportInfo(MESSAGES.chooseProject());
+            // TODO: FIRST check whether its owned by someone else?
+            openSharedProject(projectService, user.getUserId(), projectId, true);
           }
           return null;
         });
@@ -643,7 +738,6 @@ public class Ode implements EntryPoint {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
-
       viewerBox.show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
@@ -718,6 +812,12 @@ public class Ode implements EntryPoint {
       if (newGalleryId != null) {
         LOG.warning("Got a new Gallery ID of " + newGalleryId);
         newGalleryLoadingFlag = true;
+        } else {
+        sharedProjectId = Window.Location.getParameter("shared");
+        if (sharedProjectId != null) {
+          LOG.warning("Got a new shared project ID of " + sharedProjectId);
+          sharedProjectLoadingFlag = true;
+        }
       }
     }
 
@@ -776,6 +876,7 @@ public class Ode implements EntryPoint {
           return resolve(projects);
         })
         .then0(this::retrieveTemplateData)
+        .then0(this::maybeOpenProject)
         .then0(this::maybeOpenLastProject)
         .error(caught -> {
           if (caught == null) {
@@ -864,10 +965,21 @@ public class Ode implements EntryPoint {
   }
 
   private Promise<Object> maybeOpenLastProject() {
-    if (!handleQueryString() && shouldAutoloadLastProject()) {
+    if (!handleQueryString() && shouldAutoloadLastProject() && !openingProjectFromURLFlag) {
       openPreviousProject();
     }
+    openingProjectFromURLFlag = false;
+    return null;
+  }
 
+  private Promise<Object> maybeOpenProject() {
+    String projectId = Window.Location.getHash();
+    if (projectId != "") {
+      openingProjectFromURLFlag = true;
+      openProject(projectId.substring(1));
+    } else {
+      openingProjectFromURLFlag = false;
+    }
     return null;
   }
 
@@ -1731,7 +1843,7 @@ public class Ode implements EntryPoint {
           return null;  // We have at least one valid project so exit early
         }
       }
-      if (!templateLoadingFlag && !newGalleryLoadingFlag) {
+      if (!templateLoadingFlag && !newGalleryLoadingFlag && !sharedProjectLoadingFlag) {
         ErrorReporter.hide();  // hide the "Please choose a project" message
         createNoProjectsDialog(true);
       }
@@ -1860,7 +1972,7 @@ public class Ode implements EntryPoint {
   private void maybeShowSplash2() {
     projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
       if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0
-          && !templateLoadingFlag && !newGalleryLoadingFlag) {
+          && !templateLoadingFlag && !newGalleryLoadingFlag && !sharedProjectLoadingFlag) {
         ErrorReporter.hide();  // hide the "Please choose a project" message
         showSplashScreens();
       }
@@ -2353,14 +2465,22 @@ public class Ode implements EntryPoint {
     return nonce;
   }
 
+  public String getPermission() {
+    return this.permission;
+  }
+
+  public void setPermission(String perm) {
+    this.permission = perm;
+  }
+
   public boolean isReadOnly() {
-    return isReadOnly;
+    return this.isReadOnly;
   }
 
   // This is called from AdminUserList when we are switching users
   // See the comment there...
   public void setReadOnly() {
-    isReadOnly = true;
+    this.isReadOnly = true;
   }
 
   // Code to lock out certain screen and project switching code

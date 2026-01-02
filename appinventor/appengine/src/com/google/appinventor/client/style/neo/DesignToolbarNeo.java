@@ -12,6 +12,7 @@ import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.logging.Logger;
 
@@ -22,9 +23,11 @@ public class DesignToolbarNeo extends DesignToolbar {
   @UiField protected DropDownButton pickFormItem;
   @UiField protected ToolbarItem addFormItem;
   @UiField protected ToolbarItem removeFormItem;
+  @UiField protected ToolbarItem shareProjectButton;
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected Label permissionLabel;
 
   @Override
   public void bindUI() {
@@ -33,8 +36,10 @@ public class DesignToolbarNeo extends DesignToolbar {
     super.pickFormItem = pickFormItem;
     super.addFormItem = addFormItem;
     super.removeFormItem = removeFormItem;
+    super.shareProjectButton = shareProjectButton;
     super.switchToDesign = switchToDesign;
     super.switchToBlocks = switchToBlocks;
     super.sendToGalleryItem = sendToGalleryItem;
+    super.permissionLabel = permissionLabel;
   }
 }

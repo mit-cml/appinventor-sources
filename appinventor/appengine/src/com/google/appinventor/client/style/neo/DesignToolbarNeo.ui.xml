@@ -48,6 +48,12 @@
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
 
+    <g:Label ui:field="permissionLabel" styleName="ya-ProjectName" />
+
+    <ai:ToolbarItem name ="Share Project" caption="{messages.shareProjectButton}" ui:field="shareProjectButton" align="right">
+      <ca:ShareProjectsAction />
+    </ai:ToolbarItem>
+
     <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar" 
                     ui:field="toggleConsoleItem" align="right" styleName="ode-ProjectListButton bleft primary">
       <ya:ToggleConsoleAction/>
