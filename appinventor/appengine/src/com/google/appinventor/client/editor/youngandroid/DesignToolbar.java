@@ -11,6 +11,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.actions.DonateAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchScreenAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchToBlocksEditorAction;
 import com.google.appinventor.client.editor.youngandroid.actions.SwitchToFormEditorAction;
@@ -119,6 +120,8 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
   private static final String WIDGET_NAME_SENDTOGALLERY = "SendToGallery";
   private static final String WIDGET_NAME_PROJECT_PROPERTIES_DIALOG = "ProjectPropertiesDialog";
+  private static final String WIDGET_NAME_DONATE = "Donate";
+
 
   // Enum for type of view showing in the design tab
   public enum View {

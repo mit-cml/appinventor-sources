@@ -15,7 +15,11 @@
 
   <ai:Toolbar>
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName" />
-
+    <!-- Donate Button items -->
+    <ai:ToolbarItem name="Donate" caption="{messages.donateButton}"
+                    tooltip="{messages.donateTooltip}" align="left" ui:field="donateButton">
+      <ya:DonateAction />
+    </ai:ToolbarItem>
     <!-- Left button items -->
     <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}"
                     visible="false" align="center">
