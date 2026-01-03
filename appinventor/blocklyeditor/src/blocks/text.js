@@ -13,7 +13,6 @@
 goog.provide('AI.Blocks.text');
 
 goog.require('AI.BlockUtils');
-goog.require('AI.FieldTextBlockInput');
 
 Blockly.Blocks['text'] = {
   // Text value.
@@ -94,7 +93,7 @@ function maybeBumpBlockOnFinishEdit(block) {
   // If the connections are no longer compatible.
   if (!(targetConnection.getConnectionChecker().canConnect(outputConnection, targetConnection, false))) {
     targetConnection.disconnect();
-    targetConnection.sourceBlock_.bumpNeighbours();
+    targetConnection.getSourceBlock().bumpNeighbours();
   }
 }
 
@@ -532,7 +531,7 @@ Blockly.Blocks.text_split.adjustToMode = function (mode, block) {
 };
 
 Blockly.Blocks.text_split.dropdown_onchange = function (mode) {
-  Blockly.Blocks.text_split.adjustToMode(mode, this.sourceBlock_)
+  Blockly.Blocks.text_split.adjustToMode(mode, this.getSourceBlock())
 };
 
 // The order here determines the order in the dropdown

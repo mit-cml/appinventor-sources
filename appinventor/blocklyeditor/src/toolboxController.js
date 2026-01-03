@@ -28,7 +28,7 @@ bd.toolbox.ctr.blockObject = function(type,fieldNameToValue,inputNameToInputType
 }
 
 bd.toolbox.ctr.blockObjectToXML = function(block,withXMLTag) {
-  var element = goog.dom.createDom('block');
+  var element = document.createElement('block');
   element.setAttribute('type', block.type);
 
   if(block.mutatorNameToValue != null) {
@@ -41,7 +41,8 @@ bd.toolbox.ctr.blockObjectToXML = function(block,withXMLTag) {
 
   if(block.fieldNameToValue != null) {
     for(var fieldName in block.fieldNameToValue) {
-      var container = goog.dom.createDom('field', null, block.fieldNameToValue[fieldName]);
+      var container = document.createElement('field');
+      container.appendChild(document.createTextNode(block.fieldNameToValue[fieldName]));
       container.setAttribute('name', fieldName);
       element.appendChild(container);
     }
@@ -62,7 +63,7 @@ bd.toolbox.ctr.blockObjectToXML = function(block,withXMLTag) {
   }
 
   if(typeof withXMLTag != "undefined" && withXMLTag) {
-    var xmlWrap = goog.dom.createDom('xml');
+    var xmlWrap = document.createElement('xml');
     xmlWrap.setAttribute('id', 'toolbox');
     xmlWrap.appendChild(element);
     return xmlWrap;

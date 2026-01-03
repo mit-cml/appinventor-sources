@@ -62,11 +62,11 @@ Finally, you will also have to make sure that you are ignoring files that need i
 
 ### Checkout dependencies
 
-App Inventor uses the [Closure library](https://github.com/google/closure-library) and the [Picrin](https://picrin.readthedocs.io/en/latest/) Scheme implementation. It is unlikely that most contributors will need to make changes to these dependencies, but they are necessary for local compilation, so you must initialize and track these libraries as submodules. The first time after forking or cloning the repository, you can perform the following commands:
+App Inventor uses the [Picrin](https://picrin.readthedocs.io/en/latest/) Scheme implementation. It is unlikely that most contributors will need to make changes to this dependency, but it is necessary for local compilation, so you must initialize and track this library as a submodule. The first time after forking or cloning the repository, you can perform the following command:
 
     $ git submodule update --init
 
-If you need to switch back to a branch that does not contain the dependencies in the tree, you will need to run the command:
+If you need to switch back to a branch that does not contain the dependency in the tree, you will need to run the command:
 
     $ git submodule deinit --all
 
@@ -246,7 +246,7 @@ vagrant ssh
 
 This should open up a terminal within the virtual machine in the directory `/vagrant/appinventor`. This directory is the same as the `appinventor` directory in this repository, shared between your host machine and the virtual machine. Any changes made on one side will be visible in the other. This allows you to edit files on your host machine with your preferred editor, while keeping the build environment relegated to the virtual machine.
 
-Before you can build App Inventor, you will need to also obtain the dependencies as described [below](#checkout-dependencies) using `git submodule` command:
+Before you can build App Inventor, you will need to also obtain the dependency as described [above](#checkout-dependencies) using `git submodule` command:
 
 ```bash
 git submodule update --init

@@ -18,7 +18,7 @@ export declare const TEST_ONLY: {
  * @throws {Error} if the extension name is empty, the extension is already
  *     registered, or extensionFn is not a function.
  */
-export declare function register(name: string, initFn: Function): void;
+export declare function register<T extends Block>(name: string, initFn: (this: T) => void): void;
 /**
  * Registers a new extension function that adds all key/value of mixinObj.
  *

@@ -5,6 +5,7 @@
  */
 import type { BlockSvg } from '../../block_svg.js';
 import { Coordinate } from '../../utils.js';
+import { Connection } from '../measurables/connection.js';
 import type { Field } from '../measurables/field.js';
 import type { Icon } from '../measurables/icon.js';
 import type { InlineInput } from '../measurables/inline_input.js';
@@ -37,13 +38,6 @@ export declare class Drawer {
      * required.
      */
     draw(): void;
-    /**
-     * Hide icons that were marked as hidden.
-     *
-     * @deprecated Manually hiding icons is no longer necessary. To be removed
-     *     in v11.
-     */
-    protected hideHiddenIcons_(): void;
     /**
      * Save sizing information back to the block
      * Most of the rendering information can be thrown away at the end of the
@@ -141,5 +135,22 @@ export declare class Drawer {
     protected positionNextConnection_(): void;
     /** Position the output connection on a block. */
     protected positionOutputConnection_(): void;
+    /**
+     * Updates the path object to reflect which connections on the block are
+     * highlighted.
+     */
+    protected updateConnectionHighlights(): void;
+    /** Returns a path to highlight the given connection. */
+    drawConnectionHighlightPath(measurable: Connection): void;
+    /**
+     * Returns a path to highlight the given conneciton, assuming it is an
+     * input or output connection.
+     */
+    private getExpressionConnectionHighlightPath;
+    /**
+     * Returns a path to highlight the given conneciton, assuming it is a
+     * next or previous connection.
+     */
+    private getStatementConnectionHighlightPath;
 }
 //# sourceMappingURL=drawer.d.ts.map

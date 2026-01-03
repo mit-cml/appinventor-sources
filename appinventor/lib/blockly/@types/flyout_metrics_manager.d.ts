@@ -29,7 +29,7 @@ export declare class FlyoutMetricsManager extends MetricsManager {
      *
      * @returns The bounding box of the blocks on the workspace.
      */
-    private getBoundingBox_;
+    private getBoundingBox;
     getContentMetrics(opt_getWorkspaceCoordinates?: boolean): {
         height: number;
         width: number;

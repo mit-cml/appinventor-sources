@@ -177,7 +177,7 @@ Blockly.LexicalVariable.getEventParam = function (block) {
  * This is used only by Blockly.LexicalVariable.eventParameterDict
  */
 Blockly.LexicalVariable.eventParamDomToMutation = function (block, xmlElement) {
-  var children = goog.dom.getChildren(xmlElement);
+  var children = xmlElement.children;
   if (children.length == 1) { // Should be exactly one eventParam child
     var childNode = children[0];
     if (childNode.nodeName.toLowerCase() == 'eventparam') {

@@ -3,9 +3,9 @@
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { ContainerRegion, ToolboxMetrics, AbsoluteMetrics, UiMetrics } from '../metrics_manager.js';
-import type { Size } from '../utils/size.js';
+import type { AbsoluteMetrics, ContainerRegion, ToolboxMetrics, UiMetrics } from '../metrics_manager.js';
 import type { Metrics } from '../utils/metrics.js';
+import type { Size } from '../utils/size.js';
 /**
  * Interface for a metrics manager.
  */

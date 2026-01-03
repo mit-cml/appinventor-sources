@@ -40,7 +40,7 @@ export declare class CollapsibleToolboxCategory extends ToolboxCategory implemen
      *
      * @param itemDef The information needed to create a toolbox item.
      */
-    private createToolboxItem_;
+    private createToolboxItem;
     init(): void;
     createDom_(): HTMLDivElement;
     createIconDom_(): HTMLSpanElement;

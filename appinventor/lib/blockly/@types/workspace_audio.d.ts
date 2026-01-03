@@ -12,7 +12,9 @@ export declare class WorkspaceAudio {
     /** Database of pre-loaded sounds. */
     private sounds;
     /** Time that the last sound was played. */
-    private lastSound_;
+    private lastSound;
+    /** Whether the audio is muted or not. */
+    private muted;
     /**
      * @param parentWorkspace The parent of the workspace this audio object
      *     belongs to, or null.
@@ -47,5 +49,13 @@ export declare class WorkspaceAudio {
      * @param opt_volume Volume of sound (0-1).
      */
     play(name: string, opt_volume?: number): void;
+    /**
+     * @param muted If true, mute sounds. Otherwise, play them.
+     */
+    setMuted(muted: boolean): void;
+    /**
+     * @returns Whether the audio is currently muted or not.
+     */
+    getMuted(): boolean;
 }
 //# sourceMappingURL=workspace_audio.d.ts.map

@@ -167,10 +167,7 @@
         <include name="images/canvas.png" />
       </fileset>
       <fileset dir="${lib.dir}">
-        <include name="closure-library/closure/goog/base.js"/>
-        <include name="closure-library/closure/goog/css/dialog.css"/>
-        <include name="closure-library/closure/goog/css/hsvapalette.css"/>
-        <include name="closure-library/closure/goog/deps.js"/>
+        <include name="closure-compiler/base.js"/>
       </fileset>
       <fileset dir="${docs.dir}/html/static">
         <include name="js/*"/>
