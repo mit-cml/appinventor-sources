@@ -140,8 +140,8 @@ AI.Blockly.TypeBlock.prototype.generateOptions = function() {
  */
 AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
   // Clean up any previous procedures in the list.
-  this.TBOptions_ = goog.object.filter(this.TBOptions_,
-      function(opti){ return !opti.isProcedure;});
+  this.TBOptions_ = Object.fromEntries(
+      Object.entries(this.TBOptions_).filter(([_, option]) => !option.isProcedure));
 
   var procsNoReturn = createTypeBlockForProcedures_.call(this, false);
   for (const pro of procsNoReturn) {
@@ -195,9 +195,8 @@ AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
  */
 AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
   // Remove any global vars from the list so that we can re-add them.
-  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
-    return !option.isGlobalvar;
-  });
+  this.TBOptions_ = Object.fromEntries(
+      Object.entries(this.TBOptions_).filter(([_, option]) => !option.isGlobalvar));
 
   var globalVarNames = Blockly.FieldLexicalVariable.getGlobalNames();
   for (const varName of globalVarNames) {
@@ -235,9 +234,8 @@ AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
  */
 AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
   // Remove any local vars from the list so that we can re-add them.
-  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
-    return !option.isLocalVar;
-  });
+  this.TBOptions_ = Object.fromEntries(
+      Object.entries(this.TBOptions_).filter(([_, option]) => !option.isLocalVar));
 
   var selected = Blockly.common.getSelected();
   if (!selected) {
