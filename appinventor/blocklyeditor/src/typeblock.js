@@ -11,8 +11,6 @@
 
 goog.provide('AI.Blockly.TypeBlock');
 
-goog.require('goog.ui.ac.ArrayMatcher');
-
 /**
  * Main Type Block function for configuration.
  * @param {Blockly.WorkspaceSvg} workspace The workspace targeted by the TypeBlock
@@ -386,14 +384,111 @@ goog.provide('AI.Blockly.TypeBlock.ac.AIArrayMatcher');
  * have a toString method that returns the value to match against.
  * @param {boolean=} opt_noSimilar if true, do not do similarity matches for the
  * input token against the dictionary.
- * @extends {goog.ui.ac.ArrayMatcher}
  */
 AI.Blockly.TypeBlock.ac.AIArrayMatcher = function(rows, opt_noSimilar) {
-  goog.ui.ac.ArrayMatcher.call(rows, opt_noSimilar);
   this.rows_ = rows;
   this.useSimilar_ = !opt_noSimilar;
 };
-goog.inherits(AI.Blockly.TypeBlock.ac.AIArrayMatcher, goog.ui.ac.ArrayMatcher);
+
+// From goog.string.regExpEscape
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.regExpEscape_ = function(s) {
+  'use strict';
+  return String(s)
+      .replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1')
+      .replace(/\x08/g, '\\x08');
+};
+
+// From goog.ui.ac.ArrayMatcher.getPrefixMatchesForRows
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.getPrefixMatchesForRows_ = function(
+    token, maxMatches, rows) {
+  'use strict';
+  var matches = [];
+
+  if (token != '') {
+    var escapedToken = AI.Blockly.TypeBlock.ac.AIArrayMatcher.regExpEscape_(token);
+    var matcher = new RegExp('(^|\\W+)' + escapedToken, 'i');
+
+    for (var i = 0; i < rows.length && matches.length < maxMatches; i++) {
+      var row = rows[i];
+      if (String(row).match(matcher)) {
+        matches.push(row);
+      }
+    }
+  }
+  return matches;
+};
+
+// From goog.ui.ac.ArrayMatcher.getSimilarMatchesForRows
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.getSimilarMatchesForRows_ = function(
+    token, maxMatches, rows) {
+  'use strict';
+  var results = [];
+
+  for (var index = 0; index < rows.length; index++) {
+    var row = rows[index];
+    var str = token.toLowerCase();
+    var txt = String(row).toLowerCase();
+    var score = 0;
+
+    if (txt.indexOf(str) != -1) {
+      score = parseInt((txt.indexOf(str) / 4).toString(), 10);
+    } else {
+      var arr = str.split('');
+      var lastPos = -1;
+      var penalty = 10;
+
+      for (var i = 0, c; c = arr[i]; i++) {
+        var pos = txt.indexOf(c);
+        if (pos > lastPos) {
+          var diff = pos - lastPos - 1;
+          if (diff > penalty - 5) {
+            diff = penalty - 5;
+          }
+          score += diff;
+          lastPos = pos;
+        } else {
+          score += penalty;
+          penalty += 5;
+        }
+      }
+    }
+
+    if (score < str.length * 6) {
+      results.push({str: row, score: score, index: index});
+    }
+  }
+
+  results.sort(function(a, b) {
+    'use strict';
+    var diff = a.score - b.score;
+    if (diff != 0) {
+      return diff;
+    }
+    return a.index - b.index;
+  });
+
+  var matches = [];
+  for (var i = 0; i < maxMatches && i < results.length; i++) {
+    matches.push(results[i].str);
+  }
+
+  return matches;
+};
+
+// From goog.ui.ac.ArrayMatcher.prototype.getPrefixMatches
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.prototype.getPrefixMatches = function(
+    token, maxMatches) {
+  'use strict';
+  return AI.Blockly.TypeBlock.ac.AIArrayMatcher.getPrefixMatchesForRows_(
+      token, maxMatches, this.rows_);
+};
+
+// From goog.ui.ac.ArrayMatcher.prototype.getSimilarRows
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.prototype.getSimilarRows = function(token, maxMatches) {
+  'use strict';
+  return AI.Blockly.TypeBlock.ac.AIArrayMatcher.getSimilarMatchesForRows_(
+      token, maxMatches, this.rows_);
+};
 
 /**
  * @inheritDoc
