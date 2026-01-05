@@ -7,6 +7,7 @@ package com.google.appinventor.client.widgets;
 
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -50,6 +51,7 @@ public class DropDownButton extends TextButton {
   private Icon icon = null;
   private String caption = "";
   private MenuItemSeparator separator = null;
+  private String ariaRole = null;
 
   /**
    * A subclass of PZAwarePositionCallback designed to position the ContextMenu
@@ -120,9 +122,11 @@ public class DropDownButton extends TextButton {
       public void onClick(ClickEvent event) {
         if (menu.isShowing()) {
           menu.hide();
+          updateAriaExpanded(false);
         } else {
           menu.resetSelection();
           menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
+          updateAriaExpanded(true);
         }
       }
     });
@@ -149,10 +153,29 @@ public class DropDownButton extends TextButton {
         if (event.getTypeInt() == Event.ONKEYDOWN && nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && menu.isShowing()) {
           nativeEvent.preventDefault();
           menu.hide();
+          updateAriaExpanded(false);
           setFocus(true);
         }
       }
     });
+
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (event.getTypeInt() == Event.ONKEYDOWN &&
+            nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE &&
+            menu.isShowing()) {
+          nativeEvent.preventDefault();
+          menu.hide();
+          updateAriaExpanded(false);
+          setFocus(true);
+        }
+      }
+    });
+
+    // Initialize with collapsed state
+    updateAriaExpanded(false);
   }
 
   // Create a new drop-down menu button (with text), initially populated with items. Null
@@ -444,5 +467,51 @@ public class DropDownButton extends TextButton {
     for (DropDownItem item : items) {
       addItem(item);
     }
+  }
+
+  /**
+   * Sets the ARIA role for this widget.
+   * @param role The ARIA role (e.g., "button", "menubar")
+   */
+  public void setRole(String role) {
+    this.ariaRole = role;
+    if ("button".equals(role)) {
+      Roles.getButtonRole().set(getElement());
+    } else if ("menubar".equals(role)) {
+      Roles.getMenubarRole().set(getElement());
+    }
+  }
+
+  /**
+   * Sets the aria-label attribute.
+   * @param label The accessible label
+   */
+  public void setAriaLabel(String label) {
+    getElement().setAttribute("aria-label", label);
+  }
+
+  /**
+   * Sets the aria-haspopup attribute.
+   * @param value "true", "false", or "menu"
+   */
+  public void setAriaHaspopup(String value) {
+    getElement().setAttribute("aria-haspopup", value);
+  }
+
+  /**
+   * Sets initial aria-expanded state.
+   * @param expanded "true" or "false"
+   */
+  public void setAriaExpanded(String expanded) {
+    updateAriaExpanded("true".equals(expanded));
+  }
+
+  /**
+   * Updates aria-expanded state dynamically.
+   *
+   * @param expanded true if expanded, false if collapsed
+   */
+  protected void updateAriaExpanded(boolean expanded) {
+    getElement().setAttribute("aria-expanded", String.valueOf(expanded));
   }
 }

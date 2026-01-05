@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -51,6 +52,7 @@ public final class ContextMenu {
       }
     });
     menuItem.setStylePrimaryName("ode-ContextMenuItem");
+    Roles.getMenuitemRole().set(menuItem.getElement());
     menuBar.addItem(menuItem);
     return menuItem;
   }
@@ -89,6 +91,7 @@ public final class ContextMenu {
     } else {
       menuItem.setStylePrimaryName("ode-ContextMenuItem");
     }
+    Roles.getMenuitemRole().set(menuItem.getElement());
     menuBar.addItem(menuItem);
     return menuItem;
   }
@@ -163,6 +166,24 @@ public final class ContextMenu {
 
   public void resetSelection() {
     menuBar.selectItem(null);
+  }
+
+  /**
+   * Sets the ARIA role for this menu.
+   * @param role The ARIA role (should be "menu")
+   */
+  public void setRole(String role) {
+    if ("menu".equals(role)) {
+      Roles.getMenuRole().set(menuBar.getElement());
+    }
+  }
+
+  /**
+   * Sets the aria-label attribute.
+   * @param label The accessible label
+   */
+  public void setAriaLabel(String label) {
+    menuBar.getElement().setAttribute("aria-label", label);
   }
 
 }

@@ -14,7 +14,8 @@
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <!-- Projects Menu -->
-    <ai:DropDownButton name="ProjectDesignOnly" caption="{messages.projectsTabName}" icon="inventory_2"
+    <ai:DropDownButton name="ProjectDesignOnly" caption="{messages.projectsTabName}" icon="inventory_2" role="button"
+                       ariaLabel="Project menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="fileDropDown" align="left">
       <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}" visible="false">
         <actions:SwitchToProjectAction/>
@@ -53,6 +54,7 @@
 
     <!-- Connect Menu -->
     <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}" styleName="ode-TopPanelButton"
+                       role="button" ariaLabel="Connect menu" ariaHaspopup="menu" ariaExpanded="false"
                        ui:field="connectDropDown" icon="settings_remote" align="left">
       <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
         <yaactions:WirelessAction/>
@@ -86,6 +88,7 @@
 
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}" styleName="ode-TopPanelButton"
+                       role="button" ariaLabel="Build menu" ariaHaspopup="menu" ariaExpanded="false"
                        ui:field="buildDropDown" icon="system_security_update" align="left"
                        visible="{hasWriteAccess}">
       <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
@@ -118,6 +121,7 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
+        role="button" ariaLabel="Settings menu" ariaHaspopup="menu" ariaExpanded="false"
         ui:field="settingsDropDown" align="left" icon="settings" caption="{messages.settingsTabName}">
       <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
         <actions:UISettingsAction/>
@@ -150,6 +154,7 @@
 
     <!-- Admin Menu -->
     <ai:DropDownButton name="Admin" styleName="ode-TopPanelButton"
+                       role="button" ariaLabel="Admin menu" ariaHaspopup="menu" ariaExpanded="false"
                        ui:field="adminDropDown" icon="shield_person" align="left">
 
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">

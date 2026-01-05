@@ -15,6 +15,7 @@
   <g:FlowPanel styleName="ode-TopToolbar">
     <!-- Projects Menu -->
     <ai:DropDownButton name="Project" caption="{messages.projectsTabName}"
+                       role="button" ariaLabel="Project menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="fileDropDown">
       <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}">
         <actions:SwitchToProjectAction/>
@@ -70,6 +71,7 @@
 
     <!-- Connect Menu -->
     <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}"
+                       role="button" ariaLabel="Connect menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="connectDropDown">
       <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
         <yaactions:WirelessAction/>
@@ -101,6 +103,7 @@
 
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}"
+                       role="button" ariaLabel="Build menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="buildDropDown"
                        visible="{hasWriteAccess}">
       <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
@@ -133,6 +136,7 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" caption="{messages.settingsTabName}"
+                       role="button" ariaLabel="Settings menu" ariaHaspopup="menu" ßariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="settingsDropDown">
       <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
         <actions:UISettingsAction/>
@@ -152,6 +156,7 @@
 
     <!-- Help Menu -->
     <ai:DropDownButton name="Help" caption="{messages.helpTabName}"
+                       role="button" ariaLabel="Help menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="helpDropDown">
       <ai:DropDownItem name="About" caption="{messages.aboutMenuItem}">
         <actions:AboutAction/>
@@ -196,6 +201,7 @@
 
     <!-- Admin Menu -->
     <ai:DropDownButton name="Admin" caption="{messages.adminTabName}"
+                       role="button" ariaLabel="Admin menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="adminDropDown">
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
         <actions:DownloadUserSourceAction/>
