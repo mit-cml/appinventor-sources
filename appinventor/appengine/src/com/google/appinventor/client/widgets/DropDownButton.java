@@ -52,6 +52,10 @@ public class DropDownButton extends TextButton {
   private String caption = "";
   private MenuItemSeparator separator = null;
   private String ariaRole = null;
+  // Type-ahead navigation state
+  private char lastTypeAheadChar = 0;
+  private long lastTypeAheadTime = 0;
+  private static final long TYPE_AHEAD_TIMEOUT = 1000; // 1 second
 
   /**
    * A subclass of PZAwarePositionCallback designed to position the ContextMenu
@@ -142,15 +146,65 @@ public class DropDownButton extends TextButton {
     addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN && menu.isShowing()) {
+        if (!menu.isShowing()) {
+          return;
+        }
+
+        int keyCode = event.getNativeKeyCode();
+
+        if (keyCode == KeyCodes.KEY_DOWN) {
           event.preventDefault();
           menu.moveSelectionDown();
           menu.focus();
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_UP && menu.isShowing()) {
+        } else if (keyCode == KeyCodes.KEY_UP) {
           event.preventDefault();
           menu.moveSelectionUp();
           menu.focus();
         }
+      }
+    });
+
+    // Add native preview handler for Home/End/Letter keys
+    // These need to be handled globally because focus is on the menu when it's open
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        if (event.getTypeInt() != Event.ONKEYDOWN || !menu.isShowing()) {
+          return;
+        }
+
+        NativeEvent nativeEvent = event.getNativeEvent();
+        int keyCode = nativeEvent.getKeyCode();
+
+        if (keyCode == KeyCodes.KEY_HOME) {
+          // Jump to first menu item
+          nativeEvent.preventDefault();
+          menu.selectFirstItem();
+          menu.focus();
+        } else if (keyCode == KeyCodes.KEY_END) {
+          // Jump to last menu item
+          nativeEvent.preventDefault();
+          menu.selectLastItem();
+          menu.focus();
+        } else if (isLetterKey(keyCode)) {
+          // Type-ahead navigation
+          nativeEvent.preventDefault();
+          char typedChar = (char) keyCode;
+
+          long now = System.currentTimeMillis();
+          boolean repeated = (typedChar == lastTypeAheadChar) &&
+                            (now - lastTypeAheadTime < TYPE_AHEAD_TIMEOUT);
+
+          lastTypeAheadChar = typedChar;
+          lastTypeAheadTime = now;
+
+          menu.selectItemStartingWith(typedChar, repeated);
+          menu.focus();
+        }
+      }
+
+      private boolean isLetterKey(int keyCode) {
+        return (keyCode >= KeyCodes.KEY_A && keyCode <= KeyCodes.KEY_Z);
       }
     });
 
