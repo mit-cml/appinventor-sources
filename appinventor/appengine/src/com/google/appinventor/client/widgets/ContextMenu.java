@@ -186,4 +186,21 @@ public final class ContextMenu {
     menuBar.getElement().setAttribute("aria-label", label);
   }
 
+  /**
+   * Sets a unique ID on this menu's popup element.
+   * Used for aria-controls relationships.
+   * @param id The unique ID to set
+   */
+  public void setId(String id) {
+    popupPanel.getElement().setId(id);
+  }
+
+  /**
+   * Gets the ID of this menu's popup element.
+   * @return The ID, or null if not set
+   */
+  public String getId() {
+    return popupPanel.getElement().getId();
+  }
+
 }

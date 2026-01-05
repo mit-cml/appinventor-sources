@@ -136,7 +136,7 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" caption="{messages.settingsTabName}"
-                       role="button" ariaLabel="Settings menu" ariaHaspopup="menu" ßariaExpanded="false"
+                       role="button" ariaLabel="Settings menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="settingsDropDown">
       <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
         <actions:UISettingsAction/>

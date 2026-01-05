@@ -117,6 +117,11 @@ public class DropDownButton extends TextButton {
   public DropDownButton() {
     super();
 
+    // Generate unique ID for menu and set aria-controls
+    String menuId = Document.get().createUniqueId();
+    menu.setId(menuId);
+    getElement().setAttribute("aria-controls", menuId);
+
     addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -127,6 +132,9 @@ public class DropDownButton extends TextButton {
           menu.resetSelection();
           menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
           updateAriaExpanded(true);
+          // Move focus to first menu item for accessibility
+          menu.moveSelectionDown();
+          menu.focus();
         }
       }
     });
@@ -325,6 +333,8 @@ public class DropDownButton extends TextButton {
     MenuItem item = itemsById.get(id);
     if (item != null) {
       item.setEnabled(enabled);
+      // Set aria-disabled attribute for accessibility
+      item.getElement().setAttribute("aria-disabled", String.valueOf(!enabled));
     }
   }
 
@@ -332,6 +342,8 @@ public class DropDownButton extends TextButton {
     for (MenuItem item : items) {
       if (item.getText().equals(itemName)) {
         item.setEnabled(enabled);
+        // Set aria-disabled attribute for accessibility
+        item.getElement().setAttribute("aria-disabled", String.valueOf(!enabled));
         break;
       }
     }
@@ -496,6 +508,15 @@ public class DropDownButton extends TextButton {
    */
   public void setAriaHaspopup(String value) {
     getElement().setAttribute("aria-haspopup", value);
+  }
+
+  /**
+   * Sets the aria-controls attribute.
+   * Note: This is automatically set in the constructor, but can be overridden.
+   * @param controlsId The ID of the element this button controls
+   */
+  public void setAriaControls(String controlsId) {
+    getElement().setAttribute("aria-controls", controlsId);
   }
 
   /**
