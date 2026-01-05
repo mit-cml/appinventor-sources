@@ -332,7 +332,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
           self.phoneStatus.startWebRTC(kDefaultRendezvousServer, responseContent, self)
         }
       } else {
-        self.connectProgressDialog?.dismiss(animated: true)
+        DispatchQueue.main.async {
+            self.connectProgressDialog?.dismiss(animated: true)
+        }
         var responseContent = ""
         if let data = data {
           guard let responseContentStr = String(data: data, encoding: .utf8) else {

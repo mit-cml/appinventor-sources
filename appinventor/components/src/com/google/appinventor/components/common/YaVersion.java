@@ -1370,8 +1370,9 @@ public class YaVersion {
   // For PLAYER_COMPONENT_VERSION 6:
   // - The PlayInForeground property was added.
   // - The OtherPlayerStarted event was added.
-
-  public static final int PLAYER_COMPONENT_VERSION = 6;
+  // For PLAYER_COMPONENT_VERSION 7:
+  // - The PlayOnlyInForeground property default value was changed to True (was False).
+  public static final int PLAYER_COMPONENT_VERSION = 7;
 
   // For POLYGON_COMPONENT_VERSION 1:
   // - Initial Polygon implementation for Maps
@@ -1720,12 +1721,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.76";
+  public static final String PREFERRED_COMPANION = "2.77";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.76", "2.76u" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.77", "2.77u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

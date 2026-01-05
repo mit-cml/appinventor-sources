@@ -176,4 +176,23 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
       _view.backgroundColor = _backgroundColor
     }
   }
+  // MARK: Fix for Issue #3622
+    // Override Height to disable the locking constraint if scrolling is enabled
+    @objc open override var Height: Int32 {
+      get {
+        return super.Height
+      }
+      set(height) {
+        super.Height = height
+        // If we are "Automatic" (Preferred) and Scrollable, the view needs to grow.
+        if _view.scrollEnabled && height == kLengthPreferred {
+           _view.constraints.forEach { constraint in
+               if constraint.firstAttribute == .height {
+                   constraint.isActive = false
+               }
+           }
+           _view.setNeedsLayout()
+        }
+      }
+    }
 }

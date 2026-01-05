@@ -26,7 +26,7 @@ public class TextValidatorsTest extends TestCase {
 		  "图_片2", "图3片_2", "botón1", "botón_2");
 
   private final List<String> illegalComponentIdentifierNames = Arrays.asList("", "!你好吗", "2你好吗",
-		  "123按_钮", "1按2钮 ", "1botón", "!botón2");
+		  "123按_钮", "1按2钮 ", "1botón", "!botón2", "Clock`");
 
   private final List<String> reservedWordNames = Arrays.asList("YailList", "YailNumberToString", "YailRuntimeError",
           "final", "interface", "static");

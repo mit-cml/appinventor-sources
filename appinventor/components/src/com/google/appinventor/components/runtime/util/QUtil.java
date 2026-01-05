@@ -140,7 +140,14 @@ public class QUtil {
     }
     if ((!legacy && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) || forcePrivate) {
       // Q no longer allows using getExternalStorageDirectory()
-      return context.getExternalFilesDir(null);
+      File externalStorage = context.getExternalFilesDir(null);
+      if (externalStorage == null) {
+        // This can happen if the external storage is not currently mounted, but we need some
+        // place to put assets, etc. Fall back to internal storage in this case.
+        return context.getFilesDir();
+      } else {
+        return externalStorage;
+      }
     } else {
       return Environment.getExternalStorageDirectory();
     }

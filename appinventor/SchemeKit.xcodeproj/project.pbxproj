@@ -90,6 +90,7 @@
 		068B4F18207553060050A8BE /* runtime.scm in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F17207553060050A8BE /* runtime.scm */; };
 		068B4F1A207553DF0050A8BE /* HelloPurr.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F19207553DF0050A8BE /* HelloPurr.yail */; };
 		068B4F20207562880050A8BE /* Screen1.yail in Resources */ = {isa = PBXBuildFile; fileRef = 068B4F1F207562880050A8BE /* Screen1.yail */; };
+		069B37752EB12A5500C212FD /* SCMProcedureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 069B37742EB12A4E00C212FD /* SCMProcedureTests.m */; };
 		06AC1CC41DB3CF2000A59EB3 /* SCMInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = 06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		06AC1CC51DB3CF2000A59EB3 /* SCMInterpreter.m in Sources */ = {isa = PBXBuildFile; fileRef = 06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */; };
 		06BEC1791D961AE100B62630 /* emyg_atod.c in Sources */ = {isa = PBXBuildFile; fileRef = 06BEC1751D961AE100B62630 /* emyg_atod.c */; };
@@ -109,6 +110,7 @@
 		06FCDEF11D94383000199DD4 /* SchemeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 06FCDEE31D94383000199DD4 /* SchemeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5DEA70CE5B7AE0F23E524397 /* libPods-SchemeKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 64469D1E07EB96B095A3BB37 /* libPods-SchemeKit.a */; };
 		7E2FCA9DDCB92E67ACD4D306 /* libPods-SchemeKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86762300C9CEB06ADF718048 /* libPods-SchemeKitTests.a */; };
+		9835C58E2D9C662E00DF253D /* YailMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9835C58D2D9C661E00DF253D /* YailMatrix.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -211,9 +213,10 @@
 		0682D1372555881C00015CF1 /* SCMProcedure.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMProcedure.m; sourceTree = "<group>"; };
 		0682D18A255AF67400015CF1 /* SCMWeakReference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMWeakReference.h; sourceTree = "<group>"; };
 		0682D18B255AF67400015CF1 /* SCMWeakReference.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMWeakReference.m; sourceTree = "<group>"; };
-		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = components-ios/src/runtime.scm; sourceTree = SOURCE_ROOT; };
+		068B4F17207553060050A8BE /* runtime.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = runtime.scm; path = "components-ios/src/runtime.scm"; sourceTree = SOURCE_ROOT; };
 		068B4F19207553DF0050A8BE /* HelloPurr.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HelloPurr.yail; sourceTree = "<group>"; };
 		068B4F1F207562880050A8BE /* Screen1.yail */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Screen1.yail; path = ../../aiplayapp/src/edu/mit/appinventor/aicompanion3/Screen1.yail; sourceTree = "<group>"; };
+		069B37742EB12A4E00C212FD /* SCMProcedureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMProcedureTests.m; sourceTree = "<group>"; };
 		06AC1CC21DB3CF2000A59EB3 /* SCMInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMInterpreter.h; sourceTree = "<group>"; };
 		06AC1CC31DB3CF2000A59EB3 /* SCMInterpreter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMInterpreter.m; sourceTree = "<group>"; };
 		06B9A1372472BCB1002284A9 /* SCMErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMErrors.h; sourceTree = "<group>"; };
@@ -241,6 +244,7 @@
 		6B2973A1163EC9ECFE756328 /* Pods-SchemeKit-SchemeKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit-SchemeKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit-SchemeKitTests/Pods-SchemeKit-SchemeKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		811D9C3705A774DF269EC1B7 /* Pods-SchemeKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit/Pods-SchemeKit.release.xcconfig"; sourceTree = "<group>"; };
 		86762300C9CEB06ADF718048 /* libPods-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9835C58D2D9C661E00DF253D /* YailMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YailMatrix.swift; sourceTree = "<group>"; };
 		987A65C30EAFA15380F02DD8 /* libPods-SchemeKit-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKit-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F243069F800F441816C960F7 /* Pods-SchemeKit-SchemeKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SchemeKit-schemekit/tests/Pods-SchemeKit-SchemeKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -396,6 +400,7 @@
 		06FCDEE21D94383000199DD4 /* schemekit/src */ = {
 			isa = PBXGroup;
 			children = (
+				9835C58D2D9C661E00DF253D /* YailMatrix.swift */,
 				0650B1FA1DABC28000A7846C /* init_contrib.c */,
 				0650B1FB1DABC28000A7846C /* load_piclib.c */,
 				065ECF471D949DDD00C749A1 /* picrin */,
@@ -444,6 +449,7 @@
 		06FCDEED1D94383000199DD4 /* schemekit/tests */ = {
 			isa = PBXGroup;
 			children = (
+				069B37742EB12A4E00C212FD /* SCMProcedureTests.m */,
 				068B4F1F207562880050A8BE /* Screen1.yail */,
 				068B4F19207553DF0050A8BE /* HelloPurr.yail */,
 				068B4F17207553060050A8BE /* runtime.scm */,
@@ -576,7 +582,7 @@
 				TargetAttributes = {
 					06FCDEDF1D94383000199DD4 = {
 						CreatedOnToolsVersion = 8.0;
-						LastSwiftMigration = 1140;
+						LastSwiftMigration = 1610;
 						ProvisioningStyle = Automatic;
 					};
 					06FCDEE81D94383000199DD4 = {
@@ -733,6 +739,7 @@
 				0682D1392555881C00015CF1 /* SCMProcedure.m in Sources */,
 				06D1518E1DC456C600FC981E /* SCMSymbol.m in Sources */,
 				0650B1E91DAACDB100A7846C /* yail.m in Sources */,
+				9835C58E2D9C662E00DF253D /* YailMatrix.swift in Sources */,
 				065ECF501D949E0100C749A1 /* load.c in Sources */,
 				065ECF7D1D949E2400C749A1 /* write.c in Sources */,
 				0650B2151DABC4C800A7846C /* repl.c in Sources */,
@@ -750,6 +757,7 @@
 			files = (
 				0644E91C246064EC00ECD2BD /* YailListTests.m in Sources */,
 				0644E91E246064F900ECD2BD /* YailDictionaryTests.m in Sources */,
+				069B37752EB12A5500C212FD /* SCMProcedureTests.m in Sources */,
 				06FCDEEF1D94383000199DD4 /* SchemeKitTests.m in Sources */,
 				061609111D96112D00D145C4 /* MockComponent.swift in Sources */,
 				0650B1F11DAB0AD600A7846C /* YailRuntimeError.swift in Sources */,
