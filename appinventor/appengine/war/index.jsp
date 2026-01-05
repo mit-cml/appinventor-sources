@@ -29,6 +29,7 @@
       }
       return;
   }
+  final String gatag = Flag.createFlag("google.analytics", "").get();
   String cachePostfix = "@blocklyeditor_isRelease@".equals("true") ? "cache" : "nocache";
   String locale = request.getParameter("locale");
   if (locale == null || locale.isEmpty() || !i18n.mapping.containsKey(locale)) {
@@ -42,7 +43,7 @@
   String translation = odeBase + "ode/messages" + hash + "." + cachePostfix + ".js";
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
-<!-- Copyright 2011-2024 Massachusetts Institute of Technology. All Rights Reserved. -->
+<!-- Copyright 2011-2025 Massachusetts Institute of Technology. All Rights Reserved. -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -52,6 +53,18 @@
     <!--meta name="gwt:property" content="locale=en_US"-->
     <!-- Title is set at runtime. -->
     <title> </title>
+    <% if (!gatag.isEmpty()) { %>
+    <!-- Google Analytics. -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= gatag %>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '<%= gatag %>');
+    </script>
+<% } %>
     <link type="text/css" rel="stylesheet" href="static/css/gwt.css">
     <link type="text/css" rel="stylesheet" href="static/css/blockly.css">
     <link type="text/css" rel="stylesheet" href="static/css/ai2blockly.css">
