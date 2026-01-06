@@ -111,7 +111,7 @@ public class NoProjectDialogBox extends DialogBox {
 
   public static void closeIfOpen() {
     if (lastDialog != null) {
-      lastDialog.removeFromParent();;
+      lastDialog.removeFromParent();
       lastDialog = null;
     }
   }
