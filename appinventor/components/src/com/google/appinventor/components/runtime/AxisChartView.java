@@ -34,13 +34,8 @@ import java.util.List;
  * @param <C> MPAndroidChart class for Chart view.
  * @param <V> Type of the view for reflective operations
  */
-public abstract class AxisChartView<
-    E extends Entry,
-    T extends IBarLineScatterCandleBubbleDataSet<E>,
-    D extends BarLineScatterCandleBubbleData<T>,
-    C extends BarLineChartBase<D>,
-    V extends AxisChartView<E, T, D, C, V>
-    > extends ChartView<E, T, D, C, V> {
+public abstract class AxisChartView<E extends Entry, T extends IBarLineScatterCandleBubbleDataSet<E>, D extends BarLineScatterCandleBubbleData<T>, C extends BarLineChartBase<D>, V extends AxisChartView<E, T, D, C, V>>
+    extends ChartView<E, T, D, C, V> {
   // List containing Strings to use for the X Axis of the Axis Chart.
   // The first entry corresponds to an x value of 0, the second to
   // an x value of 1, and so on.
@@ -95,16 +90,16 @@ public abstract class AxisChartView<
         } else {
           // Custom axis label not present; Use the usual value
           if (valueType == CHART_VALUE_INTEGER) {
-            //labels are displayed as integer
+            // labels are displayed as integer
             return "" + ((int) value);
           } else if (valueType == CHART_VALUE_DATE) {
-            //display x-axis labels as Date
+            // display x-axis labels as Date
             Date mDate = new Date((long) value);
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             chart.getXAxis().setLabelRotationAngle(-90);
             return dateFormat.format(mDate);
           } else if (valueType == CHART_VALUE_TIME) {
-            //display x-axis labels as Time
+            // display x-axis labels as Time
             Date mDate = new Date((long) value);
             DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
             chart.getXAxis().setLabelRotationAngle(-90);
@@ -164,7 +159,7 @@ public abstract class AxisChartView<
   }
 
   public double[] getXBounds() {
-    return new double[] {chart.getXAxis().getAxisMinimum(), chart.getXAxis().getAxisMaximum()};
+    return new double[] { chart.getXAxis().getAxisMinimum(), chart.getXAxis().getAxisMaximum() };
   }
 
   public void setXBounds(double minimum, double maximum) {
@@ -188,9 +183,10 @@ public abstract class AxisChartView<
 
   /**
    *
-   * @param valueType indicates whether the data should be interpreted as integers or not
+   * @param valueType indicates whether the data should be interpreted as integers
+   *                  or not
    */
-  public void setValueType(int valueType){
+  public void setValueType(int valueType) {
     this.valueType = valueType;
   }
 
@@ -211,7 +207,8 @@ public abstract class AxisChartView<
    * Changes the List of X Axis labels to use for the Chart
    * to the specified List of Strings.
    *
-   * <p>The first entry of the List corresponds to an x value of 0,
+   * <p>
+   * The first entry of the List corresponds to an x value of 0,
    * the second entry to an x value of 1, and so on.
    * If an entry is not present for an x value, a default value
    * (usually the numeric value) is used instead.
@@ -220,5 +217,23 @@ public abstract class AxisChartView<
    */
   public void setLabels(List<String> labels) {
     this.axisLabels = labels;
+  }
+
+  /**
+   * Sets the text size of the X Axis.
+   *
+   * @param size text size
+   */
+  public void setXAxisTextSize(float size) {
+    chart.getXAxis().setTextSize(size);
+  }
+
+  /**
+   * Sets the text size of the Y Axis.
+   *
+   * @param size text size
+   */
+  public void setYAxisTextSize(float size) {
+    chart.getAxisLeft().setTextSize(size);
   }
 }

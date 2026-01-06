@@ -32,12 +32,8 @@ import java.util.List;
  * @param <C> MPAndroidChart class for Chart view.
  * @param <V> Type of the view that renders the data model.
  */
-public abstract class ChartDataModel<
-    E extends Entry,
-    T extends IDataSet<E>,
-    D extends ChartData<T>,
-    C extends com.github.mikephil.charting.charts.Chart<D>,
-    V extends ChartView<E, T, D, C, V>> extends DataModel<E> {
+public abstract class ChartDataModel<E extends Entry, T extends IDataSet<E>, D extends ChartData<T>, C extends com.github.mikephil.charting.charts.Chart<D>, V extends ChartView<E, T, D, C, V>>
+    extends DataModel<E> {
   protected D data;
   protected T dataset;
   protected V view;
@@ -111,18 +107,18 @@ public abstract class ChartDataModel<
    * @param valueType indicates the type of values Decimal, Integer, Date
    */
   public void setChartValueType(final int valueType) {
-    //for rendering point labels as integers
+    // for rendering point labels as integers
     dataset.setValueFormatter(new ValueFormatter() {
       @Override
       public String getFormattedValue(float value) {
         if (valueType == CHART_VALUE_DECIMAL) {
           return super.getFormattedValue(value);
         }
-        //integer type
+        // integer type
         return "" + ((int) (value));
       }
     });
-    //for rendering x-axis labels as integers
+    // for rendering x-axis labels as integers
     if (view instanceof AxisChartView) {
       ((AxisChartView<?, ?, ?, ?, ?>) view).setValueType(valueType);
     }
@@ -133,9 +129,31 @@ public abstract class ChartDataModel<
    *
    * @param argb new color
    */
+  /**
+   * Changes the color of the labels of the data set.
+   *
+   * @param argb new color
+   */
   public void setDataLabelColor(int argb) {
     data.setValueTextColor(argb);
   }
+
+  /**
+   * Changes the text size of the labels of the data set.
+   *
+   * @param size new text size
+   */
+  public void setDataLabelTextSize(float size) {
+    data.setValueTextSize(size);
+  }
+
+  /**
+   * Controls the visibility of the legend entry for this data series.
+   *
+   * @param visible true to show the legend entry, false to hide it
+   */
+  private String userLabel;
+  private boolean legendVisible = true;
 
   /**
    * Changes the label of the data set.
@@ -143,7 +161,35 @@ public abstract class ChartDataModel<
    * @param text new label text
    */
   public void setLabel(String text) {
-    getDataset().setLabel(text);
+    this.userLabel = text;
+    if (legendVisible) {
+      getDataset().setLabel(text);
+    } else {
+      getDataset().setLabel(null);
+    }
+  }
+
+  /**
+   * Controls the visibility of the legend entry for this data series.
+   *
+   * @param visible true to show the legend entry, false to hide it
+   */
+  public void setLegendVisible(boolean visible) {
+    this.legendVisible = visible;
+    if (dataset instanceof DataSet) {
+      if (visible) {
+        ((DataSet<?>) dataset).setForm(com.github.mikephil.charting.components.Legend.LegendForm.DEFAULT);
+      } else {
+        ((DataSet<?>) dataset).setForm(com.github.mikephil.charting.components.Legend.LegendForm.NONE);
+      }
+    }
+
+    // Also toggle the label to ensure it disappears entirely
+    if (visible) {
+      getDataset().setLabel(userLabel);
+    } else {
+      getDataset().setLabel(null);
+    }
   }
 
   /**
@@ -177,6 +223,7 @@ public abstract class ChartDataModel<
       addEntryFromTuple(YailList.makeList(tupleEntries));
     }
   }
+
   /**
    * Removes an entry from the Data Series from the specified
    * tuple (provided the entry exists).
@@ -188,8 +235,10 @@ public abstract class ChartDataModel<
     Entry entry = getEntryFromTuple(tuple);
 
     if (entry != null) {
-      // TODO: The commented line should be used instead. However, the library does not yet
-      // TODO: implement equals methods in it's entries as of yet, so the below method fails.
+      // TODO: The commented line should be used instead. However, the library does
+      // not yet
+      // TODO: implement equals methods in it's entries as of yet, so the below method
+      // fails.
       // dataset.removeEntry(entry);
 
       // Get the index of the entry
@@ -232,11 +281,13 @@ public abstract class ChartDataModel<
   /**
    * Finds and returns all the entries by the specified criterion and value.
    *
-   * <p>The entries are returned as tuple (YailList) representations.
+   * <p>
+   * The entries are returned as tuple (YailList) representations.
    *
    * @param value     value to use for comparison
    * @param criterion criterion to use for comparison
-   * @return YailList of entries represented as tuples matching the specified conditions
+   * @return YailList of entries represented as tuples matching the specified
+   *         conditions
    */
   public YailList findEntriesByCriterion(String value, EntryCriterion criterion) {
     List<YailList> entries = new ArrayList<>();
@@ -327,12 +378,16 @@ public abstract class ChartDataModel<
 
     return criterionSatisfied;
   }
+
   /**
    * Finds the index of the specified Entry in the Data Series.
    * Returns -1 if the Entry does not exist.
    *
-   * <p>TODO: Primarily used due to equals not implemented in MPAndroidChart (needed for specific
-   * TODO: operations). In the future, this method will probably become obsolete if it ever gets
+   * <p>
+   * TODO: Primarily used due to equals not implemented in MPAndroidChart (needed
+   * for specific
+   * TODO: operations). In the future, this method will probably become obsolete
+   * if it ever gets
    * TODO: fixed (post-v3.1.0).
    *
    * @param entry Entry to find
@@ -364,7 +419,8 @@ public abstract class ChartDataModel<
   /**
    * Adds the specified entry as a time entry to the Data Series.
    *
-   * <p>The method handles additional logic for removing excess values
+   * <p>
+   * The method handles additional logic for removing excess values
    * if the count exceeds the threshold.
    *
    * @param tuple tuple representing the time entry
@@ -396,9 +452,9 @@ public abstract class ChartDataModel<
    */
   protected void setDefaultStylingProperties() {
     /*
-        The method body is left empty to not require data models
-        which do not need any default styling properties to override
-        the method by default.
+     * The method body is left empty to not require data models
+     * which do not need any default styling properties to override
+     * the method by default.
      */
   }
 

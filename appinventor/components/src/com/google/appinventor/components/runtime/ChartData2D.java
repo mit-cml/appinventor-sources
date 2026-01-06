@@ -9,9 +9,13 @@ import android.util.Log;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 import gnu.lists.LList;
@@ -28,29 +32,92 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
- * for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar
- * Chart. The Data component is responsible for handling all the data of the Chart. The entries
+ * A ChartData2D component represents a single two-dimensional Data Series in
+ * the Chart component,
+ * for example, a single Line in the case of a Line Chart, or a single Bar in
+ * the case of a Bar
+ * Chart. The Data component is responsible for handling all the data of the
+ * Chart. The entries
  * of the Data component correspond of an x and a y value.
- * The component is attached directly to a Chart component by dragging it onto the Chart.
+ * The component is attached directly to a Chart component by dragging it onto
+ * the Chart.
  */
-@DesignerComponent(version = YaVersion.CHART_DATA_2D_COMPONENT_VERSION,
-    description = "A component that holds (x, y)-coordinate based data",
-    category = ComponentCategory.CHARTS,
-    iconName = "images/web.png")
+@DesignerComponent(version = YaVersion.CHART_DATA_2D_COMPONENT_VERSION, description = "A component that holds (x, y)-coordinate based data", category = ComponentCategory.CHARTS, iconName = "images/web.png")
 @SimpleObject
 @SuppressWarnings("checkstyle:JavadocParagraph")
 public final class ChartData2D extends ChartDataBase {
+  private float dataLabelFontSize = 14.0f;
+  private boolean legendVisible = true;
+
   /**
    * Creates a new Coordinate Data component.
    */
   public ChartData2D(Chart chartContainer) {
     super(chartContainer);
+    // Re-apply properties to ensure correct initialization after field initializers
+    // have run
+    // (because initChartData() called from super constructor sees uninitialized
+    // fields)
+    dataModel.setDataLabelTextSize(dataLabelFontSize);
+    dataModel.setLegendVisible(legendVisible);
+  }
+
+  @Override
+  public void initChartData() {
+    super.initChartData();
+    dataModel.setDataLabelTextSize(dataLabelFontSize);
+    dataModel.setLegendVisible(legendVisible);
   }
 
   /**
-   * Adds an entry with the specified x and y value. Values can be specified as text,
-   * or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
+   * Returns the data label font size of the Data Series.
+   *
+   * @return data label font size
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public float DataLabelFontSize() {
+    return dataLabelFontSize;
+  }
+
+  /**
+   * Specifies the font size of the data labels of the Data Series.
+   *
+   * @param size font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "14.0")
+  @SimpleProperty
+  public void DataLabelFontSize(float size) {
+    this.dataLabelFontSize = size;
+    dataModel.setDataLabelTextSize(size);
+  }
+
+  /**
+   * Returns whether the legend entry for this Data Series is visible.
+   *
+   * @return true if legend entry is visible
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public boolean LegendVisible() {
+    return legendVisible;
+  }
+
+  /**
+   * Specifies whether the legend entry for this Data Series should be visible.
+   *
+   * @param visible visibility
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @SimpleProperty
+  public void LegendVisible(boolean visible) {
+    this.legendVisible = visible;
+    dataModel.setLegendVisible(visible);
+  }
+
+  /**
+   * Adds an entry with the specified x and y value. Values can be specified as
+   * text,
+   * or as numbers. For Line, Scatter, Area and Bar Charts, both values should
+   * represent a number.
    * For Bar charts, the x value is rounded to the nearest integer.
    * For Pie Charts, the x value is a text value.
    *
@@ -74,7 +141,7 @@ public final class ChartData2D extends ChartDataBase {
 
             YailList labelList = container.Labels();
             int indexList = labelList.indexOf(x);
-            if (indexList > -1){
+            if (indexList > -1) {
               pair = YailList.makeList(Arrays.asList(indexList, y));
             }
 
@@ -102,7 +169,8 @@ public final class ChartData2D extends ChartDataBase {
 
   /**
    * Removes an entry with the specified x and y value, provided it exists.
-   * See {@link #AddEntry(String, String)} for an explanation of the valid entry values.
+   * See {@link #AddEntry(String, String)} for an explanation of the valid entry
+   * values.
    *
    * @param x - x value of entry
    * @param y - y value of entry
@@ -125,10 +193,10 @@ public final class ChartData2D extends ChartDataBase {
             YailList labelList = container.Labels();
             int indexList = labelList.indexOf(x);
             Entry currEntry = null;
-            if (indexList > -1){ // do we have labels in the x value?
+            if (indexList > -1) { // do we have labels in the x value?
               pair = YailList.makeList(Arrays.asList(indexList, y));
 
-             // currEntry = dataModel.getEntryFromTuple(pair);
+              // currEntry = dataModel.getEntryFromTuple(pair);
             }
             currEntry = dataModel.getEntryFromTuple(pair);
             int index = dataModel.findEntryIndex(currEntry);
@@ -156,7 +224,8 @@ public final class ChartData2D extends ChartDataBase {
   }
 
   /**
-   * Returns a boolean value specifying whether an entry with the specified x and y
+   * Returns a boolean value specifying whether an entry with the specified x and
+   * y
    * values exists. The boolean value of true is returned if the value exists,
    * and a false value otherwise. See {@link #AddEntry(String, String)}
    * for an explanation of the valid entry values.
@@ -227,9 +296,10 @@ public final class ChartData2D extends ChartDataBase {
   /**
    * Highlights all given data points on the Chart in the color of choice.
    *
-   * @param dataPoints - the list of data points. A data point inside this list is a pair of point
+   * @param dataPoints - the list of data points. A data point inside this list is
+   *                   a pair of point
    *                   index and point value: [[point index, point value],...,[,]]
-   * @param color - the highlight color chosen by the user
+   * @param color      - the highlight color chosen by the user
    */
   @SimpleFunction(description = "Highlights data points of choice on the Chart in the color of "
       + "choice. This block expects a list of data points, each data point is an index, value pair")
@@ -249,7 +319,7 @@ public final class ChartData2D extends ChartDataBase {
       int[] highlights = new int[entries.size()];
       Arrays.fill(highlights, dataModel.getDataset().getColor());
 
-      for (Object dataPoint: dataPointsList) {
+      for (Object dataPoint : dataPointsList) {
         if (!(dataPoint instanceof YailList)) {
           continue;
         }
@@ -288,4 +358,3 @@ public final class ChartData2D extends ChartDataBase {
     }
   }
 }
-

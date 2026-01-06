@@ -36,12 +36,7 @@ import java.util.List;
  * @param <C> MPAndroidChart class for Chart view.
  * @param <V> Type of the view for reflective operations
  */
-public abstract class ChartView<
-    E extends Entry,
-    T extends IDataSet<E>,
-    D extends ChartData<T>,
-    C extends Chart<D>,
-    V extends ChartView<E, T, D, C, V>> {
+public abstract class ChartView<E extends Entry, T extends IDataSet<E>, D extends ChartData<T>, C extends Chart<D>, V extends ChartView<E, T, D, C, V>> {
   // Keep track of the parent Chart component to be able to report
   // detailed errors & warnings.
   protected com.google.appinventor.components.runtime.Chart chartComponent;
@@ -56,7 +51,7 @@ public abstract class ChartView<
    * Creates a new Chart View with the specified Chart component
    * instance as the parent of the View.
    *
-   * @param chartComponent  Chart component to link View to
+   * @param chartComponent Chart component to link View to
    */
   protected ChartView(com.google.appinventor.components.runtime.Chart chartComponent) {
     this.chartComponent = chartComponent;
@@ -93,6 +88,15 @@ public abstract class ChartView<
    */
   public void setDescription(String text) {
     chart.getDescription().setText(text);
+  }
+
+  /**
+   * Sets the description text size of the Chart.
+   *
+   * @param size description text size
+   */
+  public void setDescriptionTextSize(float size) {
+    chart.getDescription().setTextSize(size);
   }
 
   /**
@@ -183,10 +187,12 @@ public abstract class ChartView<
    * Sets the specified List of Entries to the specified Chart Data
    * Model and refreshes the local Chart View.
    *
-   * <p>To be used after updating a ChartDataModel's entries to display
+   * <p>
+   * To be used after updating a ChartDataModel's entries to display
    * the changes on the Chart itself.
    *
-   * <p>Values are overwritten with the specified List of entries.
+   * <p>
+   * Values are overwritten with the specified List of entries.
    *
    * @param model   Chart Data Model to update
    * @param entries List of entries to set to the Chart Data Model

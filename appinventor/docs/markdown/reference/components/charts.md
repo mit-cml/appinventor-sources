@@ -14,11 +14,15 @@ Table of Contents:
 
 ## Chart  {#Chart}
 
-The Chart component plots data originating from it's attached Data components. Five different
- Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
+The Chart component plots data originating from it's attached Data
+ components. Five different
+ Chart types are available, including Line, Area, Scatter, Bar and Pie, which
+ can be changed by
  the [`Type`](#Chart.Type) property.
- The Chart component itself has various other properties that change the appearance
- of the Chart, such as {[`Description`](#Chart.Description), [`GridEnabled`](#Chart.GridEnabled),
+ The Chart component itself has various other properties that change the
+ appearance
+ of the Chart, such as {[`Description`](#Chart.Description),
+ [`GridEnabled`](#Chart.GridEnabled),
 
 
 
@@ -38,6 +42,9 @@ The Chart component plots data originating from it's attached Data components. F
 : Specifies the text displayed by the description label inside the Chart.
  Specifying an empty string ("") will not display any label.
 
+{:id="Chart.DescriptionFontSize" .number} *DescriptionFontSize*
+: Specifies the font size of the description label of the Chart.
+
 {:id="Chart.GridEnabled" .boolean} *GridEnabled*
 : Changes the visibility of the Chart's grid, if the
  Chart Type is set to a Chart with an Axis (applies for Area, Bar, Line,
@@ -54,16 +61,18 @@ The Chart component plots data originating from it's attached Data components. F
 : Changes the Chart's X axis labels to the specified List,
  if the Chart's Type is set to a Chart with an Axis.
 
-   The first entry of the List corresponds to the minimum x value of the data,
+ The first entry of the List corresponds to the minimum x value of the data,
  the second to the min x value + 1, and so on.
 
-   If a label is not specified for an x value, a default value
+ If a label is not specified for an x value, a default value
  is used (the x value of the axis tick at that location).
 
 {:id="Chart.LabelsFromString" .text .wo .do} *LabelsFromString*
 : Specifies the labels to set to the Chart's X Axis, provided the current
- view is a Chart with an X Axis. The labels are specified as a single comma-separated
- values String (meaning each value is separated by a comma). See [`Labels`](#Chart.Labels)
+ view is a Chart with an X Axis. The labels are specified as a single
+ comma-separated
+ values String (meaning each value is separated by a comma). See
+ [`Labels`](#Chart.Labels)
  for more details on how the Labels are applied to the Chart.
 
 {:id="Chart.Left" .number} *Left*
@@ -98,9 +107,15 @@ The Chart component plots data originating from it's attached Data components. F
 : Specifies the horizontal width of the `Chart` as a percentage
  of the [`Screen`'s `Width`](userinterface.html#Screen.Width).
 
+{:id="Chart.XAxisFontSize" .number} *XAxisFontSize*
+: Specifies the font size of the X Axis of the Chart.
+
 {:id="Chart.XFromZero" .boolean} *XFromZero*
 : Determines whether the X axis origin is set at 0 or the minimum X value
  across all data series.
+
+{:id="Chart.YAxisFontSize" .number} *YAxisFontSize*
+: Specifies the font size of the Y Axis of the Chart.
 
 {:id="Chart.YFromZero" .boolean} *YFromZero*
 : Determines whether the Y axis origin is set at 0 or the minimum y value
@@ -111,7 +126,8 @@ The Chart component plots data originating from it's attached Data components. F
 {:.events}
 
 {:id="Chart.EntryClick"} EntryClick(*series*{:.component},*x*{:.any},*y*{:.number})
-: Indicates that the user clicked on a data entry in the `Chart`. The specific series, along
+: Indicates that the user clicked on a data entry in the `Chart`. The specific
+ series, along
  with its x and y values, are reported.
 
 ### Methods  {#Chart-Methods}
@@ -119,11 +135,13 @@ The Chart component plots data originating from it's attached Data components. F
 {:.methods}
 
 {:id="Chart.ExtendDomainToInclude" class="method"} <i/> ExtendDomainToInclude(*x*{:.number})
-: Extends the domain of the chart to include the provided x value. If x is already within the
+: Extends the domain of the chart to include the provided x value. If x is
+ already within the
  bounds of the domain, this method has no effect.
 
 {:id="Chart.ExtendRangeToInclude" class="method"} <i/> ExtendRangeToInclude(*y*{:.number})
-: Extends the range of the chart to include the provided y value. If y is already within the
+: Extends the range of the chart to include the provided y value. If y is
+ already within the
  bounds of the range, this method has no effect.
 
 {:id="Chart.ResetAxes" class="method"} <i/> ResetAxes()
@@ -137,11 +155,15 @@ The Chart component plots data originating from it's attached Data components. F
 
 ## ChartData2D  {#ChartData2D}
 
-A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
- for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar
- Chart. The Data component is responsible for handling all the data of the Chart. The entries
+A ChartData2D component represents a single two-dimensional Data Series in
+ the Chart component,
+ for example, a single Line in the case of a Line Chart, or a single Bar in
+ the case of a Bar
+ Chart. The Data component is responsible for handling all the data of the
+ Chart. The entries
  of the Data component correspond of an x and a y value.
- The component is attached directly to a Chart component by dragging it onto the Chart.
+ The component is attached directly to a Chart component by dragging it onto
+ the Chart.
 
 
 
@@ -178,6 +200,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:id="ChartData2D.DataLabelColor" .color} *DataLabelColor*
 : Specifies the data points label color as an alpha-red-green-blue integer.
 
+{:id="ChartData2D.DataLabelFontSize" .number} *DataLabelFontSize*
+: Specifies the font size of the data labels of the Data Series.
+
 {:id="ChartData2D.DataSourceKey" .text .wo .do} *DataSourceKey*
 : Sets the Data Source key identifier for the value to import from the
  attached Data Source.
@@ -211,6 +236,9 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 
 {:id="ChartData2D.Label" .text} *Label*
 : Specifies the text for the data series label.
+
+{:id="ChartData2D.LegendVisible" .boolean} *LegendVisible*
+: Specifies whether the legend entry for this Data Series should be visible.
 
 {:id="ChartData2D.LineType" .com.google.appinventor.components.common.LineTypeEnum .wo .do} *LineType*
 : Changes the Line Type of the Data Series, provided that the
@@ -275,8 +303,10 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 {:.methods}
 
 {:id="ChartData2D.AddEntry" class="method"} <i/> AddEntry(*x*{:.text},*y*{:.text})
-: Adds an entry with the specified x and y value. Values can be specified as text,
- or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
+: Adds an entry with the specified x and y value. Values can be specified as
+ text,
+ or as numbers. For Line, Scatter, Area and Bar Charts, both values should
+ represent a number.
  For Bar charts, the x value is rounded to the nearest integer.
  For Pie Charts, the x value is a text value.
 
@@ -292,7 +322,8 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 : Removes all the entries from the Data Series.
 
 {:id="ChartData2D.DoesEntryExist" class="method returns boolean"} <i/> DoesEntryExist(*x*{:.text},*y*{:.text})
-: Returns a boolean value specifying whether an entry with the specified x and y
+: Returns a boolean value specifying whether an entry with the specified x and
+ y
  values exists. The boolean value of true is returned if the value exists,
  and a false value otherwise. See [`AddEntry`](#ChartData2D.AddEntry)
  for an explanation of the valid entry values.
@@ -373,7 +404,8 @@ A ChartData2D component represents a single two-dimensional Data Series in the C
 
 {:id="ChartData2D.RemoveEntry" class="method"} <i/> RemoveEntry(*x*{:.text},*y*{:.text})
 : Removes an entry with the specified x and y value, provided it exists.
- See [`AddEntry`](#ChartData2D.AddEntry) for an explanation of the valid entry values.
+ See [`AddEntry`](#ChartData2D.AddEntry) for an explanation of the valid entry
+ values.
 
 ## Trendline  {#Trendline}
 

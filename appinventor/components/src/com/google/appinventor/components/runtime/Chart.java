@@ -32,21 +32,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Chart component plots data originating from it's attached Data components. Five different
- * Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
+ * The Chart component plots data originating from it's attached Data
+ * components. Five different
+ * Chart types are available, including Line, Area, Scatter, Bar and Pie, which
+ * can be changed by
  * the {@link #Type(ChartType)} property.
- * The Chart component itself has various other properties that change the appearance
- * of the Chart, such as {{@link #Description(String)}, {@link #GridEnabled(boolean)},
+ * The Chart component itself has various other properties that change the
+ * appearance
+ * of the Chart, such as {{@link #Description(String)},
+ * {@link #GridEnabled(boolean)},
+ * 
  * @link #Labels(YailList)} and {@link #LegendEnabled(boolean)}.
  *
  * @see com.google.appinventor.components.runtime.ChartDataModel
  * @see com.google.appinventor.components.runtime.ChartView
  */
 @SimpleObject
-@DesignerComponent(version = YaVersion.CHART_COMPONENT_VERSION,
-    category = ComponentCategory.CHARTS,
-    description = "A component that allows visualizing data",
-    iconName = "images/chart.png")
+@DesignerComponent(version = YaVersion.CHART_COMPONENT_VERSION, category = ComponentCategory.CHARTS, description = "A component that allows visualizing data", iconName = "images/chart.png")
 @UsesLibraries(libraries = "mpandroidchart.jar")
 @SuppressWarnings("checkstyle:JavadocParagraph")
 public class Chart extends AndroidViewComponent
@@ -71,6 +73,9 @@ public class Chart extends AndroidViewComponent
 
   private int axesTextColor;
   private int valueType;
+  private float descriptionFontSize;
+  private float xAxisFontSize;
+  private float yAxisFontSize;
 
   // Synced tick value across all Data Series (used for real-time entries)
   // Start the value from 1 (in contrast to starting from 0 as in Chart
@@ -110,6 +115,9 @@ public class Chart extends AndroidViewComponent
     ValueFormat(0);
 
     AxesTextColor(Component.COLOR_DEFAULT);
+    DescriptionFontSize(14.0f);
+    XAxisFontSize(14.0f);
+    YAxisFontSize(14.0f);
 
     // Register onInitialize event of the Chart
     $form().registerForOnInitialize(this);
@@ -160,10 +168,8 @@ public class Chart extends AndroidViewComponent
    *
    * @return the current type of the chart
    */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR,
-      description = "Specifies the chart's type (area, bar, pie, scatter), "
-          + "which determines how to visualize the data.")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Specifies the chart's type (area, bar, pie, scatter), "
+      + "which determines how to visualize the data.")
   public ChartType Type() {
     return type;
   }
@@ -174,8 +180,7 @@ public class Chart extends AndroidViewComponent
    * @param type the desired chart type
    * @throws IllegalArgumentException if shape is not a legal value.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE,
-      defaultValue = "0")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_TYPE, defaultValue = "0")
   public void Type(ChartType type) {
     // Keep track whether a ChartView already exists,
     // in which case it will have to be reinitialized.
@@ -248,6 +253,9 @@ public class Chart extends AndroidViewComponent
     Labels(labels);
 
     AxesTextColor(axesTextColor);
+    DescriptionFontSize(descriptionFontSize);
+    XAxisFontSize(xAxisFontSize);
+    YAxisFontSize(yAxisFontSize);
   }
 
   /**
@@ -255,8 +263,7 @@ public class Chart extends AndroidViewComponent
    *
    * @return description label
    */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public String Description() {
     return description;
   }
@@ -275,13 +282,82 @@ public class Chart extends AndroidViewComponent
   }
 
   /**
+   * Returns the description font size of the Chart.
+   *
+   * @return description font size
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public float DescriptionFontSize() {
+    return descriptionFontSize;
+  }
+
+  /**
+   * Specifies the font size of the description label of the Chart.
+   *
+   * @param size font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "14.0")
+  @SimpleProperty
+  public void DescriptionFontSize(float size) {
+    this.descriptionFontSize = size;
+    chartView.setDescriptionTextSize(size);
+  }
+
+  /**
+   * Returns the X Axis font size of the Chart.
+   *
+   * @return X Axis font size
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public float XAxisFontSize() {
+    return xAxisFontSize;
+  }
+
+  /**
+   * Specifies the font size of the X Axis of the Chart.
+   *
+   * @param size font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "14.0")
+  @SimpleProperty
+  public void XAxisFontSize(float size) {
+    this.xAxisFontSize = size;
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setXAxisTextSize(size);
+    }
+  }
+
+  /**
+   * Returns the Y Axis font size of the Chart.
+   *
+   * @return Y Axis font size
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public float YAxisFontSize() {
+    return yAxisFontSize;
+  }
+
+  /**
+   * Specifies the font size of the Y Axis of the Chart.
+   *
+   * @param size font size
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "14.0")
+  @SimpleProperty
+  public void YAxisFontSize(float size) {
+    this.yAxisFontSize = size;
+    if (chartView instanceof AxisChartView) {
+      ((AxisChartView<?, ?, ?, ?, ?>) chartView).setYAxisTextSize(size);
+    }
+  }
+
+  /**
    * Returns the chart's background color as an alpha-red-green-blue
    * integer.
    *
    * @return background RGB color with alpha
    */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -292,8 +368,7 @@ public class Chart extends AndroidViewComponent
    *
    * @param argb background RGB color with alpha
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
   public void BackgroundColor(int argb) {
     if (argb == Component.COLOR_DEFAULT) {
@@ -309,8 +384,7 @@ public class Chart extends AndroidViewComponent
    *
    * @return axes text RGB color with alpha
    */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public int AxesTextColor() {
     return axesTextColor;
   }
@@ -321,8 +395,7 @@ public class Chart extends AndroidViewComponent
    *
    * @param argb background RGB color with alpha
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
   public void AxesTextColor(int argb) {
     if (argb == Component.COLOR_DEFAULT) {
@@ -342,7 +415,8 @@ public class Chart extends AndroidViewComponent
   /**
    * Specifies the format for X axis labels and point values.
    *
-   * @param valueType set to true if the user desires to interpret data as integers
+   * @param valueType set to true if the user desires to interpret data as
+   *                  integers
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_VALUE_TYPE)
   @SimpleProperty(category = PropertyCategory.APPEARANCE, userVisible = false)
@@ -363,20 +437,19 @@ public class Chart extends AndroidViewComponent
    * not the Pie Chart, the value has no effect.
    *
    * @internaldoc
-   *     The value is hidden in the blocks due to it being applicable
-   *     to a single Chart only. TODO: Might be better to change this in the future
+   *              The value is hidden in the blocks due to it being applicable
+   *              to a single Chart only. TODO: Might be better to change this in
+   *              the future
    *
-   *     TODO: Make this an enum selection in the future? (Donut, Full Pie, Small Donut, etc.)
+   *              TODO: Make this an enum selection in the future? (Donut, Full
+   *              Pie, Small Donut, etc.)
    *
    * @param percent Percentage of the Pie Chart radius to fill
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS,
-      defaultValue = "100")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHART_PIE_RADIUS, defaultValue = "100")
   @SimpleProperty(description = "Sets the Pie Radius of a Pie Chart from 0% to 100%, where the "
       + "percentage indicates the percentage of the hole fill. 100% means that a full Pie Chart "
-      + "is drawn, while values closer to 0% correspond to hollow Pie Charts.",
-      userVisible = false,
-      category = PropertyCategory.APPEARANCE)
+      + "is drawn, while values closer to 0% correspond to hollow Pie Charts.", userVisible = false, category = PropertyCategory.APPEARANCE)
   public void PieRadius(int percent) {
     this.pieRadius = percent;
 
@@ -403,8 +476,7 @@ public class Chart extends AndroidViewComponent
    *
    * @param enabled indicates whether the Chart should be enabled.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
   @SimpleProperty
   public void LegendEnabled(boolean enabled) {
     this.legendEnabled = enabled;
@@ -431,8 +503,7 @@ public class Chart extends AndroidViewComponent
    *
    * @param enabled indicates whether the Chart's grid should be enabled.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
   @SimpleProperty
   public void GridEnabled(boolean enabled) {
     this.gridEnabled = enabled;
@@ -461,10 +532,10 @@ public class Chart extends AndroidViewComponent
    * Changes the Chart's X axis labels to the specified List,
    * if the Chart's Type is set to a Chart with an Axis.
    *
-   *   The first entry of the List corresponds to the minimum x value of the data,
+   * The first entry of the List corresponds to the minimum x value of the data,
    * the second to the min x value + 1, and so on.
    *
-   *   If a label is not specified for an x value, a default value
+   * If a label is not specified for an x value, a default value
    * is used (the x value of the axis tick at that location).
    *
    * @param labels List of labels to set to the X Axis of the Chart
@@ -492,14 +563,16 @@ public class Chart extends AndroidViewComponent
     }
   }
 
-
   /**
    * Specifies the labels to set to the Chart's X Axis, provided the current
-   * view is a Chart with an X Axis. The labels are specified as a single comma-separated
-   * values String (meaning each value is separated by a comma). See {@link #Labels(YailList)}
+   * view is a Chart with an X Axis. The labels are specified as a single
+   * comma-separated
+   * values String (meaning each value is separated by a comma). See
+   * {@link #Labels(YailList)}
    * for more details on how the Labels are applied to the Chart.
    *
-   * @param labels Comma-separated values, where each value represents a label (in order)
+   * @param labels Comma-separated values, where each value represents a label (in
+   *               order)
    * @see #Labels(YailList)
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING)
@@ -516,8 +589,7 @@ public class Chart extends AndroidViewComponent
    *
    * @param zero true if the X-axis origin should be fixed at zero
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void XFromZero(boolean zero) {
     this.zeroX = zero;
@@ -538,8 +610,7 @@ public class Chart extends AndroidViewComponent
    *
    * @param zero true if the Y-axis origin should be fixed at zero
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void YFromZero(boolean zero) {
     this.zeroY = zero;
@@ -555,7 +626,8 @@ public class Chart extends AndroidViewComponent
   }
 
   /**
-   * Extends the domain of the chart to include the provided x value. If x is already within the
+   * Extends the domain of the chart to include the provided x value. If x is
+   * already within the
    * bounds of the domain, this method has no effect.
    *
    * @param x the value to show
@@ -576,7 +648,8 @@ public class Chart extends AndroidViewComponent
   }
 
   /**
-   * Extends the range of the chart to include the provided y value. If y is already within the
+   * Extends the range of the chart to include the provided y value. If y is
+   * already within the
    * bounds of the range, this method has no effect.
    *
    * @param y the value to show
@@ -640,12 +713,13 @@ public class Chart extends AndroidViewComponent
   }
 
   /**
-   * Indicates that the user clicked on a data entry in the `Chart`. The specific series, along
+   * Indicates that the user clicked on a data entry in the `Chart`. The specific
+   * series, along
    * with its x and y values, are reported.
    *
    * @param series the series clicked on
-   * @param x the x position of the clicked entry
-   * @param y the y position of the clicked entry
+   * @param x      the x position of the clicked entry
+   * @param y      the y position of the clicked entry
    */
   @SimpleEvent
   public void EntryClick(Component series, Object x, double y) {
@@ -704,15 +778,18 @@ public class Chart extends AndroidViewComponent
    * Returns the t value to use for time entries for a
    * Data Series of this Chart component.
    *
-   * <p>Takes in the t value of a Data Series as an argument
+   * <p>
+   * Takes in the t value of a Data Series as an argument
    * to determine a value tailored to the Data Series, while
    * updating the synced t value of the Chart component.
    *
-   * <p>This method primarily takes care of syncing t values
+   * <p>
+   * This method primarily takes care of syncing t values
    * across all the Data Series of the Chart for consistency.
    *
    * @param dataSeriesT t value of a Data Series
-   * @return t value to use for the next time entry based on the specified parameter
+   * @return t value to use for the next time entry based on the specified
+   *         parameter
    */
   public int getSyncedTValue(int dataSeriesT) {
     int returnValue;
