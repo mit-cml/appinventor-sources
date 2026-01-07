@@ -868,6 +868,8 @@ let HORIZONTAL_LAYOUT = 1
       } else {
         cell.backgroundColor = argbToColor(_elementColor)
       }
+    } else {
+      cell.backgroundColor = argbToColor(_backgroundColor)
     }
     
     //maintext
@@ -903,9 +905,14 @@ let HORIZONTAL_LAYOUT = 1
     if cell.selectedBackgroundView == nil {
       cell.selectedBackgroundView = UIView()
     }
-    cell.selectedBackgroundView?.backgroundColor =
-        argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue)
-        ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
+
+    let selectedBgView = UIView()
+    selectedBgView.backgroundColor =
+    (_selectionColor != Color.none.int32) ?
+      (_selectionColor == Color.default.int32 ? (argbToColor(kListViewDefaultSelectionColor.rawValue))
+        : argbToColor(_selectionColor))
+      :argbToColor(_selectionColor)
+    cell.selectedBackgroundView = selectedBgView
     return cell
   }
 
@@ -1073,6 +1080,13 @@ let HORIZONTAL_LAYOUT = 1
     cell.imageView.image = image
     cell.imageView.isHidden = (image == nil)
 
+    let selectedBgView = UIView()
+    selectedBgView.backgroundColor =
+    (_selectionColor != Color.none.int32) ?
+      (_selectionColor == Color.default.int32 ? (argbToColor(kListViewDefaultSelectionColor.rawValue))
+        : argbToColor(_selectionColor))
+      :argbToColor(_selectionColor)
+    cell.selectedBackgroundView = selectedBgView
     return cell
   }
 
