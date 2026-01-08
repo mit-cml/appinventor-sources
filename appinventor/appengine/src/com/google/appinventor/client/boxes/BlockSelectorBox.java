@@ -171,7 +171,9 @@ public final class BlockSelectorBox extends Box {
     }
     rootItem = new TreeItem(new HTML("<span>" + MESSAGES.builtinBlocksLabel() + "</span>"));
     for (final BlocksCategory category : getSubsetDrawerNames(language, form)) {
-      TreeItem itemNode = new TreeItem(new HTML("<span>" + new Image(category.getImage()) +
+      Image categoryImage = new Image(category.getImage());
+      categoryImage.setAltText(category.getName() + " blocks");
+      TreeItem itemNode = new TreeItem(new HTML("<span>" + categoryImage +
           category.getName() + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
