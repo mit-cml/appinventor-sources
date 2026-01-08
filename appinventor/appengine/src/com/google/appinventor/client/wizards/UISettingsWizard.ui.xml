@@ -8,10 +8,10 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
-  <wiz:Dialog ui:field="uiDialog" caption="{messages.uiSettings}"
-              styleName="ode-DialogBox ode-UserSettingsDialog">
+  <wiz:Dialog ui:field="uiDialog" role="dialog" ariaModal="true" ariaLabel="User Interface Settings"
+              caption="{messages.uiSettings}" styleName="ode-DialogBox ode-UserSettingsDialog">
     <g:FlowPanel>
-      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap" tabIndex="-1"/>
       <g:FlowPanel styleName="ode-DialogRow">
         <g:Label text="{messages.selectStyle}" />
       </g:FlowPanel>
@@ -54,7 +54,7 @@
         <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton"/>
         <g:Button ui:field="applyButton" text='{messages.okButton}' styleName="ode-ProjectListButton"/>
       </g:FlowPanel>
-      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" tabIndex="-1" />
     </g:FlowPanel>
   </wiz:Dialog>
 </ui:UiBinder>
