@@ -70,6 +70,7 @@
 	"Blockly.Msg.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN": "Select a valid item in the drop down.",
 	"Blockly.Msg.ERROR_DUPLICATE_EVENT_HANDLER": "This is a duplicate event handler for this component.",
 	"Blockly.Msg.ERROR_COMPONENT_DOES_NOT_EXIST": "Component does not exist",
+	"COMPONENT_METHOD_ADD": "Add",
 	"Blockly.Msg.ERROR_BLOCK_IS_NOT_DEFINED": "This block is not defined. Delete this block!",
 	"Blockly.Msg.ERROR_BREAK_ONLY_IN_LOOP": "The break block should be used only within loops",
 	"Blockly.Msg.ERROR_INVALID_NUMBER_CONTENT": "This text block does not contain a valid number",

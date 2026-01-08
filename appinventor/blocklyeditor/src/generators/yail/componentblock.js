@@ -179,7 +179,7 @@ AI.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
     var timeUnit = methodBlock.getFieldValue("TIME_UNIT");
     if (timeUnit) {
       if (Blockly.ComponentBlock.isClockMethodName(methodName)) {
-        methodName = "Add"+timeUnit; // For example, AddDays
+        methodName = Blockly.Msg.COMPONENT_METHOD_ADD + timeUnit; // For example, AddDays
       }
     }
   }
