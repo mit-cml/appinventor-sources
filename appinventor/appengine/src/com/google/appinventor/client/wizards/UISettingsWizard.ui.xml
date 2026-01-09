@@ -48,7 +48,7 @@
     </g:FlowPanel>
     <g:FlowPanel styleName="ode-DialogRow">
       <g:Label text="{messages.selectTheme}" />
-      <g:ListBox multipleSelect="false" ui:field="themeSelector" />
+      <g:ListBox multipleSelect="false" ui:field="themeSelector" title="{messages.selectTheme}" />
     </g:FlowPanel>
       <g:FlowPanel styleName="buttonRow">
         <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton"/>
