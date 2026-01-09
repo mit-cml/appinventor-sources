@@ -78,6 +78,7 @@ public final class MockARView3D extends MockContainer {
     typesAndIcons.put("ConeNode", new Image(images.coneNode()).getElement().getString());
     typesAndIcons.put("BoxNode", new Image(images.boxNode()).getElement().getString());
     typesAndIcons.put("CylinderNode", new Image(images.cylinderNode()).getElement().getString());
+    typesAndIcons.put("ModelNode", new Image(images.planeNode()).getElement().getString());
     typesAndIcons.put("PlaneNode", new Image(images.planeNode()).getElement().getString());
     typesAndIcons.put("PyramidNode", new Image(images.pyramidNode()).getElement().getString());
     typesAndIcons.put("SphereNode", new Image(images.sphereNode()).getElement().getString());
