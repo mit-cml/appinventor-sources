@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../block_svg.js';
+import { MiniWorkspaceBubble } from '../bubbles/mini_workspace_bubble.js';
 import type { Abstract } from '../events/events_abstract.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import { Coordinate } from '../utils/coordinate.js';
@@ -54,6 +55,8 @@ export declare class MutatorIcon extends Icon implements IHasBubble {
     isClickableInFlyout(): boolean;
     bubbleIsVisible(): boolean;
     setBubbleVisible(visible: boolean): Promise<void>;
+    /** See IHasBubble.getBubble. */
+    getBubble(): MiniWorkspaceBubble | null;
     /** @returns the configuration the mini workspace should have. */
     private getMiniWorkspaceConfig;
     /**

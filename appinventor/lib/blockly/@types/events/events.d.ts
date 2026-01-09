@@ -22,7 +22,6 @@ export { CommentDelete } from './events_comment_delete.js';
 export { CommentDrag, CommentDragJson } from './events_comment_drag.js';
 export { CommentMove, CommentMoveJson } from './events_comment_move.js';
 export { CommentResize, CommentResizeJson } from './events_comment_resize.js';
-export { MarkerMove, MarkerMoveJson } from './events_marker_move.js';
 export { Selected, SelectedJson } from './events_selected.js';
 export { ThemeChange, ThemeChangeJson } from './events_theme_change.js';
 export { ToolboxItemSelect, ToolboxItemSelectJson, } from './events_toolbox_item_select.js';
@@ -32,6 +31,7 @@ export { VarBase, VarBaseJson } from './events_var_base.js';
 export { VarCreate, VarCreateJson } from './events_var_create.js';
 export { VarDelete, VarDeleteJson } from './events_var_delete.js';
 export { VarRename, VarRenameJson } from './events_var_rename.js';
+export { VarTypeChange, VarTypeChangeJson } from './events_var_type_change.js';
 export { ViewportChange, ViewportChangeJson } from './events_viewport.js';
 export { FinishedLoading } from './workspace_events.js';
 export type { BumpEvent } from './utils.js';
@@ -56,7 +56,6 @@ export declare const CREATE = EventType.BLOCK_CREATE;
 /** @deprecated Use BLOCK_DELETE instead */
 export declare const DELETE = EventType.BLOCK_DELETE;
 export declare const FINISHED_LOADING = EventType.FINISHED_LOADING;
-export declare const MARKER_MOVE = EventType.MARKER_MOVE;
 /** @deprecated Use BLOCK_MOVE instead */
 export declare const MOVE = EventType.BLOCK_MOVE;
 export declare const SELECTED = EventType.SELECTED;

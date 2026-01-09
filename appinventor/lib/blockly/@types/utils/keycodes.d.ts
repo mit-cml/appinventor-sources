@@ -131,6 +131,7 @@ export declare enum KeyCodes {
     MAC_WK_CMD_RIGHT = 93,// WebKit Right Command key fired, different from META
     WIN_IME = 229,
     VK_NONAME = 252,
-    PHANTOM = 255
+    PHANTOM = 255,
+    CTRL_CMD
 }
 //# sourceMappingURL=keycodes.d.ts.map

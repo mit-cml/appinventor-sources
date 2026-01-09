@@ -146,6 +146,12 @@ export declare class FieldNumber extends FieldInput<number> {
      */
     protected widgetCreate_(): HTMLInputElement;
     /**
+     * Initialize the field's DOM.
+     *
+     * @override
+     */
+    initView(): void;
+    /**
      * Construct a FieldNumber from a JSON arg object.
      *
      * @param options A JSON object with options (value, min, max, and precision).
