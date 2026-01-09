@@ -10,19 +10,20 @@
  */
 import './events/events_selected.js';
 import { Block } from './block.js';
-import { IDeletable } from './blockly.js';
 import { BlockCopyData } from './clipboard/block_paster.js';
 import type { Connection } from './connection.js';
 import { ConnectionType } from './connection_type.js';
 import { ContextMenuOption, LegacyContextMenuOption } from './contextmenu_registry.js';
-import type { Field } from './field.js';
 import { IconType } from './icons/icon_types.js';
 import { MutatorIcon } from './icons/mutator_icon.js';
 import type { Input } from './inputs/input.js';
-import type { IASTNodeLocationSvg } from './interfaces/i_ast_node_location_svg.js';
 import type { IBoundedElement } from './interfaces/i_bounded_element.js';
+import { IContextMenu } from './interfaces/i_contextmenu.js';
 import type { ICopyable } from './interfaces/i_copyable.js';
+import { IDeletable } from './interfaces/i_deletable.js';
 import type { IDragStrategy, IDraggable } from './interfaces/i_draggable.js';
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
+import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import { IIcon } from './interfaces/i_icon.js';
 import { RenderedConnection } from './rendered_connection.js';
 import type { IPathObject } from './renderers/common/i_path_object.js';
@@ -36,7 +37,7 @@ import type { WorkspaceSvg } from './workspace_svg.js';
  * Class for a block's SVG representation.
  * Not normally called directly, workspace.newBlock() is preferred.
  */
-export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBoundedElement, ICopyable<BlockCopyData>, IDraggable, IDeletable {
+export declare class BlockSvg extends Block implements IBoundedElement, IContextMenu, ICopyable<BlockCopyData>, IDraggable, IDeletable, IFocusableNode {
     /**
      * Constant for identifying rows that are to be rendered inline.
      * Don't collide with Blockly.inputTypes.
@@ -228,17 +229,16 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      */
     setCollapsed(collapsed: boolean): void;
     /**
+     * Traverses child blocks to see if any of them have a warning.
+     *
+     * @returns true if any child has a warning, false otherwise.
+     */
+    private childHasWarning;
+    /**
      * Makes sure that when the block is collapsed, it is rendered correctly
      * for that state.
      */
     private updateCollapsed;
-    /**
-     * Open the next (or previous) FieldTextInput.
-     *
-     * @param start Current field.
-     * @param forward If true go forward, otherwise backward.
-     */
-    tab(start: Field, forward: boolean): void;
     /**
      * Handle a pointerdown on an SVG block.
      *
@@ -256,14 +256,20 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      *
      * @returns Context menu options or null if no menu.
      */
-    protected generateContextMenu(): Array<ContextMenuOption | LegacyContextMenuOption> | null;
+    protected generateContextMenu(e: Event): Array<ContextMenuOption | LegacyContextMenuOption> | null;
+    /**
+     * Gets the location in which to show the context menu for this block.
+     * Use the location of a click if the block was clicked, or a location
+     * based on the block's fields otherwise.
+     */
+    protected calculateContextMenuLocation(e: Event): Coordinate;
     /**
      * Show the context menu for this block.
      *
      * @param e Mouse event.
      * @internal
      */
-    showContextMenu(e: PointerEvent): void;
+    showContextMenu(e: Event): void;
     /**
      * Updates the locations of any parts of the block that need to know where
      * they are (e.g. connections, icons).
@@ -275,6 +281,18 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
     private updateConnectionLocations;
     private updateIconLocations;
     private updateFieldLocations;
+    /**
+     * Add a CSS class to the SVG group of this block.
+     *
+     * @param className
+     */
+    addClass(className: string): void;
+    /**
+     * Remove a CSS class from the SVG group of this block.
+     *
+     * @param className
+     */
+    removeClass(className: string): void;
     /**
      * Recursively adds or removes the dragging class to this node and its
      * children.
@@ -343,9 +361,12 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
     /**
      * Encode a block for copying.
      *
+     * @param addNextBlocks If true, copy subsequent blocks attached to this one
+     *     as well.
+     *
      * @returns Copy metadata, or null if the block is an insertion marker.
      */
-    toCopyData(): BlockCopyData | null;
+    toCopyData(addNextBlocks?: boolean): BlockCopyData | null;
     /**
      * Updates the colour of the block to match the block's state.
      *
@@ -381,17 +402,6 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
     private createIconPointerDownListener;
     removeIcon(type: IconType<IIcon>): boolean;
     /**
-     * @deprecated v11 - Set whether the block is manually enabled or disabled.
-     * The user can toggle whether a block is disabled from a context menu
-     * option. A block may still be disabled for other reasons even if the user
-     * attempts to manually enable it, such as when the block is in an invalid
-     * location. This method is deprecated and setDisabledReason should be used
-     * instead.
-     *
-     * @param enabled True if enabled.
-     */
-    setEnabled(enabled: boolean): void;
-    /**
      * Add or remove a reason why the block might be disabled. If a block has
      * any reasons to be disabled, then the block itself will be considered
      * disabled. A block could be disabled for multiple independent reasons
@@ -406,6 +416,11 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      *     update whether the block is currently disabled for this reason.
      */
     setDisabledReason(disabled: boolean, reason: string): void;
+    /**
+     * Add blocklyNotDeletable class when block is not deletable
+     * Or remove class when block is deletable
+     */
+    setDeletable(deletable: boolean): void;
     /**
      * Set whether the block is highlighted or not.  Block highlighting is
      * often used to visually mark blocks currently being executed.
@@ -649,24 +664,6 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * @internal
      */
     tightenChildrenEfficiently(): void;
-    /** Redraw any attached marker or cursor svgs if needed. */
-    protected updateMarkers_(): void;
-    /**
-     * Add the cursor SVG to this block's SVG group.
-     *
-     * @param cursorSvg The SVG root of the cursor to be added to the block SVG
-     *     group.
-     * @internal
-     */
-    setCursorSvg(cursorSvg: SVGElement): void;
-    /**
-     * Add the marker SVG to this block's SVG group.
-     *
-     * @param markerSvg The SVG root of the marker to be added to the block SVG
-     *     group.
-     * @internal
-     */
-    setMarkerSvg(markerSvg: SVGElement): void;
     /**
      * Returns a bounding box describing the dimensions of this block
      * and any blocks stacked below it.
@@ -696,8 +693,17 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * @internal
      */
     highlightShapeForInput(conn: RenderedConnection, add: boolean): void;
+    /**
+     * Returns the drag strategy currently in use by this block.
+     *
+     * @internal
+     * @returns This block's drag strategy.
+     */
+    getDragStrategy(): IDragStrategy;
     /** Sets the drag strategy for this block. */
     setDragStrategy(dragStrategy: IDragStrategy): void;
+    /** Returns whether this block is copyable or not. */
+    isCopyable(): boolean;
     /** Returns whether this block is movable or not. */
     isMovable(): boolean;
     /** Starts a drag on the block. */
@@ -712,5 +718,16 @@ export declare class BlockSvg extends Block implements IASTNodeLocationSvg, IBou
      * Returns a representation of this block that can be displayed in a flyout.
      */
     toFlyoutInfo(): FlyoutItemInfo[];
+    jsonInit(json: any): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
 }
 //# sourceMappingURL=block_svg.d.ts.map

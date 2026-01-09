@@ -6,9 +6,11 @@
 import * as browserEvents from '../browser_events.js';
 import { DeleteArea } from '../delete_area.js';
 import '../events/events_toolbox_item_select.js';
-import type { IAutoHideable } from '../interfaces/i_autohideable.js';
+import { type IAutoHideable } from '../interfaces/i_autohideable.js';
 import type { IDraggable } from '../interfaces/i_draggable.js';
 import type { IFlyout } from '../interfaces/i_flyout.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
+import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
 import type { IKeyboardAccessible } from '../interfaces/i_keyboard_accessible.js';
 import type { ISelectableToolboxItem } from '../interfaces/i_selectable_toolbox_item.js';
 import type { IStyleable } from '../interfaces/i_styleable.js';
@@ -22,7 +24,7 @@ import type { WorkspaceSvg } from '../workspace_svg.js';
  * Class for a Toolbox.
  * Creates the toolbox's DOM.
  */
-export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeyboardAccessible, IStyleable, IToolbox {
+export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeyboardAccessible, IStyleable, IToolbox, IFocusableNode {
     /**
      * The unique ID for this component that is used to register with the
      * ComponentManager.
@@ -36,8 +38,6 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
     protected contentsDiv_: HTMLDivElement | null;
     /** Whether the Toolbox is visible. */
     protected isVisible_: boolean;
-    /** The list of items in the toolbox. */
-    protected contents_: IToolboxItem[];
     /** The width of the toolbox. */
     protected width_: number;
     /** The height of the toolbox. */
@@ -45,9 +45,8 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
     RTL: boolean;
     /** The flyout for the toolbox. */
     private flyout;
-    protected contentMap_: {
-        [key: string]: IToolboxItem;
-    };
+    /** Map from ID to the corresponding toolbox item. */
+    protected contents: Map<string, IToolboxItem>;
     toolboxPosition: toolbox.Position;
     /** The currently selected item. */
     protected selectedItem_: ISelectableToolboxItem | null;
@@ -61,6 +60,8 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
     protected boundEvents_: browserEvents.Data[];
     /** The workspace this toolbox is on. */
     protected readonly workspace_: WorkspaceSvg;
+    /** Whether the mouse is currently being clicked. */
+    private mouseDown;
     /** @param workspace The workspace in which to create new blocks. */
     constructor(workspace: WorkspaceSvg);
     /**
@@ -392,5 +393,27 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
     private selectPrevious;
     /** Disposes of this toolbox. */
     dispose(): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
+    /** See IFocusableTree.getRootFocusableNode. */
+    getRootFocusableNode(): IFocusableNode;
+    /** See IFocusableTree.getRestoredFocusableNode. */
+    getRestoredFocusableNode(previousNode: IFocusableNode | null): IFocusableNode | null;
+    /** See IFocusableTree.getNestedTrees. */
+    getNestedTrees(): Array<IFocusableTree>;
+    /** See IFocusableTree.lookUpFocusableNode. */
+    lookUpFocusableNode(id: string): IFocusableNode | null;
+    /** See IFocusableTree.onTreeFocus. */
+    onTreeFocus(node: IFocusableNode, _previousTree: IFocusableTree | null): void;
+    /** See IFocusableTree.onTreeBlur. */
+    onTreeBlur(nextTree: IFocusableTree | null): void;
 }
 //# sourceMappingURL=toolbox.d.ts.map

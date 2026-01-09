@@ -61,10 +61,11 @@ export declare class PathObject extends BasePathObject {
     /**
      * Create's an outline path for the specified input.
      *
+     * @internal
      * @param name The input name.
      * @returns The SVG outline path.
      */
-    private getOutlinePath;
+    getOutlinePath(name: string): SVGElement;
     /**
      * Remove an outline path that is associated with the specified input.
      *
