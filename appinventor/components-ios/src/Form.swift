@@ -209,6 +209,17 @@ let kMinimumToastWait = 10.0
 
   private var _dimensions = [Int:NSLayoutConstraint]()
 
+  open func onAttach() {
+    for child in _components {
+      guard let child = child as? ViewComponent else {
+        continue
+      }
+      if child.Visible {
+        child.onAttach()
+      }
+    }
+  }
+
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
     if width <= kLengthPercentTag {
       _linearView.setWidth(of: component.view, to: Length(percent: width, of: _scaleFrameLayout))
@@ -382,6 +393,7 @@ let kMinimumToastWait = 10.0
         obj.perform(#selector(Initialize))
       }
     }
+    onAttach()
   }
 
   func defaultPropertyValues() {
