@@ -4,7 +4,6 @@ suite('TypeBlock', function() {
   setup(function() {
     Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
     workspace = Blockly.common.getMainWorkspace();
-    Blockly.common.setSelected(null);
   });
 
   function input(text) {

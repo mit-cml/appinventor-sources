@@ -4,7 +4,6 @@ suite('Multiselect', function() {
   setup(function() {
     Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
     workspace = Blockly.common.getMainWorkspace();
-    Blockly.common.setSelected(null);
   });
 
   test('copy/paste blocks', async function() {
