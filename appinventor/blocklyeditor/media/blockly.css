@@ -58,20 +58,6 @@
   font-size: 11pt;
   fill: #fff;
 }
-.blocklyNonEditableText>text {
-  pointer-events: none;
-}
-.blocklyNonEditableText>rect, .blocklyEditableText>rect {
-  fill: #fff;
-  fill-opacity: .6;
-}
-.blocklyNonEditableText>text, .blocklyEditableText>text {
-  fill: #000;
-}
-.blocklyEditableText:hover>rect {
-  stroke-width: 2;
-  stroke: #fff;
-}
 .blocklySvg text {
   -moz-user-select: none;
   -webkit-user-select: none;
