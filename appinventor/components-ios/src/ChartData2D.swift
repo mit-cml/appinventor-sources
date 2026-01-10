@@ -7,12 +7,37 @@ import Foundation
 import DGCharts
 
 @objc open class ChartData2D: ChartDataBase {
+  private var _dataLabelFontSize: Float = 14.0
+  private var _legendVisible: Bool = true
+
 
   override init(_ chartContainer: Chart) {
     super.init(chartContainer)
     dataFileColumns = [" ", " "]
     sheetColumns = [" ", " "]
     webColumns = [" ", " "]
+    chartDataModel?.setDataLabelTextSize(CGFloat(_dataLabelFontSize))
+    chartDataModel?.setLegendVisible(_legendVisible)
+  }
+
+  @objc open var DataLabelFontSize: Float {
+    get {
+      return _dataLabelFontSize
+    }
+    set {
+      _dataLabelFontSize = newValue
+      chartDataModel?.setDataLabelTextSize(CGFloat(newValue))
+    }
+  }
+
+  @objc open var LegendVisible: Bool {
+    get {
+      return _legendVisible
+    }
+    set {
+      _legendVisible = newValue
+      chartDataModel?.setLegendVisible(newValue)
+    }
   }
 
   @objc func AddEntry(_ x: String, _ y: String) {

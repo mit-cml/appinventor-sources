@@ -215,6 +215,7 @@ public abstract class AxisChartView<E extends Entry, T extends IBarLineScatterCa
    *
    * @param labels List of labels to apply to the X Axis
    */
+
   public void setLabels(List<String> labels) {
     this.axisLabels = labels;
   }

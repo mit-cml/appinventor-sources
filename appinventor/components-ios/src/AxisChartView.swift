@@ -96,6 +96,14 @@ open class AxisChartView : ChartView {
     (chart as? BarLineChartViewBase)?.leftAxis.enabled = enabled
   }
 
+  public override func setXAxisTextSize(_ size: CGFloat) {
+    chart?.xAxis.labelFont = chart?.xAxis.labelFont.withSize(size) ?? UIFont.systemFont(ofSize: size)
+  }
+
+  public override func setYAxisTextSize(_ size: CGFloat) {
+    (chart as? BarLineChartViewBase)?.leftAxis.labelFont = (chart as? BarLineChartViewBase)?.leftAxis.labelFont.withSize(size) ?? UIFont.systemFont(ofSize: size)
+  }
+
   public func setLabels(labels: Array<String>) {
     if let formatter = chart?.xAxis.valueFormatter as? AppInventorValueFormatter {
         formatter._axisLabels = labels

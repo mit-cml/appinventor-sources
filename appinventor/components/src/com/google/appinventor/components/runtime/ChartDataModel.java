@@ -129,11 +129,6 @@ public abstract class ChartDataModel<E extends Entry, T extends IDataSet<E>, D e
    *
    * @param argb new color
    */
-  /**
-   * Changes the color of the labels of the data set.
-   *
-   * @param argb new color
-   */
   public void setDataLabelColor(int argb) {
     data.setValueTextColor(argb);
   }
@@ -161,12 +156,7 @@ public abstract class ChartDataModel<E extends Entry, T extends IDataSet<E>, D e
    * @param text new label text
    */
   public void setLabel(String text) {
-    this.userLabel = text;
-    if (legendVisible) {
-      getDataset().setLabel(text);
-    } else {
-      getDataset().setLabel(null);
-    }
+    getDataset().setLabel(text);
   }
 
   /**

@@ -48,6 +48,18 @@ open class ChartView {
     }
   }
 
+  public func setDescriptionTextSize(_ size: CGFloat) {
+    chart?.chartDescription.font = chart?.chartDescription.font.withSize(size) ?? UIFont.systemFont(ofSize: size)
+  }
+
+  public func setXAxisTextSize(_ size: CGFloat) {
+    // To be overridden by AxisChartView
+  }
+
+  public func setYAxisTextSize(_ size: CGFloat) {
+    // To be overridden by AxisChartView
+  }
+
   public var legendEnabled: Bool? {
     get {
       return chart?.legend.enabled

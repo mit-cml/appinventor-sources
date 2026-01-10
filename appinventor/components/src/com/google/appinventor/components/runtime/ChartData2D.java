@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.util.Log;
+import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -175,7 +176,7 @@ public final class ChartData2D extends ChartDataBase {
    * @param x - x value of entry
    * @param y - y value of entry
    */
-  @SimpleFunction()
+  @SimpleFunction
   public void RemoveEntry(final String x, final String y) {
     // Entry should be deleted via the Thread Runner asynchronously
     // to guarantee the order of data adding (e.g. CSV data
@@ -232,7 +233,7 @@ public final class ChartData2D extends ChartDataBase {
    *
    * @param x - x value of entry
    * @param y - y value of entry
-   * @return true if entry exists
+   * @return true if the entry exists
    */
   @SuppressWarnings("TryWithIdenticalCatches")
   @SimpleFunction(description = "Checks whether an (x, y) entry exists in the Coordinate Data."

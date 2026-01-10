@@ -54,6 +54,10 @@ import DGCharts
   var _dataComponents: Array<ChartComponent> = []
   var _valueType: Int = 0
   
+  var _descriptionFontSize: Float = 14.0
+  var _xAxisFontSize: Float = 14.0
+  var _yAxisFontSize: Float = 14.0
+  
   var _axesTextColor: UIColor
   private var darkMode = false
 
@@ -369,6 +373,9 @@ import DGCharts
     ValueFormat = _valueType
     
     AxesTextColor = colorToArgb(_axesTextColor)
+    DescriptionFontSize = _descriptionFontSize
+    XAxisFontSize = _xAxisFontSize
+    YAxisFontSize = _yAxisFontSize
   }
 
   func addDataComponent(_ dataComponent: ChartComponent) {

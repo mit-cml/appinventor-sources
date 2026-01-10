@@ -63,6 +63,14 @@ open class ChartDataModel: DataModel {
     dataset?.valueTextColor = argb
   }
 
+  func setDataLabelTextSize(_ size: CGFloat) {
+    dataset?.valueFont = dataset?.valueFont.withSize(size) ?? UIFont.systemFont(ofSize: size)
+  }
+
+  func setLegendVisible(_ visible: Bool) {
+    dataset?.form = visible ? .default : .none
+  }
+
   func importFromList(_ list: [AnyObject]) {
     for entry in list {
       var tuple : YailList<AnyObject>?
