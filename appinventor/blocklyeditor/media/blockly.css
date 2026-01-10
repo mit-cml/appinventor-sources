@@ -165,12 +165,6 @@
   stroke-width: 1;
   stroke: #e4e4e4;
 }
-.blocklyScrollbarKnob {
-  fill: #ccc;
-}
-.blocklyScrollbarBackground:hover+.blocklyScrollbarKnob, .blocklyScrollbarKnob:hover {
-  fill: #bbb;
-}
 .blocklyInvalidInput {
   background: #faa;
 }
