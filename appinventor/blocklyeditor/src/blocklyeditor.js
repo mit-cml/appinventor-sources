@@ -691,7 +691,7 @@ AI.Blockly.ContextMenuItems.registerEnableDisableAllBlocksOption = function() {
       let allBlocks = scope.workspace.getAllBlocks();
       try {
         Blockly.Events.setGroup(true);
-        allBlocks.forEach(block => block.setEnabled(true));
+        allBlocks.forEach(block => block.setDisabledReason(false, Blockly.constants.MANUALLY_DISABLED));
       } finally {
         Blockly.Events.setGroup(false);
       }
@@ -712,7 +712,7 @@ AI.Blockly.ContextMenuItems.registerEnableDisableAllBlocksOption = function() {
       let allBlocks = scope.workspace.getAllBlocks();
       try {
         Blockly.Events.setGroup(true);
-        allBlocks.forEach(block => block.setEnabled(false));
+        allBlocks.forEach(block => block.setDisabledReason(true, Blockly.constants.MANUALLY_DISABLED));
       } finally {
         Blockly.Events.setGroup(false);
       }
