@@ -47,7 +47,11 @@ class PickerPhoneController: UIViewController {
     _toolBar.setItems([doneButton, flexibleSpace, cancelButton], animated: true)
     _toolBar.isUserInteractionEnabled = true
     _toolBar.sizeToFit()
-    _contentView.backgroundColor = preferredBackgroundColor(form)
+    if form.Theme == "Dark" {
+      _contentView.backgroundColor = argbToColor(Int32(bitPattern: 0xFF1C1C1E))
+    } else {
+      _contentView.backgroundColor = preferredBackgroundColor(form)
+    }
   }
 
   public override func viewDidLoad() {

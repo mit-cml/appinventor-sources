@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.editor.designer.DesignerChangeListener;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-abstract class MockButtonBase extends MockVisibleComponent implements FormChangeListener {
+abstract class MockButtonBase extends MockVisibleComponent implements DesignerChangeListener {
   private static final Logger LOG = Logger.getLogger(MockButtonBase.class.getName());
   // Property names
   private static final String PROPERTY_NAME_IMAGE = "Image";
@@ -83,13 +84,13 @@ abstract class MockButtonBase extends MockVisibleComponent implements FormChange
   @Override
   protected void onAttach() {
     super.onAttach();
-    ((YaFormEditor) editor).getForm().addFormChangeListener(this);
+    ((YaFormEditor) editor).getForm().addDesignerChangeListener(this);
   }
 
   @Override
   protected void onDetach() {
     super.onDetach();
-    ((YaFormEditor) editor).getForm().removeFormChangeListener(this);
+    ((YaFormEditor) editor).getForm().removeDesignerChangeListener(this);
   }
 
   /**

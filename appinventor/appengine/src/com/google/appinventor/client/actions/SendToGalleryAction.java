@@ -11,6 +11,9 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidComponentsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -22,6 +25,24 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 // Send to the New Gallery
 public class SendToGalleryAction implements Command {
   private static volatile boolean lockPublishButton = false; // To prevent double clicking
+
+  /**
+   * Check wether project contains any extensions or not
+   *
+   * @param project to check on
+   * @return true or false
+   */
+  private boolean containsExtension(Project project) {
+    YoungAndroidComponentsFolder componentsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getComponentsFolder();
+
+    for (ProjectNode node : componentsFolder.getChildren()) {
+      if (node.getName().equals("classes.jar")) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   @Override
   public void execute() {
@@ -50,6 +71,10 @@ public class SendToGalleryAction implements Command {
   }
 
   private void sendToGallery(Project project) {
+    if (containsExtension(project)) {
+      ErrorReporter.reportInfo(MESSAGES.ProjectContainsExtensions());
+      return;
+    }
     lockPublishButton = true;
     Ode.getInstance().getProjectService().sendToGallery(project.getProjectId(),
       new OdeAsyncCallback<RpcResult>(

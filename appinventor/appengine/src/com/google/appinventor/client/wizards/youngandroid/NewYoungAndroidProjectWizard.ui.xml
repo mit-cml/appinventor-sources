@@ -31,8 +31,8 @@
         <e:YoungAndroidThemeChoicePropertyEditor ui:field="themeEditor"/>
       </g:FlowPanel>
       <g:FlowPanel styleName="buttonRow">
-        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'/>
-        <g:Button ui:field='addButton' text='{messages.okButton}'/>
+        <g:Button ui:field='cancelButton' text='{messages.cancelButton}' styleName="ode-TextButton"/>
+        <g:Button ui:field='addButton' text='{messages.okButton}' styleName="ode-TextButton"/>
       </g:FlowPanel>
       <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
     </g:FlowPanel>

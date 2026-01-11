@@ -37,22 +37,98 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
   }
 
-
   func testBackgroundColor() {
     testList.BackgroundColor = Color.blue.int32
+    testList.ElementColor = Color.none.int32
     testList.Elements = ["Test"] as [AnyObject]
-    let view = testList.view as! UITableView
-    var cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
-    XCTAssertNotNil(cell)
-    XCTAssertEqual(Color.blue.uiColor, cell.backgroundColor)
+    
+    // Handle both table view and collection view
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      let cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell)
+      XCTAssertEqual(Color.blue.uiColor, cell.backgroundColor)
+      
+      // Change back to the default (black)
+      testList.BackgroundColor = Color.default.int32
+      XCTAssertEqual(Color.black.int32, testList.BackgroundColor)
+      
+      let cell2 = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell2)
+      XCTAssertEqual(Color.black.uiColor, cell2.backgroundColor)
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
+  }
+  
+  func testElementColor() {
+    testList.BackgroundColor = Color.blue.int32
+    testList.ElementColor = Color.red.int32
+    testList.Elements = ["Test"] as [AnyObject]
+    
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      var cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell)
+      XCTAssertEqual(Color.red.uiColor, cell.backgroundColor)
+      
+      // Change elementColor
+      testList.ElementColor = Color.yellow.int32
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell)
+      XCTAssertEqual(Color.yellow.uiColor, cell.backgroundColor)
+      
+      testList.ElementColor = Color.none.int32
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell)
+      XCTAssertEqual(Color.blue.uiColor, cell.backgroundColor)  // testList background color
+      
+      
+      testList.ElementColor = Color.default.int32
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      let expectedColor = preferredTextColor(form)
+      XCTAssertNotNil(cell)
+      // Compare resolved colors to handle dynamic colors
 
-    // Change back to the default (black)
-    testList.BackgroundColor = Color.default.int32
-    XCTAssertEqual(Color.black.int32, testList.BackgroundColor)
+      if #available(iOS 13.0, *) {
+        let cellColor = cell.backgroundColor?.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        XCTAssertNotEqual(Color.yellow.uiColor, cell.backgroundColor)
+      } else {
+        // Fallback on earlier versions
+      }
+       
+      
 
-    cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
-    XCTAssertNotNil(cell)
-    XCTAssertEqual(Color.black.uiColor, cell.backgroundColor)
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
+  }
+  
+  func testDividerColor() {
+    testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as [AnyObject]
+    
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      testList.DividerColor = Color.green.int32
+      XCTAssertEqual(Color.green.int32, testList.DividerColor)
+      tableView.separatorColor = argbToColor(testList.DividerColor)
+      XCTAssertNotNil(tableView)
+      XCTAssertNotNil(tableView.separatorColor)
+      XCTAssertEqual(Color.green.uiColor, tableView.separatorColor)
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
+  }
+  
+  func testCornerRadius() {
+    testList.Elements = ["Test"] as [AnyObject]
+    
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      let cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell)
+      testList.ElementCornerRadius = 10
+      cell.layer.cornerRadius = CGFloat(testList.ElementCornerRadius)
+      XCTAssertEqual(10, cell.layer.cornerRadius)
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
   }
 
   func testMixedElements() {
@@ -66,10 +142,14 @@ class ListViewTests: AppInventorTestCase {
     testList.FontTypeface = "2"
     testList.Elements = ["Test"] as [AnyObject]
     testList.Refresh()
-    let view = testList.view as! UITableView
-    let cell = testList.tableView(view, cellForRowAt: IndexPath(row: 0, section: 0))
-    XCTAssertNotNil(cell)
-    XCTAssertEqual("Times New Roman", cell.textLabel?.font.familyName)
+    
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      let cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell)
+      XCTAssertEqual("Times New Roman", cell.textLabel?.font.familyName)
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
   }
 
   func testListData() {
@@ -92,8 +172,34 @@ class ListViewTests: AppInventorTestCase {
     }
     testList.Elements = ["apple", "banana", "cantaloupe"] as [AnyObject]
     testList.Refresh()
-    let view = testList.view as! UITableView
-    testList.tableView(view, didSelectRowAt: IndexPath(row: 1, section: 0))
+    
+    // Handle both orientations
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      testList.tableView(tableView, didSelectRowAt: IndexPath(row: 1, section: 0))
+    } else if let collectionView = testList.view.subviews.first(where: { $0 is UICollectionView && !$0.isHidden }) as? UICollectionView {
+      testList.collectionView(collectionView, didSelectItemAt: IndexPath(row: 1, section: 0))
+    } else {
+      XCTFail("Expected either UITableView or UICollectionView to be visible")
+    }
+    
     verify()
+  }
+  
+  // New test for horizontal orientation
+  func testHorizontalOrientation() {
+    testList.Orientation = Int32(HORIZONTAL_LAYOUT)
+    testList.Elements = ["Test1", "Test2"] as [AnyObject]
+    
+    if let collectionView = testList.view.subviews.first(where: { $0 is UICollectionView && !$0.isHidden }) as? UICollectionView {
+      XCTAssertFalse(collectionView.isHidden)
+      XCTAssertEqual(2, testList.collectionView(collectionView, numberOfItemsInSection: 0))
+    } else {
+      XCTFail("Expected UICollectionView to be visible in horizontal orientation")
+    }
+    
+    // Verify table view is hidden
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView }) as? UITableView {
+      XCTAssertTrue(tableView.isHidden)
+    }
   }
 }

@@ -52,11 +52,17 @@ import DGCharts
   var _gridEnabled = true
   var _labels = [String]()
   var _dataComponents: Array<ChartComponent> = []
+  var _valueType: Int = 0
+  
+  var _axesTextColor: UIColor
+  private var darkMode = false
 
   @objc public override init(_ parent: ComponentContainer) {
     XFromZero = false
     YFromZero = false
-    _backgroundColor = parent.form?.isDarkTheme == true ? UIColor.black : UIColor.white
+    darkMode = parent.form?.isDarkTheme ?? false
+    _backgroundColor = darkMode ? UIColor.black : UIColor.white
+    _axesTextColor = darkMode ? UIColor.white : UIColor.black
     super.init(parent)
     setDelegate(self)
     parent.add(self)
@@ -73,6 +79,23 @@ import DGCharts
     self.Type = self.Type
   }
 
+  
+  @objc open var ValueFormat: Int {
+     get {
+       return _valueType;
+     }
+    set{
+      _valueType = newValue
+      _chartView?.ValueType = newValue
+      
+      for c in _dataComponents {
+        if let dc = c.dispatchDelegate as? ChartDataModel{
+          dc.ValueType = newValue
+        }
+        
+      }
+    }
+  }
   @objc open override var view: UIView {
     return _view
   }
@@ -112,6 +135,22 @@ import DGCharts
       _chartView?.backgroundColor = _backgroundColor
     }
   }
+  
+  @objc open var AxesTextColor: Int32 {
+    get {
+      return colorToArgb(_axesTextColor)
+    }
+    set {
+      if newValue == Color.default.int32 {
+        _axesTextColor = darkMode ? UIColor.white : UIColor.black
+      }
+      _axesTextColor = argbToColor(newValue)
+      if let chartView = _chartView?.chart as? BarLineChartViewBase {
+        chartView.xAxisRenderer.axis.labelTextColor = _axesTextColor
+        chartView.leftYAxisRenderer.axis.labelTextColor = _axesTextColor
+      }
+    }
+  }
 
   @objc open var Description: String {
     get {
@@ -139,15 +178,16 @@ import DGCharts
     }
   }
 
-  @objc open var Labels: [String] {
+  @objc open var Labels: YailList<AnyObject> {
     get {
-      return _labels
+      return YailList(array: _labels)
     }
     set {
-      _labels = newValue
+      _labels = newValue.filter { $0 is String }.map { $0 as! String }
       if let chart = _chartView as? AxisChartView {
-        chart.axisLabels = _labels
+        chart.setLabels(labels: _labels)
       }
+      _chartView?.refresh()
     }
   }
 
@@ -156,7 +196,7 @@ import DGCharts
         return ""
     }
     set{
-      Labels = newValue.split(",") as [String]
+      Labels = YailList(array:newValue.split(",") as [String])
     }
   }
 
@@ -228,12 +268,51 @@ import DGCharts
       }
     }
   }
+  
+  @objc open func ExtendDomainToInclude(_ x: Double) {
+    guard let chartView = _chartView as? AxisChartView else {
+      return
+    }
+    let bounds: [Double] = chartView.getXBounds();
+    if x < bounds[0] {
+      chartView.setXBounds(minimum: x, maximum: bounds[1])
+    } else if x > bounds[1] {
+      chartView.setXBounds(minimum: bounds[0], maximum: x)
+    } else {
+      return
+    }
+    chartView.refresh()
+  }
+  
+  @objc open func ExtendRangeToInclude(_ y: Double) {
+    guard let chartView = _chartView as? AxisChartView else {
+      return
+    }
+    let bounds: [Double] = chartView.getYBounds()
+    if y < bounds[0] {
+      chartView.setYBounds(minimum: y, maximum: bounds[1])
+    } else if y > bounds[1] {
+      chartView.setYBounds(minimum: bounds[0], maximum: y)
+    } else {
+      return
+    }
+    chartView.refresh()
+  }
 
   // MARK: Chart events
 
   @objc open func EntryClick(_ series: Component, _ x: AnyObject, _ y: Double) {
     EventDispatcher.dispatchEvent(of: self, called: "EntryClick",
                                   arguments: series, x, y as AnyObject)
+  }
+
+  // MARK: Chart methods
+
+  @objc open func ResetAxes() {
+    if let chartView = _chartView as? AxisChartView {
+      chartView.resetAxes()
+      refresh()
+    }
   }
 
   @objc open func SetDomain(_ minimum: Double, _ maximum: Double) {
@@ -284,9 +363,12 @@ import DGCharts
     BackgroundColor = colorToArgb(_backgroundColor)
     Description = _description
     GridEnabled = _gridEnabled
-    Labels = _labels
+    Labels = YailList(array:_labels)
     LegendEnabled = _legendEnabled
     PieRadius = _pieRadius
+    ValueFormat = _valueType
+    
+    AxesTextColor = colorToArgb(_axesTextColor)
   }
 
   func addDataComponent(_ dataComponent: ChartComponent) {

@@ -28,6 +28,7 @@ class AIComponentKitTests: XCTestCase {
     let form = ReplForm()
     form.formName = "Screen1"
     interpreter.setCurrentForm(form)
+    form.makeActive()
     interpreter.evalForm("(define test-success #f)");
     interpreter.evalForm("(clear-current-form)");
     interpreter.evalForm("(add-component Screen1 com.google.appinventor.components.runtime.Button Button1)")

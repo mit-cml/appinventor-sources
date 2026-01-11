@@ -257,6 +257,8 @@ class LCHelper : NSObject, UIGestureRecognizerDelegate {
         annotation.coordinate.longitude = longitude
         _shape = Waypoint(latitude: annotation.coordinate.latitude,
             longitude: annotation.coordinate.longitude)
+        _container?.removeFeature(self)
+        _container?.addFeature(self)
       }
     }
   }

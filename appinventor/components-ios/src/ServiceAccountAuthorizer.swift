@@ -12,8 +12,11 @@ import GTMSessionFetcher
   var request: NSMutableURLRequest? = nil
   var canceled = false
 
-  public init(serviceAccountConfig: Data, scopes: [String]) {
-    self.tokenProvider = ServiceAccountTokenProvider(credentialsData: serviceAccountConfig, scopes: scopes)!
+  public init?(serviceAccountConfig: Data, scopes: [String]) {
+    guard let tokenProvider = ServiceAccountTokenProvider(credentialsData: serviceAccountConfig, scopes: scopes) else {
+      return nil
+    }
+    self.tokenProvider = tokenProvider
     super.init()
     self.userEmail = self.tokenProvider.credentials.ClientEmail
   }

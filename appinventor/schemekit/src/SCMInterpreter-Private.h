@@ -17,7 +17,6 @@
 }
 
 - (pic_value)wrapObject:(nullable id<SCMValue>)object;
-- (pic_value)internObject:(nonnull id<SCMObject>)object;
 - (nullable id<SCMValue>)unwrapValue:(pic_value)value;
 - (pic_value)makeConsWithCar:(nullable id<SCMValue>)car cdr:(nullable id<SCMValue>)cdr;
 - (void)mark;

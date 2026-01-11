@@ -95,20 +95,6 @@
     <servlet-name>downloadServlet</servlet-name>
   </filter-mapping>
 
-  <!-- getmotd -->
-  <servlet>
-    <servlet-name>getMotdService</servlet-name>
-    <servlet-class>com.google.appinventor.server.GetMotdServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>getMotdService</servlet-name>
-    <url-pattern>/ode/getmotd</url-pattern>
-  </servlet-mapping>
-  <filter-mapping>
-    <filter-name>odeAuthFilter</filter-name>
-    <servlet-name>getMotdService</servlet-name>
-  </filter-mapping>
-
   <!-- projects -->
   <servlet>
     <servlet-name>projectService</servlet-name>

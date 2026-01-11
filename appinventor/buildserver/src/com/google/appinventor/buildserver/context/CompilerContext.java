@@ -10,14 +10,22 @@ import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Reporter;
 import com.google.appinventor.buildserver.stats.StatReporter;
 
+import com.google.appinventor.common.utils.StringUtils;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 
 public class CompilerContext<P extends Paths> {
+  private static final Logger LOG = Logger.getLogger(CompilerContext.class.getName());
+
   Project project;
   String ext;
   Set<String> compTypes;
@@ -49,6 +57,7 @@ public class CompilerContext<P extends Paths> {
   final P paths;
   Resources resources;
   ComponentInfo componentInfo;
+  final Set<File> outputFiles = new HashSet<>();
 
   public static class Builder<R extends Paths, T extends CompilerContext<? extends R>> {
     private final Project project;
@@ -208,6 +217,10 @@ public class CompilerContext<P extends Paths> {
     return project;
   }
 
+  public File getWorkDir() {
+    return new File(project.getProjectDir()).getParentFile();
+  }
+
   public String getExt() {
     return ext;
   }
@@ -330,6 +343,29 @@ public class CompilerContext<P extends Paths> {
 
   public boolean usesSharedFileAccess() {
     return "Shared".equals(project.getDefaultFileScope());
+  }
+
+  public URL getAppIcon() {
+    String userAppIcon = project.getIcon();
+    if (!userAppIcon.isEmpty()) {
+      try {
+        return new File(getPaths().getAssetsDir(), userAppIcon).toURI().toURL();
+      } catch (MalformedURLException e) {
+        LOG.log(Level.WARNING, "Unable to reference user-defined app icon. Falling back to default.", e);
+      }
+    }
+    return CompilerContext.class.getResource("/files/ya.png");
+  }
+
+  public File getSourcePackageDir() {
+    String mainClass = project.getMainClass();
+    String packageName = StringUtils.getPackageName(mainClass);
+    String packagePath = packageName.replace(".", File.separator);
+    return new File(getWorkDir().getAbsolutePath() + File.separator + "src" + File.separator + packagePath);
+  }
+
+  public Set<File> getOutputFiles() {
+    return outputFiles;
   }
 
   @Override

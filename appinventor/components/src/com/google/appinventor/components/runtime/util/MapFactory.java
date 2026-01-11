@@ -202,6 +202,20 @@ public final class MapFactory {
     void setMapTypeAbstract(com.google.appinventor.components.common.MapType type);
 
     /**
+     * Get the customUrl of the map being used.
+     *
+     * @return the customUrl of the map's active tile layer
+     */
+    String getCustomUrl();
+
+    /**
+     * Set the customUrl of the map being used.
+     *
+     * @param Set the new map customUrl for the map
+     */
+    void setCustomUrl(String url);
+
+    /**
      * Set whether the compass is displayed on the map.
      *
      * @param enable true if the compass overlay should be shown, otherwise false.
@@ -1313,6 +1327,7 @@ public final class MapFactory {
      * prior to official release. Some apps developed using earlier versions of Maps on test servers
      * may reference this property, but it may be removed in a future version of App Inventor.
      */
+    @Deprecated
     @SuppressWarnings("squid:S00100")
     void ShowShadow(boolean show);
 
@@ -1321,6 +1336,7 @@ public final class MapFactory {
      * @return true if the marker should have a shadow, otherwise false.
      * @deprecated See the deprecation message for {@link #ShowShadow(boolean)}.
      */
+    @Deprecated
     @SuppressWarnings("squid:S00100")
     boolean ShowShadow();
 
@@ -1577,7 +1593,12 @@ public final class MapFactory {
     /**
      * Terrain tile layer.
      */
-    TERRAIN
+    TERRAIN,
+
+    /**
+     * Custom tile layer.
+     */
+    CUSTOM
   }
 
   /**

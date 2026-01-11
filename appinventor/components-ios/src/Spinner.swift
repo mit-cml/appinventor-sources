@@ -211,6 +211,10 @@ open class Spinner: ButtonBase, AbstractMethodsForButton, SpinnerDelegate  {
     return _items[row]
   }
 
+  open func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+    return NSAttributedString(string: _items[row], attributes: [.foregroundColor: preferredTextColor(form)])
+  }
+
   @objc open var Prompt : String {
     get {
       return _prompt

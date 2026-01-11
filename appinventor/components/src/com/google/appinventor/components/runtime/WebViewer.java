@@ -141,6 +141,10 @@ public final class WebViewer extends AndroidViewComponent {
   // Flag to mark whether we have received permission to read external storage
   private boolean havePermission = false;
 
+  private boolean usesCamera = false;
+
+  private boolean usesMicrophone = false;
+
   /**
    * Creates a new WebViewer component.
    *
@@ -469,6 +473,51 @@ public final class WebViewer extends AndroidViewComponent {
       description = "Reload the current page.")
   public void Reload() {
     webview.reload();
+  }
+
+  /**
+   * Specifies whether this `WebViewer` can access the camera.
+   *
+   * @param uses -- Whether the camera is available
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+      description = "Whether or not to give the application permission to use the camera. " +
+              "This property is available only in the designer.",
+      category = PropertyCategory.BEHAVIOR)
+  @UsesPermissions({
+      Manifest.permission.CAMERA
+  })
+  public void UsesCamera(boolean uses) {
+    this.usesCamera = uses;
+  }
+
+  public boolean UsesCamera() {
+    return usesCamera;
+  }
+
+  /**
+   * Specifies whether this `WebViewer` can access the microphone.
+   *
+   * @param uses -- Whether the microphone is available
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+      description = "Whether or not to give the application permission to use the microphone. " +
+          "This property is available only in the designer.",
+      category = PropertyCategory.BEHAVIOR)
+  @UsesPermissions({
+      Manifest.permission.RECORD_AUDIO,
+      Manifest.permission.MODIFY_AUDIO_SETTINGS
+  })
+  public void UsesMicrophone(boolean uses) {
+    this.usesMicrophone = uses;
+  }
+
+  public boolean UsesMicrophone() {
+    return usesMicrophone;
   }
 
   /**

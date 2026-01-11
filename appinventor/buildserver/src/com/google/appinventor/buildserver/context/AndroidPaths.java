@@ -24,7 +24,6 @@ public class AndroidPaths extends Paths {
   @Override
   public void mkdirs(File buildDir) {
     super.mkdirs(buildDir);
-    setDeployDir(ExecutorUtils.createDir(buildDir, "deploy"));
     setResDir(ExecutorUtils.createDir(buildDir, "res"));
     setDrawableDir(ExecutorUtils.createDir(buildDir, "drawable"));
     setLibsDir(ExecutorUtils.createDir(buildDir, "libs"));

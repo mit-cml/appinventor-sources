@@ -35,3 +35,4 @@ These documents provide additional details on some App Inventor topics.
 * [Don't Repeat Yourself (DRY) using Any Component Blocks](any-component-blocks.html)
 * [Import and export code blocks as PNGs](download-pngs.html)
 * [ListView Layouts with ListViewLayout and ElementsFromString](advanced-listview.html)
+* [Building iOS Apps](build-ios-apps.html)

@@ -6,6 +6,9 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.CODEBLOCKS_SOURCE_EXTENSION;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -16,7 +19,6 @@ import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -26,8 +28,6 @@ import com.google.gwt.user.client.Timer;
 
 import java.util.Date;
 import java.util.logging.Logger;
-
-import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Command to wait for the result of a build
@@ -102,8 +102,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
           // Yail generation error
           String formName = extractFormName(result);
           ErrorReporter.reportError(MESSAGES.errorGeneratingYail(formName));
-          String blocksFileName = formName  + 
-              YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
+          String blocksFileName = formName + CODEBLOCKS_SOURCE_EXTENSION;
           YoungAndroidBlocksNode blocksNode =
               findBlocksNode((YoungAndroidProjectNode) node, blocksFileName);
           if (blocksNode != null) {

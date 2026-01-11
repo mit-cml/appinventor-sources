@@ -1,11 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver.context;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.common.collect.Sets;
@@ -36,6 +36,8 @@ public class ComponentInfo {
   private final ConcurrentMap<String, Set<String>> queriesNeeded;
   private final ConcurrentMap<String, Set<String>> servicesNeeded;
   private final ConcurrentMap<String, Set<String>> contentProvidersNeeded;
+  private final ConcurrentMap<String, Set<String>> xmlsNeeded;
+  private final ConcurrentMap<String, Set<String>> featuresNeeded;
 
   private Set<String> uniqueLibsNeeded;
   private AARLibraries explodedAarLibs;
@@ -58,6 +60,8 @@ public class ComponentInfo {
     queriesNeeded = new ConcurrentHashMap<>();
     servicesNeeded = new ConcurrentHashMap<>();
     contentProvidersNeeded = new ConcurrentHashMap<>();
+    xmlsNeeded = new ConcurrentHashMap<>();
+    featuresNeeded = new ConcurrentHashMap<>();
 
     uniqueLibsNeeded = Sets.newHashSet();
   }
@@ -135,6 +139,14 @@ public class ComponentInfo {
     return contentProvidersNeeded;
   }
 
+  public ConcurrentMap<String, Set<String>> getXmlsNeeded() {
+    return xmlsNeeded;
+  }
+
+  public ConcurrentMap<String, Set<String>> getFeaturesNeeded() {
+    return featuresNeeded;
+  }
+
   @Override
   public String toString() {
     return "JsonInfo{"
@@ -147,6 +159,8 @@ public class ComponentInfo {
         + ", minSdksNeeded=" + minSdksNeeded
         + ", componentBroadcastReceiver=" + componentBroadcastReceiver
         + ", uniqueLibsNeeded=" + uniqueLibsNeeded
+        + ", xmlsNeeded=" + xmlsNeeded
+        + ", featuresNeeded=" + featuresNeeded
         + '}';
   }
 }

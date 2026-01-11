@@ -242,27 +242,9 @@ public final class Project {
           public void onSuccess(UserProject project) {
             if (project.getProjectId() == projectInfo.getProjectId()) {
               projectInfo.moveToTrash();
-              Ode.getInstance().getProjectManager().trashProject(getProjectId());
             }
           }
         });
-  }
-
-  public void restoreFromTrash() {
-    Tracking.trackEvent(Tracking.PROJECT_EVENT,
-            Tracking.PROJECT_ACTION_RESTORE_PROJECT_YA, getProjectName());
-    Ode.getInstance().getProjectService().restoreProject(getProjectId(),
-            new OdeAsyncCallback<UserProject>(
-                    // failure message
-                    MESSAGES.restoreProjectError()) {
-              @Override
-              public void onSuccess(UserProject project) {
-                if (project.getProjectId() == projectInfo.getProjectId()) {
-                  projectInfo.restoreFromTrash();
-                  Ode.getInstance().getProjectManager().restoreTrashProject(getProjectId());
-                }
-              }
-            });
   }
 
   public void deleteFromTrash() {
@@ -278,7 +260,12 @@ public final class Project {
   }
 
   public boolean isInTrash() {
-    return projectInfo.isInTrash();
+    if (homeFolder == null || homeFolder == Ode.getInstance().getFolderManager().getGlobalFolder()) {
+      return false;
+    } else if (homeFolder == Ode.getInstance().getFolderManager().getTrashFolder()) {
+      return true;
+    }
+    return homeFolder.isInTrash();
   }
 
   /**

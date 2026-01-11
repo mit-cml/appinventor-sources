@@ -7,6 +7,7 @@
 package com.google.appinventor.client.utils;
 
 import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FormHandler;
@@ -19,10 +20,10 @@ import com.google.gwt.user.client.ui.RootPanel;
  * Utility class to upload files to the server.
  *
  */
-public final class Uploader {
+public class Uploader {
 
   // Singleton Uploader instance
-  public static final Uploader INSTANCE = new Uploader();
+  public static final Uploader INSTANCE = GWT.create(Uploader.class);
 
   // Uploader form
   private final FormPanel form;
@@ -42,7 +43,7 @@ public final class Uploader {
   /**
    * Creates a new uploader.
    */
-  private Uploader() {
+  protected Uploader() {
     // Because we're going to add a FileUpload widget, we'll need to set the
     // form to use the POST method, and multipart MIME encoding.
     form = new FormPanel();
@@ -90,7 +91,7 @@ public final class Uploader {
    * @param upload  file upload widget containing file information
    * @param uploadUrl  URL to upload the file to
    */
-  public final void upload(FileUpload upload, String uploadUrl,
+  public void upload(FileUpload upload, String uploadUrl,
       AsyncCallback<UploadResponse> callback) {
     this.callback = callback;
 

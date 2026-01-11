@@ -17,6 +17,11 @@ import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Pattern;
+
 /**
  * Handles the data operations & model-specific styling for point-based
  * Chart data (e.g. Scatter or Line data) for the Chart component.
@@ -45,6 +50,10 @@ public abstract class PointChartDataModel<
     super(data, view);
   }
 
+  private static final String DATE_PATTERN = "^[0-3]?[0-9]/[0-3]?[0-9]/(?:[0-9]{2})?[0-9]{2}$";
+
+  private static final String TIME_PATTERN = "([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-6][0-9]";
+
   @Override
   public Entry getEntryFromTuple(YailList tuple) {
     try {
@@ -55,8 +64,21 @@ public abstract class PointChartDataModel<
       String yValue = tuple.getString(1);
 
       try {
+        float x;
         // Attempt to parse the x and y value String representations
-        float x = Float.parseFloat(xValue);
+        if(Pattern.compile(DATE_PATTERN).matcher(xValue).matches()){
+          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+          Date date = sdf.parse(xValue);
+          x = date.getTime();
+        }
+        else if(Pattern.compile(TIME_PATTERN).matcher(xValue).matches()){
+          SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+          Date date = sdf.parse(xValue);
+          x = date.getTime();
+        }
+        else {
+          x = Float.parseFloat(xValue);
+        }
         float y = Float.parseFloat(yValue);
 
         return new Entry(x, y);
@@ -66,6 +88,8 @@ public abstract class PointChartDataModel<
             "GetEntryFromTuple",
             ErrorMessages.ERROR_INVALID_CHART_ENTRY_VALUES,
             xValue, yValue);
+      } catch (ParseException e) {
+        throw new RuntimeException(e);
       }
     } catch (NullPointerException e) {
       this.view.getForm().dispatchErrorOccurredEvent(this.view.chartComponent,

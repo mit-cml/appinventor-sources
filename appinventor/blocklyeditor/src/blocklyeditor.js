@@ -48,6 +48,8 @@ goog.require('AI.Blocks.matrices');
 goog.require('AI.Blocks.procedures');
 goog.require('AI.Blocks.text');
 
+goog.require('AI.Blockly.Themes.darkTheme');
+
 // Make dragging a block from flyout work in any direction (default: 70)
 Blockly.Flyout.prototype.dragAngleRange_ = 360;
 
@@ -848,7 +850,8 @@ AI.Blockly.ContextMenuItems.registerGridOptions = function() {
         Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', 'fill: url(#' + gridPattern.id + ');');
       } else {
         // remove grid
-        Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', 'fill: white;');
+        const color = Blockly.common.getMainWorkspace().getTheme().componentStyles.workspaceBackgroundColour ?? "white";
+        Blockly.common.getMainWorkspace().svgBackground_.setAttribute('style', `fill: ${color};`);
       }
       if (top.BlocklyPanel_setGridEnabled) {
         top.BlocklyPanel_setGridEnabled(gridOptions['enabled']);
@@ -958,6 +961,8 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
 
 AI.Blockly.ContextMenuItems.registerAll();
 
+Blockly.BlocklyEditor['cssRegistered'] = false;
+
 /**
  * Create a new Blockly workspace but without initializing its DOM.
  * @param container The container that will host the Blockly workspace
@@ -967,6 +972,18 @@ AI.Blockly.ContextMenuItems.registerAll();
  * @returns {Blockly.WorkspaceSvg} A newly created workspace
  */
 Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
+  if (!Blockly.BlocklyEditor['cssRegistered']) {
+    Blockly.BlocklyEditor['cssRegistered'] = true;
+    try {
+      Blockly.Css.register(`
+.blocklyZoom:hover, .blocklyTrash:hover, .blocklyMultiselect:hover { cursor: pointer; }
+.blocklyZoom>image, .blocklyZoom>image:hover { opacity: 1.0; }
+.blocklyMultiselect>image, .blocklyMultiselect>image:hover { opacity: 1.0; }
+`);
+    } catch (e) {
+      // Thrown if we've already registered the CSS. This should only happen in unit tests.
+    }
+  }
   var options = {
     'toolbox': {
       'kind': 'flyoutToolbox',
@@ -1143,7 +1160,10 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Element|string} container
  * @param {!Blockly.WorkspaceSvg} workspace
  */
-AI.inject = function(container, workspace) {
+AI.inject = function(container, workspace, isDarkMode=false) {
+  if (isDarkMode) {
+    Blockly.common.getMainWorkspace().setTheme(Blockly.Themes.darkTheme);
+  }
   Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
   workspace.fireChangeListener(new AI.Events.ScreenSwitch(workspace.projectId, workspace.formName));
   var gridEnabled = top.BlocklyPanel_getGridEnabled && top.BlocklyPanel_getGridEnabled();

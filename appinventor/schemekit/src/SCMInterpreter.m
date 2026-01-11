@@ -406,6 +406,13 @@ static SCMInterpreter *_defaultInterpreter = nil;
   gc_mark(_pic, value);
 }
 
+- (void)markObject:(NSObject *)object {
+  pic_value value = yail_get_native_instance(_pic, object);
+  if (!pic_nil_p(_pic, value)) {
+    [self mark:value];
+  }
+}
+
 - (void)runGC {
   pic_gc(_pic);
 }
@@ -443,6 +450,42 @@ static SCMInterpreter *_defaultInterpreter = nil;
 }
 
 #endif
+
+- (nullable id<SCMValue>)apply:(pic_value)proc {
+  pic_value e;
+  pic_state *pic = _pic;
+  _defaultInterpreter = self;
+  id result = nil;
+  pic_try {
+    size_t ai = pic_enter(pic);
+    result = yail_to_native(pic, pic_apply(pic, proc, 0, NULL));
+    pic_leave(pic, ai);
+  } pic_catch(e) {
+    exception_ = exception_from_pic_error(pic, e);
+  }
+  return result;
+}
+
+- (nullable id<SCMValue>)apply:(pic_value)proc to:(NSArray * _Nonnull)arguments {
+  pic_value e;
+  pic_state *pic = _pic;
+  _defaultInterpreter = self;
+  id result = nil;
+  int n = (int) arguments.count;
+  pic_value *pic_args = malloc(n * sizeof(pic_value));
+  pic_try {
+    size_t ai = pic_enter(pic);
+    for (int i = 0; i < n; i++) {
+      pic_args[i] = [self picValueForObjCValue:arguments[i]];
+    }
+    result = yail_to_native(pic, pic_apply(pic, proc, n, pic_args));
+    pic_leave(pic, ai);
+  } pic_catch(e) {
+    exception_ = exception_from_pic_error(pic, e);
+  }
+  free(pic_args);
+  return result;
+}
 
 @synthesize state = _pic;
 

@@ -63,6 +63,9 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   private boolean isTrash;
   private boolean projectsLoaded = false;
 
+  private Comparator<Project> projectComparator = ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
+  private Comparator<ProjectFolder> folderComparator = ProjectComparators.COMPARE_BY_FOLDER_DATE_MODIFIED_DESCENDING;
+
   // UI elements
   @UiField protected CheckBox selectAllCheckBox;
   @UiField protected FlowPanel container;
@@ -87,10 +90,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     bindIU();
     setIsTrash(false);
     refreshSortIndicators();
-    Ode.getInstance().getFolderManager().addFolderManagerEventListener(this);
-
-    // It is important to listen to project manager events as soon as possible.
-    Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
   }
 
   public void bindIU() {
@@ -151,6 +150,36 @@ public class ProjectList extends Composite implements FolderManagerEventListener
         sortOrder = SortOrder.ASCENDING;
       }
     }
+    switch (sortField) {
+      default:
+      case NAME:
+        if (sortOrder == SortOrder.ASCENDING) {
+          projectComparator = ProjectComparators.COMPARE_BY_NAME_ASCENDING;
+          folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_ASCENDING;
+        } else {
+          projectComparator = ProjectComparators.COMPARE_BY_NAME_DESCENDING;
+          folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_DESCENDING;
+        }
+        break;
+      case DATE_CREATED:
+        if (sortOrder == SortOrder.ASCENDING) {
+          projectComparator = ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING;
+          folderComparator = ProjectComparators.COMPARE_BY_FOLDER_DATE_MODIFIED_ASCENDING;
+        } else {
+          projectComparator = ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
+          folderComparator = ProjectComparators.COMPARE_BY_FOLDER_DATE_CREATED_DESCENDING;
+        }
+        break;
+      case DATE_MODIFIED:
+        if (sortOrder == SortOrder.ASCENDING) {
+          projectComparator = ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING;
+          folderComparator = ProjectComparators.COMPARE_BY_FOLDER_DATE_MODIFIED_ASCENDING;
+        } else {
+          projectComparator = ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
+          folderComparator = ProjectComparators.COMPARE_BY_FOLDER_DATE_MODIFIED_DESCENDING;
+        }
+        break;
+    }
     refresh(true);
   }
 
@@ -187,9 +216,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     }
   }
 
-  public void refresh() {
-    refresh(false);
-  }
 
   // TODO(user): This method was made public so it can be called
   // directly from from Ode when the Project List View is selected
@@ -202,37 +228,6 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   public void refresh(boolean needToSort) {
     LOG.info("Refresh ProjectList");
     List<Project> projects = folder.getProjects();
-    List<ProjectFolder> folders = folder.getChildFolders();
-    if (needToSort) {
-      // Sort the projects.
-      Comparator<Project> comparator;
-      Comparator<ProjectFolder> folderComparator;
-      folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_ASCENDING;
-      switch (sortField) {
-        default:
-        case NAME:
-          if (sortOrder == SortOrder.ASCENDING) {
-            comparator = ProjectComparators.COMPARE_BY_NAME_ASCENDING;
-          } else {
-            comparator = ProjectComparators.COMPARE_BY_NAME_DESCENDING;
-            folderComparator = ProjectComparators.COMPARE_BY_FOLDER_NAME_DESCENDING;
-          }
-          break;
-        case DATE_CREATED:
-          comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
-          break;
-        case DATE_MODIFIED:
-          comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
-          break;
-      }
-      Collections.sort(projects, comparator);
-      Collections.sort(folders, folderComparator);
-    }
-
     refreshSortIndicators();
 
     container.clear();
@@ -242,32 +237,34 @@ public class ProjectList extends Composite implements FolderManagerEventListener
         fireSelectionChangeEvent();
       }
     };
-
-    for (final ProjectFolder childFolder : folder.getChildFolders()) {
+    selectAllCheckBox.setValue(false);
+    List<ProjectFolder> sortedFolders = folder.getChildFolders();
+    sortedFolders.sort(folderComparator);
+    for (final ProjectFolder childFolder : sortedFolders) {
       if ("*trash*".equals(childFolder.getName())) {
         continue;
       }
       childFolder.setSelectionChangeHandler(selectionEvent);
-      childFolder.refresh();
+      childFolder.refresh(projectComparator, folderComparator, needToSort);
       container.add(childFolder);
     }
     folder.clearProjectList();
+    projects.sort(projectComparator);
     for (final Project project : projects) {
       ProjectListItem item = createProjectListItem(project);
       item.setSelectionChangeHandler(selectionEvent);
       folder.addProjectListItem(item);
       container.add(item);
     }
-    selectAllCheckBox.setValue(false);
 
     Ode.getInstance().getProjectToolbar().updateButtons();
-    if (isTrash && folder.getProjects().isEmpty()) {
+    if (isTrash && folder.getProjects().isEmpty() && folder.getChildFolders().isEmpty()) {
       Ode.getInstance().createEmptyTrashDialog(true);
     }
   }
 
   public ProjectListItem createProjectListItem(Project p) {
-   return new ProjectListItem(p) ;
+   return new ProjectListItem(p);
   }
 
   public boolean isSelected() {
@@ -344,7 +341,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       folder = Ode.getInstance().getFolderManager().getGlobalFolder();
     }
     if (folder != null) {
-      refresh();
+      refresh(true);
     }
   }
 
@@ -357,17 +354,17 @@ public class ProjectList extends Composite implements FolderManagerEventListener
 
   @Override
   public void onFolderRemoved(ProjectFolder folder) {
-    refresh();
+    refresh(false);
   }
 
   @Override
   public void onFolderRenamed(ProjectFolder folder) {
-    refresh();
+    refresh(false);
   }
 
   @Override
   public void onFoldersChanged() {
-    refresh();
+    refresh(false);
   }
 
   @Override
@@ -386,29 +383,16 @@ public class ProjectList extends Composite implements FolderManagerEventListener
 
   @Override
   public void onTrashProjectRestored(Project project) {
-    Ode.getInstance().getFolderManager().getGlobalFolder().addProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
   }
 
   @Override
   public void onProjectTrashed(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().getTrashFolder().addProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
-  }
 
-  public void onProjectMoved(Project project) {
-    refresh();
   }
 
   @Override
   public void onProjectDeleted(Project project) {
-    folder.removeProject(project);
-    Ode.getInstance().getFolderManager().saveAllFolders();
-    refresh();
+
   }
 
   @Override

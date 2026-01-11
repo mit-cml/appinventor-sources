@@ -61,6 +61,27 @@
     <ai.xcbuild scheme="AICompanionApp" sdk="${sdk}" />
   </target>
 
+  <target name="CheckPlayerApp" depends="init" if="ios.build.run">
+    <uptodate property="PlayerApp.uptodate" targetfile="${public.build}/PlayerApp-unsigned.ipa">
+      <srcfiles dir="PlayerApp" />
+      <srcfiles dir="components-ios/src" />
+      <srcfiles dir="schemekit/src" />
+      <srcfiles file="Podfile" />
+      <srcfiles dir="Pods" />
+      <srcfiles file="create-player-ipa.sh" />
+    </uptodate>
+  </target>
+
+  <target name="PlayerApp" depends="CheckPlayerApp" if="ios.build.run" unless="PlayerApp.uptodate">
+    <ai.xcbuild scheme="PlayerApp" sdk="${sdk}" action="archive">
+      <arg value="-archivePath" />
+      <arg value="${public.build}/PlayerApp.xcarchive" />
+    </ai.xcbuild>
+    <exec command="bash">
+      <arg value="create-player-ipa.sh" />
+    </exec>
+  </target>
+
   <target name="tests" if="ios.build.run">
     <property name="sdk" value="iphonesimulator" />
     <ai.xcbuild scheme="SchemeKit" sdk="${sdk}" action="test">

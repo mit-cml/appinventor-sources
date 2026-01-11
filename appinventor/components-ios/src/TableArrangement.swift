@@ -135,7 +135,7 @@ fileprivate enum ConstraintUpdate {
   // stores all the cells for the TableArrangement. Mapped from components
   private var _cells = [[TableCell]]()
   // stores all the components for the TableArrangement, including ones that are not visible
-  private var _components = [WeakRef<ViewComponent>]()
+  fileprivate var _components = [WeakRef<ViewComponent>]()
 
   // constraints for when the height and/or width are automatic, to force the parent view to take up space
   private var _emptyConstraints: [NSLayoutConstraint]!
@@ -372,6 +372,19 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
     _view.add(component: component)
   }
 
+
+  open override func onAttach() {
+    super.onAttach()
+    for child in _view._components {
+      guard let child = child.value else {
+        continue
+      }
+      if child.Visible {
+        child.onAttach()
+      }
+    }
+  }
+
   public func setChildWidth(of component: ViewComponent, to width: Int32) {
     component._lastSetWidth = width
     if _initialized {
@@ -395,6 +408,12 @@ open class TableArrangement: ViewComponent, AbstractMethodsForViewComponent, Com
   }
 
   open func getChildren() -> [Component] {
-    return []
+    var children: [Component] = []
+    _view._components.forEach {
+      if let child = $0.value {
+        children.append(child)
+      }
+    }
+    return children
   }
 }

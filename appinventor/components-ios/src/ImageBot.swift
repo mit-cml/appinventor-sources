@@ -40,7 +40,7 @@ open class ImageBot: ProxiedComponent<ImageBot_token, ImageBot_request, ImageBot
           return
         }
         do {
-          self.ImageCreated(try self.saveImage(response.image))
+          self.ImageCreated(try saveImage(response.image))
         } catch {
           self.ErrorOccurred(kSaveFileError, "\(error)")
         }
@@ -144,19 +144,12 @@ open class ImageBot: ProxiedComponent<ImageBot_token, ImageBot_request, ImageBot
     return ImageBot.context.pngRepresentation(of: bitmap, format: .ARGB8, colorSpace: ImageBot.sRGB)
   }
 
-  func saveImage(_ content: Data) throws -> String {
-    let destination = try FileUtil.getPictureFile("png")
-    let url = URL(fileURLWithPath: destination)
-    try content.write(to: url)
-    return destination
-  }
-
   private func editHandler(_ statusCode: Int32, _ response: ImageBot_response?, _ error: Error?) {
     if let error = error {
       self.ErrorOccurred(statusCode, (error as? ProxyError)?.message ?? error.localizedDescription)
     } else if let response = response {
       do {
-        self.ImageEdited(try self.saveImage(response.image))
+        self.ImageEdited(try saveImage(response.image))
       } catch {
         self.ErrorOccurred(kSaveFileError, "\(error)")
       }
@@ -234,4 +227,18 @@ func loadImage(_ source: AnyObject) -> CIImage? {
     }
   }
   return nil
+}
+
+/**
+ * Save the contents of a Data object into a file, by default assumes PNG.
+ *
+ * - Parameter content: Image data to be written to disk
+ * - Parameter ext: The file extension to use. Default: "png"
+ * - Returns: String containing a path to the image
+ */
+func saveImage(_ content: Data, _ ext: String = "png") throws -> String {
+  let destination = try FileUtil.getPictureFile(ext)
+  let url = URL(fileURLWithPath: destination)
+  try content.write(to: url)
+  return destination
 }

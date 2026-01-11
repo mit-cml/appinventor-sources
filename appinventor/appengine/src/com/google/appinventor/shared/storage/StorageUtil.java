@@ -26,6 +26,7 @@ public class StorageUtil {
   public static final long INITIAL_MOTD_ID = 1;
 
   public static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
+  public static final String APPSTORE_CREDENTIALS_FILENAME = "appstore_credentials.der";
   public static final String USER_BACKPACK_FILENAME = "backpack.xml";
 
   /**
@@ -200,6 +201,10 @@ public class StorageUtil {
     }
     if (filePath.endsWith(".otf"))  {
       return "font/otf";
+    }
+
+    if (filePath.endsWith(".ipa")) {
+      return "application/octet-stream";
     }
 
     // default

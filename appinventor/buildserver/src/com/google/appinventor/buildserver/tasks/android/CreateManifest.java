@@ -1,11 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import com.google.appinventor.buildserver.BuildType;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -108,6 +109,27 @@ public class CreateManifest implements AndroidTask {
         }
       }
 
+      final Map<String, Set<String>> featuresNeeded = context.getComponentInfo().getFeaturesNeeded();
+      if (!featuresNeeded.isEmpty()) {
+        final HashMap<String, String> uniqueFeatures = new HashMap<>();
+        for (Map.Entry<String, Set<String>> componentSubElSetPair : featuresNeeded.entrySet()) {
+          for (String feature : componentSubElSetPair.getValue()) {
+            // Extract just the android:name value
+            String name = feature.replaceAll(".*android:name=\"([^\"]+)\".*", "$1");
+            boolean isRequiredTrue = feature.contains("android:required=\"true\"");
+
+            // If new, store it — if existing, only replace if this one has required="true"
+            if (!uniqueFeatures.containsKey(name) || isRequiredTrue) {
+              uniqueFeatures.put(name, feature);
+            }
+          }
+        }
+
+        for (String feature : uniqueFeatures.values()) {
+          out.write(feature);
+        }
+      }
+
       final Map<String, Set<String>> queriesNeeded = context.getComponentInfo().getQueriesNeeded();
       if (!queriesNeeded.isEmpty()) {
         out.write("  <queries>\n");
@@ -134,7 +156,7 @@ public class CreateManifest implements AndroidTask {
         permissions.add("android.permission.READ_EXTERNAL_STORAGE");
         permissions.add("android.permission.WRITE_EXTERNAL_STORAGE");
       }
-      if (context.isForCompanion() || context.usesSharedFileAccess()) {
+      if (context.isForCompanion()) {
         permissions.add("android.permission.READ_MEDIA_AUDIO");
         permissions.add("android.permission.READ_MEDIA_IMAGES");
         permissions.add("android.permission.READ_MEDIA_VIDEO");
@@ -157,6 +179,10 @@ public class CreateManifest implements AndroidTask {
         permissions.remove("android.permission.CALL_PHONE");
         permissions.remove("android.permission.READ_CALL_LOG");
         permissions.remove("android.permission.WRITE_CALL_LOG");
+        // Photo and Video Permissions
+        // https://support.google.com/googleplay/android-developer/answer/9888170#photo-and-video-permissions
+        permissions.remove("android.permission.READ_MEDIA_IMAGES");
+        permissions.remove("android.permission.READ_MEDIA_VIDEO");
       }
 
       Multimap<String, PermissionConstraint<?>> permissionConstraints = HashMultimap.create();

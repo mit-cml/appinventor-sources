@@ -7,13 +7,14 @@ import Foundation
 import DGCharts
 
 @objc open class ChartDataBase: DataCollection, Component, DataSourceChangeListener, ChartViewDelegate, ChartComponent {
-  var _chartDataModel: ChartDataModel?
   var _container: Chart {
     return container as! Chart
   }
   var _color: Int32 = AIComponentKit.Color.black.int32
   var _colors: [UIColor] = []
   var _label: String?
+  
+  var _dataLabelColor: Int32 = AIComponentKit.Color.black.int32
 
   var _lineType = AIComponentKit.LineType.Linear
   var _pointshape = PointStyle.Circle
@@ -33,6 +34,7 @@ import DGCharts
   @objc public init(_ chartContainer: Chart) {
     super.init(chartContainer)
     chartContainer.addDataComponent(self)
+    _dataLabelColor = chartContainer.form?.isDarkTheme ?? true ? AIComponentKit.Color.white.int32 : AIComponentKit.Color.black.int32
     initChartData()
     DataSourceKey("")
   }
@@ -44,7 +46,7 @@ import DGCharts
     set {
       _color = newValue
       chartDataModel?.setColor(argbToColor(newValue))
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -56,6 +58,7 @@ import DGCharts
       ElementsFromPairs = elements
     }
     chartDataModel?.setColor(argbToColor(_color))
+    chartDataModel?.setDataLabelColor(argbToColor(_dataLabelColor))
     if !_colors.isEmpty {
       chartDataModel?.setColors(_colors)
     }
@@ -81,7 +84,7 @@ import DGCharts
       }
       _colors = resultColors
       chartDataModel?.dataset?.colors = _colors
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -92,7 +95,18 @@ import DGCharts
     set {
       _label = newValue
       chartDataModel?.setLabel(newValue)
-     onDataChange()
+      onDataChange()
+    }
+  }
+  
+  @objc open var DataLabelColor: Int32 {
+    get {
+      return _dataLabelColor
+    }
+    set {
+      _dataLabelColor = newValue
+      chartDataModel?.dataset?.valueTextColor = argbToColor(newValue)
+      onDataChange()
     }
   }
 
@@ -102,6 +116,7 @@ import DGCharts
     // set default values
     chartDataModel?.setColor(argbToColor(_color))
     chartDataModel?.setLabel(_label ?? "")
+    chartDataModel?.setDataLabelColor(argbToColor(_dataLabelColor))
     chartDataModel?.view.chart?.delegate = self
   }
 
@@ -117,7 +132,7 @@ import DGCharts
       if let chartDataModel = chartDataModel as? LineChartDataModel {
         chartDataModel.setLineType(_lineType)
       }
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -132,7 +147,7 @@ import DGCharts
       if let chartDataModel = chartDataModel as? ScatterChartDataModel {
         chartDataModel.setPointShape(_pointshape)
       }
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -292,7 +307,7 @@ import DGCharts
 
   @objc func ImportFromList(_ list: [AnyObject]) {
     chartDataModel?.importFromList(list)
-    refreshChart()
+    onDataChange()
   }
 
   @objc func ImportFromSpreadsheet(_ spreadsheet: Spreadsheet, _ xColumn: String, _ yColumn: String, _ useHeaders: Bool) {
@@ -301,13 +316,13 @@ import DGCharts
       updateCurrentDataSourceValue(spreadsheet, nil, nil)
     }
     chartDataModel?.importFromColumns(dataColumns as NSArray, useHeaders)
-    refreshChart()
+    onDataChange()
   }
 
   @objc func ImportFromTinyDB(_ tinyDB: TinyDB, _ tag: String) {
     let list = tinyDB.getDataValue(tag as NSString)
     updateCurrentDataSourceValue(tinyDB, tag, list as NSArray)
-    refreshChart()
+    onDataChange()
   }
 
   // MARK: Events

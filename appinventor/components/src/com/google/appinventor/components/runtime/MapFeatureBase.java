@@ -30,6 +30,8 @@ import org.osmdroid.util.GeoPoint;
 
 @SimpleObject
 public abstract class MapFeatureBase implements MapFeature, HasStroke {
+  protected String componentName;
+
   protected MapFeatureContainer container = null;
   protected Map map = null;
   private boolean visible = true;
@@ -105,6 +107,11 @@ public abstract class MapFeatureBase implements MapFeature, HasStroke {
     StrokeWidth(1);
     Title("");
     Visible(true);
+  }
+
+  @Override
+  public void setComponentName(String componentName) {
+    this.componentName = componentName;
   }
 
   public void setMap(MapFactory.MapFeatureContainer container) {

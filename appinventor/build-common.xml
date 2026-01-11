@@ -16,6 +16,8 @@
 <project name="CommonDefinitions" xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- Always build with debug set... (jis) -->
   <property name="debug" value="true"/>
+  <property name="attach" value="false"/>
+
   <description>
     Definitions common to multiple App Inventor build.xml files."
   </description>
@@ -217,6 +219,7 @@
              haltonfailure="no"
              maxmemory="2000m"
              showoutput="no">
+        <jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005" if:true="${attach}"/>
         <sysproperty key="gwt.args" value="-prod -gen ${local.build.dir}/gen -war ${local.build.dir}/build/war" if:true="@{aij-prod}"/>
         <sysproperty key="gwt.args" value="-devMode -logLevel WARN -war ${local.build.dir}/build/war" unless:true="@{aij-prod}"/>
         <sysproperty key="java.awt.headless" value="true"/>
@@ -358,6 +361,11 @@
   <target name="components_CommonConstants">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
          target="CommonConstants"/>
+  </target>
+
+  <target name="ios_PlayerApp">
+    <ant inheritall="false" usenativebasedir="true" dir="${appinventor.dir}" antfile="ios-build.xml"
+         target="PlayerApp" />
   </target>
 
 </project>

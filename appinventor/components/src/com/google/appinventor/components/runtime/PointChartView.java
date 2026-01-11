@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.renderer.XAxisRenderer;
+import com.github.mikephil.charting.renderer.YAxisRenderer;
 
 import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
 
@@ -50,5 +52,17 @@ public abstract class PointChartView<
   @Override
   public View getView() {
     return chart;
+  }
+  
+  /**
+   * Sets the color of the axes text of the Point Chart.
+   *
+   * @param color color to set text to.
+   */
+  public void setAxesTextColor(int color){
+    System.out.println("the color is " + color);
+    chart.getXAxis().setTextColor(color);
+    chart.getAxisLeft().setTextColor(color);
+    chart.invalidate();
   }
 }
