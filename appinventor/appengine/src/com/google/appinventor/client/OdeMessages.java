@@ -2538,11 +2538,11 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String apkSavedToComputer();
 
   @DefaultMessage("The APK file will be installed in the phone.")
-  @Description("")
+  @Description("Status message shown when the system is installing the generated APK directly onto the connected phone.")
   String apkInstalledToPhone();
 
   @DefaultMessage("Waiting for the barcode.")
-  @Description("")
+  @Description("Status message shown while the system is waiting for a barcode scan to complete.")
   String waitingForBarcode();
 
   @DefaultMessage("Preparing application icon")
@@ -2550,7 +2550,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String preparingApplicationIcon();
 
   @DefaultMessage("Determining permissions")
-  @Description("")
+  @Description("Status message shown while the build system determines the permissions required by the project.")
   String determiningPermissions();
 
   @DefaultMessage("Generating application information")
