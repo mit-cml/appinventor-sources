@@ -55,8 +55,14 @@ open class ChartDataModel: DataModel {
     }), alpha: 1.0)
   }
 
+  private var _userLabel: String?
+  private var _legendVisible: Bool = true
+
   func setLabel(_ text: String) {
-    dataset?.label = text
+    _userLabel = text
+    if _legendVisible {
+      dataset?.label = text
+    }
   }
   
   func setDataLabelColor(_ argb: UIColor) {
@@ -68,7 +74,13 @@ open class ChartDataModel: DataModel {
   }
 
   func setLegendVisible(_ visible: Bool) {
+    _legendVisible = visible
     dataset?.form = visible ? .default : .none
+    if visible {
+      dataset?.label = _userLabel
+    } else {
+      dataset?.label = nil
+    }
   }
 
   func importFromList(_ list: [AnyObject]) {

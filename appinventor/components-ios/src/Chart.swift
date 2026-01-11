@@ -139,6 +139,40 @@ import DGCharts
       _chartView?.backgroundColor = _backgroundColor
     }
   }
+
+  @objc open var DescriptionFontSize: Float {
+    get {
+      return _descriptionFontSize
+    }
+    set {
+      _descriptionFontSize = newValue
+      _chartView?.setDescriptionTextSize(CGFloat(newValue))
+    }
+  }
+
+  @objc open var XAxisFontSize: Float {
+    get {
+      return _xAxisFontSize
+    }
+    set {
+      _xAxisFontSize = newValue
+      if let axisChartView = _chartView as? AxisChartView {
+        axisChartView.setXAxisTextSize(CGFloat(newValue))
+      }
+    }
+  }
+
+  @objc open var YAxisFontSize: Float {
+    get {
+      return _yAxisFontSize
+    }
+    set {
+      _yAxisFontSize = newValue
+      if let axisChartView = _chartView as? AxisChartView {
+        axisChartView.setYAxisTextSize(CGFloat(newValue))
+      }
+    }
+  }
   
   @objc open var AxesTextColor: Int32 {
     get {
