@@ -100,6 +100,26 @@ public abstract class ChartView<E extends Entry, T extends IDataSet<E>, D extend
   }
 
   /**
+   * Sets the text size of the X axis of the Chart.
+   * Left empty by default as not all charts have axes.
+   *
+   * @param size text size
+   */
+  public void setXAxisTextSize(float size) {
+    // Left empty by default
+  }
+
+  /**
+   * Sets the text size of the Y axis of the Chart.
+   * Left empty by default as not all charts have axes.
+   *
+   * @param size text size
+   */
+  public void setYAxisTextSize(float size) {
+    // Left empty by default
+  }
+
+  /**
    * Enables or disables the Legend.
    *
    * @param enabled Specifies whether the Legend should be enabled.

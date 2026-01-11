@@ -38,6 +38,9 @@ public abstract class ChartDataModel<E extends Entry, T extends IDataSet<E>, D e
   protected T dataset;
   protected V view;
 
+  private String userLabel;
+  private boolean legendVisible = true;
+
   /**
    * Initializes a new ChartDataModel object instance.
    *
@@ -143,20 +146,15 @@ public abstract class ChartDataModel<E extends Entry, T extends IDataSet<E>, D e
   }
 
   /**
-   * Controls the visibility of the legend entry for this data series.
-   *
-   * @param visible true to show the legend entry, false to hide it
-   */
-  private String userLabel;
-  private boolean legendVisible = true;
-
-  /**
    * Changes the label of the data set.
    *
    * @param text new label text
    */
   public void setLabel(String text) {
-    getDataset().setLabel(text);
+    this.userLabel = text;
+    if (legendVisible) {
+      getDataset().setLabel(text);
+    }
   }
 
   /**

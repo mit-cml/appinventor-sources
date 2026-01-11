@@ -181,6 +181,16 @@ public abstract class AxisChartView<E extends Entry, T extends IBarLineScatterCa
     chart.invalidate();
   }
 
+  @Override
+  public void setXAxisTextSize(float size) {
+    chart.getXAxis().setTextSize(size);
+  }
+
+  @Override
+  public void setYAxisTextSize(float size) {
+    chart.getAxisLeft().setTextSize(size);
+  }
+
   /**
    *
    * @param valueType indicates whether the data should be interpreted as integers
@@ -215,26 +225,7 @@ public abstract class AxisChartView<E extends Entry, T extends IBarLineScatterCa
    *
    * @param labels List of labels to apply to the X Axis
    */
-
   public void setLabels(List<String> labels) {
     this.axisLabels = labels;
-  }
-
-  /**
-   * Sets the text size of the X Axis.
-   *
-   * @param size text size
-   */
-  public void setXAxisTextSize(float size) {
-    chart.getXAxis().setTextSize(size);
-  }
-
-  /**
-   * Sets the text size of the Y Axis.
-   *
-   * @param size text size
-   */
-  public void setYAxisTextSize(float size) {
-    chart.getAxisLeft().setTextSize(size);
   }
 }
