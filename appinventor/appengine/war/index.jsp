@@ -120,7 +120,7 @@
     <script src="static/js/tutorial.js"></script>
     <script type="text/javascript" src="static/closure-compiler/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
-    <script type="text/javascript" src="static/js/scroll-options-6.0.16.min.js"></script>
+    <script type="text/javascript" src="static/js/scroll-options-7.0.8.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-search-9.1.10.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.7.16.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
