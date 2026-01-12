@@ -1,0 +1,5 @@
+// -*- mode: conf; -*-
+// Copyright 2023 MIT, All rights reserved.
+
+DEVELOPMENT_TEAM = "Your Team ID here"
+BUNDLE_IDENTIFIER = "Your custom package here"

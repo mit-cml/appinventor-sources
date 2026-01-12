@@ -18,11 +18,27 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" antfile="ios-build.xml"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppExtras"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="Emulator"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="Companion"/>
   </target>
 
   <target name="MakeAuthKey">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="MakeAuthKey"/>
+  </target>
+
+  <target name="android">
+    <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+  </target>
+
+  <target name="webapp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
   </target>
 
   <target name="comps">
@@ -30,23 +46,36 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
   </target>
 
+  <target name="ios">
+    <ant inheritAll="false" antfile="ios-build.xml"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="Companion"/>
+  </target>
+
+  <target name="ioscomps">
+    <ant inheritAll="false" antfile="ios-build.xml" target="install"/>
+  </target>
+
+  <target name="iostests">
+    <ant inheritAll="false" antfile="ios-build.xml" target="tests"/>
+  </target>
+
   <target name="comps1">
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="BuildServer"/>
   </target>
 
+  <target name="docs">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="CopyToBuildWar"/>
+  </target>
+
   <target name="extensions">
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="BuildServer"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="extensions"/>
   </target>
 
   <target name="noplay">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
   </target>
 
   <target name="installplay">
@@ -61,8 +90,24 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
+  <target name="PlayAppAab">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppAab"/>
+  </target>
+
+  <target name="PlayAppExtras">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppExtras"/>
+  </target>
+
+  <target name="Emulator">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="Emulator"/>
+  </target>
+
   <target name="AIMergerApp">
     <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="AIMergerApp"/>
+  </target>
+  
+  <target name="devmode" depends="noplay">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="devmode"/>
   </target>
 
   <!-- Convenient target for just running the blockly related tests -->
@@ -76,6 +121,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="tests"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="tests"/>
     <mkdir dir="reports"/>
     <junitreport todir="reports">
       <fileset dir="appengine/reports/raw" includes="TEST-*.xml"/>
@@ -115,6 +161,35 @@
     </javadoc>
   </target>
 
+  <target name="checkstyle-all">
+    <java classname="com.puppycrawl.tools.checkstyle.Main" fork="true">
+      <classpath>
+        <pathelement path="lib/checkstyle/checkstyle.jar"/>
+        <pathelement path="lib/checkstyle/appinventor-checks.jar"/>
+      </classpath>
+      <arg value="-c"/>
+      <arg value="lib/checkstyle/appinventor-checks.xml"/>
+      <arg value="appengine/src"/>
+      <arg value="appengine/tests"/>
+      <arg value="blocklyeditor/src"/>
+      <arg value="blocklyeditor/tests"/>
+      <arg value="buildserver/src"/>
+      <arg value="buildserver/tests"/>
+      <arg value="common/src"/>
+      <arg value="common/tests"/>
+      <arg value="components/src"/>
+      <arg value="components/tests"/>
+    </java>
+  </target>
+
+  <target name="checkstyle">
+    <property name="commit" value="HEAD"/>
+    <exec executable="misc/checkstyle/checkstyle-git.py"
+          failonerror="true">
+      <arg value="${commit}"/>
+    </exec>
+  </target>
+
   <target name="clean">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="clean"/>
@@ -122,6 +197,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="clean"/>
     <delete dir="build"/>
     <delete dir="reports"/>
   </target>

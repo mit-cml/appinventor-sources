@@ -1,14 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -17,6 +21,7 @@ import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
@@ -30,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,11 +53,11 @@ import javax.annotation.Nullable;
 public final class FileImporterImpl implements FileImporter {
 
   // Maximum size of an uploaded asset, in megabytes.
-  private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 9f);
+  private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 15f);
 
   private static final Logger LOG = Logger.getLogger(FileImporterImpl.class.getName());
 
-  private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   @Override
   public UserProject importProject(String userId, String projectName,
@@ -76,9 +82,11 @@ public final class FileImporterImpl implements FileImporter {
     String qualifiedFormName = StringUtils.getQualifiedFormName(
         storageIo.getUser(userId).getUserEmail(), projectName);
     String srcDirectory = YoungAndroidProjectService.getSourceDirectory(qualifiedFormName);
+    String projectSettings = new YoungAndroidSettingsBuilder().build();
 
     ZipInputStream zin = new ZipInputStream(uploadedFileStream);
     boolean isProjectArchive = false;  // have we found at least one project properties file?
+    String lastOpened = "Screen1";
     try {
       // Extract files
       while (true) {
@@ -101,9 +109,18 @@ public final class FileImporterImpl implements FileImporter {
             // The content for the youngandroidproject/project.properties file must be regenerated
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
-            String content = YoungAndroidProjectService.getProjectPropertiesFileContents(
-              projectName, qualifiedFormName, null, null, null, null, null, null, null, null,
-              null, null, null, null, null);
+
+            Properties props = new Properties();
+            props.load(zin);
+            lastOpened = props.getProperty("lastopened", "Screen1");
+            String projectColors = props.getProperty("projectcolors", "{}");
+            YoungAndroidSettingsBuilder settingsBuilder = new YoungAndroidSettingsBuilder()
+                .setProjectName(projectName)
+                .setQualifiedFormName(qualifiedFormName)
+                .setDefaultLastOpened(lastOpened)
+                .setProjectColors(projectColors);
+            String content = settingsBuilder.toProperties();
+            projectSettings = settingsBuilder.build();
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
@@ -122,7 +139,7 @@ public final class FileImporterImpl implements FileImporter {
 
           } else {
 
-            if (fileName.startsWith(YoungAndroidProjectService.SRC_FOLDER)) {
+            if (fileName.startsWith(SRC_FOLDER)) {
               // For files within the src folder, we need to update the directory that we put files
               // in. Adjust the fileName so that it corresponds to this project's package.
               fileName = srcDirectory + '/' + StorageUtil.basename(fileName);
@@ -150,9 +167,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null, null,
-        null, null, null, null, null, null, null, null);
-    long projectId = storageIo.createProject(userId, project, settings);
+    long projectId = storageIo.createProject(userId, project, projectSettings);
     return storageIo.getUserProject(userId, projectId);
   }
 
@@ -174,13 +189,16 @@ public final class FileImporterImpl implements FileImporter {
     while ((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
       bos.write(buffer, 0, bytes);
       fileLength += bytes;
+      if (fileLength > maxSizeBytes) {
+        // Read the rest of the stream, but throw it away
+        // and throw an error, so we do not consume memory storing
+        // a large object
+        while((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
+        }
+        throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
+      }
     }
     bos.flush();
-
-    // First check the file length, to avoid loading the file into memory if it is too large anyhow.
-    if (fileLength > maxSizeBytes) {
-      throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
-    }
 
     byte[] content = os.toByteArray();
 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
+             xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
+             xmlns:neo="urn:import:com.google.appinventor.client.style.neo"
+             xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             xmlns:widgets="urn:import:com.google.appinventor.client.widgets"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="style" />
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <g:FlowPanel styleName="ode-Root">
+    <neo:TopPanelNeo ui:field="topPanel" />
+    <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
+      <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
+      <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
+        <g:FlowPanel width="100%" height="100%" styleName="ode-Project-FlexColumn">
+          <neo:ProjectToolbarNeo ui:field="projectToolbar" />
+          <box:ProjectListBox ui:field="projectListbox" styleName="ode-Box ode-Box-projectlist" />
+        </g:FlowPanel>
+        <g:FlowPanel styleName="ode-ProjectEditor" ui:field="projectEditor">
+          <neo:DesignToolbarNeo ui:field="designToolbar" />
+          <g:FlowPanel ui:field="workColumns" styleName="ode-WorkColumns" >
+            <box:PaletteBox ui:field="paletteBox" styleName="ode-Designer-LeftColumn" />
+            <box:ViewerBox ui:field="viewerBox" />
+            <g:FlowPanel ui:field="structureAndAssets" styleName="ode-Designer-RightColumns">
+              <box:SourceStructureBox ui:field="sourceStructureBox"  />
+              <box:BlockSelectorBox />
+              <g:FlowPanel>
+                <g:Label text="{messages.assetListBoxCaption}" styleName="ode-AssetsTitle" />
+                <box:AssetListBox  ui:field="assetListBox" />
+              </g:FlowPanel>
+            </g:FlowPanel>
+            <box:PropertiesBox ui:field="propertiesBox"  styleName="ode-Designer-RightColumns" />
+            <ed:ConsolePanel ui:field="consolePanel" height="100%" visible="false" />
+          </g:FlowPanel>
+        </g:FlowPanel>
+        <g:FlowPanel width="100%">
+          <box:AdminUserListBox />
+        </g:FlowPanel>
+      </g:DeckPanel>
+    </g:FlowPanel>
+    <neo:StatusPanelNeo ui:field="statusPanel" />
+  </g:FlowPanel>
+</ui:UiBinder>

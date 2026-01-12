@@ -6,9 +6,6 @@
 
 package com.google.appinventor.client.properties;
 
-import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.widgets.properties.EditableProperty;
-import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
 
@@ -16,12 +13,15 @@ import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Collection of properties.
  *
  */
 public class Properties<T extends Property> implements Iterable<T> {
+
+  private static final Logger LOG = Logger.getLogger(Properties.class.getName());
 
   // We define our own special comparator here. It turns out that
   // properties are displayed in the properties panel based on the order
@@ -106,7 +106,7 @@ public class Properties<T extends Property> implements Iterable<T> {
    * @return  encoded properties
    */
   public String encodeAllAsPairs() {
-    return encode(true, true);
+    return encode(false, true);
   }
 
   /**
@@ -126,8 +126,8 @@ public class Properties<T extends Property> implements Iterable<T> {
     for (Property property : this) {
       // Don't encode non-persistable properties or properties being assigned their default value
       // unless encoding for all properties was explicitly requested
-      if ((property.isPersisted() || (property.isYail() && forYail)) &&
-          (all || !property.getDefaultValue().equals(property.getValue()))) {
+      if (((property.isPersisted() && !forYail) || (property.isYail() && forYail))
+          && (all || !property.getDefaultValue().equals(property.getValue()))) {
         sb.append(separator);
         separator = ",";
         property.encode(sb);
@@ -202,7 +202,7 @@ public class Properties<T extends Property> implements Iterable<T> {
       getExistingProperty(name).setValue(value);
       return true;
     } catch (IllegalStateException e) {
-      OdeLog.wlog(e.toString());
+      LOG.warning(e.toString());
       return false;
     }
   }

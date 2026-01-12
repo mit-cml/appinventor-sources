@@ -1,32 +1,30 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.stats.SimpleStatReporter;
+import com.google.appinventor.buildserver.stats.StatCalculator;
+import com.google.appinventor.buildserver.stats.StatCalculator.Stats;
+import com.google.appinventor.buildserver.stats.StatReporter;
+import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
+import com.google.appinventor.buildserver.tasks.ios.IosBuildFactory;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
-
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.StringArrayOptionHandler;
-
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -34,28 +32,37 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
-import java.lang.Math;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 /**
  * Top level class for exposing the building of App Inventor APK files as a RESTful web service.
@@ -67,9 +74,10 @@ import javax.ws.rs.core.Response;
 // The Java class will be hosted at the URI path "/buildserver"
 @Path("/buildserver")
 public class BuildServer {
-  private ProjectBuilder projectBuilder = new ProjectBuilder();
+  private ProjectBuilder projectBuilder = new ProjectBuilder(statReporter);
+  private String hostname = getEtcHostname();
 
-  static class ProgressReporter {
+  public static class ProgressReporter {
     // We create a ProgressReporter instance which is handed off to the
     // project builder and compiler. It is called to report the progress
     // of the build. The reporting is done by calling the callback URL
@@ -127,6 +135,10 @@ public class BuildServer {
       usage = "Token needed to shutdown the server remotely.")
     String shutdownToken = null;
 
+    @Option(name = "--buildserverPassword",
+      usage = "Password needed to invoke the buildserver.")
+    String buildserverPassword = null;
+
     @Option(name = "--childProcessRamMb",
       usage = "Maximum ram that can be used by a child processes, in MB.")
     int childProcessRamMb = 2048;
@@ -147,9 +159,18 @@ public class BuildServer {
     @Option(name = "--debug",
       usage = "Turn on debugging, which enables the non-async calls of the buildserver.")
     boolean debug = false;
+
     @Option(name = "--dexCacheDir",
             usage = "the directory to cache the pre-dexed libraries")
     String dexCacheDir = null;
+
+    @Option(name = "--statreporter",
+        usage = "the reporter to use for collecting stats")
+    String statReporter = "com.google.appinventor.buildserver.stats.SimpleStatReporter";
+
+    @Option(name = "--ios",
+        usage = "Enables iOS builds for the buildserver")
+    boolean ios = false;
 
   }
 
@@ -178,6 +199,11 @@ public class BuildServer {
 
   //The number of failed build requests for this server run
   private static final AtomicInteger failedBuildRequests = new AtomicInteger(0);
+
+  private static final String PASSWORD_HEADER_PREFIX = "Password ";
+
+  // The reporter for gathering build stats.
+  private static StatReporter statReporter;
 
   //The number of failed build requests for this server run
   private static int maximumActiveBuildTasks = 0;
@@ -208,8 +234,7 @@ public class BuildServer {
   // otherwise still accepting jobs. This avoids having people get an error if the load
   // balancer sends a job our way because it hasn't decided we are down.
   private static volatile long shuttingTime = 0;
-
-  private static String shutdownToken = null;
+  private static volatile long turningOnTime = 0;
 
   // ShutdownState: UP:         We are up and running
   //                SHUTTING:   We have been told to shutdown, with a time delay
@@ -218,7 +243,7 @@ public class BuildServer {
   //                DRAINING:   We have reached > 2/3 of max permitted jobs
   //                            We return bad health (but accept jobs) until
   //                            the number of active jobs is < 1/3 of max
-  private enum ShutdownState { UP, SHUTTING, DOWN, DRAINING };
+  private enum ShutdownState { UP, SHUTTING, TURNING, DOWN, DRAINING };
 
   private static volatile boolean draining = false; // We have exceeded 2/3 max load, waiting for
                                                     // the load to become < 1/3 max load
@@ -237,6 +262,9 @@ public class BuildServer {
     } else if (shut == ShutdownState.DRAINING) {
       LOG.info("Healthcheck: DRAINING");
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is draining").build();
+    } else if (shut == ShutdownState.TURNING) {
+      LOG.info("Healthcheck: TURNING");
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is turning on").build();
     } else {
       LOG.info("Healthcheck: SHUTTING");
       return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Build Server is shutting down").build();
@@ -253,8 +281,13 @@ public class BuildServer {
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
     variables.put("state", getShutdownState() + "");
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
+    variables.put("etc-hostname", hostname);
     if (shuttingTime != 0) {
       variables.put("shutdown-time", dateTimeFormat.format(new Date(shuttingTime)));
+    }
+    if (turningOnTime != 0) {
+      variables.put("turnon-time", dateTimeFormat.format(new Date(turningOnTime)));
     }
     variables.put("start-time", dateTimeFormat.format(new Date(runtimeBean.getStartTime())));
     variables.put("uptime-in-ms", runtimeBean.getUptime() + "");
@@ -303,15 +336,55 @@ public class BuildServer {
     maximumActiveBuildTasks = Math.max(maximumActiveBuildTasks, buildExecutor.getActiveTaskCount());
     variables.put("maximum-simultaneous-build-tasks-occurred", maximumActiveBuildTasks + "");
     variables.put("active-build-tasks", buildExecutor.getActiveTaskCount() + "");
+    variables.put("peak-active-build-tasks", buildExecutor.getPeakActiveTaskCount() + "");
 
+    return mapToHtml(variables);
+  }
+
+  private Response mapToHtml(Map<String, String> variables) {
     StringBuilder html = new StringBuilder();
     html.append("<html><body><tt>");
     for (Map.Entry<String, String> variable : variables.entrySet()) {
       html.append("<b>").append(variable.getKey()).append("</b> ")
-        .append(variable.getValue()).append("<br>");
+          .append(variable.getValue()).append("<br>");
     }
     html.append("</tt></body></html>");
     return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
+  }
+
+  @GET
+  @Path("stats")
+  @Produces(MediaType.TEXT_HTML)
+  public Response stats() throws IOException {
+    Map<String, String> variables = new LinkedHashMap<String, String>();
+
+    variables.put("hostname", InetAddress.getLocalHost().getHostName());
+
+    // Build Stats
+    if (statReporter instanceof SimpleStatReporter) {
+      StatCalculator calculator = new StatCalculator();
+      processStats("last1000.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getOrderedStats()),
+          variables);
+      processStats("successes.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getSuccessStats()),
+          variables);
+      processStats("failures.",
+          calculator.computeStats(((SimpleStatReporter) statReporter).getFailureStats()),
+          variables);
+    }
+
+    return mapToHtml(variables);
+  }
+
+  private void processStats(String prefix, Stats stats, Map<String, String> variables) {
+    variables.put(prefix + "min", stats.getMinTime() + " ms");
+    variables.put(prefix + "avg", stats.getAvgTime() + " ms");
+    variables.put(prefix + "max", stats.getMaxTime() + " ms");
+    variables.put(prefix + "std", stats.getStdev() + " ms");
+    for (String stage : stats.getStageNames()) {
+      processStats(prefix + stage + ".", stats.getStageStats(stage), variables);
+    }
   }
 
   /**
@@ -346,6 +419,40 @@ public class BuildServer {
   }
 
   /**
+   * Indicate that the server is turning on.
+   *
+   * @param token -- secret token used like a password to authenticate the shutdown command
+   * @param delay -- the delay in seconds before jobs are no longer accepted
+   */
+
+  @GET
+  @Path("turnon")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response turnon(@QueryParam("token") String token, @QueryParam("delay") String delay) throws IOException {
+    if (commandLineOptions.shutdownToken == null || token == null) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("No Shutdown Token").build();
+    } else if (!token.equals(commandLineOptions.shutdownToken)) {
+      return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Invalid Shutdown Token").build();
+    } else {
+      if (shuttingTime == 0) {
+        return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Buildserver is not expected to be shutted down").build();
+      }
+      long turnonTime = System.currentTimeMillis();
+      if (delay != null) {
+        try {
+          turnonTime += Integer.parseInt(delay) *1000;
+        } catch (NumberFormatException e) {
+          // XXX Ignore
+        }
+      }
+      turningOnTime = turnonTime;
+      DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
+      return Response.ok("ok: Will turnon at " + dateTimeFormat.format(new Date(turningOnTime)),
+          MediaType.TEXT_PLAIN_TYPE).build();
+    }
+  }
+
+  /**
    * Build an APK file from the input zip file. The zip file needs to be a variant of the same
    * App Inventor source zip that's generated by the Download Source command.  The differences are
    * that it might not contain a .yail file (in which case we will generate the YAIL code) and it
@@ -359,8 +466,16 @@ public class BuildServer {
   @POST
   @Path("build-from-zip")
   @Produces("application/vnd.android.package-archive;charset=utf-8")
-  public Response buildFromZipFile(@QueryParam("uname") String userName, File zipFile)
-    throws IOException {
+  public Response buildFromZipFile(
+    @QueryParam("uname") String userName,
+    @QueryParam("ext") String ext,
+    @HeaderParam("Authorization") String authHeader,
+    File zipFile) throws IOException {
+
+    if (!isBuildRequestAllowed(authHeader)) {
+      return BuildServer.incorrectPasswordResponse().build();
+    }
+
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = zipFile;
     inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -370,7 +485,7 @@ public class BuildServer {
         .entity("Entry point unavailable unless debugging.").build();
 
     try {
-      build(userName, zipFile, null);
+      build(userName, zipFile, ext, null);
       String attachedFilename = outputApk.getName();
       FileInputStream outputApkDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputApk);
       // Set the outputApk field to null so that it won't be deleted in cleanUp().
@@ -402,8 +517,16 @@ public class BuildServer {
   @POST
   @Path("build-all-from-zip")
   @Produces("application/zip;charset=utf-8")
-  public Response buildAllFromZipFile(@QueryParam("uname") String userName, File inputZipFile)
-    throws IOException, JSONException {
+  public Response buildAllFromZipFile(
+    @QueryParam("uname") String userName,
+    @QueryParam("ext") String ext,
+    @HeaderParam("Authorization") String authHeader,
+    File inputZipFile) throws IOException, JSONException {
+
+    if (!isBuildRequestAllowed(authHeader)) {
+      return BuildServer.incorrectPasswordResponse().build();
+    }
+
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = inputZipFile;
     inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -413,7 +536,7 @@ public class BuildServer {
         .entity("Entry point unavailable unless debugging.").build();
 
     try {
-      buildAndCreateZip(userName, inputZipFile, null);
+      buildAndCreateZip(userName, inputZipFile, ext, null);
       String attachedFilename = outputZip.getName();
       FileInputStream outputZipDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputZip);
       // Set the outputZip field to null so that it won't be deleted in cleanUp().
@@ -460,7 +583,14 @@ public class BuildServer {
     @QueryParam("uname") final String userName,
     @QueryParam("callback") final String callbackUrlStr,
     @QueryParam("gitBuildVersion") final String gitBuildVersion,
+    @QueryParam("ext") final String ext,
+    @HeaderParam("Authorization") String authHeader,
     final File inputZipFile) throws IOException {
+
+    if (!isBuildRequestAllowed(authHeader)) {
+      return BuildServer.incorrectPasswordResponse().build();
+    }
+
     // Set the inputZip field so we can delete the input zip file later in
     // cleanUp.
     inputZip = inputZipFile;
@@ -521,7 +651,7 @@ public class BuildServer {
             try {
               LOG.info("START NEW BUILD " + count);
               checkMemory();
-              buildAndCreateZip(userName, inputZipFile, new ProgressReporter(callbackUrlStr));
+              buildAndCreateZip(userName, inputZipFile, ext, new ProgressReporter(callbackUrlStr));
               // Send zip back to the callbackUrl
               LOG.info("CallbackURL: " + callbackUrlStr);
               URL callbackUrl = new URL(callbackUrlStr);
@@ -552,6 +682,7 @@ public class BuildServer {
               }
             } catch (Exception e) {
               // TODO(user): Maybe send a failure callback
+              e.printStackTrace();
               LOG.severe("Exception: " + e.getMessage()+ " and the length is of inputZip is "+ inputZip.length());
             } finally {
               cleanUp();
@@ -580,24 +711,26 @@ public class BuildServer {
     // are now handled via a callback mechanism. The "50" here is just a plug
     // number.
     return Response.ok().type(MediaType.TEXT_PLAIN_TYPE)
-      .entity("" + 50).build();
+      .entity("" + 0).build();
   }
 
-  private void buildAndCreateZip(String userName, File inputZipFile, ProgressReporter reporter)
-    throws IOException, JSONException {
-    Result buildResult = build(userName, inputZipFile, reporter);
+  private void buildAndCreateZip(String userName, File inputZipFile, String ext,
+      ProgressReporter reporter) throws IOException, JSONException {
+    Result buildResult = build(userName, inputZipFile, ext, reporter);
     boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
     outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
     ZipOutputStream zipOutputStream =
       new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outputZip)));
     if (buildSucceeded) {
-      if (outputKeystore != null) {
-        zipOutputStream.putNextEntry(new ZipEntry(outputKeystore.getName()));
-        Files.copy(outputKeystore, zipOutputStream);
+      File[] files = outputDir.listFiles();
+      if (files != null) {
+        for (File file : files) {
+          zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+          Files.copy(file, zipOutputStream);
+          file.delete();        // Cleanup
+        }
       }
-      zipOutputStream.putNextEntry(new ZipEntry(outputApk.getName()));
-      Files.copy(outputApk, zipOutputStream);
       successfulBuildRequests.getAndIncrement();
     } else {
       LOG.severe("Build " + buildCount.get() + " Failed: " + buildResult.getResult() + " " + buildResult.getError());
@@ -610,6 +743,7 @@ public class BuildServer {
     zipPrintStream.flush();
     zipOutputStream.flush();
     zipOutputStream.close();
+    LOG.info("Output zip at " + outputZip.getAbsolutePath());
   }
 
   private String genBuildOutput(Result buildResult) throws JSONException {
@@ -623,19 +757,17 @@ public class BuildServer {
     return buildOutputJsonObj.toString();
   }
 
-  private Result build(String userName, File zipFile, ProgressReporter reporter) throws IOException {
+  private Result build(String userName, File zipFile, String ext, ProgressReporter reporter)
+      throws IOException {
     outputDir = Files.createTempDir();
     // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
     // executes. However, it is likely that the directory won't be empty and therefore, won't
     // actually be deleted. That's only if the build server is killed (via ctrl+c) while a build
     // is happening, so we should be careful about that.
     outputDir.deleteOnExit();
-    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false,
-                              commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter);
-    String buildOutput = buildResult.getOutput();
-    LOG.info("Build output: " + buildOutput);
-    String buildError = buildResult.getError();
-    LOG.info("Build error output: " + buildError);
+    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, null,
+        false, false, false, null,
+        commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir, reporter, ext);
     outputApk = projectBuilder.getOutputApk();
     if (outputApk != null) {
       outputApk.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -680,10 +812,20 @@ public class BuildServer {
     CmdLineParser cmdLineParser = new CmdLineParser(commandLineOptions);
     try {
       cmdLineParser.parseArgument(args);
-    } catch (CmdLineException e) {
+      Class<?> clazz = Class.forName(commandLineOptions.statReporter);
+      BuildServer.statReporter = clazz.asSubclass(StatReporter.class).newInstance();
+    } catch (CmdLineException | ReflectiveOperationException e) {
       LOG.severe(e.getMessage());
       cmdLineParser.printUsage(System.err);
       System.exit(1);
+    }
+
+    if (commandLineOptions.dexCacheDir != null) {
+      File cacheDir = new File(commandLineOptions.dexCacheDir);
+      if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+        throw new IllegalArgumentException(new IOException("Unable to create dex cache dir "
+            + commandLineOptions.dexCacheDir));
+      }
     }
 
     // Add a Shutdown Hook. In a container swarm, the swarm orchestrator
@@ -722,20 +864,25 @@ public class BuildServer {
         }
       });
 
-
     // Now that the command line options have been processed, we can create the buildExecutor.
+    AndroidBuildFactory.install();
+    if (commandLineOptions.ios) {
+      LOG.info("Enabling iOS builds");
+      IosBuildFactory.install();
+    }
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
 
     int port = commandLineOptions.port;
-    SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:" + port + "/");
+    final ResourceConfig rc = new ResourceConfig(BuildServer.class);
+    GrizzlyHttpServerFactory.createHttpServer(URI.create("http://0.0.0.0:" + port + "/"), rc);
     String hostAddress = InetAddress.getLocalHost().getHostAddress();
     LOG.info("App Inventor Build Server - Version: " + GitBuildId.getVersion());
     LOG.info("App Inventor Build Server - Git Fingerprint: " + GitBuildId.getFingerprint());
     LOG.info("Running at: http://" + hostAddress + ":" + port + "/buildserver");
     if (commandLineOptions.maxSimultaneousBuilds == 0) {
-      LOG.info("Maximum simultanous builds = unlimited!");
+      LOG.info("Maximum simultaneous builds = unlimited!");
     } else {
-      LOG.info("Maximum simultanous builds = " + commandLineOptions.maxSimultaneousBuilds);
+      LOG.info("Maximum simultaneous builds = " + commandLineOptions.maxSimultaneousBuilds);
     }
     LOG.info("Visit: http://" + hostAddress + ":" + port +
       "/buildserver/health for server health");
@@ -759,6 +906,11 @@ public class BuildServer {
   }
 
   private ShutdownState getShutdownState() {
+    if (turningOnTime != 0 && System.currentTimeMillis() > turningOnTime && turningOnTime > shuttingTime) {
+      turningOnTime = 0;
+      shuttingTime = 0;
+    }
+
     if (shuttingTime == 0) {
       int max = buildExecutor.getMaxActiveTasks();
       if (max < 10) {           // Only do this scheme if we are not unlimited
@@ -780,10 +932,50 @@ public class BuildServer {
       } else {
         return ShutdownState.UP;
       }
-    } else if (System.currentTimeMillis() > shuttingTime) {
-      return ShutdownState.DOWN;
-    } else {
+    } else if (turningOnTime >= System.currentTimeMillis()) {
+      return ShutdownState.TURNING;
+    } else if (shuttingTime >= System.currentTimeMillis()) {
       return ShutdownState.SHUTTING;
+    } else {
+      return ShutdownState.DOWN;
     }
   }
+
+  private String getEtcHostname() {
+    if (hostname == null) {
+      try (BufferedReader fi =  new BufferedReader(new FileReader("/etc/hostname"))) {
+        hostname = fi.readLine();
+      } catch (IOException e) {
+        hostname = "Unknown";
+      }
+    }
+    return hostname;
+  }
+
+  private boolean isBuildRequestAllowed(final String headerValue) {
+    if (Objects.isNull(commandLineOptions.buildserverPassword) || commandLineOptions.buildserverPassword.isEmpty()) {
+      // When no password is set, we always allow this request.
+      return true;
+    }
+
+    if (Objects.isNull(headerValue)) {
+      // Now we do require password, but it has not been provided.
+      return false;
+    }
+
+    if (!headerValue.startsWith(BuildServer.PASSWORD_HEADER_PREFIX)) {
+      // The header value does not start with "Password " as per the GAE contract
+      return false;
+    }
+
+    final String passwordValue = headerValue.substring(BuildServer.PASSWORD_HEADER_PREFIX.length());
+
+    // Now just make sure the password matches
+    return commandLineOptions.buildserverPassword.equals(passwordValue);
+  }
+
+  private static Response.ResponseBuilder incorrectPasswordResponse() {
+    return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("Not Authorized");
+  }
+
 }

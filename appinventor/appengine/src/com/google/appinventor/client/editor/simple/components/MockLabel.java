@@ -7,15 +7,20 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.editor.designer.DesignerChangeListener;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
  * Mock Label component.
  *
  */
-public final class MockLabel extends MockVisibleComponent {
+public final class MockLabel extends MockVisibleComponent implements DesignerChangeListener {
 
   /**
    * Component type name.
@@ -25,9 +30,9 @@ public final class MockLabel extends MockVisibleComponent {
   // GWT label widget used to mock a Simple Label
   private InlineHTML labelWidget;
 
-  private String savedText;     // Saved text, so if we change from
-                                // text to/from html we have the text
-                                // to set
+  private String savedText = "";     // Saved text, so if we change from
+                                     // text to/from html we have the text
+                                     // to set
 
   /**
    * Creates a new MockLabel component.
@@ -41,7 +46,21 @@ public final class MockLabel extends MockVisibleComponent {
     labelWidget = new InlineHTML();
     labelWidget.setStylePrimaryName("ode-SimpleMockComponent");
     initComponent(labelWidget);
+
   }
+
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    ((YaFormEditor) editor).getForm().addDesignerChangeListener(this);
+  }
+
+  @Override
+  protected void onDetach() {
+    super.onDetach();
+    ((YaFormEditor) editor).getForm().removeDesignerChangeListener(this);
+  }
+
 
   @Override
   public void onCreateFromPalette() {
@@ -84,14 +103,21 @@ public final class MockLabel extends MockVisibleComponent {
    * Sets the label's FontSize property to a new value.
    */
   private void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(labelWidget, text);
+    float convertedText = Float.parseFloat(text);
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (convertedText == FONT_DEFAULT_SIZE && form != null
+        && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(labelWidget, "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(labelWidget, text);
+    }
   }
 
   /*
    * Sets the label's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(labelWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, labelWidget, text);
   }
 
   /*
@@ -100,9 +126,15 @@ public final class MockLabel extends MockVisibleComponent {
   private void setTextProperty(String text) {
     savedText = text;
     if (getPropertyValue(PROPERTY_NAME_HTMLFORMAT).equals("True")) {
-      labelWidget.setHTML(SimpleHtmlSanitizer.sanitizeHtml(text).asString());
+      String sanitizedText = SimpleHtmlSanitizer.sanitizeHtml(text).asString();
+      if (sanitizedText != null) {
+        sanitizedText = sanitizedText.replaceAll("\\\\n", " ");
+      }
+      labelWidget.setHTML(sanitizedText);
     } else {
-      labelWidget.setText(text);
+      labelWidget.setHTML(text.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;").replaceAll("\\\\n", "<br>")
+      );
     }
   }
 
@@ -149,6 +181,38 @@ public final class MockLabel extends MockVisibleComponent {
       // either as HTML or text as appropriate
       setTextProperty(savedText);
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(labelWidget, newValue);
+      refreshForm();
     }
+  }
+
+
+  @Override
+  public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
+    if (component.getType().equals(MockForm.TYPE) && propertyName.equals("BigDefaultText")) {
+      setFontSizeProperty(getPropertyValue(PROPERTY_NAME_FONTSIZE));
+      refreshForm();
+    }
+  }
+
+  @Override
+  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+
+  }
+
+  @Override
+  public void onComponentAdded(MockComponent component) {
+
+  }
+
+  @Override
+  public void onComponentRenamed(MockComponent component, String oldName) {
+
+  }
+
+  @Override
+  public void onComponentSelectionChange(MockComponent component, boolean selected) {
+
   }
 }

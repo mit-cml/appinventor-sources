@@ -24,17 +24,40 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 
 /**
- * Clock provides the phone's clock, a timer, calendar and time calculations.
- * Everything is represented in milliseconds.
+ * ![Image of the Clock component](images/clock.png)
  *
+ * Non-visible component that provides the instant in time using the internal clock on the phone.
+ * It can fire a timer at regularly set intervals and perform time calculations, manipulations,
+ * and conversions.
+ *
+ * Operations on dates and times, such as from [`DatePicker`](userinterface.html#DatePicker) and
+ * [`TimePicker`](userinterface.html#TimePicker), are accomplished through methods in Clock. Date
+ * and Time are represented as InstantInTime and Duration.
+ *
+ *  - **Instant**: consists of Year, Month, DayOfMnoth, Hour, Minute, and SEcond. An instant can be
+ *    created using the {@link #MakeInstant(String)}, {@link #MakeInstantFromMillis(long)} and
+ *    {@link #MakeInstantFromParts(int, int, int, int, int, int)} methods.
+ *  - **Duration**: time in milliseconds elapsed between instants. Duration can be obtained by the
+ *    {@link #Duration(Calendar, Calendar)} method.
+ *
+ * Instants are assumed to be in the device's local time zone. When they are converted to or from
+ * milliseconds, the milliseconds for a given Instance are calculated from January 1, 1970 in UTC
+ * (Greenwich Mean Time).
+ *
+ * Methods to convert an Instant to text are also available. Acceptable patterns are empty string,
+ * `MM/dd/YYYY HH:mm:ss a`, or `MMM d, yyyy HH:mm`. The empty string will provide the default
+ * format, which is `"MMM d, yyyy HH:mm:ss a"` for {@link #FormatDateTime(Calendar, String)},
+ * `"MMM d, yyyy"` for {@link #FormatDate(Calendar, String)}. To see all possible formats, please
+ * see [here](https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html).
+ *
+ * A note on combining date and time: In order to combine the date from one Instant and the time
+ * from another, for example from a [`DatePicker`](userinterface.html#DatePicker) and
+ * [`TimePicker`](userinterface.html#TimePicker), extract the parts as text and use the text to
+ * create a new Instant. For example:
+ *
+ * ![Example code blocks to combine date and time picker data](images/date_and_time_instant.png)
  */
 
 @DesignerComponent(version = YaVersion.CLOCK_COMPONENT_VERSION,
@@ -47,7 +70,7 @@ import android.app.TimePickerDialog;
     nonVisible = true,
     iconName = "images/clock.png")
 @SimpleObject
-public final class Clock extends AndroidNonvisibleComponent
+public class Clock extends AndroidNonvisibleComponent
     implements Component, AlarmHandler, OnStopListener, OnResumeListener, OnDestroyListener,
                Deleteable {
   private static final int DEFAULT_INTERVAL = 1000;  // ms
@@ -86,9 +109,11 @@ public final class Clock extends AndroidNonvisibleComponent
 
   /**
    * Default Timer event handler.
+   *
+   * @suppressdoc
    */
   @SimpleEvent(
-      description = "Timer has gone off.")
+      description = "The Timer event runs when the timer has gone off.")
   public void Timer() {
     if (timerAlwaysFires || onScreen) {
       EventDispatcher.dispatchEvent(this, "Timer");
@@ -108,7 +133,10 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Interval property setter method: sets the interval between timer events.
+   * Specifies the interval between subsequent {@link #Timer()} events.
+   *
+   *   **Note**: Drift may occur over time and that the system may not honor the
+   * timing specified here if the app or another process on the phone is busy.
    *
    * @param interval timer interval in ms
    */
@@ -134,7 +162,7 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Enabled property setter method: starts or stops the timer.
+   * Specifies whether the {@link #Timer()} event should run.
    *
    * @param enabled {@code true} starts the timer, {@code false} stops it
    */
@@ -149,7 +177,8 @@ public final class Clock extends AndroidNonvisibleComponent
   /**
    * TimerAlwaysFires property getter method.
    *
-   *  return {@code true} if the timer event will fire even if the application
+   * @suppressdoc
+   * @return {@code true} if the timer event will fire even if the application
    *   is not on the screen
    */
   @SimpleProperty(
@@ -163,6 +192,7 @@ public final class Clock extends AndroidNonvisibleComponent
   /**
    * TimerAlwaysFires property setter method: instructs when to disable
    *
+   * @suppressdoc
    *  @param always {@code true} if the timer event should fire even if the
    *  application is not on the screen
    */
@@ -183,14 +213,15 @@ public final class Clock extends AndroidNonvisibleComponent
    * Returns the current system time in milliseconds.
    *
    * @return  current system time in milliseconds
+   * @suppressdoc
    */
-  @SimpleFunction (description = "The phone's internal time")
+  @SimpleFunction (description = "Returns the phone's internal time.")
   public static long SystemTime() {
     return Dates.Timer();
   }
 
-  @SimpleFunction(description = "The current instant in time read from "
-      + "phone's clock")
+  @SimpleFunction(description = "Returns the current instant in time read from "
+      + "phone's clock.")
   public static Calendar Now() {
     return Dates.Now();
   }
@@ -203,9 +234,11 @@ public final class Clock extends AndroidNonvisibleComponent
    *
    * @param from  string to convert
    * @return  date
+   * @suppressdoc
    */
   @SimpleFunction(
-      description = "An instant in time specified by MM/dd/YYYY hh:mm:ss or MM/dd/YYYY or hh:mm")
+      description = "Returns an instant in time specified by MM/dd/YYYY hh:mm:ss or "
+          + "MM/dd/YYYY or hh:mm.")
   public static Calendar MakeInstant(String from) {
     try {
       return Dates.DateValue(from);
@@ -222,10 +255,10 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param month month integer
    * @param day day integer
    * @return  Calendar instant
+   * @suppressdoc
    */
-  @SimpleFunction(description = "Allows the user to set the clock to be "
-    +"a date value.\n" +
-    "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
+  @SimpleFunction(description = "Returns an instant in time specified by year, month, date in "
+      + "UTC.\nValid values for the month field are 1-12 and 1-31 for the day field.")
   public Calendar MakeDate(int year, int month, int day) {
     int jMonth = month - 1;
     try {
@@ -249,9 +282,10 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param minute minute integer
    * @param second second integer
    * @return  Calendar instant since 1/1/1970
+   * @suppressdoc
    */
-  @SimpleFunction(description = "Allows the user to set the time of the clock - " +
-    "Valid format is hh:mm:ss\n")
+  @SimpleFunction(description = "Returns an instant in time specified by hour, minute, second in "
+      + "UTC.")
   public Calendar MakeTime(int hour, int minute, int second) {
     Calendar instant = new GregorianCalendar();
     try {
@@ -274,10 +308,11 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param minute minute integer
    * @param second minute integer
    * @return  Calendar instant
+   * @suppressdoc
    */
   @SimpleFunction(
-    description = "Allows the user to set the date and time to be displayed when the clock opens.\n" +
-    "Valid values for the month field are 1-12 and 1-31 for the day field.\n")
+    description = "Returns an instant in time specified by year, month, date, hour, minute, "
+        + "second in UTC.")
   public Calendar MakeInstantFromParts(int year, int month, int day, int hour, int minute, int second) {
     int jMonth = month - 1;
     Calendar instant = null;
@@ -312,8 +347,10 @@ public final class Clock extends AndroidNonvisibleComponent
    * Probably should go in Calendar.
    *
    * @param millis raw millisecond number.
+   * @suppressdoc
    */
-  @SimpleFunction(description = "An instant in time specified by the milliseconds since 1970.")
+  @SimpleFunction(description = "Returns an instant in time specified by the milliseconds since "
+      + "1970 in UTC.")
   public static Calendar MakeInstantFromMillis(long millis) {
     Calendar instant = Dates.Now(); // just to get our hands on an instant
     instant.setTimeInMillis(millis);
@@ -325,62 +362,63 @@ public final class Clock extends AndroidNonvisibleComponent
    *  a Calendar.
    * @param instant Calendar
    * @return milliseconds since 1/1/1970.
+   * @suppressdoc
    */
-  @SimpleFunction (description = "The instant in time measured as milliseconds since 1970.")
+  @SimpleFunction (description = "Returns the instant in time measured as milliseconds since 1970.")
   public static long GetMillis(Calendar instant) {
     return instant.getTimeInMillis();
   }
 
-  @SimpleFunction(description = "An instant in time some duration after the argument")
+  @SimpleFunction(description = "Returns an instant in time some duration after the argument")
   public static Calendar AddDuration(Calendar instant, long quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAddInMillis(newInstant, quantity);
     return newInstant;
   }
 
-  @SimpleFunction(description = "An instant in time some seconds after the argument")
+  @SimpleFunction(description = "Returns an instant in time some seconds after the given instant.")
   public static Calendar AddSeconds(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.SECOND, quantity);
     return newInstant;
   }
 
-  @SimpleFunction(description = "An instant in time some minutes after the argument")
+  @SimpleFunction(description = "Returns an instant in time some minutes after the given instant.")
   public static Calendar AddMinutes(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.MINUTE, quantity);
     return newInstant;
   }
 
-  @SimpleFunction(description = "An instant in time some hours after the argument")
+  @SimpleFunction(description = "Returns an instant in time some hours after the given instant.")
   public static Calendar AddHours(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.HOUR_OF_DAY, quantity);
     return newInstant;
   }
 
-  @SimpleFunction(description = "An instant in time some days after the argument")
+  @SimpleFunction(description = "Returns an instant in time some days after the given instant.")
   public static Calendar AddDays(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.DATE, quantity);
     return newInstant;
   }
 
-  @SimpleFunction(description = "An instant in time some weeks after the argument")
+  @SimpleFunction(description = "Returns An instant in time some weeks after the given instant.")
   public static Calendar AddWeeks(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.WEEK_OF_YEAR, quantity);
     return newInstant;
  }
 
-  @SimpleFunction(description = "An instant in time some months after the argument")
+  @SimpleFunction(description = "Returns an instant in time some months after the given instant.")
   public static Calendar AddMonths(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.MONTH, quantity);
     return newInstant;
  }
 
-  @SimpleFunction(description = "An instant in time some years after the argument")
+  @SimpleFunction(description = "Returns an instant in time some years after the given instant.")
   public static Calendar AddYears(Calendar instant, int quantity) {
     Calendar newInstant = (Calendar) instant.clone();
     Dates.DateAdd(newInstant, Calendar.YEAR, quantity);
@@ -394,7 +432,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param end ending instant
    * @return  milliseconds
    */
-  @SimpleFunction (description = "Milliseconds elapsed between instants")
+  @SimpleFunction (description = "Returns duration, which is milliseconds elapsed between "
+      + "instants.")
   public static long Duration(Calendar start, Calendar end) {
     return end.getTimeInMillis() - start.getTimeInMillis();
   }
@@ -405,7 +444,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert
    * @return  duration in seconds
    */
-  @SimpleFunction (description = "convert duration to seconds")
+  @SimpleFunction (description = "Converts the duration to the number of seconds.")
   public static long DurationToSeconds(long duration) {
           return Dates.ConvertDuration(duration, Calendar.SECOND);
   }
@@ -416,7 +455,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert
    * @return  duration in minutes
    */
-  @SimpleFunction (description = "convert duration to minutes")
+  @SimpleFunction (description = "Converts the duration to the number of minutes.")
   public static long DurationToMinutes(long duration) {
           return Dates.ConvertDuration(duration, Calendar.MINUTE);
   }
@@ -427,7 +466,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert
    * @return  duration in hours
    */
-  @SimpleFunction (description = "convert duration to hours")
+  @SimpleFunction (description = "Converts the duration to the number of hours.")
   public static long DurationToHours(long duration) {
           return Dates.ConvertDuration(duration, Calendar.HOUR_OF_DAY);
   }
@@ -438,7 +477,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert
    * @return  duration in days
    */
-  @SimpleFunction (description = "convert duration to days")
+  @SimpleFunction (description = "Converts the duration to the number of days.")
   public static long DurationToDays(long duration) {
           return Dates.ConvertDuration(duration, Calendar.DATE);
   }
@@ -449,7 +488,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param duration time interval to convert
    * @return  duration in weeks
    */
-  @SimpleFunction (description = "convert duration to weeks")
+  @SimpleFunction (description = "Converts the duration to the number of weeks.")
   public static long DurationToWeeks(long duration) {
           return Dates.ConvertDuration(duration, Calendar.WEEK_OF_YEAR);
   }
@@ -460,7 +499,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use seconds of
    * @return  seconds (range 0 - 59)
    */
-  @SimpleFunction (description = "The second of the minute")
+  @SimpleFunction (description = "Returns the second of the minute (0-59) from the instant.")
   public static int Second(Calendar instant) {
     return Dates.Second(instant);
   }
@@ -471,7 +510,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant instant to use minutes of
    * @return  minutes (range 0 - 59)
    */
-  @SimpleFunction(description = "The minute of the hour")
+  @SimpleFunction(description = "Returns the minute of the hour (0-59) from the instant.")
   public static int Minute(Calendar instant) {
     return Dates.Minute(instant);
   }
@@ -482,7 +521,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant Calendar to use hours of
    * @return  hours (range 0 - 23)
    */
-  @SimpleFunction (description = "The hour of the day")
+  @SimpleFunction (description = "Returns the hour of the day (0-23) from the instant.")
   public static int Hour(Calendar instant) {
     return Dates.Hour(instant);
   }
@@ -493,7 +532,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use day of the month of
    * @return  day: [1...31]
    */
-  @SimpleFunction (description = "The day of the month")
+  @SimpleFunction (description = "Returns the day of the month (1-31) from the instant.")
   public static int DayOfMonth(Calendar instant) {
     return Dates.Day(instant);
   }
@@ -504,8 +543,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use day of week of
    * @return day of week: [1...7] starting with Sunday
    */
-  @SimpleFunction (description = "The day of the week represented as a "
-      + "number from 1 (Sunday) to 7 (Saturday)")
+  @SimpleFunction (description = "Returns the day of the week represented as a "
+      + "number from 1 (Sunday) to 7 (Saturday).")
   public static int Weekday(Calendar instant) {
     return Dates.Weekday(instant);
   }
@@ -516,7 +555,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use weekday of
    * @return  weekday, as a string.
    */
-  @SimpleFunction (description = "The name of the day of the week")
+  @SimpleFunction (description = "Returns the name of the day of the week from the instant.")
   public static String WeekdayName(Calendar instant) {
     return Dates.WeekdayName(instant);
   }
@@ -527,8 +566,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use month of
    * @return  number of month
    */
-  @SimpleFunction (description = "The month of the year represented as a "
-      + "number from 1 to 12)")
+  @SimpleFunction (description = "Returns the month of the year represented as a "
+      + "number from 1 to 12).")
   public static int Month(Calendar instant) {
     return Dates.Month(instant) + 1;
   }
@@ -539,7 +578,8 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param instant  instant to use month of
    * @return  name of month
    */
-  @SimpleFunction (description = "The name of the month")
+  @SimpleFunction (description = "Returns the name of the month from the instant, e.g., January, "
+      + "February, March...")
   public static String MonthName(Calendar instant) {
     return Dates.MonthName(instant);
   }
@@ -556,13 +596,15 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Converts and formats an instant into a string of date and time with the specified pattern.   *
+   * Converts and formats an instant into a string of date and time with the specified pattern.
+   * To learn more about valid patterns, please see
+   * [SimpleDateFormat](https://developer.android.com/reference/java/text/SimpleDateFormat).
    *
    * @param instant  instant to format
    * @param pattern format of the date and time e.g. MM/dd/YYYY hh:mm:ss a, MMM d, yyyy HH:mm
    * @return  formatted instant
    */
-  @SimpleFunction (description = "Text representing the date and time of an"
+  @SimpleFunction (description = "Returns text representing the date and time of an"
       + " instant in the specified pattern")
   public static String FormatDateTime(Calendar instant, String pattern) {
     try {
@@ -576,7 +618,9 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Converts and formats an instant into a string of date with the specified pattern.
+   * Converts and formats an instant into a string of date with the specified pattern. To learn
+   * more about valid patterns, please see
+   * [SimpleDateFormat](https://developer.android.com/reference/java/text/SimpleDateFormat).
    *
    * @param instant  instant to format
    * @param pattern format of the date e.g. MM/DD/YYYY or MMM d, yyyy
@@ -595,7 +639,9 @@ public final class Clock extends AndroidNonvisibleComponent
   }
 
   /**
-   * Converts and formats the given instant into a string.
+   * Converts and formats the given instant into a string with the specified pattern. To learn
+   * more about valid patterns, please see
+   * [SimpleDateFormat](https://developer.android.com/reference/java/text/SimpleDateFormat).
    *
    * @param instant  instant to format
    * @return  formatted instant

@@ -20,7 +20,5 @@ public final class ProjectEditorRegistry extends Registry<ProjectRootNode, Proje
 
   public ProjectEditorRegistry() {
     super(ProjectRootNode.class);
-
-    register(YoungAndroidProjectNode.class, YaProjectEditor.getFactory());
   }
 }

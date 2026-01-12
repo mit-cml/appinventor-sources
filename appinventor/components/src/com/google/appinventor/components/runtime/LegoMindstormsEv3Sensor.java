@@ -39,6 +39,7 @@ public class LegoMindstormsEv3Sensor extends LegoMindstormsEv3Base {
 
   /**
    * Specifies the sensor port that the sensor is connected to.
+   * **Must be set in the Designer.**
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_SENSOR_PORT,
                     defaultValue = DEFAULT_SENSOR_PORT)

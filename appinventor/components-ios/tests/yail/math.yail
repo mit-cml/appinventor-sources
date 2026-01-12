@@ -1,0 +1,41 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_ewpatton.MathBlocksTest.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (p$test_math_number ) (call-yail-primitive yail-equal? (*list-for-runtime* 0 0) '(any any) "="))
+(def (p$test_math_compare ) (call-yail-primitive yail-equal? (*list-for-runtime* 0 0) '(any any) "="))
+(def (p$test_math_add ) (call-yail-primitive yail-equal? (*list-for-runtime* 2 (call-yail-primitive + (*list-for-runtime* 1 1 ) '(number number ) "+")) '(any any) "="))
+(def (p$test_math_subtract ) (call-yail-primitive yail-equal? (*list-for-runtime* 0 (call-yail-primitive - (*list-for-runtime* 1 1) '(number number) "-")) '(any any) "="))
+(def (p$test_math_multiply ) (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive * (*list-for-runtime* 1 1 ) '(number number ) "*")) '(any any) "="))
+(def (p$test_math_division ) (call-yail-primitive yail-equal? (*list-for-runtime* 2 (call-yail-primitive yail-divide (*list-for-runtime* 4 2) '(number number) "yail-divide")) '(any any) "="))
+(def (p$test_math_power ) (call-yail-primitive yail-equal? (*list-for-runtime* 4 (call-yail-primitive expt (*list-for-runtime* 2 2) '(number number) "expt")) '(any any) "="))
+(def (p$test_math_random_int ) (call-yail-primitive >= (*list-for-runtime* 100 (call-yail-primitive random-integer (*list-for-runtime* 1 100) '(number number) "random integer")) '(number number) ">="))
+(def (p$test_math_random_float ) (call-yail-primitive <= (*list-for-runtime* 0 (call-yail-primitive random-fraction (*list-for-runtime*) '() "random fraction")) '(number number) "<="))
+(def (p$test_math_random_set_seed ) (begin   (call-yail-primitive random-set-seed (*list-for-runtime* 0) '(number) "random set seed") #t))
+(def (p$test_math_on_list ) (call-yail-primitive yail-equal? (*list-for-runtime* 0 (call-yail-primitive min (*list-for-runtime* 1 0 ) '(number number ) "min")) '(any any) "="))
+(def (p$test_math_single ) (call-yail-primitive yail-equal? (*list-for-runtime* 2 (call-yail-primitive sqrt (*list-for-runtime* 4) '(number) "sqrt")) '(any any) "="))
+(def (p$test_math_abs ) (call-yail-primitive yail-equal? (*list-for-runtime* 4 (call-yail-primitive abs (*list-for-runtime* -4) '(number) "abs")) '(any any) "="))
+(def (p$test_math_neg ) (call-yail-primitive yail-equal? (*list-for-runtime* 4 (call-yail-primitive - (*list-for-runtime* -4) '(number) "negate")) '(any any) "="))
+(def (p$test_math_round ) (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive yail-round (*list-for-runtime* 1.3) '(number) "round")) '(any any) "="))
+(def (p$test_math_ceiling ) (call-yail-primitive yail-equal? (*list-for-runtime* 2 (call-yail-primitive yail-ceiling (*list-for-runtime* 1.3) '(number) "ceiling")) '(any any) "="))
+(def (p$test_math_floor ) (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive yail-floor (*list-for-runtime* 1.3) '(number) "floor")) '(any any) "="))
+(def (p$test_math_divide ) (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive modulo (*list-for-runtime* 1 2) '(number number) "modulo")) '(any any) "="))
+(def (p$test_math_trig ) (call-yail-primitive yail-equal? (*list-for-runtime* 0 (call-yail-primitive sin-degrees (*list-for-runtime* 0) '(number) "sin")) '(any any) "="))
+(def (p$test_math_cos ) (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive cos-degrees (*list-for-runtime* 0) '(number) "cos")) '(any any) "="))
+(def (p$test_math_tan ) (call-yail-primitive yail-equal? (*list-for-runtime* 0 (call-yail-primitive tan-degrees (*list-for-runtime* 0) '(number) "tan")) '(any any) "="))
+(def (p$test_math_atan2 ) (call-yail-primitive yail-equal? (*list-for-runtime* 90 (call-yail-primitive yail-round (*list-for-runtime* (call-yail-primitive atan2-degrees (*list-for-runtime* 1 0) '(number number) "atan2")) '(number) "round")) '(any any) "="))
+(def (p$test_math_rad2deg ) (call-yail-primitive yail-equal? (*list-for-runtime* 0 (call-yail-primitive radians->degrees (*list-for-runtime* 0) '(number) "convert radians to degrees")) '(any any) "="))
+(def (p$test_math_format_as_decimal ) (call-yail-primitive yail-equal? (*list-for-runtime* "123.456" (call-yail-primitive format-as-decimal (*list-for-runtime* 123.456123456 3) '(number number) "format as decimal")) '(any any) "="))
+(def (p$test_math_is_a_number ) (and-delayed (and-delayed (call-yail-primitive yail-not (*list-for-runtime* (call-yail-primitive is-number? (*list-for-runtime* #t) '(text) "is a number?")) '(boolean) "not") (call-yail-primitive is-number? (*list-for-runtime* 0) '(text) "is a number?")) (and-delayed (call-yail-primitive yail-not (*list-for-runtime* (call-yail-primitive is-number? (*list-for-runtime* "foobar") '(text) "is a number?")) '(boolean) "not") (call-yail-primitive is-number? (*list-for-runtime* "123") '(text) "is a number?"))))
+(def (p$test_math_convert_number ) (and-delayed (and-delayed (call-yail-primitive string=? (*list-for-runtime* "FF" (call-yail-primitive math-convert-dec-hex (*list-for-runtime* 255) '(text) "convert Dec to Hex")) '(text text) "text=") (call-yail-primitive string=? (*list-for-runtime* 255 (call-yail-primitive math-convert-hex-dec (*list-for-runtime* "FF") '(text) "convert Hex to Dec")) '(text text) "text=")) (and-delayed (call-yail-primitive string=? (*list-for-runtime* 255 (call-yail-primitive math-convert-bin-dec (*list-for-runtime* "11111111") '(text) "convert Hex to Dec")) '(text text) "text=") (call-yail-primitive string=? (*list-for-runtime* "11111111" (call-yail-primitive math-convert-dec-bin (*list-for-runtime* 255) '(text) "convert Dec to Hex")) '(text text) "text="))))
+;;; Screen1
+#|
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "MathBlocksTest" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+(init-runtime)
+|#

@@ -6,12 +6,13 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.output.OdeLog;
-
+import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A layout that arranges its children in a grid (with variable sized rows and
@@ -23,7 +24,9 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  */
 final class MockTableLayout extends MockLayout {
-  private static class Cell {
+  private static final Logger LOG = Logger.getLogger(MockTableLayout.class.getName());
+
+  static class Cell {
     int row;
     int col;
 
@@ -167,14 +170,29 @@ final class MockTableLayout extends MockLayout {
   private Cell getCellOfChild(MockComponent child) {
     String rowString = child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_ROW);
     String colString = child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_COLUMN);
-    return new Cell(Integer.parseInt(rowString), Integer.parseInt(colString));
+    int rowInt = Integer.parseInt(rowString);
+    int colInt = Integer.parseInt(colString);
+    
+    if (rowInt == -1 && colInt == -1) {
+      try {
+        Cell destCell = getCellContainingPoint(DragSourceSupport.absX - child.getAbsoluteLeft(),
+            DragSourceSupport.absY - child.getAbsoluteTop());
+        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_COLUMN, "" + destCell.col);
+        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW, "" + destCell.row);
+        setDropTargetCell(null);
+        return destCell;
+      } catch (Exception e) {
+        return null;
+      }    	
+    }
+    return new Cell(rowInt, colInt);
   }
 
   /**
    * Returns the cell that contains the specified point,
    * or {@code null} if the point is out of bounds.
    */
-  private Cell getCellContainingPoint(int x, int y) {
+  Cell getCellContainingPoint(int x, int y) {
     if (x < 0 || y < 0) {
       return null;
     }
@@ -234,9 +252,17 @@ final class MockTableLayout extends MockLayout {
     // will be visible.
 
     MockForm form = container.getForm();
+    ArrayList<MockComponent> nullVisibleChildren = new ArrayList<MockComponent>();
 
     for (MockComponent child : tableLayoutInfo.visibleChildren) {
       Cell cell = getCellOfChild(child);
+      if (cell == null) {
+        // This child has no row,column properties. We search for an empty cell in the
+        // table, if found the child is assigned with that cell else we hide the child.
+        nullVisibleChildren.add(child);
+        continue;
+      }
+      
       if (cell.row >= nrows || cell.col >= ncols) {
         // This child has an invalid cell. This can happen if the user changes the table's
         // dimensions after they've already dragged a component into a cell. It's not a big deal.
@@ -255,6 +281,23 @@ final class MockTableLayout extends MockLayout {
 
       tableLayoutInfo.cellChildren[cell.row][cell.col] = child;
     }
+
+    int count = nullVisibleChildren.size();
+    if (count != 0) {
+      for (int row = 0; row < nrows; row++) {
+        for (int col = 0; col < ncols; col++) {
+          if (tableLayoutInfo.cellChildren[row][col] == null && count-- > 0) {
+            MockComponent child = nullVisibleChildren.remove(0);
+            child.changeProperty(MockVisibleComponent.PROPERTY_NAME_COLUMN, "" + col);
+            child.changeProperty(MockVisibleComponent.PROPERTY_NAME_ROW, "" + row);
+          }
+        }
+      }
+      while (count-- > 0) {
+        nullVisibleChildren.remove(0).setVisible(false);
+      }
+    }
+    nullVisibleChildren = null;
 
     // Figure out the column widths and row heights, using the automatic widths for all children
     // whose width is fill parent and ignoring any child's height that is fill parent.
@@ -284,7 +327,8 @@ final class MockTableLayout extends MockLayout {
             // If childWidth is a percent tag... do it
             childWidth = (- (childWidth - MockVisibleComponent.LENGTH_PERCENT_TAG)) * form.screenWidth /100;
             childLayoutInfo.width = childWidth; // Side effect it...
-            OdeLog.log("MockTableLayout: form.screenWidth = " + form.screenWidth + " childWidth = " + childWidth);
+            LOG.info("MockTableLayout: form.screenWidth = " + form.screenWidth + " childWidth = "
+                + childWidth);
           }
 
           // int childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
@@ -301,7 +345,8 @@ final class MockTableLayout extends MockLayout {
               childHeight = (- (childHeight - MockVisibleComponent.LENGTH_PERCENT_TAG) * form.usableScreenHeight) / 100;
               childLayoutInfo.height = childHeight; // Side effect it...
               rowAllFillParent[row] = false;
-              OdeLog.log("MockTableLayout: form.usableScreenHeight = " + form.usableScreenHeight + " childHeight = " + childHeight);
+              LOG.info("MockTableLayout: form.usableScreenHeight = " + form.usableScreenHeight
+                  + " childHeight = " + childHeight);
               rowHeights[row] = Math.max(rowHeights[row], childHeight + BORDER_SIZE);
             }
 
@@ -392,7 +437,8 @@ final class MockTableLayout extends MockLayout {
     // Update layoutWidth and layoutHeight.
     layoutHeight = rowTops[nrows - 1] + rowHeights[nrows - 1];
     layoutWidth = colLefts[ncols - 1] + colWidths[ncols - 1];
-    OdeLog.log("MockTableLayout: setting layoutHeight = " + layoutHeight + " setting layoutWidth = " + layoutWidth);
+    LOG.info("MockTableLayout: setting layoutHeight = " + layoutHeight + " setting layoutWidth = "
+        + layoutWidth);
   }
 
   @Override

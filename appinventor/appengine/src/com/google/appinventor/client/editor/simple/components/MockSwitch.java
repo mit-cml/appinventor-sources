@@ -1,17 +1,18 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2018 MIT, All rights reserved
+// Copyright 2018-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 /**
  * Mock Switch component, inherited from MockToggleBase
@@ -33,7 +34,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   public InlineHTML switchLabel;
   public SVGPanel switchGraphic;
-  public Boolean isInitialized = false;
+  public Boolean isInitialized;
 
   /**
    * Creates a new MockSwitch component.
@@ -53,26 +54,6 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
   }
 
   /**
-   * Class that extends Widget so we can use a protected constructor.
-   *
-   * <p/>The purpose of this class is to create a clone of the Switch
-   * passed to the constructor. It will be used to determine the preferred size
-   * of the Switch, without having the size constrained by its parent,
-   * since the cloned Switch won't have a parent.
-   */
-  static class ClonedSwitch extends InlineHTML {
-    ClonedSwitch(HorizontalPanel ptb) {
-      super(DOM.clone(ptb.getElement(), true));
-    }
-  }
-
-  @Override
-  protected Widget createClonedWidget() {
-    return new ClonedSwitch(toggleWidget);
-  }
-
-
-  /**
    * Draw the SVG graphic of the toggle switch. It can be drawn in either checked or
    * unchecked positions, each with their own colors.
    *
@@ -84,7 +65,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
       isInitialized = true;
     }
     switchGraphic = new SVGPanel();
-    int switchHeight = Math.round(Float.parseFloat(getPropertyValue(MockVisibleComponent.PROPERTY_NAME_FONTSIZE)));
+    int switchHeight = 14;  // pixels (Android asset is 28 px at 160 dpi)
 
     int switchWidth = (int) Math.round(switchHeight * 2);
     switchGraphic.setWidth(switchWidth + "px");
@@ -98,6 +79,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
     panel.add(switchGraphic);
     panel.setCellWidth(switchGraphic, switchWidth + "px");
     panel.setCellHorizontalAlignment(switchGraphic, HasHorizontalAlignment.ALIGN_RIGHT);
+    panel.setCellVerticalAlignment(switchGraphic, HasVerticalAlignment.ALIGN_MIDDLE);
     toggleWidget = panel;
     refreshForm();
   }
@@ -176,13 +158,21 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
 
   @Override
   protected void setFontSizeProperty(String text) {
-    MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(0), text);
+    MockForm form = ((YaFormEditor) editor).getForm();
+    if (Float.parseFloat(text) == FONT_DEFAULT_SIZE
+          && form != null
+          && form.getPropertyValue("BigDefaultText").equals("True")) {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(0), "24");
+    } else {
+      MockComponentsUtil.setWidgetFontSize(toggleWidget.getWidget(0), text);
+    }
+
     updatePreferredSize();
   }
 
   @Override
   protected void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(toggleWidget.getWidget(0), text);
+    MockComponentsUtil.setWidgetFontTypeface(this.editor, toggleWidget.getWidget(0), text);
     updatePreferredSize();
   }
 
@@ -208,6 +198,9 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
       paintSwitch();
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)) {
+      MockComponentsUtil.updateTextAppearances(switchLabel, newValue);
       refreshForm();
     }
   }

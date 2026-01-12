@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2015-2017 MIT, All rights reserved
+// Copyright 2015-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -49,7 +49,7 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
   private static final Logger LOG =
       Logger.getLogger(ComponentServiceImpl.class.getName());
 
-  private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   private final FileImporter fileImporter = new FileImporterImpl();
 

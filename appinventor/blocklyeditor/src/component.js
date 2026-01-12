@@ -17,105 +17,10 @@ goog.provide('AI.Blockly.Component');
 goog.provide('AI.Blockly.ComponentTypes');
 goog.provide('AI.Blockly.ComponentInstances');
 
-goog.require('Blockly.TranslationProperties');
-goog.require('Blockly.TranslationEvents');
-goog.require('Blockly.TranslationMethods');
-goog.require('Blockly.TranslationParams');
-
-// App Inventor extensions to Blockly
-goog.require('Blockly.TypeBlock');
-
 if (Blockly.Component === undefined) Blockly.Component = {};
 if (Blockly.ComponentTypes === undefined) Blockly.ComponentTypes = {};
 if (Blockly.ComponentInstances === undefined) Blockly.ComponentInstances = {};
 
-Blockly.Component.add = function(name, uid) {
-  if (Blockly.ComponentInstances.haveInstance(name, uid)) {
-    return;
-  }
-  Blockly.TypeBlock.needsReload.components = true;
-  //get type name for instance
-  var typeName = Blockly.Component.instanceNameToTypeName(name);
-  Blockly.ComponentInstances.addInstance(name, uid, typeName);
-};
-
-/**
- * Rename component with given uid and instance name oldname to newname
- * @param oldname the Component's current name, e.g., Button1
- * @param newname the newname the component will be given, e.g., Button2
- * @param uid the component's unique id
- *
- * Here are the various places that a component's name must be changed, using Button1
- *  as an example name.
- * Blockly.ComponentInstances -- an index containing an entry for each Component used by the app
- *  keyed on its oldname, needs to change to the new name
- *  e.g., ComponentInstances['Button1'] --> ComponentInstances['Button2']
- *
- * Call rename on all component blocks
- */
-Blockly.Component.rename = function(oldname, newname, uid) {
-  console.log("Got call to Blockly.Component.rename(" + oldname + ", " + newname + ", " + uid + ")");
-  Blockly.TypeBlock.needsReload.components = true;
-  if (!Blockly.ComponentInstances.haveInstance(oldname, uid)) {
-    console.log("Renaming, No such Component instance " + oldname + " aborting");
-    return;
-  }
-  // Create an entry in Blockly.ComponentInstances for the block's newname and delete oldname (below)
-  Blockly.ComponentInstances[newname] = {}
-  Blockly.ComponentInstances[newname].uid = uid;
-  Blockly.ComponentInstances[newname].typeName = Blockly.ComponentInstances[oldname].typeName;
-
-  // Delete the index entry for the oldname
-  Blockly.ComponentInstances[oldname] = null;
-  delete Blockly.ComponentInstances[oldname];
-
-  console.log("Revised Blockly.ComponentInstances, Blockly.Language, Blockly.Yail for " + newname);
-
-  // Revise names, types, and block titles for all blocks containing newname in Blockly.mainWorkspace
-  var blocks = Blockly.mainWorkspace.getAllBlocks();
-  for (var x = 0, block; block = blocks[x]; x++) {
-    if (!block.category) {
-      continue;
-    } else if (block.category == 'Component') {
-      block.rename(oldname, newname);      // Changes block's instanceName, typeName, and current title
-    }
-  }
-
-  console.log("Revised Blockly.mainWorkspace for " + newname);
-};
-
-
-/**
- * Remove component with given type and instance name and unique id uid
- * @param type, Component's type -- e.g., Button
- * @param name, Component's name == e.g., Buton1
- * @param uid, Component's unique id -- not currently used
- *
- * The component should be listed in the ComponentInstances list.
- *   - For each instance of the component's block in the Blockly.mainWorkspace
- *     -- Call its BlocklyBlock.destroy() method to remove the block
- *        from the workspace and adjust enclosed or enclosing blocks.
- * Remove the block's entry from ComponentInstances
- *
- */
-Blockly.Component.remove = function(type, name, uid) {
-  console.log("Got call to Blockly.Component.remove(" + type + ", " + name + ", " + uid + ")");
-  Blockly.TypeBlock.needsReload.components = true;
-
-  // Delete instances of this type of block from the workspace
-  var allblocks = Blockly.mainWorkspace.getAllBlocks();
-  for (var x = 0, block; block = allblocks[x]; x++) {
-    if (!block.category) {
-      continue;
-    } else if (block.category == 'Component' && block.instanceName == name) {
-      block.dispose(true);     // Destroy the block gently
-    }
-  }
-
-  // Remove the component instance
-  console.log("Deleting " + name + " from Blockly.ComponentInstances");
-  delete Blockly.ComponentInstances[name];
-};
 
 /**
  * Builds a map of component name -> top level blocks for that component.
@@ -138,7 +43,7 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
 
   // TODO: populate warnings, errors as we traverse the top-level blocks
 
-  var blocks = Blockly.mainWorkspace.getTopBlocks(true);
+  var blocks = Blockly.common.getMainWorkspace().getTopBlocks(true);
   for (var x = 0, block; block = blocks[x]; x++) {
 
     // TODO: deal with unattached blocks that are not valid top-level definitions. Valid blocks
@@ -178,8 +83,8 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
  */
 Blockly.Component.verifyAllBlocks = function () {
   // We can only verify blocks once the workspace has been injected...
-  if (Blockly.mainWorkspace != null) {
-    var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  if (Blockly.common.getMainWorkspace() != null) {
+    var allBlocks = Blockly.common.getMainWorkspace().getAllBlocks();
     for (var x = 0, block; block = allBlocks[x]; ++x) {
       if (block.category != 'Component') {
         continue;

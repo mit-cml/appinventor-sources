@@ -8,11 +8,12 @@ package com.google.appinventor.client.explorer.commands;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.DesignToolbar;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar.View;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -25,8 +26,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -109,9 +110,9 @@ public final class AddFormCommand extends ChainableCommand {
 
       newNameTextBox = new LabeledTextBox(MESSAGES.formNameLabel());
       newNameTextBox.setText(defaultFormName);
-      newNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      newNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
         @Override
-        public void onKeyUp(KeyUpEvent event) {
+        public void onKeyDown(KeyDownEvent event) {
           int keyCode = event.getNativeKeyCode();
           if (keyCode == KeyCodes.KEY_ENTER) {
             handleOkClick(projectRootNode);
@@ -245,7 +246,7 @@ public final class AddFormCommand extends ChainableCommand {
                 long projectId = formEditor.getProjectId();
                 designToolbar.addScreen(projectId, formName, formEditor, 
                     blocksEditor);
-                designToolbar.switchToScreen(projectId, formName, DesignToolbar.View.FORM);
+                designToolbar.switchToScreen(projectId, formName, View.DESIGNER);
                 executeNextCommand(projectRootNode);
               } else {
                 // The form editor and/or blocks editor is still not there. Try again later.

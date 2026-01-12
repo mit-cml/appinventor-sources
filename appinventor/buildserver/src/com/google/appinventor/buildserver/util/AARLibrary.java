@@ -233,8 +233,8 @@ public class AARLibrary {
       zip = new ZipFile(aarPath);
       packageName = extractPackageName(zip);
       basedir = new File(path, packageName);
-      if (!basedir.mkdirs()) {
-        throw new IOException("Unable to create directory for AAR package");
+      if (!basedir.exists() && !basedir.mkdirs()) {
+        throw new IOException("Unable to create directory for AAR package: " + basedir);
       }
       InputStream input = null;
       OutputStream output = null;

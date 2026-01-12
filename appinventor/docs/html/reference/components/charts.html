@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Charts</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Charts</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="charts">Charts</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#Chart">Chart</a></li>
+  <li><a href="#ChartData2D">ChartData2D</a></li>
+  <li><a href="#Trendline">Trendline</a></li>
+</ul>
+
+<h2 id="Chart">Chart</h2>
+
+<p>The Chart component plots data originating from it’s attached Data components. Five different
+ Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
+ the <a href="#Chart.Type"><code class="highlighter-rouge">Type</code></a> property.
+ The Chart component itself has various other properties that change the appearance
+ of the Chart, such as {<a href="#Chart.Description"><code class="highlighter-rouge">Description</code></a>, <a href="#Chart.GridEnabled"><code class="highlighter-rouge">GridEnabled</code></a>,</p>
+
+<h3 id="Chart-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Chart.AxesTextColor" class="color"><em>AxesTextColor</em></dt>
+  <dd>Specifies the chart’s axes text color as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="Chart.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the chart’s background color as an alpha-red-green-blue
+ integer.</dd>
+  <dt id="Chart.Description" class="text"><em>Description</em></dt>
+  <dd>Specifies the text displayed by the description label inside the Chart.
+ Specifying an empty string (“”) will not display any label.</dd>
+  <dt id="Chart.GridEnabled" class="boolean"><em>GridEnabled</em></dt>
+  <dd>Changes the visibility of the Chart’s grid, if the
+ Chart Type is set to a Chart with an Axis (applies for Area, Bar, Line,
+ Scatter Chart types).</dd>
+  <dt id="Chart.Height" class="number bo"><em>Height</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Chart</code>’s vertical height, measured in pixels.</dd>
+  <dt id="Chart.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Chart</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Chart.Labels" class="list bo"><em>Labels</em></dt>
+  <dd>Changes the Chart’s X axis labels to the specified List,
+ if the Chart’s Type is set to a Chart with an Axis.
+
+    <p>The first entry of the List corresponds to the minimum x value of the data,
+ the second to the min x value + 1, and so on.</p>
+
+    <p>If a label is not specified for an x value, a default value
+ is used (the x value of the axis tick at that location).</p>
+  </dd>
+  <dt id="Chart.LabelsFromString" class="text wo do"><em>LabelsFromString</em></dt>
+  <dd>Specifies the labels to set to the Chart’s X Axis, provided the current
+ view is a Chart with an X Axis. The labels are specified as a single comma-separated
+ values String (meaning each value is separated by a comma). See <a href="#Chart.Labels"><code class="highlighter-rouge">Labels</code></a>
+ for more details on how the Labels are applied to the Chart.</dd>
+  <dt id="Chart.Left" class="number"><em>Left</em></dt>
+  <dd>Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Chart.LegendEnabled" class="boolean"><em>LegendEnabled</em></dt>
+  <dd>Changes the visibility of the Chart’s Legend.</dd>
+  <dt id="Chart.PieRadius" class="number wo do"><em>PieRadius</em></dt>
+  <dd>Sets the Pie Radius of the Chart. If the current type is
+ not the Pie Chart, the value has no effect.</dd>
+  <dt id="Chart.Top" class="number"><em>Top</em></dt>
+  <dd>Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.</dd>
+  <dt id="Chart.Type" class="com google appinventor components common ChartTypeEnum ro"><em>Type</em></dt>
+  <dd>Specifies the type of the Chart, which determines how to visualize the data.</dd>
+  <dt id="Chart.ValueFormat" class="number do"><em>ValueFormat</em></dt>
+  <dd>Specifies the format for X axis labels and point values.</dd>
+  <dt id="Chart.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Chart</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
+ if the <code class="highlighter-rouge">Chart</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dt id="Chart.Width" class="number bo"><em>Width</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Chart</code>, measured in pixels.</dd>
+  <dt id="Chart.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
+  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Chart</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dt id="Chart.XFromZero" class="boolean"><em>XFromZero</em></dt>
+  <dd>Determines whether the X axis origin is set at 0 or the minimum X value
+ across all data series.</dd>
+  <dt id="Chart.YFromZero" class="boolean"><em>YFromZero</em></dt>
+  <dd>Determines whether the Y axis origin is set at 0 or the minimum y value
+ across all data series.</dd>
+</dl>
+
+<h3 id="Chart-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Chart.EntryClick">EntryClick(<em class="component">series</em>,<em class="any">x</em>,<em class="number">y</em>)</dt>
+  <dd>Indicates that the user clicked on a data entry in the <code class="highlighter-rouge">Chart</code>. The specific series, along
+ with its x and y values, are reported.</dd>
+</dl>
+
+<h3 id="Chart-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Chart.ExtendDomainToInclude" class="method"><i></i> ExtendDomainToInclude(<em class="number">x</em>)</dt>
+  <dd>Extends the domain of the chart to include the provided x value. If x is already within the
+ bounds of the domain, this method has no effect.</dd>
+  <dt id="Chart.ExtendRangeToInclude" class="method"><i></i> ExtendRangeToInclude(<em class="number">y</em>)</dt>
+  <dd>Extends the range of the chart to include the provided y value. If y is already within the
+ bounds of the range, this method has no effect.</dd>
+  <dt id="Chart.ResetAxes" class="method"><i></i> ResetAxes()</dt>
+  <dd>Resets the axes of the chart to their original bounds.</dd>
+  <dt id="Chart.SetDomain" class="method"><i></i> SetDomain(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
+  <dd>Sets the minimum and maximum for the domain of the X axis.</dd>
+  <dt id="Chart.SetRange" class="method"><i></i> SetRange(<em class="number">minimum</em>,<em class="number">maximum</em>)</dt>
+  <dd>Sets the minimum and maximum for the range of the Y axis.</dd>
+</dl>
+
+<h2 id="ChartData2D">ChartData2D</h2>
+
+<p>A ChartData2D component represents a single two-dimensional Data Series in the Chart component,
+ for example, a single Line in the case of a Line Chart, or a single Bar in the case of a Bar
+ Chart. The Data component is responsible for handling all the data of the Chart. The entries
+ of the Data component correspond of an x and a y value.
+ The component is attached directly to a Chart component by dragging it onto the Chart.</p>
+
+<h3 id="ChartData2D-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ChartData2D.Color" class="color"><em>Color</em></dt>
+  <dd>Specifies the data series color as an alpha-red-green-blue integer.</dd>
+  <dt id="ChartData2D.Colors" class="list bo"><em>Colors</em></dt>
+  <dd>Specifies the data series colors as a list of alpha-red-green-blue integers.
+
+    <p>If there is more data than there are colors, the colors will be alternated
+ in order. E.g. if there are two colors Red and Blue, the colors will be applied
+ in the order: Red, Blue, Red, Blue, …</p>
+  </dd>
+  <dt id="ChartData2D.DataFileXColumn" class="text wo do"><em>DataFileXColumn</em></dt>
+  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a>. The
+ value represents the column to use from the DataFile for the x entries
+ of the Data Series. For instance, if a column’s first value is “Time”,
+ and a column value of “Time” is specified, that column will be used
+ for the x values. If a value here is not specified, default values for the
+ x values will be generated instead.</dd>
+  <dt id="ChartData2D.DataFileYColumn" class="text wo do"><em>DataFileYColumn</em></dt>
+  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a>. The
+ value represents the column to use from the DataFile for the y entries
+ of the Data Series. For instance, if a column’s first value is “Temperature”,
+ and a column value of “Temperature” is specified, that column will be used
+ for the y values. If a value here is not specified, default values for the
+ y values will be generated instead.</dd>
+  <dt id="ChartData2D.DataLabelColor" class="color"><em>DataLabelColor</em></dt>
+  <dd>Specifies the data points label color as an alpha-red-green-blue integer.</dd>
+  <dt id="ChartData2D.DataSourceKey" class="text wo do"><em>DataSourceKey</em></dt>
+  <dd>Sets the Data Source key identifier for the value to import from the
+ attached Data Source.
+
+    <p>An example is the tag of the TinyDB component, which identifies the value.</p>
+
+    <p>The property is a Designer-only property, and should be changed after setting the
+ Source component of the Chart Data component.</p>
+
+    <p>A complete list of applicable values for each compatible source is as follows:</p>
+
+    <ul>
+      <li>For TinyDB and CloudDB, this is the tag value.</li>
+      <li>For the AccelerometerSensor, the value should be one of the following: X Y or Z</li>
+      <li>For the GyroscopeSensor, the value should be one of the following: X Y or Z</li>
+      <li>For the LocationSensor, the value should be one of the following:
+latitude, longitude, altitude or speed</li>
+      <li>For the OrientationSensor, the value should be one of the following:
+pitch, azimuth or roll</li>
+      <li>For the Pedometer, the value should be one of the following:
+WalkSteps, SimpleSteps or Distance</li>
+      <li>For the ProximitySensor, the value should be distance.</li>
+      <li>For the BluetoothClient, the value represents the prefix to remove from the value.
+For instance, if values come in the format “t:12”, the prefix can be specified as “t:”,
+and the prefix will then be removed from the data. No value can be specified if purely
+numerical values are returned.</li>
+    </ul>
+  </dd>
+  <dt id="ChartData2D.ElementsFromPairs" class="text wo do"><em>ElementsFromPairs</em></dt>
+  <dd>Comma separated list of Elements to use for the data series. Values are formatted
+ as follows: x1,y1,x2,y2,x3,y3. Values are taken in pairs, and an entry is formed
+ from the x and y values.</dd>
+  <dt id="ChartData2D.Label" class="text"><em>Label</em></dt>
+  <dd>Specifies the text for the data series label.</dd>
+  <dt id="ChartData2D.LineType" class="com google appinventor components common LineTypeEnum wo do"><em>LineType</em></dt>
+  <dd>Changes the Line Type of the Data Series, provided that the
+ Data component is attached to a Chart that has the type set to
+ a line-based Chart(applies to area and line Chart types).
+  Valid types include linear, curved or stepped.</dd>
+  <dt id="ChartData2D.PointShape" class="com google appinventor components common PointStyleEnum wo do"><em>PointShape</em></dt>
+  <dd>Changes the Point Shape of the Data Series, provided that the
+ Data component is attached to a Chart that has the type set to
+ the Scatter Chart. Valid types include circle, square, triangle, cross, x.</dd>
+  <dt id="ChartData2D.Source" class="component wo do"><em>Source</em></dt>
+  <dd>Sets the Source to use for the Data component. Valid choices
+ include AccelerometerSensor, BluetoothClient, CloudDB, DataFile,
+ GyroscopeSensor, LocationSesnro, OrientationSensor, Pedometer,
+ ProximitySensor TinyDB and Web components. The Source value also requires
+ valid DataSourceValue, WebColumn or DataFileColumn properties,
+ depending on the type of the Source attached (the required properties
+ show up in the Properties menu after the Source is changed).
+
+    <p>If the data identified by the <a href="#ChartData2D.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> is updated
+ in the attached Data Source component, then the data is also updated in
+ the Chart Data component.</p>
+  </dd>
+  <dt id="ChartData2D.SpreadsheetUseHeaders" class="boolean wo do"><em>SpreadsheetUseHeaders</em></dt>
+  <dd>If checked, the first row of the spreadsheet will be used to interpret the x and y column
+ values. Otherwise, the x and y columns should be a column reference, such as A or B.</dd>
+  <dt id="ChartData2D.SpreadsheetXColumn" class="text wo do"><em>SpreadsheetXColumn</em></dt>
+  <dd>Sets the column to parse from the attached Spreadsheet component for the x values. If a
+ column is not specified, default values for the x values will be generated instead.</dd>
+  <dt id="ChartData2D.SpreadsheetYColumn" class="text wo do"><em>SpreadsheetYColumn</em></dt>
+  <dd>Sets the column to parse from the attached Spreadsheet component for the y values. If a
+ column is not specified, default values for the y values will be generated instead.</dd>
+  <dt id="ChartData2D.WebXColumn" class="text wo do"><em>WebXColumn</em></dt>
+  <dd>Value used when importing data from a Web component Source. The
+ value represents the column to use from the Web for the x entries
+ of the Data Series. For instance, if the contents of the Web are
+ retrieved in JSON format, and an array with the “Time” tag exists,
+ the “Time” column value can be specified to use that array.</dd>
+  <dt id="ChartData2D.WebYColumn" class="text wo do"><em>WebYColumn</em></dt>
+  <dd>Value used when importing data from a Web component Source. The
+ value represents the column to use from the Web for the y entries
+ of the Data Series. For instance, if the contents of the Web are
+ retrieved in JSON format, and an array with the “Temperature” tag exists,
+ the “Temperature” column value can be specified to use that array.</dd>
+</dl>
+
+<h3 id="ChartData2D-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ChartData2D.EntryClick">EntryClick(<em class="any">x</em>,<em class="number">y</em>)</dt>
+  <dd>Indicates that the user tapped on a data point in the chart. The x and y values of the
+ tapped entry are reported.</dd>
+</dl>
+
+<h3 id="ChartData2D-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ChartData2D.AddEntry" class="method"><i></i> AddEntry(<em class="text">x</em>,<em class="text">y</em>)</dt>
+  <dd>Adds an entry with the specified x and y value. Values can be specified as text,
+ or as numbers. For Line, Scatter, Area and Bar Charts, both values should represent a number.
+ For Bar charts, the x value is rounded to the nearest integer.
+ For Pie Charts, the x value is a text value.</dd>
+  <dt id="ChartData2D.ChangeDataSource" class="method"><i></i> ChangeDataSource(<em class="component">source</em>,<em class="text">keyValue</em>)</dt>
+  <dd>Changes the Data Source of the component to the specified component Source with the
+ specified key value. See the <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a> property for
+ applicable components. See the <a href="#ChartData2D.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> property for the interpretation
+ of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
+ be a CSV formatted string, where the first value corresponds to the x column, and the second
+ value corresponds to the y value.</dd>
+  <dt id="ChartData2D.Clear" class="method"><i></i> Clear()</dt>
+  <dd>Removes all the entries from the Data Series.</dd>
+  <dt id="ChartData2D.DoesEntryExist" class="method returns boolean"><i></i> DoesEntryExist(<em class="text">x</em>,<em class="text">y</em>)</dt>
+  <dd>Returns a boolean value specifying whether an entry with the specified x and y
+ values exists. The boolean value of true is returned if the value exists,
+ and a false value otherwise. See <a href="#ChartData2D.AddEntry"><code class="highlighter-rouge">AddEntry</code></a>
+ for an explanation of the valid entry values.</dd>
+  <dt id="ChartData2D.GetAllEntries" class="method returns list"><i></i> GetAllEntries()</dt>
+  <dd>Returns all entries of the data series.
+ The returned value is a list, where each element of the list
+ is a list containing the values of the entry in order.</dd>
+  <dt id="ChartData2D.GetEntriesWithXValue" class="method returns list"><i></i> GetEntriesWithXValue(<em class="text">x</em>)</dt>
+  <dd>Returns all entries of the data series matching the specified x value.
+ For a description of the format of the returned List, see <a href="#ChartData2D.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+  <dt id="ChartData2D.GetEntriesWithYValue" class="method returns list"><i></i> GetEntriesWithYValue(<em class="text">y</em>)</dt>
+  <dd>Returns all entries of the data series matching the specified y value.
+ For a description of the format of the returned List, see <a href="#ChartData2D.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+  <dt id="ChartData2D.HighlightDataPoints" class="method"><i></i> HighlightDataPoints(<em class="list">dataPoints</em>,<em class="number">color</em>)</dt>
+  <dd>Highlights all given data points on the Chart in the color of choice.</dd>
+  <dt id="ChartData2D.ImportFromCloudDB" class="method"><i></i> ImportFromCloudDB(<em class="component">cloudDB</em>,<em class="text">tag</em>)</dt>
+  <dd>Imports data from the specified CloudDB component by taking the value
+ identified by the specified tag value.
+
+    <p>The expected CloudDB value is a list formatted in the same way as described in
+ <a href="#ChartData2D.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+
+    <p>Does not overwrite any data.</p>
+  </dd>
+  <dt id="ChartData2D.ImportFromDataFile" class="method"><i></i> ImportFromDataFile(<em class="component">dataFile</em>,<em class="text">xValueColumn</em>,<em class="text">yValueColumn</em>)</dt>
+  <dd>Imports data from the specified DataFile component by taking the specified x column
+ for the x values, and the specified y column for the y values. The DataFile’s source file
+ is expected to be either a CSV or a JSON file.
+
+    <p>Passing in empty text for any of the column parameters will result in the usage of
+ default values which are the indices of the entries. For the first entry, the default
+ value would be the 1, for the second it would be 2, and so on.</p>
+  </dd>
+  <dt id="ChartData2D.ImportFromList" class="method"><i></i> ImportFromList(<em class="list">list</em>)</dt>
+  <dd>Imports the data from the specified list parameter to the data series.
+ The list is expected to contain element which are also lists. Each
+ list element is expected to have 2 values, the first one being
+ the x value, and the second one being the y value.
+ Invalid list entries are simply skipped. Existing data are not cleared.</dd>
+  <dt id="ChartData2D.ImportFromSpreadsheet" class="method"><i></i> ImportFromSpreadsheet(<em class="component">spreadsheet</em>,<em class="text">xColumn</em>,<em class="text">yColumn</em>,<em class="boolean">useHeaders</em>)</dt>
+  <dd>Imports data from the specified Spreadsheet component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the Spreadsheet component’s ReadSheet method has to be called to load the data. The usage of
+ the GotSheet event in the Spreadsheet component is unnecessary.
+
+    <p>Empty columns are filled with default values (1, 2, 3, … for Entry 1, 2, 3, …).</p>
+  </dd>
+  <dt id="ChartData2D.ImportFromTinyDB" class="method"><i></i> ImportFromTinyDB(<em class="component">tinyDB</em>,<em class="text">tag</em>)</dt>
+  <dd>Imports data from the specified TinyDB component by taking the value
+ identified by the specified tag value.
+
+    <p>The expected TinyDB value is a list formatted in the same way as described in
+ <a href="#ChartData2D.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+
+    <p>Does not overwrite any data.</p>
+  </dd>
+  <dt id="ChartData2D.ImportFromWeb" class="method"><i></i> ImportFromWeb(<em class="component">web</em>,<em class="text">xValueColumn</em>,<em class="text">yValueColumn</em>)</dt>
+  <dd>Imports data from the specified Web component by taking the specified x column
+ for the x values, and the specified y column for the y values. Prior to calling this function,
+ the Web component’s Get method has to be called to load the data. The usage of the gotValue
+ event in the Web component is unnecessary.
+
+    <p>The expected response of the Web component is a JSON or CSV formatted
+ file for this function to work.</p>
+
+    <p>Empty columns are filled with default values (1, 2, 3, … for Entry 1, 2, 3, …).</p>
+  </dd>
+  <dt id="ChartData2D.RemoveDataSource" class="method"><i></i> RemoveDataSource()</dt>
+  <dd>Removes the currently attached Data Source from the Chart Data component.
+ Doing so will result in no more updates from the Data Source being sent, however,
+ the current data will not be removed.</dd>
+  <dt id="ChartData2D.RemoveEntry" class="method"><i></i> RemoveEntry(<em class="text">x</em>,<em class="text">y</em>)</dt>
+  <dd>Removes an entry with the specified x and y value, provided it exists.
+ See <a href="#ChartData2D.AddEntry"><code class="highlighter-rouge">AddEntry</code></a> for an explanation of the valid entry values.</dd>
+</dl>
+
+<h2 id="Trendline">Trendline</h2>
+
+<p>The Trendline component can be used to visualize the trend of a data series represented by a
+ ChartData2D component. It must be added to a Chart component. To associate a ChartData2D
+ instance, either set the ChartData property in the design view of the app or use the setter
+ block. The Trendline will update automatically if its associated ChartData2D is changed.</p>
+
+<p>There are four models available for the Trendline: Linear, Quadratic, Logarithmic, and
+ Exponential. Depending on which model you use, certain properties of the Trendline component
+ will provide relevant values.</p>
+
+<ul>
+  <li>Linear: y = m*x + b, where m is LinearCoefficient and b is YIntercept</li>
+  <li>Quadratic: y = a*x<sup>2</sup> + b*x + c, where a is QuadraticCoefficient, b is
+LinearCoefficient, and c is YIntercept</li>
+  <li>Logarithmic: y = a + b*ln(x), where a is LogarithmConstant and b is LogarithmCoefficient</li>
+  <li>Exponential: y = a*b<sup>x</sup>, where a is the ExponentialCoefficient and b is the
+ExponentialBase</li>
+</ul>
+
+<p>For all models, the r<sup>2</sup> correlation will be reported through the RSquared property
+ block.</p>
+
+<h3 id="Trendline-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Trendline.ChartData" class="component wo"><em>ChartData</em></dt>
+  <dd>The data series for which to compute the line of best fit.</dd>
+  <dt id="Trendline.Color" class="color"><em>Color</em></dt>
+  <dd>The color of the line of best fit.</dd>
+  <dt id="Trendline.CorrelationCoefficient" class="number ro bo"><em>CorrelationCoefficient</em></dt>
+  <dd>The correlation coefficient of the trendline to the data.</dd>
+  <dt id="Trendline.ExponentialBase" class="number ro bo"><em>ExponentialBase</em></dt>
+  <dd>The base of the exponential term in the equation y = a*b^x.</dd>
+  <dt id="Trendline.ExponentialCoefficient" class="number ro bo"><em>ExponentialCoefficient</em></dt>
+  <dd>The coefficient of the exponential term in the equation y = a*b^x.</dd>
+  <dt id="Trendline.Extend" class="boolean"><em>Extend</em></dt>
+  <dd>Whether to extend the line of best fit beyond the data.</dd>
+  <dt id="Trendline.LinearCoefficient" class="number ro bo"><em>LinearCoefficient</em></dt>
+  <dd>The coefficient of the linear term in the trendline.</dd>
+  <dt id="Trendline.LogarithmCoefficient" class="number ro bo"><em>LogarithmCoefficient</em></dt>
+  <dd>The coefficient of the logarithmic term in the equation y = a + b*ln(x).</dd>
+  <dt id="Trendline.LogarithmConstant" class="number ro bo"><em>LogarithmConstant</em></dt>
+  <dd>The constant term in the logarithmic equation y = a + b*ln(x).</dd>
+  <dt id="Trendline.Model" class="com google appinventor components common BestFitModelEnum"><em>Model</em></dt>
+  <dd>The model to use for the line of best fit.</dd>
+  <dt id="Trendline.Predictions" class="list ro bo"><em>Predictions</em></dt>
+  <dd>The predictions for the trendline.</dd>
+  <dt id="Trendline.QuadraticCoefficient" class="number ro bo"><em>QuadraticCoefficient</em></dt>
+  <dd>The coefficient of the quadratic term in the trendline, if any.</dd>
+  <dt id="Trendline.RSquared" class="number ro bo"><em>RSquared</em></dt>
+  <dd>The r-squared coefficient of determination for the trendline.</dd>
+  <dt id="Trendline.Results" class="dictionary ro bo"><em>Results</em></dt>
+  <dd>Obtain a copy of the most recent values computed by the line of best fit.</dd>
+  <dt id="Trendline.StrokeStyle" class="com google appinventor components common StrokeStyleEnum"><em>StrokeStyle</em></dt>
+  <dd>The style of the best fit line.</dd>
+  <dt id="Trendline.StrokeWidth" class="number"><em>StrokeWidth</em></dt>
+  <dd>The width of the best fit line.</dd>
+  <dt id="Trendline.Visible" class="boolean"><em>Visible</em></dt>
+  <dd>Whether the line of best fit is visible.</dd>
+  <dt id="Trendline.XIntercepts" class="any ro bo"><em>XIntercepts</em></dt>
+  <dd>The X-intercepts of the trendline (where the line crosses the X-axis), if any. Possible
+ values are NaN (no intercept), a single value (one intercept), or a list of values.</dd>
+  <dt id="Trendline.YIntercept" class="number ro bo"><em>YIntercept</em></dt>
+  <dd>The Y-intercept of the trendline (constant term).</dd>
+</dl>
+
+<h3 id="Trendline-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Trendline.Updated">Updated(<em class="dictionary">results</em>)</dt>
+  <dd>Event indicating that the line of best fit has been updated.</dd>
+</dl>
+
+<h3 id="Trendline-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Trendline.DisconnectFromChartData" class="method"><i></i> DisconnectFromChartData()</dt>
+  <dd>Disconnect the Trendline from a previously associated ChartData2D.</dd>
+  <dt id="Trendline.GetResultValue" class="method returns any"><i></i> GetResultValue(<em class="text">value</em>)</dt>
+  <dd>Get the field of the most recent values computed by the line of best fit. The available
+ values vary based on the model used. For example, a linear model will have slope and
+ Yintercept fields whereas a quadratic model will have x^2, slope, and intercept fields.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

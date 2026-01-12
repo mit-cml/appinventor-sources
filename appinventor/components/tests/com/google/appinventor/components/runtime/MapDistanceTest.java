@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.runtime.util.YailList;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.google.appinventor.components.runtime.util.GeometryUtil.ONE_DEG_IN_METERS;

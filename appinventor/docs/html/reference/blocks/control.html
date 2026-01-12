@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>MIT App Inventor Control Blocks</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">MIT App Inventor Control Blocks</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<ul>
+  <li><a href="#if">if &amp; else if</a></li>
+  <li><a href="#forrange">for each number from to</a></li>
+  <li><a href="#foreach">for each item in list</a></li>
+  <li><a href="#foreachdict">for each key with value in dictionary</a></li>
+  <li><a href="#while">while</a></li>
+  <li><a href="#choose">if then else</a></li>
+  <li><a href="#doreturn">do with result</a></li>
+  <li><a href="#evaluate">evaluate but ignore result</a></li>
+  <li><a href="#openscreen">open another screen</a></li>
+  <li><a href="#openscreenwithvalue">open another screen with start value</a></li>
+  <li><a href="#getplainstarttext">get plain start text</a></li>
+  <li><a href="#getstartvalue">get start value</a></li>
+  <li><a href="#closescreen">close screen</a></li>
+  <li><a href="#closescreenwithplaintext">close screen with plain text</a></li>
+  <li><a href="#closescreenwithvalue">close screen with value</a></li>
+  <li><a href="#closeapp">close application</a></li>
+  <li><a href="#break">break</a></li>
+</ul>
+
+<h3 id="if">if &amp; else if</h3>
+
+<p class="clearfix"><img src="images/control/if.png" alt="" style="float:left;clear:left;border:0" /> Tests a given condition. If the condition is true, performs the actions in a given sequence of blocks; otherwise, the blocks are ignored.</p>
+
+<p class="clearfix"><img src="images/control/ifelse.png" alt="" style="float:left;clear:left;border:0" /> Tests a given condition. If the condition is true, performs the actions in the -then sequence of blocks; otherwise, performs the actions in the -else equence of blocks.</p>
+
+<p class="clearfix"><img src="images/control/ifelseif.png" alt="" style="float:left;clear:left;border:0" /> Tests a given condition. If the result is true, performs the actions in the -then sequence of blocks; otherwise tests the statement in the -else if section. If the result is true, performs the actions in the -then sequence of blocks; otherwise, performs the actions in the -else sequence of blocks.</p>
+
+<p>The animation below shows how to use the if else mutator block.</p>
+
+<p><img src="images/control/if.gif" alt="" /></p>
+
+<h3 id="forrange">for each number from to</h3>
+
+<p><img src="images/control/forrange.png" alt="" /></p>
+
+<p>Runs the blocks in the do section for each numeric value in the range starting from <em>from</em> and ending at <em>to</em>, incrementing <code class="variable block highlighter-rouge">number</code> by the value of <em>by</em> each time. Use the given variable name, <code class="variable block highlighter-rouge">number</code>, to refer to the current value. You can change the name <code class="variable block highlighter-rouge">number</code> to something else if you wish.</p>
+
+<h3 id="foreach">for each item in list</h3>
+
+<p><img src="images/control/foreach.png" alt="" /></p>
+
+<p>Runs the blocks in the do section for each item in the list. Use the given variable name, <code class="variable block highlighter-rouge">item</code>, to refer to the current list item. You can change the name <code class="variable block highlighter-rouge">item</code> to something else if you wish.</p>
+
+<h3 id="foreachdict">for each key with value in dictionary</h3>
+
+<p><img src="images/control/foreachdict.png" alt="" /></p>
+
+<p>Runs the blocks in the do section for each key-value entry in the dictionary. Use the given variables, <code class="variable block highlighter-rouge">key</code> and <code class="variable block highlighter-rouge">value</code>, to refer to the key and value of the current dictionary entry. You can change the names <code class="variable block highlighter-rouge">key</code> and <code class="variable block highlighter-rouge">value</code> to something else if you wish.</p>
+
+<h3 id="while">while</h3>
+
+<p><img src="images/control/while.png" alt="" /></p>
+
+<p>Tests the -test condition. If true, performs the action given in -do , then tests again. When test is false, the block ends and the action given in -do is no longer performed.</p>
+
+<h3 id="choose">if then else</h3>
+
+<p>Tests a given condition. If the statement is true, performs the actions in the then-return sequence of blocks and returns the then-return value; otherwise, performs the actions in the else-return sequence of blocks and returns the else-return value. This block is similar to the ternary operator (?:) found in some languages.</p>
+
+<h3 id="doreturn">do with result</h3>
+
+<p><img src="images/control/doreturn.png" alt="" /></p>
+
+<p>Sometimes in a procedure or another block of code, you may need to do something and return something, but for various reasons you may choose to use this block instead of creating a new procedure.</p>
+
+<h3 id="evaluate">evaluate but ignore result</h3>
+
+<p><img src="images/control/evaluate.png" alt="" /></p>
+
+<p>Provides a “dummy socket” for fitting a block that has a plug on its left into a place where there is no socket, such as one of the sequence of blocks in the do part of a procedure or an if block. The block you fit in will be run, but its returned result will be ignored. This can be useful if you define a procedure that returns a result, but want to call it in a context that does not accept a result.</p>
+
+<h3 id="openscreen">open another screen</h3>
+
+<p><img src="images/control/openscreen.png" alt="" /></p>
+
+<p>Opens the screen with the provided name.</p>
+
+<p>The screenName must be one of the Screens created using the Designer. The
+screenName should be selected from the connected screen name dropdown block.</p>
+
+<p>If you do open another screen, you should close it when returning to your main screen to free system memory. Failure to close a screen upon leaving it will eventually lead to memory problems.</p>
+
+<p>App developers should never close Screen1 or use this block to return to Screen1. Use the <code class="control block highlighter-rouge">close screen</code> block instead.</p>
+
+<h3 id="openscreenwithvalue">open another screen with start value</h3>
+
+<p><img src="images/control/openscreenwithvalue.png" alt="" /></p>
+
+<p>Opens another screen and passes a value to it.</p>
+
+<h3 id="getplainstarttext">get plain start text</h3>
+
+<p><img src="images/control/getplainstarttext.png" alt="" /></p>
+
+<p>Returns the plain text that was passed to this screen when it was started by another app. If no value was passed, it returns the empty text. For multiple screen apps, use <code class="control block highlighter-rouge">get start value</code> rather than <code class="control block highlighter-rouge">get plain start text</code>.</p>
+
+<h3 id="getstartvalue">get start value</h3>
+
+<p><img src="images/control/getstartvalue.png" alt="" /></p>
+
+<p>Returns the start value given to the current screen.</p>
+
+<p>This value is given from using <code class="control block highlighter-rouge">open another screen with start value</code> or <code class="control block highlighter-rouge">close screen with value</code>.</p>
+
+<h3 id="closescreen">close screen</h3>
+
+<p><img src="images/control/closescreen.png" alt="" /></p>
+
+<p>Closes the current screen.</p>
+
+<h3 id="closescreenwithplaintext">close screen with plain text</h3>
+
+<p><img src="images/control/closescreenwithplaintext.png" alt="" /></p>
+
+<p>Closes the current screen and passes text to the app that opened this one. This command is for returning text to non-App Inventor activities, not to App Inventor screens. For App Inventor Screens, as in multiple screen apps, use <code class="control block highlighter-rouge">close screen with value</code>, not <code class="control block highlighter-rouge">close screen with plain text</code>.</p>
+
+<h3 id="closescreenwithvalue">close screen with value</h3>
+
+<p><img src="images/control/closescreenwithvalue.png" alt="" /></p>
+
+<p>Closes the current screen and returns a value to the screen that opened this one.</p>
+
+<h3 id="closeapp">close application</h3>
+
+<p><img src="images/control/closeapp.png" alt="" /></p>
+
+<p>Closes the application.</p>
+
+<h3 id="break">break</h3>
+
+<p><img src="images/control/break.png" alt="" /></p>
+
+<p>When looping using the <a href="#forrange">for range</a>, <a href="#foreach">for each</a>, or <a href="#while">while</a> blocks it is sometimes useful to be able to exit the loop early. The <code class="control block highlighter-rouge">break</code> allows you to escape the loop. When executed, this will exit the loop and continue the app with the statements that occur after the loop in the blocks.</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

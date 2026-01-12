@@ -50,7 +50,7 @@ public class OdeAuthFilterTest {
     localUserMock = PowerMock.createMock(LocalUser.class);
     PowerMock.mockStatic(LocalUser.class);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
-    localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null));
+    localUserMock.set(new User("1", "NonSuch", false, false, null));
     expectLastCall().times(1);
     expect(localUserMock.getUserEmail()).andReturn("NonSuch").times(1);
     localUserInfo = PowerMock.createMock(OdeAuthFilter.UserInfo.class);
@@ -84,7 +84,7 @@ public class OdeAuthFilterTest {
 
     OdeAuthFilter myAuthFilter = new OdeAuthFilter() {
       @Override
-      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) { localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null)); return;}
+      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) { localUserMock.set(new User("1", "NonSuch", false, false, null)); return;}
       @Override
       void removeUser() {}
       @Override
@@ -120,7 +120,7 @@ public class OdeAuthFilterTest {
 
     OdeAuthFilter myAuthFilter = new OdeAuthFilter() {
       @Override
-      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) { localUserMock.set(new User("1", "NonSuch", "NoName", null, 0, false, false, 0, null)); return;}
+      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly) { localUserMock.set(new User("1", "NonSuch", false, false, null)); return;}
       @Override
       void removeUser() {}
       @Override

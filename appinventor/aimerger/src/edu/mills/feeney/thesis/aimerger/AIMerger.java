@@ -1,6 +1,5 @@
 package edu.mills.feeney.thesis.aimerger;
 
-import java.nio.file.*;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -9,20 +8,17 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -254,7 +250,7 @@ public class AIMerger extends JFrame {
           ZipEntry curEntry;
           while ((curEntry = mainZipInput.getNextEntry()) != null) {
             if (filesFromMainProject.contains(curEntry.getName())) {
-              outZip.putNextEntry(curEntry);
+              outZip.putNextEntry(new ZipEntry(curEntry.getName()));
               int len;
               while ((len = mainZipInput.read(buf)) > 0) {
                 outZip.write(buf, 0, len);
@@ -273,7 +269,7 @@ public class AIMerger extends JFrame {
                 if (oldName != null && curEntry.toString().contains(oldName)) {
                   curEntry = new ZipEntry(newName + getExt(curEntry.toString()));
                 }
-                outZip.putNextEntry(curEntry);
+                outZip.putNextEntry(new ZipEntry(curEntry.getName()));
                 int len;
                 while ((len = secondZipInput.read(buf)) > 0) {
                   if (getExt(curEntry.toString()).equals(".scm") && curEntry.toString().equals(
@@ -607,7 +603,7 @@ public class AIMerger extends JFrame {
   }
 
   public AIMerger() {
-    super("App Inventor Merger v1.2 -- for App Inventor 2");
+    super("App Inventor Merger v1.3 -- for App Inventor 2");
 
     // Set the size and location of the application's window based on the screen size.
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

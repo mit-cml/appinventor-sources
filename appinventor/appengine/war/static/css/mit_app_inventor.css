@@ -1,0 +1,482 @@
+/* -*- mode: css; css-indent-offset: 2; -*- */
+.mit_app_inventor .about-us .container-fluid {
+  margin-top: 2rem;
+  margin-bottom: 2rem; }
+
+.mit_app_inventor .about-us .card .card-img img {
+  width: 100%; }
+
+.mit_app_inventor .default-page .container-fluid {
+  margin-top: 2rem;
+  margin-bottom: 2rem; }
+
+.mit_app_inventor .default-page .card .card-img img {
+  width: 100%; }
+
+.mit_app_inventor .blog-post .container-fluid {
+  margin-top: 2rem;
+  margin-bottom: 2rem; }
+
+.mit_app_inventor .blog-post .image-gallery.row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px; }
+  .mit_app_inventor .blog-post .image-gallery.row .column {
+    flex: 50%;
+    max-width: 50%;
+    padding: 0 4px; }
+    .mit_app_inventor .blog-post .image-gallery.row .column img {
+      margin-top: 8px;
+      vertical-align: middle;
+      width: 100%; }
+  @media screen and (max-width: 800px) {
+    .mit_app_inventor .blog-post .image-gallery.row .column {
+      -ms-flex: 50%;
+      flex: 50%;
+      max-width: 50%; } }
+  @media screen and (max-width: 600px) {
+    .mit_app_inventor .blog-post .image-gallery.row .column {
+      -ms-flex: 100%;
+      flex: 100%;
+      max-width: 100%; } }
+
+.mit_app_inventor .blogs-home .container-fluid {
+  margin-top: 2rem;
+  margin-bottom: 2rem; }
+
+.mit_app_inventor .blogs-home .card {
+  max-height: 535px; }
+
+.mit_app_inventor .blogs-home .col-xl-12.blogs {
+  display: flex;
+  flex-wrap: wrap; }
+  .mit_app_inventor .blogs-home .col-xl-12.blogs .card {
+    flex: 49%;
+    max-width: 49%;
+    margin: 0.3rem; }
+  @media screen and (max-width: 800px) {
+    .mit_app_inventor .blogs-home .col-xl-12.blogs .card {
+      -ms-flex: 49%;
+      flex: 49%;
+      max-width: 49%; } }
+  @media screen and (max-width: 600px) {
+    .mit_app_inventor .blogs-home .col-xl-12.blogs .card {
+      -ms-flex: 100%;
+      flex: 100%;
+      max-width: 100%; } }
+
+.mit_app_inventor .background-green {
+  background-image: linear-gradient(174deg, #095C71, #052E39); }
+
+.mit_app_inventor .orange-gradient {
+  background-image: linear-gradient(164deg, #A24F18, #FD8F1F); }
+
+.mit_app_inventor .magenta-gradient {
+  background-image: linear-gradient(351deg, #A7247A, #54123D); }
+
+.mit_app_inventor .white {
+  color: #FFFFFF; }
+
+.mit_app_inventor .off-white {
+  color: #FFFFFF;
+  opacity: .9; }
+
+.mit_app_inventor .half-white {
+  color: #FFFFFF;
+  opacity: .5; }
+
+.mit_app_inventor .dark-gray {
+  color: #000000;
+  opacity: .5; }
+
+.mit_app_inventor .black {
+  color: #1C1C1C; }
+
+.mit_app_inventor .magenta {
+  color: #A7247A; }
+
+.mit_app_inventor .dark-purple {
+  color: #54123D; }
+
+.mit_app_inventor .gray {
+  color: #000000;
+  opacity: .16; }
+
+.mit_app_inventor .rust {
+  color: #A24F18; }
+
+.mit_app_inventor .peach {
+  color: #FD8F1F; }
+
+.mit_app_inventor .footer {
+  padding: 1rem 7.5rem;
+  color: white;
+  list-style-type: none; }
+  .mit_app_inventor .footer .row {
+    margin-top: 0;
+    margin-bottom: 0; }
+  .mit_app_inventor .footer .has-search {
+    padding-left: 0; }
+  .mit_app_inventor .footer .links .contact-us {
+    padding-left: 0; }
+  .mit_app_inventor .footer .links address {
+    margin-bottom: 0.5rem; }
+  .mit_app_inventor .footer .links a, .mit_app_inventor .footer .links address {
+    line-height: 16px;
+    color: #FFFFFF; }
+  .mit_app_inventor .footer .legal ul {
+    padding: 0;
+    list-style-type: none;
+    font-size: 14px; }
+    .mit_app_inventor .footer .legal ul a {
+      line-height: 16px;
+      color: #FFFFFF; }
+
+.mit_app_inventor {
+  max-width: 1440px;
+  margin: auto;
+  font-family: 'Roboto', sans-serif; }
+
+.mit_app_inventor
+.header {
+  background: linear-gradient(174deg, rgba(9, 92, 113, 0.75), rgba(5, 46, 57, 0.75));
+  font-size: 60px;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 3rem; }
+
+.header.index {
+  padding: 0;
+  margin-bottom: 0;
+  background: linear-gradient(174deg, rgba(9, 92, 113, 0.40), rgba(5, 46, 57, 0.75)), url("/akamai_images/CRLS19-FreshmanTech_173.jpg");
+  height: 489px;
+  background-size: cover;
+  background-position: center center; }
+  .header.index h1 {
+    color: #FFFFFF;
+    padding-top: 75px;
+    font-size: 80px;
+    max-width: 900px; }
+  .header.index .btn {
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    margin-top: 20px; }
+    .header.index .btn.btn-outline-light {
+      border-width: 4px;
+      border-radius: 35px 35px 35px 35px; }
+    .header.index .btn:hover {
+      color: #095C71; }
+
+.mit_app_inventor .container-fluid {
+  max-width: 85%; }
+
+.mit_app_inventor .stats {
+  width: 100%;
+  height: 116px;
+  text-align: center;
+  border-bottom: 2px solid #095C71;
+  margin-top: 0 !important; }
+  .mit_app_inventor .stats .stat-group {
+    color: #095C71;
+    font-weight: bold;
+    font-size: 25px; }
+
+.mit_app_inventor .row {
+  margin-top: 3rem;
+  margin-bottom: 3rem; }
+
+.mit_app_inventor .quick-link-cards .card {
+  border-color: #A7247A;
+  border-width: .13rem;
+  border-radius: 1rem;
+  height: 27.5rem; }
+  .mit_app_inventor .quick-link-cards .card .card-img {
+    padding: 1.5rem; }
+    .mit_app_inventor .quick-link-cards .card .card-img .far, .mit_app_inventor .quick-link-cards .card .card-img .fas {
+      color: #095C71; }
+      .mit_app_inventor .quick-link-cards .card .card-img .far.fa-flag, .mit_app_inventor .quick-link-cards .card .card-img .fas.fa-flag {
+        transform: rotate(-15deg); }
+  .mit_app_inventor .quick-link-cards .card .card-title {
+    color: #A7247A;
+    font-size: 1.9rem;
+    margin-bottom: 1rem; }
+  .mit_app_inventor .quick-link-cards .card .card-text {
+    font-size: 20px;
+    margin-bottom: 2rem; }
+  .mit_app_inventor .quick-link-cards .card .action-btn {
+    color: #FFFFFF;
+    background-color: #A7247A;
+    border-radius: 2rem;
+    width: 10rem;
+    font-size: 1.1rem; }
+    .mit_app_inventor .quick-link-cards .card .action-btn:hover {
+      color: #A7247A;
+      background-color: #FFFFFF;
+      border-color: #A7247A; }
+
+.mit_app_inventor .action-card-container {
+  height: 371px; }
+  .mit_app_inventor .action-card-container .action-cards {
+    border-radius: 15px 15px 15px 15px;
+    box-shadow: 0 3px 10px #000000;
+    color: #FFFFFF; }
+    .mit_app_inventor .action-card-container .action-cards .card-footer .btn {
+      border-radius: 1rem; }
+
+.mit_app_inventor .picture-break {
+  height: 489px;
+  border-radius: 1rem;
+  background: url("/akamai_images/2019.03.21_13.05.53.851.jpg");
+  background-size: cover;
+  background-position: center center; }
+
+.mit_app_inventor .news-header h1 {
+  width: 100%;
+  color: #A7247A; }
+
+.mit_app_inventor .accented-cards .card {
+  border-radius: 1rem; }
+  .mit_app_inventor .accented-cards .card .card-body {
+    border-top: 10px solid #A7247A; }
+    .mit_app_inventor .accented-cards .card .card-body:first-child {
+      border-radius: 1rem; }
+
+.mit_app_inventor .news-cards .card-columns {
+  column-count: 2; }
+
+.mit_app_inventor .news-cards .card {
+  border-radius: 1rem; }
+  .mit_app_inventor .news-cards .card .card-img {
+    height: 200px;
+    border-radius: 1rem 1rem 0 0;
+    background-size: cover !important; }
+    .mit_app_inventor .news-cards .card .card-img.dharavi-girls {
+      background: url("/akamai_images/dharavi-girls.jpeg"); }
+    .mit_app_inventor .news-cards .card .card-img.kids {
+      background: url("/akamai_images/coolthink1.png"); }
+    .mit_app_inventor .news-cards .card .card-img.kids-on-computer {
+      background: url("/akamai_images/DSC_0019.jpg"); }
+  .mit_app_inventor .news-cards .card .card-text {
+    font-size: 18px; }
+  .mit_app_inventor .news-cards .card .card-footer {
+    font-size: 12px; }
+
+.mit_app_inventor .view-more-container {
+  width: 100%; }
+  .mit_app_inventor .view-more-container .btn {
+    width: 278px;
+    height: 78px;
+    color: #A7247A;
+    border: 4px solid #A7247A;
+    border-radius: 2rem;
+    font-size: 30px; }
+    .mit_app_inventor .view-more-container .btn:hover {
+      color: white;
+      background-color: #A7247A; }
+
+.mit_app_inventor .navbar .navbar-brand {
+  margin: 1rem; }
+
+.mit_app_inventor .navbar .navbar-nav a {
+  color: #1C1C1C; }
+
+.mit_app_inventor .navbar .navbar-nav li:hover > .dropdown-menu {
+  display: block; }
+
+.mit_app_inventor .navbar .navbar-nav .nav-item {
+  margin-right: 3rem; }
+  .mit_app_inventor .navbar .navbar-nav .nav-item .nav-link {
+    font-weight: bold; }
+    .mit_app_inventor .navbar .navbar-nav .nav-item .nav-link:hover, .mit_app_inventor .navbar .navbar-nav .nav-item .nav-link:focus {
+      background-color: #EEEEEE; }
+  .mit_app_inventor .navbar .navbar-nav .nav-item .dropdown-menu {
+    margin-top: 0;
+    background-color: #EEEEEE;
+    border-top-left-radius: 0;
+    border-width: 0; }
+
+.mit_app_inventor .navbar .donate-btn {
+  color: #FFFFFF;
+  background-color: #A7247A;
+  border-radius: 31px;
+  width: 117px;
+  font-size: 18px; }
+
+.mit_app_inventor .navbar .create-btn {
+    color: #FFFFFF;
+    background-color: #F88D34;
+    border-radius: 31px;
+    width: 150px;
+    font-size: 18px; }
+
+.mit_app_inventor .has-search {
+    padding-left: 24px; }
+  .mit_app_inventor .has-search.form-group {
+    margin-bottom: 0; }
+  .mit_app_inventor .has-search .form-control {
+    padding-left: 2.375rem;
+    border: 2px solid #1C1C1C;
+    border-radius: 31px; }
+  .mit_app_inventor .has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #1C1C1C;
+    opacity: .5; }
+
+/* Documentation styles */
+h1 { color: white; }
+.documentation img { max-width: 100%; }
+.documentation code.block { font-family: Roboto, Helvetica, Arial, sans-serif; color: inherit; }
+.documentation span.block,
+.documentation code.block {
+  border: 1px solid black;
+  padding: 0 0.5ex;
+  color: white;
+  white-space: nowrap;
+  font-size: inherit;
+}
+.documentation span.control, .documentation span.event, .documentation code.control, .documentation code.event { background-color: #B18E35; }
+.documentation span.logic, .documentation code.logic { background-color: #77AB41; }
+.documentation span.math, .documentation code.math { background-color: #3F71B5; }
+.documentation span.text, .documentation code.text { background-color: #B32D5E; }
+.documentation span.list, .documentation code.list { background-color: #49A6D4; }
+.documentation span.dictionary, .documentation code.dictionary { background-color: #2D1799; }
+.documentation span.color, .documentation code.color { background-color: #7D7D7D; }
+.documentation span.variable,
+.documentation code.variable {
+  background-color: #D05F2D;
+}
+.documentation span.procedure, .documentation span.method, documentation code.procedure, .documentation code.method { background-color: #7C5385; }
+.documentation span.setter, .documentation code.setter { background-color: #266643; }
+.documentation span.getter, .documentation span.component, .documentation code.getter, .documentation code.component { background-color: #439970; }
+.documentation p { margin: 6pt 0; }
+.documentation .figure { display: block; margin: 4pt auto; }
+.documentation p.figure { text-align: center; }
+.documentation p.figure img { margin: 4pt auto; }
+.documentation p.caption { padding: 0 24pt; font-size: 80%; text-align: center; }
+.documentation h1, .documentation h2, .documentation h3 { padding: 6pt 0; }
+.documentation h1 { font-size: 2rem; margin-top: 1rem; color: black; }
+.documentation h2 { padding-bottom: 6pt; font-size: 1.67rem; }
+.documentation h3 { font-size: 1.33rem; }
+
+dt {
+  font-size: 0.846em;
+  font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+}
+dd {
+  margin: 0 0 0.4em 0;
+  padding: 0 0 0 2em;
+}
+dt:after, dt i:after, dt em:after, dt em:before {
+  font-size: 85%;
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: #444;
+  color: white;
+  padding: 1pt 4pt 1.5pt 3pt;
+  border-radius: 4pt;
+  user-select: none;
+  vertical-align: top;
+  font-style: normal;
+  margin-left: 4pt;
+}
+dt em:before {
+  margin-right: 2pt;
+  margin-left: 2pt;
+}
+.documentation dt span,
+.documentation dt span.text,
+.documentation dt span.list,
+.documentation dt span.color,
+.documentation dt span.component { background-color: inherit; }
+dt.ro:after, dt span.ro:after, dt em.ro:after { content: "read-only"; }
+dt.wo:after, dt span.wo:after, dt em.wo:after { content: "write-only"; }
+dt.bo:after, dt span.bo:after, dt em.bo:after { content: "blocks-only"; }
+dt.do:after, dt span.do:after, dt em.do:after { content: "designer-only"; }
+dt.ro.bo:after, dt span.ro.bo:after, dt em.ro.bo:after { content: "read-only, blocks-only"; }
+dt.wo.bo:after, dt span.wo.bo:after, dt em.wo.bo:after { content: "write-only, blocks-only"; }
+dt.wo.do:after, dt span.wo.do:after, dt em.wo.do:after { content: "write-only, designer-only"; }
+dt.boolean i:after,
+dt span.boolean:after,
+.properties dt.boolean em:after,
+.methods dt em.boolean:before,
+.events dt em.boolean:before
+{ background-color: #92b55f; content: "boolean"; }
+dt.number i:after,
+dt span.number i:after,
+.properties dt.number em:after,
+.methods dt em.number:before,
+.events dt em.number:before
+{ background-color: #5c84bd; content: "number"; }
+dt.text i:after,
+dt span.text i:after,
+.properties dt.text em:after,
+.methods dt em.text:before,
+.events dt em.text:before
+{ background-color: #b34d71; content: "text"; }
+dt.list i:after,
+dt span.list i:after,
+.properties dt.list em:after,
+.methods dt em.list:before,
+.events dt em.list:before
+{ background-color: #70b3d8; content: "list"; }
+dt.dictionary i:after,
+dt span.dictionary i:after,
+.properties dt.dictionary em:after,
+.methods dt em.dictionary:before,
+.events dt em.dictionary:before
+{ background-color: #2D1799; content: "dictionary"; }
+dt.component i:after,
+dt span.component i:after,
+.properties dt.component em:after,
+.methods dt em.component:before,
+.events dt em.component:before
+{ background-color: #5a9773; content: "component"; }
+dt.any i:after,
+dt span.any i:after,
+.properties dt.any em:after,
+.methods dt em.any:before,
+.events dt em.any:before
+{ background-color: #ce7947; content: "any"; }
+dt.color i:after,
+dt span.color i:after,
+.properties dt.color em:after,
+.methods dt em.color:before,
+.events dt em.color:before
+{ background-color: #909090; content: "color"; }
+span.list { background-color: #70b3d8; }
+span.ro { background-color: #f88; color: black; }
+span.wo { background-color: #8f8; color: black; }
+span.bo { background-color: #88f; color: black; }
+span.do { background-color: #ff8; color: black; }
+dt.FileScopeEnum i:after,
+dt span.FileScopeEnum i:after,
+dt.FileScopeEnum em:after,
+em.FileScopeEnum:before
+{ background-color: #BF4343; content: "FileScope"; }
+dt.ChartTypeEnum i:after,
+dt span.ChartTypeEnum i:after,
+dt.ChartTypeEnum em:after,
+em.ChartTypeEnum:before
+{ background-color: #BF4343; content: "ChartType"; }
+dt.LineTypeEnum i:after,
+dt span.LineTypeEnum i:after,
+dt.LineTypeEnum em:after,
+em.LineTypeEnum:before
+{ background-color: #BF4343; content: "LineType"; }
+dt.PointStyleEnum i:after,
+dt span.PointStyleEnum i:after,
+dt.PointStyleEnum em:after,
+em.PointStyleEnum:before
+{ background-color: #BF4343; content: "PointStyle"; }
+dt.LOBFValuesEnum i:after,
+dt span.LOBFValuesEnum i:after,
+dt.LOBFValuesEnum em:after,
+em.LOBFValuesEnum:before
+{ background-color: #BF4343; content: "LOBFValues"; }

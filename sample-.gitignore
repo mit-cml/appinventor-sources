@@ -9,11 +9,15 @@ reports/
 *~
 *.out
 .DS_Store*
-*.out
-*~
 *.iml
 .idea/
 .externalToolBuilders/
 .gwt/
 out/
 *.pyc
+.vagrant/
+*.log
+.build/
+*-cache/
+.bundle/
+vendor/

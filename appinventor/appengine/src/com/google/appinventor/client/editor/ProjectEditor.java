@@ -1,76 +1,82 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.SourceNode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Logger;
 
 /**
  * Abstract superclass for all project editors.
  * Each ProjectEditor is associated with a single project and may have multiple
  * FileEditors open in a DeckPanel.
- * 
+ *
  * TODO(sharon): consider merging this into YaProjectEditor, since we now
- * only have one type of project editor. 
+ * only have one type of project editor.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class ProjectEditor extends Composite {
+  private static final Logger LOG = Logger.getLogger(ProjectEditor.class.getName());
 
   protected final ProjectRootNode projectRootNode;
+  protected final UiStyleFactory uiFactory;
   protected final long projectId;
   protected final Project project;
 
   // Invariants: openFileEditors, fileIds, and deckPanel contain corresponding
   // elements, i.e., if a FileEditor is in openFileEditors, its fileid should be
   // in fileIds and the FileEditor should be in deckPanel. If selectedFileEditor
-  // is non-null, it is one of the file editors in openFileEditors and the 
-  // one currently showing in deckPanel. 
+  // is non-null, it is one of the file editors in openFileEditors and the
+  // one currently showing in deckPanel.
   private final Map<String, FileEditor> openFileEditors;
-  protected final List<String> fileIds; 
+  private final Map<String, Map<String, FileEditor>> editorsByType;
+  protected final List<String> fileIds;
   private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
   private final DeckPanel deckPanel;
   private FileEditor selectedFileEditor;
+  private final TreeMap<String, Boolean> screenHashMap = new TreeMap<String, Boolean>();
 
   /**
    * Creates a {@code ProjectEditor} instance.
    *
    * @param projectRootNode  the project root node
    */
-  public ProjectEditor(ProjectRootNode projectRootNode) {
+  public ProjectEditor(ProjectRootNode projectRootNode, UiStyleFactory uiFactory) {
     this.projectRootNode = projectRootNode;
+    this.uiFactory = uiFactory;
     projectId = projectRootNode.getProjectId();
     project = Ode.getInstance().getProjectManager().getProject(projectId);
 
     openFileEditors = Maps.newHashMap();
     fileIds = new ArrayList<String>();
+    editorsByType = Maps.newHashMap();
 
     deckPanel = new DeckPanel();
 
-    VerticalPanel panel = new VerticalPanel();
-    panel.add(deckPanel);
     deckPanel.setSize("100%", "100%");
-    panel.setSize("100%", "100%");
-    initWidget(panel);
+    initWidget(deckPanel);
     // Note: I'm not sure that the setSize call below does anything useful.
     setSize("100%", "100%");
   }
@@ -85,31 +91,69 @@ public abstract class ProjectEditor extends Composite {
 
   /**
    * Called when the ProjectEditor widget is loaded after having been hidden. 
-   * Subclasses must implement this method, taking responsiblity for causing 
+   * Subclasses must implement this method, taking responsibility for causing 
    * the onShow method of the selected file editor to be called and for updating 
    * any other UI elements related to showing the project editor.
    */
   protected abstract void onShow();
-  
+
   /**
    * Called when the ProjectEditor widget is about to be unloaded. Subclasses
-   * must implement this method, taking responsiblity for causing the onHide 
+   * must implement this method, taking responsibility for causing the onHide 
    * method of the selected file editor to be called and for updating any 
    * other UI elements related to hiding the project editor.
    */
   protected abstract void onHide();
 
-  /**
-   * Adds a file editor to this project editor.
-   *
-   * @param fileEditor  file editor to add
-   */
-  public final void addFileEditor(FileEditor fileEditor) {
-    String fileId = fileEditor.getFileId();
-    openFileEditors.put(fileId, fileEditor);
-    fileIds.add(fileId);
-    
-    deckPanel.add(fileEditor);
+  public UiStyleFactory getUiFactory() {
+    return uiFactory;
+  }
+
+  public final void setScreenCheckboxState(String screen, Boolean isChecked) {
+    screenHashMap.put(screen, isChecked);
+    changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP,
+        getScreenCheckboxMapString()
+    );
+  }
+
+  public final Boolean getScreenCheckboxState(String screen) {
+    if (screenHashMap.size() == 0) {
+      buildScreenHashMap();
+    }
+    return screenHashMap.get(screen);
+  }
+
+  public final String getScreenCheckboxMapString() {
+    String screenCheckboxMap = "";
+    int count = 0;
+    Set<String> screens = screenHashMap.keySet();
+    int size = screens.size();
+    for (String screen : screens) {
+      Boolean isChecked = screenHashMap.get(screen);
+      if (isChecked == null) {
+        continue;
+      }
+      String isCheckedString = (isChecked) ? "True" : "False";
+      String separator = (count == size) ? "" : " ";
+      screenCheckboxMap += screen + ":" + isCheckedString + separator;
+    }
+    return screenCheckboxMap;
+  }
+
+  public final void buildScreenHashMap() {
+    String screenCheckboxMap = getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_SCREEN_CHECKBOX_STATE_MAP
+    );
+    String[] pairs = screenCheckboxMap.split(" ");
+    for (String pair : pairs) {
+      String[] mapping = pair.split(":");
+      String screen = mapping[0];
+      Boolean isChecked = Boolean.parseBoolean(mapping[1]);
+      screenHashMap.put(screen, isChecked);
+    }
   }
 
   /**
@@ -123,18 +167,28 @@ public abstract class ProjectEditor extends Composite {
     openFileEditors.put(fileId, fileEditor);
     fileIds.add(beforeIndex, fileId);
     deckPanel.insert(fileEditor, beforeIndex);
-    OdeLog.log("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
+    LOG.info("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
+  }
 
+  protected final void addFileEditorByType(FileEditor fileEditor) {
+    String entityName = SourceNode.getEntityName(fileEditor.getFileId());
+    if (!editorsByType.containsKey(entityName)) {
+      Map<String, FileEditor> editorMap = new HashMap<>();
+      editorMap.put(fileEditor.getEditorType(), fileEditor);
+      editorsByType.put(entityName, editorMap);
+    } else {
+      editorsByType.get(entityName).put(fileEditor.getEditorType(), fileEditor);
+    }
   }
 
   /**
    * Selects the given file editor in the deck panel and calls its onShow()
-   * method. Calls onHide() for a previously selected file editor if there was 
+   * method. Calls onHide() for a previously selected file editor if there was
    * one (and it wasn't the same one).
-   * 
+   *
    * Note: all actions that cause the selected file editor to change should
    * be going through DesignToolbar.SwitchScreenAction.execute(), which calls
-   * this method. If you're thinking about calling this method directly from 
+   * this method. If you're thinking about calling this method directly from
    * somewhere else, please reconsider!
    *
    * @param fileEditor  file editor to select
@@ -143,20 +197,20 @@ public abstract class ProjectEditor extends Composite {
     int index = deckPanel.getWidgetIndex(fileEditor);
     if (index == -1) {
       if (fileEditor != null) {
-        OdeLog.wlog("Can't find widget for fileEditor " + fileEditor.getFileId());
+        LOG.warning("Can't find widget for fileEditor " + fileEditor.getFileId());
       } else {
-        OdeLog.wlog("Not expecting selectFileEditor(null)");
+        LOG.warning("Not expecting selectFileEditor(null)");
       }
     }
-    OdeLog.log("ProjectEditor: got selectFileEditor for " 
+    LOG.info("ProjectEditor: got selectFileEditor for "
         + ((fileEditor == null) ? null : fileEditor.getFileId())
-        +  " selectedFileEditor is " 
+        +  " selectedFileEditor is "
         + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
     if (selectedFileEditor != null && selectedFileEditor != fileEditor) {
       selectedFileEditor.onHide();
     }
-    // Note that we still want to do the following statements even if 
-    // selectedFileEdtior == fileEditor already. This handles the case of switching back
+    // Note that we still want to do the following statements even if
+    // selectedFileEditor == fileEditor already. This handles the case of switching back
     // to a previously opened project from another project.
     selectedFileEditor = fileEditor;
     deckPanel.showWidget(index);
@@ -171,14 +225,30 @@ public abstract class ProjectEditor extends Composite {
   public final FileEditor getFileEditor(String fileId) {
     return openFileEditors.get(fileId);
   }
-  
+
+  /**
+   * Get the file editor of the given <code>editorType</code>, if any, for <code>entityName</code>.
+   *
+   * @param entityName
+   * @param editorType
+   * @return
+   */
+  public final FileEditor getFileEditor(String entityName, String editorType) {
+    Map<String, FileEditor> entityEditors = editorsByType.get(entityName);
+    if (entityEditors != null) {
+      return entityEditors.get(editorType);
+    } else {
+      return null;
+    }
+  }
+
   /**
    * Returns the set of open file editors
    */
   public final Iterable<FileEditor> getOpenFileEditors() {
     return Collections.unmodifiableCollection(openFileEditors.values());
   }
-  
+
   /**
    * Returns the currently selected file editor
    */
@@ -188,7 +258,7 @@ public abstract class ProjectEditor extends Composite {
 
   /**
    * Closes the file editors for the given file IDs, without saving.
-   * This is used when the files are about to be deleted. If  
+   * This is used when the files are about to be deleted. If
    * selectedFileEditor is closed, sets selectedFileEditor to null.
    *
    * @param closeFileIds  file IDs of the files to be closed
@@ -197,19 +267,20 @@ public abstract class ProjectEditor extends Composite {
     for (String fileId : closeFileIds) {
       FileEditor fileEditor = openFileEditors.remove(fileId);
       if (fileEditor == null) {
-        OdeLog.elog("File editor is unexpectedly null for " + fileId);
+        LOG.severe("File editor is unexpectedly null for " + fileId);
         continue;
       }
       int index = deckPanel.getWidgetIndex(fileEditor);
       fileIds.remove(index);
       deckPanel.remove(fileEditor);
       if (selectedFileEditor == fileEditor) {
+        selectedFileEditor.onHide();
         selectedFileEditor = null;
       }
       fileEditor.onClose();
     }
   }
-  
+
   /**
    * Returns the value of a project settings property.
    *
@@ -235,7 +306,7 @@ public abstract class ProjectEditor extends Composite {
     Settings settings = projectSettings.getSettings(category);
     String currentValue = settings.getPropertyValue(name);
     if (!newValue.equals(currentValue)) {
-      OdeLog.log("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
+      LOG.info("ProjectEditor: changeProjectSettingsProperty: " + name + " " + currentValue +
                  " => " + newValue);
       settings.changePropertyValue(name, newValue);
       // Deal with the Tutorial Panel
@@ -257,26 +328,25 @@ public abstract class ProjectEditor extends Composite {
    * is only available from the designer. Each WebViewer then
    * registers its value here. Each time this hashtable is updated we
    * recompute whether or not location permission is needed based on a
-   * logical OR of all of the WebViwer components registered. Note:
-   * Even if no WebViewer component requires location permisson, other
+   * logical OR of all of the WebViewer components registered. Note:
+   * Even if no WebViewer component requires location permission, other
    * components, such as the LocationSensor may require it. That is
    * handled via the @UsesPermissions mechanism and is independent of
    * this code.
    *
    * @param componentName The name of the component registering location permission
-   * @param newVlue either "True" or "False" indicating whether permission is need.
+   * @param newValue either "True" or "False" indicating whether permission is need.
    */
-
   public final void recordLocationSetting(String componentName, String newValue) {
-    OdeLog.log("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
+    LOG.info("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
     locationHashMap.put(componentName, newValue);
     recomputeLocationPermission();
   }
 
-  private final void recomputeLocationPermission() {
+  private void recomputeLocationPermission() {
     String usesLocation = "False";
     for (String c : locationHashMap.values()) {
-      OdeLog.log("ProjectEditor:recomputeLocationPermission: " + c);
+      LOG.info("ProjectEditor:recomputeLocationPermission: " + c);
       if (c.equals("True")) {
         usesLocation = "True";
         break;
@@ -287,7 +357,7 @@ public abstract class ProjectEditor extends Composite {
   }
 
   public void clearLocation(String componentName) {
-    OdeLog.log("ProjectEditor:clearLocation: clearing " + componentName);
+    LOG.info("ProjectEditor:clearLocation: clearing " + componentName);
     locationHashMap.remove(componentName);
     recomputeLocationPermission();
   }
@@ -313,7 +383,7 @@ public abstract class ProjectEditor extends Composite {
     // already-opened project is re-opened.
     // This is different from the ProjectEditor method loadProject, which is called to load the
     // project just after the editor is created.
-    OdeLog.log("ProjectEditor: got onLoad for project " + projectId);
+    LOG.info("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
     String tutorialURL = getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
                                                     SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
@@ -331,7 +401,7 @@ public abstract class ProjectEditor extends Composite {
     Ode ode = Ode.getInstance();
     ode.setTutorialVisible(false);
     ode.getDesignToolbar().setTutorialToggleVisible(false);
-    OdeLog.log("ProjectEditor: got onUnload for project " + projectId);
+    LOG.info("ProjectEditor: got onUnload for project " + projectId);
     super.onUnload();
     onHide();
   }

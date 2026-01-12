@@ -18,4 +18,4 @@
           xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:state_enabled="false" android:color="?attr/colorControlActivated" app:alpha="?android:attr/disabledAlpha"/>
     <item android:color="?attr/colorControlActivated"/>
-</selector>
+</selector><!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/color/abc_tint_seek_thumb.xml -->

@@ -1,0 +1,23 @@
+{
+  "name": "appinventor",
+  "version": "1.0.0",
+  "description": "",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "karma": "^6.4.4",
+    "karma-chai": "^0.1.0",
+    "karma-firefox-launcher": "^2.1.3",
+    "karma-mocha": "^2.0.1",
+    "mocha": "^7.1.1"
+  },
+  "scripts": {
+    "test": "karma start --single-run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

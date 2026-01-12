@@ -1,0 +1,30 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_ewpatton.ColorBlocksTest.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (p$test_color_black ) (call-yail-primitive yail-equal? (*list-for-runtime* -16777216 -16777216) '(any any) "="))
+(def (p$test_color_blue ) (call-yail-primitive yail-equal? (*list-for-runtime* -16776961 -16776961) '(any any) "="))
+(def (p$test_color_cyan ) (call-yail-primitive yail-equal? (*list-for-runtime* -16711681 -16711681) '(any any) "="))
+(def (p$test_color_dark_gray ) (call-yail-primitive yail-equal? (*list-for-runtime* -12303292 -12303292) '(any any) "="))
+(def (p$test_color_gray ) (call-yail-primitive yail-equal? (*list-for-runtime* -7829368 -7829368) '(any any) "="))
+(def (p$test_color_green ) (call-yail-primitive yail-equal? (*list-for-runtime* -16711936 -16711936) '(any any) "="))
+(def (p$test_color_light_gray ) (call-yail-primitive yail-equal? (*list-for-runtime* -3355444 -3355444) '(any any) "="))
+(def (p$test_color_magenta ) (call-yail-primitive yail-equal? (*list-for-runtime* -65281 -65281) '(any any) "="))
+(def (p$test_color_pink ) (call-yail-primitive yail-equal? (*list-for-runtime* -20561 -20561) '(any any) "="))
+(def (p$test_color_red ) (call-yail-primitive yail-equal? (*list-for-runtime* -65536 -65536) '(any any) "="))
+(def (p$test_color_white ) (call-yail-primitive yail-equal? (*list-for-runtime* -1 -1) '(any any) "="))
+(def (p$test_color_orange ) (call-yail-primitive yail-equal? (*list-for-runtime* -14336 -14336) '(any any) "="))
+(def (p$test_color_yellow ) (call-yail-primitive yail-equal? (*list-for-runtime* -256 -256) '(any any) "="))
+(def (p$test_color_make_color ) (call-yail-primitive yail-equal? (*list-for-runtime* -65536 (call-yail-primitive make-color (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* 255 0 0 ) '(any any any ) "make a list")) '(list) "make-color")) '(any any) "="))
+(def (p$test_color_split_color ) (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* 255 0 0 255 ) '(any any any any ) "make a list") (call-yail-primitive split-color (*list-for-runtime* -65536) '(number) "split-color")) '(any any) "="))
+;;; Screen1
+#|
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "ColorBlocksTest" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+(init-runtime)
+|#

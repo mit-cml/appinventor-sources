@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+
+  <ai:Toolbar>
+    <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName" />
+
+    <!-- Left button items -->
+    <ai:ToolbarItem name="TutorialToggle" caption="{messages.toggleTutorialButton}"
+                    visible="false" align="center">
+      <ya:ToggleTutorialAction />
+    </ai:ToolbarItem>
+    <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
+                       ui:field="pickFormItem" align="center" />
+    <ai:ToolbarItem name="AddForm" caption="{messages.addFormButton}" ui:field="addFormItem"
+                    align="center">
+      <ya:AddFormAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="RemoveForm" caption="{messages.removeFormButton}" ui:field="removeFormItem"
+       align="center">
+      <ya:RemoveFormAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="ProjectPropertiesDialog" caption="{messages.projectPropertiesText}" ui:field="projectPropertiesDialog"
+                    align="center">
+      <ya:ProjectPropertiesAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
+       ui:field="sendToGalleryItem" align="center">
+      <actions:SendToGalleryAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name ="Console Toggle" caption="{messages.toggleConsoleButton}" ui:field="toggleConsoleItem" align="right">
+      <ya:ToggleConsoleAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
+                    ui:field="switchToDesign" align="right">
+      <ya:SwitchToFormEditorAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="switchToBlocks" caption="{messages.switchToBlocksEditorButton}"
+                    ui:field="switchToBlocks" align="right">
+      <ya:SwitchToBlocksEditorAction />
+    </ai:ToolbarItem>
+  </ai:Toolbar>
+</ui:UiBinder>

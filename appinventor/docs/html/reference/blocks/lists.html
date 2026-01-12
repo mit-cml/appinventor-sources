@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>MIT App Inventor List Blocks</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">MIT App Inventor List Blocks</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<ul>
+  <li><a href="#emptylist">create empty list</a></li>
+  <li><a href="#makealist">make a list</a></li>
+  <li><a href="#additems">add items to list</a></li>
+  <li><a href="#inlist">is in list</a></li>
+  <li><a href="#lengthoflist">length of list</a></li>
+  <li><a href="#islistempty">is list empty</a></li>
+  <li><a href="#pickrandomitem">pick a random item</a></li>
+  <li><a href="#indexinlist">index in list</a></li>
+  <li><a href="#selectlistitem">select list item</a></li>
+  <li><a href="#insert">insert list item</a></li>
+  <li><a href="#replace">replace list item</a></li>
+  <li><a href="#removeitem">remove list item</a></li>
+  <li><a href="#append">append to list</a></li>
+  <li><a href="#copy">copy list</a></li>
+  <li><a href="#isalist">is a list?</a></li>
+  <li><a href="#reverse">reverse list</a></li>
+  <li><a href="#listtocsvrow">list to csv row</a></li>
+  <li><a href="#listtocsvtable">list to csv table</a></li>
+  <li><a href="#listfromcsvrow">list from csv row</a></li>
+  <li><a href="#listfromcsvtable">list from csv table</a></li>
+  <li><a href="#lookupinpairs">lookup in pairs</a></li>
+  <li><a href="#joinwithseparator">join with separator</a></li>
+  <li><a href="#mapnondest">make new mapped list</a></li>
+  <li><a href="#filter">make new filtered list</a></li>
+  <li><a href="#reduce">reduce list to a single value</a></li>
+  <li><a href="#sort">sort list in ascending order</a></li>
+  <li><a href="#sortwithcomparator">sort list with a specified comparator</a></li>
+  <li><a href="#sortwithkey">sort list with proxy values</a></li>
+  <li><a href="#minnumber">minimum value in list</a></li>
+  <li><a href="#maximum">maximum value in list</a></li>
+  <li><a href="#butfirst">all but first</a></li>
+  <li><a href="#butlast">all but last</a></li>
+  <li><a href="#slices">list slices</a></li>
+</ul>
+
+<p><em>Need additional help understanding lists? Check out <a href="../concepts/lists.html">making lists</a> on the Concepts page.</em></p>
+
+<h3 id="emptylist">create empty list</h3>
+
+<p><img src="images/lists/emptylist.png" alt="" /></p>
+
+<p>Creates an empty list with no elements.</p>
+
+<h3 id="makealist">make a list</h3>
+
+<p><img src="images/lists/makealist.png" alt="" /></p>
+
+<p>Creates a list from the given blocks. If you don’t supply any arguments, this creates an empty list, which you can add elements to later.
+This block is a <a href="../concepts/mutators.html">mutator</a>. Clicking the blue plus sign will allow you to add additional items to your list.</p>
+
+<h3 id="additems">add items to list</h3>
+
+<p><img src="images/lists/additems.png" alt="" /></p>
+
+<p>Adds the given items to the end of the list.
+The difference between this and append to list is that append to list takes the items to be appended as a single list
+while add items to list takes the items as individual arguments. This block is a <a href="../concepts/mutators.html">mutator</a>.</p>
+
+<h3 id="inlist">is in list</h3>
+
+<p><img src="images/lists/inlist.png" alt="" /></p>
+
+<p>If thing is one of the elements of the list, returns true; otherwise, returns false. Note that if a list contains sublists,
+the members of the sublists are not themselves members of the list. For example, the members of the list (1 2 (3 4)) are 1, 2, and the list (3 4); 3 and 4 are not themselves members of the list.</p>
+
+<h3 id="lengthoflist">length of list</h3>
+
+<p><img src="images/lists/lengthoflist.png" alt="" /></p>
+
+<p>Returns the number of items in the list.</p>
+
+<h3 id="islistempty">is list empty</h3>
+
+<p><img src="images/lists/islistempty.png" alt="" /></p>
+
+<p>If list has no items, returns true; otherwise, returns false.</p>
+
+<h3 id="pickrandomitem">pick a random item</h3>
+
+<p><img src="images/lists/pickrandomitem.png" alt="" /></p>
+
+<p>Picks an item at random from the list.</p>
+
+<h3 id="indexinlist">index in list</h3>
+
+<p><img src="images/lists/indexinlist.png" alt="" /></p>
+
+<p>Returns the position of the thing in the list. If not in the list, returns 0.</p>
+
+<h3 id="selectlistitem">select list item</h3>
+
+<p><img src="images/lists/selectlistitem.png" alt="" /></p>
+
+<p>Selects the item at the given index in the given list. The first list item is at index 1.</p>
+
+<h3 id="insert">insert list item</h3>
+
+<p><img src="images/lists/insert.png" alt="" /></p>
+
+<p>Inserts an item into the list at the given position.</p>
+
+<h3 id="replace">replace list item</h3>
+
+<p><img src="images/lists/replace.png" alt="" /></p>
+
+<p>Inserts <em>replacement</em> into the given list at position index. The previous item at that position is removed.</p>
+
+<h3 id="removeitem">remove list item</h3>
+
+<p><img src="images/lists/removeitem.png" alt="" /></p>
+
+<p>Removes the item at the given position.</p>
+
+<h3 id="append">append to list</h3>
+
+<p><img src="images/lists/append.png" alt="" /></p>
+
+<p>Adds the items in the second list to the end of the first list.</p>
+
+<h3 id="copy">copy list</h3>
+
+<p><img src="images/lists/copy.png" alt="" /></p>
+
+<p>Makes a copy of a list, including copying all sublists.</p>
+
+<h3 id="isalist">is a list?</h3>
+
+<p><img src="images/lists/isalist.png" alt="" /></p>
+
+<p>If <em>thing</em> is a list, returns true; otherwise, returns false.</p>
+
+<h3 id="reverse">reverse list</h3>
+
+<p><img src="images/lists/reverse.png" alt="" /></p>
+
+<p>Returns a copy of the list with items in the reverse order. For example reverse([1,2,3]) returns [3,2,1]</p>
+
+<h3 id="listtocsvrow">list to csv row</h3>
+
+<p><img src="images/lists/listtocsvrow.png" alt="" /></p>
+
+<p>Interprets the list as a row of a table and returns a CSV (comma-separated value) text representing the row.
+Each item in the row list is considered to be a field, and is quoted with double-quotes in the resulting CSV text. Items are separated by commas.
+For example, converting the list (a b c d) to a CSV row produces (“a”, “b”, “c”, “d”).
+The returned row text does not have a line separator at the end.</p>
+
+<h3 id="listtocsvtable">list to csv table</h3>
+
+<p><img src="images/lists/listtocsvtable.png" alt="" /></p>
+
+<p>Interprets the list as a table in row-major format and returns a CSV (comma-separated value) text representing the table.
+Each item in the list should itself be a list representing a row of the CSV table.
+Each item in the row list is considered to be a field, and is quoted with double-quotes in the resulting CSV text.
+In the returned text, items in rows are separated by commas and rows are separated by CRLF (\r\n).</p>
+
+<h3 id="listfromcsvrow">list from csv row</h3>
+
+<p><img src="images/lists/listfromcsvrow.png" alt="" /></p>
+
+<p>Parses a text as a CSV (comma-separated value) formatted row to produce a list of fields.
+For example, converting (“a”, “b”, “c”, “d”) to a list produces (a b c d).</p>
+
+<h3 id="listfromcsvtable">list from csv table</h3>
+
+<p><img src="images/lists/listfromcsvtable.png" alt="" /></p>
+
+<p>Parses a text as a CSV (comma-separated value) formatted table to produce a list of rows, each of which is a list of fields.
+Rows can be separated by newlines (\n) or CRLF (\r\n).</p>
+
+<h3 id="lookupinpairs">lookup in pairs</h3>
+
+<p><img src="images/lists/lookupinpairs.png" alt="" /></p>
+
+<p>Used for looking up information in a dictionary-like structure represented as a list.
+This operation takes three inputs, a <em>key</em>, a list <em>pairs</em>, and a <em>notFound</em> result, which by default, is set to “not found”.
+Here <em>pairs</em> must be a list of pairs, that is, a list where each element is itself a list of two elements.
+<code class="list block highlighter-rouge">Lookup in pairs</code> finds the first pair in the list whose first element is the <em>key</em>, and returns the second
+element. For example, if the list is ((a apple) (d dragon) (b boxcar) (cat 100)) then looking up ‘b’ will return ‘boxcar’.
+If there is no such pair in the list, then the <code class="list block highlighter-rouge">lookup in pairs</code> will return the <em>notFound</em> parameter. If <em>pairs</em> is not a list of
+pairs, then the operation will signal an error.</p>
+
+<h3 id="joinwithseparator">join with separator</h3>
+
+<p><img src="images/lists/joinwithseparator.png" alt="" /></p>
+
+<p>Joins all elements in the specified list by the specified separator, producing text as a result.</p>
+
+<h3 id="map">make new mapped list</h3>
+
+<p><img src="images/lists/mapnondest.png" alt="" /></p>
+
+<p>Creates a new list from mapping each item in the input list to a new value using the provided expression.
+The body is an expression that manipulates each item in the list.
+Use the given variable name, item, to refer to the current list item.</p>
+
+<p><a href="../concepts/pholo.html#map">Here</a> is a tutorial on how to use the map block.</p>
+
+<h3 id="filter">make new filtered list</h3>
+
+<p><img src="images/lists/filternondest.png" alt="" /></p>
+
+<p>Create a new list from keeping each item in the input list satisfying the test.
+The body is a boolean expression that checks if an item passes the test.
+If the body returns true, then the item is added to the new filtered list.
+Use the given variable name, item, to refer to the current list item.</p>
+
+<p><a href="../concepts/pholo.html#filter">Here</a> is a tutorial on how to use the filter block.</p>
+
+<h3 id="reduce">reduce list to a single value</h3>
+
+<p><img src="images/lists/reduce.png" alt="" /></p>
+
+<p>Returns an accumulated value by reducing the input list.
+If the input list is empty, then initialAnswer is returned. Otherwise, answerSoFar is initialized to initialAnswer.
+The body block will be evaluated using the accumulated answerSoFar and each item in the input list.</p>
+
+<p><a href="../concepts/pholo.html#reduce">Here</a> is a tutorial on how to use the reduce block.</p>
+
+<h3 id="sort">sort list in ascending order</h3>
+
+<p><img src="images/lists/sort.png" alt="" /></p>
+
+<p>Create a new list from sorting the input list in ascending order.
+This is a generic sorting procedure that works on lists of any type.
+It groups items of the same type together, and then sorts accordingly within the same type group.
+The current order of the types is booleans, numbers, strings, lists and then components.
+For booleans, false is defined as less than true.
+Components are first compared with their class names.
+If they are instances of the same class, their hashcodes are used for comparison.</p>
+
+<p><a href="../concepts/pholo.html#sort">Here</a> is a tutorial on how to use the sort block.</p>
+
+<h3 id="sortwithcomparator">sort list with a specified comparator</h3>
+
+<p><img src="images/lists/sortwithcomparator.png" alt="" /></p>
+
+<p>Create a new list from sorting the input list in an order specified by the body of the block.
+The body of this block is a boolean expression involving item1 and item2 and returns true or false.
+If the body returns true, then item1 is merged prior to item2 in sorting.
+If the body returns false, then item2 is merged prior to item1 in sorting.
+Use the given variable names, item1 and item2, to refer to the two current list items that are being compared.</p>
+
+<p><a href="../concepts/pholo.html#sortwithcomparator">Here</a> is a tutorial on how to use the sort with comparator block.</p>
+
+<h3 id="sortwithkey">sort list with key</h3>
+
+<p><img src="images/lists/sortwithkey.png" alt="" /></p>
+
+<p>Create a new list from sorting the input list with the keys in ascending order.
+The keys are proxy values generated from each item in the list by the body of this block.</p>
+
+<p><a href="../concepts/pholo.html#sortwithkey">Here</a> is a tutorial on how to use the sort with key block.</p>
+
+<h3 id="minnumber">minimum value in list</h3>
+
+<p><img src="images/lists/minnumber.png" alt="" /></p>
+
+<p>Return the minimum number in the input list.</p>
+
+<h3 id="maxnumber">maximum value in list</h3>
+
+<p><img src="images/lists/maxnumber.png" alt="" /></p>
+
+<p>Return the maximum number in the input list.</p>
+
+<h3 id="butfirst">all but first</h3>
+
+<p><img src="images/lists/butfirst.png" alt="" /></p>
+
+<p>Return a list without the first item in the input list.</p>
+
+<h3 id="butlast">all but last</h3>
+
+<p><img src="images/lists/butlast.png" alt="" /></p>
+
+<p>Return a list without the last item in the input list.</p>
+
+<h3 id="slices">list slices</h3>
+
+<p><img src="images/lists/slices.png" alt="" /></p>
+
+<p>Return a list from slicing the input list at the two given index.
+The returned list contains items of the input list that starts from index1 up to but not including index2.</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

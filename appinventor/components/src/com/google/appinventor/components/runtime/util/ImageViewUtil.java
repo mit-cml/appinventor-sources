@@ -1,21 +1,20 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2017-2018 MIT, All rights reserved
+// Copyright 2017-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
+import static android.graphics.PorterDuff.Mode.MULTIPLY;
+
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
+import androidx.core.widget.ImageViewCompat;
 import java.util.LinkedList;
 import java.util.Queue;
-
-import static android.graphics.PorterDuff.Mode.MULTIPLY;
 
 public final class ImageViewUtil {
 

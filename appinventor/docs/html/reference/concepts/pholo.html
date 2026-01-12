@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Functional List Operators</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Functional List Operators</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p>Functional programming is a programming paradigm where programs are constructed by composing pure functions, avoiding shared state, mutable data, and side effects.
+Many operators in functional programming are commonly used to make code more concise, and less complex.</p>
+
+<p><img src="images/pholoblocks.png" alt="Picture of the functional operator blocks." /></p>
+
+<p>This tutorial demonstrates the usage functional operator blocks: filter, map, reduce and sort.</p>
+
+<h2 id="lemonade-stand">Part 1: Berry’s Lemonade Stand</h2>
+
+<p>Berry is fundraising by setting up a lemonade stand, where she charges $2 per lemonade.
+As shown below, she keeps a simple record of the number of lemonades she sold on each date.
+She planned on doing this for seven consecutive days but was not able to set up her stand on some days, so for those days she wrote down N/A for the number of lemonades sold.
+Berry is interested in finding her total profit for this week’s lemonade stand.</p>
+
+<p><img src="images/lemonadeStandTable.png" alt="Table for Berry's lemonade stand sell profit." /></p>
+
+<p><img src="images/originalList.png" alt="Original List for lemonadeSold." /></p>
+
+<p>Thus, Berry needs to</p>
+
+<ol>
+  <li>keep only the entries that are numbers in her column of “# of Lemonades Sold” (<span style="color: red">filter</span>),</li>
+  <li>multiply each entry by $2 to get a list of daily profits (<span style="color: blue">map</span>), and then</li>
+  <li>sum up all the daily profit entries to get total profit (<span style="color: green">reduce</span>).</li>
+</ol>
+
+<h3 id="step-1-filter">Step 1: <span style="color: red" id="filter">Filter</span></h3>
+
+<p>Berry needs to return a new list that results from filtering her original list so that “N/A” entries are eliminated and only numbers exist in list.</p>
+
+<p><img src="images/filterResult.png" alt="Result after applying filter to original list." /></p>
+
+<p>The filter block takes in two inputs: 1) an input list and 2) a body block that is a boolean expression involving item–it returns true or false.
+Note that item is a variable name that refers to the current list item.
+The filter block iterates through the list and keeps each item the list that makes the body block return true.
+In this case, the input list is Berry’s original list, and the body block checks to see if item is a number.</p>
+
+<p><img src="images/filterBlock.png" alt="Filter block to keep only numbers in the list." /></p>
+
+<h3 id="step-2-map">Step 2: <span style="color: blue" id="map">Map</span></h3>
+
+<p>Now that Berry has a filtered list of # of lemonades sold, she needs to multiply each item in the list by $2 to return a new list of daily profits.</p>
+
+<p><img src="images/mapResult.png" alt="Result after applying filter to the list." /></p>
+
+<p>The map block takes in two inputs: 1) an input list and 2) a body block that is an expression manipulating item. The map block iterates through the list and maps each item in the list to a new item using the body block.
+In this case, the input list is Berry’s filtered list, and the body block multiplies each item by 2.</p>
+
+<p><img src="images/mapBlock.png" alt="Map block to multiply each number in the list by two." /></p>
+
+<h3 id="step-3-reduce">Step 3: <span style="color: green" id="reduce">Reduce</span></h3>
+
+<p>Finally, Berry wants to sum up all the items in her list of daily profits to find her total profit.</p>
+
+<p><img src="images/reduceResult.png" alt="Result after applying reduce to the list." /></p>
+
+<p>The reduce block takes in three inputs: 1) an input list, 2) initialAnswer and 3) a body block that combines item (referring to the current list item) and answerSoFar (referring to the accumulating answer).
+If the input list is empty, then initialAnswer is returned. Otherwise, answerSoFar is initialized to initialAnswer.
+The body block is first evaluated using answerSoFar (which is equivalent to initialAnswer at this point) and the first list item, and then on the accumulating answer and the next list item, and so on until the end of the list.</p>
+
+<p>In this case, the input list is Berry’s list of daily profits, the initialAnswer is 0, since the sum of all the items in an empty list is 0, and the body block adds the current list item to the accumulating answer to sum all her daily profits.</p>
+
+<p>Berry decides to define her procedure as getTotalProfit. When getTotalProfit is called, Berry’s total profit from her lemonade stand is returned.</p>
+
+<p><img src="images/reduceBlock.png" alt="Reduce block to sum up all the daily sells." /></p>
+
+<h2 id="classmates-height">Part 2: Bob’s classmates’ height</h2>
+
+<p>Bob is collecting data about his classmates’ height. Here is a small part of his data:</p>
+
+<p><img src="images/heightTable.png" alt="Table for Bob's classmates' height." /></p>
+
+<p>BobDataList is a list of lists, as shown below:</p>
+
+<p><img src="images/bobData.png" alt="Bob's data" /></p>
+
+<p><img src="images/bobDataList.png" alt="Bob's data list" /></p>
+
+<p>Thus, Bob would like to have the list being sorted in following three different ways:</p>
+
+<ol>
+  <li>Sort the data alphabetically by last name (<span style="color: red">basic sort</span>)</li>
+  <li>Sort the data alphabetically by gender, then numerically by height (<span style="color: blue">sort with comparator</span>)</li>
+  <li>Sort the data alphabetically by height (<span style="color: green">sort with key</span>)</li>
+</ol>
+
+<h3 id="situation-1-basic-sort">Situation 1: <span style="color: red" id="sort">Basic Sort</span></h3>
+
+<p>Bob wants to sort the list by last name.</p>
+
+<p><img src="images/sortLastNameResult.png" alt="Result of sorting by last name" /></p>
+
+<p>Since last name is in index 1 of each item in BobDataList, he can simply input his list into the basic sort block.</p>
+
+<p><img src="images/sortLastNameBlock.png" alt="Sort list with basic sort." /></p>
+
+<h3 id="situation-2-sort-with-comparator">Situation 2: <span style="color: blue" id="sortwithcomparator">Sort with Comparator</span></h3>
+
+<p>Bob wants to first sort his data alphabetically by gender, then numerically by height.
+In other words, the females are listed first, followed by males.
+Within females and within males, the data is organized by height.
+Gender is index 3 of each item in BobDataList, and height is in index 4 of each item in BobDataList.</p>
+
+<p><img src="images/sortGenderHeightResult.png" alt="" /></p>
+
+<p>In this case, Bob can use the sort with comparator block.
+This block takes in two inputs: 1) an input list and 2) a body block that specifies the order by which the the input list should be sorted.
+The body block is a boolean expression involving item1 and item2 and returns true or false.
+The given variable names, item1 and item2, refer to the two current list items that are being compared.</p>
+
+<p>To achieve Bob’s goal, the body block will have two boolean expressions.
+The first boolean expression checks to see if the gender of item1 is less than the gender of item2.
+If is, then the body returns true immediately. If not (i.e. the gender is the same), then the second boolean expression will check to see if the height of item1 is less than the height of item2.</p>
+
+<p>To implement this in terms of blocks, the body block will combine the two boolean expressions using an “or” block.
+An “or” block tests the conditions from left to right, and stops testing as soon as one of the conditions is true.</p>
+
+<p><img src="images/sortGenderHeightBlock.png" alt="" /></p>
+
+<h3 id="situation-3-sort-with-key">Situation 3: <span style="color: green" id="sortwithkey">Sort with Key</span></h3>
+
+<p>Bob wants to sort his data only by height.</p>
+
+<p><img src="images/sortHeightResult.png" alt="Result after applying reduce to the list." /></p>
+
+<p>In this case, he can use the sort with key block.
+This sort block takes in two inputs: 1) an input list and 2) a body block (key) that is a function that is applied to each item in the list prior to sorting.
+The list of proxy values returned by the key is used for sorting.</p>
+
+<p>Since Bob would like to sort by height, the body of the block gets index 4 of each item in BobDataList, and sorts by this value.</p>
+
+<p><img src="images/sortHeightBlock.png" alt="Reduce block to sum up all the daily sells." /></p>
+
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

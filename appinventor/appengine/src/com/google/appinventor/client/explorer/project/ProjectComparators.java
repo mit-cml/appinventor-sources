@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.explorer.project;
 
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
+
 import java.util.Comparator;
 
 
@@ -72,21 +74,57 @@ public final class ProjectComparators {
     }
   };
 
-  public static final Comparator<Project> COMPARE_BY_PUBLISHED_ASCENDING = new Comparator<Project>() {
+  public static final Comparator<ProjectFolder> COMPARE_BY_FOLDER_NAME_ASCENDING = new Comparator<ProjectFolder>() {
     @Override
-    public int compare(Project proj1, Project proj2) {
-      Boolean b1 = proj1.isPublished();
-      Boolean b2 = proj2.isPublished();
-      return b1.compareTo(b2);
+    public int compare(ProjectFolder folder1, ProjectFolder folder2) {
+      String folder1Name = folder1.getName();
+      String folder2Name = folder2.getName();
+      return folder1Name.compareToIgnoreCase(folder2Name); // ascending
     }
   };
 
-  public static final Comparator<Project> COMPARE_BY_PUBLISHED_DESCENDING = new Comparator<Project>() {
+  public static final Comparator<ProjectFolder> COMPARE_BY_FOLDER_NAME_DESCENDING = new Comparator<ProjectFolder>() {
     @Override
-    public int compare(Project proj1, Project proj2) {
-      Boolean b1 = proj1.isPublished();
-      Boolean b2 = proj2.isPublished();
-      return b2.compareTo(b1);
+    public int compare(ProjectFolder folder1, ProjectFolder folder2) {
+      String folder1Name = folder1.getName();
+      String folder2Name = folder2.getName();
+      return folder2Name.compareToIgnoreCase(folder1Name); // descending
+    }
+  };
+
+  public static final Comparator<ProjectFolder> COMPARE_BY_FOLDER_DATE_CREATED_ASCENDING = new Comparator<ProjectFolder>() {
+    @Override
+    public int compare(ProjectFolder folder1, ProjectFolder folder2) {
+      long date1 = folder1.getDateCreated();
+      long date2 = folder2.getDateCreated();
+      return Long.signum(date1 - date2); // ascending
+    }
+  };
+
+  public static final Comparator<ProjectFolder> COMPARE_BY_FOLDER_DATE_CREATED_DESCENDING = new Comparator<ProjectFolder>() {
+    @Override
+    public int compare(ProjectFolder folder1, ProjectFolder folder2) {
+      long date1 = folder1.getDateCreated();
+      long date2 = folder2.getDateCreated();
+      return Long.signum(date2 - date1); // descending
+    }
+  };
+
+  public static final Comparator<ProjectFolder> COMPARE_BY_FOLDER_DATE_MODIFIED_ASCENDING = new Comparator<ProjectFolder>() {
+    @Override
+    public int compare(ProjectFolder folder1, ProjectFolder folder2) {
+      long date1 = folder1.getDateModified();
+      long date2 = folder2.getDateModified();
+      return Long.signum(date1 - date2); // ascending
+    }
+  };
+
+  public static final Comparator<ProjectFolder> COMPARE_BY_FOLDER_DATE_MODIFIED_DESCENDING = new Comparator<ProjectFolder>() {
+    @Override
+    public int compare(ProjectFolder folder1, ProjectFolder folder2) {
+      long date1 = folder1.getDateModified();
+      long date2 = folder2.getDateModified();
+      return Long.signum(date2 - date1); // descending
     }
   };
 }

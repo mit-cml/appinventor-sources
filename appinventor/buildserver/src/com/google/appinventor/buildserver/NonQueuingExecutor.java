@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.buildserver;
@@ -8,6 +8,7 @@ package com.google.appinventor.buildserver;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntUnaryOperator;
 import java.util.logging.Logger;
 
 /**
@@ -22,6 +23,7 @@ final class NonQueuingExecutor implements Executor {
   // The maximum number of active tasks. O means unlimited.
   private final int maxActiveTasks;
 
+  private final AtomicInteger peakActiveTaskCount = new AtomicInteger(0);
   private final AtomicInteger activeTaskCount = new AtomicInteger(0);
   private final AtomicInteger completedTaskCount = new AtomicInteger(0);
 
@@ -54,7 +56,8 @@ final class NonQueuingExecutor implements Executor {
             completedTaskCount.incrementAndGet();
           }
         });
-        activeTaskCount.incrementAndGet();
+        final int activeTasks = activeTaskCount.incrementAndGet();
+        peakActiveTaskCount.getAndUpdate(operand -> Math.max(activeTasks, operand));
         thread.start();
 
       } else {
@@ -74,5 +77,9 @@ final class NonQueuingExecutor implements Executor {
 
   public int getCompletedTaskCount() {
     return completedTaskCount.get();
+  }
+
+  public int getPeakActiveTaskCount() {
+    return peakActiveTaskCount.get();
   }
 }

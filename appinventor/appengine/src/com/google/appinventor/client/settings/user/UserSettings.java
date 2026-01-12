@@ -6,22 +6,29 @@
 
 package com.google.appinventor.client.settings.user;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.client.utils.Promise.rejectWithReason;
+import static com.google.appinventor.client.utils.Promise.resolve;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.CommonSettings;
 import com.google.appinventor.client.settings.SettingsAccessProvider;
+import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import java.util.logging.Logger;
 
 /**
  * Collection of user settings.
  *
  */
-public final class UserSettings extends CommonSettings implements SettingsAccessProvider {
+public final class UserSettings extends CommonSettings
+    implements SettingsAccessProvider<UserSettings> {
+  private static final Logger LOG = Logger.getLogger(UserSettings.class.getName());
+
   private boolean loading;
   private boolean loaded;
 
@@ -38,25 +45,22 @@ public final class UserSettings extends CommonSettings implements SettingsAccess
   // SettingsAccessProvider implementation
 
   @Override
-  public void loadSettings() {
-    loading = true;
-    Ode.getInstance().getUserInfoService().loadUserSettings(
-        new OdeAsyncCallback<String>(MESSAGES.settingsLoadError()) {
-          @Override
-          public void onSuccess(String result) {
-            OdeLog.log("Loaded global settings: " + result);
-            decodeSettings(result);
+  public Promise<UserSettings> loadSettings() {
+    return Promise.call(MESSAGES.settingsLoadError(),
+        Ode.getInstance().getUserInfoService()::loadUserSettings)
+        .then(result -> {
+          LOG.info("Loaded global settings: " + result);
+          decodeSettings(result);
 
-            changed = false;
-            loaded = true;
-            loading = false;
-          }
+          changed = false;
+          loaded = true;
+          loading = false;
 
-          @Override
-          public void onFailure(Throwable caught) {
-            super.onFailure(caught);
-            loading = false;
-          }
+          return resolve(this);
+        })
+        .done(result -> {
+          loading = false;
+          return resolve(result);
         });
   }
 
@@ -87,7 +91,7 @@ public final class UserSettings extends CommonSettings implements SettingsAccess
       return;
     } else {
       String s = encodeSettings();
-      OdeLog.log("Saving global settings: " + s);
+      LOG.info("Saving global settings: " + s);
       Ode.getInstance().getUserInfoService().storeUserSettings(
           s,
           new OdeAsyncCallback<Void>(

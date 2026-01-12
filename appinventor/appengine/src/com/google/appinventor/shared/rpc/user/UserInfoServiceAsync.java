@@ -27,16 +27,6 @@ public interface UserInfoServiceAsync {
   void getUserBackpack(AsyncCallback<String> callback);
 
   /**
-   * @see UserInfoService#getUserInformation()
-   */
-  void getUserInformation(String sessionId, AsyncCallback<User> callback);
-
-  /**
-   * @see UserInfoService#getUserInformationByUserId(String)
-   */
-  void getUserInformationByUserId(String userId, AsyncCallback<User> callback);
-
-  /**
    * @see UserInfoService#loadUserSettings()
    */
   void loadUserSettings(AsyncCallback<String> callback);
@@ -50,21 +40,6 @@ public interface UserInfoServiceAsync {
    * @see UserInfoService#storeUserSettings(String)
    */
   void storeUserSettings(String settings, AsyncCallback<Void> callback);
-
-  /**
-   * @see UserInfoService#storeNameSettings(String)
-   */
-  void storeUserName(String name, AsyncCallback<Void> callback);
-
-  /**
-   * @see UserInfoService#storeNameLink(String)
-   */
-  void storeUserLink(String link, AsyncCallback<Void> callback);
-
-  /**
-   * @see UserInfoService#storeUserEmailFrequency(int)
-   */
-  void storeUserEmailFrequency(int emailFrequency, AsyncCallback<Void> callback);
 
   /**
    * @see UserInfoService#hasUserFile(String)
@@ -90,5 +65,16 @@ public interface UserInfoServiceAsync {
    * @see UserInfoService#storeSharedBackpack(String, String)
    */
   void storeSharedBackpack(String backPackId, String content, AsyncCallback<Void> callback);
+
+  /**
+   * @see UserInfoService#deleteAccount()
+   */
+
+  void deleteAccount(AsyncCallback<String> callback);
+
+  /**
+   * @see UserInfoService#storeAppStoreSettings(String)
+   */
+  void storeAppStoreSettings(String content, AsyncCallback<Void> callback);
 
 }

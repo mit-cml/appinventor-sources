@@ -11,11 +11,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import java.util.Map;
 
 import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-
+import java.util.logging.Logger;
 
 
 /**
@@ -28,6 +27,7 @@ import com.google.gwt.user.client.Element;
  * @author hal@mit.edu (Hal Abelson)
  */
 abstract class MockHVLayoutBase extends MockLayout {
+  private static final Logger LOG = Logger.getLogger(MockHVLayoutBase.class.getName());
 
   // Gap between adjacent components to allow for the insertion divider
   private static final int COMPONENT_SPACING = 5;
@@ -382,7 +382,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       topY = finalRemainingHeight;
       break;
     default:
-      OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
+      LOG.severe("System error: Bad value for vertical alignment -- MockHVLayoutBase");
     }
 
     int index = 0;
@@ -418,7 +418,7 @@ abstract class MockHVLayoutBase extends MockLayout {
         leftX = containerLayoutInfo.width - childWidthWithBorder;
         break;
       default:
-        OdeLog.elog("System error: Bad value for horizontal alignment -- MockHVLayoutBase");
+        LOG.severe("System error: Bad value for horizontal alignment -- MockHVLayoutBase");
       }
 
       container.setChildSizeAndPosition(child, childLayoutInfo, leftX, topY);
@@ -578,7 +578,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       leftX = finalRemainingWidth;
       break;
     default:
-      OdeLog.elog("System error: Bad value for horizontal justification -- MockHVLayoutBase");
+      LOG.severe("System error: Bad value for horizontal justification -- MockHVLayoutBase");
     }
 
     // Position each child and update layoutWidth and layoutHeight.
@@ -613,7 +613,7 @@ abstract class MockHVLayoutBase extends MockLayout {
         case Bottom:
           topY = containerLayoutInfo.height - childHeightWithBorder;
         default:
-          OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
+          LOG.severe("System error: Bad value for vertical alignment -- MockHVLayoutBase");
       }
 
       container.setChildSizeAndPosition(child, childLayoutInfo, leftX, topY);
@@ -695,7 +695,7 @@ abstract class MockHVLayoutBase extends MockLayout {
   /**
    * Set the layout flags centerH and centerV that govern whether the layout performs
    * horizontal or vertical centering.   Called by the arrangement that uses this layout
-   * @param centering is the string value of the centering property "0", "1", "2", or "3"
+   * @param alignment is the string value of the centering property "0", "1", "2", or "3"
    */
 
 

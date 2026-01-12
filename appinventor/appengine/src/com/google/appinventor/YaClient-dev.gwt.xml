@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.3.0//EN" "http://www.gwtproject.org/doctype/2.8.1/gwt-module.dtd">
+<module rename-to='ode'>
+  <inherits name="com.google.appinventor.YaClient" />
+  <collapse-all-properties/>
+</module>

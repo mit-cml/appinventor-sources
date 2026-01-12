@@ -1,0 +1,23 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:w="urn:import:com.google.appinventor.client.widgets"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <wiz:Dialog ui:field="uploadError" styleName="ode-DialogBox" animationEnabled="true"
+              width="350px" height="150px">
+    <g:FlowPanel>
+      <g:HTML ui:field="errorMessage" />
+      <g:FlowPanel styleName="buttonRow" >
+        <g:Button ui:field='okButton' text='{messages.okButton}' />
+        <g:Button ui:field='infoButton' text='{messages.moreInformation}' visible="false"  />
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

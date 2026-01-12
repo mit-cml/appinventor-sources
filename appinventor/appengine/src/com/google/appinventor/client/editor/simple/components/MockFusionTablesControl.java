@@ -5,12 +5,15 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 
 import com.google.appinventor.client.utils.MessageDialog;
 
 import com.google.gwt.core.client.GWT;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Image;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -27,7 +30,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class MockFusionTablesControl extends MockNonVisibleComponent {
 
   public static final String TYPE = "FusiontablesControl";
-  private static boolean warningGiven = false; // Whether or not we have given experimental warning
+  private static boolean warningGiven = false; // Whether or not we have given the
+                                               // deprecation warning
 
   /**
    * Creates a new instance of a non-visible component whose icon is
@@ -39,6 +43,25 @@ public class MockFusionTablesControl extends MockNonVisibleComponent {
    */
   public MockFusionTablesControl(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
+  }
+
+  /**
+   * Generate a dialog box indicating that the FusiontablesControl is
+   * deprecated.
+   */
+
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    if (!warningGiven) {
+      warningGiven = true;
+      DeferredCommand.addCommand(new Command() {
+          @Override
+          public void execute() {
+            Ode.getInstance().genericWarning(MESSAGES.FusionTablesDeprecated());
+          }
+        });
+    }
   }
 
   /**
@@ -54,6 +77,10 @@ public class MockFusionTablesControl extends MockNonVisibleComponent {
         MESSAGES.FusionTablesDeprecated(),
         MESSAGES.okButton(), null, null);
     }
+  }
+
+  public static void resetWarning() {
+    warningGiven = false;
   }
 
 }

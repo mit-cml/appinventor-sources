@@ -1,0 +1,79 @@
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             xmlns:neo="urn:import:com.google.appinventor.client.style.neo"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <ui:with field="config" type="com.google.appinventor.client.OdeMessages"/>
+  <g:FlowPanel styleName="ode-TopPanel">
+    <g:HTML>
+      <img srcset="" class="ode-Logo" ui:field="logo" height="37px"/>
+    </g:HTML>
+    <neo:TopToolbarNeo ui:field="topToolbar"/>
+    <g:FlowPanel ui:field="rightPanel">
+      <g:FlowPanel styleName="ode-TopPanelAccount">
+        <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"
+                 ui:field="readOnly"/>
+        <!-- Help Menu -->
+        <ai:DropDownButton name="Help" caption="{messages.helpTabName}" styleName="ode-TopPanelButton"
+                           ui:field="helpDropDown" align="right" icon="help">
+          <ai:DropDownItem name="About" caption="{messages.aboutMenuItem}">
+            <actions:AboutAction/>
+          </ai:DropDownItem>
+          <hr/>
+          <ai:DropDownItem name="Guide" caption="{messages.guideTabName}">
+            <actions:OpenGuideAction/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="Feedback" caption="{messages.feedbackTabName}">
+            <actions:OpenFeedbackAction/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="Library" caption="{messages.libraryMenuItem}">
+            <actions:OpenLinkAction link_name="Library"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="GetStarted" caption="{messages.getStartedMenuItem}">
+            <actions:OpenLinkAction link_name="GetStarted"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="Extensions" caption="{messages.extensionsMenuItem}">
+            <actions:OpenLinkAction link_name="Extensions"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="Tutorials" caption="{messages.tutorialsMenuItem}">
+            <actions:OpenLinkAction link_name="Tutorials"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="Troubleshooting" caption="{messages.troubleshootingMenuItem}">
+            <actions:OpenLinkAction link_name="Troubleshooting"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="Forums" caption="{messages.forumsMenuItem}">
+            <actions:OpenLinkAction link_name="Forums"/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="ShowSplash" caption="{messages.showSplashMenuItem}">
+            <actions:ShowSplashAction/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="ShowShortcuts" caption="{messages.showShortcuts}">
+            <actions:ShowShortcutsAction/>
+          </ai:DropDownItem>
+        </ai:DropDownButton>
+
+        <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links">
+          <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                             ui:field="languageDropDown" icon="language"/>
+          <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                             ui:field="accountButton" icon="logout">
+            <ai:DropDownItem name="Signout" caption="{messages.signOutLink}">
+              <actions:SignOutAction/>
+            </ai:DropDownItem>
+            <ai:DropDownItem name="Signout" ui:field="deleteAccountItem"
+                             caption="{messages.deleteAccountLink}">
+              <actions:DeleteAccountAction/>
+            </ai:DropDownItem>
+          </ai:DropDownButton>
+        </g:FlowPanel>
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </g:FlowPanel>
+</ui:UiBinder>

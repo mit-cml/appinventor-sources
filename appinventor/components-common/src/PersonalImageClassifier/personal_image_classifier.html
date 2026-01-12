@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Look</title>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+      .webcam-box-inner {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        overflow: hidden;
+        width: 224px;
+        height: 224px;
+        margin: 0 auto;
+        position: relative;
+      }
+      .webcam-box-inner video {
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="webcam-box-inner" id="webcam-box">
+      <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+    </div>
+    <script src="tfjs-0.13.2.js"></script>
+    <script src="personal_image_classifier.js"></script>
+  </body>
+</html>

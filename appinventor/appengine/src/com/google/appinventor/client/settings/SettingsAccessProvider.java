@@ -6,18 +6,19 @@
 
 package com.google.appinventor.client.settings;
 
+import com.google.appinventor.client.utils.Promise;
 import com.google.gwt.user.client.Command;
 
 /**
  * Defines an interface for accessing settings.
  *
  */
-public interface SettingsAccessProvider {
+public interface SettingsAccessProvider<T> {
 
   /**
    * Loads the associated settings.
    */
-  void loadSettings();
+  Promise<T> loadSettings();
 
   /**
    * Saves the associated settings.

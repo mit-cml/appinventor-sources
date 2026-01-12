@@ -26,26 +26,6 @@ public interface UserInfoProvider {
   String getUserEmail();
 
   /**
-   * Returns the user's name.
-   *
-   * @return user email name
-   */
-  String getUserName();
-
-  /**
-   * Returns the user's link.
-   *
-   * @return user link
-   */
-  String getUserLink();
-
-  /**
-   * Returns the email notification frequency set by user
-   * @return emailFrequency email frequency
-   */
-  int getUserEmailFrequency();
-
-  /**
    * Returns the user object.
    *
    * @return user object
@@ -67,13 +47,6 @@ public interface UserInfoProvider {
    *         {@code false} otherwise
    */
   boolean getIsAdmin();
-
-  /**
-   * Returns which type the user has
-   *
-   * @return user type
-   */
-  int getType();
 
   String getSessionId();
 

@@ -1,0 +1,2 @@
+# Always use linefeed for some test files
+**/tests/assets/**/*.txt text eol=lf

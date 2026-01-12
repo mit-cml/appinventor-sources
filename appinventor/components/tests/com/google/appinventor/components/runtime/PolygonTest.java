@@ -12,6 +12,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.util.GeoPoint;
@@ -40,6 +41,7 @@ public class PolygonTest extends MapTestBase {
   public void setUp() {
     super.setUp();
     polygon = new Polygon(getMap());
+    polygon.Initialize();
   }
 
   @Test

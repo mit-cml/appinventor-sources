@@ -68,6 +68,7 @@ public final class CrashReport {
     }
     s.append("build.version").append("=").append(buildData).append("\n");
     s.append("git.build.version").append("=").append(GitBuildId.getVersion()).append("\n");
+    s.append("git.build.fingerprint").append("=").append(GitBuildId.getFingerprint()).append("\n");
     if (req != null) {
       s.append("request.details").append("=").append(req.toString()).append("\n");
     }

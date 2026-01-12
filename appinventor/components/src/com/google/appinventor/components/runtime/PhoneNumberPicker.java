@@ -30,7 +30,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Component enabling a user to select a contact's phone number.
+ * A button that, when clicked on, displays a list of the contacts' phone numbers to choose among.
+ * After the user has made a selection, the following properties will be set to information about
+ * the chosen contact:
+ *
+ *  - {@link #ContactName()}: the contact's name
+ *  - {@link #PhoneNumber()}: the contact's phone number
+ *  - {@link #EmailAddress()}: the contact's email address
+ *  - {@link #Picture()}: the name of the file containing the contact's image, which can be used as a Picture property value for the Image or ImageSprite component.
+ *
+ * Other properties affect the appearance of the button ({@link #TextAlignment()},
+ * {@link #BackgroundColor()}, etc.) and whether it can be clicked on ({@link #Enabled()}).
+ *
+ * The `PhoneNumberPicker` component may not work on all Android devices. For example, on Android
+ * systems before system 3.0, the returned lists of phone numbers and email addresses will be empty.
  *
  * @author sharon@google.com (Sharon Perl)
  * @author markf@google.com (Mark Friedman)
@@ -52,7 +65,8 @@ import java.util.List;
     "<p>The PhoneNumberPicker component may not work on all Android " +
     "devices. For example, on Android systems before system 3.0, the " +
     "returned lists of phone numbers and email addresses will be empty.\n",
-    category = ComponentCategory.SOCIAL)
+    category = ComponentCategory.SOCIAL,
+    iconName = "images/phoneNumberPicker.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class PhoneNumberPicker extends ContactPicker {
@@ -81,7 +95,8 @@ public class PhoneNumberPicker extends ContactPicker {
   }
 
   /**
-   * PhoneNumber property getter method.
+   * Returns the primary phone number associated with the selected contact, or the empty string if
+   * no phone number is associated with the contact.
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)

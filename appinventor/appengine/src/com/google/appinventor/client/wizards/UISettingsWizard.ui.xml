@@ -1,0 +1,60 @@
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <wiz:Dialog ui:field="uiDialog" caption="{messages.uiSettings}"
+              styleName="ode-DialogBox ode-UserSettingsDialog">
+    <g:FlowPanel>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label text="{messages.selectStyle}" />
+      </g:FlowPanel>
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label ui:field="introText" text='{messages.selectUIStyle}' styleName="ExtendedText" visible="false" />
+      </g:FlowPanel>
+    <g:FlowPanel styleName="ode-DialogRow">
+      <g:HTMLPanel styleName="image-radio-group">
+        <div class="image-radio">
+          <label class="image-label">
+            <input type="radio" class="hidden-radio" name="UI" value="classic"
+                   ui:field="classicRadioButton" />
+            <div>
+            <img class="light" src="/static/images/ai2-classic-style.png" />
+            <img class="dark" src="/static/images/ai2-classic-dark-style.png" />
+            </div>
+            <br/>
+            <g:Label text="{messages.disableNewLayout}" />
+          </label>
+        </div>
+        <div class="image-radio">
+          <label class="image-label">
+            <input type="radio" class="hidden-radio" name="UI" value="modern"
+                   ui:field="modernRadioButton" />
+            <div>
+            <img class="light" src="/static/images/ai2-neo-style.png" />
+            <img class="dark" src="/static/images/ai2-neo-dark-style.png" />
+            </div>
+            <br/>
+            <g:Label text="{messages.enableNewLayout}" />
+          </label>
+        </div>
+      </g:HTMLPanel>
+    </g:FlowPanel>
+    <g:FlowPanel styleName="ode-DialogRow">
+      <g:Label text="{messages.selectTheme}" />
+      <g:ListBox multipleSelect="false" ui:field="themeSelector" />
+    </g:FlowPanel>
+      <g:FlowPanel styleName="buttonRow">
+        <g:Button ui:field="cancelButton" text='{messages.cancelButton}' styleName="ode-ProjectListButton"/>
+        <g:Button ui:field="applyButton" text='{messages.okButton}' styleName="ode-ProjectListButton"/>
+      </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

@@ -55,7 +55,7 @@ public class ComponentRenameWizard extends Wizard{
             for (ProjectNode node : nodes) {
                 project.addNode(componentsFolder, node);
                 if (node.getName().equals("component.json") && StringUtils.countMatches(node.getFileId(), "/") == 3) {
-                    projectEditor.addComponent(node, null);
+                    projectEditor.importExtension(node);
                 }
             }
         }

@@ -11,6 +11,8 @@
 
 package com.google.appinventor.server.util;
 
+import java.net.URLEncoder;
+
 public class UriBuilder {
   private StringBuilder sb = new StringBuilder();
   private boolean first = true;
@@ -30,7 +32,7 @@ public class UriBuilder {
     } else {
       sb.append("&");
     }
-    sb.append(key + "=" + value);
+    sb.append(URLEncoder.encode(key) + "=" + URLEncoder.encode(value));
     return this;
   }
 

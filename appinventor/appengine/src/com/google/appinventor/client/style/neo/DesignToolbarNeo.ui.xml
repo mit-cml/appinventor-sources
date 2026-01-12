@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ca="urn:import:com.google.appinventor.client.actions"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <ai:Toolbar>
+    <!-- Left button items -->
+    <ai:ToolbarItem name="myProjects" icon="arrow_back" align="left" styleName="ode-ProjectListButton right-spacer"
+                    tooltip="{messages.myProjectsButton}">
+      <ca:SwitchToProjectAction/>
+    </ai:ToolbarItem>
+    <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName"/>
+
+    <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false"/>
+    <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
+                       ui:field="pickFormItem" align="center" styleName="ode-ProjectListButton inline bleft primary"/>
+    <ai:ToolbarItem name="AddForm" icon="add" ui:field="addFormItem"
+                    align="center" styleName="ode-ProjectListButton inline bcenter primary"
+                    tooltip="{messages.addFormButton}">
+      <ya:AddFormAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="RemoveForm" icon="remove" ui:field="removeFormItem"
+                    align="center" styleName="ode-ProjectListButton inline bright primary"
+                    tooltip="{messages.removeFormButton}">
+      <ya:RemoveFormAction/>
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="TutorialToggle" icon="school" tooltip="{messages.toggleTutorialButton}"
+        visible="false" align="center" styleName="ode-ProjectListButton inline">
+      <ya:ToggleTutorialAction/>
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="ProjectPropertiesDialog" icon="manufacturing"
+        tooltip="{messages.projectPropertiesText}" align="center" styleName="ode-ProjectListButton inline left-spacer">
+      <ya:ProjectPropertiesAction />
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="Gallery" icon="public" tooltip="{messages.publishToGalleryButton}"
+                    ui:field="sendToGalleryItem" align="center"  styleName="ode-ProjectListButton inline">
+      <ca:SendToGalleryAction/>
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar" 
+                    ui:field="toggleConsoleItem" align="right" styleName="ode-ProjectListButton bleft primary">
+      <ya:ToggleConsoleAction/>
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="switchToDesign" caption="{messages.switchToFormEditorButton}"
+                    ui:field="switchToDesign" align="right" styleName="ode-ProjectListButton bcenter primary">
+      <ya:SwitchToFormEditorAction/>
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="switchToBlocks" caption="{messages.switchToBlocksEditorButton}"
+                    ui:field="switchToBlocks" align="right" styleName="ode-ProjectListButton bright primary">
+      <ya:SwitchToBlocksEditorAction/>
+    </ai:ToolbarItem>
+  </ai:Toolbar>
+</ui:UiBinder>

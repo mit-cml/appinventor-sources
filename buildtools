@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+
+ROOTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+title() {
+  echo -ne "\e]0;$*\a"
+}
+
+pause() {
+  echo ""
+  read -p "Press Enter key to continue..."
+}
+
+open_url() {
+  case "$(uname -s)" in
+    Darwin) open "$1" ;;
+    Linux) xdg-open "$1" &> /dev/null || echo "Open $1 in your browser" ;;
+  esac
+}
+
+menu() {
+  until [ "$choice" = "0" ]; do
+    title Build Tools for App Inventor
+    clear
+    echo "                                   MENU"
+    echo " - - What do you want to do? - - - - - - - - - - - - - - - - - - - - - - -"
+    echo ""
+    echo "   1.Clean Build"
+    echo "   2.Make Auth Key"
+    echo ""
+    echo "   3.Build App Inventor"
+    echo "   4.Build Without Companion"
+    echo "   5.Build Companion App"
+    echo "   6.Build Extension"
+    echo ""
+    echo "   7.Run Local Server"
+    echo "   8.Run Super Dev Mode"
+    echo "   9.Run Build Server"
+    echo "   A.Run Tests"
+    echo ""
+    echo "   B.Doctor"
+    echo ""
+    echo "   0.Exit"
+    echo ""
+    echo " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+    read -p "Enter your choice:" choice
+    echo ""
+    case $choice in
+      1) clear ; clean ; pause ;;
+      2) clear ; makeauthkey ; pause ;;
+      3) clear ; build ; pause ;;
+      4) clear ; buildnoplay ; pause ;;
+      5) clear ; companion ; pause ;;
+      6) clear ; extension ; pause ;;
+      7) clear ; localserver ; pause ;;
+      8) clear ; sdm ; pause ;;
+      9) clear ; buildserver ; pause ;;
+      a|A) clear ; tests ; pause ;;
+      b|B) clear ; doctor ; pause ;;
+      0) clear ; exit 0 ;;
+    esac
+  done
+}
+
+clean() {
+  title Cleaning Build...
+  ant clean
+}
+
+makeauthkey() {
+  title Making Auth Key...
+  ant MakeAuthKey
+}
+
+build() {
+  title Building...
+  ant all
+}
+
+buildnoplay() {
+  title Building without companion...
+  ant noplay
+}
+
+companion() {
+  title Building Companion...
+  ant PlayApp
+  if [ $? -eq 0 ]; then
+    echo ""
+    echo The companion is generated at:
+    echo "$ROOTDIR"/appinventor/build/buildserver/MIT AI2 Companion.apk
+  fi
+}
+
+extension() {
+  title Building Extension...
+  ant extensions
+  if [ $? -eq 0 ]; then
+    echo ""
+    echo The extension is generated at:
+    echo "$ROOTDIR"/appinventor/components/build/extensions
+  fi
+}
+
+localserver() {
+  title Running Local Server...
+  start java_dev_appserver --address=0.0.0.0 --port=8888 appengine/build/war/
+  # wait for 10 seconds for app engine server to start
+  sleep 10
+  open_url http://localhost:8888
+}
+
+sdm() {
+  title Running Super Dev Mode...
+  open_url http://localhost:9876
+  start ant devmode
+}
+
+buildserver() {
+  title Running Build Server...
+  start ant RunLocalBuildServer
+}
+
+tests() {
+  title Running Tests...
+  ant tests
+}
+
+doctor() {
+  title Doctor
+  echo Diagnosing your system...
+  echo ""
+  pass=0
+  fail=0
+  # Check if Java is installed
+  if command -v java &> /dev/null; then
+    ((pass++))
+    echo [PASS] Java is installed.
+    # Check Java version
+    if java -version 2>&1 | grep -q "version \"11." &> /dev/null; then
+      ((pass++))
+      echo [PASS] Required version of Java is installed.
+    else
+      ((fail++))
+      echo [FAIL] Required version of Java is not installed or not found on PATH.
+      echo _______Please install Java 11 and try again.
+    fi
+  else
+    ((fail++))
+    echo [FAIL] Java is not installed or not found on PATH.
+    echo _______Please install Java 11 and try again.
+  fi
+  # Check if git is installed
+  if command -v git &> /dev/null; then
+    ((pass++))
+    echo [PASS] Git is installed.
+    # Check if git submodules are present
+    if git submodule status lib/blockly lib/closure-library &> /dev/null; then
+      ((pass++))
+      echo [PASS] Git submodules are properly set up.
+    else
+      ((fail++))
+      echo [FAIL] Git submodules are not properly set up.
+      echo _______Please run \`git submodule update --init\`
+    fi
+  else
+    ((fail++))
+    echo [FAIL] Git is not installed or not found on PATH.
+    echo _______Please install Git and try again.
+  fi
+  # Check if gcloud is installed
+  if command -v where gcloud &> /dev/null; then
+    ((pass++))
+    echo [PASS] Google Cloud SDK is installed.
+  else
+    ((fail++))
+    echo [FAIL] Google Cloud SDK is not installed or not found on PATH.
+    echo _______Download gcloud from here: https://cloud.google.com/appengine/docs/standard/java/download
+  fi
+  echo ""
+  echo Passed $pass checks and $fail failing
+}
+
+# Run the script inside the appinventor dir
+cd appinventor
+
+if [[ $1 == "doctor" ]]; then
+  doctor
+else
+  menu
+fi

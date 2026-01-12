@@ -1,21 +1,19 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsInputChannel;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
@@ -30,18 +28,17 @@ import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
+
 import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.Channels;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,17 +46,18 @@ import java.util.logging.Logger;
 /**
  * The implementation of the RPC service which runs on the server.
  *
- * <p>Note that this service must be state-less so that it can be run on
+ * Note that this service must be state-less so that it can be run on
  * multiple servers.
  *
  */
+
 public class ProjectServiceImpl extends OdeRemoteServiceServlet implements ProjectService {
 
   private static final Logger LOG = Logger.getLogger(ProjectServiceImpl.class.getName());
 
   private static final long serialVersionUID = -8316312003804169166L;
 
-  private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   // RPC implementation for YoungAndroid projects
   private final transient YoungAndroidProjectService youngAndroidProject =
@@ -172,7 +170,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
                 new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
               json += in.readLine() +  ", ";
             } catch (IOException e) {
-              LOG.log(Level.SEVERE, "I/O Exception reading template json file", e);
+              LOG.log(Level.SEVERE, "I/O Exception reading template json file: " + templateName, e);
               throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
                 new IllegalArgumentException("Cannot Read Internal Project Template"));
             }
@@ -208,14 +206,69 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     getProjectRpcImpl(userId, projectId).deleteProject(userId, projectId);
   }
 
- /**
-   * On publish this sets the project's gallery id
+  /**
+   * Moves the project to trash.
    * @param projectId  project ID
-   * @param galleryId  gallery ID
    */
-  public void setGalleryId(long projectId, long galleryId) {
+  @Override
+  public UserProject moveToTrash(long projectId) {
+    String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).setMovedToTrash(userId, projectId, true);
+  }
+
+  /**
+   * Moves the project back to My Projects Tab.
+   * @param projectId  project ID
+   */
+  @Override
+  public UserProject restoreProject(long projectId) {
+    String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).setMovedToTrash(userId, projectId, false);
+  }
+
+  /**
+   * Login to the new Gallery
+   *
+   * Generate a token used to login to the new gallery
+   * @return RPC Result which contains URL to open a window on the Gallery
+   */
+
+  @Override
+  public RpcResult loginToGallery() {
     final String userId = userInfoProvider.getUserId();
-    getProjectRpcImpl(userId, projectId).setGalleryId(userId, projectId, galleryId);
+    return youngAndroidProject.loginToGallery(userId);
+  }
+
+  /**
+   * Send project to new Gallery
+   * @param projectId project ID
+   * @return RPC Result which contains URL to open a window on the Gallery
+   */
+
+  @Override
+  public RpcResult sendToGallery(long projectId) {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).sendToGallery(userId, projectId);
+  }
+
+  /**
+   * Load a project from the Gallery
+   * We take the galleryId, fetch the project from the (remote) Gallery
+   * store it with the user's projects and return a UserProject object
+   * to the client, which will then load the project into the UI
+   * @param galleryId The unique id for the project in the gallery
+   * @return UserProject Info for the UI to load the project
+   *
+   * Note: The server loads the project directly from the gallery
+   *       it is *not* routed via the user's browser
+   *
+   */
+
+  @Override
+  public UserProject loadFromGallery(String galleryId) throws IOException {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId,
+      YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE).loadFromGallery(userId, galleryId);
   }
 
   /**
@@ -267,7 +320,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public String loadProjectSettings(long projectId) {
     String userId = userInfoProvider.getUserId();
-    return storageIo.loadProjectSettings(userId, projectId);
+    return getProjectRpcImpl(userId, projectId).loadProjectSettings(userId, projectId);
   }
 
   /**
@@ -343,6 +396,25 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public String load(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * <p>Expected format is either JSON or CSV. If the first character of the
+   * file's contents is a left curly bracket ( { ), then JSON parsing is
+   * attempted. Otherwise, CSV parsing is done.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed columns (each column is a List of Strings)
+   */
+  @Override
+  public List<List<String>> loadDataFile(long projectId, String fileId) {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).loadDataFile(userId, projectId, fileId);
   }
 
   /**
@@ -510,14 +582,18 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @param projectId  project ID
    * @param target  build target (optional, implementation dependent)
    *
+   * @param foriOS
+   * @param forAppStore
    * @return  results of build
    */
   @Override
-  public RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver) {
+  public RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver,
+      boolean isAab, boolean foriOS, boolean forAppStore) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
-      userInfoProvider.getUser(), projectId, nonce, target, secondBuildserver);
+      userInfoProvider.getUser(), projectId, nonce, target, secondBuildserver,
+        isAab, foriOS, forAppStore);
   }
 
   /**
@@ -565,6 +641,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Returns the RPC implementation for the given project type.
    */
   private CommonProjectService getProjectRpcImpl(final String userId, long projectId) {
+    storageIo.assertUserHasProject(userId, projectId);
     String projectType = storageIo.getProjectType(userId, projectId);
     if (!projectType.isEmpty()) {
       return getProjectRpcImpl(userId, projectType);
@@ -596,73 +673,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).importMedia(userId, projectId, url, save);
-  }
-
-  /**
-   * This service is passed a URL to an aia file in GCS, of the form
-   *    /gallery/apps/<galleryid>/aia
-   * It converts it to a byte array and imports the project using FileImporter.
-   * It also sets the attributionId of the project to point to the galleryID
-   * it is remixing.
-   */
-  @Override
-  public UserProject newProjectFromGallery(String projectName, String galleryPath,
-      long galleryId) {
-    try {
-      GcsService fileService = GcsServiceFactory.createGcsService();
-      GcsFilename readableFile = new GcsFilename(Flag.createFlag("gallery.bucket", "").get(), galleryPath);
-      GcsInputChannel readChannel = fileService.openPrefetchingReadChannel(readableFile, 0, 16384);
-      if (DEBUG) {
-        LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
-      }
-      InputStream gcsis = Channels.newInputStream(readChannel);
-      // ok, we don't want to send the gcs stream because it can time out as we
-      // process the zip. We need to copy to a byte buffer first, then send a bytestream
-
-      byte[] buffer = new byte[16384];
-      int bytesRead = 0;
-      ByteArrayOutputStream bao = new ByteArrayOutputStream();
-
-      while ((bytesRead = gcsis.read(buffer)) != -1) {
-        bao.write(buffer, 0, bytesRead);
-      }
-
-      InputStream bais = new ByteArrayInputStream(bao.toByteArray());
-      if (DEBUG) {
-        LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
-      }
-
-      // close the gcs
-      readChannel.close();
-      // now use byte stream to process aia file
-      FileImporter fileImporter = new FileImporterImpl();
-      UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
-        projectName, bais);
-      if (DEBUG) {
-        LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
-      }
-
-      // set the attribution id of the project
-      storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),galleryId);
-      //To-Do: this is a temperory fix for the error that getAttributionId before setAttributionId
-      userProject.setAttributionId(galleryId);
-
-      return userProject;
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
-          e);
-      } catch (IOException e) {
-        e.printStackTrace();
-
-        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath+":"+projectName,
-          e);
-      } catch (FileImporterException e) {
-        e.printStackTrace();
-
-        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), galleryPath,
-          e);
-      }
   }
 
   @Override

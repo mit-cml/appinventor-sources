@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mocha Tests for Blockly</title>
+
+    <link href="../../../../../../node_modules/mocha/mocha.css" rel="stylesheet" />
+    <script src="../../../../../../node_modules/mocha/mocha.js"></script>
+    <script src="../../../../../../node_modules/chai/chai.js"></script>
+    <script src="../../../../../../build/blocklyeditor/msg/messages.nocache.js"></script>
+    <script src="../../../../../../build/blocklyeditor/blockly-all.js"></script>
+    <script src="../../../../../../build/blocklyeditor/component-types.js"></script>
+    <script src="../../../../../../blocklyeditor/tests/testCommon.js"></script>
+    <script src="../../../../../../appengine/war/static/js/scroll-options-5.0.11.min.js"></script>
+    <script src="../../../../../../appengine/war/static/js/workspace-search.min.js"></script>
+    <script src="../../../../../../appengine/war/static/js/block-dynamic-connection-0.6.0.min.js"></script>
+    <script src="../../../../../../appengine/war/static/js/workspace-multiselect-0.1.14-beta2.min.js"></script>
+    <!--<script src="../../../../../../blocklyeditor/src/msg/en/_messages.js"></script>-->
+</head>
+<body>
+
+<div id="mocha"></div>
+<div id="failureCount" style="display:none" tests_failed="unset"></div>
+<script class="mocha-init">
+  mocha.setup({
+    ui: 'tdd',
+  });
+</script>
+
+<!--Add test files here-->
+<script src="block.js"></script>
+<script src="text.js"></script>
+<script src="../../../../../build/javascript/BlocklyEvalTest.js"></script>
+<script src="../blocklyeditor/yailgenerators.js"></script>
+<script src="../blocklyeditor/component_database_tests.js"></script>
+
+<div id="blocklyDiv"></div>
+
+<script class="mocha-exec">
+  mocha.run(function(failures) {
+    var failureDiv = document.getElementById('failureCount');
+    failureDiv.setAttribute('tests_failed', failures);
+  });
+</script>
+</body>
+</html>

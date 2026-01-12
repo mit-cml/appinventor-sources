@@ -1,0 +1,42 @@
+// NOTE WELL!!! This file must define the same structures as the version
+// in the server hierarchy and the version used by the proxy server
+
+option java_package = "com.google.appinventor.components.runtime.translate";
+option java_outer_classname = "TranslatorToken";
+
+message Unsigned {
+    optional string huuid = 1;                   // userId of requestor
+    optional uint64 version = 2 [default = 0];   // Token structure version #
+    optional uint64 generation = 3 [default =0]; // used to revoke a compromised token
+}
+
+// This is the actual message token. The "unsigned" field
+// contains the serialized version of the "unsigned" message
+// above. The "signature" fields contains the raw bytes of
+// the output of HMAC-SHA1 using the key identified by
+// "keyid"
+
+// When stored in a project, this token is base58 encoded
+
+message Token {
+    optional uint64 version = 1 [default = 1];    // version of structure
+    optional uint64 keyid = 2 [default = 1];
+    optional uint64 generation = 3 [default = 0]; // should match top level version
+    optional bytes unsigned = 4;
+    optional bytes signature = 5;
+}
+
+message Request {
+    optional uint64 version = 1 [default = 1];
+    optional Token token = 2;
+    optional string totranslate = 3;
+    optional string languagecode = 4;
+    optional string sourcelanguage = 5;
+    optional string targetlanguage = 6;
+}
+
+message Response {
+    optional uint64 version = 1 [default = 1];
+    optional uint64 status = 2 [default = 0]; // 0 = success, otherwise error code
+    optional string translated = 3;
+}

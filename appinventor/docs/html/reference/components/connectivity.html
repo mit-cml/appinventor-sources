@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Connectivity</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Connectivity</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="connectivity">Connectivity</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#ActivityStarter">ActivityStarter</a></li>
+  <li><a href="#BluetoothClient">BluetoothClient</a></li>
+  <li><a href="#BluetoothServer">BluetoothServer</a></li>
+  <li><a href="#Serial">Serial</a></li>
+  <li><a href="#Web">Web</a></li>
+</ul>
+
+<h2 id="ActivityStarter">ActivityStarter</h2>
+
+<p>A component that can launch an activity using the StartActivity method.</p>
+
+<p>Activities that can be launched include:</p>
+
+<ul>
+  <li>Starting another App Inventor for Android app. To do so, first find out the class of the other
+application by downloading the source code and using a file explorer or unzip utility to find
+a file named “youngandroidproject/project.properties”. The first line of the file will start
+with “main=” and be followed by the class name; for example,
+<code class="highlighter-rouge">main=com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>. (The first components indicate that it was
+created by Ben.Bitdiddle@gmail.com.) To make your <code class="highlighter-rouge">ActivityStarter</code> launch this application,
+set the following properties:
+    <ul>
+      <li><code class="highlighter-rouge">ActivityPackage</code> to the class name, dropping the last component (for example,
+<code class="highlighter-rouge">com.gmail.Bitdiddle.Ben.HelloPurr</code>)</li>
+      <li><code class="highlighter-rouge">ActivityClass</code> to the entire class name (for example,
+<code class="highlighter-rouge">com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>)</li>
+    </ul>
+  </li>
+  <li>Starting the camera application by setting the following properties:
+    <ul>
+      <li><code class="highlighter-rouge">Action</code>: <code class="highlighter-rouge">android.intent.action.MAIN</code></li>
+      <li><code class="highlighter-rouge">ActivityPackage</code>: <code class="highlighter-rouge">com.android.camera</code></li>
+      <li><code class="highlighter-rouge">ActivityClass</code>: <code class="highlighter-rouge">com.android.camera.Camera</code></li>
+    </ul>
+  </li>
+  <li>Performing web search. Assuming the term you want to search for is “vampire” (feel free to substitute your own choice), set the properties to:
+    <ul>
+      <li><code class="highlighter-rouge">Action</code>: <code class="highlighter-rouge">android.intent.action.WEB_SEARCH</code></li>
+      <li><code class="highlighter-rouge">ExtraKey</code>: <code class="highlighter-rouge">query</code></li>
+      <li><code class="highlighter-rouge">ExtraValue</code>: <code class="highlighter-rouge">vampire</code></li>
+      <li><code class="highlighter-rouge">ActivityPackage</code>: <code class="highlighter-rouge">com.google.android.providers.enhancedgooglesearch</code></li>
+      <li><code class="highlighter-rouge">ActivityClass</code>: <code class="highlighter-rouge">com.google.android.providers.enhancedgooglesearch.Launcher</code></li>
+    </ul>
+  </li>
+  <li>Opening a browser to a specified web page. Assuming the page you want to go to is “www.facebook.com” (feel free to substitute your own choice), set the properties to:
+    <ul>
+      <li><code class="highlighter-rouge">Action</code>: <code class="highlighter-rouge">android.intent.action.VIEW</code></li>
+      <li><code class="highlighter-rouge">DataUri</code>: <code class="highlighter-rouge">http://www.facebook.com</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="ActivityStarter-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="ActivityStarter.Action" class="text"><em>Action</em></dt>
+  <dd>Specifies the action that will be used to start the activity.</dd>
+  <dt id="ActivityStarter.ActivityClass" class="text"><em>ActivityClass</em></dt>
+  <dd>Specifies the class part of the specific component that will be started.</dd>
+  <dt id="ActivityStarter.ActivityPackage" class="text"><em>ActivityPackage</em></dt>
+  <dd>Specifies the package part of the specific component that will be started.</dd>
+  <dt id="ActivityStarter.DataType" class="text"><em>DataType</em></dt>
+  <dd>Specifies the MIME type to pass to the activity.</dd>
+  <dt id="ActivityStarter.DataUri" class="text"><em>DataUri</em></dt>
+  <dd>Specifies the data URI that will be used to start the activity.</dd>
+  <dt id="ActivityStarter.ExtraKey" class="text"><em>ExtraKey</em></dt>
+  <dd>Specifies the extra key that will be passed to the activity.
+ Obsolete. Should use Extras instead</dd>
+  <dt id="ActivityStarter.ExtraValue" class="text"><em>ExtraValue</em></dt>
+  <dd>Specifies the extra value that will be passed to the activity.
+ Obsolete. Should use Extras instead</dd>
+  <dt id="ActivityStarter.Extras" class="list bo"><em>Extras</em></dt>
+  <dd>Returns the list of key-value pairs that will be passed as extra data to the activity.</dd>
+  <dt id="ActivityStarter.Result" class="text ro bo"><em>Result</em></dt>
+  <dd>Returns the result from the activity.</dd>
+  <dt id="ActivityStarter.ResultName" class="text"><em>ResultName</em></dt>
+  <dd>Specifies the name that will be used to retrieve a result from the
+ activity.</dd>
+  <dt id="ActivityStarter.ResultType" class="text ro bo"><em>ResultType</em></dt>
+  <dd>Returns the MIME type from the activity.</dd>
+  <dt id="ActivityStarter.ResultUri" class="text ro bo"><em>ResultUri</em></dt>
+  <dd>Returns the URI from the activity.</dd>
+</dl>
+
+<h3 id="ActivityStarter-Events">Events</h3>
+
+<dl class="events">
+  <dt id="ActivityStarter.ActivityCanceled">ActivityCanceled()</dt>
+  <dd>Event raised if this `ActivityStarter returns because the activity was canceled.</dd>
+  <dt id="ActivityStarter.AfterActivity">AfterActivity(<em class="text">result</em>)</dt>
+  <dd>Event raised after this <code class="highlighter-rouge">ActivityStarter</code> returns.</dd>
+</dl>
+
+<h3 id="ActivityStarter-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="ActivityStarter.ResolveActivity" class="method returns text"><i></i> ResolveActivity()</dt>
+  <dd>Returns the name of the activity that corresponds to this <code class="highlighter-rouge">ActivityStarter</code>,
+ or an empty string if no corresponding activity can be found.</dd>
+  <dt id="ActivityStarter.StartActivity" class="method"><i></i> StartActivity()</dt>
+  <dd>Start the activity corresponding to this <code class="highlighter-rouge">ActivityStarter</code>.</dd>
+</dl>
+
+<h2 id="BluetoothClient">BluetoothClient</h2>
+
+<p>Use <code class="highlighter-rouge">BluetoothClient</code> to connect your device to other devices using Bluetooth. This component
+ uses the Serial Port Profile (SPP) for communication. If you are interested in using Bluetooth
+ low energy, please see the
+ <a href="http://iot.appinventor.mit.edu/#/bluetoothle/bluetoothleintro">BluetoothLE</a> extension.</p>
+
+<h3 id="BluetoothClient-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="BluetoothClient.AddressesAndNames" class="list ro bo"><em>AddressesAndNames</em></dt>
+  <dd>Returns the list of paired Bluetooth devices. Each element of the returned
+ list is a String consisting of the device’s address, a space, and the
+ device’s name. On Android 12 or later, if the permissions BLUETOOTH_CONNECT
+ and BLUETOOTH_SCAN have not been granted to the app, the block will raise
+ an error via the Screen’s PermissionDenied event.</dd>
+  <dt id="BluetoothClient.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
+ <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dt id="BluetoothClient.CharacterEncoding" class="text"><em>CharacterEncoding</em></dt>
+  <dd>Returns the character encoding to use when sending and receiving text.</dd>
+  <dt id="BluetoothClient.DelimiterByte" class="number"><em>DelimiterByte</em></dt>
+  <dd>Returns the delimiter byte to use when passing a negative number for the
+ numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
+ ReceiveUnsignedBytes.</dd>
+  <dt id="BluetoothClient.DisconnectOnError" class="boolean"><em>DisconnectOnError</em></dt>
+  <dd>Specifies whether BluetoothClient should be disconnected
+ automatically when an error occurs.</dd>
+  <dt id="BluetoothClient.Enabled" class="boolean ro bo"><em>Enabled</em></dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dt id="BluetoothClient.HighByteFirst" class="boolean"><em>HighByteFirst</em></dt>
+  <dd>Specifies whether numbers are sent and received with the most significant
+ byte first.</dd>
+  <dt id="BluetoothClient.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
+  <dt id="BluetoothClient.NoLocationNeeded" class="boolean do"><em>NoLocationNeeded</em></dt>
+  <dd>On Android 12 and later, indicates that Bluetooth is not used to determine the user’s location.</dd>
+  <dt id="BluetoothClient.PollingRate" class="number"><em>PollingRate</em></dt>
+  <dd>Returns the configured polling rate value of the Bluetooth Client.</dd>
+  <dt id="BluetoothClient.Secure" class="boolean"><em>Secure</em></dt>
+  <dd>Specifies whether a secure connection should be used.</dd>
+</dl>
+
+<h3 id="BluetoothClient-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="BluetoothClient-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="BluetoothClient.BytesAvailableToReceive" class="method returns number"><i></i> BytesAvailableToReceive()</dt>
+  <dd>Returns number of bytes available from the input stream.</dd>
+  <dt id="BluetoothClient.Connect" class="method returns boolean"><i></i> Connect(<em class="text">address</em>)</dt>
+  <dd>Connect to a Bluetooth device with the given address.</dd>
+  <dt id="BluetoothClient.ConnectWithUUID" class="method returns boolean"><i></i> ConnectWithUUID(<em class="text">address</em>,<em class="text">uuid</em>)</dt>
+  <dd>Connect to a Bluetooth device with the given address and a specific UUID.</dd>
+  <dt id="BluetoothClient.Disconnect" class="method"><i></i> Disconnect()</dt>
+  <dd>Disconnects from the connected Bluetooth device.</dd>
+  <dt id="BluetoothClient.IsDevicePaired" class="method returns boolean"><i></i> IsDevicePaired(<em class="text">address</em>)</dt>
+  <dd>Checks whether the Bluetooth device with the given address is paired.</dd>
+  <dt id="BluetoothClient.ReceiveSigned1ByteNumber" class="method returns number"><i></i> ReceiveSigned1ByteNumber()</dt>
+  <dd>Reads a signed 1-byte number.</dd>
+  <dt id="BluetoothClient.ReceiveSigned2ByteNumber" class="method returns number"><i></i> ReceiveSigned2ByteNumber()</dt>
+  <dd>Reads a signed 2-byte number.</dd>
+  <dt id="BluetoothClient.ReceiveSigned4ByteNumber" class="method returns number"><i></i> ReceiveSigned4ByteNumber()</dt>
+  <dd>Reads a signed 4-byte number.</dd>
+  <dt id="BluetoothClient.ReceiveSignedBytes" class="method returns list"><i></i> ReceiveSignedBytes(<em class="number">numberOfBytes</em>)</dt>
+  <dd>Reads a number of signed bytes from the input stream and returns them as
+ a List.
+
+    <p>If numberOfBytes is negative, this method reads until a delimiter byte
+ value is read. The delimiter byte value is included in the returned list.</p>
+  </dd>
+  <dt id="BluetoothClient.ReceiveText" class="method returns text"><i></i> ReceiveText(<em class="number">numberOfBytes</em>)</dt>
+  <dd>Reads a number of bytes from the input stream and converts them to text.
+
+    <p>If numberOfBytes is negative, read until a delimiter byte value is read.</p>
+  </dd>
+  <dt id="BluetoothClient.ReceiveUnsigned1ByteNumber" class="method returns number"><i></i> ReceiveUnsigned1ByteNumber()</dt>
+  <dd>Reads an unsigned 1-byte number.</dd>
+  <dt id="BluetoothClient.ReceiveUnsigned2ByteNumber" class="method returns number"><i></i> ReceiveUnsigned2ByteNumber()</dt>
+  <dd>Reads an unsigned 2-byte number.</dd>
+  <dt id="BluetoothClient.ReceiveUnsigned4ByteNumber" class="method returns number"><i></i> ReceiveUnsigned4ByteNumber()</dt>
+  <dd>Reads an unsigned 4-byte number.</dd>
+  <dt id="BluetoothClient.ReceiveUnsignedBytes" class="method returns list"><i></i> ReceiveUnsignedBytes(<em class="number">numberOfBytes</em>)</dt>
+  <dd>Reads a number of unsigned bytes from the input stream and returns them as
+ a List.
+
+    <p>If numberOfBytes is negative, this method reads until a delimiter byte
+ value is read. The delimiter byte value is included in the returned list.</p>
+  </dd>
+  <dt id="BluetoothClient.Send1ByteNumber" class="method"><i></i> Send1ByteNumber(<em class="text">number</em>)</dt>
+  <dd>Decodes the given number String to an integer and writes it as one byte
+ to the output stream.
+
+    <p>If the number could not be decoded to an integer, or the integer would not
+ fit in one byte, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothClient.Send2ByteNumber" class="method"><i></i> Send2ByteNumber(<em class="text">number</em>)</dt>
+  <dd>Decodes the given number String to an integer and writes it as two bytes
+ to the output stream.
+
+    <p>If the number could not be decoded to an integer, or the integer would not
+ fit in two bytes, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothClient.Send4ByteNumber" class="method"><i></i> Send4ByteNumber(<em class="text">number</em>)</dt>
+  <dd>Decodes the given number String to an integer and writes it as four bytes
+ to the output stream.
+
+    <p>If the number could not be decoded to an integer, or the integer would not
+ fit in four bytes, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothClient.SendBytes" class="method"><i></i> SendBytes(<em class="list">list</em>)</dt>
+  <dd>Takes each element from the given list, converts it to a String, decodes
+ the String to an integer, and writes it as one byte to the output stream.
+
+    <p>If an element could not be decoded to an integer, or the integer would not
+ fit in one byte, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothClient.SendText" class="method"><i></i> SendText(<em class="text">text</em>)</dt>
+  <dd>Converts the given text to bytes and writes them to the output stream.</dd>
+</dl>
+
+<h2 id="BluetoothServer">BluetoothServer</h2>
+
+<p>Use the <code class="highlighter-rouge">BluetoothServer</code> component to turn your device into a server that receive connections
+ from other apps that use the <code class="highlighter-rouge">BluetoothClient</code> component.</p>
+
+<h3 id="BluetoothServer-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="BluetoothServer.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
+ <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dt id="BluetoothServer.CharacterEncoding" class="text"><em>CharacterEncoding</em></dt>
+  <dd>Returns the character encoding to use when sending and receiving text.</dd>
+  <dt id="BluetoothServer.DelimiterByte" class="number"><em>DelimiterByte</em></dt>
+  <dd>Returns the delimiter byte to use when passing a negative number for the
+ numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
+ ReceiveUnsignedBytes.</dd>
+  <dt id="BluetoothServer.Enabled" class="boolean ro bo"><em>Enabled</em></dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dt id="BluetoothServer.HighByteFirst" class="boolean"><em>HighByteFirst</em></dt>
+  <dd>Specifies whether numbers are sent and received with the most significant
+ byte first.</dd>
+  <dt id="BluetoothServer.IsAccepting" class="boolean ro bo"><em>IsAccepting</em></dt>
+  <dd>Returns true if this BluetoothServer component is accepting an
+ incoming connection.</dd>
+  <dt id="BluetoothServer.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
+  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
+  <dt id="BluetoothServer.Secure" class="boolean"><em>Secure</em></dt>
+  <dd>Specifies whether a secure connection should be used.</dd>
+</dl>
+
+<h3 id="BluetoothServer-Events">Events</h3>
+
+<dl class="events">
+  <dt id="BluetoothServer.ConnectionAccepted">ConnectionAccepted()</dt>
+  <dd>Indicates that a bluetooth connection has been accepted.</dd>
+</dl>
+
+<h3 id="BluetoothServer-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="BluetoothServer.AcceptConnection" class="method"><i></i> AcceptConnection(<em class="text">serviceName</em>)</dt>
+  <dd>Accept an incoming connection with the Serial Port Profile (SPP).</dd>
+  <dt id="BluetoothServer.AcceptConnectionWithUUID" class="method"><i></i> AcceptConnectionWithUUID(<em class="text">serviceName</em>,<em class="text">uuid</em>)</dt>
+  <dd>Accept an incoming connection with a specific UUID.</dd>
+  <dt id="BluetoothServer.BytesAvailableToReceive" class="method returns number"><i></i> BytesAvailableToReceive()</dt>
+  <dd>Returns number of bytes available from the input stream.</dd>
+  <dt id="BluetoothServer.Disconnect" class="method"><i></i> Disconnect()</dt>
+  <dd>Disconnects from the connected Bluetooth device.</dd>
+  <dt id="BluetoothServer.ReceiveSigned1ByteNumber" class="method returns number"><i></i> ReceiveSigned1ByteNumber()</dt>
+  <dd>Reads a signed 1-byte number.</dd>
+  <dt id="BluetoothServer.ReceiveSigned2ByteNumber" class="method returns number"><i></i> ReceiveSigned2ByteNumber()</dt>
+  <dd>Reads a signed 2-byte number.</dd>
+  <dt id="BluetoothServer.ReceiveSigned4ByteNumber" class="method returns number"><i></i> ReceiveSigned4ByteNumber()</dt>
+  <dd>Reads a signed 4-byte number.</dd>
+  <dt id="BluetoothServer.ReceiveSignedBytes" class="method returns list"><i></i> ReceiveSignedBytes(<em class="number">numberOfBytes</em>)</dt>
+  <dd>Reads a number of signed bytes from the input stream and returns them as
+ a List.
+
+    <p>If numberOfBytes is negative, this method reads until a delimiter byte
+ value is read. The delimiter byte value is included in the returned list.</p>
+  </dd>
+  <dt id="BluetoothServer.ReceiveText" class="method returns text"><i></i> ReceiveText(<em class="number">numberOfBytes</em>)</dt>
+  <dd>Reads a number of bytes from the input stream and converts them to text.
+
+    <p>If numberOfBytes is negative, read until a delimiter byte value is read.</p>
+  </dd>
+  <dt id="BluetoothServer.ReceiveUnsigned1ByteNumber" class="method returns number"><i></i> ReceiveUnsigned1ByteNumber()</dt>
+  <dd>Reads an unsigned 1-byte number.</dd>
+  <dt id="BluetoothServer.ReceiveUnsigned2ByteNumber" class="method returns number"><i></i> ReceiveUnsigned2ByteNumber()</dt>
+  <dd>Reads an unsigned 2-byte number.</dd>
+  <dt id="BluetoothServer.ReceiveUnsigned4ByteNumber" class="method returns number"><i></i> ReceiveUnsigned4ByteNumber()</dt>
+  <dd>Reads an unsigned 4-byte number.</dd>
+  <dt id="BluetoothServer.ReceiveUnsignedBytes" class="method returns list"><i></i> ReceiveUnsignedBytes(<em class="number">numberOfBytes</em>)</dt>
+  <dd>Reads a number of unsigned bytes from the input stream and returns them as
+ a List.
+
+    <p>If numberOfBytes is negative, this method reads until a delimiter byte
+ value is read. The delimiter byte value is included in the returned list.</p>
+  </dd>
+  <dt id="BluetoothServer.Send1ByteNumber" class="method"><i></i> Send1ByteNumber(<em class="text">number</em>)</dt>
+  <dd>Decodes the given number String to an integer and writes it as one byte
+ to the output stream.
+
+    <p>If the number could not be decoded to an integer, or the integer would not
+ fit in one byte, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothServer.Send2ByteNumber" class="method"><i></i> Send2ByteNumber(<em class="text">number</em>)</dt>
+  <dd>Decodes the given number String to an integer and writes it as two bytes
+ to the output stream.
+
+    <p>If the number could not be decoded to an integer, or the integer would not
+ fit in two bytes, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothServer.Send4ByteNumber" class="method"><i></i> Send4ByteNumber(<em class="text">number</em>)</dt>
+  <dd>Decodes the given number String to an integer and writes it as four bytes
+ to the output stream.
+
+    <p>If the number could not be decoded to an integer, or the integer would not
+ fit in four bytes, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothServer.SendBytes" class="method"><i></i> SendBytes(<em class="list">list</em>)</dt>
+  <dd>Takes each element from the given list, converts it to a String, decodes
+ the String to an integer, and writes it as one byte to the output stream.
+
+    <p>If an element could not be decoded to an integer, or the integer would not
+ fit in one byte, then the Form’s ErrorOccurred event is triggered and this
+ method returns without writing any bytes to the output stream.</p>
+  </dd>
+  <dt id="BluetoothServer.SendText" class="method"><i></i> SendText(<em class="text">text</em>)</dt>
+  <dd>Converts the given text to bytes and writes them to the output stream.</dd>
+  <dt id="BluetoothServer.StopAccepting" class="method"><i></i> StopAccepting()</dt>
+  <dd>Stop accepting an incoming connection.</dd>
+</dl>
+
+<h2 id="Serial">Serial</h2>
+
+<p>Component for Serial</p>
+
+<h3 id="Serial-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Serial.BaudRate" class="number"><em>BaudRate</em></dt>
+  <dd>Returns the current baud rate</dd>
+  <dt id="Serial.BufferSize" class="number"><em>BufferSize</em></dt>
+  <dd>Returns the buffer size in bytes</dd>
+  <dt id="Serial.IsInitialized" class="boolean ro bo"><em>IsInitialized</em></dt>
+  <dd>Returns true when the Serial has been initialized.</dd>
+  <dt id="Serial.IsOpen" class="boolean ro bo"><em>IsOpen</em></dt>
+  <dd>Returns true when the Serial connection is open.</dd>
+</dl>
+
+<h3 id="Serial-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Serial-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Serial.CloseSerial" class="method returns boolean"><i></i> CloseSerial()</dt>
+  <dd>Closes serial connection. Returns true when closed.</dd>
+  <dt id="Serial.InitializeSerial" class="method"><i></i> InitializeSerial()</dt>
+  <dd>Initializes serial connection.</dd>
+  <dt id="Serial.OpenSerial" class="method returns boolean"><i></i> OpenSerial()</dt>
+  <dd>Opens serial connection. Returns true when opened.</dd>
+  <dt id="Serial.PrintSerial" class="method"><i></i> PrintSerial(<em class="text">data</em>)</dt>
+  <dd>Writes given data to serial, and appends a new line at the end.</dd>
+  <dt id="Serial.ReadSerial" class="method returns text"><i></i> ReadSerial()</dt>
+  <dd>Reads data from serial.</dd>
+  <dt id="Serial.WriteSerial" class="method"><i></i> WriteSerial(<em class="text">data</em>)</dt>
+  <dd>Writes given data to serial.</dd>
+</dl>
+
+<h2 id="Web">Web</h2>
+
+<p>Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.</p>
+
+<h3 id="Web-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Web.AllowCookies" class="boolean"><em>AllowCookies</em></dt>
+  <dd>Specifies whether cookies should be allowed</dd>
+  <dt id="Web.RequestHeaders" class="list bo"><em>RequestHeaders</em></dt>
+  <dd>Sets the request headers.</dd>
+  <dt id="Web.ResponseFileName" class="text"><em>ResponseFileName</em></dt>
+  <dd>Specifies the name of the file where the response should be saved.
+ If SaveResponse is true and ResponseFileName is empty, then a new file
+ name will be generated.</dd>
+  <dt id="Web.ResponseTextEncoding" class="text"><em>ResponseTextEncoding</em></dt>
+  <dd>Specifies the Response Text Encoding.</dd>
+  <dt id="Web.SaveResponse" class="boolean"><em>SaveResponse</em></dt>
+  <dd>Specifies whether the response should be saved in a file.</dd>
+  <dt id="Web.Timeout" class="number"><em>Timeout</em></dt>
+  <dd>Returns the number of milliseconds that each request will wait for a response before they time out.
+ If set to 0, then the request will wait for a response indefinitely.</dd>
+  <dt id="Web.Url" class="text"><em>Url</em></dt>
+  <dd>Specifies the URL.</dd>
+</dl>
+
+<h3 id="Web-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Web.GotFile">GotFile(<em class="text">url</em>,<em class="number">responseCode</em>,<em class="text">responseType</em>,<em class="text">fileName</em>)</dt>
+  <dd>Event indicating that a request has finished.</dd>
+  <dt id="Web.GotText">GotText(<em class="text">url</em>,<em class="number">responseCode</em>,<em class="text">responseType</em>,<em class="text">responseContent</em>)</dt>
+  <dd>Event indicating that a request has finished.</dd>
+  <dt id="Web.TimedOut">TimedOut(<em class="text">url</em>)</dt>
+  <dd>Event indicating that a request has timed out.</dd>
+</dl>
+
+<h3 id="Web-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Web.BuildRequestData" class="method returns text"><i></i> BuildRequestData(<em class="list">list</em>)</dt>
+  <dd>Converts a list of two-element sublists, representing name and value pairs, to a
+ string formatted as application/x-www-form-urlencoded media type, suitable to pass to
+ PostText.</dd>
+  <dt id="Web.ClearCookies" class="method"><i></i> ClearCookies()</dt>
+  <dd>Clears all cookies for this Web component.</dd>
+  <dt id="Web.Delete" class="method"><i></i> Delete()</dt>
+  <dd>Performs an HTTP DELETE request using the Url property and retrieves the
+ response.
+
+    <p>If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be
+ triggered.</p>
+  </dd>
+  <dt id="Web.Get" class="method"><i></i> Get()</dt>
+  <dd>Performs an HTTP GET request using the Url property and retrieves the
+ response.
+
+    <p>If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be
+ triggered.</p>
+  </dd>
+  <dt id="Web.HtmlTextDecode" class="method returns text"><i></i> HtmlTextDecode(<em class="text">htmlText</em>)</dt>
+  <dd>Decodes the given HTML text value.
+
+    <p>HTML Character Entities such as <code class="highlighter-rouge">&amp;amp;</code>, <code class="highlighter-rouge">&amp;lt;</code>, <code class="highlighter-rouge">&amp;gt;</code>, <code class="highlighter-rouge">&amp;apos;</code>, and <code class="highlighter-rouge">&amp;quot;</code> are
+ changed to <code class="highlighter-rouge">&amp;</code>, <code class="highlighter-rouge">&lt;</code>, <code class="highlighter-rouge">&gt;</code>, <code class="highlighter-rouge">'</code>, and <code class="highlighter-rouge">"</code>.
+ Entities such as <code class="highlighter-rouge">&amp;#xhhhh;</code>, and <code class="highlighter-rouge">&amp;#nnnn;</code> are changed to the appropriate characters.</p>
+  </dd>
+  <dt id="Web.JsonObjectEncode" class="method returns text"><i></i> JsonObjectEncode(<em class="any">jsonObject</em>)</dt>
+  <dd>Returns the value of a built-in type (i.e., boolean, number, text, list, dictionary)
+ in its JavaScript Object Notation representation. If the value cannot be
+ represented as JSON, the Screen’s ErrorOccurred event will be run, if any,
+ and the Web component will return the empty string.</dd>
+  <dt id="Web.JsonTextDecode" class="method returns any"><i></i> JsonTextDecode(<em class="text">jsonText</em>)</dt>
+  <dd>Decodes the given JSON encoded value to produce a corresponding AppInventor value.
+ A JSON list <code class="highlighter-rouge">[x, y, z]</code> decodes to a list <code class="highlighter-rouge">(x y z)</code>,  A JSON object with key A and value B,
+ (denoted as <code class="highlighter-rouge">{A:B}</code>) decodes to a list <code class="highlighter-rouge">((A B))</code>, that is, a list containing the two-element
+ list <code class="highlighter-rouge">(A B)</code>.
+
+    <p>Use the method <a href="#Web.JsonTextDecodeWithDictionaries">JsonTextDecodeWithDictionaries</a> if you
+ would prefer to get back dictionary objects rather than lists-of-lists in the result.</p>
+  </dd>
+  <dt id="Web.JsonTextDecodeWithDictionaries" class="method returns any"><i></i> JsonTextDecodeWithDictionaries(<em class="text">jsonText</em>)</dt>
+  <dd>Decodes the given JSON encoded value to produce a corresponding App Inventor value.
+ A JSON list [x, y, z] decodes to a list (x y z). A JSON Object with name A and value B,
+ denoted as {a: b} decodes to a dictionary with the key a and value b.</dd>
+  <dt id="Web.PatchFile" class="method"><i></i> PatchFile(<em class="text">path</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and data from the specified file.
+
+    <p>If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property can be
+ used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PatchText" class="method"><i></i> PatchText(<em class="text">text</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using UTF-8 encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The responseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PatchTextWithEncoding" class="method"><i></i> PatchTextWithEncoding(<em class="text">text</em>,<em class="text">encoding</em>)</dt>
+  <dd>Performs an HTTP PATCH request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using the given encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PostFile" class="method"><i></i> PostFile(<em class="text">path</em>)</dt>
+  <dd>Performs an HTTP POST request using the Url property and data from the specified file.
+
+    <p>If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property can be
+ used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PostText" class="method"><i></i> PostText(<em class="text">text</em>)</dt>
+  <dd>Performs an HTTP POST request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using UTF-8 encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The responseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PostTextWithEncoding" class="method"><i></i> PostTextWithEncoding(<em class="text">text</em>,<em class="text">encoding</em>)</dt>
+  <dd>Performs an HTTP POST request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using the given encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PutFile" class="method"><i></i> PutFile(<em class="text">path</em>)</dt>
+  <dd>Performs an HTTP PUT request using the Url property and data from the specified file.
+
+    <p>If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property can be
+ used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PutText" class="method"><i></i> PutText(<em class="text">text</em>)</dt>
+  <dd>Performs an HTTP PUT request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using UTF-8 encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The responseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.PutTextWithEncoding" class="method"><i></i> PutTextWithEncoding(<em class="text">text</em>,<em class="text">encoding</em>)</dt>
+  <dd>Performs an HTTP PUT request using the Url property and the specified text.
+
+    <p>The characters of the text are encoded using the given encoding.</p>
+
+    <p>If the SaveResponse property is true, the response will be saved in a
+ file and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.</p>
+
+    <p>If the SaveResponse property is false, the GotText event will be triggered.</p>
+  </dd>
+  <dt id="Web.UriDecode" class="method returns text"><i></i> UriDecode(<em class="text">text</em>)</dt>
+  <dd>Decodes the encoded text value so that the values aren’t URL encoded anymore.</dd>
+  <dt id="Web.UriEncode" class="method returns text"><i></i> UriEncode(<em class="text">text</em>)</dt>
+  <dd>Encodes the given text value so that it can be used in a URL.</dd>
+  <dt id="Web.XMLTextDecode" class="method returns any"><i></i> XMLTextDecode(<em class="text">XmlText</em>)</dt>
+  <dd>Decodes the given XML string to produce a list structure. <code class="highlighter-rouge">&lt;tag&gt;string&lt;/tag&gt;</code> decodes to
+ a list that contains a pair of tag and string.  More generally, if obj1, obj2, …
+ are tag-delimited XML strings, then <code class="highlighter-rouge">&lt;tag&gt;obj1 obj2 ...&lt;/tag&gt;</code> decodes to a list
+ that contains a pair whose first element is tag and whose second element is the
+ list of the decoded obj’s, ordered alphabetically by tags.
+
+    <p>Examples:</p>
+    <ul>
+      <li><code class="highlighter-rouge">&lt;foo&gt;&lt;123/foo&gt;</code> decodes to a one-item list containing the pair <code class="highlighter-rouge">(foo 123)</code></li>
+      <li><code class="highlighter-rouge">&lt;foo&gt;1 2 3&lt;/foo&gt;</code> decodes to a one-item list containing the pair <code class="highlighter-rouge">(foo "1 2 3")</code></li>
+      <li><code class="highlighter-rouge">&lt;a&gt;&lt;foo&gt;1 2 3&lt;/foo&gt;&lt;bar&gt;456&lt;/bar&gt;&lt;/a&gt;</code> decodes to a list containing the pair <code class="highlighter-rouge">(a X)</code>
+where X is a 2-item list that contains the pair <code class="highlighter-rouge">(bar 123)</code> and the pair <code class="highlighter-rouge">(foo "1 2 3")</code>.</li>
+    </ul>
+
+    <p>If the sequence of obj’s mixes tag-delimited and non-tag-delimited items, then the
+ non-tag-delimited items are pulled out of the sequence and wrapped with a “content” tag.
+ For example, decoding <code class="highlighter-rouge">&lt;a&gt;&lt;bar&gt;456&lt;/bar&gt;many&lt;foo&gt;1 2 3&lt;/foo&gt;apples&lt;a&gt;&lt;/code&gt;</code>
+ is similar to above, except that the list X is a 3-item list that contains the additional pair
+ whose first item is the string “content”, and whose second item is the list (many, apples).
+ This method signals an error and returns the empty list if the result is not well-formed XML.</p>
+  </dd>
+  <dt id="Web.XMLTextDecodeAsDictionary" class="method returns any"><i></i> XMLTextDecodeAsDictionary(<em class="text">XmlText</em>)</dt>
+  <dd>Decodes the given XML string to produce a dictionary structure. The dictionary includes the
+ special keys <code class="highlighter-rouge">$tag</code>, <code class="highlighter-rouge">$localName</code>, <code class="highlighter-rouge">$namespace</code>, <code class="highlighter-rouge">$namespaceUri</code>, <code class="highlighter-rouge">$attributes</code>, and <code class="highlighter-rouge">$content</code>,
+ as well as a key for each unique tag for every node, which points to a list of elements of
+ the same structure as described here.
+
+    <p>The <code class="highlighter-rouge">$tag</code> key is the full tag name, e.g., foo:bar. The <code class="highlighter-rouge">$localName</code> is the local portion of
+ the name (everything after the colon <code class="highlighter-rouge">:</code> character). If a namespace is given (everything before
+ the colon <code class="highlighter-rouge">:</code> character), it is provided in <code class="highlighter-rouge">$namespace</code> and the corresponding URI is given
+ in <code class="highlighter-rouge">$namespaceUri</code>. The attributes are stored in a dictionary in <code class="highlighter-rouge">$attributes</code> and the
+ child nodes are given as a list under <code class="highlighter-rouge">$content</code>.</p>
+
+    <p><strong>More Information on Special Keys</strong></p>
+
+    <p>Consider the following XML document:</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="nt">&lt;ex:Book</span> <span class="na">xmlns:ex=</span><span class="s">"http://example.com/"</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;ex:title</span> <span class="na">xml:lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>On the Origin of Species<span class="nt">&lt;/ex:title&gt;</span>
+     <span class="nt">&lt;ex:author&gt;</span>Charles Darwin<span class="nt">&lt;/ex:author&gt;</span>
+   <span class="nt">&lt;/ex:Book&gt;</span>
+</code></pre></div>    </div>
+
+    <p>When parsed, the <code class="highlighter-rouge">$tag</code> key will be <code class="highlighter-rouge">"ex:Book"</code>, the <code class="highlighter-rouge">$localName</code> key will be <code class="highlighter-rouge">"Book"</code>, the
+ <code class="highlighter-rouge">$namespace</code> key will be <code class="highlighter-rouge">"ex"</code>, <code class="highlighter-rouge">$namespaceUri</code> will be <code class="highlighter-rouge">"http://example.com/"</code>, the
+ <code class="highlighter-rouge">$attributes</code> key will be a dictionary <code class="highlighter-rouge">{}</code> (xmlns is removed for the namespace), and the
+ <code class="highlighter-rouge">$content</code> will be a list of two items representing the decoded <code class="highlighter-rouge">&lt;ex:title&gt;</code> and <code class="highlighter-rouge">&lt;ex:author&gt;</code>
+ elements. The first item, which corresponds to the <code class="highlighter-rouge">&lt;ex:title&gt;</code> element, will have an
+ <code class="highlighter-rouge">$attributes</code> key containing the dictionary <code class="highlighter-rouge">{"xml:lang": "en"}</code>. For each <code class="highlighter-rouge">name=value</code>
+ attribute on an element, a key-value pair mapping <code class="highlighter-rouge">name</code> to <code class="highlighter-rouge">value</code> will exist in the
+ <code class="highlighter-rouge">$attributes</code> dictionary. In addition to these special keys, there will also be <code class="highlighter-rouge">"ex:title"</code>
+ and <code class="highlighter-rouge">"ex:author"</code> to allow lookups faster than having to traverse the <code class="highlighter-rouge">$content</code> list.</p>
+  </dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

@@ -9,7 +9,7 @@
 
 'use strict';
 
-goog.provide('Blockly.Yail.procedures');
+goog.provide('AI.Yail.procedures');
 
 /**
  * Lyn's History:
@@ -22,66 +22,66 @@ goog.provide('Blockly.Yail.procedures');
  * [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
  */
 
-Blockly.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/variables.js
+AI.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/variables.js
 
 // Generator code for procedure call with return
 // [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
-Blockly.Yail['procedures_defreturn'] = function() {
-  var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
+AI.Yail['procedures_defreturn'] = function() {
+  var argPrefix = AI.Yail.YAIL_LOCAL_VAR_TAG
                   + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
   var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
-  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('NAME');
-  var returnVal = Blockly.Yail.valueToCode(this, 'RETURN', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
-      + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION 
-      + Blockly.Yail.YAIL_SPACER + returnVal + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('NAME');
+  var returnVal = AI.Yail.valueToCode(this, 'RETURN', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var code = AI.Yail.YAIL_DEFINE + AI.Yail.YAIL_OPEN_COMBINATION + procName
+      + AI.Yail.YAIL_SPACER + args + AI.Yail.YAIL_CLOSE_COMBINATION 
+      + AI.Yail.YAIL_SPACER + returnVal + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // Generator code for procedure call with return
-Blockly.Yail['procedures_defnoreturn'] = function() {
-  var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
+AI.Yail['procedures_defnoreturn'] = function() {
+  var argPrefix = AI.Yail.YAIL_LOCAL_VAR_TAG
                   + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
   var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
-  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('NAME');
-  var body = Blockly.Yail.statementToCode(this, 'STACK', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
-      + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + body
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('NAME');
+  var body = AI.Yail.statementToCode(this, 'STACK', AI.Yail.ORDER_NONE)  || AI.Yail.YAIL_FALSE;
+  var code = AI.Yail.YAIL_DEFINE + AI.Yail.YAIL_OPEN_COMBINATION + procName
+      + AI.Yail.YAIL_SPACER + args + AI.Yail.YAIL_CLOSE_COMBINATION + body
+      + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
-Blockly.Yail['procedure_lexical_variable_get'] = function() {
-  return Blockly.Yail.lexical_variable_get.call(this);
+AI.Yail['procedure_lexical_variable_get'] = function() {
+  return AI.Yail.lexical_variable_get.call(this);
 }
 
 //call the do return in control category
-Blockly.Yail['procedures_do_then_return'] = function() {
-  return Blockly.Yail.controls_do_then_return.call(this);
+AI.Yail['procedures_do_then_return'] = function() {
+  return AI.Yail.controls_do_then_return.call(this);
 }
 
 // Generator code for procedure call with return
-Blockly.Yail['procedures_callnoreturn'] = function() {
-  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
+AI.Yail['procedures_callnoreturn'] = function() {
+  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
   var argCode = [];
   for ( var x = 0;this.getInput("ARG" + x); x++) {
-    argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+    argCode[x] = AI.Yail.valueToCode(this, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   }
-  var code = Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_GET_VARIABLE + procName
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + argCode.join(' ')
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var code = AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_GET_VARIABLE + procName
+      + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + argCode.join(' ')
+      + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // Generator code for procedure call with return
-Blockly.Yail['procedures_callreturn'] = function() {
-  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
+AI.Yail['procedures_callreturn'] = function() {
+  var procName = AI.Yail.YAIL_PROC_TAG + this.getFieldValue('PROCNAME');
   var argCode = [];
   for ( var x = 0; this.getInput("ARG" + x); x++) {
-    argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+    argCode[x] = AI.Yail.valueToCode(this, 'ARG' + x, AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   }
-  var code = Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_GET_VARIABLE + procName
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + argCode.join(' ')
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  var code = AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_GET_VARIABLE + procName
+      + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + argCode.join(' ')
+      + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };

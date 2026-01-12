@@ -1,3 +1,0 @@
-[lib]
-lib/ext/*.jar
-

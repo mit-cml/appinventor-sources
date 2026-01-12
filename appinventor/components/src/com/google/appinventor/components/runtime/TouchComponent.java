@@ -12,6 +12,7 @@ import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
@@ -153,7 +154,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   }
 
   /**
-   * Returns the component's background color as an alpha-red-green-blue
+   * Returns the `%type%`'s background color as an alpha-red-green-blue
    * integer.
    *
    * @return background RGB color with alpha
@@ -166,16 +167,18 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   }
 
   /**
-   * Specifies the component's color as an alpha-red-green-blue
-   * integer.  If the parameter is {@link Component#COLOR_DEFAULT}, the
-   * original beveling is restored.  If an Image has been set, the color
-   * change will not be visible until the Image is removed.
+   * Specifies the `%type%`'s background color as an alpha-red-green-blue
+   * integer.  If an {@link #Image(String)} has been set, the color
+   * change will not be visible until the {@link #Image(String)} is removed.
+   *
+   * @internaldoc
+   * If the parameter is {@link Component#COLOR_DEFAULT}, the original beveling is restored.
    *
    * @param argb background RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-  @SimpleProperty(description = "Specifies the component's background color. " +
+                    defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @SimpleProperty(description = "Specifies the background color of the %type%. " +
       "The background color will not be visible if an Image is being displayed.")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
@@ -183,7 +186,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   }
 
   /**
-   * Returns the path of the component's image.
+   * Returns the path of the `%type%`'s image.
    *
    * @return the path of the component's image
    */
@@ -195,8 +198,9 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   }
 
   /**
-   * Specifies the path of the component's image.
+   * Specifies the path of the `%type%`'s image.
    *
+   * @internaldoc
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
@@ -207,7 +211,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   @SimpleProperty(description = "Specifies the path of the component's image.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
       "visible.")
-  public void Image(String path) {
+  public void Image(@Asset String path) {
     // If it's the same as on the prior call and the prior load was successful,
     // do nothing.
     if (path.equals(imagePath) && backgroundImageDrawable != null) {

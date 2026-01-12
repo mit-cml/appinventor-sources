@@ -1,18 +1,31 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
+import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
+
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.ios.CredentialsEncryptor;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.survey.Survey;
+import com.google.appinventor.server.tokens.Token;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.storage.StorageUtil;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Implementation of the user information service.
@@ -24,9 +37,16 @@ import com.google.appinventor.shared.storage.StorageUtil;
 public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements UserInfoService {
 
   // Storage of user settings
-  private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+  private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
   private static final long serialVersionUID = -7316312435338169166L;
+
+  private static final Logger LOG = Logger.getLogger(UserInfoServiceImpl.class.getName());
+
+  @SuppressWarnings("SimpleDateFormat")
+  private static final DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+
+  private static boolean deleteAccountAllowed = Flag.createFlag("auth.deleteaccountallowed", true).get();
 
   /**
    * Returns System Config, including user information record
@@ -44,6 +64,13 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setRendezvousServer(rendezvousFlag.get());
     }
     config.setUser(user);
+
+    String surveyUrl;
+    if (AppInventorFeatures.doingSurvey()) {
+      surveyUrl = Survey.check(user.getUserEmail());
+    } else {
+      surveyUrl = null;
+    }
 
     // Fetch the current splash screen version
     config.setSplashConfig(storageIo.getSplashConfig());
@@ -63,13 +90,37 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setFirebaseURL(Flag.createFlag("firebase.url", "").get());
     config.setDefaultCloudDBserver(Flag.createFlag("clouddb.server", "").get());
     config.setNoop(Flag.createFlag("session.noop", 0).get());
+    config.setGalleryEnabled(Flag.createFlag("gallery.enabled", false).get());
+    config.setGalleryReadOnly(Flag.createFlag("gallery.readonly", false).get());
+    config.setGalleryLocation(Flag.createFlag("gallery.location", "").get());
+    config.setDeleteAccountAllowed(deleteAccountAllowed);
+    config.setIosExtensions(storageIo.getIosExtensionsConfig());
+    config.setSurveyUrl(surveyUrl);
 
     if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
       config.setSecondBuildserver(true);
     }
 
-    // Check to see if we need to upgrade this user's project to GCS
-    storageIo.checkUpgrade(userInfoProvider.getUserId());
+    if (!Flag.createFlag("ios.build.server.host", "").get().isEmpty()) {
+      config.setiOSBuildServer(true);
+    }
+
+    String expirationDate = Flag.createFlag("service.expires.time", "").get();
+    if (!expirationDate.isEmpty()) {
+      try {
+        Date expires = ISO8601.parse(expirationDate);
+        if (expires.before(new Date())) {
+          config.setServerExpired(true);
+        }
+      } catch (ParseException e) {
+        throw CrashReport.createAndLogError(LOG, null, null, e);
+      }
+    }
+
+    // Fetch list of allowed tutorial prefixes from the data store
+    List<String> urls = storageIo.getTutorialsUrlAllowed();
+    config.setTutorialUrlAllowed(urls);
+
     return config;
   }
 
@@ -85,37 +136,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     } else {
       return storageIo.downloadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, "UTF-8");
     }
-  }
-
-  /**
-   * Returns user information.
-   *
-   * (obsoleted by getSystemConfig())
-   *
-   * @return  user information record
-   */
-
-  @Override
-  public User getUserInformation(String sessionId) {
-    // This is a little evil here. We are fetching the User object
-    // *and* side effecting it by storing the sessionId
-    // A more pedagotically correct way would be to do the store
-    // in a separate RPC. But that would add another round trip.
-    User user = userInfoProvider.getUser();
-    user.setSessionId(sessionId); // Store local copy
-    // Store it in the data store
-    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
-    return user;
-  }
-
-  /**
-   * Returns user information based on userId.
-   *
-   * @return  user information record
-   */
-  @Override
-  public User getUserInformationByUserId(String userId) {
-    return storageIo.getUser(userId);
   }
 
   /**
@@ -148,33 +168,6 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
-   * Stores the user's name.
-   * @param name  user's name
-   */
-  @Override
-  public void storeUserName(String name) {
-    storageIo.setUserName(userInfoProvider.getUserId(), name);
-  }
-
-  /**
-   * Stores the user's link.
-   * @param link  user's link
-   */
-  @Override
-  public void storeUserLink(String link) {
-    storageIo.setUserLink(userInfoProvider.getUserId(), link);
-  }
-
-  /**
-   * Stores the user's email notification frequency.
-   * @param emailFrequency  user's email frequency
-   */
-  @Override
-  public void storeUserEmailFrequency(int emailFrequency) {
-    storageIo.setUserEmailFrequency(userInfoProvider.getUserId(), emailFrequency);
-  }
-
-  /**
    * Returns true if the current user has a user file with the given file name
    */
   @Override
@@ -202,7 +195,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   /**
    * fetch the contents of a shared backpack.
    *
-   * @param BackPackId the uuid of the backpack
+   * @param backPackId the uuid of the backpack
    * @return the backpack's content as an XML string
    */
 
@@ -217,8 +210,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
    * Note: We overwrite any existing backpack. If merging of contents
    * is desired, our caller has to take care of it.
    *
-   * @param BackPackId the uuid of the shared backpack
-   * @param the new contents of the backpack
+   * @param backPackId the uuid of the shared backpack
+   * @param content the new contents of the backpack
    */
 
   @Override
@@ -226,4 +219,31 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     storageIo.uploadBackpack(backPackId, content);
   }
 
+  @Override
+  public String deleteAccount() {
+    if (!deleteAccountAllowed) {
+      return ("");
+    }
+    if (storageIo.deleteAccount(userInfoProvider.getUserId())) {
+      String delAccountUrl = Flag.createFlag("deleteaccount.url", "NONE").get();
+      if (delAccountUrl.equals("NONE")) {
+        return (delAccountUrl);
+      } else {
+        String token = Token.makeAccountDeletionToken(userInfoProvider.getUserId(),
+          userInfoProvider.getUserEmail());
+        return (delAccountUrl + "/?token=" + token);
+      }
+    } else {
+      return ("");
+    }
+  }
+
+  @Override
+  public void storeAppStoreSettings(String content) {
+    byte[] encrypted = CredentialsEncryptor.encrypt(content);
+    if (encrypted == null) {
+      throw new IllegalStateException("Unable to securely encrypt credential information.");
+    }
+      storageIo.uploadRawUserFile(userInfoProvider.getUserId(), APPSTORE_CREDENTIALS_FILENAME, encrypted);
+  }
 }

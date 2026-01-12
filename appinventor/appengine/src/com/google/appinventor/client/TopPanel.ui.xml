@@ -1,0 +1,51 @@
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             xmlns:ode="urn:import:com.google.appinventor.client"
+             xmlns:actions="urn:import:com.google.appinventor.client.actions"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <g:FlowPanel styleName="ode-TopPanel" ui:field="header">
+    <g:HTML>
+      <img srcset="" class="ode-Logo" ui:field="logo" />
+    </g:HTML>
+    <ode:TopToolbar ui:field="topToolbar"/>
+    <g:FlowPanel ui:field="rightPanel">
+      <g:FlowPanel styleName="ode-TopPanelAccount">
+        <g:FlowPanel styleName="ode-TopPanelLinks" ui:field="links">
+          <g:Label text="{messages.readOnlyMode}" styleName="ode-TopPanelWarningLabel"
+                   ui:field="readOnly"/>
+          <ai:TextButton text="{messages.myProjectsTabName}" styleName="ode-TopPanelButton" ui:field="myProjects">
+            <actions:SwitchToProjectAction/>
+          </ai:TextButton>
+          <ai:TextButton text="{messages.viewTrashTabName}" styleName="ode-TopPanelButton" ui:field="viewTrash">
+            <actions:TrashAction/>
+          </ai:TextButton>
+          <ai:TextButton text="{messages.guideTabName}" styleName="ode-TopPanelButton">
+            <actions:OpenGuideAction/>
+          </ai:TextButton>
+          <ai:TextButton text="{messages.feedbackTabName}" styleName="ode-TopPanelButton">
+            <actions:OpenFeedbackAction/>
+          </ai:TextButton>
+        </g:FlowPanel>
+        <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                           ui:field="languageDropDown"/>
+        <ai:DropDownButton styleName="ode-TopPanelButton" rightAlign="true"
+                           ui:field="accountButton">
+          <ai:DropDownItem name="Signout" caption="{messages.signOutLink}">
+            <actions:SignOutAction/>
+          </ai:DropDownItem>
+          <ai:DropDownItem name="DeleteAccount" caption="{messages.deleteAccountLink}"
+                           ui:field="deleteAccountItem" styleName="ode-ContextMenuItem-Red">
+            <actions:DeleteAccountAction/>
+          </ai:DropDownItem>
+        </ai:DropDownButton>
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </g:FlowPanel>
+</ui:UiBinder>

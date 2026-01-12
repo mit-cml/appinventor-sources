@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>LEGO® MINDSTORMS®</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">LEGO® MINDSTORMS®</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p><a href="index.html">« Back to index</a></p>
+<h1 id="lego-mindstorms">LEGO® MINDSTORMS®</h1>
+
+<p>Table of Contents:</p>
+
+<ul>
+  <li><a href="#Ev3ColorSensor">Ev3ColorSensor</a></li>
+  <li><a href="#Ev3Commands">Ev3Commands</a></li>
+  <li><a href="#Ev3GyroSensor">Ev3GyroSensor</a></li>
+  <li><a href="#Ev3Motors">Ev3Motors</a></li>
+  <li><a href="#Ev3Sound">Ev3Sound</a></li>
+  <li><a href="#Ev3TouchSensor">Ev3TouchSensor</a></li>
+  <li><a href="#Ev3UI">Ev3UI</a></li>
+  <li><a href="#Ev3UltrasonicSensor">Ev3UltrasonicSensor</a></li>
+  <li><a href="#NxtColorSensor">NxtColorSensor</a></li>
+  <li><a href="#NxtDirectCommands">NxtDirectCommands</a></li>
+  <li><a href="#NxtDrive">NxtDrive</a></li>
+  <li><a href="#NxtLightSensor">NxtLightSensor</a></li>
+  <li><a href="#NxtSoundSensor">NxtSoundSensor</a></li>
+  <li><a href="#NxtTouchSensor">NxtTouchSensor</a></li>
+  <li><a href="#NxtUltrasonicSensor">NxtUltrasonicSensor</a></li>
+</ul>
+
+<h2 id="Ev3ColorSensor">Ev3ColorSensor</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a color sensor on a
+ LEGO MINDSTORMS EV3 robot.</p>
+
+<h3 id="Ev3ColorSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3ColorSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
+  <dd>Specifies whether the AboveRange event should fire when the light level
+ goes above the TopOfRange.</dd>
+  <dt id="Ev3ColorSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
+  <dd>Specifies whether the BelowRange event should fire when the light level
+ goes below the BottomOfRange.</dd>
+  <dt id="Ev3ColorSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+  <dt id="Ev3ColorSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
+  <dt id="Ev3ColorSensor.ColorChangedEventEnabled" class="boolean"><em>ColorChangedEventEnabled</em></dt>
+  <dd>Specifies whether the ColorChanged event should fire when the DetectColor
+ property is set to True and the detected color changes</dd>
+  <dt id="Ev3ColorSensor.Mode" class="text"><em>Mode</em></dt>
+  <dd>The current mode of the sensor. One of:
+   Reflected: Senses the current light level including light reflected by the sensor.
+   Ambient: Senses the current light level <em>not</em> including light reflected by the sensor.
+   Color: Senses the color the sensor is pointing at.</dd>
+  <dt id="Ev3ColorSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="Ev3ColorSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
+  <dt id="Ev3ColorSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
+  <dd>Specifies whether the WithinRange event should fire when the light level
+ goes between the BottomOfRange and the TopOfRange.</dd>
+</dl>
+
+<h3 id="Ev3ColorSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Ev3ColorSensor.AboveRange">AboveRange()</dt>
+  <dd>Light level has gone above the range.</dd>
+  <dt id="Ev3ColorSensor.BelowRange">BelowRange()</dt>
+  <dd>Light level has gone below the range.</dd>
+  <dt id="Ev3ColorSensor.ColorChanged">ColorChanged(<em class="number">colorCode</em>,<em class="text">colorName</em>)</dt>
+  <dd>Called when the detected color has changed.</dd>
+  <dt id="Ev3ColorSensor.WithinRange">WithinRange()</dt>
+  <dd>Light level has gone within the range.</dd>
+</dl>
+
+<h3 id="Ev3ColorSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3ColorSensor.GetColorCode" class="method returns number"><i></i> GetColorCode()</dt>
+  <dd>It returns the color code for the detected color.</dd>
+  <dt id="Ev3ColorSensor.GetColorName" class="method returns text"><i></i> GetColorName()</dt>
+  <dd>Returns the name of the detected color.</dd>
+  <dt id="Ev3ColorSensor.GetLightLevel" class="method returns number"><i></i> GetLightLevel()</dt>
+  <dd>It returns the light level in percentage.</dd>
+</dl>
+
+<h2 id="Ev3Commands">Ev3Commands</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a low-level interface to a LEGO MINDSTORMS EV3
+ robot, with functions to send system or direct commands to EV3 robots.</p>
+
+<h3 id="Ev3Commands-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3Commands.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+</dl>
+
+<h3 id="Ev3Commands-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Ev3Commands-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3Commands.GetBatteryCurrent" class="method returns number"><i></i> GetBatteryCurrent()</dt>
+  <dd>Get the battery current.</dd>
+  <dt id="Ev3Commands.GetBatteryVoltage" class="method returns number"><i></i> GetBatteryVoltage()</dt>
+  <dd>Get the battery voltage.</dd>
+  <dt id="Ev3Commands.GetFirmwareBuild" class="method returns text"><i></i> GetFirmwareBuild()</dt>
+  <dd>Get the firmware build on EV3.</dd>
+  <dt id="Ev3Commands.GetFirmwareVersion" class="method returns text"><i></i> GetFirmwareVersion()</dt>
+  <dd>Get the firmware version on EV3.</dd>
+  <dt id="Ev3Commands.GetHardwareVersion" class="method returns text"><i></i> GetHardwareVersion()</dt>
+  <dd>Get the hardware version of EV3.</dd>
+  <dt id="Ev3Commands.GetOSBuild" class="method returns text"><i></i> GetOSBuild()</dt>
+  <dd>Get the OS build on EV3.</dd>
+  <dt id="Ev3Commands.GetOSVersion" class="method returns text"><i></i> GetOSVersion()</dt>
+  <dd>Get the OS version on EV3.</dd>
+  <dt id="Ev3Commands.KeepAlive" class="method"><i></i> KeepAlive(<em class="number">minutes</em>)</dt>
+  <dd>Keep the EV3 brick from shutdown for a period of time.</dd>
+</dl>
+
+<h2 id="Ev3GyroSensor">Ev3GyroSensor</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a gyro sensor on a LEGO
+ MINDSTORMS EV3 robot.</p>
+
+<h3 id="Ev3GyroSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3GyroSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+  <dt id="Ev3GyroSensor.Mode" class="text"><em>Mode</em></dt>
+  <dd>Returns the mode of the sensor.</dd>
+  <dt id="Ev3GyroSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="Ev3GyroSensor.SensorValueChangedEventEnabled" class="boolean"><em>SensorValueChangedEventEnabled</em></dt>
+  <dd>Returns whether the SensorValueChanged event should fire when the sensor value changed.</dd>
+</dl>
+
+<h3 id="Ev3GyroSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Ev3GyroSensor.SensorValueChanged">SensorValueChanged(<em class="number">sensorValue</em>)</dt>
+  <dd>Called then the sensor value changed.</dd>
+</dl>
+
+<h3 id="Ev3GyroSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3GyroSensor.GetSensorValue" class="method returns number"><i></i> GetSensorValue()</dt>
+  <dd>Returns the current angle or rotation speed based on current mode,
+ or -1 if the value cannot be read from sensor.</dd>
+</dl>
+
+<h2 id="Ev3Motors">Ev3Motors</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides both high- and low-level interfaces to
+ control the motors on LEGO MINDSTORMS EV3.</p>
+
+<h3 id="Ev3Motors-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3Motors.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+  <dt id="Ev3Motors.EnableSpeedRegulation" class="boolean"><em>EnableSpeedRegulation</em></dt>
+  <dd>Returns whether to keep motor rotation at constant speed.</dd>
+  <dt id="Ev3Motors.MotorPorts" class="text do"><em>MotorPorts</em></dt>
+  <dd>Specifies the motor port.</dd>
+  <dt id="Ev3Motors.ReverseDirection" class="boolean"><em>ReverseDirection</em></dt>
+  <dd>Returns if the direction of the motors is reversed.</dd>
+  <dt id="Ev3Motors.StopBeforeDisconnect" class="boolean"><em>StopBeforeDisconnect</em></dt>
+  <dd>Specifies whether to stop the drive motors before disconnecting.</dd>
+  <dt id="Ev3Motors.TachoCountChangedEventEnabled" class="boolean"><em>TachoCountChangedEventEnabled</em></dt>
+  <dd>Returns whether the TachoCountChanged event should fire when the motor angle is increaing.</dd>
+  <dt id="Ev3Motors.WheelDiameter" class="number do"><em>WheelDiameter</em></dt>
+  <dd>Returns the diameter of the wheels attached on motors.</dd>
+</dl>
+
+<h3 id="Ev3Motors-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Ev3Motors.TachoCountChanged">TachoCountChanged(<em class="number">tachoCount</em>)</dt>
+  <dd>Called when the tacho count has changed.</dd>
+</dl>
+
+<h3 id="Ev3Motors-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3Motors.GetTachoCount" class="method returns number"><i></i> GetTachoCount()</dt>
+  <dd>Get the current tacho count.</dd>
+  <dt id="Ev3Motors.ResetTachoCount" class="method"><i></i> ResetTachoCount()</dt>
+  <dd>Set the current tacho count to zero.</dd>
+  <dt id="Ev3Motors.RotateInDistance" class="method"><i></i> RotateInDistance(<em class="number">power</em>,<em class="number">distance</em>,<em class="boolean">useBrake</em>)</dt>
+  <dd>Rotate the motors in a distance.</dd>
+  <dt id="Ev3Motors.RotateInDuration" class="method"><i></i> RotateInDuration(<em class="number">power</em>,<em class="number">milliseconds</em>,<em class="boolean">useBrake</em>)</dt>
+  <dd>Rotate the motors in a period of time.</dd>
+  <dt id="Ev3Motors.RotateInTachoCounts" class="method"><i></i> RotateInTachoCounts(<em class="number">power</em>,<em class="number">tachoCounts</em>,<em class="boolean">useBrake</em>)</dt>
+  <dd>Rotate the motors in a number of tacho counts.</dd>
+  <dt id="Ev3Motors.RotateIndefinitely" class="method"><i></i> RotateIndefinitely(<em class="number">power</em>)</dt>
+  <dd>Start to rotate the motors.</dd>
+  <dt id="Ev3Motors.RotateSyncInDistance" class="method"><i></i> RotateSyncInDistance(<em class="number">power</em>,<em class="number">distance</em>,<em class="number">turnRatio</em>,<em class="boolean">useBrake</em>)</dt>
+  <dd>Rotate the motors at the same speed for a distance in cm.</dd>
+  <dt id="Ev3Motors.RotateSyncInDuration" class="method"><i></i> RotateSyncInDuration(<em class="number">power</em>,<em class="number">milliseconds</em>,<em class="number">turnRatio</em>,<em class="boolean">useBrake</em>)</dt>
+  <dd>Rotate the motors at the same speed in a period of time.</dd>
+  <dt id="Ev3Motors.RotateSyncInTachoCounts" class="method"><i></i> RotateSyncInTachoCounts(<em class="number">power</em>,<em class="number">tachoCounts</em>,<em class="number">turnRatio</em>,<em class="boolean">useBrake</em>)</dt>
+  <dd>Rotate the motors at the same speed in a number of tacho counts.</dd>
+  <dt id="Ev3Motors.RotateSyncIndefinitely" class="method"><i></i> RotateSyncIndefinitely(<em class="number">power</em>,<em class="number">turnRatio</em>)</dt>
+  <dd>Start to rotate the motors at the same speed.</dd>
+  <dt id="Ev3Motors.Stop" class="method"><i></i> Stop(<em class="boolean">useBrake</em>)</dt>
+  <dd>Stop the motors of the robot.</dd>
+  <dt id="Ev3Motors.ToggleDirection" class="method"><i></i> ToggleDirection()</dt>
+  <dd>Toggle the direction of motors.</dd>
+</dl>
+
+<h2 id="Ev3Sound">Ev3Sound</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a LEGO MINDSTORMS EV3
+ robot, which provides sound functionalities.</p>
+
+<h3 id="Ev3Sound-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3Sound.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+</dl>
+
+<h3 id="Ev3Sound-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Ev3Sound-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3Sound.PlayTone" class="method"><i></i> PlayTone(<em class="number">volume</em>,<em class="number">frequency</em>,<em class="number">milliseconds</em>)</dt>
+  <dd>Make the robot play a tone.</dd>
+  <dt id="Ev3Sound.StopSound" class="method"><i></i> StopSound()</dt>
+  <dd>Stop any sound on the robot.</dd>
+</dl>
+
+<h2 id="Ev3TouchSensor">Ev3TouchSensor</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a touch sensor on a LEGO
+ MINDSTORMS EV3 robot.</p>
+
+<h3 id="Ev3TouchSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3TouchSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+  <dt id="Ev3TouchSensor.PressedEventEnabled" class="boolean"><em>PressedEventEnabled</em></dt>
+  <dd>Returns whether the Pressed event should fire when the touch sensor is
+ pressed.</dd>
+  <dt id="Ev3TouchSensor.ReleasedEventEnabled" class="boolean"><em>ReleasedEventEnabled</em></dt>
+  <dd>Specifies whether the Released event should fire when the touch sensor is
+ released.</dd>
+  <dt id="Ev3TouchSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+</dl>
+
+<h3 id="Ev3TouchSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Ev3TouchSensor.Pressed">Pressed()</dt>
+  <dd>Called when the touch sensor is pressed.</dd>
+  <dt id="Ev3TouchSensor.Released">Released()</dt>
+  <dd>Called when the touch sensor is pressed.</dd>
+</dl>
+
+<h3 id="Ev3TouchSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3TouchSensor.IsPressed" class="method returns boolean"><i></i> IsPressed()</dt>
+  <dd>Returns true if the touch sensor is pressed.</dd>
+</dl>
+
+<h2 id="Ev3UI">Ev3UI</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to a LEGO MINDSTORMS EV3
+ robot, which provides graphic functionalities.</p>
+
+<h3 id="Ev3UI-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3UI.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+</dl>
+
+<h3 id="Ev3UI-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="Ev3UI-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3UI.DrawCircle" class="method"><i></i> DrawCircle(<em class="number">color</em>,<em class="number">x</em>,<em class="number">y</em>,<em class="number">radius</em>,<em class="boolean">fill</em>)</dt>
+  <dd>Draw a circle on the screen.</dd>
+  <dt id="Ev3UI.DrawIcon" class="method"><i></i> DrawIcon(<em class="number">color</em>,<em class="number">x</em>,<em class="number">y</em>,<em class="number">type</em>,<em class="number">no</em>)</dt>
+  <dd>Draw a built-in icon on screen.</dd>
+  <dt id="Ev3UI.DrawLine" class="method"><i></i> DrawLine(<em class="number">color</em>,<em class="number">x1</em>,<em class="number">y1</em>,<em class="number">x2</em>,<em class="number">y2</em>)</dt>
+  <dd>Draw a line on the screen.</dd>
+  <dt id="Ev3UI.DrawPoint" class="method"><i></i> DrawPoint(<em class="number">color</em>,<em class="number">x</em>,<em class="number">y</em>)</dt>
+  <dd>Draw a point on the screen.</dd>
+  <dt id="Ev3UI.DrawRect" class="method"><i></i> DrawRect(<em class="number">color</em>,<em class="number">x</em>,<em class="number">y</em>,<em class="number">width</em>,<em class="number">height</em>,<em class="boolean">fill</em>)</dt>
+  <dd>Draw a rectangle on the screen.</dd>
+  <dt id="Ev3UI.FillScreen" class="method"><i></i> FillScreen(<em class="number">color</em>)</dt>
+  <dd>Fill the screen with a color.</dd>
+</dl>
+
+<h2 id="Ev3UltrasonicSensor">Ev3UltrasonicSensor</h2>
+
+<p><img src="images/legoMindstormsEv3.png" alt="EV3 component icon" /></p>
+
+<p>A component that provides a high-level interface to an ultrasonic sensor on a LEGO
+ MINDSTORMS EV3 robot.</p>
+
+<h3 id="Ev3UltrasonicSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="Ev3UltrasonicSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
+  <dd>Specifies whether the AboveRange event should fire when the distance
+ goes above the TopOfRange.</dd>
+  <dt id="Ev3UltrasonicSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
+  <dd>Specifies whether the BelowRange event should fire when the distance
+ goes below the BottomOfRange.</dd>
+  <dt id="Ev3UltrasonicSensor.BluetoothClient" class="component"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer</strong>.</dd>
+  <dt id="Ev3UltrasonicSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
+  <dt id="Ev3UltrasonicSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="Ev3UltrasonicSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
+  <dt id="Ev3UltrasonicSensor.Unit" class="text"><em>Unit</em></dt>
+  <dd>Returns the unit of distance.</dd>
+  <dt id="Ev3UltrasonicSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
+  <dd>Specifies whether the WithinRange event should fire when the distance
+ goes between the BottomOfRange and the TopOfRange.</dd>
+</dl>
+
+<h3 id="Ev3UltrasonicSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="Ev3UltrasonicSensor.AboveRange">AboveRange()</dt>
+  <dd>Called when the detected distance has gone above the range.</dd>
+  <dt id="Ev3UltrasonicSensor.BelowRange">BelowRange()</dt>
+  <dd>Called when the detected distance has gone below the range.</dd>
+  <dt id="Ev3UltrasonicSensor.WithinRange">WithinRange()</dt>
+  <dd>Called when the detected distance has gone within the range.</dd>
+</dl>
+
+<h3 id="Ev3UltrasonicSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="Ev3UltrasonicSensor.GetDistance" class="method returns number"><i></i> GetDistance()</dt>
+  <dd>Returns the current distance in centimeters as a value between 0 and 254, or -1 if the distance can not be read.</dd>
+</dl>
+
+<h2 id="NxtColorSensor">NxtColorSensor</h2>
+
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a color sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
+<h3 id="NxtColorSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NxtColorSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
+  <dd>Specifies whether the AboveRange event should fire when the DetectColor
+ property is set to False and the light level goes above the TopOfRange.</dd>
+  <dt id="NxtColorSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
+  <dd>Specifies whether the BelowRange event should fire when the DetectColor
+ property is set to False and the light level goes below the BottomOfRange.</dd>
+  <dt id="NxtColorSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtColorSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
+  <dt id="NxtColorSensor.ColorChangedEventEnabled" class="boolean"><em>ColorChangedEventEnabled</em></dt>
+  <dd>Specifies whether the ColorChanged event should fire when the DetectColor
+ property is set to True and the detected color changes</dd>
+  <dt id="NxtColorSensor.DetectColor" class="boolean"><em>DetectColor</em></dt>
+  <dd>Specifies whether the sensor should detect color light. True indicates
+ that the sensor should detect color; False indicates that the sensor
+ should detect light.</dd>
+  <dt id="NxtColorSensor.GenerateColor" class="number"><em>GenerateColor</em></dt>
+  <dd>Specifies the color that should generated by the sensor.
+ Only None, Red, Green, or Blue are valid values.
+ The sensor will not generate color when the DetectColor property is set to
+ True.</dd>
+  <dt id="NxtColorSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtColorSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
+  <dt id="NxtColorSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
+  <dd>Specifies whether the WithinRange event should fire when the DetectColor
+ property is set to False and the light level goes between the
+ BottomOfRange and the TopOfRange.</dd>
+</dl>
+
+<h3 id="NxtColorSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="NxtColorSensor.AboveRange">AboveRange()</dt>
+  <dd>Light level has gone above the range. The AboveRange event will not occur if the DetectColor property is set to True or if the AboveRangeEventEnabled property is set to False.</dd>
+  <dt id="NxtColorSensor.BelowRange">BelowRange()</dt>
+  <dd>Light level has gone below the range. The BelowRange event will not occur if the DetectColor property is set to True or if the BelowRangeEventEnabled property is set to False.</dd>
+  <dt id="NxtColorSensor.ColorChanged">ColorChanged(<em class="number">color</em>)</dt>
+  <dd>Detected color has changed. The ColorChanged event will not occur if the DetectColor property is set to False or if the ColorChangedEventEnabled property is set to False.</dd>
+  <dt id="NxtColorSensor.WithinRange">WithinRange()</dt>
+  <dd>Light level has gone within the range. The WithinRange event will not occur if the DetectColor property is set to True or if the WithinRangeEventEnabled property is set to False.</dd>
+</dl>
+
+<h3 id="NxtColorSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="NxtColorSensor.GetColor" class="method returns number"><i></i> GetColor()</dt>
+  <dd>Returns the current detected color, or the color None if the color can not be read or if the DetectColor property is set to False.</dd>
+  <dt id="NxtColorSensor.GetLightLevel" class="method returns number"><i></i> GetLightLevel()</dt>
+  <dd>Returns the current light level as a value between 0 and 1023, or -1 if the light level can not be read or if the DetectColor property is set to True.</dd>
+</dl>
+
+<h2 id="NxtDirectCommands">NxtDirectCommands</h2>
+
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a low-level interface to a LEGO MINDSTORMS NXT
+ robot, with functions to send NXT Direct Commands.</p>
+
+<h3 id="NxtDirectCommands-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NxtDirectCommands.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
+</dl>
+
+<h3 id="NxtDirectCommands-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="NxtDirectCommands-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="NxtDirectCommands.DeleteFile" class="method"><i></i> DeleteFile(<em class="text">fileName</em>)</dt>
+  <dd>Delete a file on the robot.</dd>
+  <dt id="NxtDirectCommands.DownloadFile" class="method"><i></i> DownloadFile(<em class="text">source</em>,<em class="text">destination</em>)</dt>
+  <dd>Download a file to the robot.</dd>
+</dl>
+
+<p />
+<p>See <a href="#MediaUtil.determineMediaSource"><code class="highlighter-rouge">MediaUtil</code>’s <code class="highlighter-rouge">determineMediaSource</code></a> for information about what
+ a path can be.</p>
+
+<dl>
+  <dt id="NxtDirectCommands.GetBatteryLevel" class="method returns number"><i></i> GetBatteryLevel()</dt>
+  <dd>Get the battery level for the robot. Returns the voltage in millivolts.</dd>
+  <dt id="NxtDirectCommands.GetBrickName" class="method returns text"><i></i> GetBrickName()</dt>
+  <dd>Get the brick name of the robot.</dd>
+  <dt id="NxtDirectCommands.GetCurrentProgramName" class="method returns text"><i></i> GetCurrentProgramName()</dt>
+  <dd>Get the name of currently running program on the robot.</dd>
+  <dt id="NxtDirectCommands.GetFirmwareVersion" class="method returns list"><i></i> GetFirmwareVersion()</dt>
+  <dd>Get the firmware and protocol version numbers for the robot as a list where the first element is the firmware version number and the second element is the protocol version number.</dd>
+  <dt id="NxtDirectCommands.GetInputValues" class="method returns list"><i></i> GetInputValues(<em class="text">sensorPortLetter</em>)</dt>
+  <dd>Reads the values of an input sensor on the robot. Assumes sensor type has been configured via SetInputMode.</dd>
+  <dt id="NxtDirectCommands.GetOutputState" class="method returns list"><i></i> GetOutputState(<em class="text">motorPortLetter</em>)</dt>
+  <dd>Reads the output state of a motor on the robot.</dd>
+  <dt id="NxtDirectCommands.KeepAlive" class="method returns number"><i></i> KeepAlive()</dt>
+  <dd>Keep Alive. Returns the current sleep time limit in milliseconds.</dd>
+  <dt id="NxtDirectCommands.ListFiles" class="method returns list"><i></i> ListFiles(<em class="text">wildcard</em>)</dt>
+  <dd>Returns a list containing the names of matching files found on the robot.</dd>
+  <dt id="NxtDirectCommands.LsGetStatus" class="method returns number"><i></i> LsGetStatus(<em class="text">sensorPortLetter</em>)</dt>
+  <dd>Returns the count of available bytes to read.</dd>
+  <dt id="NxtDirectCommands.LsRead" class="method returns list"><i></i> LsRead(<em class="text">sensorPortLetter</em>)</dt>
+  <dd>Reads unsigned low speed data from an input sensor on the robot. Assumes sensor type has been configured via SetInputMode.</dd>
+  <dt id="NxtDirectCommands.LsWrite" class="method"><i></i> LsWrite(<em class="text">sensorPortLetter</em>,<em class="list">list</em>,<em class="number">rxDataLength</em>)</dt>
+  <dd>Writes low speed data to an input sensor on the robot. Assumes sensor type has been configured via SetInputMode.</dd>
+  <dt id="NxtDirectCommands.MessageRead" class="method returns text"><i></i> MessageRead(<em class="number">mailbox</em>)</dt>
+  <dd>Read a message from a mailbox (1-10) on the robot.</dd>
+  <dt id="NxtDirectCommands.MessageWrite" class="method"><i></i> MessageWrite(<em class="number">mailbox</em>,<em class="text">message</em>)</dt>
+  <dd>Write a message to a mailbox (1-10) on the robot.</dd>
+  <dt id="NxtDirectCommands.PlaySoundFile" class="method"><i></i> PlaySoundFile(<em class="text">fileName</em>)</dt>
+  <dd>Play a sound file on the robot.</dd>
+  <dt id="NxtDirectCommands.PlayTone" class="method"><i></i> PlayTone(<em class="number">frequencyHz</em>,<em class="number">durationMs</em>)</dt>
+  <dd>Make the robot play a tone.</dd>
+  <dt id="NxtDirectCommands.ResetInputScaledValue" class="method"><i></i> ResetInputScaledValue(<em class="text">sensorPortLetter</em>)</dt>
+  <dd>Reset the scaled value of an input sensor on the robot.</dd>
+  <dt id="NxtDirectCommands.ResetMotorPosition" class="method"><i></i> ResetMotorPosition(<em class="text">motorPortLetter</em>,<em class="boolean">relative</em>)</dt>
+  <dd>Reset motor position.</dd>
+  <dt id="NxtDirectCommands.SetBrickName" class="method"><i></i> SetBrickName(<em class="text">name</em>)</dt>
+  <dd>Set the brick name of the robot.</dd>
+  <dt id="NxtDirectCommands.SetInputMode" class="method"><i></i> SetInputMode(<em class="text">sensorPortLetter</em>,<em class="number">sensorType</em>,<em class="number">sensorMode</em>)</dt>
+  <dd>Configure an input sensor on the robot.</dd>
+  <dt id="NxtDirectCommands.SetOutputState" class="method"><i></i> SetOutputState(<em class="text">motorPortLetter</em>,<em class="number">power</em>,<em class="number">mode</em>,<em class="number">regulationMode</em>,<em class="number">turnRatio</em>,<em class="number">runState</em>,<em class="number">tachoLimit</em>)</dt>
+  <dd>Sets the output state of a motor on the robot.</dd>
+  <dt id="NxtDirectCommands.StartProgram" class="method"><i></i> StartProgram(<em class="text">programName</em>)</dt>
+  <dd>Start execution of a previously downloaded program on the robot.</dd>
+  <dt id="NxtDirectCommands.StopProgram" class="method"><i></i> StopProgram()</dt>
+  <dd>Stop execution of the currently running program on the robot.</dd>
+  <dt id="NxtDirectCommands.StopSoundPlayback" class="method"><i></i> StopSoundPlayback()</dt>
+  <dd>Stop sound playback.</dd>
+</dl>
+
+<h2 id="NxtDrive">NxtDrive</h2>
+
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a LEGO MINDSTORMS NXT
+ robot, with functions that can move and turn the robot.</p>
+
+<h3 id="NxtDrive-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NxtDrive.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtDrive.DriveMotors" class="text do"><em>DriveMotors</em></dt>
+  <dd>Specifies the motor ports that are used for driving.</dd>
+  <dt id="NxtDrive.StopBeforeDisconnect" class="boolean"><em>StopBeforeDisconnect</em></dt>
+  <dd>Specifies whether to stop the drive motors before disconnecting.</dd>
+  <dt id="NxtDrive.WheelDiameter" class="number do"><em>WheelDiameter</em></dt>
+  <dd>Returns the diameter of the wheels used for driving.</dd>
+</dl>
+
+<h3 id="NxtDrive-Events">Events</h3>
+
+<p class="events">None</p>
+
+<h3 id="NxtDrive-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="NxtDrive.MoveBackward" class="method"><i></i> MoveBackward(<em class="number">power</em>,<em class="number">distance</em>)</dt>
+  <dd>Move the robot backward the given distance, with the specified percentage of maximum power, by powering both drive motors backward.</dd>
+  <dt id="NxtDrive.MoveBackwardIndefinitely" class="method"><i></i> MoveBackwardIndefinitely(<em class="number">power</em>)</dt>
+  <dd>Move the robot backward indefinitely, with the specified percentage of maximum power, by powering both drive motors backward.</dd>
+  <dt id="NxtDrive.MoveForward" class="method"><i></i> MoveForward(<em class="number">power</em>,<em class="number">distance</em>)</dt>
+  <dd>Move the robot forward the given distance, with the specified percentage of maximum power, by powering both drive motors forward.</dd>
+  <dt id="NxtDrive.MoveForwardIndefinitely" class="method"><i></i> MoveForwardIndefinitely(<em class="number">power</em>)</dt>
+  <dd>Move the robot forward indefinitely, with the specified percentage of maximum power, by powering both drive motors forward.</dd>
+  <dt id="NxtDrive.Stop" class="method"><i></i> Stop()</dt>
+  <dd>Stop the drive motors of the robot.</dd>
+  <dt id="NxtDrive.TurnClockwiseIndefinitely" class="method"><i></i> TurnClockwiseIndefinitely(<em class="number">power</em>)</dt>
+  <dd>Turn the robot clockwise indefinitely, with the specified percentage of maximum power, by powering the left drive motor forward and the right drive motor backward.</dd>
+  <dt id="NxtDrive.TurnCounterClockwiseIndefinitely" class="method"><i></i> TurnCounterClockwiseIndefinitely(<em class="number">power</em>)</dt>
+  <dd>Turn the robot counterclockwise indefinitely, with the specified percentage of maximum power, by powering the right drive motor forward and the left drive motor backward.</dd>
+</dl>
+
+<h2 id="NxtLightSensor">NxtLightSensor</h2>
+
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a light sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
+<h3 id="NxtLightSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NxtLightSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
+  <dd>Specifies whether the AboveRange event should fire when the light level
+ goes above the TopOfRange.</dd>
+  <dt id="NxtLightSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
+  <dd>Specifies whether the BelowRange event should fire when the light level
+ goes below the BottomOfRange.</dd>
+  <dt id="NxtLightSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtLightSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
+  <dt id="NxtLightSensor.GenerateLight" class="boolean"><em>GenerateLight</em></dt>
+  <dd>Specifies whether the light sensor should generate light.</dd>
+  <dt id="NxtLightSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be specified in the Designer.</strong></dd>
+  <dt id="NxtLightSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
+  <dt id="NxtLightSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
+  <dd>Specifies whether the WithinRange event should fire when the light level
+ goes between the BottomOfRange and the TopOfRange.</dd>
+</dl>
+
+<h3 id="NxtLightSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="NxtLightSensor.AboveRange">AboveRange()</dt>
+  <dd>Light level has gone above the range.</dd>
+  <dt id="NxtLightSensor.BelowRange">BelowRange()</dt>
+  <dd>Light level has gone below the range.</dd>
+  <dt id="NxtLightSensor.WithinRange">WithinRange()</dt>
+  <dd>Light level has gone within the range.</dd>
+</dl>
+
+<h3 id="NxtLightSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="NxtLightSensor.GetLightLevel" class="method returns number"><i></i> GetLightLevel()</dt>
+  <dd>Returns the current light level as a value between 0 and 1023, or -1 if the light level can not be read.</dd>
+</dl>
+
+<h2 id="NxtSoundSensor">NxtSoundSensor</h2>
+
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a sound sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
+<h3 id="NxtSoundSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NxtSoundSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
+  <dd>Specifies whether the AboveRange event should fire when the sound level
+ goes above the TopOfRange.</dd>
+  <dt id="NxtSoundSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
+  <dd>Specifies whether the BelowRange event should fire when the sound level
+ goes below the BottomOfRange.</dd>
+  <dt id="NxtSoundSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtSoundSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
+  <dt id="NxtSoundSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtSoundSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
+  <dt id="NxtSoundSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
+  <dd>Specifies whether the WithinRange event should fire when the sound level
+ goes between the BottomOfRange and the TopOfRange.</dd>
+</dl>
+
+<h3 id="NxtSoundSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="NxtSoundSensor.AboveRange">AboveRange()</dt>
+  <dd>Sound level has gone above the range.</dd>
+  <dt id="NxtSoundSensor.BelowRange">BelowRange()</dt>
+  <dd>Sound level has gone below the range.</dd>
+  <dt id="NxtSoundSensor.WithinRange">WithinRange()</dt>
+  <dd>Sound level has gone within the range.</dd>
+</dl>
+
+<h3 id="NxtSoundSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="NxtSoundSensor.GetSoundLevel" class="method returns number"><i></i> GetSoundLevel()</dt>
+  <dd>Returns the current sound level as a value between 0 and 1023, or -1 if the sound level can not be read.</dd>
+</dl>
+
+<h2 id="NxtTouchSensor">NxtTouchSensor</h2>
+
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to a touch sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
+<h3 id="NxtTouchSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NxtTouchSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtTouchSensor.PressedEventEnabled" class="boolean"><em>PressedEventEnabled</em></dt>
+  <dd>Specifies whether the Pressed event should fire when the touch sensor is
+ pressed.</dd>
+  <dt id="NxtTouchSensor.ReleasedEventEnabled" class="boolean"><em>ReleasedEventEnabled</em></dt>
+  <dd>Specifies whether the Released event should fire when the touch sensor is
+ released.</dd>
+  <dt id="NxtTouchSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+</dl>
+
+<h3 id="NxtTouchSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="NxtTouchSensor.Pressed">Pressed()</dt>
+  <dd>Touch sensor has been pressed.</dd>
+  <dt id="NxtTouchSensor.Released">Released()</dt>
+  <dd>Touch sensor has been released.</dd>
+</dl>
+
+<h3 id="NxtTouchSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="NxtTouchSensor.IsPressed" class="method returns boolean"><i></i> IsPressed()</dt>
+  <dd>Returns true if the touch sensor is pressed.</dd>
+</dl>
+
+<h2 id="NxtUltrasonicSensor">NxtUltrasonicSensor</h2>
+
+<p><img src="images/legoMindstormsNxt.png" alt="NXT component icon" /></p>
+
+<p>A component that provides a high-level interface to an ultrasonic sensor on a LEGO
+ MINDSTORMS NXT robot.</p>
+
+<h3 id="NxtUltrasonicSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="NxtUltrasonicSensor.AboveRangeEventEnabled" class="boolean"><em>AboveRangeEventEnabled</em></dt>
+  <dd>Specifies whether the AboveRange event should fire when the distance
+ goes above the TopOfRange.</dd>
+  <dt id="NxtUltrasonicSensor.BelowRangeEventEnabled" class="boolean"><em>BelowRangeEventEnabled</em></dt>
+  <dd>Specifies whether the BelowRange event should fire when the distance
+ goes below the BottomOfRange.</dd>
+  <dt id="NxtUltrasonicSensor.BluetoothClient" class="component do"><em>BluetoothClient</em></dt>
+  <dd>Specifies the BluetoothClient component that should be used for communication.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtUltrasonicSensor.BottomOfRange" class="number"><em>BottomOfRange</em></dt>
+  <dd>Specifies the bottom of the range used for the BelowRange, WithinRange,
+ and AboveRange events.</dd>
+  <dt id="NxtUltrasonicSensor.SensorPort" class="text do"><em>SensorPort</em></dt>
+  <dd>Specifies the sensor port that the sensor is connected to.
+ <strong>Must be set in the Designer.</strong></dd>
+  <dt id="NxtUltrasonicSensor.TopOfRange" class="number"><em>TopOfRange</em></dt>
+  <dd>Specifies the top of the range used for the BelowRange, WithinRange, and
+ AboveRange events.</dd>
+  <dt id="NxtUltrasonicSensor.WithinRangeEventEnabled" class="boolean"><em>WithinRangeEventEnabled</em></dt>
+  <dd>Specifies whether the WithinRange event should fire when the distance
+ goes between the BottomOfRange and the TopOfRange.</dd>
+</dl>
+
+<h3 id="NxtUltrasonicSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="NxtUltrasonicSensor.AboveRange">AboveRange()</dt>
+  <dd>Distance has gone above the range.</dd>
+  <dt id="NxtUltrasonicSensor.BelowRange">BelowRange()</dt>
+  <dd>Distance has gone below the range.</dd>
+  <dt id="NxtUltrasonicSensor.WithinRange">WithinRange()</dt>
+  <dd>Distance has gone within the range.</dd>
+</dl>
+
+<h3 id="NxtUltrasonicSensor-Methods">Methods</h3>
+
+<dl class="methods">
+  <dt id="NxtUltrasonicSensor.GetDistance" class="method returns number"><i></i> GetDistance()</dt>
+  <dd>Returns the current distance in centimeters as a value between 0 and 254, or -1 if the distance can not be read.</dd>
+</dl>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>
