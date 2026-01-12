@@ -119,6 +119,26 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   }
 
   /**
+   * Indicates the cursor moved over the button so it is now possible
+   * to click it.
+   */
+  @SimpleEvent(description = "Indicates the cursor moved over the button so " +
+      "it is now possible to click it.")
+  public void GotFocus() {
+    EventDispatcher.dispatchEvent(this, "GotFocus");
+  }
+
+  /**
+   * Indicates the cursor moved away from the button so it is now no
+   * longer possible to click it.
+   */
+  @SimpleEvent(description = "Indicates the cursor moved away from " +
+      "the button so it is now no longer possible to click it.")
+  public void LostFocus() {
+    EventDispatcher.dispatchEvent(this, "LostFocus");
+  }
+
+  /**
    * Returns the alignment of the button's text: center, normal
    * (e.g., left-justified if text is written left to right), or
    * opposite (e.g., right-justified if text is written left to right).
@@ -427,26 +447,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     } else {
       TextViewUtil.setTextColors(view, defaultColorStateList);
     }
-  }
-
-  /**
-   * Indicates the cursor moved over the button so it is now possible
-   * to click it.
-   */
-  @SimpleEvent(description = "Indicates the cursor moved over the button so " +
-      "it is now possible to click it.")
-  public void GotFocus() {
-    EventDispatcher.dispatchEvent(this, "GotFocus");
-  }
-
-  /**
-   * Indicates the cursor moved away from the button so it is now no
-   * longer possible to click it.
-   */
-  @SimpleEvent(description = "Indicates the cursor moved away from " +
-      "the button so it is now no longer possible to click it.")
-  public void LostFocus() {
-    EventDispatcher.dispatchEvent(this, "LostFocus");
   }
 
   // OnFocusChangeListener implementation
