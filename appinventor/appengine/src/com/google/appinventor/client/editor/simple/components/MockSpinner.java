@@ -40,15 +40,6 @@ public final class MockSpinner extends MockVisibleComponent {
   }
 
   @Override
-  protected boolean isPropertyVisible(String propertyName){
-    // We don't want to allow user to change the component height; only the width
-    /*if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-      return false;
-    }*/
-    return super.isPropertyVisible(propertyName);
-  }
-
-  @Override
   public int getPreferredWidth(){
     // The superclass uses getOffsetWidth, which won't work for us.
     return DEFAULT_WIDTH;
@@ -118,29 +109,29 @@ public final class MockSpinner extends MockVisibleComponent {
 
   // PropertyChangeListener implementation
   @Override
-  public void onPropertyChange(String propertyName, String newValue){
+  public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
 
-      if (propertyName.equals(PROPERTY_NAME_ENABLED)) {
-          setEnabledProperty(newValue);
-      } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {
-          setFontBoldProperty(newValue);
-          refreshForm();
-      } else if (propertyName.equals(PROPERTY_NAME_FONTITALIC)) {
-          setFontItalicProperty(newValue);
-          refreshForm();
-      } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
-          setFontSizeProperty(newValue);
-          refreshForm();
-      } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
-          setFontTypefaceProperty(newValue);
-          refreshForm();
-      } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
-          setTextColorProperty(newValue);
-      } else if (propertyName.equals(PROPERTY_NAME_TEXTALIGNMENT)) {
-          setTextAlignmentProperty(newValue);
-      } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
-          setBackgroundColorProperty(newValue);
-      }
+    if (propertyName.equals(PROPERTY_NAME_ENABLED)) {
+      setEnabledProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_FONTBOLD)) {
+      setFontBoldProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_FONTITALIC)) {
+      setFontItalicProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_FONTSIZE)) {
+      setFontSizeProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_FONTTYPEFACE)) {
+      setFontTypefaceProperty(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
+      setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_TEXTALIGNMENT)) {
+      setTextAlignmentProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
+      setBackgroundColorProperty(newValue);
+    }
   }
 }

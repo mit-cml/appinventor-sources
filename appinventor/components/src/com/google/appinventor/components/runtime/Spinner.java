@@ -224,284 +224,284 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     view.setSelection(0);
   }
 
-    /**
-     * Returns the alignment of the spinner's text: center, normal
-     * (e.g., left-justified if text is written left to right), or
-     * opposite (e.g., right-justified if text is written left to right).
-     *
-     * @return one of {@link Component#ALIGNMENT_NORMAL},
-     * {@link Component#ALIGNMENT_CENTER} or
-     * {@link Component#ALIGNMENT_OPPOSITE}
-     */
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE,
-            description = "Left, center, or right.",
-            userVisible = false)
-    public int TextAlignment() {
-        return adapter.getTextAlignment();
+  /**
+   * Returns the alignment of the spinner's text: center, normal
+   * (e.g., left-justified if text is written left to right), or
+   * opposite (e.g., right-justified if text is written left to right).
+   *
+   * @return one of {@link Component#ALIGNMENT_NORMAL},
+   * {@link Component#ALIGNMENT_CENTER} or
+   * {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Left, center, or right.",
+      userVisible = false)
+  public int TextAlignment() {
+    return adapter.getTextAlignment();
+  }
+
+  /**
+   * Specifies the alignment of the spinner's text: center, normal
+   * (e.g., left-justified if text is written left to right), or
+   * opposite (e.g., right-justified if text is written left to right).
+   *
+   * @param alignment one of {@link Component#ALIGNMENT_NORMAL},
+   *                  {@link Component#ALIGNMENT_CENTER} or
+   *                  {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
+      defaultValue = Component.ALIGNMENT_CENTER + "")
+  @SimpleProperty(userVisible = false)
+  public void TextAlignment(int alignment) {
+    adapter.setTextAlignment(alignment);
+  }
+
+  /**
+   * Returns true if the spinner's text should be bold.
+   * If bold has been requested, this property will return true, even if the
+   * font does not support bold.
+   *
+   * @return {@code true} indicates bold, {@code false} normal
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "If set, spinner text is displayed in bold.")
+  public boolean FontBold() {
+    return adapter.isBold();
+  }
+
+  /**
+   * Specifies whether the spinner's text should be bold.
+   * Some fonts do not support bold.
+   *
+   * @param bold {@code true} indicates bold, {@code false} normal
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public void FontBold(boolean bold) {
+    adapter.setBold(bold);
+  }
+
+  /**
+   * Returns true if the spinner's text should be italic.
+   * If italic has been requested, this property will return true, even if the
+   * font does not support italic.
+   *
+   * @return {@code true} indicates italic, {@code false} normal
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "If set, spinner text is displayed in italics.")
+  public boolean FontItalic() {
+    return adapter.isItalic();
+  }
+
+  /**
+   * Specifies whether the spinner's text should be italic.
+   * Some fonts do not support italic.
+   *
+   * @param italic {@code true} indicates italic, {@code false} normal
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public void FontItalic(boolean italic) {
+    adapter.setItalic(italic);
+  }
+
+  /**
+   * Returns the spinner's text's font size, measured in sp(scale-independent pixels).
+   *
+   * @return font size in sp(scale-independent pixels).
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Point size for spinner text.")
+  public float FontSize() {
+    return adapter.getFontSize();
+  }
+
+  /**
+   * Specifies the spinner's text's font size, measured in sp(scale-independent pixels).
+   *
+   * @param size font size in sp(scale-independent pixels)
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+      defaultValue = Component.FONT_DEFAULT_SIZE + "")
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public void FontSize(float size) {
+    adapter.setFontSize(size);
+  }
+
+  /**
+   * Returns the spinner's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @return one of {@link Component#TYPEFACE_DEFAULT},
+   * {@link Component#TYPEFACE_SERIF},
+   * {@link Component#TYPEFACE_SANSSERIF} or
+   * {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Font family for spinner text.",
+      userVisible = false)
+  public int FontTypeface() {
+    return adapter.getFontTypeface();
+  }
+
+  /**
+   * Specifies the spinner's text's font face as default, serif, sans
+   * serif, or monospace.
+   *
+   * @param typeface one of {@link Component#TYPEFACE_DEFAULT},
+   *                 {@link Component#TYPEFACE_SERIF},
+   *                 {@link Component#TYPEFACE_SANSSERIF} or
+   *                 {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
+      defaultValue = Component.TYPEFACE_DEFAULT + "")
+  @SimpleProperty(
+      userVisible = false)
+  public void FontTypeface(int typeface) {
+    adapter.setFontTypeface(typeface);
+  }
+
+  /**
+   * Returns the spinner's text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return text RGB color with alpha
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Color for spinner text.")
+  public int TextColor() {
+    return adapter.getTextColor();
+  }
+
+  /**
+   * Specifies the spinner's text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb text RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+  @SimpleProperty
+  public void TextColor(int argb) {
+    adapter.setTextColor(argb);
+  }
+
+  private static class SpinnerArrayAdapter extends ArrayAdapter<String> {
+    // This is our handle in Android's default spinner color states;
+    private ColorStateList defaultColorStateList;
+
+    // Backing for text alignment
+    private int textAlignment;
+
+    // Backing for font typeface
+    private int fontTypeface;
+
+    // Backing for font bold
+    private boolean bold;
+
+    // Backing for font italic
+    private boolean italic;
+
+    // Backing for text color
+    private int textColor;
+
+    // Backing for font size
+    private float fontSize;
+
+    public SpinnerArrayAdapter(final Context context, final int textViewResourceId) {
+      super(context, textViewResourceId);
     }
 
-    /**
-     * Specifies the alignment of the spinner's text: center, normal
-     * (e.g., left-justified if text is written left to right), or
-     * opposite (e.g., right-justified if text is written left to right).
-     *
-     * @param alignment one of {@link Component#ALIGNMENT_NORMAL},
-     *                  {@link Component#ALIGNMENT_CENTER} or
-     *                  {@link Component#ALIGNMENT_OPPOSITE}
-     */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
-            defaultValue = Component.ALIGNMENT_CENTER + "")
-    @SimpleProperty(userVisible = false)
-    public void TextAlignment(int alignment) {
-        adapter.setTextAlignment(alignment);
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      TextView view = (TextView) super.getView(position, convertView, parent);
+      decorate(view);
+      return view;
     }
 
-    /**
-     * Returns true if the spinner's text should be bold.
-     * If bold has been requested, this property will return true, even if the
-     * font does not support bold.
-     *
-     * @return {@code true} indicates bold, {@code false} normal
-     */
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE,
-            description = "If set, spinner text is displayed in bold.")
-    public boolean FontBold() {
-        return adapter.isBold();
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+      TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+      decorate(view);
+      return view;
     }
 
-    /**
-     * Specifies whether the spinner's text should be bold.
-     * Some fonts do not support bold.
-     *
-     * @param bold {@code true} indicates bold, {@code false} normal
-     */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-            defaultValue = "False")
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE)
-    public void FontBold(boolean bold) {
-        adapter.setBold(bold);
+    private void decorate(TextView view) {
+      // This is a workaround to the save default ColorStateList of the textView.
+      // (defaultColorStateList == null) will only be true when the decorate method is called for
+      // the first time.
+      if (defaultColorStateList == null)
+        defaultColorStateList = view.getTextColors();
+
+      TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+      TextViewUtil.setFontSize(view, fontSize);
+      TextViewUtil.setAlignment(view, textAlignment, true);
+
+      if (textColor != Component.COLOR_DEFAULT) {
+        TextViewUtil.setTextColor(view, textColor);
+      } else {
+        TextViewUtil.setTextColors(view, defaultColorStateList);
+      }
     }
 
-    /**
-     * Returns true if the spinner's text should be italic.
-     * If italic has been requested, this property will return true, even if the
-     * font does not support italic.
-     *
-     * @return {@code true} indicates italic, {@code false} normal
-     */
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE,
-            description = "If set, spinner text is displayed in italics.")
-    public boolean FontItalic() {
-        return adapter.isItalic();
+    public int getTextAlignment() {
+      return textAlignment;
     }
 
-    /**
-     * Specifies whether the spinner's text should be italic.
-     * Some fonts do not support italic.
-     *
-     * @param italic {@code true} indicates italic, {@code false} normal
-     */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-            defaultValue = "False")
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE)
-    public void FontItalic(boolean italic) {
-        adapter.setItalic(italic);
+    public void setTextAlignment(int textAlignment) {
+      this.textAlignment = textAlignment;
     }
 
-    /**
-     * Returns the spinner's text's font size, measured in sp(scale-independent pixels).
-     *
-     * @return font size in sp(scale-independent pixels).
-     */
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE,
-            description = "Point size for spinner text.")
-    public float FontSize() {
-        return adapter.getFontSize();
+    public int getFontTypeface() {
+      return fontTypeface;
     }
 
-    /**
-     * Specifies the spinner's text's font size, measured in sp(scale-independent pixels).
-     *
-     * @param size font size in sp(scale-independent pixels)
-     */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-            defaultValue = Component.FONT_DEFAULT_SIZE + "")
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE)
-    public void FontSize(float size) {
-        adapter.setFontSize(size);
+    public void setFontTypeface(int fontTypeface) {
+      this.fontTypeface = fontTypeface;
     }
 
-    /**
-     * Returns the spinner's text's font face as default, serif, sans
-     * serif, or monospace.
-     *
-     * @return one of {@link Component#TYPEFACE_DEFAULT},
-     * {@link Component#TYPEFACE_SERIF},
-     * {@link Component#TYPEFACE_SANSSERIF} or
-     * {@link Component#TYPEFACE_MONOSPACE}
-     */
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE,
-            description = "Font family for spinner text.",
-            userVisible = false)
-    public int FontTypeface() {
-        return adapter.getFontTypeface();
+    public boolean isBold() {
+      return bold;
     }
 
-    /**
-     * Specifies the spinner's text's font face as default, serif, sans
-     * serif, or monospace.
-     *
-     * @param typeface one of {@link Component#TYPEFACE_DEFAULT},
-     *                 {@link Component#TYPEFACE_SERIF},
-     *                 {@link Component#TYPEFACE_SANSSERIF} or
-     *                 {@link Component#TYPEFACE_MONOSPACE}
-     */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
-            defaultValue = Component.TYPEFACE_DEFAULT + "")
-    @SimpleProperty(
-            userVisible = false)
-    public void FontTypeface(int typeface) {
-        adapter.setFontTypeface(typeface);
+    public void setBold(boolean bold) {
+      this.bold = bold;
     }
 
-    /**
-     * Returns the spinner's text color as an alpha-red-green-blue
-     * integer.
-     *
-     * @return text RGB color with alpha
-     */
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE,
-            description = "Color for spinner text.")
-    public int TextColor() {
-        return adapter.getTextColor();
+    public boolean isItalic() {
+      return italic;
     }
 
-    /**
-     * Specifies the spinner's text color as an alpha-red-green-blue
-     * integer.
-     *
-     * @param argb text RGB color with alpha
-     */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-            defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-    @SimpleProperty
-    public void TextColor(int argb) {
-        adapter.setTextColor(argb);
+    public void setItalic(boolean italic) {
+      this.italic = italic;
     }
 
-    private static class SpinnerArrayAdapter extends ArrayAdapter<String> {
-        // This is our handle in Android's default spinner color states;
-        private ColorStateList defaultColorStateList;
-
-        // Backing for text alignment
-        private int textAlignment;
-
-        // Backing for font typeface
-        private int fontTypeface;
-
-        // Backing for font bold
-        private boolean bold;
-
-        // Backing for font italic
-        private boolean italic;
-
-        // Backing for text color
-        private int textColor;
-
-        // Backing for font size
-        private float fontSize;
-
-        public SpinnerArrayAdapter(final Context context, final int textViewResourceId) {
-            super(context, textViewResourceId);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TextView view = (TextView) super.getView(position, convertView, parent);
-            decorate(view);
-            return view;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            TextView view = (TextView) super.getDropDownView(position, convertView, parent);
-            decorate(view);
-            return view;
-        }
-
-        private void decorate(TextView view) {
-            // This is a workaround to the save default ColorStateList of the textView.
-            // (defaultColorStateList == null) will only be true when the decorate method is called for
-            // the first time.
-            if (defaultColorStateList == null)
-                defaultColorStateList = view.getTextColors();
-
-            TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
-            TextViewUtil.setFontSize(view, fontSize);
-            TextViewUtil.setAlignment(view, textAlignment, true);
-
-            if (textColor != Component.COLOR_DEFAULT) {
-                TextViewUtil.setTextColor(view, textColor);
-            } else {
-                TextViewUtil.setTextColors(view, defaultColorStateList);
-            }
-        }
-
-        public int getTextAlignment() {
-            return textAlignment;
-        }
-
-        public void setTextAlignment(int textAlignment) {
-            this.textAlignment = textAlignment;
-        }
-
-        public int getFontTypeface() {
-            return fontTypeface;
-        }
-
-        public void setFontTypeface(int fontTypeface) {
-            this.fontTypeface = fontTypeface;
-        }
-
-        public boolean isBold() {
-            return bold;
-        }
-
-        public void setBold(boolean bold) {
-            this.bold = bold;
-        }
-
-        public boolean isItalic() {
-            return italic;
-        }
-
-        public void setItalic(boolean italic) {
-            this.italic = italic;
-        }
-
-        public int getTextColor() {
-            return textColor;
-        }
-
-        public void setTextColor(int textColor) {
-            this.textColor = textColor;
-        }
-
-        public float getFontSize() {
-            return fontSize;
-        }
-
-        public void setFontSize(float fontSize) {
-            this.fontSize = fontSize;
-        }
+    public int getTextColor() {
+      return textColor;
     }
+
+    public void setTextColor(int textColor) {
+      this.textColor = textColor;
+    }
+
+    public float getFontSize() {
+      return fontSize;
+    }
+
+    public void setFontSize(float fontSize) {
+      this.fontSize = fontSize;
+    }
+  }
 }
