@@ -122,7 +122,7 @@
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="static/js/scroll-options-7.0.8.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-search-10.1.7.min.js"></script>
-    <script type="text/javascript" src="static/js/block-dynamic-connection-0.7.16.min.js"></script>
+    <script type="text/javascript" src="static/js/block-dynamic-connection-0.8.8.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-multiselect-pr120-44c2447.min.js"></script>
     <script type="text/javascript" src="static/js/keyboard-navigation-0.7.0.min.js"></script>
