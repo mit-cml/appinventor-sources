@@ -2325,7 +2325,12 @@ Blockly.Versioning.AllUpgradeMaps =
   "Spinner": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: The BackgroundColor, Enabled, FontBold, FontSize, Height, Image, ShowFeedback, TextAlignment, and
+    // TextColor properties were added.
+    2: "noUpgrade"
+
 
   }, // End Spinner upgraders
 
