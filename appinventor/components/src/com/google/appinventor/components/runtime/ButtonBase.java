@@ -17,6 +17,7 @@ import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -32,20 +33,21 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 
 /**
  * Underlying base class for click-based components, not directly accessible to Simple programmers.
+ *
  */
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public abstract class ButtonBase extends TouchComponent<android.widget.Button>
-    implements OnClickListener, OnLongClickListener, View.OnFocusChangeListener {
+    implements OnClickListener, OnFocusChangeListener, OnLongClickListener {
 
   // Constant for shape
   // 10px is the radius of the rounded corners.
   // 10px was chosen for esthetic reasons.
   private static final float ROUNDED_CORNERS_RADIUS = 10f;
-  private static final float[] ROUNDED_CORNERS_ARRAY = new float[]{ROUNDED_CORNERS_RADIUS,
+  private static final float[] ROUNDED_CORNERS_ARRAY = new float[] { ROUNDED_CORNERS_RADIUS,
       ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS,
       ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS,
-      ROUNDED_CORNERS_RADIUS};
+      ROUNDED_CORNERS_RADIUS };
 
   // Constant background color for buttons with a Shape other than default
   private static final int SHAPED_DEFAULT_BACKGROUND_COLOR = Color.LTGRAY;
@@ -73,14 +75,14 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
 
   /**
    * The minimum width of a button for the current theme.
-   * <p>
+   *
    * We store this statically because it should be constant across all buttons in the app.
    */
   private static int defaultButtonMinWidth = 0;
 
   /**
    * The minimum height of a button for the current theme.
-   * <p>
+   *
    * We store this statically because it should be constant across all buttons in the app.
    */
   private static int defaultButtonMinHeight = 0;
@@ -88,7 +90,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   /**
    * Creates a new ButtonBase component.
    *
-   * @param container container, component will be placed in
+   * @param container  container, component will be placed in
    */
   public ButtonBase(ComponentContainer container) {
     super(container);
@@ -102,9 +104,9 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     // Initialize TouchComponent attributes
     initToggle();
 
-    // Listen to clicks & focus change
-    view.setOnFocusChangeListener(this);
+    // Listen to clicks and focus changes
     view.setOnClickListener(this);
+    view.setOnFocusChangeListener(this);
     view.setOnLongClickListener(this);
     IceCreamSandwichUtil.setAllCaps(view, false);
 
@@ -143,9 +145,9 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * (e.g., left-justified if text is written left to right), or
    * opposite (e.g., right-justified if text is written left to right).
    *
-   * @return one of {@link Component#ALIGNMENT_NORMAL},
-   * {@link Component#ALIGNMENT_CENTER} or
-   * {@link Component#ALIGNMENT_OPPOSITE}
+   * @return  one of {@link Component#ALIGNMENT_NORMAL},
+   *          {@link Component#ALIGNMENT_CENTER} or
+   *          {@link Component#ALIGNMENT_OPPOSITE}
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -160,12 +162,12 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * (e.g., left-justified if text is written left to right), or
    * opposite (e.g., right-justified if text is written left to right).
    *
-   * @param alignment one of {@link Component#ALIGNMENT_NORMAL},
-   *                  {@link Component#ALIGNMENT_CENTER} or
-   *                  {@link Component#ALIGNMENT_OPPOSITE}
+   * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
+   *                   {@link Component#ALIGNMENT_CENTER} or
+   *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
-      defaultValue = Component.ALIGNMENT_CENTER + "")
+                    defaultValue = Component.ALIGNMENT_CENTER + "")
   @SimpleProperty(userVisible = false)
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
@@ -175,10 +177,10 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   /**
    * Returns the style of the button.
    *
-   * @return one of {@link Component#BUTTON_SHAPE_DEFAULT},
-   * {@link Component#BUTTON_SHAPE_ROUNDED},
-   * {@link Component#BUTTON_SHAPE_RECT} or
-   * {@link Component#BUTTON_SHAPE_OVAL}
+   * @return  one of {@link Component#BUTTON_SHAPE_DEFAULT},
+   *          {@link Component#BUTTON_SHAPE_ROUNDED},
+   *          {@link Component#BUTTON_SHAPE_RECT} or
+   *          {@link Component#BUTTON_SHAPE_OVAL}
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -191,9 +193,10 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * Specifies the style the button. This does not check that the argument is a legal value.
    *
    * @param shape one of {@link Component#BUTTON_SHAPE_DEFAULT},
-   *              {@link Component#BUTTON_SHAPE_ROUNDED},
-   *              {@link Component#BUTTON_SHAPE_RECT} or
-   *              {@link Component#BUTTON_SHAPE_OVAL}
+   *          {@link Component#BUTTON_SHAPE_ROUNDED},
+   *          {@link Component#BUTTON_SHAPE_RECT} or
+   *          {@link Component#BUTTON_SHAPE_OVAL}
+   *
    * @throws IllegalArgumentException if shape is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE,
@@ -228,12 +231,12 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
     }
   }
 
-  private ColorStateList createRippleState() {
+  private ColorStateList createRippleState () {
 
-    int[][] states = new int[][]{new int[]{android.R.attr.state_enabled}};
+    int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
     int enabled_color = defaultColorStateList.getColorForState(view.getDrawableState(), android.R.attr.state_enabled);
-    int[] colors = new int[]{Color.argb(70, Color.red(enabled_color), Color.green(enabled_color),
-        Color.blue(enabled_color))};
+    int[] colors = new int[] { Color.argb(70, Color.red(enabled_color), Color.green(enabled_color),
+            Color.blue(enabled_color)) };
 
     return new ColorStateList(states, colors);
   }
@@ -280,7 +283,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * If bold has been requested, this property will return true, even if the
    * font does not support bold.
    *
-   * @return {@code true} indicates bold, {@code false} normal
+   * @return  {@code true} indicates bold, {@code false} normal
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -293,7 +296,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * Specifies whether the button's text should be bold.
    * Some fonts do not support bold.
    *
-   * @param bold {@code true} indicates bold, {@code false} normal
+   * @param bold  {@code true} indicates bold, {@code false} normal
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
@@ -309,7 +312,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * If italic has been requested, this property will return true, even if the
    * font does not support italic.
    *
-   * @return {@code true} indicates italic, {@code false} normal
+   * @return  {@code true} indicates italic, {@code false} normal
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -322,7 +325,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * Specifies whether the button's text should be italic.
    * Some fonts do not support italic.
    *
-   * @param italic {@code true} indicates italic, {@code false} normal
+   * @param italic  {@code true} indicates italic, {@code false} normal
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
@@ -336,7 +339,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   /**
    * Returns the button's text's font size, measured in sp(scale-independent pixels).
    *
-   * @return font size in sp(scale-independent pixels).
+   * @return  font size in sp(scale-independent pixels).
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -348,7 +351,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   /**
    * Specifies the button's text's font size, measured in sp(scale-independent pixels).
    *
-   * @param size font size in sp(scale-independent pixels)
+   * @param size  font size in sp(scale-independent pixels)
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
@@ -362,10 +365,10 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * Returns the button's text's font face as default, serif, sans
    * serif, or monospace.
    *
-   * @return one of {@link Component#TYPEFACE_DEFAULT},
-   * {@link Component#TYPEFACE_SERIF},
-   * {@link Component#TYPEFACE_SANSSERIF} or
-   * {@link Component#TYPEFACE_MONOSPACE}
+   * @return  one of {@link Component#TYPEFACE_DEFAULT},
+   *          {@link Component#TYPEFACE_SERIF},
+   *          {@link Component#TYPEFACE_SANSSERIF} or
+   *          {@link Component#TYPEFACE_MONOSPACE}
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -379,10 +382,10 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * Specifies the button's text's font face as default, serif, sans
    * serif, or monospace.
    *
-   * @param typeface one of {@link Component#TYPEFACE_DEFAULT},
-   *                 {@link Component#TYPEFACE_SERIF},
-   *                 {@link Component#TYPEFACE_SANSSERIF} or
-   *                 {@link Component#TYPEFACE_MONOSPACE}
+   * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
+   *                  {@link Component#TYPEFACE_SERIF},
+   *                  {@link Component#TYPEFACE_SANSSERIF} or
+   *                  {@link Component#TYPEFACE_MONOSPACE}
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
@@ -396,7 +399,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   /**
    * Returns the text displayed by the button.
    *
-   * @return button caption
+   * @return  button caption
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -408,7 +411,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   /**
    * Specifies the text displayed by the button.
    *
-   * @param text new caption for button
+   * @param text  new caption for button
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
@@ -421,7 +424,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * Returns the button's text color as an alpha-red-green-blue
    * integer.
    *
-   * @return text RGB color with alpha
+   * @return  text RGB color with alpha
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
@@ -434,7 +437,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    * Specifies the button's text color as an alpha-red-green-blue
    * integer.
    *
-   * @param argb text RGB color with alpha
+   * @param argb  text RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
@@ -446,17 +449,6 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
       TextViewUtil.setTextColor(view, argb);
     } else {
       TextViewUtil.setTextColors(view, defaultColorStateList);
-    }
-  }
-
-  // OnFocusChangeListener implementation
-
-  @Override
-  public void onFocusChange(View previouslyFocused, boolean gainFocus) {
-    if (gainFocus) {
-      GotFocus();
-    } else {
-      LostFocus();
     }
   }
 
@@ -475,6 +467,17 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @Override
   public void onClick(View view) {
     click();
+  }
+
+  // OnFocusChangeListener implementation
+
+  @Override
+  public void onFocusChange(View previouslyFocused, boolean gainFocus) {
+    if (gainFocus) {
+      GotFocus();
+    } else {
+      LostFocus();
+    }
   }
 
   // OnLongClickListener implementation

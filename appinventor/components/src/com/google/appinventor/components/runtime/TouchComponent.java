@@ -68,11 +68,11 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
 
     defaultDrawable = view.getBackground();
 
-    Enabled(true);
     // BackgroundColor and Image are dangerous properties:
     // Once either of them is set, the original bevel effect (e.g. for a Button) is
     // irretrievable, except by reloading defaultDrawable, defined above.
     BackgroundColor(Component.COLOR_DEFAULT);
+    Enabled(true);
     Image("");
   }
 
@@ -95,38 +95,6 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   @SimpleEvent(description = "Indicates that a component has been released.")
   public void TouchUp() {
     EventDispatcher.dispatchEvent(this, "TouchUp");
-  }
-
-
-  /**
-   * If a custom background images is specified for the component, then it will lose the pressed
-   * and disabled image effects; no visual feedback.
-   * The approach below is to provide a visual feedback if and only if an image is assigned
-   * to the component. In this situation, we overlay a gray background when pressed and
-   * release when not-pressed.
-   */
-  @Override
-  public boolean onTouch(View view, MotionEvent me) {
-    //NOTE: We ALWAYS return false because we want to indicate that this listener has not
-    //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
-    if (me.getAction() == MotionEvent.ACTION_DOWN) {
-      //component pressed, provide visual feedback AND return false
-      if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-        view.getBackground().setAlpha(70); // translucent
-        view.invalidate();
-      }
-      TouchDown();
-    } else if (me.getAction() == MotionEvent.ACTION_UP ||
-        me.getAction() == MotionEvent.ACTION_CANCEL) {
-      //component released, set component back to normal AND return false
-      if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-        view.getBackground().setAlpha(255); // opaque
-        view.invalidate();
-      }
-      TouchUp();
-    }
-
-    return false;
   }
 
   /**
@@ -153,7 +121,6 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     view.setEnabled(enabled);
     view.invalidate();
   }
-
 
   /**
    * Specifies if a visual feedback should be shown when a component with an assigned image
@@ -229,7 +196,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
 
   /**
    * Specifies the path of the component's image.
-   * <p>
+   *
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
@@ -253,7 +220,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
     backgroundImageDrawable = null;
 
     // Load image from file.
-    if (imagePath.length() > 0) {
+    if (!imagePath.isEmpty()) {
       try {
         backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
       } catch (IOException ioe) {
@@ -265,6 +232,39 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
 
     // Update the appearance based on the new value of backgroundImageDrawable.
     updateAppearance();
+  }
+
+  // OnTouchListener implementation
+
+  /**
+   * If a custom background images is specified for the component, then it will lose the pressed
+   * and disabled image effects; no visual feedback.
+   * The approach below is to provide a visual feedback if and only if an image is assigned
+   * to the component. In this situation, we overlay a gray background when pressed and
+   * release when not-pressed.
+   */
+  @Override
+  public boolean onTouch(View view, MotionEvent me) {
+    //NOTE: We ALWAYS return false because we want to indicate that this listener has not
+    //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
+    if (me.getAction() == MotionEvent.ACTION_DOWN) {
+      //component pressed, provide visual feedback AND return false
+      if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+        view.getBackground().setAlpha(70); // translucent
+        view.invalidate();
+      }
+      TouchDown();
+    } else if (me.getAction() == MotionEvent.ACTION_UP ||
+        me.getAction() == MotionEvent.ACTION_CANCEL) {
+      //component released, set component back to normal AND return false
+      if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+        view.getBackground().setAlpha(255); // opaque
+        view.invalidate();
+      }
+      TouchUp();
+    }
+
+    return false;
   }
 
   protected void updateAppearance() {

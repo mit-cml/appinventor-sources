@@ -8,8 +8,6 @@ package com.google.appinventor.components.runtime;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
@@ -17,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-
 import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -29,7 +26,10 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.*;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
+import com.google.appinventor.components.runtime.util.HoneycombUtil;
+import com.google.appinventor.components.runtime.util.TextViewUtil;
+import com.google.appinventor.components.runtime.util.YailList;
 
 @DesignerComponent(version = YaVersion.SPINNER_COMPONENT_VERSION,
     description = "<p>A spinner component that displays a pop-up with a list of elements." +
@@ -46,7 +46,7 @@ import com.google.appinventor.components.runtime.util.*;
 @SimpleObject
 public final class Spinner extends TouchComponent<android.widget.Spinner> implements OnItemSelectedListener {
 
-  private SpinnerArrayAdapter adapter;
+  private final SpinnerArrayAdapter adapter;
   private YailList items = new YailList();
   private int oldAdapterCount;
   private int oldSelectionIndex;
@@ -140,7 +140,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
   public void Elements(YailList itemList){
     // The following conditional handles special cases for the fact that
     // spinners automatically select an item when non-empty data is fed
-    if (itemList.size() == 0) {
+    if (itemList.isEmpty()) {
       SelectionIndex(0);
     } else if (itemList.size() < items.size() && SelectionIndex() == items.size()) {
       SelectionIndex(itemList.size());
@@ -162,8 +162,8 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
   private void setAdapterData(String[] theItems) {
     oldAdapterCount = adapter.getCount();
     adapter.clear();
-    for (int i = 0; i < theItems.length; i++){
-      adapter.add(theItems[i]);
+    for (String theItem : theItems) {
+      adapter.add(theItem);
     }
   }
 
