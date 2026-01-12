@@ -177,6 +177,9 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isValidIdentifier(String text) {
+    if (text == null) {
+    return false;
+  }
     return text.matches("^[a-zA-Z]\\w*$");
   }
 
@@ -200,7 +203,12 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isValidComponentIdentifier(String text) {
-    return text.matches("^[" + ID_DISALLOWED_STARTCHARS + "][" + ID_DISALLOWED_CHARS + "]*$");
+    if (text == null) {
+    return false;
+  }
+  String startClass = "[^" + ID_DISALLOWED_STARTCHARS + "]";
+  String restClass = "[^" + ID_DISALLOWED_CHARS + "]*";
+  return text.matches("^" + startClass + restClass + "$");
   }
 
   /**
@@ -214,6 +222,9 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isValidCharFilename(String filename){
+    if (text == null) {
+    return false;
+  }
     return !filename.contains("'") && filename.equals(URL.encodePathSegment(filename));
   }
 
@@ -229,7 +240,11 @@ public final class TextValidators {
    *         otherwise
    */
   public static boolean isValidLengthFilename(String filename){
-    return !(filename.length() > MAX_FILENAME_SIZE || filename.length() < MIN_FILENAME_SIZE);
+    if (filename == null) {
+    return false;
+  }
+  int len = filename.length();
+  return len >= MIN_FILENAME_SIZE && len <= MAX_FILENAME_SIZE;
   }
 
   enum NameValidationError {
@@ -249,7 +264,10 @@ public final class TextValidators {
   }
 
   private static ValidationResult validateName(String name) {
-    String temp = name.trim().replaceAll("( )+", " ").replace(" ", "_");
+    if (name == null) {
+  name = "";
+}
+    String temp = name.trim().replaceAll("\\s+", " ").replace("\\s ", "_");
     NameValidationError error;
     if (temp.length() == 0) {
       error = NameValidationError.NONE;
