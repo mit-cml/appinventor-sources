@@ -206,9 +206,7 @@ public final class TextValidators {
     if (text == null) {
     return false;
   }
-  String startClass = "[^" + ID_DISALLOWED_STARTCHARS + "]";
-  String restClass = "[^" + ID_DISALLOWED_CHARS + "]*";
-  return text.matches("^" + startClass + restClass + "$");
+  return text.matches("^[^" + ID_DISALLOWED_STARTCHARS + "][^" + ID_DISALLOWED_CHARS + "]*$");
   }
 
   /**
