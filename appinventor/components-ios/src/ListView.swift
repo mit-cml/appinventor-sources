@@ -177,18 +177,20 @@ let HORIZONTAL_LAYOUT = 1
   
     private func addElements(_ elements: [AnyObject]) {
       if !elements.isEmpty {
-        let testItemsForDict = _items.first(where: { !($0 is SCMSymbol) })
-        let testElementsForDict = elements.first(where: { !($0 is SCMSymbol) })
+        let testItemsForDict = _items.first(where: { $0 is NSDictionary })
+        let testElementsForDict = elements.first(where: { $0 is NSDictionary })
         let filteredListElements = elements.filter { $0 is YailList<AnyObject> }
         
+        let otherElements = elements.filter { !($0 is YailList<AnyObject>) && !($0 is NSDictionary) }
+        
         let useDictFormat = testItemsForDict?["Text1"] != nil || testElementsForDict?["Text1"] != nil
+       
         
         if useDictFormat {
-          _items.append((elements as AnyObject) as! [String : AnyObject])
-          
+          _items.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
         } else if filteredListElements.count > 0 {
           var dict: [String: AnyObject] = [:]
-                  
+          print("item type is YailList \(dict)")
           for kvPair in filteredListElements {
             if let pair = kvPair as? YailList<AnyObject>, pair.count >= 3 {
               if let key = pair[1] as? String {
@@ -197,18 +199,16 @@ let HORIZONTAL_LAYOUT = 1
             }
           }
           _items.append(dict)
-        } else {
-          for item in elements {
+        }
+        
+        for item in otherElements {
             // Fall back to simple text item
             if let str = item as? String {
               _items.append(makeListItem(text1: str))
-              print("dict: item type is String")
             } else if let n = item as? NSNumber {
               _items.append(makeListItem(text1: n.stringValue))
-              print("dict: item type is Number")
+
             }
-          }
-          
         }
         elementsCount()
       }
