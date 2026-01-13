@@ -360,7 +360,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
       category = PropertyCategory.APPEARANCE,
       description = "Font family for spinner text.",
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return adapter.getFontTypeface();
   }
 
@@ -377,7 +377,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     adapter.setFontTypeface(typeface);
   }
 
@@ -415,7 +415,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
     private int textAlignment;
 
     // Backing for font typeface
-    private int fontTypeface;
+    private String fontTypeface;
 
     // Backing for font bold
     private boolean bold;
@@ -454,7 +454,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
       if (defaultColorStateList == null)
         defaultColorStateList = view.getTextColors();
 
-      TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+      TextViewUtil.setFontTypeface((Form) getContext(), view, fontTypeface, bold, italic);
       TextViewUtil.setFontSize(view, fontSize);
       TextViewUtil.setAlignment(view, textAlignment, true);
 
@@ -473,11 +473,11 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
       this.textAlignment = textAlignment;
     }
 
-    public int getFontTypeface() {
+    public String getFontTypeface() {
       return fontTypeface;
     }
 
-    public void setFontTypeface(int fontTypeface) {
+    public void setFontTypeface(String fontTypeface) {
       this.fontTypeface = fontTypeface;
     }
 

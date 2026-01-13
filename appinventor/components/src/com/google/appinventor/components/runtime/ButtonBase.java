@@ -287,7 +287,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
         Paint paint = new Paint();
         paint.setAntiAlias(true);
 
-        BitmapDrawable backgroundBitmap = ((BitmapDrawable) backgroundImageDrawable).getBitmap();
+        Bitmap backgroundBitmap = ((BitmapDrawable) backgroundImageDrawable).getBitmap();
         float displayDensity = view.getContext().getResources().getDisplayMetrics().density;
         int shapeHeight = Math.round(backgroundImageDrawable.getIntrinsicHeight() * displayDensity);
         int shapeWidth = Math.round(backgroundImageDrawable.getIntrinsicWidth() * displayDensity);
@@ -321,7 +321,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
 
   private Drawable getSafeBackgroundDrawable() {
     if (myBackgroundDrawable == null) {
-      Drawable.ConstantState state = defaultButtonDrawable.getConstantState();
+      Drawable.ConstantState state = defaultDrawable.getConstantState();
       if (state != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
         try {
           myBackgroundDrawable = state.newDrawable().mutate();
@@ -329,11 +329,11 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
           // We see this on SDK 7, but given we can't easily test every version
           // this is meant as a safeguard.
           Log.e(LOG_TAG, "Unable to clone button drawable", e);
-          myBackgroundDrawable = defaultButtonDrawable;
+          myBackgroundDrawable = defaultDrawable;
         }
       } else {
         // Since we can't make a copy of the default we'll just use it directly
-        myBackgroundDrawable = defaultButtonDrawable;
+        myBackgroundDrawable = defaultDrawable;
       }
     }
     return myBackgroundDrawable;
@@ -637,7 +637,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
         ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
         view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
       } else {
-        ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+        ViewUtil.setBackgroundDrawable(view, defaultDrawable);
       }
     }
 

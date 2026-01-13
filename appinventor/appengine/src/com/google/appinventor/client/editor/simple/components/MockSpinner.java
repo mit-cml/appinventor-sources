@@ -77,7 +77,7 @@ public final class MockSpinner extends MockVisibleComponent {
    * Sets the spinner's FontTypeface property to a new value.
    */
   private void setFontTypefaceProperty(String text) {
-    MockComponentsUtil.setWidgetFontTypeface(spinnerWidget, text);
+    MockComponentsUtil.setWidgetFontTypeface(editor, spinnerWidget, text);
   }
 
   /*

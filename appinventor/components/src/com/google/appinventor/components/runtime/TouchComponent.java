@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -50,7 +51,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   protected Drawable backgroundImageDrawable;
 
   // Stores default background of the component
-  private Drawable defaultDrawable;
+  protected Drawable defaultDrawable;
 
   /**
    * Creates a new TouchComponent component.
@@ -83,37 +84,37 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   }
 
   /**
-   * Indicates when a component is touch down
+   * Indicates that the `%type%` was pressed down.
    */
-  @SimpleEvent(description = "Indicates that the component was pressed down.")
+  @SimpleEvent(description = "Indicates that the %type% was pressed down.")
   public void TouchDown() {
     EventDispatcher.dispatchEvent(this, "TouchDown");
   }
 
   /**
-   * Indicates when a component touch ends
+   * Indicates that the `%type%` has been released.
    */
-  @SimpleEvent(description = "Indicates that a component has been released.")
+  @SimpleEvent(description = "Indicates that the %type% has been released.")
   public void TouchUp() {
     EventDispatcher.dispatchEvent(this, "TouchUp");
   }
 
   /**
-   * Returns true if the component is active and interacatable.
+   * If set, user can tap `%type%` to cause action.
    *
-   * @return {@code true} indicates enabled, {@code false} disabled
+   * @return  {@code true} indicates enabled, {@code false} disabled
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "If set, user can tap check box to cause action.")
+      description = "If set, user can tap %type% to cause action.")
   public boolean Enabled() {
     return view.isEnabled();
   }
 
   /**
-   * Specifies whether the component should be active and interactable.
+   * Specifies whether the `%type%` should be active and clickable.
    *
-   * @param enabled {@code true} for enabled, {@code false} disabled
+   * @param enabled  {@code true} for enabled, {@code false} disabled
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
@@ -124,31 +125,31 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   }
 
   /**
-   * Specifies if a visual feedback should be shown when a component with an assigned image
-   * is pressed.
+   * Specifies if a visual feedback should be shown when a `%type%` with an assigned
+   * {@link #Image()} is pressed.
    *
-   * @param showFeedback {@code true} enables showing feedback,
-   *                     {@code false} disables it
+   * @param showFeedback  {@code true} enables showing feedback,
+   *                 {@code false} disables it
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
-      " for a component that as an image as background.")
-
+      " for a %type% that has an image as background.")
   public void ShowFeedback(boolean showFeedback) {
     this.showFeedback = showFeedback;
   }
 
   /**
-   * Returns true if the component should provide visual feedback when it is pressed
-   * and there is an image assigned.
+   * Specifies if a visual feedback should be shown when a `%type%` with an assigned
+   * {@link #Image()} is pressed.
    *
+   * @suppressdoc
    * @return {@code true} indicates visual feedback will be shown,
-   * {@code false} visual feedback will not be shown
+   *                 {@code false} visual feedback will not be shown
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Returns the component's visual feedback state")
+      description = "Returns the visual feedback state of the %type%")
   public boolean ShowFeedback() {
     return showFeedback;
   }
@@ -157,11 +158,12 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
    * Returns the `%type%`'s background color as an alpha-red-green-blue
    * integer.
    *
-   * @return background RGB color with alpha
+   * @return  background RGB color with alpha
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Returns the component's background color")
+      description = "Returns the button's background color")
+  @IsColor
   public int BackgroundColor() {
     return backgroundColor;
   }
@@ -177,7 +179,7 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
    * @param argb background RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-                    defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty(description = "Specifies the background color of the %type%. " +
       "The background color will not be visible if an Image is being displayed.")
   public void BackgroundColor(int argb) {
@@ -188,27 +190,28 @@ public abstract class TouchComponent<T extends View> extends AndroidViewComponen
   /**
    * Returns the path of the `%type%`'s image.
    *
-   * @return the path of the component's image
+   * @return  the path of the button's image
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Image to display on component.")
+      description = "Image to display on button.")
   public String Image() {
     return imagePath;
   }
 
   /**
-   * Specifies the path of the `%type%`'s image.
+   * Specifies the path of the `%type%`'s image. If there is both an `Image` and a
+   * {@link #BackgroundColor()} specified, only the `Image` will be visible.
    *
    * @internaldoc
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
-   * @param path the path of the component's image
+   * @param path  the path of the button's image
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
-  @SimpleProperty(description = "Specifies the path of the component's image.  " +
+  @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
       "visible.")
   public void Image(@Asset String path) {
