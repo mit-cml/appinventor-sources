@@ -36,6 +36,43 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
     XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
   }
+  
+  func testElementAsDictItems() {
+    testList.Elements = [["Text1": "MainText","Text2": "DetailText", "Image": "Image"] as YailDictionary]
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItems3Args() {
+    testList.AddItems([["Text1": "MainText","Text2": "DetailText", "Image": "Image"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItems2Args() {
+    testList.AddItems([["Text1": "MainText","Text2": "DetailText"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItemsMixed2Args() {
+    testList.AddItems([["Text1": "MainText","Image": "Image"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItems1Args() {
+    testList.AddItems([["Text1": "MainText"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+
+  }
 
   func testBackgroundColor() {
     testList.BackgroundColor = Color.blue.int32
