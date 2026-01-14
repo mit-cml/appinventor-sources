@@ -73,8 +73,12 @@ public class ProjectManager {
         if (entryName.endsWith(screenName + ".yail")) {
           InputStream input = zipFile.getInputStream(entry);
           String yail = convertInputStreamToString(input);
-          int index = yail.indexOf(";;; ");
-          yail = yail.substring(index);
+          // Generic events and variable initialization is at the top of the file, but needs
+          // to happen after the components are loaded!
+          int index = yail.indexOf("(require <com.google.youngandroid.runtime>)");
+          int index1 = yail.indexOf(";;; ");
+          String init_yail = yail.substring(index + 43, index1);
+          yail = yail.substring(index1);
           if (screenName.equals("Screen1")) {
             yail = preamble1 + "(clear-current-form) (set-form-name \"" + screenName + "\") (clear-init-thunks) " + yail + postamble;
           } else {
@@ -83,6 +87,9 @@ public class ProjectManager {
           previousScreen = screenName;
           Log.d(LOG_TAG, "Yail: " + yail);
           ((ReplForm)form).evalScheme(yail); // ReplForm calls runOnUiThread
+          init_yail = preamble1 + init_yail + postamble;
+          Log.d(LOG_TAG, "Init_Yail: " + init_yail);
+          ((ReplForm)form).evalScheme(init_yail);
         }
       }
     } catch (IOException e) {
