@@ -119,9 +119,9 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   }
 
-  open override var shouldAutorotate: Bool {
-    return true
-  }
+  // open override var shouldAutorotate: Bool {
+  //   return true
+  // }
 
   private func initializeInterpreter() -> SCMInterpreter {
     guard !ViewController._interpreterInitialized else {
