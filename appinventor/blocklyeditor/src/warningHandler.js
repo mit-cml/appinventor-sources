@@ -300,9 +300,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
     if(errorFunc.call(this,block,errorObj)){
 
       //remove warning marker, if present
-      if(block.warning) {
-        block.setWarningText(null);
-      }
+      block.setWarningText(null);
       //If the block doesn't have an error already,
       //add one to the error count
       if(!block.hasError) {
@@ -352,9 +350,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
   }
 
   //remove the warning icon, if there is one
-  if(block.warning) {
-    block.setWarningText(null);
-  }
+  block.setWarningText(null);
   if(block.hasWarning) {
     block.hasWarning = false;
     this.warningCount--;
@@ -671,9 +667,7 @@ Blockly.WarningHandler.checkDuplicateErrorHandler = function(params){
 
 //This is the error that can be set from the REPL. It will be removed when the block changes.
 Blockly.WarningHandler.prototype.setBlockError = function(block, message){
-  if(block.warning) {
-    block.setWarningText(null);
-  }
+  block.setWarningText(null);
   if(block.hasWarning) {
     block.hasWarning = false;
     this.warningCount--;
