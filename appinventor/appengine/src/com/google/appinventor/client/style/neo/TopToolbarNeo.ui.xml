@@ -70,6 +70,9 @@
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
         <yaactions:RefreshCompanionAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="SaveProjectToCompanion" caption="{messages.saveProjectToCompanionMenuItem}">
+        <yaactions:SaveProjectToCompanionAction/>
+      </ai:DropDownItem>
       <ai:DropDownItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
         <yaactions:ResetAction/>
       </ai:DropDownItem>

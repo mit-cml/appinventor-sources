@@ -90,12 +90,15 @@
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
         <yaactions:RefreshCompanionAction/>
       </ai:DropDownItem>
-      <hr/>
       <ai:DropDownItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
         <yaactions:ResetAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
         <yaactions:HardResetAction/>
+      </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="SaveProjectToCompanion" caption="{messages.saveProjectToCompanionMenuItem}">
+        <yaactions:SaveProjectToCompanionAction/>
       </ai:DropDownItem>
     </ai:DropDownButton>
 
