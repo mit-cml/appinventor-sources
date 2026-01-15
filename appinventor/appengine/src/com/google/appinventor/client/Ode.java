@@ -1617,39 +1617,25 @@ public class Ode implements EntryPoint {
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
-    Grid mainGrid = new Grid(2, 2);
-    mainGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(0,
-            1,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(1,
-            1,
-            HasHorizontalAlignment.ALIGN_RIGHT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
+    HorizontalPanel mainPanel = new HorizontalPanel();
+    mainPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    mainPanel.setSpacing(10);
 
     Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 
-    Grid messageGrid = new Grid(2, 1);
-    messageGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_JUSTIFY,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    messageGrid.getCellFormatter().setAlignment(1,
-            0,
-            HasHorizontalAlignment.ALIGN_LEFT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-
+    VerticalPanel messagePanel = new VerticalPanel();
+    messagePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 
     Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
-    messageGrid.setWidget(1, 0, messageChunk2);
-    mainGrid.setWidget(0, 0, dialogImage);
-    mainGrid.setWidget(0, 1, messageGrid);
+    messagePanel.add(messageChunk2);
 
-    dialogBox.setWidget(mainGrid);
+    mainPanel.add(dialogImage);
+    mainPanel.add(messagePanel);
+
+    mainPanel.setCellHorizontalAlignment(dialogImage, HasHorizontalAlignment.ALIGN_CENTER);
+    mainPanel.setCellVerticalAlignment(dialogImage, HasVerticalAlignment.ALIGN_MIDDLE);
+
+    dialogBox.setWidget(mainPanel);
     dialogBox.center();
 
     if (showDialog) {
@@ -2708,7 +2694,7 @@ public class Ode implements EntryPoint {
   public interface Resources extends ClientBundle {
 
     public static final Resources INSTANCE =  GWT.create(Resources.class);
-    
+
     @Source({
       "com/google/appinventor/client/style/classic/light.css",
       "com/google/appinventor/client/style/classic/variableColors.css"
