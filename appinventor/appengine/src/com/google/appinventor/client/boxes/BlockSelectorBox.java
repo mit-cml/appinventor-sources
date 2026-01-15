@@ -148,6 +148,9 @@ public final class BlockSelectorBox extends Box {
     setContent(sourceStructureExplorer);
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
+
+    getElement().setAttribute("role", "region");
+    getElement().setAttribute("aria-label", MESSAGES.blockSelectorAriaLabel());
   }
 
   /**

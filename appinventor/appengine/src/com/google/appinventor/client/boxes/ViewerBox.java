@@ -42,6 +42,8 @@ public class ViewerBox extends Box {
         false,  // minimizable
         false); // removable
     addStyleName("ViewerBox");
+    getElement().setAttribute("role", "main");
+    getElement().setAttribute("aria-label", MESSAGES.viewerAriaLabel());
   }
 
   /**
