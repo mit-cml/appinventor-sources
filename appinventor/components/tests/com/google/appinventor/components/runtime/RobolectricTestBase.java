@@ -15,7 +15,7 @@ import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.shadows.org.osmdroid.tileprovider.util.ShadowStorageUtils;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import org.junit.Before;
-import org.junit.BeforeClass; // Added this tool to run code only once
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
     shadows = {ShadowStorageUtils.class, ShadowEventDispatcher.class, ShadowAsynchUtil.class})
 public class RobolectricTestBase {
 
-  // This variable now stays in memory for the whole test run
   private static Form sharedForm;
 
   private static class FakeForm extends Form {
@@ -63,20 +62,14 @@ public class RobolectricTestBase {
     return sharedForm;
   }
 
-  /**
-   * This method runs ONLY ONCE at the very beginning.
-   * It builds the "Fake Phone" (Form) that all tests will share.
-   */
   @BeforeClass
   public static void setUpBeforeClass() {
     if (sharedForm == null) {
       shadowOf(Looper.getMainLooper()).getScheduler().setIdleState(IdleState.PAUSED);
-      // Build the activity once
       ActivityController<FakeForm> activityController = Robolectric.buildActivity(FakeForm.class).setup();
       sharedForm = activityController.get();
       sharedForm.DefaultFileScope(FileScope.Legacy);
       
-      // Simulate layout once
       View v = sharedForm.getFrameLayout();
       v.layout(0, 0, 240, 320);
       v.measure(240, 320);
@@ -86,23 +79,30 @@ public class RobolectricTestBase {
     }
   }
 
-  /**
-   * This method runs before EVERY test.
-   * It no longer builds a phone; it just clears old messages (Light Cleaning).
-   */
   @Before
   public void setUp() {
-    ShadowEventDispatcher.clearEvents(); // Start with a clean slate
+    if (sharedForm == null) {
+      setUpBeforeClass();
+    }
+    
+    // Reset state to ensure isolation between tests
+    if (sharedForm.getFrameLayout() != null) {
+      sharedForm.getFrameLayout().removeAllViews();
+    }
+    
+    sharedForm.Title("Screen1");
+    sharedForm.BackgroundColor(Component.COLOR_WHITE);
+    sharedForm.BackgroundImage("");
+    
+    ShadowEventDispatcher.clearEvents();
+    sharedForm.ErrorOccurredEvent(sharedForm, "", 0, "");
   }
 
   public void setUpAsRepl() {
-    // Note: If a test specifically needs the REPL form, 
-    // it will still use the existing logic, but most use FakeForm.
     setUpForm(FakeReplForm.class);
   }
 
   private <T extends Form> void setUpForm(Class<T> clazz) {
-    // Keep this for specialized setup if needed
     shadowOf(Looper.getMainLooper()).getScheduler().setIdleState(IdleState.PAUSED);
     ActivityController<T> activityController = Robolectric.buildActivity(clazz).setup();
     sharedForm = activityController.get();
