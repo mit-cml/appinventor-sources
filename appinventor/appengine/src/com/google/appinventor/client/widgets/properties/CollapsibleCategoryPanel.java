@@ -9,22 +9,30 @@ package com.google.appinventor.client.widgets.properties;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A collapsible panel for property categories to replace GWT DisclosurePanel
- * and avoid table-based DOM structure (FlowPanel + CSS flexbox).
+ * Uses FlowPanel with CSS flexbox instead of VerticalPanel (which renders as tables)
  */
 public class CollapsibleCategoryPanel extends FlowPanel {
   private final FlowPanel header;
-  private final Label headerIcon;
+  private final Image headerIcon;
   private final Label headerText;
   private final FlowPanel content;
   private boolean isOpen;
 
-  private static final String ICON_OPEN = "▼";
-  private static final String ICON_CLOSED = "▶";
+  /**
+   * Note: Copy of the triangle icon from GWT 2.8.1 DisclosurePanel. These images are
+   * not available to outside classes (not even using a ClientBundle).
+   *
+   * Update this if/when upgrading GWT versions to match new theme images and no
+   * replacement for DisclosurePanel with alternative rendering is provided.
+   */
+  private static final String DISCLOSURE_ARROW_DATA_URI =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAnklEQVR4XmNgoDZITk4WQhcjCaSlpZ1JTU3tBdL86HJEAaDGS0D8H4hfpaenJ6PLEwRIBsDweSC2QVeHE2AxAIaXArEcunoMgMcAEP4GDJ+6wsJCTnR9cEDAABjeGBoayoyuFwwIGPCcYMDiMOAnKGqzsrJ40NVjACwGbAQmLhV0dTgBkgFXgU71QJcnCIAaDwOdm48zkAgBvFE0KAEAjDyRV4CcerkAAAAASUVORK5CYII=";
 
   /**
    * Creates a new collapsible category panel.
@@ -37,7 +45,8 @@ public class CollapsibleCategoryPanel extends FlowPanel {
     header = new FlowPanel();
     header.setStylePrimaryName("ode-PropertyCategoryHeader");
 
-    headerIcon = new Label(ICON_OPEN);
+    headerIcon = new Image();
+    headerIcon.setUrl(DISCLOSURE_ARROW_DATA_URI);
     headerIcon.setStylePrimaryName("ode-PropertyCategoryIcon");
 
     headerText = new Label(categoryName);
@@ -71,10 +80,10 @@ public class CollapsibleCategoryPanel extends FlowPanel {
     isOpen = open;
     if (open) {
       content.removeStyleName("ode-PropertyCategoryContent-closed");
-      headerIcon.setText(ICON_OPEN);
+      headerIcon.removeStyleName("ode-PropertyCategoryIcon-closed");
     } else {
       content.addStyleName("ode-PropertyCategoryContent-closed");
-      headerIcon.setText(ICON_CLOSED);
+      headerIcon.addStyleName("ode-PropertyCategoryIcon-closed");
     }
   }
 

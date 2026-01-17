@@ -1241,11 +1241,16 @@ div.StatusPanel {
 }
 
 .ode-PropertyCategoryIcon {
-  font-size: 14px;
-  line-height: 16px;
   width: 16px;
-  color: rgb(0, 0, 0);
+  height: 16px;
+  margin-top: 3px;
   flex-shrink: 0;
+  transition: transform 0.3s ease-out;
+  transform: rotate(90deg);  /* Default: rotate right-pointing arrow to point down */
+}
+
+.ode-PropertyCategoryIcon-closed {
+  transform: rotate(0deg);  /* Closed: no rotation, shows right arrow */
 }
 
 .ode-PropertyCategoryText {
