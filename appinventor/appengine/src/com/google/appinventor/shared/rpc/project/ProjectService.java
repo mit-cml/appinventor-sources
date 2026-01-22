@@ -178,7 +178,7 @@ public interface ProjectService extends RemoteService {
    * @param directory path of the directory
    * @return modification date for project
    */
-  long deleteFolder(String sessionId, long projectId, String directory) throws InvalidSessionException;
+  void deleteFolder(String sessionId, long projectId, String directory) throws InvalidSessionException;
 
   /**
    * Loads the file information associated with a node in the project tree. The

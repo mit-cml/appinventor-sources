@@ -388,7 +388,7 @@ public class LocalProjectService implements ProjectServiceAsync {
 
   @Override
   public void deleteFolder(String sessionId, long projectId, String directory,
-      AsyncCallback<Long> callback) {
+      AsyncCallback<Void> callback) {
 
   }
 

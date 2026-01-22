@@ -1,0 +1,54 @@
+[main]
+# Point this to a directory where your project data will be stored.
+storage = 
+[mail]
+# host name of the mail server
+host = 
+# username to login with on the mail server
+user = 
+# password to use (if needed)
+password = 
+# starttls whether or not to use the STARTTLS directive, true or false only
+starttls = false
+# Port to send mail. 25 is the "normal" mail port, 587 is the mail submission port
+# you most likely want to use 587
+port = 587
+# when starttls is used, if you care about certificate validate, point this
+# to a local java keystore file with the trusted root certificates you use.
+# keystore = 
+# mailfrom is used as the SMTP mail from when sending email. If it is
+# blank, then user@host (above) is used.
+mailfrom = 
+[other]
+require.tos = false
+auth.uselocal = true
+# Which buildserver to use (default to localhost:9990)
+build.server.host = localhost:9990
+# Our address for returning from the buildserver (default localhost:8888)
+build.server.return = localhost:8888
+# Set to true to enforce strict compatiblity with the buildserver
+# (the system and the buildserver must have the same git version number)
+build.send.git.version = false
+# Set auth.usegoogle to true to use Google Authentication. If set to true
+# you must set auth.googleclientid to the Google issues Client ID that you
+# obtain from the Google Cloud Console (via the API section)
+auth.usegoogle = false
+auth.googleclientid = none
+localauth.mailserver = https://osiris.mit.edu/passmail/
+localauth.mailserver.password = secret123
+motd.check.interval.secs = 0
+# public non-https port for App Inventor to use for itself
+# This may be different then the port we are actually listening on
+# because there may be a port mapping NAT in front of us
+port.public = 8888
+library.url = http://appinventor.mit.edu/explore/library
+get_started.url = http://appinventor.mit.edu/explore/get-started
+tutorials.url = http://appinventor.mit.edu/explore/ai2/tutorials
+troubleshooting.url = http://appinventor.mit.edu/explore/ai2/support/troubleshooting
+forums.url = https://groups.google.com/forum/#!forum/mitappinventortest
+feedback.url = http://something.example.com
+release.notes.url = http://appinventor.mit.edu/ai2/ReleaseNotes.html
+tos.url = /about/termsofservice.html
+logo.url = http://appinventor.mit.edu
+guide.url = http://appinventor.mit.edu/explore/library
+reference.components.url = /reference/components/

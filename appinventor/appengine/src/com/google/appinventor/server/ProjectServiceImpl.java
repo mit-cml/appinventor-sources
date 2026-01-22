@@ -28,6 +28,8 @@ import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
+import com.google.appinventor.server.encryption.EncryptionStrategy;
+import com.google.appinventor.server.encryption.Encryptor;
 
 import com.google.common.collect.Lists;
 
@@ -65,6 +67,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
+  @Override public void init() {
+    Encryptor encryptor = EncryptionStrategy.WRITE;
+    encryptor.setKeyPath(getServletContext().getRealPath("WEB-INF/keystore"));
+    LOG.log(Level.INFO, "Settings encryptor keystore path.");
+  }
+
   /**
    * Creates a new project.
    * @param projectType  type of new project
@@ -93,8 +101,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public UserProject newProjectFromTemplate(String projectName, String pathToZip) {
 
-    //Window.alert("newProjectFromTemplate " + host + pathToZip);
-    //   System.out.println("newProjectFromTemplate = " +  host + pathToZip);
+    // Need to alter the pathToZip to take into account local server root
+    pathToZip = getServletContext().getRealPath(pathToZip);
+
     UserProject userProject = null;
     try {
       FileInputStream fis = new FileInputStream(pathToZip);
@@ -157,8 +166,17 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public String retrieveTemplateData(String pathToTemplatesDir) {
     String json = "[";
+
+    // We have to "fix" the path to the templates dir. This
+    // really should not be coming from the client and we should
+    // refactor this code to remove the argument and provide the
+    // template path in this (server side) code.
+
+    pathToTemplatesDir = getServletContext().getRealPath(pathToTemplatesDir);
+
     File templatesRepository = new File(pathToTemplatesDir);
     File templateFolder[] = templatesRepository.listFiles();
+
     for (File file: templateFolder) {
       String templateName = file.getName();
       if (file.isDirectory()) {  // Should be a template folder
@@ -192,7 +210,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public UserProject copyProject(long oldProjectId, String newName){
     final String userId = userInfoProvider.getUserId();
     long projectId = getProjectRpcImpl(userId, oldProjectId).
-        copyProject(userId, oldProjectId, newName);
+      copyProject(userId, oldProjectId, newName, null);
     return makeUserProject(userId, projectId);
   }
 
@@ -374,11 +392,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
      * @return modification date for project
      */
   @Override
-  public long deleteFolder(String sessionId, long projectId, String directory) throws InvalidSessionException {
+  public void deleteFolder(String sessionId, long projectId, String directory) throws InvalidSessionException {
       validateSessionId(sessionId);
       final String userId = userInfoProvider.getUserId();
-      return getProjectRpcImpl(userId, projectId).deleteFolder(userId, projectId,
-              directory);
+      getProjectRpcImpl(userId, projectId).deleteFolder(userId, projectId,
+        directory);
   }
 
   /**
@@ -590,6 +608,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver,
       boolean isAab, boolean foriOS, boolean forAppStore) {
     // Dispatch
+
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
       userInfoProvider.getUser(), projectId, nonce, target, secondBuildserver,

@@ -38,4 +38,10 @@ public enum EncryptionStrategy implements Encryptor {
   public byte[] encrypt(byte[] plain) throws EncryptionException {
     return encryptor.encrypt(plain);
   }
+
+  @Override
+  public void setKeyPath(String keyPath) {
+    encryptor.setKeyPath(keyPath);
+  }
+
 }

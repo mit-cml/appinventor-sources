@@ -112,7 +112,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#deleteFolder(String, long, String)
    */
-  void deleteFolder(String sessionId, long projectId, String directory, AsyncCallback<Long> callback);
+  void deleteFolder(String sessionId, long projectId, String directory, AsyncCallback<Void> callback);
 
   /**
    * @see ProjectService#load(long, String)

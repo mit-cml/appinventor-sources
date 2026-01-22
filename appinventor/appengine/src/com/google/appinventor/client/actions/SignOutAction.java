@@ -17,10 +17,17 @@ public class SignOutAction implements Command {
   public void execute() {
     // Maybe take a screenshot
     Ode.getInstance().screenShotMaybe(new Runnable() {
-      @Override
-      public void run() {
-        Window.Location.replace(SIGNOUT_URL);
-      }
-    }, true);               // Wait for i/o
+        @Override
+        public void run() {
+          Ode.getInstance().displayRevisitCodes(true, new Runnable() {
+              @Override
+              public void run() {
+                Window.Location.replace(SIGNOUT_URL);
+              }
+            });
+        }
+      }, true);
   }
 }
+
+
