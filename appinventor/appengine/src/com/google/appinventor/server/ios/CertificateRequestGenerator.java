@@ -65,7 +65,7 @@ public class CertificateRequestGenerator {
       Date start = new Date(now);
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(start);
-      calendar.add(Calendar.YEAR, 1);
+      calendar.add(Calendar.YEAR, 25);
       Date end = calendar.getTime();
       ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
       JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(name, timestamp, start, end, name, keyPair.getPublic());
