@@ -3094,7 +3094,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "Sharing": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Added CopyToClipboard method
+    2: "noUpgrade"
 
   }, // End Sharing upgraders
 
