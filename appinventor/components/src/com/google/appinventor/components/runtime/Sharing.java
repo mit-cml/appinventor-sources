@@ -24,6 +24,9 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 
 import java.io.File;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 
 /**
  * Sharing is a non-visible component that enables sharing files and/or messages between your app
@@ -88,6 +91,21 @@ public class Sharing extends AndroidNonvisibleComponent {
     // oversized pop up sharing window.
     this.form.startActivity(shareIntent);
   }
+
+  /**
+   * Copies the given text to the system clipboard.
+   */
+  @SimpleFunction(description = "Copies the given text to the system clipboard.")
+  public void CopyToClipboard(String text) {
+    ClipboardManager clipboard =
+        (ClipboardManager) form.getSystemService(Context.CLIPBOARD_SERVICE);
+
+    if (clipboard != null) {
+      ClipData clip = ClipData.newPlainText("App Inventor Clipboard", text);
+      clipboard.setPrimaryClip(clip);
+    }
+  }
+
 
   /**
    * Shares a file using Android' built-in sharing.
