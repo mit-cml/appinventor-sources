@@ -734,17 +734,6 @@ AI.Yail.blockToCode1 = function(block) {
 };
 
 /**
- * Standard blockToCode method that delegates to blockToCode1.
- * This provides compatibility for both static and instance method calls.
- * @param {Blockly.Block} block The block to generate code for.
- * @param {boolean=} opt_thisOnly True to generate code for this block only (no attached blocks).
- * @return {string|!Array} Generated code.
- */
-AI.Yail.blockToCode = function(block, opt_thisOnly) {
-  return AI.Yail.__proto__.blockToCode.call(AI.Yail, block, opt_thisOnly);
-};
-
-/**
  * Generates YAIL that will unregister an event if the corresponding block is disabled in the
  * workspace.
  *
