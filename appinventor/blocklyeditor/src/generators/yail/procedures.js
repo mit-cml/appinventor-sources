@@ -44,13 +44,7 @@ AI.Yail.forBlock['procedures_defnoreturn'] = function(block, generator) {
                   + (Blockly.usePrefixInYail && block.arguments_.length != 0 ? "param_" : "");
   var args = block.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
   var procName = AI.Yail.YAIL_PROC_TAG + block.getFieldValue('NAME');
-  var body = '';
-  var currentBlock = block.getInputTargetBlock('STACK');
-  while (currentBlock) {
-    body += generator.blockToCode(currentBlock);
-    currentBlock = currentBlock.getNextBlock();
-  }
-  body = body || AI.Yail.YAIL_FALSE;
+  var body = generator.statementToCode(block, 'STACK') || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_DEFINE + AI.Yail.YAIL_OPEN_COMBINATION + procName
       + AI.Yail.YAIL_SPACER + args + AI.Yail.YAIL_CLOSE_COMBINATION + body
       + AI.Yail.YAIL_CLOSE_COMBINATION;

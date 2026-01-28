@@ -141,13 +141,7 @@ AI.Yail['local_variable'] = function(block, generator, isExpression) {
       code += AI.Yail.YAIL_SPACER + generator.valueToCode(block, 'RETURN', AI.Yail.ORDER_NONE);
     }
   } else {
-    var stackCode = '';
-    var stackBlock = block.getInputTargetBlock('STACK');
-    while (stackBlock) {
-      stackCode += generator.blockToCode(stackBlock);
-      stackBlock = stackBlock.getNextBlock();
-    }
-    stackCode = stackCode || AI.Yail.YAIL_FALSE;
+    var stackCode = generator.statementToCode(block, 'STACK') || AI.Yail.YAIL_FALSE;
     code += AI.Yail.YAIL_SPACER + stackCode;
   }
   code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_CLOSE_COMBINATION;

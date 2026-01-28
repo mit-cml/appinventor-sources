@@ -41,13 +41,7 @@ AI.Yail.forBlock['component_event'] = function(block, generator) {
       + block.eventName;
   }
 
-  var body = '';
-  var doBlock = block.getInputTargetBlock('DO');
-  while (doBlock) {
-    body += generator.blockToCode(doBlock);
-    doBlock = doBlock.getNextBlock();
-  }
-  body = body || AI.Yail.YAIL_FALSE;
+  var body = generator.statementToCode(block, 'DO');
   // TODO: handle deactivated block, null body
   if(body == ""){
     body = AI.Yail.YAIL_NULL;
