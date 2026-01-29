@@ -136,7 +136,7 @@
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
 			<arg value="--js='${blockly.src.dir}/blockly_compressed.js'"/>
 			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-62b3583.min.js'"/>
-			<arg value="--js='${blockly.plugin.dir}/typeblocking-josmas-pr2-5344556.min.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/typeblocking-josmas-pr4-cb783e3.min.js'"/>
 			<arg value="--js='blocklyeditor/src/**.js'"/>
 			<arg value="--js='${lib.dir}/closure-compiler/base.js'"/>
 		</java>
