@@ -1238,8 +1238,8 @@ public class Ode implements EntryPoint {
     LOG.info("Ode: Setting current file editor to " + currentFileEditor.getFileId());
     if (currentFileEditor instanceof YaFormEditor) {
       sourceStructureBox.show(((YaFormEditor) currentFileEditor).getForm());
-      switchToDesignView();
     }
+    switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
