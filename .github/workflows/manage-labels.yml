@@ -1,0 +1,37 @@
+# Helpful bot to manage labels!
+name: "Label Helper"
+
+# This bot runs when you open a PR or update it.
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  helper:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      # Step 1: When you open a new PR, the bot adds a label for you!
+      - name: Setup New PR
+        if: github.event.action == 'opened'
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "pull request: needs review"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+
+      # Step 2: When you send new code, the bot helps update the label!
+      - name: Reset After Push
+        if: github.event.action == 'synchronize'
+        run: |
+          # The bot looks at the labels on your PR.
+          labels=$(gh pr view ${{ github.event.pull_request.number }} --json labels --template '{{range .labels}}{{.name}},{{end}}')
+          
+          # If it sees you need to reply, it changes it back to "needs review".
+          if [[ "$labels" == *"pull request: needs reply to review"* ]]; then
+            gh pr edit ${{ github.event.pull_request.number }} --remove-label "pull request: needs reply to review" --add-label "pull request: needs review"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
