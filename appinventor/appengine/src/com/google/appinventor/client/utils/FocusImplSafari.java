@@ -14,8 +14,14 @@ import com.google.gwt.dom.client.Element;
 public class FocusImplSafari extends com.google.gwt.user.client.ui.impl.FocusImplSafari {
   @Override
   public native void focus(Element elem)/*-{
+  if (!elem || !elem.focus) {
+    return;
+    }
     $wnd.setTimeout(function() {
+    try {
       elem.focus({'preventScroll': true});
+    } catch (e) {
+    }
     }, 0);
   }-*/;
 }
