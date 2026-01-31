@@ -239,7 +239,7 @@ public final class YoungAndroidFontTypefaceChoicePropertyEditor extends Addition
       if (node.getName().equals(currentValue)) {
         // Our asset was removed.
         choices.selectValue(MESSAGES.defaultFontTypeface());
-        property.setValue(MESSAGES.defaultFontTypeface());
+        property.setValue("0"); // Go back to the normal font (which is called "0") to make sure everything keeps working!
       }
       
       // Remove the asset from the list.
