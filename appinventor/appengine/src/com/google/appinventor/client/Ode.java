@@ -2488,7 +2488,7 @@ public class Ode implements EntryPoint {
     }
   }
 
-  public void setTutorialVisible(boolean visible) {
+  public void setTutorialVisible(boolean visible, boolean isOnUnload) {
     tutorialVisible = visible;
     if (visible) {
       tutorialPanel.setVisible(true);
@@ -2496,7 +2496,7 @@ public class Ode implements EntryPoint {
     } else {
       tutorialPanel.setVisible(false);
     }
-    if (currentFileEditor != null) {
+    if (!isOnUnload && currentFileEditor != null) {
       currentFileEditor.resize();
     }
   }
@@ -2539,7 +2539,7 @@ public class Ode implements EntryPoint {
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty()) {
       designToolbar.setTutorialToggleVisible(false);
-      setTutorialVisible(false);
+      setTutorialVisible(false, false);
       return;
     }
 
@@ -2553,7 +2553,7 @@ public class Ode implements EntryPoint {
 
     if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
-      setTutorialVisible(false);
+      setTutorialVisible(false, false);
     } else {
       String locale = Window.Location.getParameter("locale");
       if (locale != null) {
@@ -2564,7 +2564,7 @@ public class Ode implements EntryPoint {
       String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
       tutorialPanel.setUrl(effectiveUrl);
       designToolbar.setTutorialToggleVisible(true);
-      setTutorialVisible(true);
+      setTutorialVisible(true, false);
     }
   }
 
