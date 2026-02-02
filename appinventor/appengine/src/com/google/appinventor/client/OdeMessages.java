@@ -732,11 +732,11 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Information about the Companion")
   String companionInformation();
 
-  @DefaultMessage("Update the Companion")
-  @Description("Menu item to update the Companion to the latest version")
+  @DefaultMessage("Update the Companion for Emulator")
+  @Description("Menu item to update the Companion to the latest version for the Android emulator")
   String companionUpdate();
 
-  @DefaultMessage("You must have a project open to update the Companion")
+  @DefaultMessage("You must have a project open to update the Companion for Emulator")
   @Description("")
   String companionUpdateMustHaveProject();
 
