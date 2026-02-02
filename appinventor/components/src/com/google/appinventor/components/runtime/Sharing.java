@@ -3,6 +3,7 @@
 // Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+package com.google.appinventor.components.runtime;
 
 import java.io.File;
 
@@ -96,7 +97,11 @@ public class Sharing extends AndroidNonvisibleComponent {
         (ClipboardManager) form.getSystemService(Context.CLIPBOARD_SERVICE);
 
     if (clipboard != null) {
-      ClipData clip = ClipData.newPlainText("App Inventor Clipboard", text);
+      String label = form.getApplication().getApplicationInfo()
+       .loadLabel(form.getApplication().getPackageManager())
+       .toString();
+
+      ClipData clip = ClipData.newPlainText(label, text);
       clipboard.setPrimaryClip(clip);
     }
   }
