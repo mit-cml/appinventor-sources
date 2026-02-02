@@ -368,6 +368,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Regression")) {
         srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Sharing")) {
+        srcCompVersion = upgradeSharingProperties(componentProperties, srcCompVersion);
+        
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
 
@@ -448,8 +451,6 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeEv3UltrasonicSensorProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("NxtDirectCommands")) {
         srcCompVersion = upgradeNxtDirectCommandsProperties(componentProperties, srcCompVersion);
-      } else if (componentType.equals("Sharing")) {
-        srcCompVersion = upgradeSharingProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
