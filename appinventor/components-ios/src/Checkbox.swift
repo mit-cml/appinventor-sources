@@ -75,6 +75,8 @@ public class CheckBoxView: UIView {
   fileprivate var _checked: CAShapeLayer!
   fileprivate var _unchecked: CAShapeLayer!
   fileprivate var _layersLoaded = false
+  fileprivate var _checkedColor: CGColor = CHECKBOX_CHECKED_COLOR
+  fileprivate var _uncheckedColor: CGColor = UIColor.black.withAlphaComponent(138.0/255.0).cgColor
 
   public init() {
     super.init(frame: .zero)
@@ -165,15 +167,9 @@ public class CheckBoxView: UIView {
           layer.fillColor = UIColor.black.withAlphaComponent(38.0/255.0).cgColor
         }
       } else if Checked {
-        layer.fillColor = CHECKBOX_CHECKED_COLOR
+        layer.fillColor = _checkedColor
       } else {
-        if #available(iOS 11.0, *) {
-          layer.fillColor = UIColor(named: "CheckBoxEnabled", in: Bundle(for: CheckBox.self),
-                                    compatibleWith: _button.traitCollection)?.cgColor
-        } else {
-          // Fallback on earlier versions
-          layer.fillColor = UIColor.black.withAlphaComponent(138.0/255.0).cgColor
-        }
+        layer.fillColor = _uncheckedColor
       }
       setNeedsDisplay()
     }
@@ -356,6 +352,26 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
     }
     set(color) {
       _view._text.textColor = argbToColor(color)
+    }
+  }
+
+  @objc open var CheckedColor: Int32 {
+    get {
+      return colorToArgb(UIColor(cgColor: _view._checkedColor))
+    }
+    set(color) {
+      _view._checkedColor = argbToColor(color).cgColor
+      _view.updateColor()
+    }
+  }
+
+  @objc open var UncheckedColor: Int32 {
+    get {
+      return colorToArgb(UIColor(cgColor: _view._uncheckedColor))
+    }
+    set(color) {
+      _view._uncheckedColor = argbToColor(color).cgColor
+      _view.updateColor()
     }
   }
 
