@@ -228,7 +228,7 @@ public class Ode implements EntryPoint {
   @UiField protected TutorialPanel tutorialPanel;
   @UiField protected ConsolePanel consolePanel;
   private int projectsTabIndex;
-  private int designTabIndex;
+  private int projectEditorTabIndex;
   private int debuggingTabIndex;
   private int userAdminTabIndex;
   @UiField protected TopPanel topPanel;
@@ -503,17 +503,17 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
+   * Switch to the project editor tab. Shows an error message if there is no currentFileEditor.
    */
-  public void switchToDesignView() {
+  public void switchToProjectEditor() {
     hideChaff();
-    // Only show designer if there is a current editor.
-    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
+    // Only show project editor if there is a current editor.
+    // ***** THE PROJECT EDITOR TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
     showTutorials();
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
-      deckPanel.showWidget(designTabIndex);
+      deckPanel.showWidget(projectEditorTabIndex);
     } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
       LOG.warning("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
@@ -649,7 +649,7 @@ public class Ode implements EntryPoint {
       // asynchronously, and loaded into file editors.
 
       viewerBox.show(projectRootNode);
-      // Note: we can't call switchToDesignView until the Screen1 file editor
+      // Note: we can't call switchToProjectEditor until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.
       String projectIdString = Long.toString(project.getProjectId());
@@ -1056,8 +1056,8 @@ public class Ode implements EntryPoint {
     // Projects tab
     projectsTabIndex = 0;
 
-    // Design tab
-    designTabIndex = 1;
+    // Project editor tab
+    projectEditorTabIndex = 1;
 
     // User Admin Panel
     userAdminTabIndex = 2;
@@ -1255,7 +1255,7 @@ public class Ode implements EntryPoint {
     if (currentFileEditor instanceof YaFormEditor) {
       sourceStructureBox.show(((YaFormEditor) currentFileEditor).getForm());
     }
-    switchToDesignView();
+    switchToProjectEditor();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
