@@ -1152,7 +1152,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Element|string} container
  * @param {!Blockly.WorkspaceSvg} workspace
  */
-AI.inject = function(container, workspace, isDarkMode=false, animationDelayMs=0) {
+AI.inject = function(container, workspace, isDarkMode=false) {
   if (isDarkMode) {
     Blockly.common.getMainWorkspace().setTheme(Blockly.Themes.darkTheme);
   }
@@ -1164,20 +1164,18 @@ AI.inject = function(container, workspace, isDarkMode=false, animationDelayMs=0)
   // it was possible for workspace.injected to be false, but that is no longer the case.
   workspace.setGridSettings(gridEnabled, gridSnap);
   // Update the workspace size in case the window was resized while we were hidden
-  setTimeout(function() {
-    for (const block of workspace.blocksNeedingRendering) {
-      workspace.getWarningHandler().checkErrors(block);
-      block.render();
-    }
-    workspace.blocksNeedingRendering.splice(0);  // clear the array of pending blocks
-    workspace.resizeContents();
-    Blockly.common.svgResize(workspace);
-    if (workspace.notYetRendered) {
-      workspace.notYetRendered = false;
-      workspace.scrollCenter();
-    }
-    //AI.Blockly.navigationController.enable(workspace);
-  }, animationDelayMs);
+  for (const block of workspace.blocksNeedingRendering) {
+    workspace.getWarningHandler().checkErrors(block);
+    block.render();
+  }
+  workspace.blocksNeedingRendering.splice(0);  // clear the array of pending blocks
+  workspace.resizeContents();
+  Blockly.common.svgResize(workspace);
+  if (workspace.notYetRendered) {
+    workspace.notYetRendered = false;
+    workspace.scrollCenter();
+  }
+  //AI.Blockly.navigationController.enable(workspace);
 };
 
 // Preserve Blockly during Closure and GWT optimizations

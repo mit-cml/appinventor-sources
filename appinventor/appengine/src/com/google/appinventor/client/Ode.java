@@ -205,9 +205,6 @@ public class Ode implements EntryPoint {
   public static final int TRASHCAN = 3;
   public static int currentView = PROJECTS;
 
-  // GWT DeckPanel animation is 350ms but we add a small buffer
-  public static final int DECKPANEL_ANIMATION_DURATION_MS = 375;
-
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
    *
@@ -251,7 +248,6 @@ public class Ode implements EntryPoint {
   private boolean tutorialVisible = false;
 
   private boolean consoleVisible = false;
-  private boolean isDeckPanelAnimating = false;
 
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
@@ -1006,18 +1002,6 @@ public class Ode implements EntryPoint {
 
     // Create tab panel for subsequent tabs
     deckPanel = new DeckPanel() {
-      @Override
-      public void showWidget(int index) {
-        if (isAnimationEnabled() && getVisibleWidget() != index) {
-          isDeckPanelAnimating = true;
-          Scheduler.get().scheduleFixedDelay(() -> {
-            isDeckPanelAnimating = false;
-            return false;
-          }, DECKPANEL_ANIMATION_DURATION_MS);
-        }
-        super.showWidget(index);
-      }
-
       @Override
       public final void onBrowserEvent(Event event) {
         switch (event.getTypeInt()) {
@@ -2516,10 +2500,6 @@ public class Ode implements EntryPoint {
 
   public boolean isConsoleVisible() {
     return consoleVisible;
-  }
-
-  public boolean isDeckPanelAnimating() {
-    return isDeckPanelAnimating;
   }
 
   public void setTutorialURL(String newURL) {
