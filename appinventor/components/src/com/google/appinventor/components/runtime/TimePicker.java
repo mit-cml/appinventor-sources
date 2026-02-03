@@ -19,8 +19,9 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.text.format.DateFormat;
+import android.os.Build;
 import android.os.Handler;
+import android.text.format.DateFormat;
 
 import java.util.Calendar;
 
@@ -65,8 +66,16 @@ public class TimePicker extends ButtonBase {
     final Calendar c = Calendar.getInstance();
     hour = c.get(Calendar.HOUR_OF_DAY);
     minute = c.get(Calendar.MINUTE);
+
+    // On newer Android phones (like Android 14), we need to use a special style
+    // so the time picker does not crash!
+    int themeId = 0;
+    if (Build.VERSION.SDK_INT >= 34 /* UPSIDE_DOWN_CAKE */) {
+      themeId = android.R.style.Theme_Material_Dialog;
+    }
+
     time = new TimePickerDialog(this.container.$context(),
-        timePickerListener, hour, minute, DateFormat.is24HourFormat(this.container.$context()));
+        themeId, timePickerListener, hour, minute, DateFormat.is24HourFormat(this.container.$context()));
 
     instant = Dates.TimeInstant(hour, minute);
     androidUIHandler = new Handler();
