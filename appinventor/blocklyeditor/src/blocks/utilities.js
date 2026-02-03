@@ -70,6 +70,10 @@ AI.BlockUtils.YailTypeToBlocklyTypeMap = {
     'input': ['InstantInTime', AI.BlockUtils.InstantInTime],
     'output': ['InstantInTime', AI.BlockUtils.InstantInTime],
   },
+  'procedure' : {
+    'input': ['YailProcedure'],
+    'output': ['YailProcedure']
+  },
   'any': {
     'input': null,
     'output': null

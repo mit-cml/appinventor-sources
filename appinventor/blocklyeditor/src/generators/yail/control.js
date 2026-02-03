@@ -49,12 +49,15 @@ AI.Yail.forBlock['controls_if'] = function(block, generator) {
     code += AI.Yail.YAIL_IF + argument + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_BEGIN
       + branch + AI.Yail.YAIL_CLOSE_COMBINATION;
   }
+
+  // Handle the ELSE input
   if(block.elseCount_ == 1){
     var branch = generator.statementToCode(block, 'ELSE') || AI.Yail.YAIL_FALSE;
     code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_BEGIN + branch + AI.Yail.YAIL_CLOSE_COMBINATION;
   }
 
-  for(var i=0;i<block.elseifCount_;i++){
+  // Close parentheses for nested definitions
+  for(var i = 0; i < block.elseifCount_; i++){
     code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_CLOSE_COMBINATION;
   }
   code += AI.Yail.YAIL_CLOSE_COMBINATION;
@@ -83,7 +86,6 @@ AI.Yail.forBlock['controls_forEach'] = function(block, generator) {
   emptyListCode += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION;
   emptyListCode += AI.Yail.YAIL_CLOSE_COMBINATION;
   emptyListCode += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_DOUBLE_QUOTE + "make a list" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
-
 
   var loopIndexName = AI.Yail.YAIL_LOCAL_VAR_TAG + block.getFieldValue('VAR');
   var listCode = generator.valueToCode(block, 'LIST', AI.Yail.ORDER_NONE) || emptyListCode;
@@ -191,6 +193,22 @@ AI.Yail.forBlock['controls_do_then_return'] = function(block, generator) {
   var value = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_BEGIN + stm + AI.Yail.YAIL_SPACER + value + AI.Yail.YAIL_CLOSE_COMBINATION;
   return [code, AI.Yail.ORDER_ATOMIC];
+};
+
+AI.Yail['controls_run_in_background'] = function(block, generator) {
+  var procedure = generator.valueToCode(block, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var callback = generator.valueToCode(block, 'CALLBACK', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var code = AI.Yail.YailCallYialPrimitive(
+      "run-in-background", [ procedure, callback ], [ "any", "any"], "run in background");
+  return code;
+};
+
+AI.Yail['controls_run_after_period'] = function(block, generator) {
+  var millis = generator.valueToCode(block, 'MILLIS', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var procedure = generator.valueToCode(block, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var code = AI.Yail.YailCallYialPrimitive(
+      "run-after-period", [ millis, procedure ], [ "any", "any" ], "run after period");
+  return code;
 };
 
  // [lyn, 01/15/2013] Added

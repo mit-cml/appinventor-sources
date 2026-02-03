@@ -707,6 +707,9 @@ public class YaVersion {
   // - Add pull-downs for the ChatBot provider and model
   // For BLOCKS_LANGUAGE_VERSION 37
   // - Added matrices and its operations
+  // For BLOCKS_LANGUAGE_VERSION 38
+  // - Control: run-in-background & run-after-period were added.
+  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
   public static final int BLOCKS_LANGUAGE_VERSION = 38;
 
   // ................................. Target SDK Version Number ..................................
