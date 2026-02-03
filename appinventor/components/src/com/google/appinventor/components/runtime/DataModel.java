@@ -185,7 +185,7 @@ public abstract class DataModel<E> {
    */
   public YailList getTuplesFromColumns(YailList columns, boolean hasHeaders) {
     // Determine the (maximum) row count of the specified columns
-    int rows = ChartDataSourceUtil.determineMaximumListSize(columns);
+    int rows = ChartDataSourceUtil.determineMinimumListSize(columns);
 
     List<YailList> tuples = new ArrayList<>();
 

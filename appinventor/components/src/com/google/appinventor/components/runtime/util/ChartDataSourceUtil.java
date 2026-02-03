@@ -58,6 +58,38 @@ public class ChartDataSourceUtil {
   }
 
   /**
+   * Determines the minimum List entry size in the specified matrix.
+   * The YailList is expected to contain List entries, and invalid
+   * entries are simply skipped.
+   *
+   * @param matrix  Matrix to return minimum list size of
+   * @return  Minimum List size of the matrix's nested Lists
+   */
+  public static int determineMinimumListSize(YailList matrix) {
+    if (matrix == null || matrix.size() == 0) {
+      return 0;
+    }
+
+    int entries = Integer.MAX_VALUE;
+
+    for (int i = 0; i < matrix.size(); ++i) {
+      Object row = matrix.getObject(i);
+
+      if (!(row instanceof List)) {
+        continue;
+      }
+
+      List<?> list = (List<?>) row;
+
+      if (list.size() < entries) {
+        entries = list.size();
+      }
+    }
+
+    return (entries == Integer.MAX_VALUE) ? 0 : entries;
+  }
+
+  /**
    * Returns the transpose of the specified matrix (List of Lists)
    * The specified YailList parameter is expected to contain nested
    * YailList entries. Invalid entries are simply ignored.

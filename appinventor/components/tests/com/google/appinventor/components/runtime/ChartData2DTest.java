@@ -20,6 +20,7 @@ import com.google.appinventor.components.common.ChartType;
 import com.google.appinventor.components.common.LineType;
 import com.google.appinventor.components.common.PointStyle;
 
+import com.google.appinventor.components.runtime.Spreadsheet;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.Arrays;
@@ -748,5 +749,63 @@ public class ChartData2DTest extends RobolectricTestBase {
     replay(futureObject);
 
     return futureObject;
+  }
+
+  /**
+   * Test case to ensure that importing from a Spreadsheet component
+   * via the ImportFromSpreadsheet method with a missing header
+   * (misspelled) does not import any data (prevents fake data).
+   */
+  @Test
+  public void testImportFromSpreadsheetMissingHeader() {
+    // Setup expected parameters
+    YailList expectedParameters = YailList.makeList(Arrays.asList("X", "MissingY"));
+
+    // Mock Spreadsheet component
+    Spreadsheet spreadsheet = EasyMock.createMock(Spreadsheet.class);
+
+    // Setup mock Spreadsheet to return an empty list when one header is missing
+    // (This simulates the new logic in Spreadsheet.getColumns)
+    YailList columns = new YailList();
+    Future<YailList> returnValue = getMockFutureObject(columns);
+
+    EasyMock.expect(spreadsheet.getDataValue(expectedParameters, true))
+        .andReturn(returnValue);
+
+    // Register the Mock
+    replay(spreadsheet);
+
+    data.ImportFromSpreadsheet(spreadsheet, "X", "MissingY", true);
+    assertEquals(0, model.getDataset().getEntryCount());
+  }
+
+  @Test
+  public void testImportFromSpreadsheetCaseInsensitive() {
+    YailList expectedParameters = YailList.makeList(Arrays.asList("x", "y"));
+    Spreadsheet spreadsheet = EasyMock.createMock(Spreadsheet.class);
+    YailList xColumn = YailList.makeList(Arrays.asList("X", "1", "2", "3"));
+    YailList yColumn = YailList.makeList(Arrays.asList("Y", "4", "5", "6"));
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+    Future<YailList> returnValue = getMockFutureObject(columns);
+    EasyMock.expect(spreadsheet.getDataValue(expectedParameters, true))
+        .andReturn(returnValue);
+    replay(spreadsheet);
+    data.ImportFromSpreadsheet(spreadsheet, "x", "y", true);
+    assertEquals(3, model.getDataset().getEntryCount());
+  }
+
+  @Test
+  public void testImportFromSpreadsheetMismatchedColumns() {
+    YailList expectedParameters = YailList.makeList(Arrays.asList("X", "Y"));
+    Spreadsheet spreadsheet = EasyMock.createMock(Spreadsheet.class);
+    YailList xColumn = YailList.makeList(Arrays.asList("X", "1", "2", "3"));
+    YailList yColumn = YailList.makeList(Arrays.asList("Y", "4", "5"));
+    YailList columns = YailList.makeList(Arrays.asList(xColumn, yColumn));
+    Future<YailList> returnValue = getMockFutureObject(columns);
+    EasyMock.expect(spreadsheet.getDataValue(expectedParameters, true))
+        .andReturn(returnValue);
+    replay(spreadsheet);
+    data.ImportFromSpreadsheet(spreadsheet, "X", "Y", true);
+    assertEquals(2, model.getDataset().getEntryCount());
   }
 }
