@@ -8,6 +8,7 @@ package com.google.appinventor.client.youngandroid;
 
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import java.util.Objects;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
@@ -173,10 +174,12 @@ public final class TextValidators {
    * (unaccented English) letters, digits, or underscores.
    *
    * @param text the proposed identifier
+   * @throws NullPointerException if text is null
    * @return {@code true} if the argument is a legal identifier, {@code false}
    *         otherwise
    */
   public static boolean isValidIdentifier(String text) {
+    Objects.requireNonNull(text, "Identifier must not be null");
     return text.matches("^[a-zA-Z]\\w*$");
   }
 
@@ -196,10 +199,12 @@ public final class TextValidators {
    * Blockly.LexicalVariable.checkIdentifier for the regex reference
    *
    * @param text the proposed identifier
+   * @throws NullPointerException if text is null
    * @return {@code true} if the argument is a legal identifier, {@code false}
    *         otherwise
    */
   public static boolean isValidComponentIdentifier(String text) {
+     Objects.requireNonNull(text,"Component Identifier must not be null");
     return text.matches("^[" + ID_DISALLOWED_STARTCHARS + "][" + ID_DISALLOWED_CHARS + "]*$");
   }
 
@@ -210,10 +215,12 @@ public final class TextValidators {
    * - all characters must be 7-bit printable ASCII
    * - none of { '/' '\\' ':' }
    * @param filename The filename (not path) of uploaded file
+   * @throws NullPointerException if filename is null
    * @return {@code true} if the argument is a legal filename, {@code false}
    *         otherwise
    */
   public static boolean isValidCharFilename(String filename){
+     Objects.requireNonNull(filename,"Filename must not be null");
     return !filename.contains("'") && filename.equals(URL.encodePathSegment(filename));
   }
 
@@ -225,10 +232,12 @@ public final class TextValidators {
    * where kMaxAssetFileName is defined to be 100.
    * (A legal name, therefore, has length <= kMaxAssetFileNames)
    * @param filename The filename (not path) of uploaded file
+   *  @throws NullPointerException if filename is null
    * @return {@code true} if the length of the argument is legal, {@code false}
    *         otherwise
    */
   public static boolean isValidLengthFilename(String filename){
+     Objects.requireNonNull(filename,"Filename must not be null");
     return !(filename.length() > MAX_FILENAME_SIZE || filename.length() < MIN_FILENAME_SIZE);
   }
 
