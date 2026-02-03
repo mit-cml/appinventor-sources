@@ -740,6 +740,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("")
   String companionUpdateMustHaveProject();
 
+  @DefaultMessage("The emulator must be running to update the Companion")
+  @Description("Error message when user tries to update companion without emulator running")
+  String companionUpdateNeedEmulator();
+
   @DefaultMessage("Show Splash Screen")
   @Description("Redisplay the Splash Screen")
   String showSplashMenuItem();
