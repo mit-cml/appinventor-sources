@@ -146,15 +146,15 @@ AI.Yail.forBlock['matrices_operations'].OPERATORS = {
 };
 
 AI.Yail.forBlock['matrices_transpose'] = function(block, generator) {
-  return AI.Yail.matrices_operations.call(block, block, generator);
+  return AI.Yail.forBlock['matrices_operations'].call(block, block, generator);
 };
 
 AI.Yail.forBlock['matrices_rotate_left'] = function(block, generator) {
-  return AI.Yail.matrices_operations.call(block, block, generator);
+  return AI.Yail.forBlock['matrices_operations'].call(block, block, generator);
 };
 
 AI.Yail.forBlock['matrices_rotate_right'] = function(block, generator) {
-  return AI.Yail.matrices_operations.call(block, block, generator);
+  return AI.Yail.forBlock['matrices_operations'].call(block, block, generator);
 };
 
 AI.Yail.forBlock['matrices_arithmetic'] = function(block, generator, mode) {
@@ -183,19 +183,19 @@ AI.Yail.forBlock['matrices_arithmetic'] = function(block, generator, mode) {
 };
 
 AI.Yail.forBlock['matrices_subtract'] = function(block, generator) {
-  return AI.Yail.matrices_arithmetic(block, generator, "MINUS");
+  return AI.Yail.forBlock['matrices_arithmetic'](block, generator, "MINUS");
 };
 
 AI.Yail.forBlock['matrices_power'] = function(block, generator) {
-  return AI.Yail.matrices_arithmetic(block, generator, "POWER");
+  return AI.Yail.forBlock['matrices_arithmetic'](block, generator, "POWER");
 };
 
 AI.Yail.forBlock['matrices_add'] = function(block, generator) {
-  return AI.Yail.matrices_arithmetic_list(block, generator, "ADD");
+  return AI.Yail.forBlock['matrices_arithmetic_list'](block, generator, "ADD");
 };
 
 AI.Yail.forBlock['matrices_multiply'] = function(block, generator) {
-  return AI.Yail.matrices_arithmetic_list(block, generator, "MULTIPLY");
+  return AI.Yail.forBlock['matrices_arithmetic_list'](block, generator, "MULTIPLY");
 };
 
 AI.Yail.forBlock['matrices_arithmetic_list'] = function(block, generator, mode) {
