@@ -452,12 +452,28 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     return tileSource;
   }
 
+  private ITileSource getRoadTileSource() {
+  return new XYTileSource(
+      "OSM-Road",
+      1,
+      20,
+      256,
+      ".png",
+      new String[] {
+          "https://a.tile.openstreetmap.org/",
+          "https://b.tile.openstreetmap.org/",
+          "https://c.tile.openstreetmap.org/"
+      }
+    );
+  }
+
   @Override
   public void setMapTypeAbstract(MapType type) {
     tileType = type;
     switch (type) {
       case Road:
-        view.setTileSource(TileSourceFactory.MAPNIK);
+        view.getTileProvider().clearTileCache();
+        view.setTileSource(getRoadTileSource());
         break;
       case Aerial:
         view.setTileSource(TileSourceFactory.USGS_SAT);
