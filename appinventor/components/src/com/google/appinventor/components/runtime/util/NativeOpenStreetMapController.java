@@ -106,6 +106,20 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   /* end copied from SVG */
 
   private static final String TAG = NativeOpenStreetMapController.class.getSimpleName();
+  private static final ITileSource OSM_ROAD_TILE_SOURCE =
+    new XYTileSource(
+        "OSM-Road",
+        1,
+        20,
+        256,
+        ".png",
+        new String[] {
+            "https://a.tile.openstreetmap.org/",
+            "https://b.tile.openstreetmap.org/",
+            "https://c.tile.openstreetmap.org/"
+        },
+        "© OpenStreetMap contributors"
+  );
   private boolean caches;
   private final Form form;
   private RelativeLayout containerView;
@@ -452,28 +466,12 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     return tileSource;
   }
 
-  private ITileSource getRoadTileSource() {
-  return new XYTileSource(
-      "OSM-Road",
-      1,
-      20,
-      256,
-      ".png",
-      new String[] {
-          "https://a.tile.openstreetmap.org/",
-          "https://b.tile.openstreetmap.org/",
-          "https://c.tile.openstreetmap.org/"
-      }
-    );
-  }
-
   @Override
   public void setMapTypeAbstract(MapType type) {
     tileType = type;
     switch (type) {
       case Road:
-        view.getTileProvider().clearTileCache();
-        view.setTileSource(getRoadTileSource());
+        view.setTileSource(OSM_ROAD_TILE_SOURCE);
         break;
       case Aerial:
         view.setTileSource(TileSourceFactory.USGS_SAT);
