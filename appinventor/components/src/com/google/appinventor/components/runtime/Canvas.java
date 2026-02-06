@@ -82,41 +82,52 @@ import java.util.Set;
  * A two-dimensional touch-sensitive rectangular panel on which drawing can
  * be done and sprites can be moved.
  *
- * The {@link #BackgroundColor()}, {@link #PaintColor()}, {@link #BackgroundImage()},
- * {@link #Width()}, and {@link #Height()} of the `Canvas` can be set in either the Designer or in
- * the Blocks Editor. The `Width` and `Height` are measured in pixels and must be positive.
+ * The {@link #BackgroundColor()}, {@link #PaintColor()},
+ * {@link #BackgroundImage()},
+ * {@link #Width()}, and {@link #Height()} of the `Canvas` can be set in either
+ * the Designer or in
+ * the Blocks Editor. The `Width` and `Height` are measured in pixels and must
+ * be positive.
  *
- * Any location on the `Canvas` can be specified as a pair of `(X, Y)` values, where
+ * Any location on the `Canvas` can be specified as a pair of `(X, Y)` values,
+ * where
  *
  * * X is the number of pixels away from the left edge of the `Canvas`
  * * Y is the number of pixels away from the top edge of the `Canvas`
  *
- * There are events to tell when and where a `Canvas` has been touched or a Sprite
- * ({@link ImageSprite} or {@link Ball}) has been dragged. There are also methods for drawing
+ * There are events to tell when and where a `Canvas` has been touched or a
+ * Sprite
+ * ({@link ImageSprite} or {@link Ball}) has been dragged. There are also
+ * methods for drawing
  * points, lines, circles, shapes, arcs, and text.
  *
  * @internaldoc
  *
- * Conceptually, a sprite consists of the following layers, from back
- * to front (with items in front being drawn on top):
+ *              Conceptually, a sprite consists of the following layers, from
+ *              back
+ *              to front (with items in front being drawn on top):
  *
- * * background color
- * * background image
- * * the "drawing layer", populated through calls to
- *      {@link #DrawPoint(int,int)}, {@link #DrawCircle(int,int,float,boolean)},
- *      {@link #DrawText(String,int,int)}, and
- *      {@link #DrawTextAtAngle(String,int,int,float)}, and
- *      {@link #SetBackgroundPixelColor(int,int,int)}
- * * the sprite layer, where sprites with higher Z values are drawn
- *      in front of (after) sprites with lower Z values.
+ *              * background color
+ *              * background image
+ *              * the "drawing layer", populated through calls to
+ *              {@link #DrawPoint(int,int)},
+ *              {@link #DrawCircle(int,int,float,boolean)},
+ *              {@link #DrawText(String,int,int)}, and
+ *              {@link #DrawTextAtAngle(String,int,int,float)}, and
+ *              {@link #SetBackgroundPixelColor(int,int,int)}
+ *              * the sprite layer, where sprites with higher Z values are drawn
+ *              in front of (after) sprites with lower Z values.
  *
- * To the user, the first three layers are all the background, in terms
- * of the behavior of {@link #SetBackgroundPixelColor(int,int,int)} and
- * {@link #GetBackgroundPixelColor(int,int)}.  For historical reasons,
- * changing the background color or image clears the drawing layer.
+ *              To the user, the first three layers are all the background, in
+ *              terms
+ *              of the behavior of {@link #SetBackgroundPixelColor(int,int,int)}
+ *              and
+ *              {@link #GetBackgroundPixelColor(int,int)}. For historical
+ *              reasons,
+ *              changing the background color or image clears the drawing layer.
  */
-@DesignerComponent(version = YaVersion.CANVAS_COMPONENT_VERSION,
-    description = "<p>A two-dimensional touch-sensitive rectangular panel on " +
+@DesignerComponent(version = YaVersion.CANVAS_COMPONENT_VERSION, description = "<p>A two-dimensional touch-sensitive rectangular panel on "
+    +
     "which drawing can be done and sprites can be moved.</p> " +
     "<p>The <code>BackgroundColor</code>, <code>PaintColor</code>, " +
     "<code>BackgroundImage</code>, <code>Width</code>, and " +
@@ -131,9 +142,7 @@ import java.util.Set;
     "<p>There are events to tell when and where a Canvas has been touched or " +
     "a <code>Sprite</code> (<code>ImageSprite</code> or <code>Ball</code>) " +
     "has been dragged.  There are also methods for drawing points, lines, " +
-    "and circles.</p>",
-    category = ComponentCategory.ANIMATION,
-    iconName = "images/canvas.png")
+    "and circles.</p>", category = ComponentCategory.ANIMATION, iconName = "images/canvas.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class Canvas extends AndroidViewComponent implements ComponentContainer {
@@ -153,17 +162,22 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private String backgroundImagePath = "";
   private int textAlignment;
   private boolean extendMovesOutsideCanvas = false;
-  
+
   /**
    * The number of pixels right, left, up, or down, a sequence of drags must
    * move from the starting point to be considered a drag (instead of a
    * touch).
    */
-  // This used to be 15 and people complained that they could not draw small circles. So we
-  // made it a user settable property because if the threshold is too small, then touches might
-  // be misinterpreted as drags. Default value is appropriate for most cases but there may be
-  // different requirements. This might require more experimentation. We might also want to take
-  // screen resolution into account and/or try to make a more clever motion parser.
+  // This used to be 15 and people complained that they could not draw small
+  // circles. So we
+  // made it a user settable property because if the threshold is too small, then
+  // touches might
+  // be misinterpreted as drags. Default value is appropriate for most cases but
+  // there may be
+  // different requirements. This might require more experimentation. We might
+  // also want to take
+  // screen resolution into account and/or try to make a more clever motion
+  // parser.
   private int tapThreshold = 15;
 
   // Default values
@@ -172,10 +186,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
   private static final int DEFAULT_TEXTALIGNMENT = Component.ALIGNMENT_CENTER;
-  private static final int FLING_INTERVAL = 1000;  // ms
+  private static final int FLING_INTERVAL = 1000; // ms
   private static final int DEFAULT_TAP_THRESHOLD = 15;
 
-  // Keep track of enclosed sprites.  This list should always be
+  // Keep track of enclosed sprites. This list should always be
   // sorted by increasing sprite.Z().
   private final List<Sprite> sprites;
 
@@ -186,9 +200,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private final GestureDetector mGestureDetector;
 
   // The canvas has built-in detectors that trigger on touch, drag, touchDown,
-  // TouchUp and Fling gestures.  It also maintains a set of additional gesture detectors
+  // TouchUp and Fling gestures. It also maintains a set of additional gesture
+  // detectors
   // that can respond to motion events. These detectors
-  // will typically be implemented by extension components that add the detector to this set.
+  // will typically be implemented by extension components that add the detector
+  // to this set.
 
   private final Set<ExtensionGestureDetector> extensionGestureDetectors = Sets.newHashSet();
 
@@ -204,15 +220,15 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Parser for Android {@link android.view.MotionEvent} sequences, which calls
-   * the appropriate event handlers.  Specifically:
+   * the appropriate event handlers. Specifically:
    * <ul>
-   * <li> If a {@link android.view.MotionEvent#ACTION_DOWN} is followed by one
+   * <li>If a {@link android.view.MotionEvent#ACTION_DOWN} is followed by one
    * or more {@link android.view.MotionEvent#ACTION_MOVE} events, a sequence of
    * {@link Sprite#Dragged(float, float, float, float, float, float)}
    * calls are generated for sprites that were touched, and the final
    * {@link android.view.MotionEvent#ACTION_UP} is ignored.
    *
-   * <li> If a {@link android.view.MotionEvent#ACTION_DOWN} is followed by an
+   * <li>If a {@link android.view.MotionEvent#ACTION_DOWN} is followed by an
    * {@link android.view.MotionEvent#ACTION_UP} event either immediately or
    * after {@link android.view.MotionEvent#ACTION_MOVE} events that take it no
    * further than {@link #tapThreshold} pixels horizontally or vertically from
@@ -224,7 +240,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * After the {@code Dragged()} or {@code Touched()} methods are called for
    * any applicable sprites, a call is made to
    * {@link Canvas#Dragged(float, float, float, float, float, float, boolean)}
-   * or {@link Canvas#Touched(float, float, boolean)}, respectively.  The
+   * or {@link Canvas#Touched(float, float, boolean)}, respectively. The
    * additional final argument indicates whether it was preceded by one or
    * more calls to a sprite, i.e., whether the locations on the canvas had a
    * sprite on them ({@code true}) or were empty of sprites {@code false}).
@@ -233,17 +249,17 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   class MotionEventParser {
     /**
-     * The width of a finger.  This is used in determining whether a sprite is
-     * touched.  Specifically, this is used to determine the horizontal extent
-     * of a bounding box that is tested for collision with each sprite.  The
+     * The width of a finger. This is used in determining whether a sprite is
+     * touched. Specifically, this is used to determine the horizontal extent
+     * of a bounding box that is tested for collision with each sprite. The
      * vertical extent is determined by {@link #FINGER_HEIGHT}.
      */
     public static final int FINGER_WIDTH = 24;
 
     /**
-     * The height of a finger.  This is used in determining whether a sprite is
-     * touched.  Specifically, this is used to determine the vertical extent
-     * of a bounding box that is tested for collision with each sprite.  The
+     * The height of a finger. This is used in determining whether a sprite is
+     * touched. Specifically, this is used to determine the vertical extent
+     * of a bounding box that is tested for collision with each sprite. The
      * horizontal extent is determined by {@link #FINGER_WIDTH}.
      */
     public static final int FINGER_HEIGHT = 24;
@@ -252,7 +268,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     private static final int HALF_FINGER_HEIGHT = FINGER_HEIGHT / 2;
 
     /**
-     * The set of sprites encountered in a touch or drag sequence.  Checks are
+     * The set of sprites encountered in a touch or drag sequence. Checks are
      * only made for sprites at the endpoints of each drag.
      */
     private final List<Sprite> draggedSprites = new ArrayList<Sprite>();
@@ -277,7 +293,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       int height = Height();
 
       // Coordinates less than 0 can be returned if a move begins within a
-      // view and ends outside of it.  Because negative coordinates would
+      // view and ends outside of it. Because negative coordinates would
       // probably confuse the user (as they did me) and would not be useful,
       // we replace any negative values with zero.
       float x = Math.max(0, (int) event.getX() / $form().deviceDensity());
@@ -328,7 +344,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           // Don't let MOVE extend beyond the bounds of the canvas
           // if ExtendMovesOutsideCanvas is false
           if (((x <= 0) || (x > width) || (y <= 0) || (y > height))
-              && (! extendMovesOutsideCanvas)) {
+              && (!extendMovesOutsideCanvas)) {
             break;
           }
 
@@ -358,7 +374,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           break;
 
         case MotionEvent.ACTION_UP:
-          // If we never strayed far from the start point, it's a tap.  (If we
+          // If we never strayed far from the start point, it's a tap. (If we
           // did stray far, we've already handled the movements in the ACTION_MOVE
           // case.)
           if (!drag) {
@@ -373,8 +389,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
             }
             // Last argument indicates that one or more sprites handled the tap
             Touched(x, y, handled);
-          }
-          else {
+          } else {
             for (Sprite sprite : draggedSprites) {
               if (sprite.Enabled() && sprite.Visible()) {
                 sprite.Touched(x, y);
@@ -405,7 +420,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private final class CanvasView extends View {
     // Variables to implement View
     private android.graphics.Canvas canvas;
-    private Bitmap bitmap;  // Bitmap backing Canvas
+    private Bitmap bitmap; // Bitmap backing Canvas
 
     // Support for background images
     private BitmapDrawable backgroundDrawable;
@@ -413,20 +428,20 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     // Support for GetBackgroundPixelColor() and GetPixelColor().
 
     // scaledBackgroundBitmap is a scaled version of backgroundDrawable that
-    // is created only if getBackgroundPixelColor() is called.  It is set back
+    // is created only if getBackgroundPixelColor() is called. It is set back
     // to null whenever the canvas size or backgroundDrawable changes.
     private Bitmap scaledBackgroundBitmap;
 
-    // completeBitmap is created if the user calls getPixelColor().  It is set
-    // back to null whenever the view is redrawn.  If available, it is used
+    // completeBitmap is created if the user calls getPixelColor(). It is set
+    // back to null whenever the view is redrawn. If available, it is used
     // when the Canvas is saved to a file.
     private Bitmap completeBitmap;
 
     public CanvasView(Context context) {
       super(context);
       bitmap = Bitmap.createBitmap(ComponentConstants.CANVAS_PREFERRED_WIDTH,
-                                   ComponentConstants.CANVAS_PREFERRED_HEIGHT,
-                                   Bitmap.Config.ARGB_8888);
+          ComponentConstants.CANVAS_PREFERRED_HEIGHT,
+          Bitmap.Config.ARGB_8888);
       canvas = new android.graphics.Canvas(bitmap);
     }
 
@@ -439,7 +454,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       int height = getHeight();
       Bitmap currentBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
       android.graphics.Canvas c = new android.graphics.Canvas(currentBitmap);
-      layout(0, 0, width, height);
       draw(c);
       return currentBitmap;
     }
@@ -473,12 +487,16 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         // Create a new bitmap by scaling the old bitmap that contained the
         // drawing layer (points, lines, text, etc.).
 
-        // The documentation for Bitmap.createScaledBitmap doesn't specify whether it creates a
+        // The documentation for Bitmap.createScaledBitmap doesn't specify whether it
+        // creates a
         // mutable or immutable bitmap. Looking at the source code shows that it calls
-        // Bitmap.createBitmap(Bitmap, int, int, int, int, Matrix, boolean), which is documented as
+        // Bitmap.createBitmap(Bitmap, int, int, int, int, Matrix, boolean), which is
+        // documented as
         // returning an immutable bitmap. However, it actually returns a mutable bitmap.
-        // It's possible that the behavior could change in the future if they "fix" that bug.
-        // Try Bitmap.createScaledBitmap, but if it gives us an immutable bitmap, we'll have to
+        // It's possible that the behavior could change in the future if they "fix" that
+        // bug.
+        // Try Bitmap.createScaledBitmap, but if it gives us an immutable bitmap, we'll
+        // have to
         // create a mutable bitmap and scale the old bitmap using Canvas.drawBitmap.
         try {
           // See comment at the catch below
@@ -487,8 +505,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           if (scaledBitmap.isMutable()) {
             // scaledBitmap is mutable; we can use it in a canvas.
             bitmap = scaledBitmap;
-            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
-            // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
+            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that
+            // the
+            // canvas.drawCircle() method did not work correctly. So, we need to create a
+            // whole new
             // canvas.
             canvas = new android.graphics.Canvas(bitmap);
 
@@ -496,8 +516,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
             // scaledBitmap is immutable; we can't use it in a canvas.
 
             bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
-            // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
+            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that
+            // the
+            // canvas.drawCircle() method did not work correctly. So, we need to create a
+            // whole new
             // canvas.
             canvas = new android.graphics.Canvas(bitmap);
 
@@ -509,11 +531,14 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
         } catch (IllegalArgumentException ioe) {
           // There's some kind of order of events issue that results in w or h being zero.
-          // I'm guessing that this is a result of specifying width or height as FILL_PARRENT on an
-          // opening screen.   In any case, w<=0 or h<=0 causes the call to createScaledBitmap
-          // to throw an illegal argument.  If this happens we simply don't draw the bitmap
+          // I'm guessing that this is a result of specifying width or height as
+          // FILL_PARRENT on an
+          // opening screen. In any case, w<=0 or h<=0 causes the call to
+          // createScaledBitmap
+          // to throw an illegal argument. If this happens we simply don't draw the bitmap
           // (which would be of width or height 0)
-          // TODO(hal): Investigate this further to see what is causes the w=0 or h=0 and see if
+          // TODO(hal): Investigate this further to see what is causes the w=0 or h=0 and
+          // see if
           // there is a more high-level fix.
 
           Log.e(LOG_TAG, "Bad values to createScaledBimap w = " + w + ", h = " + h);
@@ -532,7 +557,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       int preferredWidth;
       int preferredHeight;
       if (backgroundDrawable != null) {
-        // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
+        // Drawable.getIntrinsicWidth/Height gives weird values, but
+        // Bitmap.getWidth/Height works.
         Bitmap bitmap = backgroundDrawable.getBitmap();
         preferredWidth = bitmap.getWidth();
         preferredHeight = bitmap.getHeight();
@@ -569,15 +595,15 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       // The following call results in the Form not grabbing our events and
       // handling dragging on its own, which it wants to do to handle scrolling.
       // Its effect only lasts long as the current set of motion events
-      // generated during this touch and drag sequence.  Consequently, it needs
+      // generated during this touch and drag sequence. Consequently, it needs
       // to be called here, so that it happens for each touch-drag sequence.
       container.$form().dontGrabTouchEventsForComponent();
       motionEventParser.parse(event);
       mGestureDetector.onTouchEvent(event); // handle onFling here
       // let each detector in the custom list handle the event
       for (ExtensionGestureDetector g : extensionGestureDetectors) {
-        //  Log.i("Canvas", "Calling detector: " + g.toString());
-        //  Log.i("Canvas", "sending motion event " + event.toString());
+        // Log.i("Canvas", "Calling detector: " + g.toString());
+        // Log.i("Canvas", "sending motion event " + event.toString());
         g.onTouchEvent(event);
       }
       return true;
@@ -606,7 +632,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
       setBackground();
 
-      clearDrawingLayer();  // will call invalidate()
+      clearDrawingLayer(); // will call invalidate()
     }
 
     @RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
@@ -622,7 +648,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       }
 
       setBackground();
-      clearDrawingLayer();  // will call invalidate()
+      clearDrawingLayer(); // will call invalidate()
     }
 
     private void setBackground() {
@@ -631,8 +657,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         setDraw = backgroundDrawable.getConstantState().newDrawable();
         setDraw.setColorFilter((backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE,
             PorterDuff.Mode.DST_OVER);
-      }
-      else {
+      } else {
         setDraw = new ColorDrawable(
             (backgroundColor != Component.COLOR_DEFAULT) ? backgroundColor : Component.COLOR_WHITE);
       }
@@ -688,7 +713,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
             scaledBackgroundBitmap = Bitmap.createScaledBitmap(
                 backgroundDrawable.getBitmap(),
                 bitmap.getWidth(), bitmap.getHeight(),
-                false);  // false argument indicates not to filter
+                false); // false argument indicates not to filter
           }
           color = scaledBackgroundBitmap.getPixel(x, y);
           return color;
@@ -729,7 +754,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         }
 
         // TODO(user): If needed for efficiency, check whether there are any
-        // sprites overlapping (x, y).  If not, we can just call getBackgroundPixelColor().
+        // sprites overlapping (x, y). If not, we can just call
+        // getBackgroundPixelColor().
         // If so, maybe we can just draw those sprites instead of building a full
         // cache of the view.
 
@@ -782,8 +808,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     return view;
   }
 
-
-
   // For extension components to
   // access the bitmap of the canvas
 
@@ -795,7 +819,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     return context;
   }
 
-  // add a new custom gesture detector, typically by means of a component extension
+  // add a new custom gesture detector, typically by means of a component
+  // extension
   public void registerCustomGestureDetector(ExtensionGestureDetector detector) {
     // Log.i("Canvas", "Adding custom detector " + detector.toString());
     extensionGestureDetectors.add(detector);
@@ -805,7 +830,6 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     extensionGestureDetectors.remove(detector);
   }
 
-
   // Methods related to getting the dimensions of this Canvas
 
   /**
@@ -813,7 +837,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * If so, {@link #Width()} and {@link #Height()} will be properly initialized.
    *
    * @return {@code true} if it is safe to call {@link #Width()} and {@link
-   * #Height()}, {@code false} otherwise
+   *         #Height()}, {@code false} otherwise
    */
   public boolean ready() {
     return drawn;
@@ -831,7 +855,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     // Add before first element with greater Z value.
     // This ensures not only that items are in increasing Z value
     // but that sprites whose Z values are always equal are
-    // ordered by creation time.  While we don't wish to guarantee
+    // ordered by creation time. While we don't wish to guarantee
     // this behavior going forward, it does provide consistency
     // with how things worked before Z layering was added.
     for (int i = 0; i < sprites.size(); i++) {
@@ -882,7 +906,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   @Override
-  public List<? extends Component> getChildren(){
+  public List<? extends Component> getChildren() {
     return sprites;
   }
 
@@ -914,17 +938,16 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     findSpriteCollisions(sprite);
   }
 
-
   // Methods for detecting collisions
 
   /**
    * Checks if the given sprite now overlaps with or abuts any other sprite
-   * or has ceased to do so.  If there is a sprite that is newly in collision
+   * or has ceased to do so. If there is a sprite that is newly in collision
    * with it, {@link Sprite#CollidedWith(Sprite)} is called for each sprite
-   * with the other sprite as an argument.  If two sprites that had been in
+   * with the other sprite as an argument. If two sprites that had been in
    * collision are no longer colliding,
    * {@link Sprite#NoLongerCollidingWith(Sprite)} is called for each sprite
-   * with the other as an argument.   Collisions are only recognized between
+   * with the other as an argument. Collisions are only recognized between
    * sprites that are both
    * {@link com.google.appinventor.components.runtime.Sprite#Visible()}
    * and
@@ -962,28 +985,28 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
-
   // Properties
 
- /**
-  * Specifies the horizontal width of the `%type%`, measured in pixels.
-  *
-  * @internaldoc
-  * The width can only be set to >0 or -1 (automatic) or -2 (fill parent)
-  * or to a value less then or equal to LENGTH_PERCENT_TAG (which is later
-  * converted to pixels.
-  *
-  * @param width
-  */
+  /**
+   * Specifies the horizontal width of the `%type%`, measured in pixels.
+   *
+   * @internaldoc
+   *              The width can only be set to >0 or -1 (automatic) or -2 (fill
+   *              parent)
+   *              or to a value less then or equal to LENGTH_PERCENT_TAG (which is
+   *              later
+   *              converted to pixels.
+   *
+   * @param width
+   */
   @Override
   @SimpleProperty
   // the bitmap routines will crash if the width is set to 0
   public void Width(int width) {
-    if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED) ||
+    if ((width > 0) || (width == LENGTH_FILL_PARENT) || (width == LENGTH_PREFERRED) ||
         (width <= LENGTH_PERCENT_TAG)) {
       super.Width(width);
-    }
-    else {
+    } else {
       container.$form().dispatchErrorOccurredEvent(this, "Width",
           ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
     }
@@ -993,38 +1016,36 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * Specifies the `%type%`'s vertical height, measured in pixels.
    *
    * @internaldoc
-   * The height can only be set to >0 or -1 (automatic) or -2 (fill parent) or
-   * to a value less then or equal to LENGTH_PERCENT_TAG (which is later
-   * converted to pixels.
+   *              The height can only be set to >0 or -1 (automatic) or -2 (fill
+   *              parent) or
+   *              to a value less then or equal to LENGTH_PERCENT_TAG (which is
+   *              later
+   *              converted to pixels.
    *
    * @param height
    */
   @Override
   @SimpleProperty
   // the bitmap routines will crash if the height is set to 0
-   public void Height(int height) {
-     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED) ||
-         (height <= LENGTH_PERCENT_TAG)) {
-       super.Height(height);
-     }
-     else {
-       container.$form().dispatchErrorOccurredEvent(this, "Height",
-            ErrorMessages.ERROR_CANVAS_HEIGHT_ERROR);
+  public void Height(int height) {
+    if ((height > 0) || (height == LENGTH_FILL_PARENT) || (height == LENGTH_PREFERRED) ||
+        (height <= LENGTH_PERCENT_TAG)) {
+      super.Height(height);
+    } else {
+      container.$form().dispatchErrorOccurredEvent(this, "Height",
+          ErrorMessages.ERROR_CANVAS_HEIGHT_ERROR);
     }
-   }
-
+  }
 
   /**
    * Returns the button's background color as an alpha-red-green-blue
-   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * integer, i.e., {@code 0xAARRGGBB}. An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
    *
    * @return background color in the format 0xAARRGGBB, which includes
-   * alpha, red, green, and blue components
+   *         alpha, red, green, and blue components
    */
-  @SimpleProperty(
-      description = "The color of the canvas background.",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "The color of the canvas background.", category = PropertyCategory.APPEARANCE)
   @IsColor
   public int BackgroundColor() {
     return backgroundColor;
@@ -1032,15 +1053,14 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Specifies the Canvas's background color as an alpha-red-green-blue
-   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * integer, i.e., {@code 0xAARRGGBB}. An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
    * The background color only shows if there is no background image.
    *
    * @param argb background color in the format 0xAARRGGBB, which
-   * includes alpha, red, green, and blue components
+   *             includes alpha, red, green, and blue components
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void BackgroundColor(int argb) {
     view.setBackgroundColor(argb);
@@ -1049,26 +1069,26 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * Returns the path of the canvas background image.
    *
-   * @return  the path of the canvas background image
+   * @return the path of the canvas background image
    */
-  @SimpleProperty(
-      description = "The name of a file containing the background image for the canvas",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "The name of a file containing the background image for the canvas", category = PropertyCategory.APPEARANCE)
   public String BackgroundImage() {
     return backgroundImagePath;
   }
 
   /**
-   * Specifies the name of a file containing the background image for the `Canvas`.
+   * Specifies the name of a file containing the background image for the
+   * `Canvas`.
    *
    * @internaldoc
-   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
-   * a path can be.
+   *              <p/>
+   *              See {@link MediaUtil#determineMediaSource} for information about
+   *              what
+   *              a path can be.
    *
-   * @param path  the path of the canvas background image
+   * @param path the path of the canvas background image
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-      defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET, defaultValue = "")
   @SimpleProperty
   public void BackgroundImage(@Asset String path) {
     view.setBackgroundImage(path);
@@ -1077,14 +1097,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * Specifies the backgound image in Base64 format
    * imageUrl will be in format of: iVBORw0KG...s//f+4z/6Z
+   * 
    * @suppressdoc
    * @param imageUrl the base64 format for an image
    */
   @RequiresApi(api = android.os.Build.VERSION_CODES.FROYO)
-  @SimpleProperty (
-      description = "Set the background image in Base64 format. This requires API level >= 8. For "
-          + "devices with API level less than 8, setting this will end up with an empty background."
-  )
+  @SimpleProperty(description = "Set the background image in Base64 format. This requires API level >= 8. For "
+      + "devices with API level less than 8, setting this will end up with an empty background.")
   public void BackgroundImageinBase64(String imageUrl) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
       view.setBackgroundImageBase64(imageUrl);
@@ -1093,17 +1112,17 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
 
   }
-  
+
   /**
    * Returns the movement threshold to differentiate a drag from a tap.
    *
-   * @return tapThreshold : The number of pixels right, left, up, or down, a sequence of drags
-   *     must move from the starting point to be considered a drag (instead of a touch).
+   * @return tapThreshold : The number of pixels right, left, up, or down, a
+   *         sequence of drags
+   *         must move from the starting point to be considered a drag (instead of
+   *         a touch).
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Set the number of pixels right, left, up or down, a sequence of drags must"
-          + "move from the starting point to be considered a drag (instead of a touch)."
-  )
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Set the number of pixels right, left, up or down, a sequence of drags must"
+      + "move from the starting point to be considered a drag (instead of a touch).")
   public int TapThreshold() {
     return tapThreshold;
   }
@@ -1111,27 +1130,26 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * Specifies the movement threshold to differentiate a drag from a tap.
    *
-   * @param threshold The number of pixels right, left, up, or down, a sequence of drags must
-   *     move from the starting point to be considered a drag (instead of a touch).
+   * @param threshold The number of pixels right, left, up, or down, a sequence of
+   *                  drags must
+   *                  move from the starting point to be considered a drag
+   *                  (instead of a touch).
    */
   @SimpleProperty
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
-      defaultValue = "15")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER, defaultValue = "15")
   public void TapThreshold(int threshold) {
     this.tapThreshold = threshold;
   }
 
   /**
    * Returns the currently specified paint color as an alpha-red-green-blue
-   * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
+   * integer, i.e., {@code 0xAARRGGBB}. An alpha of {@code 00}
    * indicates fully transparent and {@code FF} means opaque.
    *
    * @return paint color in the format 0xAARRGGBB, which includes alpha,
-   * red, green, and blue components
+   *         red, green, and blue components
    */
-  @SimpleProperty(
-      description = "The color in which lines are drawn",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "The color in which lines are drawn", category = PropertyCategory.APPEARANCE)
   @IsColor
   public int PaintColor() {
     return paintColor;
@@ -1139,14 +1157,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Specifies the paint color as an alpha-red-green-blue integer,
-   * i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00} indicates fully
+   * i.e., {@code 0xAARRGGBB}. An alpha of {@code 00} indicates fully
    * transparent and {@code FF} means opaque.
    *
    * @param argb paint color in the format 0xAARRGGBB, which includes
-   * alpha, red, green, and blue components
+   *             alpha, red, green, and blue components
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void PaintColor(int argb) {
     paintColor = argb;
@@ -1164,9 +1181,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
-  @SimpleProperty(
-      description = "The font size of text drawn on the canvas.",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "The font size of text drawn on the canvas.", category = PropertyCategory.APPEARANCE)
   public float FontSize() {
     float scale = $form().deviceDensity();
     return paint.getTextSize() / scale;
@@ -1174,10 +1189,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Specifies the font size of text drawn on the Canvas.
+   * 
    * @param size
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = Component.FONT_DEFAULT_SIZE + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = Component.FONT_DEFAULT_SIZE
+      + "")
   @SimpleProperty
   public void FontSize(float size) {
     float scale = $form().deviceDensity();
@@ -1186,11 +1202,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Returns the currently specified stroke width
+   * 
    * @return width
    */
-  @SimpleProperty(
-      description = "The width of lines drawn on the canvas.",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "The width of lines drawn on the canvas.", category = PropertyCategory.APPEARANCE)
   public float LineWidth() {
     return paint.getStrokeWidth() / $form().deviceDensity();
   }
@@ -1200,8 +1215,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *
    * @param width
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = DEFAULT_LINE_WIDTH + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = DEFAULT_LINE_WIDTH
+      + "")
   @SimpleProperty
   public void LineWidth(float width) {
     paint.setStrokeWidth(width * $form().deviceDensity());
@@ -1212,17 +1227,16 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * (starting at the specified point in drawText()), or opposite
    * (ending at the specified point in drawText()).
    *
-   * @return  one of {@link Component#ALIGNMENT_NORMAL},
-   *          {@link Component#ALIGNMENT_CENTER} or
-   *          {@link Component#ALIGNMENT_OPPOSITE}
+   * @return one of {@link Component#ALIGNMENT_NORMAL},
+   *         {@link Component#ALIGNMENT_CENTER} or
+   *         {@link Component#ALIGNMENT_OPPOSITE}
    */
   @SimpleProperty(description = "Determines the alignment of the " +
       "text drawn by DrawText() or DrawAngle() with respect to the " +
       "point specified by that command: point at the left of the text, point at the center " +
       "of the text, or point at the right of the text.",
-//    TODO: (Hal) Check that this is still correct for RTL languages.
-      category = PropertyCategory.APPEARANCE,
-      userVisible = true)
+      // TODO: (Hal) Check that this is still correct for RTL languages.
+      category = PropertyCategory.APPEARANCE, userVisible = true)
   public int TextAlignment() {
     return textAlignment;
   }
@@ -1235,12 +1249,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * {@link #DrawText(String, int, int)} or
    * {@link #DrawTextAtAngle(String, int, int, float)}).
    *
-   * @param alignment  one of {@link Component#ALIGNMENT_NORMAL},
-   *                   {@link Component#ALIGNMENT_CENTER} or
-   *                   {@link Component#ALIGNMENT_OPPOSITE}
+   * @param alignment one of {@link Component#ALIGNMENT_NORMAL},
+   *                  {@link Component#ALIGNMENT_CENTER} or
+   *                  {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
-                    defaultValue = DEFAULT_TEXTALIGNMENT + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT, defaultValue = DEFAULT_TEXTALIGNMENT
+      + "")
   @SimpleProperty(userVisible = true)
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
@@ -1257,12 +1271,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 
-  @SimpleProperty(description = 
-      "Determines whether moves can extend beyond the canvas borders.  "  +
+  @SimpleProperty(description = "Determines whether moves can extend beyond the canvas borders.  " +
       " Default is false. This should normally be false, and the property " +
-      "is provided for backwards compatibility.",
-      category = PropertyCategory.BEHAVIOR,
-      userVisible = true)
+      "is provided for backwards compatibility.", category = PropertyCategory.BEHAVIOR, userVisible = true)
   public boolean ExtendMovesOutsideCanvas() {
     return extendMovesOutsideCanvas;
   }
@@ -1273,21 +1284,22 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(userVisible = true)
-  public void ExtendMovesOutsideCanvas(boolean extend){
-    extendMovesOutsideCanvas = extend;   
+  public void ExtendMovesOutsideCanvas(boolean extend) {
+    extendMovesOutsideCanvas = extend;
   }
 
   // Methods supporting event handling
 
   /**
    * When the user touches the canvas and then immediately lifts finger: provides
-   * the (x,y) position of the touch, relative to the upper left of the canvas.  TouchedAnySprite
+   * the (x,y) position of the touch, relative to the upper left of the canvas.
+   * TouchedAnySprite
    * is true if the same touch also touched a sprite, and false otherwise.
    *
-   * @param x  x-coordinate of the point that was touched
-   * @param y  y-coordinate of the point that was touched
+   * @param x                x-coordinate of the point that was touched
+   * @param y                y-coordinate of the point that was touched
    * @param touchedAnySprite {@code true} if a sprite was touched, {@code false}
-   *        otherwise
+   *                         otherwise
    */
   @SimpleEvent
   public void Touched(float x, float y, boolean touchedAnySprite) {
@@ -1299,8 +1311,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * leaves it there): provides the (x,y) position of the touch, relative
    * to the upper left of the canvas
    *
-   * @param x  x-coordinate of the point that was touched
-   * @param y  y-coordinate of the point that was touched
+   * @param x x-coordinate of the point that was touched
+   * @param y y-coordinate of the point that was touched
    */
   @SimpleEvent
   public void TouchDown(float x, float y) {
@@ -1312,8 +1324,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * TouchDown event): provides the (x,y) position of the touch, relative
    * to the upper left of the canvas
    *
-   * @param x  x-coordinate of the point that was touched
-   * @param y  y-coordinate of the point that was touched
+   * @param x x-coordinate of the point that was touched
+   * @param y y-coordinate of the point that was touched
    */
   @SimpleEvent
   public void TouchUp(float x, float y) {
@@ -1323,49 +1335,51 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * When a fling gesture (quick swipe) is made on the canvas: provides
    * the (x,y) position of the start of the fling, relative to the upper
-   * left of the canvas. Also provides the speed (pixels per millisecond) and heading
+   * left of the canvas. Also provides the speed (pixels per millisecond) and
+   * heading
    * (-180 to 180 degrees) of the fling, as well as the x velocity and y velocity
    * components of the fling's vector. The value "flungSprite" is true if a sprite
    * was located near the the starting point of the fling gesture.
    *
-   * @param x  x-coordinate of touched point
-   * @param y  y-coordinate of touched point
-   * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
-   * @param heading  the heading of the fling
-   * @param xvel  the speed in x-direction of the fling
-   * @param yvel  the speed in y-direction of the fling
-   * @param flungSprite  {@code true} if a sprite was flung,
-   *        {@code false} otherwise
+   * @param x           x-coordinate of touched point
+   * @param y           y-coordinate of touched point
+   * @param speed       the speed of the fling sqrt(xspeed^2 + yspeed^2)
+   * @param heading     the heading of the fling
+   * @param xvel        the speed in x-direction of the fling
+   * @param yvel        the speed in y-direction of the fling
+   * @param flungSprite {@code true} if a sprite was flung,
+   *                    {@code false} otherwise
    *
    */
   @SimpleEvent
-  public void Flung(float x, float y, float speed, float heading,float xvel, float yvel,
+  public void Flung(float x, float y, float speed, float heading, float xvel, float yvel,
       boolean flungSprite) {
     EventDispatcher.dispatchEvent(this, "Flung", x, y, speed, heading, xvel, yvel, flungSprite);
   }
 
-/**
+  /**
    * When the user does a drag from one point (prevX, prevY) to
-   * another (x, y).  The pair (startX, startY) indicates where the
+   * another (x, y). The pair (startX, startY) indicates where the
    * user first touched the screen, and "draggedAnySprite" indicates whether a
    * sprite is being dragged.
    *
-   * @param startX the starting x-coordinate
-   * @param startY the starting y-coordinate
-   * @param prevX the previous x-coordinate (possibly equal to startX)
-   * @param prevY the previous y-coordinate (possibly equal to startY)
-   * @param currentX the current x-coordinate
-   * @param currentY the current y-coordinate
+   * @param startX           the starting x-coordinate
+   * @param startY           the starting y-coordinate
+   * @param prevX            the previous x-coordinate (possibly equal to startX)
+   * @param prevY            the previous y-coordinate (possibly equal to startY)
+   * @param currentX         the current x-coordinate
+   * @param currentY         the current y-coordinate
    * @param draggedAnySprite {@code true} if
-   *        {@link Sprite#Dragged(float, float, float, float, float, float)}
-   *        was called for one or more sprites for this segment, {@code false}
-   *        otherwise
+   *                         {@link Sprite#Dragged(float, float, float, float, float, float)}
+   *                         was called for one or more sprites for this segment,
+   *                         {@code false}
+   *                         otherwise
    */
   @SimpleEvent
   public void Dragged(float startX, float startY, float prevX, float prevY,
-                      float currentX, float currentY, boolean draggedAnySprite) {
+      float currentX, float currentY, boolean draggedAnySprite) {
     EventDispatcher.dispatchEvent(this, "Dragged", startX, startY,
-                                  prevX, prevY, currentX, currentY, draggedAnySprite);
+        prevX, prevY, currentX, currentY, draggedAnySprite);
   }
 
   // Functions
@@ -1383,8 +1397,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * Draws a point at the given coordinates on the canvas.
    *
-   * @param x  x coordinate
-   * @param y  y coordinate
+   * @param x x coordinate
+   * @param y y coordinate
    */
   @SimpleFunction
   public void DrawPoint(int x, int y) {
@@ -1394,14 +1408,15 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     view.invalidate();
   }
 
- /**
-   * Draws a circle (filled in) with the given radius centered at the given coordinates on the
+  /**
+   * Draws a circle (filled in) with the given radius centered at the given
+   * coordinates on the
    * Canvas.
    *
-   * @param centerX  x-coordinate of the center of the circle
-   * @param centerY  y-coordinate of the center of the circle
+   * @param centerX x-coordinate of the center of the circle
+   * @param centerY y-coordinate of the center of the circle
    * @param radius  radius of the circle
-   * @param fill  true for filled circle; false for circle outline
+   * @param fill    true for filled circle; false for circle outline
    */
   @SimpleFunction
   public void DrawCircle(int centerX, int centerY, float radius, boolean fill) {
@@ -1417,10 +1432,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * Draws a line between the given coordinates on the canvas.
    *
-   * @param x1  x coordinate of first point
-   * @param y1  y coordinate of first point
-   * @param x2  x coordinate of second point
-   * @param y2  y coordinate of second point
+   * @param x1 x coordinate of first point
+   * @param y1 y coordinate of first point
+   * @param x2 x coordinate of second point
+   * @param y2 y coordinate of second point
    */
   @SimpleFunction
   public void DrawLine(int x1, int y1, int x2, int y2) {
@@ -1434,16 +1449,19 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * Draws a shape on the canvas.
-   * pointList should be a list contains sub-lists with two number which represents a coordinate.
-   * The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
+   * pointList should be a list contains sub-lists with two number which
+   * represents a coordinate.
+   * The first point and last point does not need to be the same. e.g. ((x1 y1)
+   * (x2 y2) (x3 y3))
    * When fill is true, the shape will be filled.
    *
-   * @param pointList  A list of points, should contains sub-lists with two number which represents a coordinate.
-   *                   The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3))
-   * @param fill  true for filled shape; false for shape outline
+   * @param pointList A list of points, should contains sub-lists with two number
+   *                  which represents a coordinate.
+   *                  The first point and last point does not need to be the same.
+   *                  e.g. ((x1 y1) (x2 y2) (x3 y3))
+   * @param fill      true for filled shape; false for shape outline
    */
-  @SimpleFunction(description = 
-      "Draws a shape on the canvas. " +
+  @SimpleFunction(description = "Draws a shape on the canvas. " +
       "pointList should be a list contains sub-lists with two number which represents a coordinate. " +
       "The first point and last point does not need to be the same. e.g. ((x1 y1) (x2 y2) (x3 y3)) " +
       "When fill is true, the shape will be filled.")
@@ -1498,44 +1516,49 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
             throw new IllegalArgumentException(e.fillInStackTrace());
           }
         } else {
-          throw new IllegalArgumentException("length of item YailList("+ index +") is not 2");
+          throw new IllegalArgumentException("length of item YailList(" + index + ") is not 2");
         }
       } else {
-        throw new IllegalArgumentException("item("+ index +") in YailList is not a YailList");
+        throw new IllegalArgumentException("item(" + index + ") in YailList is not a YailList");
       }
     }
     return points;
   }
 
   /**
-   * Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom).
-   * Start angle is 0 when heading to the right, and increase when rotate clockwise.
+   * Draw an arc on Canvas, by drawing an arc from a specified oval (specified by
+   * left, top, right & bottom).
+   * Start angle is 0 when heading to the right, and increase when rotate
+   * clockwise.
    * When useCenter is true, a sector will be drawed instead of an arc.
-   * When fill is true, a filled arc (or sector) will be drawed instead of just an outline.
+   * When fill is true, a filled arc (or sector) will be drawed instead of just an
+   * outline.
    * 
-   * @param left   the left end of the oval
-   * @param top    the top of the oval
-   * @param right  the right end of the oval
-   * @param bottom the bottom of the oval
-   * @param startAngle the start angle of the arc, rightward as 0, clockwise as positive, in degree
-   * @param sweepAngle the sweep angle of the arc, clockwise as positive, in degree
+   * @param left       the left end of the oval
+   * @param top        the top of the oval
+   * @param right      the right end of the oval
+   * @param bottom     the bottom of the oval
+   * @param startAngle the start angle of the arc, rightward as 0, clockwise as
+   *                   positive, in degree
+   * @param sweepAngle the sweep angle of the arc, clockwise as positive, in
+   *                   degree
    * @param useCenter  fill a sector instead of just an arc (when true)
-   * @param fill  true for filled arc (or sector); false for outline only
+   * @param fill       true for filled arc (or sector); false for outline only
    */
-  @SimpleFunction(description = 
-      "Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom). " +
+  @SimpleFunction(description = "Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom). "
+      +
       "Start angle is 0 when heading to the right, and increase when rotate clockwise. " +
       "When useCenter is true, a sector will be drawed instead of an arc. " +
       "When fill is true, a filled arc (or sector) will be drawed instead of just an outline.")
-  public void DrawArc(int left, int top, int right, int bottom, 
+  public void DrawArc(int left, int top, int right, int bottom,
       float startAngle, float sweepAngle, boolean useCenter, boolean fill) {
     float scalingFactor = $form().deviceDensity();
     Paint p = new Paint(paint);
     p.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
     view.canvas.drawArc(
-      new RectF(scalingFactor * left, scalingFactor * top,
-                scalingFactor * right, scalingFactor * bottom),
-      startAngle, sweepAngle, useCenter, p);
+        new RectF(scalingFactor * left, scalingFactor * top,
+            scalingFactor * right, scalingFactor * bottom),
+        startAngle, sweepAngle, useCenter, p);
     view.invalidate();
   }
 
@@ -1545,8 +1568,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * {@link #TextAlignment(int)} properties.
    *
    * @param text the text to draw
-   * @param x the x-coordinate of the origin
-   * @param y the y-coordinate of the origin
+   * @param x    the x-coordinate of the origin
+   * @param y    the y-coordinate of the origin
    */
   @SimpleFunction(description = "Draws the specified text relative to the specified coordinates "
       + "using the values of the FontSize and TextAlignment properties.")
@@ -1563,9 +1586,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * at the specified angle using the values of the {@link #FontSize(float)} and
    * {@link #TextAlignment(int)} properties.
    *
-   * @param text the text to draw
-   * @param x the x-coordinate of the origin
-   * @param y the y-coordinate of the origin
+   * @param text  the text to draw
+   * @param x     the x-coordinate of the origin
+   * @param y     the y-coordinate of the origin
    * @param angle the angle (in degrees) at which to draw the text
    */
   @SimpleFunction(description = "Draws the specified text starting at the specified coordinates "
@@ -1595,11 +1618,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Sets the color of the given pixel.  This has no effect if the
+   * Sets the color of the given pixel. This has no effect if the
    * coordinates are out of bounds.
    *
-   * @param x the x-coordinate
-   * @param y the y-coordinate
+   * @param x     the x-coordinate
+   * @param y     the y-coordinate
    * @param color the color as an alpha-red-blue-green integer
    */
   @SimpleFunction(description = "Sets the color of the specified point. "
@@ -1636,10 +1659,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @UsesPermissions({WRITE_EXTERNAL_STORAGE})
+  @UsesPermissions({ WRITE_EXTERNAL_STORAGE })
   @SimpleFunction(description = "Saves a picture of this Canvas to the " +
-       "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
-       "event will be called.")
+      "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
+      "event will be called.")
   public String Save() {
     return saveFile(FileUtil.getScopedPictureFile($form(), "png"),
         Bitmap.CompressFormat.PNG, "Save");
@@ -1653,11 +1676,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @UsesPermissions({WRITE_EXTERNAL_STORAGE})
-  @SimpleFunction(description =  "Saves a picture of this Canvas to the device's " +
-   "external storage in the file " +
-   "named fileName. fileName must end with one of .jpg, .jpeg, or .png, " +
-   "which determines the file type.")
+  @UsesPermissions({ WRITE_EXTERNAL_STORAGE })
+  @SimpleFunction(description = "Saves a picture of this Canvas to the device's " +
+      "external storage in the file " +
+      "named fileName. fileName must end with one of .jpg, .jpeg, or .png, " +
+      "which determines the file type.")
   public String SaveAs(String fileName) {
     // Figure out desired file format
     Bitmap.CompressFormat format;
@@ -1665,7 +1688,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       format = Bitmap.CompressFormat.JPEG;
     } else if (fileName.endsWith(".png")) {
       format = Bitmap.CompressFormat.PNG;
-    } else if (!fileName.contains(".")) {  // make PNG the default to match Save behavior
+    } else if (!fileName.contains(".")) { // make PNG the default to match Save behavior
       fileName = fileName + ".png";
       format = Bitmap.CompressFormat.PNG;
     } else {
@@ -1722,8 +1745,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
         float velocityY) {
-      float x = Math.max(0, (int)(e1.getX() / $form().deviceDensity())); // set to zero if negative
-      float y = Math.max(0, (int)(e1.getY() / $form().deviceDensity())); // set to zero if negative
+      float x = Math.max(0, (int) (e1.getX() / $form().deviceDensity())); // set to zero if negative
+      float y = Math.max(0, (int) (e1.getY() / $form().deviceDensity())); // set to zero if negative
 
       // Normalize the velocity: Change from pixels/sec to pixels/ms
       float vx = velocityX / FLING_INTERVAL;
@@ -1757,4 +1780,3 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 }
-
