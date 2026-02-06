@@ -538,20 +538,25 @@ The `AIContextBuilder` dynamically includes/excludes tool definitions based on t
 ### Step 2: Provider-agnostic LLM layer
 
 **New files:**
-- `server/aiagent/llm/LLMProvider.java` - Interface:
+- `server/aiagent/llm/LLMProvider.java` - Interface (see Step 10e for the full signature):
   ```java
   public interface LLMProvider {
-      LLMResponse chat(List<LLMMessage> messages, List<LLMTool> tools);
-      String getProviderName();
+      LLMResponse chat(String systemPrompt, String userMessage,
+                       List<LLMTool> tools, String conversationRef,
+                       List<ChatMessage> history);
+      boolean isStateless();
   }
   ```
 - `server/aiagent/llm/LLMProviderRegistry.java` - Factory that selects provider based on config
 - `server/aiagent/llm/AnthropicProvider.java` - Claude API (Messages API with tool_use)
 - `server/aiagent/llm/OpenAIProvider.java` - GPT-4 API (Chat Completions with function calling)
 - `server/aiagent/llm/GeminiProvider.java` - Gemini API (function calling)
-- `server/aiagent/llm/LLMMessage.java`, `LLMTool.java`, `LLMResponse.java` - Common data types
+- `server/aiagent/llm/LLMTool.java` - Tool definition (name, description, parameter schema)
+- `server/aiagent/llm/LLMResponse.java` - Provider response (text, raw tool calls, conversationRef)
+- `server/aiagent/llm/ChatMessage.java` - Role + text pair for conversation history
+- `server/aiagent/llm/RawToolCall.java` - Unparsed tool call from provider (name, arguments JSON string)
 
-Each provider translates the common tool definitions into its own format (Anthropic tool_use, OpenAI functions, Gemini function declarations) and parses tool call responses back into the common `AIOperation` format.
+Each provider translates the common tool definitions into its own format (Anthropic tool_use, OpenAI functions, Gemini function declarations). Raw tool calls from the provider are returned as `RawToolCall` objects in `LLMResponse`, then parsed and validated by `LLMResponseParser` (§8g Stage 1) into `AIOperation` objects.
 
 ### Step 3: Server-side AI agent service and LLM context strategy
 
@@ -1943,30 +1948,35 @@ private static final Set<String> WRITE_OPS = Set.of(
     "SWITCH_SCREEN", "CREATE_SCREEN", "DELETE_SCREEN", "SET_PROJECT_PROP"
 );
 
-public void validateForMode(List<AIOperation> ops, String mode) {
+public ValidationResult validateForMode(List<AIOperation> ops, String mode) {
+    List<AIOperation> accepted = new ArrayList<>();
+    List<String> warnings = new ArrayList<>();
+
     for (AIOperation op : ops) {
         String type = op.getType();
         switch (mode) {
             case "Advisor":
-                // Advisor can NEVER produce write operations
+                // Advisor can NEVER produce write operations — drop silently
                 if (WRITE_OPS.contains(type)) {
-                    throw new SecurityException(
-                        "Advisor mode: operation " + type + " not permitted");
+                    warnings.add("Advisor mode: operation " + type + " not permitted — dropped.");
+                    continue;
                 }
                 break;
             case "ScreenEditor":
                 // ScreenEditor can write to current screen, but NEVER project-level
                 if (PROJECT_LEVEL_OPS.contains(type)) {
-                    throw new SecurityException(
-                        "ScreenEditor mode: operation " + type + " not permitted. "
-                        + "Enable ProjectEditor mode for cross-screen operations.");
+                    warnings.add("ScreenEditor mode: operation " + type
+                        + " not permitted (requires ProjectEditor mode) — dropped.");
+                    continue;
                 }
                 break;
             case "ProjectEditor":
                 // All operations allowed
                 break;
         }
+        accepted.add(op);
     }
+    return new ValidationResult(accepted, warnings);
 }
 ```
 
@@ -2104,44 +2114,22 @@ public static final String YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE = "AIAgentMode";
 - `ScreenEditor`: Opens chat dialog; AI can propose and apply operations to the current screen only
 - `ProjectEditor`: Opens chat dialog; AI has full project write access (create/delete screens, modify any screen, change project settings)
 
-**Server-side enforcement** in `AIAgentServiceImpl.processRequest()`:
-```java
-String mode = getProjectAIAgentMode(userId, projectId);  // Read from Screen1.scm
+**Server-side enforcement** in `AIAgentServiceImpl.processRequest()` (see Step 10e for
+the full implementation including conversation management):
 
-// 1. Check mode is enabled
-if ("Off".equals(mode)) {
-    throw new SecurityException("AI Agent is disabled for this project");
-}
+The 3-layer defense ensures mode restrictions are enforced even if the LLM hallucinates
+tools it shouldn't have:
 
-// 2. Build LLM context with mode-appropriate tools (Advisor gets no write tools,
-//    ScreenEditor gets no project-level tools, ProjectEditor gets all tools)
-String systemPrompt = aiContextBuilder.build(userId, projectId, screenName, mode);
-
-// 3. Call LLM with mode-filtered tool set
-LLMResponse llmResponse = llmProvider.chat(systemPrompt, userMessage, tools);
-
-// 4. CRITICAL: Server-side mode enforcement on ALL operations (defense-in-depth)
-//    Even though the LLM only saw mode-appropriate tools, it could hallucinate others.
-aiOperationValidator.validateForMode(llmResponse.getOperations(), mode);
-
-// 5. Validate operations against component database (types, properties, etc.)
-aiOperationValidator.validateOperations(llmResponse.getOperations(), componentDb);
-
-// 6. Additional Advisor override: strip any write operations from response
-//    (defense-in-depth — validateForMode already rejects them, but belt-and-suspenders)
-if ("Advisor".equals(mode)) {
-    response.setOperations(Collections.emptyList());
-    response.setReadOnly(true);
-}
-
-// 7. Return to client
-return response;
-```
-
-The 3-layer defense for mode enforcement:
-1. **Prompt filtering** (`AIContextBuilder`): LLM never sees tools it can't use
-2. **Server validation** (`AIOperationValidator.validateForMode`): Rejects any operation outside mode scope (see §8h for full code)
-3. **Client validation** (`AIOperationExecutor`): Same check before execution
+1. **Mode check** — If `mode == "Off"`, throw `SecurityException` immediately
+2. **Prompt filtering** — `AIContextBuilder.build(userId, projectId, screenName, mode)`
+   only includes tools appropriate for the active mode
+3. **Post-LLM validation** — After the LLM responds and `LLMResponseParser` parses the
+   tool calls (§8g Stage 1), `AIOperationValidator.validateForMode(ops, mode)` drops any
+   operations outside the mode scope with warnings (§8h)
+4. **Semantic validation** — `AIOperationValidator.validateOperations(ops, componentDb)`
+   drops invalid component types, property names, etc. (§8g Stage 2)
+5. **Advisor belt-and-suspenders** — In Advisor mode, any surviving write operations are
+   stripped and the response is marked read-only
 
 **When user first clicks "AI Assistant" and mode is `Off`**, show a dialog:
 > "Choose an AI Agent permission level for this project:"
@@ -2581,51 +2569,45 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     }
     storeConversationRef(projectId, provider, newRef);
 
-    // For stateless providers, persist both messages to Datastore
+    // 6. Structural validation (§8g Stage 1)
+    ParseResult parsed = llmResponseParser.parseToolCalls(llmResponse.getToolCalls());
+    List<AIOperation> operations = parsed.getOperations();
+    List<String> warnings = new ArrayList<>(parsed.getWarnings());
+
+    // 7. Mode enforcement (§8h) — drops operations outside mode scope
+    ValidationResult modeResult = aiOperationValidator.validateForMode(operations, mode);
+    operations = modeResult.getAccepted();
+    warnings.addAll(modeResult.getWarnings());
+
+    // 8. Semantic validation (§8g Stage 2) — drops invalid types/properties
+    ValidationResult semanticResult = aiOperationValidator.validateOperations(operations, componentDb);
+    operations = semanticResult.getAccepted();
+    warnings.addAll(semanticResult.getWarnings());
+
+    // 9. Advisor belt-and-suspenders: strip any surviving write ops
+    if ("Advisor".equals(mode)) {
+        operations = Collections.emptyList();
+    }
+
+    // 10. Build response for client
+    AIAgentResponse response = new AIAgentResponse();
+    response.setAiMessage(llmResponse.getText());
+    response.setOperations(operations);
+    response.setWarnings(warnings);
+    response.setNewConversation(isNewConversation);
+
+    // 11. For stateless providers, persist both messages to Datastore
     if (llmProvider.isStateless()) {
         storeMessage(newRef, "user", userMessage);
         storeMessage(newRef, "assistant", llmResponse.getText());
     }
 
-    // 6. Include isNewConversation flag in response for client UI
-    AIAgentResponse response = buildResponse(llmResponse);
-    response.setNewConversation(isNewConversation);
-
-    // 7. Validate and return (mode enforcement, operation validation, etc.)
-    // ... (unchanged from existing plan)
     return response;
 }
 ```
 
-**Updated `LLMProvider` interface:**
-
-```java
-public interface LLMProvider {
-    /**
-     * Send a message to the LLM.
-     *
-     * @param conversationRef  Provider-specific conversation ref (null → new conversation)
-     * @param history          For stateless providers: prior messages. Empty for stateful.
-     * @return LLMResponse with text, operations, and updated conversationRef
-     */
-    LLMResponse chat(String systemPrompt, String userMessage,
-                     List<LLMTool> tools, String conversationRef,
-                     List<ChatMessage> history);
-
-    /** True if this provider requires caller to manage message history (e.g. Anthropic). */
-    boolean isStateless();
-}
-```
-
-**Updated `AIAgentResponse` DTO:**
-
-Add to `shared/rpc/aiagent/AIAgentResponse.java`:
-```java
-private boolean isNewConversation;  // True when a fresh conversation was started
-
-public boolean isNewConversation() { return isNewConversation; }
-public void setNewConversation(boolean val) { this.isNewConversation = val; }
-```
+The `LLMProvider` interface is defined in Step 2. The `AIAgentResponse` DTO fields
+(`aiMessage`, `operations`, `isNewConversation`, `warnings`) are defined in Step 1.
 
 **Chat UI — "New Conversation" button and notices:**
 
@@ -2666,7 +2648,7 @@ String aiConversationExpired();
 
 ## File Summary
 
-### New files (~14 files):
+### New files (29 files):
 
 | File | Purpose |
 |------|---------|
@@ -2691,24 +2673,29 @@ String aiConversationExpired();
 | `server/aiagent/llm/AnthropicProvider.java` | Claude API implementation |
 | `server/aiagent/llm/OpenAIProvider.java` | GPT-4 API implementation |
 | `server/aiagent/llm/GeminiProvider.java` | Gemini API implementation |
+| `server/aiagent/llm/LLMTool.java` | Tool definition (name, description, parameters) |
+| `server/aiagent/llm/LLMResponse.java` | Provider response (text, raw tool calls, conversationRef) |
+| `server/aiagent/llm/ChatMessage.java` | Role + text pair for conversation history |
+| `server/aiagent/llm/RawToolCall.java` | Unparsed tool call from provider (name, JSON args) |
 | `client/editor/youngandroid/AIChatDialog.java` | Floating chat dialog |
 | `client/editor/youngandroid/AIOperationExecutor.java` | Apply operations to editors |
 | `components/.../common/AIAgentMode.java` | Enum: Off, Advisor, ScreenEditor, ProjectEditor |
 | `client/.../properties/YoungAndroidAIAgentModeChoicePropertyEditor.java` | Dropdown property editor |
 
-### Modified files (~18 files):
+### Modified files (19 files):
 
 | File | Change |
 |------|--------|
 | `client/Ode.java` | Add AIChatDialog field, toggle method, two-layer enablement check |
-| `client/OdeMessages.java` | Add ~18 i18n message definitions for AI UI (see Step 10d) |
+| `client/OdeMessages.java` | Add ~25 i18n message definitions for AI UI (Steps 10d + 10e) |
 | `client/style/neo/DesignToolbarNeo.java` | Add "AI Assistant" toolbar button |
 | `client/editor/blocks/BlocklyPanel.java` | Add `injectBlocksXml()`, `deleteBlockByTypeAndId()`, `replaceBlock()` JSNI methods |
 | `client/editor/blocks/BlocksEditor.java` | Add public `injectBlocksXml()`, `deleteBlock()`, `replaceBlock()` wrappers |
 | `client/editor/simple/components/MockForm.java` | Add `AIAgentMode` dropdown handling, visibility on Screen1 only |
 | `client/.../components/utils/PropertiesUtil.java` | Register `YoungAndroidAIAgentModeChoicePropertyEditor` |
 | `components/.../common/PropertyTypeConstants.java` | Add `PROPERTY_TYPE_AI_AGENT_MODE` constant |
-| `server/tokenauth/TokenAuthServiceImpl.java` | Add AI token generation |
+| `server/tokenauth/TokenAuthServiceImpl.java` | Add AI token generation method |
+| `shared/rpc/tokenauth/TokenAuthService.java` | Add AI token interface method (§8a) |
 | `appengine/war/WEB-INF/appengine-web.xml` | Add AI configuration system properties |
 | `appengine/war/WEB-INF/web.xml` | Add `aiAgentService` servlet + mapping + auth filter (see Step 10a) |
 | `appengine/src/.../YaClient.gwt.xml` | Add `<servlet>` and `<source path>` for AI agent RPC (see Step 10b) |
