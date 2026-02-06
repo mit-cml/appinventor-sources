@@ -51,12 +51,45 @@ Browser (GWT Client)                    Server (App Engine)              Externa
   - `String userMessage` - natural language request
   - `long projectId` - current project
   - `String screenName` - current screen
-  - `String conversationId` - for multi-turn context
+  - ~~`String conversationId`~~ — **removed**: conversation state is managed entirely
+    server-side (Memcache keyed by `projectId`). See Step 10e.
 - `shared/rpc/aiagent/AIAgentResponse.java` - Response DTO containing:
   - `String aiMessage` - natural language explanation
   - `List<AIOperation> operations` - structured operations to apply
-  - `String conversationId` - for continuation
+  - `boolean isNewConversation` - true when this message started a new conversation
+    (client uses this to show a "new conversation" indicator in the chat UI)
+  - `List<String> warnings` - dropped operations and validation issues (see §8g)
 - `shared/rpc/aiagent/AIOperation.java` - Single operation: type enum + JSON payload string
+
+**GWT-RPC service interface (`AIAgentService.java`):**
+
+```java
+@RemoteServiceRelativePath("aiagent")
+public interface AIAgentService extends RemoteService {
+    /**
+     * Send a user message to the AI agent.
+     * Conversation state is managed server-side (one conversation per project,
+     * lazy-created on first message, 24h TTL). No conversationId from client.
+     */
+    AIAgentResponse processRequest(AIAgentRequest request);
+
+    /**
+     * Clear the current conversation for a project.
+     * Deletes the Memcache entry and, for stateless providers, all Datastore
+     * ConversationMessageData entities. The next processRequest() will start fresh.
+     */
+    void clearConversation(long projectId);
+}
+```
+
+**Async interface (`AIAgentServiceAsync.java`):**
+
+```java
+public interface AIAgentServiceAsync {
+    void processRequest(AIAgentRequest request, AsyncCallback<AIAgentResponse> callback);
+    void clearConversation(long projectId, AsyncCallback<Void> callback);
+}
+```
 
 **Operation types enum:**
 ```
@@ -533,7 +566,14 @@ Each provider translates the common tool definitions into its own format (Anthro
    - Verify property names/types are valid for the target component
    - Verify referenced components exist in current screen
    - Verify event/method names are valid
-4. **Conversation management**: In-memory `ConcurrentHashMap<String, List<LLMMessage>>` keyed by conversationId, with TTL expiry
+4. **Conversation management**: Hybrid stateful/stateless depending on LLM provider.
+   Memcache maps `projectId` → `provider:conversationRef` with 24h TTL.
+   Stateful providers (OpenAI, Gemini): `conversationRef` is the provider's native ID
+   (`previous_response_id` / `previous_interaction_id`); provider holds the history.
+   Stateless providers (Anthropic): `conversationRef` is a compound ID
+   `projectId:randomUUID`; messages are stored in Datastore (`ConversationMessageData`)
+   keyed by conversation ID + UNIX timestamp, with matching 24h TTL.
+   See Step 10e for full details.
 
 **LLM tool definitions** (provider-agnostic format, translated per-provider):
 
@@ -629,6 +669,20 @@ Component rules:
 - All property values are strings. Colors use "&HAARRGGBB" format. Booleans are "True"/"False".
 - Name components descriptively (e.g., "SubmitButton" not "Button1") unless the user
   specifies a name.
+
+Scope — you are ONLY an App Inventor assistant:
+- You help users build and modify MIT App Inventor projects. NOTHING ELSE.
+- If the user asks about other platforms, frameworks, or languages (React, Flutter,
+  Swift, Python, web development, etc.), politely decline: "I can only help with
+  App Inventor projects. Could you tell me what you'd like to build in App Inventor?"
+- If the user asks general knowledge questions, homework help, or anything unrelated
+  to their App Inventor project, decline: "I'm focused on helping you build your
+  App Inventor app. What would you like to add or change?"
+- Do NOT write code in any language. You produce App Inventor operations only.
+- Do NOT provide general programming tutorials. If the user needs to understand a
+  concept (e.g., variables, loops), explain it in the context of App Inventor blocks.
+- It is acceptable to discuss mobile app design concepts (UI layout, user flow,
+  accessibility) when they directly relate to the user's App Inventor project.
 
 General:
 - When the user asks you to explain the app, use the explain tool — do NOT generate operations.
@@ -1064,8 +1118,10 @@ If the user's request involves another screen, the LLM can ask for it or we can 
 2. Appends Layer 4 (current app state, built per-request from ProjectService.load())
 3. Appends Layer 5 (few-shot examples, static)
 4. LLM processes user message, calls `lookup_component` as needed (multi-turn tool use within a single request)
-5. LLM returns structured operations
-6. Server validates and returns to client
+5. LLM returns raw response (text + tool calls)
+6. `LLMResponseParser` — structural validation: drops malformed/unknown tool calls, keeps valid ones (§8g Stage 1)
+7. `AIOperationValidator` — semantic validation: drops invalid component types, bad properties, mode violations (§8g Stage 2)
+8. Server returns `AIAgentResponse` with surviving operations + warnings list to client
 
 ### Step 4: Blocks XML generator (server-side)
 
@@ -1740,18 +1796,28 @@ Even if the LLM were completely compromised by prompt injection, the worst it ca
 
 **Attack:** User A guesses User B's `conversationId` and sends it in their request, hoping to see User B's conversation context or trick the AI into using User B's project state.
 
-**Defense:** Conversation IDs are scoped to the authenticated user:
+**Defense:** Every AI agent request begins with `storageIo.assertUserHasProject(userId,
+projectId)` which throws `SecurityException` if the authenticated user doesn't own the
+project. Since projects are user-scoped (one owner per project ID), the Memcache key
+can use `projectId` alone — unauthorized users are rejected before the lookup:
 
 ```java
-// Conversation key includes userId — cannot be shared across users
-private final ConcurrentHashMap<String, ConversationState> conversations = new ConcurrentHashMap<>();
-
-private String conversationKey(String userId, String conversationId) {
-    return userId + ":" + conversationId;  // User A can never access User B's conversation
+// Memcache key uses projectId — project ownership is enforced by
+// storageIo.assertUserHasProject() at the start of every request
+private String conversationCacheKey(long projectId) {
+    return "ai_conv:" + projectId;
 }
 ```
 
-Even if User A sends User B's conversationId, the lookup key includes `userId` (from the trusted auth cookie), so they'll get a new empty conversation, not User B's.
+For stateless providers (Anthropic), the Datastore `ConversationMessageData` entities
+are additionally keyed by `conversationId` which is compound `projectId:randomUUID`.
+The server validates that the `projectId` component matches the request's project ID
+and that the authenticated user has access to that project (via
+`storageIo.assertUserHasProject()`), preventing any cross-user data access.
+
+For stateful providers (OpenAI/Gemini), the provider-side conversation ID is opaque
+and only retrievable via the user-scoped Memcache key — there is no client-supplied
+conversation ID to forge.
 
 #### 8e. Rate limiting
 
@@ -1764,13 +1830,98 @@ Before passing the user's message to the LLM:
 - Sanitize: strip control characters, null bytes
 - The `AIAgentEnabled` check on the project ensures the user explicitly opted in
 
-#### 8g. Output validation
+#### 8g. Output validation (structural + semantic, graceful degradation)
 
-After receiving operations from the LLM, before returning to client:
-- `AIOperationValidator` checks every operation against the component database
-- Invalid component types, property names, or value types are rejected
-- Operations referencing non-existent components in the current screen are rejected
+The LLM response is processed through a two-stage validation pipeline. Malformed or
+invalid operations are **dropped individually** — valid operations in the same response
+are kept. The client receives the surviving operations plus a list of warnings for any
+that were dropped.
+
+**Stage 1: Structural validation** (in `LLMResponseParser`, runs immediately after
+the provider returns the raw LLM response)
+
+Each tool call from the LLM is checked for structural correctness before it becomes
+an `AIOperation`:
+
+```java
+/**
+ * Parse raw LLM tool calls into validated AIOperation objects.
+ * Malformed calls are dropped (added to warnings list), not fatal.
+ */
+public ParseResult parseToolCalls(List<RawToolCall> toolCalls) {
+    List<AIOperation> operations = new ArrayList<>();
+    List<String> warnings = new ArrayList<>();
+
+    for (RawToolCall call : toolCalls) {
+        // 1. Unknown tool name → drop
+        if (!KNOWN_TOOLS.contains(call.getName())) {
+            warnings.add("Unknown tool '" + call.getName() + "' — ignored.");
+            continue;
+        }
+
+        // 2. Malformed JSON arguments → drop
+        JsonObject args;
+        try {
+            args = JsonParser.parseString(call.getArguments()).getAsJsonObject();
+        } catch (JsonSyntaxException e) {
+            warnings.add("Tool '" + call.getName() + "' had malformed arguments — ignored.");
+            continue;
+        }
+
+        // 3. Missing required parameters → drop
+        List<String> missing = getMissingRequired(call.getName(), args);
+        if (!missing.isEmpty()) {
+            warnings.add("Tool '" + call.getName() + "' missing required param(s): "
+                + String.join(", ", missing) + " — ignored.");
+            continue;
+        }
+
+        // 4. Type coercion for known fields (e.g., ensure "properties" is an object)
+        try {
+            args = coerceTypes(call.getName(), args);
+        } catch (IllegalArgumentException e) {
+            warnings.add("Tool '" + call.getName() + "': " + e.getMessage() + " — ignored.");
+            continue;
+        }
+
+        operations.add(new AIOperation(call.getName(), args));
+    }
+
+    return new ParseResult(operations, warnings);
+}
+```
+
+`KNOWN_TOOLS` is the set of all tool names defined in the system prompt (`add_component`,
+`delete_component`, `set_property`, etc.). `getMissingRequired()` checks per-tool required
+fields (e.g., `add_component` requires `component_type` and `name`). `coerceTypes()` ensures
+`properties` in `add_component` is a JSON object (not a string), `parameters` in
+`set_procedure` is a JSON array, etc.
+
+**Stage 2: Semantic validation** (in `AIOperationValidator`, runs after structural parsing)
+
+Same as before — checks every surviving `AIOperation` against the component database:
+- Invalid component types, property names, or value types → drop + warn
+- Operations referencing non-existent components in the current screen → drop + warn
 - Maximum operation count per response (e.g., 50) to prevent runaway modifications
+- Mode enforcement (§8h) and protected properties (§8i)
+
+Individual operations that fail semantic validation are dropped with a warning, same
+as structural failures. The response is only fully rejected if *all* operations fail.
+
+**`AIAgentResponse` carries warnings to the client:**
+
+```java
+public class AIAgentResponse implements Serializable {
+    private String aiMessage;
+    private List<AIOperation> operations;
+    private boolean isNewConversation;
+    private List<String> warnings;  // Dropped operations, shown as dimmed notes in chat UI
+}
+```
+
+The client chat UI renders warnings below the AI message in a muted style, e.g.:
+"⚠ 1 operation was invalid and skipped: Unknown tool 'create_api' — ignored."
+This gives the user visibility into what was dropped without blocking the valid operations.
 
 #### 8h. Mode-scoped operation enforcement (critical)
 
@@ -2178,6 +2329,339 @@ String aiOperationSkipped();
 (from `@DefaultMessage`) are sufficient — GWT falls back to them automatically when a
 key is missing from a locale file. Translations can be contributed incrementally.
 
+#### 10e. Conversation state management
+
+**Invariant: exactly ONE conversation per project.** A conversation is created lazily on the
+first message when none exists. It expires after 24 hours. The user can explicitly clear it
+to start fresh. There is no concept of multiple concurrent conversations per project.
+
+**Layer 1: Memcache — conversation reference index**
+
+Memcache maps a project to its single active conversation. One entry per project, period.
+
+```java
+// Key:   "ai_conv:{projectId}"
+// Value: "{provider}:{conversationRef}"
+// TTL:   24 hours
+//
+// Examples:
+//   "ai_conv:12345" → "openai:resp_abc123"           (OpenAI previous_response_id)
+//   "ai_conv:12345" → "gemini:interaction_xyz789"     (Gemini previous_interaction_id)
+//   "ai_conv:12345" → "anthropic:12345:f47ac10b-..."  (compound ID for Datastore lookup)
+
+private static final int CONVERSATION_TTL_SECONDS = 24 * 60 * 60;  // 24 hours
+
+private void storeConversationRef(long projectId, String provider, String conversationRef) {
+    String key = "ai_conv:" + projectId;
+    String value = provider + ":" + conversationRef;
+    memcache.put(key, value, Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
+}
+
+private String getConversationRef(long projectId) {
+    return (String) memcache.get("ai_conv:" + projectId);  // null if expired or absent
+}
+```
+
+This follows the existing Memcache pattern in `ObjectifyStorageIo` (line 132, 333).
+`Expiration.byDeltaSeconds()` is already imported and used (line 21, 333).
+
+**Conversation lifecycle:**
+
+1. **Creation** — Lazy, on first message. When `processRequest()` is called and
+   `getConversationRef(projectId)` returns null, a new conversation is created:
+   - Stateful providers: pass `conversationRef = null` to the LLM; the provider creates a
+     new conversation and returns its ID in the response.
+   - Stateless providers: generate a compound ID `projectId:randomUUID` server-side.
+   The new ref is stored in Memcache.
+
+2. **Continuation** — On subsequent messages within 24h, the Memcache lookup returns the
+   existing ref. If the configured provider has changed since the conversation was created
+   (the cached value's provider prefix doesn't match), the old conversation is discarded
+   and a new one is created.
+
+3. **Expiry** — After 24 hours with no messages (Memcache TTL), the ref disappears. The
+   next message creates a new conversation. The server includes `isNewConversation: true`
+   in the response so the client can display a notice.
+
+4. **Clear** — The user can explicitly clear the conversation via a "New Conversation"
+   button in the chat dialog. This calls the `clearConversation` RPC method (see below).
+
+**Layer 2 (stateful providers): Provider holds history**
+
+For OpenAI and Gemini, the provider's server-side state holds the full conversation.
+The `conversationRef` in Memcache is the provider's native ID:
+
+- **OpenAI**: Pass `previous_response_id` on each call. Provider stores messages for 30 days.
+- **Gemini**: Pass `previous_interaction_id` on each call. Provider manages history server-side.
+
+When the Memcache entry expires (24h) or is cleared by the user, the next request starts a
+fresh conversation. The provider-side data may linger longer (30 days for OpenAI) but is
+harmless — it's just unreachable.
+
+**Layer 2 (stateless providers): Datastore message storage**
+
+For Anthropic (stateless API — full message array must be sent each time), messages are
+persisted in Datastore so they survive App Engine instance restarts.
+
+**New Objectify entity** in `StoredData.java`:
+
+```java
+@Unindexed
+static final class ConversationMessageData implements Serializable {
+    // Unique per message: "{conversationId}:{timestamp}"
+    @Id String id;
+
+    // The conversation this message belongs to.
+    // Compound key: "projectId:randomUUID", e.g. "12345:f47ac10b-58cc-4372-..."
+    @Indexed String conversationId;
+
+    // Server-side System.currentTimeMillis() — sort key.
+    // Effectively unique within a conversation (millisecond precision; two messages
+    // in the same request are stored sequentially: user first, then assistant).
+    long timestamp;
+
+    String role;             // "user" or "assistant"
+
+    String text;             // Message content (natural language only, not operations)
+
+    long expiresAt;          // timestamp + 24h, for cleanup
+}
+```
+
+**Registration** — Add to `ObjectifyStorageIo` constructor (after line 211):
+```java
+ObjectifyService.register(ConversationMessageData.class);
+```
+
+**Server-side conversation ID generation** (in `AIAgentServiceImpl`):
+
+```java
+private String newConversationId(long projectId) {
+    return projectId + ":" + UUID.randomUUID().toString();
+}
+```
+
+**Storing a message** (called after each user message and assistant response):
+
+```java
+private void storeMessage(String conversationId, String role, String text) {
+    long now = System.currentTimeMillis();
+    ConversationMessageData msg = new ConversationMessageData();
+    msg.id = conversationId + ":" + now;
+    msg.conversationId = conversationId;
+    msg.timestamp = now;
+    msg.role = role;
+    msg.text = text;
+    msg.expiresAt = now + (CONVERSATION_TTL_SECONDS * 1000L);
+    Objectify datastore = ObjectifyService.begin();
+    datastore.put(msg);
+}
+```
+
+**Loading conversation history** (for building the LLM messages array):
+
+```java
+private List<ChatMessage> loadConversation(String conversationId) {
+    long now = System.currentTimeMillis();
+    Objectify datastore = ObjectifyService.begin();
+    List<ConversationMessageData> messages = datastore.query(ConversationMessageData.class)
+        .filter("conversationId", conversationId)
+        .order("timestamp")
+        .list();
+    // Filter expired (belt-and-suspenders — Memcache TTL is the primary expiry)
+    return messages.stream()
+        .filter(m -> m.expiresAt > now)
+        .map(m -> new ChatMessage(m.role, m.text))
+        .collect(Collectors.toList());
+}
+```
+
+Optionally, a cron job can run daily to delete entities where `expiresAt < now`.
+
+**Clearing a conversation** (called by the "New Conversation" RPC):
+
+```java
+/**
+ * RPC method: Clear the active conversation for a project.
+ * Delegates to doCleanupConversation() after auth check.
+ */
+public void clearConversation(long projectId) {
+    String userId = userInfoProvider.getUserId();
+    storageIo.assertUserHasProject(userId, projectId);
+    doCleanupConversation(projectId);
+}
+
+/**
+ * Internal helper: deletes the Memcache ref and, for stateless providers,
+ * deletes all Datastore messages. No auth check — caller must have already
+ * verified project ownership.
+ */
+private void doCleanupConversation(long projectId) {
+    String cachedRef = getConversationRef(projectId);
+    if (cachedRef == null) return;
+
+    // Delete Memcache entry
+    memcache.delete("ai_conv:" + projectId);
+
+    // For stateless providers, delete Datastore messages
+    String provider = cachedRef.substring(0, cachedRef.indexOf(':'));
+    String conversationId = cachedRef.substring(provider.length() + 1);
+    LLMProvider llmProvider = LLMProviderRegistry.get(provider);
+    if (llmProvider.isStateless()) {
+        deleteConversationMessages(conversationId);
+    }
+}
+
+private void deleteConversationMessages(String conversationId) {
+    Objectify datastore = ObjectifyService.begin();
+    List<Key<ConversationMessageData>> keys = datastore
+        .query(ConversationMessageData.class)
+        .filter("conversationId", conversationId)
+        .keys()
+        .list();
+    if (!keys.isEmpty()) {
+        datastore.delete(keys);
+    }
+}
+```
+
+Both `processRequest` and `clearConversation` are declared in the `AIAgentService`
+interface (see Step 1 for the full GWT-RPC interface and async counterpart).
+
+**Full request flow in `AIAgentServiceImpl.processRequest()`:**
+
+```java
+public AIAgentResponse processRequest(AIAgentRequest request) {
+    // 1. Auth check
+    String userId = userInfoProvider.getUserId();
+    long projectId = request.getProjectId();
+    String screenName = request.getScreenName();
+    String userMessage = request.getUserMessage();
+    storageIo.assertUserHasProject(userId, projectId);
+    String mode = getProjectAIAgentMode(userId, projectId);
+
+    // 2. Look up the project's single active conversation from Memcache
+    String cachedRef = getConversationRef(projectId);
+    String provider = getConfiguredProvider();  // from appengine-web.xml
+    String conversationRef = null;
+    List<ChatMessage> history = Collections.emptyList();
+    boolean isNewConversation = false;
+
+    if (cachedRef != null && cachedRef.startsWith(provider + ":")) {
+        // Existing conversation with the current provider
+        conversationRef = cachedRef.substring(provider.length() + 1);
+        if (llmProvider.isStateless()) {
+            history = loadConversation(conversationRef);
+        }
+    } else {
+        // No conversation exists (first message, expired, or provider changed)
+        // → Create a new one lazily
+        isNewConversation = true;
+        if (cachedRef != null) {
+            // Provider changed — clear the stale conversation
+            doCleanupConversation(projectId);
+        }
+        if (llmProvider.isStateless()) {
+            conversationRef = newConversationId(projectId);
+        }
+        // For stateful providers, conversationRef stays null (provider creates new)
+    }
+
+    // 3. Build system prompt from live project state
+    String systemPrompt = aiContextBuilder.build(userId, projectId, screenName, mode);
+
+    // 4. Call LLM
+    LLMResponse llmResponse = llmProvider.chat(systemPrompt, userMessage,
+                                                tools, conversationRef, history);
+
+    // 5. Store conversation ref in Memcache (creates or refreshes the 24h TTL)
+    String newRef = llmResponse.getConversationRef();  // Provider returns updated ref
+    if (newRef == null && llmProvider.isStateless()) {
+        newRef = conversationRef;  // Keep existing compound ID
+    }
+    storeConversationRef(projectId, provider, newRef);
+
+    // For stateless providers, persist both messages to Datastore
+    if (llmProvider.isStateless()) {
+        storeMessage(newRef, "user", userMessage);
+        storeMessage(newRef, "assistant", llmResponse.getText());
+    }
+
+    // 6. Include isNewConversation flag in response for client UI
+    AIAgentResponse response = buildResponse(llmResponse);
+    response.setNewConversation(isNewConversation);
+
+    // 7. Validate and return (mode enforcement, operation validation, etc.)
+    // ... (unchanged from existing plan)
+    return response;
+}
+```
+
+**Updated `LLMProvider` interface:**
+
+```java
+public interface LLMProvider {
+    /**
+     * Send a message to the LLM.
+     *
+     * @param conversationRef  Provider-specific conversation ref (null → new conversation)
+     * @param history          For stateless providers: prior messages. Empty for stateful.
+     * @return LLMResponse with text, operations, and updated conversationRef
+     */
+    LLMResponse chat(String systemPrompt, String userMessage,
+                     List<LLMTool> tools, String conversationRef,
+                     List<ChatMessage> history);
+
+    /** True if this provider requires caller to manage message history (e.g. Anthropic). */
+    boolean isStateless();
+}
+```
+
+**Updated `AIAgentResponse` DTO:**
+
+Add to `shared/rpc/aiagent/AIAgentResponse.java`:
+```java
+private boolean isNewConversation;  // True when a fresh conversation was started
+
+public boolean isNewConversation() { return isNewConversation; }
+public void setNewConversation(boolean val) { this.isNewConversation = val; }
+```
+
+**Chat UI — "New Conversation" button and notices:**
+
+The `AIChatDialog` provides a "New Conversation" button (visible at all times when a
+conversation is active). Clicking it:
+1. Calls `aiAgentService.clearConversation(projectId, callback)`
+2. On success: clears all messages from the dialog, shows a system message:
+   "Conversation cleared. Send a message to start a new one."
+3. The next user message triggers lazy creation of a new conversation server-side.
+
+When the server response has `isNewConversation = true` and the client had messages from
+a prior conversation displayed, the dialog prepends a notice:
+> "Previous conversation expired. Starting a new conversation."
+
+When a conversation first begins, show:
+> "This conversation expires after 24 hours of inactivity."
+
+Add to `OdeMessages.java`:
+```java
+@DefaultMessage("New Conversation")
+@Description("Button label to clear the AI conversation and start fresh")
+String aiNewConversationButton();
+
+@DefaultMessage("Conversation cleared. Send a message to start a new one.")
+@Description("Notice shown after the user clears the AI conversation")
+String aiConversationCleared();
+
+@DefaultMessage("This conversation expires after 24 hours of inactivity.")
+@Description("Notice shown at the top of the AI chat about conversation expiry")
+String aiConversationExpiryNotice();
+
+@DefaultMessage("Previous conversation expired. Starting a new conversation.")
+@Description("Notice shown when a prior conversation was not found")
+String aiConversationExpired();
+```
+
 ---
 
 ## File Summary
@@ -2193,7 +2677,8 @@ key is missing from a locale file. Translations can be contributed incrementally
 | `shared/rpc/aiagent/AIOperation.java` | Operation type enum + payload |
 | `server/aiagent/AIAgentServiceImpl.java` | Server implementation |
 | `server/aiagent/AIContextBuilder.java` | Tiered LLM prompt assembly (layers 1-5) |
-| `server/aiagent/AIOperationValidator.java` | Validate AI-generated operations |
+| `server/aiagent/LLMResponseParser.java` | Structural validation of raw LLM tool calls (§8g Stage 1) |
+| `server/aiagent/AIOperationValidator.java` | Semantic validation of AI-generated operations (§8g Stage 2) |
 | `server/aiagent/BlocksXmlGenerator.java` | AST -> Blockly XML (used by PseudocodeParser) |
 | `server/aiagent/BlocksPseudocodeGenerator.java` | BKY XML -> pseudocode (read path) |
 | `server/aiagent/PseudocodeParser.java` | Pseudocode -> AST -> Blockly XML (write path) |
@@ -2211,7 +2696,7 @@ key is missing from a locale file. Translations can be contributed incrementally
 | `components/.../common/AIAgentMode.java` | Enum: Off, Advisor, ScreenEditor, ProjectEditor |
 | `client/.../properties/YoungAndroidAIAgentModeChoicePropertyEditor.java` | Dropdown property editor |
 
-### Modified files (~16 files):
+### Modified files (~18 files):
 
 | File | Change |
 |------|--------|
@@ -2231,6 +2716,8 @@ key is missing from a locale file. Translations can be contributed incrementally
 | `components/.../runtime/Form.java` | Add `AIAgentMode` dropdown property (Screen1-only, default "Off") |
 | `components/.../common/YaVersion.java` | Bump `FORM_COMPONENT_VERSION` 31 → 32 |
 | `shared/settings/SettingsConstants.java` | Add `YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE` constant |
+| `server/storage/StoredData.java` | Add `ConversationMessageData` entity for stateless provider message history (see Step 10e) |
+| `server/storage/ObjectifyStorageIo.java` | Register `ConversationMessageData` entity (after line 211) |
 
 File paths are relative to `appinventor/appengine/src/com/google/appinventor/` except where noted with full paths or `components/...`.
 
