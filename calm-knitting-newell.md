@@ -548,15 +548,31 @@ The `AIContextBuilder` dynamically includes/excludes tool definitions based on t
   }
   ```
 - `server/aiagent/llm/LLMProviderRegistry.java` - Factory that selects provider based on config
-- `server/aiagent/llm/AnthropicProvider.java` - Claude API (Messages API with tool_use)
-- `server/aiagent/llm/OpenAIProvider.java` - GPT-4 API (Chat Completions with function calling)
-- `server/aiagent/llm/GeminiProvider.java` - Gemini API (function calling)
+- `server/aiagent/llm/AnthropicProvider.java` - Claude API (Messages API with tool_use). Stateless.
+- `server/aiagent/llm/OpenAIProvider.java` - OpenAI API (Chat Completions with function calling). Stateful (`previous_response_id`).
+- `server/aiagent/llm/GeminiProvider.java` - Gemini API (function calling). Stateful (`previous_interaction_id`).
+- `server/aiagent/llm/OllamaProvider.java` - Ollama `/api/chat` endpoint with tool calling. Stateless.
+  Requires Ollama 0.3.0+ and a model that supports tool use (Llama 3.1+, Qwen 2.5+,
+  Mistral, etc.). Configurable base URL via `ai.agent.base.url` (default:
+  `http://localhost:11434`). API key optional (empty = no `Authorization` header).
+  Tool definitions use Ollama's native format (JSON Schema in `tools[].function.parameters`).
+  Tool calls come back in `message.tool_calls[]`. Wire format is similar to OpenAI but
+  handled independently — no shared code dependency between the two providers.
 - `server/aiagent/llm/LLMTool.java` - Tool definition (name, description, parameter schema)
 - `server/aiagent/llm/LLMResponse.java` - Provider response (text, raw tool calls, conversationRef)
 - `server/aiagent/llm/ChatMessage.java` - Role + text pair for conversation history
 - `server/aiagent/llm/RawToolCall.java` - Unparsed tool call from provider (name, arguments JSON string)
 
-Each provider translates the common tool definitions into its own format (Anthropic tool_use, OpenAI functions, Gemini function declarations). Raw tool calls from the provider are returned as `RawToolCall` objects in `LLMResponse`, then parsed and validated by `LLMResponseParser` (§8g Stage 1) into `AIOperation` objects.
+Each provider translates the common tool definitions into its own format (Anthropic tool_use, OpenAI functions, Gemini function declarations, Ollama tools). Raw tool calls from the provider are returned as `RawToolCall` objects in `LLMResponse`, then parsed and validated by `LLMResponseParser` (§8g Stage 1) into `AIOperation` objects.
+
+**Provider summary:**
+
+| Provider | Config value | API endpoint | Stateful? | API key required? |
+|----------|-------------|--------------|-----------|-------------------|
+| Anthropic | `anthropic` | `api.anthropic.com` Messages API | No (Datastore) | Yes |
+| OpenAI | `openai` | `api.openai.com` Chat Completions | Yes (`previous_response_id`) | Yes |
+| Gemini | `gemini` | `generativelanguage.googleapis.com` | Yes (`previous_interaction_id`) | Yes |
+| Ollama | `ollama` | Configurable (`ai.agent.base.url`) `/api/chat` | No (Datastore) | No (optional) |
 
 ### Step 3: Server-side AI agent service and LLM context strategy
 
@@ -2012,9 +2028,31 @@ The AI agent is **not** enabled automatically. It requires two layers of enablem
 <property name="ai.agent.provider" value="anthropic" />
 <property name="ai.agent.model" value="claude-sonnet-4-20250514" />
 <property name="ai.agent.api.key" value="" />
+<property name="ai.agent.base.url" value="" />
 <property name="ai.agent.rate.limit" value="10" />
 ```
-The `ai.agent.available` flag controls whether the AI feature is offered to users at all. When `false`, the Form property is hidden and the toolbar button does not appear.
+
+| Property | Description |
+|----------|-------------|
+| `ai.agent.available` | Master switch. When `false`, the Form property is hidden and the toolbar button does not appear. |
+| `ai.agent.provider` | One of: `anthropic`, `openai`, `gemini`, `ollama`. See Step 2 provider summary. |
+| `ai.agent.model` | Model identifier. Examples: `claude-sonnet-4-20250514`, `gpt-4o`, `gemini-2.0-flash`, `llama3.1:70b`. |
+| `ai.agent.api.key` | API key for cloud providers. Required for `anthropic`, `openai`, `gemini`. Optional for `ollama` (empty = no `Authorization` header). |
+| `ai.agent.base.url` | Base URL override. **Required for `ollama`** (e.g., `http://localhost:11434`). Optional for other providers (leave empty to use their default endpoints). Useful for proxy setups or regional endpoints. |
+| `ai.agent.rate.limit` | Max requests per minute per user. Default: `10`. |
+
+**Ollama setup example** (self-hosted App Inventor + local Ollama):
+```xml
+<property name="ai.agent.available" value="true" />
+<property name="ai.agent.provider" value="ollama" />
+<property name="ai.agent.model" value="qwen2.5:32b" />
+<property name="ai.agent.api.key" value="" />
+<property name="ai.agent.base.url" value="http://localhost:11434" />
+```
+The `OllamaProvider` appends `/api/chat` to the base URL automatically. The model must
+support tool calling — the provider does NOT validate this at startup; if the model
+doesn't support tools, the LLM response will contain no tool calls (only text), which
+is handled gracefully (the user sees the AI explanation but no operations).
 
 #### Layer 2: Per-project tiered permission via Form dropdown property
 
@@ -2648,7 +2686,7 @@ String aiConversationExpired();
 
 ## File Summary
 
-### New files (29 files):
+### New files (30 files):
 
 | File | Purpose |
 |------|---------|
@@ -2673,6 +2711,7 @@ String aiConversationExpired();
 | `server/aiagent/llm/AnthropicProvider.java` | Claude API implementation |
 | `server/aiagent/llm/OpenAIProvider.java` | GPT-4 API implementation |
 | `server/aiagent/llm/GeminiProvider.java` | Gemini API implementation |
+| `server/aiagent/llm/OllamaProvider.java` | Ollama `/api/chat` implementation (stateless) |
 | `server/aiagent/llm/LLMTool.java` | Tool definition (name, description, parameters) |
 | `server/aiagent/llm/LLMResponse.java` | Provider response (text, raw tool calls, conversationRef) |
 | `server/aiagent/llm/ChatMessage.java` | Role + text pair for conversation history |
