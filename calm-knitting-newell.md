@@ -1161,8 +1161,23 @@ determining `text_contains` mode from the pseudocode keyword used, etc.).
 - `MockComponent.changeProperty(name, value)` at `MockComponent.java:664` - setting properties
 - `MockComponent.delete()` at `MockComponent.java:1208` - removing components
 - `MockComponent.rename(newName)` at `MockComponent.java:672` - renaming
-- `BlocklyPanel` JSNI bridge - injecting blocks XML (new method, see Step 7)
-- `DesignerEditor.getComponents()` - lookup existing components by name
+- `BlocklyPanel` JSNI bridge - injecting and deleting blocks XML (new methods, see Step 7)
+- `DesignerEditor.getComponents()` at `DesignerEditor.java:377` - returns `Map<String, MockComponent>` (name → component); used for lookup via `.get(name)`. Note: there is no `getComponent(name)` convenience method; always use `getComponents().get(name)`.
+
+**Accessing the current screen's editors:**
+
+The executor needs the `YaFormEditor` and `YaBlocksEditor` for the current screen. These are NOT available via `projectEditor.getCurrentFormEditor()` (no such method). Instead, access them through `DesignToolbar`:
+
+```java
+DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+DesignToolbar.DesignProject project = toolbar.getCurrentProject();
+DesignToolbar.Screen screen = project.screens.get(project.currentScreen);
+FileEditor formEditor = screen.designerEditor;   // Cast to YaFormEditor
+FileEditor blocksEditor = screen.blocksEditor;    // Cast to YaBlocksEditor
+```
+
+This mirrors how `DesignToolbar.doSwitchScreen1()` (line 225-226) accesses editors.
+The `DesignToolbar.Screen` class (extends `EditorPair`, line 65) holds both the designer and blocks editor for a given screen. `DesignToolbar.DesignProject` (line 76) maps screen names to `Screen` objects and tracks `currentScreen`. The separate `EditorSet` inner class in `YaProjectEditor` (line 99) is private and only used during project loading — it is NOT accessible to the executor.
 
 **IMPORTANT — Existing API error behavior:**
 
@@ -1182,8 +1197,9 @@ the underlying API, since the API itself won't catch the error.
 **Operation ordering and view switching:**
 
 Both `YaFormEditor` (designer) and `YaBlocksEditor` (blocks) are always loaded in memory
-for every screen (stored as `EditorSet` pairs in `YaProjectEditor.editorMap`). Only one is
-visible at a time via `DeckPanel`. Even though both are technically accessible when hidden,
+for every screen (stored as `Screen` objects in `DesignToolbar.DesignProject.screens`). Only
+one is visible at a time via `DeckPanel` (toggled by `ProjectEditor.selectFileEditor()` which
+calls `deckPanel.showWidget(index)`). Even though both are technically accessible when hidden,
 **the executor MUST switch to the correct view before modifying**, so the user sees what's
 happening. This follows the same principle as "never modify a non-visible screen."
 
@@ -1251,8 +1267,50 @@ private List<List<AIOperation>> groupIntoPhases(List<AIOperation> ops) {
 ```
 
 Between phases, the executor calls `designToolbar.switchToScreen()` with the appropriate
-`View` enum. The switch is async (uses `DeferredCommand`), so the executor waits for it
-to complete before proceeding.
+`View` enum. The switch is async — `doSwitchScreen()` (DesignToolbar.java:183) uses
+`Scheduler.get().scheduleDeferred()` and loops while `Ode.screensLocked()` is true before
+calling `doSwitchScreen1()`. Because GWT is single-threaded, the executor CANNOT block and
+wait synchronously. Instead, phase execution must be structured as a callback chain:
+
+```java
+/**
+ * Execute phases sequentially using GWT's deferred scheduling.
+ * Each phase completes asynchronously, then triggers the next.
+ */
+private void executePhaseChain(List<List<AIOperation>> phases, int phaseIndex,
+                                ExecutionResult result, Command onComplete) {
+    if (phaseIndex >= phases.size() || result.failed != null) {
+        onComplete.execute();
+        return;
+    }
+    List<AIOperation> phase = phases.get(phaseIndex);
+    if (phase.isEmpty()) {
+        executePhaseChain(phases, phaseIndex + 1, result, onComplete);
+        return;
+    }
+
+    // Switch view for this phase, then execute operations after switch completes
+    View targetView = getViewForPhase(phaseIndex);
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    toolbar.switchToScreen(projectId, screenName, targetView);
+
+    // Wait for switch to complete (screensLocked becomes false), then execute
+    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+            if (Ode.getInstance().screensLocked()) {
+                Scheduler.get().scheduleDeferred(this);  // Retry until unlocked
+            } else {
+                executePhaseOperations(phase, result);
+                executePhaseChain(phases, phaseIndex + 1, result, onComplete);
+            }
+        }
+    });
+}
+```
+
+This mirrors the same deferred-retry pattern used by `DesignToolbar.doSwitchScreen()`
+(line 184-193).
 
 **Error handling strategy — validate-then-execute with stop-on-error:**
 
@@ -1270,7 +1328,8 @@ public class AIOperationExecutor {
     }
 
     /**
-     * Execute operations with pre-validation and stop-on-error semantics.
+     * Execute a single phase's operations synchronously (within a deferred command).
+     * Called by executePhaseChain() after the view switch completes.
      *
      * Strategy:
      * 1. Pre-validate EACH operation before executing it (not all upfront, because
@@ -1283,44 +1342,51 @@ public class AIOperationExecutor {
      * No rollback — partially applied changes remain. The user can:
      * - Ask the AI to fix the issue (error is fed back to the LLM)
      * - Manually undo via Ctrl+Z (blocks editor) or manually adjust the designer
+     *
+     * The formEditor and blocksEditor are obtained from DesignToolbar, NOT from
+     * ProjectEditor (which has no getCurrentFormEditor() method):
+     *
+     *   DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+     *   DesignToolbar.Screen screen = toolbar.getCurrentProject()
+     *       .screens.get(toolbar.getCurrentProject().currentScreen);
+     *   YaFormEditor formEditor = (YaFormEditor) screen.designerEditor;
+     *   YaBlocksEditor blocksEditor = (YaBlocksEditor) screen.blocksEditor;
      */
-    public ExecutionResult executeOperations(List<AIOperation> ops,
-                                              ProjectEditor projectEditor) {
-        ExecutionResult result = new ExecutionResult();
-        result.succeeded = new ArrayList<>();
-        result.skipped = new ArrayList<>();
+    public void executePhaseOperations(List<AIOperation> ops, ExecutionResult result) {
+        DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+        DesignToolbar.DesignProject project = toolbar.getCurrentProject();
+        DesignToolbar.Screen screen = project.screens.get(project.currentScreen);
+        YaFormEditor formEditor = (YaFormEditor) screen.designerEditor;
+        YaBlocksEditor blocksEditor = (YaBlocksEditor) screen.blocksEditor;
 
         for (int i = 0; i < ops.size(); i++) {
             AIOperation op = ops.get(i);
-            YaFormEditor formEditor = projectEditor.getCurrentFormEditor();
-            YaBlocksEditor blocksEditor = projectEditor.getCurrentBlocksEditor();
 
             // 1. Pre-validate this operation against current state
-            String validationError = preValidate(op, formEditor, blocksEditor, projectEditor);
+            String validationError = preValidate(op, formEditor, blocksEditor);
             if (validationError != null) {
                 result.failed = op;
                 result.errorMessage = validationError;
-                result.skipped = ops.subList(i + 1, ops.size());
+                result.skipped.addAll(ops.subList(i + 1, ops.size()));
                 break;
             }
 
             // 2. Execute with exception handling
             try {
-                executeOne(op, formEditor, blocksEditor, projectEditor);
+                executeOne(op, formEditor, blocksEditor);
                 result.succeeded.add(op);
             } catch (Exception e) {
                 result.failed = op;
                 result.errorMessage = "Execution error: " + e.getMessage();
-                result.skipped = ops.subList(i + 1, ops.size());
+                result.skipped.addAll(ops.subList(i + 1, ops.size()));
                 break;
             }
         }
 
         // Save if anything succeeded
         if (!result.succeeded.isEmpty()) {
-            projectEditor.getCurrentFormEditor().onSave();
+            formEditor.onSave();
         }
-        return result;
     }
 
     /**
@@ -1331,8 +1397,12 @@ public class AIOperationExecutor {
      * reject invalid input — they'll silently corrupt state.
      */
     private String preValidate(AIOperation op, YaFormEditor formEditor,
-                                YaBlocksEditor blocksEditor,
-                                ProjectEditor projectEditor) {
+                                YaBlocksEditor blocksEditor) {
+        // Component lookup: DesignerEditor has no getComponent(name) method.
+        // Use getComponents() which returns Map<String, MockComponent> (DesignerEditor.java:377),
+        // then call .get(name) on the map. Returns null if not found.
+        Map<String, MockComponent> components = formEditor.getComponents();
+
         switch (op.getType()) {
             case ADD_COMPONENT: {
                 String type = op.getComponentType();
@@ -1343,12 +1413,12 @@ public class AIOperationExecutor {
                     return "Unknown component type: " + type;
                 }
                 // Check name not already taken
-                if (formEditor.getComponent(name) != null) {
+                if (components.get(name) != null) {
                     return "Component name already exists: " + name;
                 }
                 // Check parent exists (if specified) and is a container
                 if (parent != null) {
-                    MockComponent parentComp = formEditor.getComponent(parent);
+                    MockComponent parentComp = components.get(parent);
                     if (parentComp == null) {
                         return "Parent container not found: " + parent;
                     }
@@ -1365,12 +1435,15 @@ public class AIOperationExecutor {
             }
             case SET_PROPERTY: {
                 String compName = op.getComponentName();
-                MockComponent comp = formEditor.getComponent(compName);
+                MockComponent comp = components.get(compName);
                 if (comp == null) {
                     return "Component not found: " + compName;
                 }
                 String propName = op.getPropertyName();
-                if (!comp.hasProperty(propName)) {
+                // Property check: MockComponent.hasProperty() does not exist.
+                // Use comp.getProperties().getProperty(name) (Properties.java:241)
+                // which returns null if the property doesn't exist.
+                if (comp.getProperties().getProperty(propName) == null) {
                     return "Property " + propName + " does not exist on " + compName
                         + " (" + comp.getType() + ")";
                 }
@@ -1378,7 +1451,7 @@ public class AIOperationExecutor {
             }
             case DELETE_COMPONENT: {
                 String compName = op.getComponentName();
-                MockComponent comp = formEditor.getComponent(compName);
+                MockComponent comp = components.get(compName);
                 if (comp == null) {
                     return "Component not found: " + compName;
                 }
@@ -1388,25 +1461,28 @@ public class AIOperationExecutor {
                 return null;
             }
             case RENAME_COMPONENT: {
-                MockComponent comp = formEditor.getComponent(op.getOldName());
+                MockComponent comp = components.get(op.getOldName());
                 if (comp == null) {
                     return "Component not found: " + op.getOldName();
                 }
-                if (formEditor.getComponent(op.getNewName()) != null) {
+                if (components.get(op.getNewName()) != null) {
                     return "Name already taken: " + op.getNewName();
                 }
                 return null;
             }
             case SWITCH_SCREEN: {
                 String screenName = op.getScreenName();
-                if (!projectEditor.hasScreen(screenName)) {
+                // Check via DesignToolbar (not ProjectEditor which has no hasScreen method)
+                DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+                if (!toolbar.getCurrentProject().screens.containsKey(screenName)) {
                     return "Screen not found: " + screenName;
                 }
                 return null;
             }
             case CREATE_SCREEN: {
                 String screenName = op.getScreenName();
-                if (projectEditor.hasScreen(screenName)) {
+                DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+                if (toolbar.getCurrentProject().screens.containsKey(screenName)) {
                     return "Screen already exists: " + screenName;
                 }
                 return null;
@@ -1416,7 +1492,8 @@ public class AIOperationExecutor {
                 if ("Screen1".equals(screenName)) {
                     return "Cannot delete Screen1";
                 }
-                if (!projectEditor.hasScreen(screenName)) {
+                DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+                if (!toolbar.getCurrentProject().screens.containsKey(screenName)) {
                     return "Screen not found: " + screenName;
                 }
                 return null;
@@ -1474,30 +1551,140 @@ When an operation fails, the error propagates through 3 channels:
 - Instead, the stop-on-error approach ensures the state is consistent up to the point
   of failure, and the user/LLM can fix the remaining issue from there
 
-### Step 7: Blocks injection in BlocklyPanel
+### Step 7: Blocks injection and deletion in BlocklyPanel
 
-**Modify:**
-- `client/editor/blocks/BlocklyPanel.java` - Add JSNI method:
-  ```java
-  public native void injectBlocksXml(String xmlString) /*-{
-      var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
-      var previousMainWorkspace = $wnd.Blockly.common.getMainWorkspace();
-      try {
-          $wnd.Blockly.common.setMainWorkspace(workspace);
-          var xml = $wnd.Blockly.utils.xml.textToDom(xmlString);
-          $wnd.Blockly.Xml.domToWorkspace(xml, workspace);
-      } finally {
-          $wnd.Blockly.common.setMainWorkspace(previousMainWorkspace);
-      }
-  }-*/;
-  ```
+The existing codebase loads blocks via `workspace.loadBlocksFile()` (BlocklyPanel.java:792),
+which does a full workspace load with form context and verification. For AI operations we need
+**incremental injection** (append blocks to existing workspace) and **targeted deletion**
+(remove specific blocks by type/identifier). Neither exists in the current codebase.
 
-- `client/editor/blocks/BlocksEditor.java` - Add public wrapper method:
-  ```java
-  public void injectBlocksXml(String xmlString) {
-      blocklyPanel.injectBlocksXml(xmlString);
-  }
-  ```
+**Modify `client/editor/blocks/BlocklyPanel.java`** — Add three JSNI methods:
+
+```java
+/**
+ * Inject (append) blocks XML into the existing workspace. Uses Blockly.Xml.domToWorkspace
+ * which APPENDS blocks to the workspace (unlike loadBlocksFile which replaces).
+ *
+ * This follows the same workspace-switching pattern used by doLoadBlocksContent (line 787):
+ * save/restore the Blockly main workspace to ensure multi-workspace safety.
+ *
+ * NOTE: Blockly.Xml.domToWorkspace is a standard Blockly API that appends blocks.
+ * We use it here (rather than loadBlocksFile) because we need to ADD blocks to an
+ * existing workspace, not replace the entire workspace.
+ */
+public native void injectBlocksXml(String xmlString) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var previousMainWorkspace = $wnd.Blockly.common.getMainWorkspace();
+    try {
+        $wnd.Blockly.common.setMainWorkspace(workspace);
+        var xml = $wnd.Blockly.utils.xml.textToDom(xmlString);
+        $wnd.Blockly.Xml.domToWorkspace(xml, workspace);
+        // Verify new blocks (same as loadBlocksFile does after loading)
+        workspace.getAllBlocks().forEach(function(block) {
+            block.verify && block.verify();
+        });
+    } finally {
+        $wnd.Blockly.common.setMainWorkspace(previousMainWorkspace);
+    }
+}-*/;
+
+/**
+ * Delete a top-level block matching the given type and identifier.
+ *
+ * For event handlers: type="component_event", identifier matches the mutation attributes
+ *   (instance_name + event_name).
+ * For global variables: type="global_declaration", identifier matches the field NAME.
+ * For procedures: type="procedures_defnoreturn"/"procedures_defreturn",
+ *   identifier matches the field NAME.
+ *
+ * YaBlocksEditor has no methods for targeted block deletion — all block manipulation
+ * goes through the Blockly JavaScript workspace API. This JSNI method bridges that gap.
+ */
+public native boolean deleteBlockByTypeAndId(String blockType, String instanceName,
+                                              String identifier) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var allBlocks = workspace.getTopBlocks(false);
+    for (var i = 0; i < allBlocks.length; i++) {
+        var block = allBlocks[i];
+        if (block.type !== blockType) continue;
+
+        var match = false;
+        if (blockType === "component_event") {
+            // Match by instance_name + event_name from the mutation element
+            var mutation = block.mutationToDom && block.mutationToDom();
+            if (mutation) {
+                match = (mutation.getAttribute("instance_name") === instanceName &&
+                         mutation.getAttribute("event_name") === identifier);
+            }
+        } else if (blockType === "global_declaration") {
+            // Match by variable name in the NAME field
+            var nameField = block.getFieldValue("NAME");
+            match = (nameField === identifier);
+        } else if (blockType === "procedures_defnoreturn" ||
+                   blockType === "procedures_defreturn") {
+            // Match by procedure name in the NAME field
+            var nameField = block.getFieldValue("NAME");
+            match = (nameField === identifier);
+        }
+
+        if (match) {
+            block.dispose(true);  // true = animate disposal
+            return true;
+        }
+    }
+    return false;  // Block not found
+}-*/;
+
+/**
+ * Replace an existing top-level block (delete + inject). Used for SET_EVENT_HANDLER,
+ * SET_VARIABLE, SET_PROCEDURE with create-or-replace semantics.
+ */
+public void replaceBlock(String blockType, String instanceName, String identifier,
+                          String newBlockXml) {
+    deleteBlockByTypeAndId(blockType, instanceName, identifier);  // No-op if not found
+    injectBlocksXml(newBlockXml);
+}
+```
+
+**Modify `client/editor/blocks/BlocksEditor.java`** — Add public wrapper methods:
+
+```java
+public void injectBlocksXml(String xmlString) {
+    blocklyPanel.injectBlocksXml(xmlString);
+}
+
+public boolean deleteBlock(String blockType, String instanceName, String identifier) {
+    return blocklyPanel.deleteBlockByTypeAndId(blockType, instanceName, identifier);
+}
+
+public void replaceBlock(String blockType, String instanceName, String identifier,
+                          String newBlockXml) {
+    blocklyPanel.replaceBlock(blockType, instanceName, identifier, newBlockXml);
+}
+```
+
+**Usage by `AIOperationExecutor`:**
+
+```java
+// SET_EVENT_HANDLER (create-or-replace)
+blocksEditor.replaceBlock("component_event", "AddButton", "Click", generatedXml);
+
+// DELETE_EVENT_HANDLER
+blocksEditor.deleteBlock("component_event", "AddButton", "Click");
+
+// SET_VARIABLE (create-or-replace)
+blocksEditor.replaceBlock("global_declaration", null, "count", generatedXml);
+
+// DELETE_VARIABLE
+blocksEditor.deleteBlock("global_declaration", null, "count");
+
+// SET_PROCEDURE (create-or-replace)
+blocksEditor.replaceBlock("procedures_defnoreturn", null, "resetGame", generatedXml);
+// or procedures_defreturn for procedures with return values
+
+// DELETE_PROCEDURE
+blocksEditor.deleteBlock("procedures_defnoreturn", null, "resetGame");
+```
 
 ### Step 8: Authentication, authorization, and security hardening
 
@@ -1857,8 +2044,8 @@ Selecting a level sets `AIAgentMode` on Screen1 and opens the chat dialog.
 | `client/Ode.java` | Add AIChatDialog field, toggle method, two-layer enablement check |
 | `client/OdeMessages.java` | Add i18n strings for AI UI and confirmation dialog |
 | `client/style/neo/DesignToolbarNeo.java` | Add "AI Assistant" toolbar button |
-| `client/editor/blocks/BlocklyPanel.java` | Add `injectBlocksXml()` JSNI method |
-| `client/editor/blocks/BlocksEditor.java` | Add public `injectBlocksXml()` wrapper |
+| `client/editor/blocks/BlocklyPanel.java` | Add `injectBlocksXml()`, `deleteBlockByTypeAndId()`, `replaceBlock()` JSNI methods |
+| `client/editor/blocks/BlocksEditor.java` | Add public `injectBlocksXml()`, `deleteBlock()`, `replaceBlock()` wrappers |
 | `client/editor/simple/components/MockForm.java` | Add `AIAgentMode` dropdown handling, visibility on Screen1 only |
 | `client/.../components/utils/PropertiesUtil.java` | Register `YoungAndroidAIAgentModeChoicePropertyEditor` |
 | `components/.../common/PropertyTypeConstants.java` | Add `PROPERTY_TYPE_AI_AGENT_MODE` constant |
