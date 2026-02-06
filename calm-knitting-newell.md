@@ -2004,6 +2004,180 @@ The 3-layer defense for mode enforcement:
 
 Selecting a level sets `AIAgentMode` on Screen1 and opens the chat dialog.
 
+### Step 10: Deployment wiring (web.xml, GWT module, i18n, build resources)
+
+These are infrastructure changes required for the new code to compile and be reachable at runtime. They follow established patterns exactly.
+
+#### 10a. Servlet registration in web.xml
+
+**Modify** `appinventor/appengine/war/WEB-INF/web.xml` — Add the AI agent servlet
+following the same `<servlet>` + `<servlet-mapping>` + `<filter-mapping>` pattern used by
+all existing GWT-RPC services (e.g., `tokenAuthService` at lines 155-167):
+
+```xml
+  <!-- aiagent -->
+  <servlet>
+    <servlet-name>aiAgentService</servlet-name>
+    <servlet-class>com.google.appinventor.server.aiagent.AIAgentServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>aiAgentService</servlet-name>
+    <url-pattern>/ode/aiagent</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>aiAgentService</servlet-name>
+  </filter-mapping>
+```
+
+The `odeAuthFilter` mapping ensures `OdeAuthFilter` runs on every AI agent request,
+providing the same authentication guarantee as all other services.
+
+#### 10b. GWT module update (YaClient.gwt.xml)
+
+**Modify** `appinventor/appengine/src/com/google/appinventor/YaClient.gwt.xml` —
+The GWT compiler needs to know about the new client-side RPC interfaces and their
+source paths. Two changes are needed:
+
+**1. Add servlet declaration** (after the existing servlet entries at lines 39-44):
+
+```xml
+  <servlet path="/aiagent" class="com.google.appinventor.server.aiagent.AIAgentServiceImpl" />
+```
+
+**2. Add source path for the new shared RPC package** (after `shared/rpc/project/youngandroid`
+at line 92):
+
+```xml
+  <source path="shared/rpc/aiagent"/>
+```
+
+This makes `AIAgentService.java`, `AIAgentServiceAsync.java`, `AIAgentRequest.java`,
+`AIAgentResponse.java`, and `AIOperation.java` visible to the GWT compiler.
+
+**NOTE:** The existing `<source path="shared/rpc"/>` at line 81 does NOT automatically
+include sub-packages in GWT. Other sub-packages like `shared/rpc/project/` and
+`shared/rpc/component/` are listed explicitly (lines 88-92), so `shared/rpc/aiagent/`
+must be listed explicitly as well.
+
+Server-side Java files (`server/aiagent/**/*.java`) do NOT need a `<source>` entry — they
+are compiled by the `AiServerLib` ant target which uses `server/**/*.java` as its source
+glob (`appinventor/appengine/build.xml:348`).
+
+#### 10c. Build resource copy for server-side AI resources
+
+**Modify** `appinventor/appengine/build.xml` — The `AiServerLib` target (line 336-360)
+compiles all `server/**/*.java` automatically, but only copies `*.properties` files to the
+classpath (line 341-343). The new resource files in `server/aiagent/resources/` (`.md` and
+`.json`) need an explicit copy rule.
+
+Add after the existing `<copy>` blocks (line 344-346), before the `<ai.javac>` call:
+
+```xml
+    <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server/aiagent/resources">
+      <fileset dir="src/${appinventor.pkg}/server/aiagent/resources"
+               includes="*.md,*.json" />
+    </copy>
+```
+
+This ensures `pseudocode_grammar.md`, `appinventor_reference.md`, `component_catalog.json`,
+and `few_shot_examples.json` are on the classpath and loadable via
+`getClass().getResourceAsStream()` in `AIContextBuilder.java`.
+
+#### 10d. i18n message strings
+
+GWT i18n for this project uses `@DefaultMessage` annotations on the `OdeMessages.java`
+interface as the English default — there is no base `OdeMessages.properties` file. Locale-
+specific translations are in files like `OdeMessages_zh_CN.properties`,
+`OdeMessages_es_ES.properties`, etc. (~20 locale files exist).
+
+**Modify** `client/OdeMessages.java` — Add the following i18n message definitions:
+
+```java
+// AI Assistant messages
+
+@DefaultMessage("AI Assistant")
+@Description("Label for the AI Assistant toolbar button")
+String aiAssistantButton();
+
+@DefaultMessage("Send")
+@Description("Label for the send button in the AI chat dialog")
+String aiSendButton();
+
+@DefaultMessage("Apply")
+@Description("Label for the apply button to confirm AI operations")
+String aiApplyButton();
+
+@DefaultMessage("Reject")
+@Description("Label for the reject button to discard AI operations")
+String aiRejectButton();
+
+@DefaultMessage("AI will make these changes:")
+@Description("Header shown above the AI operation preview list")
+String aiOperationPreviewHeader();
+
+@DefaultMessage("Thinking...")
+@Description("Shown while waiting for AI response")
+String aiThinking();
+
+@DefaultMessage("Type a message...")
+@Description("Placeholder text in the AI chat input field")
+String aiInputPlaceholder();
+
+@DefaultMessage("Choose an AI Agent permission level for this project:")
+@Description("Header for the AI mode selection dialog")
+String aiModeSelectionHeader();
+
+@DefaultMessage("Advisor")
+@Description("Label for Advisor AI mode option")
+String aiAgentModeAdvisor();
+
+@DefaultMessage("AI can read and explain your project but cannot make changes.")
+@Description("Description for Advisor AI mode")
+String aiAgentModeAdvisorDescription();
+
+@DefaultMessage("Screen Editor")
+@Description("Label for Screen Editor AI mode option")
+String aiAgentModeScreenEditor();
+
+@DefaultMessage("AI can modify the current screen (components & blocks).")
+@Description("Description for Screen Editor AI mode")
+String aiAgentModeScreenEditorDescription();
+
+@DefaultMessage("Project Editor")
+@Description("Label for Project Editor AI mode option")
+String aiAgentModeProjectEditor();
+
+@DefaultMessage("AI can modify all screens and project settings.")
+@Description("Description for Project Editor AI mode")
+String aiAgentModeProjectEditorDescription();
+
+@DefaultMessage("Off")
+@Description("Label for Off AI mode (disabled)")
+String aiAgentModeOff();
+
+@DefaultMessage("Changes made by AI may be destructive. Ensure you have a backup.")
+@Description("Warning text shown in the AI mode selection dialog")
+String aiModeWarning();
+
+@DefaultMessage("Select & Open")
+@Description("Button to confirm AI mode selection and open the chat dialog")
+String aiModeSelectAndOpen();
+
+@DefaultMessage("Failed: {0}")
+@Description("Prefix for a failed AI operation in the preview list")
+String aiOperationFailed(String details);
+
+@DefaultMessage("Skipped (not attempted)")
+@Description("Label for AI operations that were not attempted after a failure")
+String aiOperationSkipped();
+```
+
+**i18n for locale files:** Translations for these new keys should be added to each
+`OdeMessages_*.properties` file. For the initial implementation, the English defaults
+(from `@DefaultMessage`) are sufficient — GWT falls back to them automatically when a
+key is missing from a locale file. Translations can be contributed incrementally.
+
 ---
 
 ## File Summary
@@ -2037,12 +2211,12 @@ Selecting a level sets `AIAgentMode` on Screen1 and opens the chat dialog.
 | `components/.../common/AIAgentMode.java` | Enum: Off, Advisor, ScreenEditor, ProjectEditor |
 | `client/.../properties/YoungAndroidAIAgentModeChoicePropertyEditor.java` | Dropdown property editor |
 
-### Modified files (~11 files):
+### Modified files (~16 files):
 
 | File | Change |
 |------|--------|
 | `client/Ode.java` | Add AIChatDialog field, toggle method, two-layer enablement check |
-| `client/OdeMessages.java` | Add i18n strings for AI UI and confirmation dialog |
+| `client/OdeMessages.java` | Add ~18 i18n message definitions for AI UI (see Step 10d) |
 | `client/style/neo/DesignToolbarNeo.java` | Add "AI Assistant" toolbar button |
 | `client/editor/blocks/BlocklyPanel.java` | Add `injectBlocksXml()`, `deleteBlockByTypeAndId()`, `replaceBlock()` JSNI methods |
 | `client/editor/blocks/BlocksEditor.java` | Add public `injectBlocksXml()`, `deleteBlock()`, `replaceBlock()` wrappers |
@@ -2050,12 +2224,15 @@ Selecting a level sets `AIAgentMode` on Screen1 and opens the chat dialog.
 | `client/.../components/utils/PropertiesUtil.java` | Register `YoungAndroidAIAgentModeChoicePropertyEditor` |
 | `components/.../common/PropertyTypeConstants.java` | Add `PROPERTY_TYPE_AI_AGENT_MODE` constant |
 | `server/tokenauth/TokenAuthServiceImpl.java` | Add AI token generation |
-| `appengine-web.xml` | Add AI configuration system properties |
+| `appengine/war/WEB-INF/appengine-web.xml` | Add AI configuration system properties |
+| `appengine/war/WEB-INF/web.xml` | Add `aiAgentService` servlet + mapping + auth filter (see Step 10a) |
+| `appengine/src/.../YaClient.gwt.xml` | Add `<servlet>` and `<source path>` for AI agent RPC (see Step 10b) |
+| `appengine/build.xml` | Add `<copy>` rule for `server/aiagent/resources/*.md,*.json` (see Step 10c) |
 | `components/.../runtime/Form.java` | Add `AIAgentMode` dropdown property (Screen1-only, default "Off") |
 | `components/.../common/YaVersion.java` | Bump `FORM_COMPONENT_VERSION` 31 → 32 |
 | `shared/settings/SettingsConstants.java` | Add `YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE` constant |
 
-File paths are relative to `appinventor/appengine/src/com/google/appinventor/` except where noted with `components/...`.
+File paths are relative to `appinventor/appengine/src/com/google/appinventor/` except where noted with full paths or `components/...`.
 
 ---
 
