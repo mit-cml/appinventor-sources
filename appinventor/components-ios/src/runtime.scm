@@ -1723,6 +1723,7 @@ Matrix implementation.
 - get matrix cell       (yail-matrix-get-cell yail-matrix row col)
 - set matrix cell       (yail-matrix-set-cell yail-matrix row col value)
 - is YailMatrix?        (yail-matrix? x)
+- get matrix dimensions         (yail-matrix-get-dims matrix)
 - get matrix inverse    (yail-matrix-inverse matrix)
 - get matrix transpose  (yail-matrix-transpose matrix)
 - matrix add            (yail-matrix-add matrix1 matrix2)
@@ -1751,6 +1752,9 @@ Matrix implementation.
 
 (define (yail-matrix? x)
   (instance? x SchemeKit.YailMatrix))
+
+(define (yail-matrix-get-dims matrix)
+  (invoke matrix 'getDimensions'))
 
 (define (yail-matrix-inverse matrix)
   (invoke 'SchemeKit.YailMatrix 'inverse:error: matrix))
