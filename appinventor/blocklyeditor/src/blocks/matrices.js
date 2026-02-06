@@ -368,7 +368,7 @@ Blockly.Blocks['matrices_add'] = {
     containerBlock.setFieldValue(
       Blockly.Msg.LANG_MATH_ARITHMETIC_ADD, 'CONTAINER_TEXT');
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_ADD}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_ARTIHMETIC_ADD}]
 };
 
 Blockly.Blocks['matrices_subtract'] = {
@@ -385,7 +385,7 @@ Blockly.Blocks['matrices_subtract'] = {
     this.setInputsInline(true);
     this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT_TOOLTIP);
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_MINUS}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT}]
 };
 
 Blockly.Blocks['matrices_multiply'] = {
@@ -446,7 +446,7 @@ Blockly.Blocks['matrices_multiply'] = {
     containerBlock.setFieldValue(
       AI.BlockUtils.times_symbol, 'CONTAINER_TEXT');
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_MULTIPLY}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_ARITHMETIC_MULTIPLY}]
 };
 
 Blockly.Blocks['matrices_power'] = {
@@ -463,7 +463,7 @@ Blockly.Blocks['matrices_power'] = {
     this.setInputsInline(true);
     this.setTooltip(Blockly.Msg.LANG_MATRICES_ARITHMETIC_POWER_TOOLTIP);
   },
-  typeblock: [{translatedName: Blockly.Msg.LANG_MATH_ARITHMETIC_POWER}]
+  typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_ARITHMETIC_POWER}]
 };
 
 Blockly.Blocks['matrices_operations'] = {

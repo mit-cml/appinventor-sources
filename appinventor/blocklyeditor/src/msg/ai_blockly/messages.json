@@ -780,6 +780,10 @@
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_ROTATE_RIGHT": "Returns the right rotation of the matrix (90 degrees clockwise)",
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_ROTATE_RIGHT": "/reference/blocks/matrices.html#rotateright",
 
+	"Blockly.Msg.LANG_MATRICES_ARTIHMETIC_ADD": "matrix +",
+	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT": "matrix -",
+	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_MULTIPLY": "matrix *",
+	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_POWER": "matrix ^",
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_ADD_TOOLTIP": "Returns the sum of two matrices",
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_SUBTRACT_TOOLTIP": "Returns the different between two matrices",
 	"Blockly.Msg.LANG_MATRICES_ARITHMETIC_MULTIPLY_TOOLTIP": "Returns the product of two matrices or one matrix and a scalar",
