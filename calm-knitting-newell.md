@@ -1347,6 +1347,60 @@ The executor reorders the LLM's operations into **phases**, switching views betw
 **Phase 1: Project-level operations** (if any)
 - `SWITCH_SCREEN`, `CREATE_SCREEN`, `DELETE_SCREEN`, `SET_PROJECT_PROP`
 - These are applied first, as they change which screen is being edited
+- **Phase 1 is fully async** — each operation involves server RPCs and deferred scheduling.
+  The executor must chain Phase 1 operations sequentially using callbacks, not a for-loop.
+
+**`CREATE_SCREEN` execution** — follows the same flow as `AddFormAction`/`AddFormCommand`:
+1. Call `projectService.addFile(projectId, formFileId, callback)` — server creates .scm, .bky,
+   .yail with initial content (see `YoungAndroidProjectService.addFile()`:420-456)
+2. On success callback:
+   a. Create `YoungAndroidFormNode` and `YoungAndroidBlocksNode`, add to project
+   b. Wait (via deferred scheduling) for `YaProjectEditor.onProjectNodeAdded()` to create
+      the `YaFormEditor` and `YaBlocksEditor` instances
+   c. Call `designToolbar.addScreen(projectId, screenName, formEditor, blocksEditor)`
+   d. Call `designToolbar.switchToScreen(projectId, screenName, View.DESIGNER)`
+3. On failure: set `result.failed` and skip remaining Phase 1 operations
+
+**`DELETE_SCREEN` execution** — follows the same flow as `RemoveFormAction`/`DeleteFileCommand`:
+1. Reject if screenName is "Screen1" (pre-validated, but belt-and-suspenders)
+2. If deleting the current screen, switch to Screen1 first via
+   `designToolbar.switchToScreen(projectId, "Screen1", View.DESIGNER)` and wait for completion
+3. Call `editorManager.closeFileEditors(projectId, [formFileId, blocksFileId])`
+4. Call `projectService.deleteFile(sessionId, projectId, formFileId, callback)` — server
+   deletes .scm, .bky, .codeblocks, .yail (see `YoungAndroidProjectService.deleteFile()`:459-482)
+5. On success callback:
+   a. Remove form, blocks, and yail nodes from project
+   b. Call `designToolbar.removeScreen(projectId, screenName)`
+6. On failure: set `result.failed` and skip remaining Phase 1 operations
+
+**`SET_PROJECT_PROP` execution** — sets a project-level property via MockForm on Screen1:
+1. Get Screen1's `MockForm` via
+   `projectEditor.getFormFileEditor("Screen1").getComponents().get("Screen1")`
+2. Call `mockForm.changeProperty(propertyName, value)` — this triggers
+   `MockForm.onPropertyChange()` which calls `changeProjectSettingsProperty()` for
+   project-level properties, and `EditorManager.scheduleAutoSave()` for persistence
+3. Applies synchronously (no server RPC needed — auto-save handles persistence)
+
+**`SET_PROJECT_PROP` allowed properties** (whitelist enforced by `AIOperationValidator`):
+
+| Property Name | Maps to Setting | Example Values |
+|---------------|----------------|----------------|
+| `AppName` | `YOUNG_ANDROID_SETTINGS_APP_NAME` | "My Counter App" |
+| `Title` | (Form property, not project setting) | "Main Screen" |
+| `Icon` | `YOUNG_ANDROID_SETTINGS_ICON` | "icon.png" (must be in assets) |
+| `VersionCode` | `YOUNG_ANDROID_SETTINGS_VERSION_CODE` | "2" |
+| `VersionName` | `YOUNG_ANDROID_SETTINGS_VERSION_NAME` | "1.1" |
+| `Sizing` | `YOUNG_ANDROID_SETTINGS_SIZING` | "Responsive", "Fixed" |
+| `Theme` | `YOUNG_ANDROID_SETTINGS_THEME` | "AppTheme.Light.DarkActionBar", "Classic" |
+| `PrimaryColor` | `YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR` | "&HFFA5CF47" |
+| `PrimaryColorDark` | `YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK` | "&HFF41521C" |
+| `AccentColor` | `YOUNG_ANDROID_SETTINGS_ACCENT_COLOR` | "&HFF00728A" |
+| `ActionBar` | `YOUNG_ANDROID_SETTINGS_ACTIONBAR` | "true", "false" |
+| `ShowListsAsJson` | `YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON` | "true", "false" |
+| `DefaultFileScope` | `YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE` | "App", "Legacy" |
+
+Properties NOT in this whitelist are rejected by `AIOperationValidator`. Properties starting
+with `$`, `Uuid`, `AIAgentMode`, and all iOS `NS*` permission properties are forbidden (§8i).
 
 **Phase 2: Designer operations** (add/modify — switch to Designer view)
 - Switch to `DesignToolbar.View.DESIGNER` via `designToolbar.switchToScreen(projectId, screenName, View.DESIGNER)`
@@ -1415,6 +1469,11 @@ wait synchronously. Instead, phase execution must be structured as a callback ch
 /**
  * Execute phases sequentially using GWT's deferred scheduling.
  * Each phase completes asynchronously, then triggers the next.
+ *
+ * Phase 0 (project-level ops) is special: each operation is async (involves
+ * server RPCs for CREATE_SCREEN/DELETE_SCREEN) and must complete before the
+ * next operation starts. Phases 1-4 are synchronous within a deferred command
+ * (they only manipulate in-memory editor state).
  */
 private void executePhaseChain(List<List<AIOperation>> phases, int phaseIndex,
                                 ExecutionResult result, Command onComplete) {
@@ -1428,7 +1487,15 @@ private void executePhaseChain(List<List<AIOperation>> phases, int phaseIndex,
         return;
     }
 
-    // Switch view for this phase, then execute operations after switch completes
+    if (phaseIndex == 0) {
+        // Phase 1 (project-level ops): execute each op asynchronously via callbacks
+        executeProjectOpsChain(phase, 0, result, () -> {
+            executePhaseChain(phases, phaseIndex + 1, result, onComplete);
+        });
+        return;
+    }
+
+    // Phases 2-5: switch view, then execute synchronously
     View targetView = getViewForPhase(phaseIndex);
     DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
     toolbar.switchToScreen(projectId, screenName, targetView);
@@ -1445,6 +1512,45 @@ private void executePhaseChain(List<List<AIOperation>> phases, int phaseIndex,
             }
         }
     });
+}
+
+/**
+ * Execute Phase 1 (project-level) operations one at a time, each completing
+ * asynchronously before the next starts.
+ *
+ * CREATE_SCREEN and DELETE_SCREEN involve server RPCs (addFile/deleteFile)
+ * that return via async callbacks. SWITCH_SCREEN involves deferred scheduling
+ * (waiting for screensLocked). SET_PROJECT_PROP is synchronous but is chained
+ * here for consistency.
+ */
+private void executeProjectOpsChain(List<AIOperation> ops, int index,
+                                     ExecutionResult result, Command onComplete) {
+    if (index >= ops.size() || result.failed != null) {
+        onComplete.execute();
+        return;
+    }
+    AIOperation op = ops.get(index);
+    Command next = () -> executeProjectOpsChain(ops, index + 1, result, onComplete);
+
+    switch (op.getType()) {
+        case CREATE_SCREEN:
+            executeCreateScreen(op, result, next);
+            break;
+        case DELETE_SCREEN:
+            executeDeleteScreen(op, result, next);
+            break;
+        case SWITCH_SCREEN:
+            executeSwitchScreen(op, result, next);
+            break;
+        case SET_PROJECT_PROP:
+            // Synchronous — changeProperty on MockForm triggers auto-save
+            executeSetProjectProp(op, result);
+            next.execute();
+            break;
+        default:
+            next.execute();
+            break;
+    }
 }
 ```
 
@@ -1522,9 +1628,19 @@ public class AIOperationExecutor {
             }
         }
 
-        // Save if anything succeeded
+        // Trigger auto-save if anything succeeded.
+        //
+        // DO NOT call formEditor.onSave() — that is a post-save callback stub (no-op
+        // in DesignerEditor.java:472), not a save trigger.
+        //
+        // The correct mechanism: property changes already fire
+        // DesignerEditor.onComponentPropertyChanged() → EditorManager.scheduleAutoSave()
+        // automatically through the PropertyChangeListener chain (see MockComponent.java:1187,
+        // DesignerEditor.java:312). For operations that don't go through changeProperty()
+        // (e.g., ADD_COMPONENT, DELETE_COMPONENT, RENAME_COMPONENT), we must explicitly
+        // mark the editor as dirty:
         if (!result.succeeded.isEmpty()) {
-            formEditor.onSave();
+            Ode.getInstance().getEditorManager().scheduleAutoSave(formEditor);
         }
     }
 
@@ -2134,12 +2250,42 @@ The AI agent is **not** enabled automatically. It requires two layers of enablem
 
 | Property | Description |
 |----------|-------------|
-| `ai.agent.available` | Master switch. When `false`, the Form property is hidden and the toolbar button does not appear. |
+| `ai.agent.available` | Master switch. When `false`, the Form property is hidden and the toolbar button does not appear. Communicated to the client via the `Config` DTO (see below). |
 | `ai.agent.provider` | One of: `anthropic`, `openai`, `gemini`, `ollama`. See Step 2 provider summary. |
 | `ai.agent.model` | Model identifier. Examples: `claude-sonnet-4-20250514`, `gpt-4o`, `gemini-2.0-flash`, `llama3.1:70b`. |
 | `ai.agent.api.key` | API key for cloud providers. Required for `anthropic`, `openai`, `gemini`. Optional for `ollama` (empty = no `Authorization` header). |
 | `ai.agent.base.url` | Base URL override. **Required for `ollama`** (e.g., `http://localhost:11434`). Optional for other providers (leave empty to use their default endpoints). Useful for proxy setups or regional endpoints. |
 | `ai.agent.rate.limit` | Max requests per minute per user. Default: `10`. |
+
+**Communicating `ai.agent.available` to the client:**
+
+The client needs to know whether the AI agent feature is enabled on the server so it can
+show/hide the toolbar button and the `AIAgentMode` Form property. This follows the exact
+pattern used by `gallery.enabled`, `firebase.url`, and other server flags.
+
+**Modify** `shared/rpc/user/Config.java` — Add field and getter/setter:
+```java
+private boolean aiAgentAvailable;
+
+public boolean getAiAgentAvailable() { return aiAgentAvailable; }
+public void setAiAgentAvailable(boolean available) { aiAgentAvailable = available; }
+```
+
+**Modify** `server/UserInfoServiceImpl.java` — In `getSystemConfig()`, read the flag:
+```java
+config.setAiAgentAvailable(Flag.createFlag("ai.agent.available", false).get());
+```
+
+**Client usage** — In `MockForm.isPropertyVisible()`:
+```java
+case PROPERTY_NAME_AI_AGENT_MODE:
+    return editor.isScreen1() && Ode.getSystemConfig().getAiAgentAvailable();
+```
+
+**Client usage** — In `DesignToolbar` (toolbar button visibility):
+```java
+setVisibleItem(aiAssistantItem, Ode.getSystemConfig().getAiAgentAvailable());
+```
 
 **Ollama setup example** (self-hosted App Inventor + local Ollama):
 ```xml
@@ -2455,7 +2601,33 @@ String aiValidationErrorHeader();
 @DefaultMessage("Try rephrasing your request.")
 @Description("Hint shown below AI validation errors")
 String aiValidationErrorHint();
+
+@DefaultMessage("AI service unavailable: {0}")
+@Description("Error shown when the LLM API call fails (network, auth, rate limit)")
+String aiServiceUnavailable(String reason);
 ```
+
+**GWT-RPC timeout configuration:**
+
+LLM API calls routinely take 5-30+ seconds (especially for Ollama with large models).
+GWT-RPC has short default timeouts that would cause premature failures. Configure the
+timeout on the async service proxy in `AIChatDialog` (or wherever the RPC is initiated):
+
+```java
+// In AIChatDialog initialization, after creating the async service:
+AIAgentServiceAsync aiService = GWT.create(AIAgentService.class);
+((ServiceDefTarget) aiService).setRpcRequestBuilder(new RpcRequestBuilder() {
+    @Override
+    protected void doSetTimeout(RequestBuilder rb) {
+        rb.setTimeoutMillis(120_000);  // 2 minutes — accommodates slow LLM responses
+    }
+});
+```
+
+This follows the standard GWT pattern for overriding RPC timeouts. The 2-minute timeout
+accommodates the worst case: initial LLM call (~30s) + validation retry call (~30s) +
+context building overhead. If the server-side rate limiter delays the request, the client
+still has headroom before timing out.
 
 **i18n for locale files:** Translations for these new keys should be added to each
 `OdeMessages_*.properties` file. For the initial implementation, the English defaults
@@ -2805,9 +2977,28 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     // 3. Build system prompt from live project state
     String systemPrompt = aiContextBuilder.build(userId, projectId, screenName, mode);
 
-    // 4. Call LLM
-    LLMResponse llmResponse = llmProvider.chat(systemPrompt, userMessage,
-                                                tools, providerRef, history);
+    // 4. Call LLM (with error handling for API failures)
+    LLMResponse llmResponse;
+    try {
+        llmResponse = llmProvider.chat(systemPrompt, userMessage,
+                                       tools, providerRef, history);
+    } catch (LLMProviderException e) {
+        // LLM API failure: network timeout, 429 rate limit, 500 server error,
+        // invalid API key, Ollama unreachable, etc.
+        // Persist the user message so conversation history stays consistent,
+        // then return an error response with no operations.
+        storeConversationRef(projectId, providerName, conversationId,
+                             providerRef != null ? providerRef : "");
+        storeMessage(conversationId, "user", userMessage);
+
+        AIAgentResponse errorResponse = new AIAgentResponse();
+        errorResponse.setAiMessage("");
+        errorResponse.setNewConversation(isNewConversation);
+        errorResponse.setOperations(Collections.emptyList());
+        errorResponse.setErrors(Collections.singletonList(
+            "AI service unavailable: " + e.getUserFacingMessage()));
+        return errorResponse;
+    }
 
     // 5. Update providerRef from the LLM response and store in Memcache
     String newProviderRef = llmResponse.getConversationRef();  // may be null for stateless
@@ -2823,19 +3014,25 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     if (!validated.errors.isEmpty()) {
         // 7. Retry: inject error feedback and re-call LLM once
         String feedback = buildValidationErrorFeedback(validated.errors);
-        LLMResponse retryResponse = llmProvider.chat(systemPrompt, feedback,
-                                                      tools, providerRef, history);
-        // Update providerRef from retry
-        String retryRef = retryResponse.getConversationRef();
-        if (retryRef != null) {
-            providerRef = retryRef;
-            storeConversationRef(projectId, providerName, conversationId,
-                                 providerRef);
-        }
+        try {
+            LLMResponse retryResponse = llmProvider.chat(systemPrompt, feedback,
+                                                          tools, providerRef, history);
+            // Update providerRef from retry
+            String retryRef = retryResponse.getConversationRef();
+            if (retryRef != null) {
+                providerRef = retryRef;
+                storeConversationRef(projectId, providerName, conversationId,
+                                     providerRef);
+            }
 
-        // Re-validate the retry response
-        validated = validate(retryResponse, mode);
-        llmResponse = retryResponse;  // Use retry response for the final result
+            // Re-validate the retry response
+            validated = validate(retryResponse, mode);
+            llmResponse = retryResponse;  // Use retry response for the final result
+        } catch (LLMProviderException e) {
+            // Retry LLM call itself failed — fall through with the original
+            // validation errors. The response will show zero operations + errors.
+            LOG.warning("LLM retry call failed: " + e.getMessage());
+        }
     }
 
     // 8. Build response for client
@@ -2959,7 +3156,7 @@ String aiConversationRestored();
 
 ## File Summary
 
-### New files (31 files):
+### New files (32 files):
 
 | File | Purpose |
 |------|---------|
@@ -2981,6 +3178,7 @@ String aiConversationRestored();
 | `server/aiagent/resources/component_catalog.json` | Compact ~100-component listing (~3K tokens, excludes 7 INTERNAL) |
 | `server/aiagent/resources/few_shot_examples.json` | Worked input→output examples (~3K tokens) |
 | `server/aiagent/llm/LLMProvider.java` | Provider interface |
+| `server/aiagent/llm/LLMProviderException.java` | Checked exception for LLM API failures (network, auth, rate limit). Contains `getUserFacingMessage()` returning a sanitized message safe to display (no API keys, no stack traces). |
 | `server/aiagent/llm/LLMProviderRegistry.java` | Provider factory |
 | `server/aiagent/llm/AnthropicProvider.java` | Claude API implementation |
 | `server/aiagent/llm/OpenAIProvider.java` | GPT-4 API implementation |
@@ -2995,7 +3193,7 @@ String aiConversationRestored();
 | `components/.../common/AIAgentMode.java` | Enum: Off, Advisor, ScreenEditor, ProjectEditor |
 | `client/.../properties/YoungAndroidAIAgentModeChoicePropertyEditor.java` | Dropdown property editor |
 
-### Modified files (17 files):
+### Modified files (19 files):
 
 | File | Change |
 |------|--------|
@@ -3007,6 +3205,8 @@ String aiConversationRestored();
 | `client/editor/simple/components/MockForm.java` | Add `AIAgentMode` dropdown handling, visibility on Screen1 only |
 | `client/.../components/utils/PropertiesUtil.java` | Register `YoungAndroidAIAgentModeChoicePropertyEditor` |
 | `components/.../common/PropertyTypeConstants.java` | Add `PROPERTY_TYPE_AI_AGENT_MODE` constant |
+| `shared/rpc/user/Config.java` | Add `aiAgentAvailable` field + getter/setter (§9 Layer 1) |
+| `server/UserInfoServiceImpl.java` | Read `ai.agent.available` flag into Config (§9 Layer 1) |
 | `appengine/war/WEB-INF/appengine-web.xml` | Add AI configuration system properties |
 | `appengine/war/WEB-INF/web.xml` | Add `aiAgentService` servlet + mapping + auth filter (see Step 10a) |
 | `appengine/src/.../YaClient.gwt.xml` | Add `<servlet>` and `<source path>` for AI agent RPC (see Step 10b) |
