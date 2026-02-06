@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2023 MIT, All rights reserved.
+Released under the Apache License, Version 2.0
+http://www.apache.org/licenses/LICENSE-2.0
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>method</key>
+    <string>development</string>
+    <key>compileBitcode</key>
+    <false/>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+  </dict>
+</plist>

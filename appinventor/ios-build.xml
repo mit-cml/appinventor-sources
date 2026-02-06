@@ -108,7 +108,7 @@
 
   <target name="release" depends="archive" if="ios.build.run">
     <mkdir dir="${public.build}" />
-    <exec executable="xcodebuild">
+    <exec executable="xcodebuild" failonerror="false">
       <arg value="-exportArchive" />
       <arg value="-archivePath" />
       <arg value="${archive}"/>
@@ -119,10 +119,14 @@
     </exec>
   </target>
 
-  <target name="install" depends="release" if="ios.build.run">
-    <exec executable="ideviceinstaller">
+  <target name="install" depends="check-ideviceinstaller,release" if="ideviceinstaller.present">
+    <exec executable="ideviceinstaller" failonerror="false">
       <arg value="-i" />
       <arg value="${public.build}/AICompanionApp.ipa" />
     </exec>
+  </target>
+
+  <target name="check-ideviceinstaller">
+    <available file="ideviceinstaller" filepath="${env.PATH}" property="ideviceinstaller.present"/>
   </target>
 </project>

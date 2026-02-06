@@ -151,11 +151,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   fileprivate var _dragStartX = CGFloat(0)
   fileprivate var _dragStartY = CGFloat(0)
   
-  /// Layers are split into four categories. There may be multiple layers in shapeLayers and textLayers.
-  /// There is always just one background image layer and one background color layer.
-  fileprivate var _shapeLayers = [CALayer]()
-  fileprivate var _textLayers = [CALayer]()
   fileprivate var _backgroundImageView = UIImageView(image: nil)
+  fileprivate var _drawingImageView = UIImageView(image: nil)
 
   /// Old values are used to scale shapes when canvas size changes.
   fileprivate var _oldHeight = CGFloat(0)
@@ -187,6 +184,13 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _backgroundImageView.bottomAnchor.constraint(equalTo: _view.bottomAnchor).isActive = true
     _backgroundImageView.leftAnchor.constraint(equalTo: _view.leftAnchor).isActive = true
     _backgroundImageView.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
+
+    _view.addSubview(_drawingImageView)
+    _drawingImageView.translatesAutoresizingMaskIntoConstraints = false
+    _drawingImageView.topAnchor.constraint(equalTo: _view.topAnchor).isActive = true
+    _drawingImageView.bottomAnchor.constraint(equalTo: _view.bottomAnchor).isActive = true
+    _drawingImageView.leftAnchor.constraint(equalTo: _view.leftAnchor).isActive = true
+    _drawingImageView.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
 
     // Configure default dimension constraints. These are set to low priority so that they can be overriden
     // by the user configuration.
@@ -386,18 +390,23 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     }
   }
 
-  fileprivate func transformLayerWidth(_ s: CALayer, _ xScaleFactor: CGFloat) {
-    s.transform.m11 *= xScaleFactor
-    s.transform.m12 *= xScaleFactor
-    s.transform.m13 *= xScaleFactor
-    s.transform.m14 *= xScaleFactor
-  }
-  
-  fileprivate func transformLayerHeight(_ s: CALayer, _ yScaleFactor: CGFloat) {
-    s.transform.m21 *= yScaleFactor
-    s.transform.m22 *= yScaleFactor
-    s.transform.m23 *= yScaleFactor
-    s.transform.m24 *= yScaleFactor
+  fileprivate func drawOnBitmap(_ action: (CGContext) -> Void) {
+    let size = _view.bounds.size
+    if size.width <= 0 || size.height <= 0 {
+      return
+    }
+    UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+    _drawingImageView.image?.draw(in: _view.bounds)
+    if let context = UIGraphicsGetCurrentContext() {
+      if _paintColor == 0 {
+        context.setBlendMode(.clear)
+      } else {
+        context.setBlendMode(.normal)
+      }
+      action(context)
+      _drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
+    }
+    UIGraphicsEndImageContext()
   }
 
   // MARK: Events
@@ -586,68 +595,40 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   }
   
   @objc open func Clear() {
-    // background image and background color are not cleared
-    _shapeLayers.forEach{ $0.removeFromSuperlayer() }
-    _shapeLayers.removeAll()
-    _textLayers.forEach{ $0.removeFromSuperlayer() }
-    _textLayers.removeAll()
+    _drawingImageView.image = nil
   }
 
   @objc open func DrawArc(_ left: Int, _ top: Int, _ right: Int, _ bottom: Int, _ startAngle: Float,
-                          _ sweepAngle: Float, _ useCenter: Bool, _ fill: Bool) {
-    // on Android, we only draw the Arc if right > left and bottom > top
+                         _ sweepAngle: Float, _ useCenter: Bool, _ fill: Bool) {
     guard right > left, bottom > top else { return }
-    
-    let horizontalAxis = CGFloat(abs(right-left))
-    let verticalAxis = CGFloat(abs(bottom-top))
+
+    let horizontalAxis = CGFloat(abs(right - left))
+    let verticalAxis = CGFloat(abs(bottom - top))
     let startingAngle = CGFloat(GLKMathDegreesToRadians(startAngle))
     let endingAngle = CGFloat(GLKMathDegreesToRadians(sweepAngle + startAngle))
-    
-    // on Android, the path is closed when using center or, when not using center, when fill is set.
-    let ellipticalArc = UIBezierPath(ellipseArcIn: CGRect(x: CGFloat(left), y: CGFloat(top), width:horizontalAxis, height: verticalAxis), startAngle: startingAngle, endAngle: endingAngle, useCenter: useCenter, closePath: useCenter || fill)
-    
+
+    let ellipticalArc = UIBezierPath(ellipseArcIn: CGRect(x: CGFloat(left), y: CGFloat(top), width: horizontalAxis, height: verticalAxis), startAngle: startingAngle, endAngle: endingAngle, useCenter: useCenter, closePath: useCenter || fill)
+
     addShapeWithFill(for: ellipticalArc.cgPath, with: fill)
   }
 
   @objc open func DrawCircle(_ centerX: Float, _ centerY: Float, _ radius: Float, _ fill: Bool) {
-    guard isInCanvasBoundaries(CGFloat(centerX), CGFloat(centerY)) else {
-      return
-    }
-
-    let point = UIBezierPath(arcCenter: CGPoint(x: CGFloat(centerX), y: CGFloat(centerY)), radius: CGFloat(radius), startAngle: 0, endAngle:CGFloat(Double.pi * 2), clockwise: true)
-
-    addShapeWithFill(for: point.cgPath, with: fill)
+    let path = UIBezierPath(arcCenter: CGPoint(x: CGFloat(centerX), y: CGFloat(centerY)), radius: CGFloat(radius),
+                            startAngle: 0, endAngle: 2 * .pi, clockwise: true)
+    addShapeWithFill(for: path.cgPath, with: fill)
   }
 
   @objc open func DrawLine(_ x1: Float, _ y1: Float, _ x2: Float, _ y2: Float) {
-    let finalX1 = CGFloat(x1); let finalY1 = CGFloat(y1)
-    var finalX2 = CGFloat(x2); var finalY2 = CGFloat(y2)
-
-    guard isInCanvasBoundaries(finalX1, finalY1) else {
-      return
-    }
-
-    // Setting finalX2 and finalY2 to be within the canvas bounds (between 0 and the view's width/height).
-    finalX2 = max(0, min(finalX2, _view.frame.size.width))
-    finalY2 = max(0, min(finalY2, _view.frame.size.height))
-
-
-    let line = UIBezierPath()
-    line.move(to: CGPoint(x: finalX1, y: finalY1))
-    line.addLine(to: CGPoint(x: finalX2, y: finalY2))
-    line.close()
-
-    addShapeWithFill(for: line.cgPath, with: false)
+    let path = UIBezierPath()
+    path.move(to: CGPoint(x: CGFloat(x1), y: CGFloat(y1)))
+    path.addLine(to: CGPoint(x: CGFloat(x2), y: CGFloat(y2)))
+    addShapeWithFill(for: path.cgPath, with: false)
   }
   
   @objc open func DrawPoint(_ x: Float, _ y: Float) {
-    guard isInCanvasBoundaries(CGFloat(x), CGFloat(y)) else {
-      return
-    }
-
-    let point = UIBezierPath(arcCenter: CGPoint(x: CGFloat(x), y: CGFloat(y)), radius: 1.0, startAngle: 0, endAngle:CGFloat(Float.pi * 2), clockwise: true)
-
-    addShapeWithFill(for: point.cgPath, with: true)
+    let path = UIBezierPath(arcCenter: CGPoint(x: CGFloat(x), y: CGFloat(y)), radius: 1.0,
+                            startAngle: 0, endAngle: 2 * .pi, clockwise: true)
+    addShapeWithFill(for: path.cgPath, with: true)
   }
 
   @objc open func DrawShape(_ pointList: YailList<YailList<NSNumber>>, _ fill: Bool) {
@@ -683,7 +664,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
           throw YailRuntimeError("length of item YailList \(index) is not 2", "IllegalArgument")
         }
 
-        let x = CGFloat(truncating: point[1] as! NSNumber); let y = CGFloat(truncating: point[2] as! NSNumber)
+        let x = CGFloat(truncating: point[1] as! NSNumber)
+        let y = CGFloat(truncating: point[2] as! NSNumber)
         points.append(CGPoint(x: x, y: y))
       }
     }
@@ -692,39 +674,70 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   }
 
   fileprivate func addShapeWithFill(for path: CGPath, with fill: Bool, maskLayer: CAShapeLayer? = nil) {
-    let shapeLayer = CAShapeLayer()
-    shapeLayer.mask = maskLayer
-
-    if fill {
-      shapeLayer.fillColor = argbToColor(_paintColor).cgColor
-    } else {
-      shapeLayer.fillColor = nil
+    drawOnBitmap { context in
+      context.addPath(path)
+      if fill {
+        context.setFillColor(argbToColor(_paintColor).cgColor)
+        context.fillPath()
+      } else {
+        context.setStrokeColor(argbToColor(_paintColor).cgColor)
+        context.setLineWidth(_lineWidth)
+        context.strokePath()
+      }
     }
-
-    shapeLayer.lineWidth = _lineWidth
-    shapeLayer.strokeColor = argbToColor(_paintColor).cgColor
-    shapeLayer.path = path
-    _view.layer.addSublayer(shapeLayer)
-    _shapeLayers.append(shapeLayer)
   }
 
   @objc open func DrawText(_ text: String, _ x: Float, _ y: Float) {
-    if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
-      let textLayer = makeTextLayer(text: text, x: x, y: y)
-      _view.layer.addSublayer(textLayer)
-      _textLayers.append(textLayer)
+    drawOnBitmap { context in
+      let textAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.systemFont(ofSize: CGFloat(_fontSize)),
+        .foregroundColor: argbToColor(_paintColor)
+      ]
+      let nsText = text as NSString
+      let textSize = nsText.size(withAttributes: textAttributes)
+      var drawX = CGFloat(x)
+      var drawY = CGFloat(y)
+
+      switch _textAlignment {
+      case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right):
+        drawX -= textSize.width
+      case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left):
+        break
+      default:
+        drawX -= textSize.width / 2
+      }
+
+      nsText.draw(at: CGPoint(x: drawX, y: drawY), withAttributes: textAttributes)
     }
   }
 
   @objc open func DrawTextAtAngle(_ text: String, _ x: Float, _ y: Float, _ angle: Float) {
-    if isInCanvasBoundaries(CGFloat(x), CGFloat(y)) {
-      let textLayer = makeTextLayer(text: text, x: x, y: y)
+    drawOnBitmap { context in
+      let textAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.systemFont(ofSize: CGFloat(_fontSize)),
+        .foregroundColor: argbToColor(_paintColor)
+      ]
+      let nsText = text as NSString
+      let textSize = nsText.size(withAttributes: textAttributes)
 
-      // this is counterclockwise, same as Android.
-      let radians = CGFloat(angle * Float.pi / 180)
-      textLayer.transform = CATransform3DMakeRotation(-radians, 0, 0, 1.0)
-      _view.layer.addSublayer(textLayer)
-      _textLayers.append(textLayer)
+      context.saveGState()
+      context.translateBy(x: CGFloat(x), y: CGFloat(y))
+      context.rotate(by: CGFloat(-angle * Float.pi / 180))
+
+      var drawX: CGFloat = 0
+      var drawY: CGFloat = 0
+
+      switch _textAlignment {
+      case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.right):
+        drawX -= textSize.width
+      case convertFromCATextLayerAlignmentMode(CATextLayerAlignmentMode.left):
+        break
+      default:
+        drawX -= textSize.width / 2
+      }
+
+      nsText.draw(at: CGPoint(x: drawX, y: drawY), withAttributes: textAttributes)
+      context.restoreGState()
     }
   }
 
@@ -819,14 +832,14 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       return
     }
 
-    let point = UIBezierPath(arcCenter: CGPoint(x: CGFloat(x), y: CGFloat(y)), radius: 0.5, startAngle: 0, endAngle:CGFloat(Float.pi * 2), clockwise: true)
-
-    let shapeLayer = CAShapeLayer()
-    shapeLayer.fillColor = argbToColor(color).cgColor
-    shapeLayer.lineWidth = _lineWidth
-    shapeLayer.path = point.cgPath
-    _view.layer.addSublayer(shapeLayer)
-    _shapeLayers.append(shapeLayer)
+    let previousColor = _paintColor
+    _paintColor = color
+    drawOnBitmap { context in
+      context.addArc(center: CGPoint(x: CGFloat(x), y: CGFloat(y)), radius: 0.5, startAngle: 0, endAngle: CGFloat(Float.pi * 2), clockwise: true)
+      context.setFillColor(argbToColor(color).cgColor)
+      context.fillPath()
+    }
+    _paintColor = previousColor
   }
 
   @objc open func Save() -> String {
@@ -1152,19 +1165,11 @@ open class CanvasView: UIView {
     super.layoutSubviews()
     if let canvas = _canvas, _oldSize != .zero {
       if _oldSize != frame.size {
-        let xScale = frame.width / _oldSize.width
-        let yScale = frame.height / _oldSize.height
-
-        for s in canvas._shapeLayers {
-          canvas.transformLayerHeight(s, yScale)
-          canvas.transformLayerWidth(s, xScale)
-        }
-
-        for s in canvas._textLayers {
-          s.position.x *= xScale
-          s.position.y *= yScale
-          canvas.transformLayerHeight(s, yScale)
-          canvas.transformLayerWidth(s, xScale)
+        if let currentImage = canvas._drawingImageView.image {
+          UIGraphicsBeginImageContextWithOptions(frame.size, false, 0.0)
+          currentImage.draw(in: CGRect(origin: .zero, size: frame.size))
+          canvas._drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
+          UIGraphicsEndImageContext()
         }
       }
     }
