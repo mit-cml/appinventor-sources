@@ -760,6 +760,10 @@
 	"Blockly.Msg.LANG_MATRICES_SET_CELL_TOOLTIP": "Sets the value for a cell of the matrix",
 	"Blockly.Msg.LANG_MATRICES_SET_CELL_HELPURL": "/reference/blocks/matrices.html#setcell",
 
+	"Blockly.Msg.LANG_MATRICES_GET_DIMS": "get matrix dimensions",
+	"Blockly.Msg.LANG_MATRICES_GET_DIMS_TOOLTIP": "Returns a list with the dimensions of the matrix",
+	"Blockly.Msg.LANG_MATRICES_GET_DIMS_HELPURL": "/reference/blocks/matrices.html#getdims",
+
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_INVERSE": "inverse",
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_TOOLTIP_INVERSE": "Returns the inverse of the matrix",
 	"Blockly.Msg.LANG_MATRICES_OPERATIONS_HELPURL_INVERSE": "/reference/blocks/matrices.html#inverse",
@@ -785,6 +789,10 @@
 	"Blockly.Msg.LANG_MATRICES_SUBTRACT_HELPURL": "/reference/blocks/matrices.html#matrixsubtract",
 	"Blockly.Msg.LANG_MATRICES_MULTIPLY_HELPURL": "/reference/blocks/matrices.html#matrixmultiply",
 	"Blockly.Msg.LANG_MATRICES_POWER_HELPURL": "/reference/blocks/matrices.html#matrixpower",
+
+	"Blockly.Msg.LANG_MATRICES_IS_MATRIX": "is a matrix?",
+	"Blockly.Msg.LANG_MATRICES_IS_MATRIX_TOOLTIP": "Tests if something is a matrix.",
+	"Blockly.Msg.LANG_MATRICES_IS_MATRIX_HELPURL": "/reference/blocks/matrices.html#is-a-matrix",
 
 	"Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT": "initialize global",
 	"Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME": "name",

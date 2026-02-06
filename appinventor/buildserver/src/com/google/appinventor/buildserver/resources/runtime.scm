@@ -3294,6 +3294,7 @@ Matrix implementation.
 - get matrix cell               (yail-matrix-get-cell matrix . idxs)
 - set matrix cell               (yail-matrix-set-cell! matrix value . idxs)
 - is YailMatrix?                (yail-matrix? x)
+- get matrix dimensions         (yail-matrix-get-dims matrix)
 - get matrix inverse            (yail-matrix-inverse matrix)
 - get matrix transpose          (yail-matrix-transpose matrix)
 - get matrix rotate left        (yail-matrix-rotate-left matrix)
@@ -3327,6 +3328,9 @@ Matrix implementation.
 
 (define (yail-matrix? x)
   (instance? x YailMatrix))
+
+(define (yail-matrix-get-dims matrix)
+  (kawa-list->yail-list (*:getDimensions (as YailMatrix matrix))))
 
 (define (yail-matrix-inverse matrix)
   (YailMatrix:inverse (as YailMatrix matrix)))

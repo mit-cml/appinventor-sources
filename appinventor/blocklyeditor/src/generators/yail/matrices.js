@@ -118,6 +118,16 @@ AI.Yail.forBlock['matrices_set_cell'] = function(block, generator) {
   return code; 
 };
 
+AI.Yail.forBlock['matrices_get_dims'] = function(block, generator) {
+  var argument = generator.valueToCode(block, 'MATRIX', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-matrix-get-dims" + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
+  code += argument + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION + "matrix" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_DOUBLE_QUOTE + "get matrix dimensions" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, AI.Yail.ORDER_ATOMIC];
+};
+
 AI.Yail.forBlock['matrices_operations'] = function(block, generator) {
   var mode = block.getFieldValue('OP');
   var tuple = AI.Yail.forBlock['matrices_operations'].OPERATORS[mode];
@@ -242,4 +252,14 @@ AI.Yail.forBlock['matrices_arithmetic'].OPERATORS = {
   MINUS: ['yail-matrix-subtract', AI.Yail.ORDER_NONE],
   MULTIPLY: ['yail-matrix-multiply', AI.Yail.ORDER_NONE],
   POWER: ['yail-matrix-power', AI.Yail.ORDER_NONE]
+};
+
+AI.Yail.forBlock['matrices_is_matrix'] = function(block, generator) {
+  var argument = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-matrix?" + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
+  code += argument + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION + "any" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_DOUBLE_QUOTE + "is matrix?" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, AI.Yail.ORDER_ATOMIC];
 };

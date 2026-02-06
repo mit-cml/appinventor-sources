@@ -185,6 +185,14 @@ public class YailMatrix {
     return arrayToLList(colArr);
   }
 
+  public List<Integer> getDimensions() {
+    List<Integer> dimList = new ArrayList<>();
+    for (int d : dims) {
+      dimList.add(d);
+    }
+    return dimList;
+  }
+
   // Convert a Java double[] array to LList
   private LList arrayToLList(double[] array) {
     Object[] newArray = new Object[array.length];

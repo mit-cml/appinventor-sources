@@ -54,9 +54,15 @@ Returns the row of the given row index in the given matrix.
 
 Returns the column of the given column index in the given matrix.
 
+### get matrix dimensions {#getdims}
+
+![](images/matrices/getdims.png)
+
+Returns the dimensions of the given matrix as a list. The length of the list is equal to the number of dimensions in the matrix, and each element in the list is equal to the size of that dimension.
+
 ### matrix + {#matrixadd}
 
-![](images/matrices/matrixadd.png)
+![](images/matrices/matricesadd.png)
 
 Returns the result of adding two matrices together. The two matrices must have equal dimensions.
 
@@ -69,9 +75,9 @@ Returns the result of subtracting one matrix from another matrix. The two matric
 
 ### matrix * {#matrixmultiply}
 
-![](images/matrices/matrixmultiply.png)
+![](images/matrices/matricesmultiply.png)
 
-Returns the result of multipling either two matrices together or a matrix with a scalar. In the case of two matrices, they must have matching inner dimensions (e.g. the column of the first matrix must equal the row of the second matrix).
+Returns the result of multiplying either two matrices together or a matrix with a scalar. In the case of two matrices, they must have matching inner dimensions (e.g. the column of the first matrix must equal the row of the second matrix).
 
 ### matrix ^ {#matrixpower}
 
@@ -102,3 +108,9 @@ Returns the left rotation of the matrix (90 degrees counterclockwise).
 ![](images/matrices/rotateright.png)
 
 Returns the right rotation of the matrix (90 degrees clockwise).
+
+### is a matrix?  {#is-a-matrix}
+
+![](images/matrices/ismatrix.png)
+
+Returns true if the given input is a matrix, and false otherwise.

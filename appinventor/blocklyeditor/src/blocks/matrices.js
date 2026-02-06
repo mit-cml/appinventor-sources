@@ -290,6 +290,21 @@ Blockly.Blocks['matrices_get_column'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_GET_COLUMN}]
 };
 
+Blockly.Blocks['matrices_get_dims'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_GET_DIMS_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("list", AI.BlockUtils.OUTPUT));
+    this.appendValueInput('MATRIX')
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("matrix", AI.BlockUtils.INPUT))
+      .appendField(Blockly.Msg.LANG_MATRICES_GET_DIMS)
+      .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_DIMS_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_MATRICES_GET_DIMS }]
+}
+
 Blockly.Blocks['matrix_mutator_item_mat'] = {
   init: function () {
     this.setColour(Blockly.MATRIX_CATEGORY_HUE);
@@ -584,3 +599,17 @@ Blockly.Blocks['matrices_rotate_right'] = {
     });
   }
 };
+
+Blockly.Blocks['matrices_is_matrix'] = {
+  category: 'Matrices',
+  helpUrl: Blockly.Msg.LANG_MATRICES_IS_MATRIX_HELPURL,
+  init: function () {
+    this.setColour(Blockly.MATRIX_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
+    this.appendValueInput('VALUE')
+      .setCheck(null)
+      .appendField(Blockly.Msg.LANG_MATRICES_IS_MATRIX);
+    this.setTooltip(Blockly.Msg.LANG_MATRICES_IS_MATRIX_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_MATRICES_IS_MATRIX }]
+}
