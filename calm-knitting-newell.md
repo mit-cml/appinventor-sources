@@ -540,10 +540,15 @@ The `AIContextBuilder` dynamically includes/excludes tool definitions based on t
 **Placement rules (enforced by `AIOperationValidator` and `AIOperationExecutor`):**
 - `parent` is resolved to a `MockContainer` via `DesignerEditor.getComponents()`
 - Container acceptance checked via `MockContainer.willAcceptComponentType(type)`:
-  - `MockCanvas` only accepts `Ball` and `ImageSprite`
-  - `MockMap` only accepts `Marker`, `LineString`, `Polygon`, `Rectangle`, `Circle`, `FeatureCollection`
-  - `MockTableArrangement` checks for empty cells via `canPasteComponentOfType()`
-  - All other containers accept any standard component type
+  - The **base** `MockContainer.willAcceptComponentType()` uses inverted logic:
+    `return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);`
+    This means standard containers **reject** Canvas-specific types (Ball, ImageSprite) and
+    Map-specific types (Marker, LineString, etc.), and accept everything else.
+  - `MockCanvas` overrides: only accepts `Ball` and `ImageSprite`
+  - `MockMap` overrides: only accepts `Marker`, `LineString`, `Polygon`, `Rectangle`, `Circle`, `FeatureCollection`
+  - `MockTableArrangement` overrides: checks for empty cells via `canPasteComponentOfType()`
+  - The validator must call `willAcceptComponentType()` on the resolved `MockContainer`
+    instance — do NOT reimplement the logic; rely on the polymorphic override.
 - `insertAfter` is resolved to a sibling index, then `MockContainer.addVisibleComponent(component, index+1)` is used for positioning; if omitted, `addComponent(component)` appends at the end
 - **Non-visible components** (Clock, TinyDB, Notifier, ChatBot, etc.) ignore `parent` and `insertAfter` — they are always added to the Form root and displayed in the `nonVisibleComponentsPanel`
 - The LLM system prompt will document these placement rules so the AI generates valid placement specs
@@ -1824,11 +1829,15 @@ blocksEditor.deleteBlock("procedures_defnoreturn", null, "resetGame");
 
 #### 8a. Authentication (follows existing patterns)
 
-**Modify:**
-- `server/tokenauth/TokenAuthServiceImpl.java` - Add AI agent token method (mirrors `getChatBotToken()`)
-- `shared/rpc/tokenauth/TokenAuthService.java` - Add interface method
+The `AIAgentServiceImpl` extends `OdeRemoteServiceServlet`, so `OdeAuthFilter` runs on every
+request (enforced by the `<filter-mapping>` in `web.xml` — see Step 10a). The authenticated
+`userId` is always obtained server-side via `userInfoProvider.getUserId()` — never from client
+input.
 
-The `AIAgentServiceImpl` extends `OdeRemoteServiceServlet`, so `OdeAuthFilter` runs on every request. The authenticated `userId` is always obtained server-side via `userInfoProvider.getUserId()` — never from client input.
+**No token auth needed.** Unlike the ChatBot runtime component (which runs on the user's
+device and needs a signed token to call an external proxy), the AI agent operates entirely
+through GWT-RPC on the same origin. `OdeAuthFilter` provides session-based authentication
+on every request — no separate token mechanism is required.
 
 #### 8b. Project ownership validation (defense against projectId spoofing)
 
@@ -2590,7 +2599,10 @@ harmless — it's just unreachable.
 ```java
 @Unindexed
 static final class ConversationMessageData implements Serializable {
-    // Unique per message: "{conversationId}:{timestamp}"
+    // Unique per message: "{conversationId}:{sequence}"
+    // The sequence number is an atomically incrementing counter within a request,
+    // ensuring no collisions even when multiple messages are stored in the same
+    // millisecond (e.g., user message + assistant response stored back-to-back).
     @Id String id;
 
     // The conversation this message belongs to.
@@ -2598,10 +2610,13 @@ static final class ConversationMessageData implements Serializable {
     // Same UUID stored as the second field of the Memcache value.
     @Indexed String conversationId;
 
-    // Server-side System.currentTimeMillis() — sort key.
-    // Effectively unique within a conversation (millisecond precision; two messages
-    // in the same request are stored sequentially: user first, then assistant).
+    // Server-side System.currentTimeMillis() + sub-millisecond ordering via sequence.
+    // Used as the sort key when loading conversation history.
     long timestamp;
+
+    // Ordering tiebreaker within the same millisecond. Guarantees user message
+    // always comes before assistant response even if both share the same timestamp.
+    int sequence;
 
     String role;             // "user" or "assistant"
 
@@ -2627,12 +2642,21 @@ private String newConversationId() {
 **Storing a message** (called after each user message and assistant response):
 
 ```java
+/**
+ * Per-request sequence counter. Ensures unique IDs when multiple messages
+ * are stored within the same millisecond (user + assistant in one request).
+ * Reset to 0 at the start of each processRequest() call.
+ */
+private int messageSequence;
+
 private void storeMessage(String conversationId, String role, String text) {
     long now = System.currentTimeMillis();
+    int seq = messageSequence++;
     ConversationMessageData msg = new ConversationMessageData();
-    msg.id = conversationId + ":" + now;
+    msg.id = conversationId + ":" + now + ":" + seq;
     msg.conversationId = conversationId;
     msg.timestamp = now;
+    msg.sequence = seq;
     msg.role = role;
     msg.text = text;
     msg.expiresAt = now + (CONVERSATION_TTL_SECONDS * 1000L);
@@ -2650,6 +2674,7 @@ private List<ChatMessage> loadConversation(String conversationId) {
     List<ConversationMessageData> messages = datastore.query(ConversationMessageData.class)
         .filter("conversationId", conversationId)
         .order("timestamp")
+        .order("sequence")
         .list();
     // Filter expired (belt-and-suspenders — Memcache TTL is the primary expiry)
     return messages.stream()
@@ -2738,6 +2763,9 @@ via `storageIo.assertUserHasProject(userId, projectId)` before accessing any dat
 
 ```java
 public AIAgentResponse processRequest(AIAgentRequest request) {
+    // 0. Reset per-request state
+    messageSequence = 0;
+
     // 1. Auth check
     String userId = userInfoProvider.getUserId();
     long projectId = request.getProjectId();
@@ -2790,11 +2818,11 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
                          providerRef != null ? providerRef : "");
 
     // 6. Validate (§8g) — all-or-nothing with one retry
-    List<String> errors = validate(llmResponse, mode);
+    ValidatedResponse validated = validate(llmResponse, mode);
 
-    if (!errors.isEmpty()) {
+    if (!validated.errors.isEmpty()) {
         // 7. Retry: inject error feedback and re-call LLM once
-        String feedback = buildValidationErrorFeedback(errors);
+        String feedback = buildValidationErrorFeedback(validated.errors);
         LLMResponse retryResponse = llmProvider.chat(systemPrompt, feedback,
                                                       tools, providerRef, history);
         // Update providerRef from retry
@@ -2806,7 +2834,7 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
         }
 
         // Re-validate the retry response
-        errors = validate(retryResponse, mode);
+        validated = validate(retryResponse, mode);
         llmResponse = retryResponse;  // Use retry response for the final result
     }
 
@@ -2815,14 +2843,9 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     response.setAiMessage(llmResponse.getText());
     response.setNewConversation(isNewConversation);
 
-    if (errors.isEmpty()) {
-        // All valid — send full operation batch
-        ParseResult parsed = llmResponseParser.parseToolCalls(llmResponse.getToolCalls());
-        List<AIOperation> ops = parsed.getOperations();
-        ValidationResult modeResult = aiOperationValidator.validateForMode(ops, mode);
-        ops = modeResult.getAccepted();
-        ValidationResult semResult = aiOperationValidator.validateOperations(ops, componentDb);
-        ops = semResult.getAccepted();
+    if (validated.errors.isEmpty()) {
+        // All valid — use the already-validated operations (no re-parsing)
+        List<AIOperation> ops = validated.operations;
 
         // Advisor belt-and-suspenders: strip any surviving write ops
         if ("Advisor".equals(mode)) {
@@ -2833,7 +2856,7 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     } else {
         // Retry failed — send zero operations + errors
         response.setOperations(Collections.emptyList());
-        response.setErrors(errors);
+        response.setErrors(validated.errors);
     }
 
     // 9. Persist messages to Datastore (ALL providers — enables chat restore after reload)
@@ -2844,29 +2867,49 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
 }
 
 /**
- * Run both validation stages. Returns empty list if all operations are valid,
- * or a list of error descriptions if any fail.
+ * Result of running both validation stages. Contains the validated operations
+ * (ready to send to the client) AND any error descriptions. This avoids
+ * re-parsing the LLM response a second time when building the final response.
  */
-private List<String> validate(LLMResponse llmResponse, String mode) {
+private static class ValidatedResponse {
+    final List<AIOperation> operations;  // Empty if errors is non-empty
+    final List<String> errors;
+
+    ValidatedResponse(List<AIOperation> operations, List<String> errors) {
+        this.operations = operations;
+        this.errors = errors;
+    }
+}
+
+/**
+ * Run both validation stages. Returns the validated operations AND any errors.
+ * If errors is non-empty, operations is empty (all-or-nothing).
+ */
+private ValidatedResponse validate(LLMResponse llmResponse, String mode) {
     List<String> errors = new ArrayList<>();
 
     // Stage 1: Structural
     ParseResult parsed = llmResponseParser.parseToolCalls(llmResponse.getToolCalls());
     errors.addAll(parsed.getErrors());
 
-    // Stage 2: Mode enforcement + semantic
-    if (parsed.getErrors().isEmpty()) {
-        // Only run semantic checks if structural parsing fully succeeded
-        ValidationResult modeResult = aiOperationValidator.validateForMode(
-            parsed.getOperations(), mode);
-        errors.addAll(modeResult.getErrors());
-
-        ValidationResult semResult = aiOperationValidator.validateOperations(
-            modeResult.getAccepted(), componentDb);
-        errors.addAll(semResult.getErrors());
+    if (!parsed.getErrors().isEmpty()) {
+        return new ValidatedResponse(Collections.emptyList(), errors);
     }
 
-    return errors;
+    // Stage 2: Mode enforcement + semantic
+    ValidationResult modeResult = aiOperationValidator.validateForMode(
+        parsed.getOperations(), mode);
+    errors.addAll(modeResult.getErrors());
+
+    ValidationResult semResult = aiOperationValidator.validateOperations(
+        modeResult.getAccepted(), componentDb);
+    errors.addAll(semResult.getErrors());
+
+    if (!errors.isEmpty()) {
+        return new ValidatedResponse(Collections.emptyList(), errors);
+    }
+
+    return new ValidatedResponse(semResult.getAccepted(), Collections.emptyList());
 }
 ```
 
@@ -2952,7 +2995,7 @@ String aiConversationRestored();
 | `components/.../common/AIAgentMode.java` | Enum: Off, Advisor, ScreenEditor, ProjectEditor |
 | `client/.../properties/YoungAndroidAIAgentModeChoicePropertyEditor.java` | Dropdown property editor |
 
-### Modified files (19 files):
+### Modified files (17 files):
 
 | File | Change |
 |------|--------|
@@ -2964,8 +3007,6 @@ String aiConversationRestored();
 | `client/editor/simple/components/MockForm.java` | Add `AIAgentMode` dropdown handling, visibility on Screen1 only |
 | `client/.../components/utils/PropertiesUtil.java` | Register `YoungAndroidAIAgentModeChoicePropertyEditor` |
 | `components/.../common/PropertyTypeConstants.java` | Add `PROPERTY_TYPE_AI_AGENT_MODE` constant |
-| `server/tokenauth/TokenAuthServiceImpl.java` | Add AI token generation method |
-| `shared/rpc/tokenauth/TokenAuthService.java` | Add AI token interface method (§8a) |
 | `appengine/war/WEB-INF/appengine-web.xml` | Add AI configuration system properties |
 | `appengine/war/WEB-INF/web.xml` | Add `aiAgentService` servlet + mapping + auth filter (see Step 10a) |
 | `appengine/src/.../YaClient.gwt.xml` | Add `<servlet>` and `<source path>` for AI agent RPC (see Step 10b) |
