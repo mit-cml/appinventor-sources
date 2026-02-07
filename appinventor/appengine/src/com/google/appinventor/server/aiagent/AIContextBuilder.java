@@ -393,7 +393,8 @@ public class AIContextBuilder {
 
     // Collect non-default, non-internal properties
     List<String> propPairs = new ArrayList<>();
-    for (String key : properties.keySet()) {
+    for (Object keyObj : properties.keySet()) {
+      String key = (String) keyObj;
       if (key.startsWith("$") || "Uuid".equals(key)) {
         continue;
       }

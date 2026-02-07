@@ -63,6 +63,34 @@ public class PseudocodeParser {
     COLOR_NAMES = Collections.unmodifiableMap(c);
   }
 
+  /** Maps math_single OP field values to pseudocode keywords (op → keyword). */
+  private static final Map<String, String> MATH_SINGLE_OPS;
+
+  /** Maps math_trig OP field values to pseudocode keywords (op → keyword). */
+  private static final Map<String, String> TRIG_OPS;
+
+  static {
+    Map<String, String> ms = new HashMap<>();
+    ms.put("NEG", "negate");
+    ms.put("ABS", "abs");
+    ms.put("SQRT", "sqrt");
+    ms.put("LOG", "log");
+    ms.put("EXP", "e^");
+    ms.put("ROUND", "round");
+    ms.put("FLOOR", "floor");
+    ms.put("CEILING", "ceiling");
+    MATH_SINGLE_OPS = Collections.unmodifiableMap(ms);
+
+    Map<String, String> t = new HashMap<>();
+    t.put("SIN", "sin");
+    t.put("COS", "cos");
+    t.put("TAN", "tan");
+    t.put("ASIN", "asin");
+    t.put("ACOS", "acos");
+    t.put("ATAN", "atan");
+    TRIG_OPS = Collections.unmodifiableMap(t);
+  }
+
   // Prefix keywords used to disambiguate unary expression operators
   private static final Set<String> PREFIX_EXPR_KEYWORDS = new HashSet<>(Arrays.asList(
       "negate", "abs", "sqrt", "log", "round", "floor", "ceiling",

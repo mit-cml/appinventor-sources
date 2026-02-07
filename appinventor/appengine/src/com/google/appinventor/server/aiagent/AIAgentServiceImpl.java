@@ -18,6 +18,7 @@ import com.google.appinventor.server.aiagent.llm.ReadOnlyToolResolver;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData.ConversationMessageData;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
@@ -323,18 +324,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
     // Delete stored messages from Datastore
     Objectify ofy = ObjectifyService.begin();
-    List<com.google.appinventor.server.storage.StoredData.ConversationMessageData> messages =
-        ofy.query(com.google.appinventor.server.storage.StoredData.ConversationMessageData.class)
+    List<ConversationMessageData> messages =
+        ofy.query(ConversationMessageData.class)
             .filter("userId", userId)
             .filter("projectId", projectId)
             .list();
-    ofy.delete().entities(messages);
+    for (ConversationMessageData msg : messages) {
+      ofy.delete(msg);
+    }
   }
 
   private void saveMessage(String userId, long projectId, String role, String text) {
     Objectify ofy = ObjectifyService.begin();
-    com.google.appinventor.server.storage.StoredData.ConversationMessageData msg =
-        new com.google.appinventor.server.storage.StoredData.ConversationMessageData();
+    ConversationMessageData msg =
+        new ConversationMessageData();
     msg.userId = userId;
     msg.projectId = projectId;
     msg.role = role;
@@ -345,15 +348,15 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
   private List<ChatMessage> loadHistory(String userId, long projectId) {
     Objectify ofy = ObjectifyService.begin();
-    List<com.google.appinventor.server.storage.StoredData.ConversationMessageData> messages =
-        ofy.query(com.google.appinventor.server.storage.StoredData.ConversationMessageData.class)
+    List<ConversationMessageData> messages =
+        ofy.query(ConversationMessageData.class)
             .filter("userId", userId)
             .filter("projectId", projectId)
             .order("timestamp")
             .list();
 
     List<ChatMessage> history = new ArrayList<>();
-    for (com.google.appinventor.server.storage.StoredData.ConversationMessageData msg : messages) {
+    for (ConversationMessageData msg : messages) {
       history.add(new ChatMessage(msg.role, msg.text));
     }
     return history;
