@@ -105,6 +105,7 @@ public final class Project {
   private static final String USESLOCATIONTAG = "useslocation";
   private static final String ANAMETAG = "aname";
   private static final String ANDROID_MIN_SDK_TAG = "androidminsdk";
+  private static final String ANDROID_MIN_SDK_DOT_TAG = "android.minSdk";
   private static final String ACTIONBAR_TAG = "actionbar";
   private static final String COLOR_THEMETAG = "theme";
   private static final String COLOR_PRIMARYTAG = "color.primary";
@@ -306,8 +307,32 @@ public final class Project {
    * @return  the minimum Android sdk
    */
   public String getMinSdk() {
-    return properties.getProperty(ANDROID_MIN_SDK_TAG, DEFAULT_MIN_SDK);
+    // Prefer the new property name if present
+    String minSdk = properties.getProperty(ANDROID_MIN_SDK_DOT_TAG);
+
+    // Fall back to legacy property name
+    if (minSdk == null) {
+      minSdk = properties.getProperty(ANDROID_MIN_SDK_TAG);
+    }
+
+    // Final fallback to default
+    if (minSdk == null) {
+      LOG.info("Using default App Inventor minSdkVersion = " + DEFAULT_MIN_SDK);
+      return DEFAULT_MIN_SDK;
+    }
+
+    // Validate value
+    try {
+      int parsed = Integer.parseInt(minSdk.trim());
+      LOG.info("Using project-defined minSdkVersion = " + parsed);
+      return String.valueOf(parsed);
+    } catch (NumberFormatException e) {
+      LOG.warning(
+          "Invalid minSdkVersion '" + minSdk + "', falling back to default = " + DEFAULT_MIN_SDK);
+      return DEFAULT_MIN_SDK;
+    }
   }
+
 
   /**
    * Returns whether the ActionBar should be enabled in the project.
