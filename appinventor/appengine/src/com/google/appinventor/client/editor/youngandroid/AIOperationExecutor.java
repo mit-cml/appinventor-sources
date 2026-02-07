@@ -875,13 +875,18 @@ public class AIOperationExecutor {
 
     // Build a minimal JSON properties object in the format expected by
     // DesignerEditor.createMockComponent():
-    //   { "$Type": "Button", "$Name": "Button1", "$Version": "7", ... }
-    // We use the App Inventor shared JSON types (ClientJsonParser / ClientJsonString)
-    // because that is what DesignerEditor.createMockComponent expects.
+    //   { "$Type": "Button", "$Version": "7", ... }
+    // We intentionally omit $Name here. createMockComponent auto-generates a
+    // name (e.g., "Button1") and fires fireComponentAdded, which registers
+    // that auto-name in Blockly's componentDb_. We then call rename() below
+    // to set the desired name, which fires fireComponentRenamed — the same
+    // path as a manual user renaming via the properties panel. This avoids a
+    // race where Blockly registers the auto-name but never learns about the
+    // rename (because changeProperty("$Name", ...) inside createMockComponent
+    // does not fire fireComponentRenamed).
     SimpleComponentDatabase db = formEditor.getComponentDatabase();
     StringBuilder sb = new StringBuilder();
     sb.append("{\"$Type\":\"").append(type).append("\",");
-    sb.append("\"$Name\":\"").append(name).append("\",");
     sb.append("\"$Version\":\"").append(db.getComponentVersion(type)).append("\"");
 
     // Append any initial property values from the payload.
@@ -907,7 +912,16 @@ public class AIOperationExecutor {
     ClientJsonParser sharedParser = new ClientJsonParser();
     com.google.appinventor.shared.properties.json.JSONObject propertiesObject =
         sharedParser.parse(sb.toString()).asObject();
-    formEditor.addMockComponent(propertiesObject, container);
+    MockComponent created = formEditor.addMockComponent(propertiesObject, container);
+
+    // Now rename the component to the AI-specified name. The component was
+    // created with an auto-generated name (e.g., "Button1"). rename() fires
+    // fireComponentRenamed, which notifies BlocksEditor.onComponentRenamed()
+    // to update Blockly's componentDb_ — ensuring blocks that reference this
+    // name will pass validation.
+    if (created != null && !name.equals(created.getName())) {
+      created.rename(name);
+    }
   }
 
   private void executeSetProperty(JSONObject json) {

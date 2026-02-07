@@ -206,7 +206,8 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
    * for use by {@link AIOperationExecutor}.
    *
    * @param propertiesObject JSON object describing the component (must include
-   *     $Type, $Name, and optionally property values)
+   *     $Type and $Version; $Name is optional — if omitted, an auto-generated
+   *     name is assigned and the caller should rename afterward)
    * @param parent the container to add the component to
    * @return the newly created MockComponent
    */
