@@ -1,0 +1,207 @@
+[
+  {
+    "user": "Add a red button that says Hello",
+    "operations": [
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Button",
+          "name": "Button1",
+          "properties": {
+            "Text": "Hello",
+            "BackgroundColor": "&HFFFF0000"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "user": "Create a counter app with a label showing the count and a button to increment it",
+    "operations": [
+      {
+        "type": "SET_VARIABLE",
+        "payload": {
+          "name": "count",
+          "initial_value": "0"
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Label",
+          "name": "CounterLabel",
+          "properties": {
+            "Text": "0",
+            "FontSize": "24",
+            "TextAlignment": "1",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Button",
+          "name": "IncrementButton",
+          "properties": {
+            "Text": "Add 1",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "type": "SET_EVENT_HANDLER",
+        "payload": {
+          "component_name": "IncrementButton",
+          "event_name": "Click",
+          "body": "set global count to (global count + 1)\nset CounterLabel.Text to global count"
+        }
+      }
+    ]
+  },
+  {
+    "user": "Make a login screen with username, password, and a submit button that checks if the username is 'admin' and password is '1234'",
+    "operations": [
+      {
+        "type": "SET_PROPERTY",
+        "payload": {
+          "component_name": "Screen1",
+          "property_name": "Title",
+          "value": "Login"
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "VerticalArrangement",
+          "name": "LoginLayout",
+          "properties": {
+            "AlignHorizontal": "3",
+            "AlignVertical": "2",
+            "Width": "-2",
+            "Height": "-2"
+          }
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Label",
+          "name": "TitleLabel",
+          "container": "LoginLayout",
+          "properties": {
+            "Text": "Welcome",
+            "FontSize": "28",
+            "FontBold": "True",
+            "TextAlignment": "1",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "TextBox",
+          "name": "UsernameBox",
+          "container": "LoginLayout",
+          "properties": {
+            "Hint": "Enter username",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "PasswordTextBox",
+          "name": "PasswordBox",
+          "container": "LoginLayout",
+          "properties": {
+            "Hint": "Enter password",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Button",
+          "name": "LoginButton",
+          "container": "LoginLayout",
+          "properties": {
+            "Text": "Submit",
+            "Width": "-2",
+            "BackgroundColor": "&HFF2196F3",
+            "TextColor": "&HFFFFFFFF"
+          }
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Notifier",
+          "name": "LoginNotifier"
+        }
+      },
+      {
+        "type": "SET_EVENT_HANDLER",
+        "payload": {
+          "component_name": "LoginButton",
+          "event_name": "Click",
+          "body": "if (UsernameBox.Text = \"admin\" and PasswordBox.Text = \"1234\") then\n  call LoginNotifier.ShowAlert(\"Login successful!\")\nelse\n  call LoginNotifier.ShowAlert(\"Invalid username or password.\")"
+        }
+      }
+    ]
+  },
+  {
+    "user": "Add a procedure that calculates the average of a list of numbers and a button that shows the result",
+    "operations": [
+      {
+        "type": "SET_PROCEDURE",
+        "payload": {
+          "name": "calculateAverage",
+          "parameters": ["numbers"],
+          "returns": true,
+          "body": "initialize local total to 0\n  for each item in numbers\n    set local total to (local total + item)\nreturn (local total / length of list numbers)",
+          "return_value": "(local total / length of list numbers)"
+        }
+      },
+      {
+        "type": "SET_VARIABLE",
+        "payload": {
+          "name": "scores",
+          "initial_value": "list(85, 90, 78, 92, 88)"
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Label",
+          "name": "ResultLabel",
+          "properties": {
+            "Text": "Average: --",
+            "FontSize": "18"
+          }
+        }
+      },
+      {
+        "type": "ADD_COMPONENT",
+        "payload": {
+          "component_type": "Button",
+          "name": "CalcButton",
+          "properties": {
+            "Text": "Calculate Average"
+          }
+        }
+      },
+      {
+        "type": "SET_EVENT_HANDLER",
+        "payload": {
+          "component_name": "CalcButton",
+          "event_name": "Click",
+          "body": "set ResultLabel.Text to join(\"Average: \", call calculateAverage(global scores))"
+        }
+      }
+    ]
+  }
+]
