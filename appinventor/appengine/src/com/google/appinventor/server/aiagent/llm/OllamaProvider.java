@@ -1,0 +1,351 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.aiagent.llm;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * LLM provider implementation for the Ollama local inference server.
+ *
+ * <p>This is a stateless provider: the full conversation history must be
+ * passed on each call. It uses the {@code /api/chat} endpoint with tool
+ * calling and implements an internal tool-use loop for read-only tools
+ * (up to {@value #MAX_TOOL_ITERATIONS} iterations).
+ *
+ * <p>The base URL is configurable via the {@code ai.agent.base.url} system
+ * property (defaults to {@code http://localhost:11434}). An optional API
+ * key can be provided for Ollama instances behind an authenticating proxy.
+ */
+public class OllamaProvider implements LLMProvider {
+
+  private static final Logger LOG = Logger.getLogger(OllamaProvider.class.getName());
+
+  private static final String CHAT_PATH = "/api/chat";
+  private static final int MAX_TOOL_ITERATIONS = 5;
+  private static final int CONNECT_TIMEOUT_MS = 30000;
+  private static final int READ_TIMEOUT_MS = 180000; // Ollama can be slow on CPU
+
+  private final String baseUrl;
+  private final String model;
+  private final String apiKey;
+
+  /**
+   * Creates a new Ollama provider.
+   *
+   * @param baseUrl the base URL of the Ollama server (e.g. "http://localhost:11434")
+   * @param model   the model name (e.g. "llama3.1")
+   * @param apiKey  optional API key for authenticated proxies (may be null or empty)
+   */
+  OllamaProvider(String baseUrl, String model, String apiKey) {
+    // Strip trailing slash
+    this.baseUrl = baseUrl != null && baseUrl.endsWith("/")
+        ? baseUrl.substring(0, baseUrl.length() - 1)
+        : baseUrl;
+    this.model = model;
+    this.apiKey = apiKey;
+  }
+
+  @Override
+  public boolean isStateless() {
+    return true;
+  }
+
+  @Override
+  public LLMResponse chat(String systemPrompt, String userMessage, List<LLMTool> tools,
+      String providerRef, List<ChatMessage> history, ReadOnlyToolResolver resolver)
+      throws LLMProviderException {
+
+    // Build the messages array
+    JSONArray messages = buildMessages(systemPrompt, history, userMessage);
+    JSONArray toolDefs = buildToolDefinitions(tools);
+
+    // Internal tool-use loop
+    for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
+      JSONObject requestBody = new JSONObject();
+      requestBody.put("model", model);
+      requestBody.put("messages", messages);
+      requestBody.put("stream", false);
+      if (toolDefs.length() > 0) {
+        requestBody.put("tools", toolDefs);
+      }
+
+      JSONObject responseJson = callApi(requestBody);
+
+      // Parse the response
+      JSONObject message = responseJson.optJSONObject("message");
+      if (message == null) {
+        return new LLMResponse("", new ArrayList<RawToolCall>(), null);
+      }
+
+      String textContent = message.optString("content", "");
+      JSONArray toolCalls = message.optJSONArray("tool_calls");
+
+      // If no tool calls, return the final response
+      if (toolCalls == null || toolCalls.length() == 0) {
+        return new LLMResponse(
+            textContent != null ? textContent : "",
+            new ArrayList<RawToolCall>(),
+            null);
+      }
+
+      // Classify tool calls into read-only and operation tools
+      List<ToolCallInfo> readOnlyCalls = new ArrayList<>();
+      List<ToolCallInfo> operationCalls = new ArrayList<>();
+
+      for (int i = 0; i < toolCalls.length(); i++) {
+        JSONObject tc = toolCalls.getJSONObject(i);
+        JSONObject function = tc.getJSONObject("function");
+        String name = function.getString("name");
+        JSONObject args = function.optJSONObject("arguments");
+        String argsJson = args != null ? args.toString() : "{}";
+
+        ToolCallInfo info = new ToolCallInfo(name, argsJson);
+        if (resolver != null && resolver.isReadOnly(name)) {
+          readOnlyCalls.add(info);
+        } else {
+          operationCalls.add(info);
+        }
+      }
+
+      // If no read-only tools, return all as operation tool calls
+      if (readOnlyCalls.isEmpty()) {
+        List<RawToolCall> rawCalls = new ArrayList<>();
+        for (ToolCallInfo info : operationCalls) {
+          rawCalls.add(new RawToolCall(info.name, info.argsJson));
+        }
+        return new LLMResponse(
+            textContent != null ? textContent : "",
+            rawCalls,
+            null);
+      }
+
+      // Add the assistant message with tool_calls to messages
+      messages.put(message);
+
+      // Resolve read-only tools and add tool results
+      for (ToolCallInfo info : readOnlyCalls) {
+        String result;
+        try {
+          result = resolver.resolve(info.name, info.argsJson);
+        } catch (ReadOnlyToolException e) {
+          result = "Error: " + e.getMessage();
+        }
+        messages.put(new JSONObject()
+            .put("role", "tool")
+            .put("content", result));
+      }
+
+      // For operation tools in a mixed response, send a placeholder
+      for (ToolCallInfo info : operationCalls) {
+        messages.put(new JSONObject()
+            .put("role", "tool")
+            .put("content", "This operation tool call has been queued for execution. "
+                + "Please continue with any remaining read-only lookups you need."));
+      }
+
+      LOG.info("Ollama tool-use loop iteration " + (iteration + 1)
+          + ": resolved " + readOnlyCalls.size() + " read-only tools, "
+          + operationCalls.size() + " operation tools pending");
+    }
+
+    // Safety limit reached
+    throw new LLMProviderException(
+        "Ollama tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
+        "The AI took too many steps to process your request. Please try again.");
+  }
+
+  /**
+   * Builds the messages array from system prompt, conversation history,
+   * and the current user message.
+   */
+  private JSONArray buildMessages(String systemPrompt, List<ChatMessage> history,
+      String userMessage) {
+    JSONArray messages = new JSONArray();
+
+    // System message first
+    if (systemPrompt != null && !systemPrompt.isEmpty()) {
+      messages.put(new JSONObject()
+          .put("role", "system")
+          .put("content", systemPrompt));
+    }
+
+    // Conversation history
+    if (history != null) {
+      for (ChatMessage msg : history) {
+        messages.put(new JSONObject()
+            .put("role", msg.getRole())
+            .put("content", msg.getText()));
+      }
+    }
+
+    // Current user message
+    messages.put(new JSONObject()
+        .put("role", "user")
+        .put("content", userMessage));
+
+    return messages;
+  }
+
+  /**
+   * Translates generic {@link LLMTool} definitions into the Ollama
+   * tool format.
+   */
+  private JSONArray buildToolDefinitions(List<LLMTool> tools) {
+    JSONArray toolDefs = new JSONArray();
+    if (tools == null) {
+      return toolDefs;
+    }
+    for (LLMTool tool : tools) {
+      JSONObject parameters;
+      try {
+        parameters = new JSONObject(tool.getParameterSchema());
+      } catch (JSONException e) {
+        LOG.warning("Invalid parameter schema for tool " + tool.getName()
+            + ": " + e.getMessage());
+        parameters = new JSONObject()
+            .put("type", "object")
+            .put("properties", new JSONObject());
+      }
+
+      JSONObject functionDef = new JSONObject()
+          .put("name", tool.getName())
+          .put("description", tool.getDescription())
+          .put("parameters", parameters);
+
+      toolDefs.put(new JSONObject()
+          .put("type", "function")
+          .put("function", functionDef));
+    }
+    return toolDefs;
+  }
+
+  /**
+   * Makes an HTTP POST to the Ollama chat API.
+   */
+  private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
+    HttpURLConnection conn = null;
+    try {
+      URL url = new URL(baseUrl + CHAT_PATH);
+      conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("POST");
+      conn.setDoOutput(true);
+      conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
+      conn.setReadTimeout(READ_TIMEOUT_MS);
+
+      conn.setRequestProperty("Content-Type", "application/json");
+
+      // Optional API key for authenticated proxies
+      if (apiKey != null && !apiKey.isEmpty()) {
+        conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+      }
+
+      byte[] body = requestBody.toString().getBytes(StandardCharsets.UTF_8);
+      conn.setRequestProperty("Content-Length", String.valueOf(body.length));
+
+      try (OutputStream os = conn.getOutputStream()) {
+        os.write(body);
+        os.flush();
+      }
+
+      int statusCode = conn.getResponseCode();
+      String responseText = readResponse(conn, statusCode);
+
+      if (statusCode < 200 || statusCode >= 300) {
+        LOG.warning("Ollama API error (HTTP " + statusCode + "): " + responseText);
+        String userMsg = mapHttpErrorToUserMessage(statusCode);
+        throw new LLMProviderException(
+            "Ollama API returned HTTP " + statusCode + ": " + responseText,
+            userMsg);
+      }
+
+      return new JSONObject(responseText);
+
+    } catch (IOException e) {
+      LOG.log(Level.WARNING, "Ollama API connection error", e);
+      throw new LLMProviderException(
+          "Failed to connect to Ollama at " + baseUrl + ": " + e.getMessage(),
+          "Could not reach the local AI service. "
+              + "Please verify Ollama is running and accessible.",
+          e);
+    } catch (JSONException e) {
+      LOG.log(Level.WARNING, "Failed to parse Ollama API response", e);
+      throw new LLMProviderException(
+          "Invalid JSON response from Ollama API: " + e.getMessage(),
+          "Received an unexpected response from the AI service.",
+          e);
+    } finally {
+      if (conn != null) {
+        conn.disconnect();
+      }
+    }
+  }
+
+  /**
+   * Reads the response body from an HTTP connection.
+   */
+  private String readResponse(HttpURLConnection conn, int statusCode) throws IOException {
+    BufferedReader reader;
+    if (statusCode >= 200 && statusCode < 300) {
+      reader = new BufferedReader(
+          new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+    } else {
+      reader = new BufferedReader(
+          new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
+    }
+    StringBuilder sb = new StringBuilder();
+    String line;
+    while ((line = reader.readLine()) != null) {
+      sb.append(line);
+    }
+    reader.close();
+    return sb.toString();
+  }
+
+  /**
+   * Maps HTTP status codes to user-friendly error messages.
+   */
+  private String mapHttpErrorToUserMessage(int statusCode) {
+    switch (statusCode) {
+      case 401:
+        return "The AI service rejected the API key. Please contact your administrator.";
+      case 404:
+        return "The requested model was not found. Please verify the model is installed.";
+      case 500:
+      case 502:
+      case 503:
+        return "The AI service is temporarily unavailable. Please try again later.";
+      default:
+        return "The AI service returned an error. Please try again.";
+    }
+  }
+
+  /**
+   * Internal representation of an Ollama tool call.
+   */
+  private static class ToolCallInfo {
+    final String name;
+    final String argsJson;
+
+    ToolCallInfo(String name, String argsJson) {
+      this.name = name;
+      this.argsJson = argsJson;
+    }
+  }
+}
