@@ -561,10 +561,46 @@ The `AIContextBuilder` dynamically includes/excludes tool definitions based on t
   public interface LLMProvider {
       LLMResponse chat(String systemPrompt, String userMessage,
                        List<LLMTool> tools, String providerRef,
-                       List<ChatMessage> history);
+                       List<ChatMessage> history,
+                       ReadOnlyToolResolver resolver);
       boolean isStateless();
   }
   ```
+- `server/aiagent/llm/ReadOnlyToolResolver.java` - Callback interface for resolving
+  read-only tools (lookup_component, lookup_screen) inside the provider's native
+  tool-use loop:
+  ```java
+  /**
+   * Resolves read-only tool calls (lookup_component, lookup_screen) during the
+   * provider's internal tool-use loop. The provider detects tool calls in the LLM
+   * response, checks if they are read-only via {@link #isReadOnly(String)}, resolves
+   * them via {@link #resolve(String, String)}, formats the result in the provider's
+   * native tool-result format, and re-calls the LLM — repeating until the LLM
+   * produces either operation tool calls or a text-only response.
+   *
+   * This design keeps each provider in control of its own wire format (Anthropic
+   * tool_use blocks, OpenAI function results, Gemini function responses, Ollama
+   * tool results) while centralizing resolution logic in AIAgentServiceImpl.
+   */
+  public interface ReadOnlyToolResolver {
+
+      /** Returns true if the given tool name is a read-only tool (not an operation). */
+      boolean isReadOnly(String toolName);
+
+      /**
+       * Resolves a read-only tool call and returns the result as a plain string.
+       * @param toolName  The tool name (e.g., "lookup_component", "lookup_screen")
+       * @param argsJson  The tool arguments as a JSON string
+       * @return The tool result text to inject back into the conversation
+       * @throws ReadOnlyToolException if the tool call is invalid (unknown screen, etc.)
+       */
+      String resolve(String toolName, String argsJson) throws ReadOnlyToolException;
+  }
+  ```
+- `server/aiagent/llm/ReadOnlyToolException.java` - Checked exception for invalid
+  read-only tool calls (e.g., non-existent screen name, unknown component type).
+  Contains a user-facing message that the provider injects as the tool result so
+  the LLM can self-correct.
 - `server/aiagent/llm/LLMProviderRegistry.java` - Factory that selects provider based on config
 - `server/aiagent/llm/AnthropicProvider.java` - Claude API (Messages API with tool_use). Stateless.
 - `server/aiagent/llm/OpenAIProvider.java` - OpenAI API (Chat Completions with function calling). Stateful (`previous_response_id`).
@@ -581,7 +617,34 @@ The `AIContextBuilder` dynamically includes/excludes tool definitions based on t
 - `server/aiagent/llm/ChatMessage.java` - Role + text pair for conversation history
 - `server/aiagent/llm/RawToolCall.java` - Unparsed tool call from provider (name, arguments JSON string)
 
-Each provider translates the common tool definitions into its own format (Anthropic tool_use, OpenAI functions, Gemini function declarations, Ollama tools). Raw tool calls from the provider are returned as `RawToolCall` objects in `LLMResponse`, then parsed and validated by `LLMResponseParser` (§8g Stage 1) into `AIOperation` objects.
+Each provider translates the common tool definitions into its own format (Anthropic tool_use, OpenAI functions, Gemini function declarations, Ollama tools). The provider's `chat()` method runs an internal tool-use loop:
+
+1. Call the LLM API with the system prompt, user message, tools, and history
+2. Inspect the response for tool calls
+3. For each tool call, check `resolver.isReadOnly(toolName)`:
+   - **If read-only:** call `resolver.resolve(toolName, argsJson)` to get the result
+     string. If `ReadOnlyToolException` is thrown, use the exception's message as the
+     tool result (so the LLM sees the error and can self-correct). Format the tool
+     result in the provider's native format and append it to the conversation.
+   - **If NOT read-only (i.e., an operation tool call):** the loop ends. The operation
+     tool calls are returned in `LLMResponse.getToolCalls()` as `RawToolCall` objects,
+     to be parsed and validated by `LLMResponseParser` (§8g Stage 1).
+4. If all tool calls in a response were read-only, re-call the LLM API with the
+   accumulated tool results and repeat from step 2.
+5. If the response contains NO tool calls (text-only), the loop ends immediately.
+   `LLMResponse.getToolCalls()` will be empty.
+6. **Safety limit:** Max 5 loop iterations to prevent runaway tool-use cycles.
+   If exceeded, return whatever the LLM produced on the last iteration.
+
+The `LLMResponse` returned by `chat()` contains only the **final** response — the one
+with either operation tool calls or text only. The intermediate read-only tool exchanges
+are internal to the provider and not exposed to `AIAgentServiceImpl`.
+
+**Mixed responses** (both read-only and operation tool calls in a single LLM turn):
+If the LLM returns both read-only and operation tool calls in the same response, the
+provider resolves only the read-only ones, injects their results, and re-calls the LLM.
+The operation tool calls from that intermediate turn are discarded — the LLM will
+re-produce them (potentially refined) in its next turn after seeing the tool results.
 
 **Provider summary:**
 
@@ -846,14 +909,22 @@ Parameters:
 resolved server-side during the multi-turn LLM conversation, NOT an `AIOperation` sent to
 the client. When the LLM calls `lookup_screen("Settings")`, the server:
 
-1. **Validates the screen exists** — checks `DesignToolbar.getCurrentProject().screens`
-   equivalent on the server by verifying the `.scm` file exists in project storage:
+1. **Validates the screen exists** — scans the project's source file list for a `.scm`
+   file whose last path segment matches the requested screen name. File paths use the
+   qualified form name (e.g., `src/appinventor/ai_user/ProjectName/Screen1.scm`),
+   which varies per project, so we match on the suffix rather than constructing paths:
    ```java
-   String formPath = "src/" + packageName + "/" + screenName + ".scm";
-   String blocksPath = "src/" + packageName + "/" + screenName + ".bky";
-   if (!storageIo.getProjectSourceFiles(userId, projectId).contains(formPath)) {
+   List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+   String suffix = "/" + screenName + FORM_PROPERTIES_EXTENSION;
+   String formPath = sourceFiles.stream()
+       .filter(f -> f.endsWith(suffix))
+       .findFirst().orElse(null);
+   if (formPath == null) {
        return toolError("Screen not found: " + screenName);
    }
+   // Derive .bky path from the qualified name
+   String qualifiedName = YoungAndroidSourceNode.getQualifiedName(formPath);
+   String blocksPath = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedName);
    ```
 
 2. **Loads the .scm file** from storage and converts to the same component tree format
@@ -1214,15 +1285,23 @@ If the user's request involves another screen, the LLM can ask for it or we can 
 1. `AIContextBuilder` assembles the system prompt from Layers 1-3 (static, cached on server startup)
 2. Appends Layer 4 (current app state, built per-request from ProjectService.load())
 3. Appends Layer 5 (few-shot examples, static)
-4. LLM processes user message, calls `lookup_component` and/or `lookup_screen` as needed (multi-turn tool use within a single request — server resolves these read-only tools and feeds results back before the LLM produces its final operation tool calls)
-5. LLM returns raw response (text + tool calls)
-6. `LLMResponseParser` — structural validation (§8g Stage 1)
-7. `AIOperationValidator` — semantic validation + mode enforcement (§8g Stage 2, §8h)
-8. **If any operations failed validation:** inject error feedback into the conversation
-   and re-call the LLM (one retry). Go back to step 5 with the retry response.
-9. **If retry also fails (or no retry needed):** return `AIAgentResponse` to client.
-   - All valid → `operations` populated, `errors` empty
-   - Still invalid after retry → `operations` empty, `errors` populated
+4. `AIAgentServiceImpl` constructs a `ReadOnlyToolResolver` callback (resolves
+   `lookup_component` from the component DB, `lookup_screen` from storageIo)
+5. `llmProvider.chat()` is called with the resolver. Inside the provider:
+   a. LLM receives user message, may call `lookup_component` / `lookup_screen`
+   b. Provider detects read-only tool calls → delegates to `resolver.resolve()`
+   c. Provider formats the result in its native tool-result format and re-calls LLM
+   d. Loop repeats (max 5 iterations) until LLM produces operation tool calls or text-only
+6. Provider returns `LLMResponse` containing only the **final** LLM output (text +
+   operation tool calls). Read-only exchanges are internal to the provider.
+7. `LLMResponseParser` — structural validation (§8g Stage 1)
+8. `AIOperationValidator` — semantic validation + mode enforcement (§8g Stage 2, §8h)
+9. **If any operations failed validation:** inject error feedback into the conversation
+   and re-call the LLM (one retry, also through `chat()` with the resolver). Go back
+   to step 7 with the retry response.
+10. **If retry also fails (or no retry needed):** return `AIAgentResponse` to client.
+    - All valid → `operations` populated, `errors` empty
+    - Still invalid after retry → `operations` empty, `errors` populated
 
 ### Step 4: Blocks XML generator (server-side)
 
@@ -3057,11 +3136,16 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     // 3. Build system prompt from live project state
     String systemPrompt = aiContextBuilder.build(userId, projectId, screenName, mode);
 
-    // 4. Call LLM (with error handling for API failures)
+    // 4. Build read-only tool resolver (lookup_component, lookup_screen)
+    //    The resolver is a callback injected into the provider so it can resolve
+    //    read-only tools in its native format during the tool-use loop.
+    ReadOnlyToolResolver resolver = buildReadOnlyToolResolver(userId, projectId);
+
+    // 5. Call LLM (provider runs internal tool-use loop for read-only tools)
     LLMResponse llmResponse;
     try {
         llmResponse = llmProvider.chat(systemPrompt, userMessage,
-                                       tools, providerRef, history);
+                                       tools, providerRef, history, resolver);
     } catch (LLMProviderException e) {
         // LLM API failure: network timeout, 429 rate limit, 500 server error,
         // invalid API key, Ollama unreachable, etc.
@@ -3080,7 +3164,7 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
         return errorResponse;
     }
 
-    // 5. Update providerRef from the LLM response and store in Memcache
+    // 6. Update providerRef from the LLM response and store in Memcache
     String newProviderRef = llmResponse.getConversationRef();  // may be null for stateless
     if (newProviderRef != null) {
         providerRef = newProviderRef;
@@ -3088,15 +3172,16 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     storeConversationRef(projectId, providerName, conversationId,
                          providerRef != null ? providerRef : "");
 
-    // 6. Validate (§8g) — all-or-nothing with one retry
+    // 7. Validate (§8g) — all-or-nothing with one retry
     ValidatedResponse validated = validate(llmResponse, mode);
 
     if (!validated.errors.isEmpty()) {
-        // 7. Retry: inject error feedback and re-call LLM once
+        // 8. Retry: inject error feedback and re-call LLM once
         String feedback = buildValidationErrorFeedback(validated.errors);
         try {
             LLMResponse retryResponse = llmProvider.chat(systemPrompt, feedback,
-                                                          tools, providerRef, history);
+                                                          tools, providerRef, history,
+                                                          resolver);
             // Update providerRef from retry
             String retryRef = retryResponse.getConversationRef();
             if (retryRef != null) {
@@ -3115,7 +3200,7 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
         }
     }
 
-    // 8. Build response for client
+    // 9. Build response for client
     AIAgentResponse response = new AIAgentResponse();
     response.setAiMessage(llmResponse.getText());
     response.setNewConversation(isNewConversation);
@@ -3136,7 +3221,7 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
         response.setErrors(validated.errors);
     }
 
-    // 9. Persist messages to Datastore (ALL providers — enables chat restore after reload)
+    // 10. Persist messages to Datastore (ALL providers — enables chat restore after reload)
     storeMessage(conversationId, "user", userMessage);
     storeMessage(conversationId, "assistant", llmResponse.getText());
 
@@ -3188,6 +3273,123 @@ private ValidatedResponse validate(LLMResponse llmResponse, String mode) {
 
     return new ValidatedResponse(semResult.getAccepted(), Collections.emptyList());
 }
+
+/**
+ * Builds a ReadOnlyToolResolver that resolves lookup_component and lookup_screen
+ * calls. Injected into the provider's chat() method so it can resolve these
+ * tools in its native wire format during the tool-use loop.
+ */
+private ReadOnlyToolResolver buildReadOnlyToolResolver(String userId, long projectId) {
+    // Per-request cache for lookup_screen results (avoids redundant storage reads
+    // if the LLM looks up the same screen multiple times in one request)
+    Map<String, String> screenCache = new HashMap<>();
+
+    return new ReadOnlyToolResolver() {
+        private static final Set<String> READ_ONLY_TOOLS = Set.of(
+            "lookup_component", "lookup_screen");
+
+        @Override
+        public boolean isReadOnly(String toolName) {
+            return READ_ONLY_TOOLS.contains(toolName);
+        }
+
+        @Override
+        public String resolve(String toolName, String argsJson)
+                throws ReadOnlyToolException {
+            JSONObject args = new JSONObject(argsJson);
+            switch (toolName) {
+                case "lookup_component":
+                    return resolveLookupComponent(args.getString("component_type"));
+                case "lookup_screen":
+                    return resolveLookupScreen(
+                        userId, projectId, args.getString("screen_name"),
+                        screenCache);
+                default:
+                    throw new ReadOnlyToolException(
+                        "Unknown read-only tool: " + toolName);
+            }
+        }
+    };
+}
+
+/**
+ * Resolves lookup_component: returns detailed metadata for a component type
+ * from simple_components.json (properties with types/defaults/descriptions,
+ * events with parameter lists, methods with parameter lists and return types).
+ */
+private String resolveLookupComponent(String componentType)
+        throws ReadOnlyToolException {
+    JSONObject metadata = componentDb.getComponentMetadata(componentType);
+    if (metadata == null) {
+        throw new ReadOnlyToolException(
+            "Unknown component type: " + componentType
+            + ". Check the component catalog for valid types.");
+    }
+    return formatComponentMetadata(metadata);
+}
+
+/**
+ * Resolves lookup_screen: loads the screen's .scm and .bky files, converts
+ * them to the component tree + pseudocode format, and returns the result.
+ *
+ * File paths are built using the existing utility methods:
+ *   YoungAndroidFormNode.getFormFileId(qualifiedName) → "src/{pkg/path}/Screen1.scm"
+ *   YoungAndroidBlocksNode.getBlocklyFileId(qualifiedName) → "src/{pkg/path}/Screen1.bky"
+ *
+ * The qualified name includes the package name (e.g.,
+ * "appinventor.ai_user.ProjectName.Screen1"), which varies per project. We
+ * resolve it by scanning the project's source file list for a .scm file
+ * whose unqualified form name matches the requested screen name.
+ */
+private String resolveLookupScreen(String userId, long projectId,
+        String screenName, Map<String, String> cache)
+        throws ReadOnlyToolException {
+    if (cache.containsKey(screenName)) {
+        return cache.get(screenName);
+    }
+
+    // Find the .scm file for this screen from the project's source file list.
+    // Path format: "src/{package/path}/{ScreenName}.scm"
+    // We match on the last path segment (the screen name) because the package
+    // prefix varies per project.
+    List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+    String scmPath = null;
+    String suffix = "/" + screenName + YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+    for (String file : sourceFiles) {
+        if (file.endsWith(suffix)) {
+            scmPath = file;
+            break;
+        }
+    }
+
+    if (scmPath == null) {
+        throw new ReadOnlyToolException(
+            "Screen '" + screenName + "' not found in this project. "
+            + "Available screens are listed in the '== Other Screens ==' section.");
+    }
+
+    // Derive .bky path from the qualified name
+    String qualifiedName = YoungAndroidSourceNode.getQualifiedName(scmPath);
+    String bkyPath = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedName);
+
+    try {
+        String scmContent = storageIo.downloadFile(userId, projectId, scmPath);
+        String componentTree = aiContextBuilder.buildComponentTree(scmContent);
+
+        String bkyContent = storageIo.downloadFile(userId, projectId, bkyPath);
+        String pseudocode = blocksPseudocodeGenerator.generate(bkyContent);
+
+        String result = "== Screen: " + screenName + " ==\n"
+            + "Components:\n" + componentTree + "\n\n"
+            + "Blocks:\n" + pseudocode;
+
+        cache.put(screenName, result);
+        return result;
+    } catch (Exception e) {
+        throw new ReadOnlyToolException(
+            "Failed to load screen '" + screenName + "': " + e.getMessage());
+    }
+}
 ```
 
 The `LLMProvider` interface is defined in Step 2. The `AIAgentResponse` DTO fields
@@ -3236,7 +3438,7 @@ String aiConversationRestored();
 
 ## File Summary
 
-### New files (32 files):
+### New files (34 files):
 
 | File | Purpose |
 |------|---------|
@@ -3259,6 +3461,8 @@ String aiConversationRestored();
 | `server/aiagent/resources/few_shot_examples.json` | Worked input→output examples (~3K tokens) |
 | `server/aiagent/llm/LLMProvider.java` | Provider interface |
 | `server/aiagent/llm/LLMProviderException.java` | Checked exception for LLM API failures (network, auth, rate limit). Contains `getUserFacingMessage()` returning a sanitized message safe to display (no API keys, no stack traces). |
+| `server/aiagent/llm/ReadOnlyToolResolver.java` | Callback interface for resolving read-only tools (lookup_component, lookup_screen) inside the provider's tool-use loop |
+| `server/aiagent/llm/ReadOnlyToolException.java` | Checked exception for invalid read-only tool calls (non-existent screen, unknown component type). Message is injected as tool result for LLM self-correction. |
 | `server/aiagent/llm/LLMProviderRegistry.java` | Provider factory |
 | `server/aiagent/llm/AnthropicProvider.java` | Claude API implementation |
 | `server/aiagent/llm/OpenAIProvider.java` | GPT-4 API implementation |
