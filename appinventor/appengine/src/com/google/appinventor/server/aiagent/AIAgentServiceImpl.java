@@ -56,8 +56,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private static final Logger LOG = Logger.getLogger(AIAgentServiceImpl.class.getName());
 
   private static final int MAX_MESSAGE_LENGTH = 2000;
-  private static final int CONVERSATION_TTL_SECONDS = 24 * 60 * 60; // 24 hours
-  private static final int STATUS_TTL_SECONDS = 5 * 60; // 5 minutes
   private static final int MAX_VALIDATION_RETRIES = 1;
   private static final long RATE_WINDOW_MS = 60_000; // 1 minute
   private static final String COMPONENT_DB_RESOURCE =
@@ -511,7 +509,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   }
 
   private void saveConversation(long projectId, AIConversationState state) {
-    storageIo.saveAIConversationState(projectId, state, CONVERSATION_TTL_SECONDS);
+    storageIo.saveAIConversationState(projectId, state);
   }
 
   private void clearConversationInternal(long projectId) {
@@ -535,8 +533,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private void storeMessage(String conversationId, String role, String text) {
     long now = System.currentTimeMillis();
     int seq = messageSequence++;
-    long expiresAt = now + (CONVERSATION_TTL_SECONDS * 1000L);
-    storageIo.storeAIConversationMessage(conversationId, now, seq, role, text, expiresAt);
+    storageIo.storeAIConversationMessage(conversationId, now, seq, role, text);
   }
 
   private List<ChatMessage> loadConversation(String conversationId) {
@@ -551,7 +548,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   // ---------- Status updates ----------
 
   private void updateStatus(long projectId, String status) {
-    storageIo.updateAIRequestStatus(projectId, status, STATUS_TTL_SECONDS);
+    storageIo.updateAIRequestStatus(projectId, status);
   }
 
   private void clearStatus(long projectId) {

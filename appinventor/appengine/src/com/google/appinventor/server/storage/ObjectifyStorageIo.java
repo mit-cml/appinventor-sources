@@ -2854,11 +2854,13 @@ public class ObjectifyStorageIo implements StorageIo {
   private static final String AI_CONV_CACHE_KEY_PREFIX = "ai_conv:";
   private static final String AI_STATUS_CACHE_KEY_PREFIX = "ai_status:";
 
+  private static final int CONVERSATION_TTL_SECONDS = 24 * 60 * 60; // 24 hours
+  private static final int STATUS_TTL_SECONDS = 5 * 60; // 5 minutes
+
   @Override
-  public void saveAIConversationState(long projectId, AIConversationState state,
-      int ttlSeconds) {
+  public void saveAIConversationState(long projectId, AIConversationState state) {
     memcache.put(AI_CONV_CACHE_KEY_PREFIX + projectId, state,
-        Expiration.byDeltaSeconds(ttlSeconds));
+        Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
   }
 
   @Override
@@ -2873,7 +2875,7 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void storeAIConversationMessage(String conversationId, long timestamp,
-      int sequence, String role, String text, long expiresAt) {
+      int sequence, String role, String text) {
     Objectify ofy = ObjectifyService.begin();
     ConversationMessageData msg = new ConversationMessageData();
     msg.conversationId = conversationId;
@@ -2881,7 +2883,7 @@ public class ObjectifyStorageIo implements StorageIo {
     msg.sequence = sequence;
     msg.role = role;
     msg.text = text;
-    msg.expiresAt = expiresAt;
+    msg.expiresAt = (timestamp + CONVERSATION_TTL_SECONDS) * 1000L;
     ofy.put(msg);
   }
 
@@ -2925,9 +2927,9 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
-  public void updateAIRequestStatus(long projectId, String status, int ttlSeconds) {
+  public void updateAIRequestStatus(long projectId, String status) {
     memcache.put(AI_STATUS_CACHE_KEY_PREFIX + projectId, status,
-        Expiration.byDeltaSeconds(ttlSeconds));
+        Expiration.byDeltaSeconds(STATUS_TTL_SECONDS));
   }
 
   @Override

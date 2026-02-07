@@ -682,7 +682,7 @@ public interface StorageIo {
    * @param state       the conversation state
    * @param ttlSeconds  time-to-live in seconds
    */
-  void saveAIConversationState(long projectId, AIConversationState state, int ttlSeconds);
+  void saveAIConversationState(long projectId, AIConversationState state);
 
   /**
    * Loads the AI conversation state from memcache.
@@ -710,7 +710,7 @@ public interface StorageIo {
    * @param expiresAt       expiration timestamp (millis)
    */
   void storeAIConversationMessage(String conversationId, long timestamp,
-      int sequence, String role, String text, long expiresAt);
+      int sequence, String role, String text);
 
   /**
    * Loads all non-expired AI conversation messages for a conversation,
@@ -735,7 +735,7 @@ public interface StorageIo {
    * @param status      the status message
    * @param ttlSeconds  time-to-live in seconds
    */
-  void updateAIRequestStatus(long projectId, String status, int ttlSeconds);
+  void updateAIRequestStatus(long projectId, String status);
 
   /**
    * Clears the AI request status from memcache.
