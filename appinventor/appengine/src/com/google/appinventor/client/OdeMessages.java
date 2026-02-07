@@ -5746,6 +5746,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text to display for the iOS settings category in the Project Property Dialog")
   String projectPropertyIosSettingsCategoryTitle();
 
+  @DefaultMessage("AI")
+  @Description("Text to display for the AI category in the Project Property Dialog")
+  String projectPropertyAiCategoryTitle();
+
+  @DefaultMessage("AI Assistant")
+  @Description("Label of the toolbar button for toggling the AI chat dialog")
+  String toggleAIChatButton();
+
   // Best Fit Model names
 
   @DefaultMessage("Linear")

@@ -1425,7 +1425,7 @@ public class Form extends AppInventorCompatActivity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AI_AGENT_MODE,
       defaultValue = "Off")
-  @SimpleProperty(userVisible = false, category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(userVisible = false, category = PropertyCategory.AI)
   public void AIAgentMode(String mode) {
     // Designer-only property; no runtime effect.
   }

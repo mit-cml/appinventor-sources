@@ -76,6 +76,7 @@ public class ProjectPropertiesDialogBox {
     projectCategories.put("Theming", MESSAGES.projectPropertyThemingCategoryTitle());
     projectCategories.put("Publishing", MESSAGES.projectPropertyPublishingCategoryTitle());
     projectCategories.put("iOS Settings", MESSAGES.projectPropertyIosSettingsCategoryTitle());
+    projectCategories.put("AI", MESSAGES.projectPropertyAiCategoryTitle());
   }
 
   /**
@@ -167,6 +168,10 @@ public class ProjectPropertiesDialogBox {
     propertiesContainer.setStyleName("ode-propertyDialogVerticalPanel");
 
     List<EditableProperty> properties = categoryToProperties.get(category);
+
+    if (properties == null) {
+      return propertiesContainer;
+    }
 
     for (EditableProperty property : properties) {
       // container for displaing one editable property
