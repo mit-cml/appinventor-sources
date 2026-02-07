@@ -513,12 +513,12 @@ The system prompt includes (from Layer 4):
 
 The `== Session Info ==` block is critical — it tells the LLM:
 - **Mode**: Which permission level is active, so it knows what tools are available
-- **Available tools**: Explicit list (e.g., ScreenEditor gets `add_component, set_property, delete_component, rename_component, add_event_handler, create_global_variable, create_procedure, lookup_component, search_components, lookup_screen, explain`; ProjectEditor adds `switch_screen, create_screen, delete_screen, set_project_property`)
+- **Available tools**: Explicit list (e.g., ScreenEditor gets `add_component, set_property, delete_component, rename_component, add_event_handler, create_global_variable, create_procedure, lookup_component, lookup_screen`; ProjectEditor adds `switch_screen, create_screen, delete_screen, set_project_property`)
 - **Current Screen**: Which screen is visible — all operations target this screen
 
 The `AIContextBuilder` dynamically includes/excludes tool definitions based on the mode:
-- **Advisor**: Only `lookup_component`, `search_components`, `lookup_screen`, `explain`
-- **ScreenEditor**: All component/block tools + `lookup_screen`, `explain`. No project-level tools.
+- **Advisor**: Only `lookup_component`, `lookup_screen`
+- **ScreenEditor**: All component/block tools + `lookup_screen`. No project-level tools.
 - **ProjectEditor**: All tools including `switch_screen`, `create_screen`, `delete_screen`, `set_project_property`
 
 **ADD_COMPONENT detail:**
@@ -639,9 +639,7 @@ Each provider translates the common tool definitions into its own format (Anthro
 
 *Read-only tools (all modes):*
 - `lookup_component(component_type)` - Query detailed metadata for a component type
-- `search_components(query)` - Search components by capability/keyword
 - `lookup_screen(screen_name)` - View another screen's full state (read-only)
-- `explain()` - Return a natural language explanation (no operations)
 
 ---
 
@@ -725,7 +723,8 @@ Scope — you are ONLY an App Inventor assistant:
   accessibility) when they directly relate to the user's App Inventor project.
 
 General:
-- When the user asks you to explain the app, use the explain tool — do NOT generate operations.
+- When the user asks you to explain the app, respond with text only — do NOT call any tools
+  or generate any operations. A text-only response (zero tool calls) is always valid.
 - If the request is ambiguous, ask for clarification instead of guessing.
 - Always explain what you're doing in your response message.
 
@@ -811,15 +810,6 @@ all methods (with parameter and return type signatures).
 Parameters:
   - component_type (string, required): e.g. "Button", "Canvas", "TinyDB"
 
-## search_components
-Search for components by capability or keyword.
-Parameters:
-  - query (string, required): e.g. "play sound", "store data", "take photo"
-
-## explain
-Provide a natural language explanation of the current app (no operations generated).
-No parameters.
-
 ## switch_screen (ProjectEditor mode only)
 Navigate the editor to a different screen. All subsequent operations will target the
 new screen. NOT available in ScreenEditor or Advisor mode.
@@ -849,6 +839,71 @@ Available in all modes. Returns the component tree and blocks pseudocode for the
 specified screen.
 Parameters:
   - screen_name (string, required): Name of the screen to inspect.
+
+**Server-side implementation** (in `AIAgentServiceImpl`, within the multi-turn tool-use loop):
+
+`lookup_screen` is handled the same way as `lookup_component` — it's a read-only tool
+resolved server-side during the multi-turn LLM conversation, NOT an `AIOperation` sent to
+the client. When the LLM calls `lookup_screen("Settings")`, the server:
+
+1. **Validates the screen exists** — checks `DesignToolbar.getCurrentProject().screens`
+   equivalent on the server by verifying the `.scm` file exists in project storage:
+   ```java
+   String formPath = "src/" + packageName + "/" + screenName + ".scm";
+   String blocksPath = "src/" + packageName + "/" + screenName + ".bky";
+   if (!storageIo.getProjectSourceFiles(userId, projectId).contains(formPath)) {
+       return toolError("Screen not found: " + screenName);
+   }
+   ```
+
+2. **Loads the .scm file** from storage and converts to the same component tree format
+   used in Layer 4 of the system prompt:
+   ```java
+   String scmContent = storageIo.downloadFile(userId, projectId, formPath);
+   String componentTree = aiContextBuilder.buildComponentTree(scmContent);
+   ```
+   `buildComponentTree()` is the same method already used by `AIContextBuilder` to produce
+   the `== Current Screen: ... ==` section — it parses the SCM JSON and outputs the
+   indented component tree with properties.
+
+3. **Loads the .bky file** and converts to pseudocode:
+   ```java
+   String bkyContent = storageIo.downloadFile(userId, projectId, blocksPath);
+   String pseudocode = blocksPseudocodeGenerator.generate(bkyContent);
+   ```
+   `BlocksPseudocodeGenerator.generate()` is the same read-path converter described in
+   Step 3 — it parses Blockly XML and outputs pseudocode.
+
+4. **Returns the combined result** as the tool response, which is injected back into the
+   LLM conversation as a tool result message:
+   ```
+   == Screen: Settings ==
+   Components:
+     Form "Settings"
+       ├─ Label "TitleLabel" [Text="Settings", FontSize=20]
+       ├─ CheckBox "DarkModeToggle" [Text="Dark Mode", Checked=False]
+       └─ Button "SaveButton" [Text="Save"]
+
+   Blocks:
+     When SaveButton.Click do
+       if DarkModeToggle.Checked then
+         set Screen1.Theme to "AppTheme"
+       else
+         set Screen1.Theme to "AppTheme.Light.DarkActionBar"
+       close screen
+   ```
+
+5. The LLM then continues generating its response (text + operation tool calls) with
+   full knowledge of the target screen's state.
+
+**Caching:** Since the same screen may be looked up multiple times within a conversation,
+the server caches loaded screen state in a per-request `Map<String, String>` to avoid
+redundant storage reads. This cache is NOT persisted across requests — fresh state is
+loaded each time to reflect any changes made by prior operations.
+
+**Security:** The `storageIo.downloadFile()` call goes through the same ownership check
+as all other file operations (the `userId` + `projectId` are already validated at the
+start of `processRequest`). The tool cannot read screens from other projects.
 
 # Section 4: Format Conventions
 
@@ -912,7 +967,9 @@ The LLM gets a tool to request full metadata for specific components:
 
 Returns the full entry from `simple_components.json` for that component. The LLM calls this tool BEFORE generating operations, so it knows exact property names, types, and valid values.
 
-Also: `search_components(query)` tool for when the user asks "I need something to play sound" — searches component descriptions/helpStrings.
+The LLM already has the full component catalog in its context, so it can match user
+descriptions like "I need something to play sound" to the appropriate components (`Sound`,
+`Player`) directly from the catalog — no separate search tool is needed.
 
 **Layer 4: Current app state** (included per-request, variable size)
 
@@ -1157,7 +1214,7 @@ If the user's request involves another screen, the LLM can ask for it or we can 
 1. `AIContextBuilder` assembles the system prompt from Layers 1-3 (static, cached on server startup)
 2. Appends Layer 4 (current app state, built per-request from ProjectService.load())
 3. Appends Layer 5 (few-shot examples, static)
-4. LLM processes user message, calls `lookup_component` as needed (multi-turn tool use within a single request)
+4. LLM processes user message, calls `lookup_component` and/or `lookup_screen` as needed (multi-turn tool use within a single request — server resolves these read-only tools and feeds results back before the LLM produces its final operation tool calls)
 5. LLM returns raw response (text + tool calls)
 6. `LLMResponseParser` — structural validation (§8g Stage 1)
 7. `AIOperationValidator` — semantic validation + mode enforcement (§8g Stage 2, §8h)
@@ -1603,6 +1660,29 @@ public class AIOperationExecutor {
         DesignToolbar.Screen screen = project.screens.get(project.currentScreen);
         YaFormEditor formEditor = (YaFormEditor) screen.designerEditor;
         YaBlocksEditor blocksEditor = (YaBlocksEditor) screen.blocksEditor;
+
+        // Assert: editor must be fully loaded before we touch components.
+        //
+        // DesignerEditor.getComponents() returns an EMPTY MAP when loadComplete is
+        // false (DesignerEditor.java:377). If we proceed, every component lookup
+        // returns null and preValidate rejects all operations with confusing errors.
+        //
+        // This should never happen because:
+        // - SWITCH_SCREEN targets screens whose editors were loaded at project open
+        //   (YaProjectEditor loads all screens eagerly in onProjectLoaded)
+        // - CREATE_SCREEN's async chain waits for onProjectNodeAdded → file download
+        //   → onFileLoaded (which sets loadComplete = true in SimpleEditor.java:582)
+        // - The phase chain's deferred scheduling already waits for screensLocked to
+        //   clear, which overlaps with the I/O window
+        //
+        // If this assertion fires, it indicates a bug in the async chain above.
+        if (!formEditor.isLoadComplete()) {
+            result.failed = ops.get(0);
+            result.errorMessage = "Internal error: editor not loaded for screen "
+                + project.currentScreen + ". This is a bug — please report it.";
+            result.skipped.addAll(ops);
+            return;
+        }
 
         for (int i = 0; i < ops.size(); i++) {
             AIOperation op = ops.get(i);
