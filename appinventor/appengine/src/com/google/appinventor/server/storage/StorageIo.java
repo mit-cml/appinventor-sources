@@ -673,6 +673,85 @@ public interface StorageIo {
 
   String getIosExtensionsConfig();
 
+  // ---------- AI Agent conversation storage ----------
+
+  /**
+   * Saves an AI conversation state to memcache, keyed by projectId.
+   *
+   * @param projectId   the project this conversation belongs to
+   * @param state       the conversation state
+   * @param ttlSeconds  time-to-live in seconds
+   */
+  void saveAIConversationState(long projectId, AIConversationState state, int ttlSeconds);
+
+  /**
+   * Loads the AI conversation state from memcache.
+   *
+   * @param projectId the project whose conversation state to load
+   * @return the conversation state, or null if not found
+   */
+  AIConversationState getAIConversationState(long projectId);
+
+  /**
+   * Clears the AI conversation state from memcache.
+   *
+   * @param projectId the project whose conversation state to clear
+   */
+  void clearAIConversationState(long projectId);
+
+  /**
+   * Stores an AI conversation message to the Datastore.
+   *
+   * @param conversationId  the conversation UUID
+   * @param timestamp       server-side timestamp (millis)
+   * @param sequence        ordering tiebreaker within same millisecond
+   * @param role            "user" or "assistant"
+   * @param text            message content
+   * @param expiresAt       expiration timestamp (millis)
+   */
+  void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, String role, String text, long expiresAt);
+
+  /**
+   * Loads all non-expired AI conversation messages for a conversation,
+   * ordered by timestamp and sequence.
+   *
+   * @param conversationId the conversation UUID
+   * @return list of [role, text] string arrays, ordered chronologically
+   */
+  List<String[]> loadAIConversationMessages(String conversationId);
+
+  /**
+   * Deletes all AI conversation messages for a conversation from the Datastore.
+   *
+   * @param conversationId the conversation UUID
+   */
+  void deleteAIConversationMessages(String conversationId);
+
+  /**
+   * Updates the AI request status in memcache (for progress polling).
+   *
+   * @param projectId   the project whose status to update
+   * @param status      the status message
+   * @param ttlSeconds  time-to-live in seconds
+   */
+  void updateAIRequestStatus(long projectId, String status, int ttlSeconds);
+
+  /**
+   * Clears the AI request status from memcache.
+   *
+   * @param projectId the project whose status to clear
+   */
+  void clearAIRequestStatus(long projectId);
+
+  /**
+   * Gets the current AI request status from memcache.
+   *
+   * @param projectId the project to check status for
+   * @return the status string, or empty string if not found
+   */
+  String getAIRequestStatus(long projectId);
+
 }
 
 

@@ -16,23 +16,15 @@ import com.google.appinventor.server.aiagent.llm.RawToolCall;
 import com.google.appinventor.server.aiagent.llm.ReadOnlyToolException;
 import com.google.appinventor.server.aiagent.llm.ReadOnlyToolResolver;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.AIConversationState;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
-import com.google.appinventor.server.storage.StoredData.ConversationMessageData;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.settings.SettingsConstants;
-
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.ErrorHandlers;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-
-import com.googlecode.objectify.Objectify;
-import com.googlecode.objectify.ObjectifyService;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,7 +67,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       Flag.createFlag("ai.agent.rate.limit", 10);
 
   private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
-  private final transient MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
   private final transient AIContextBuilder contextBuilder;
   private final transient LLMResponseParser responseParser = new LLMResponseParser();
   private final transient AIOperationValidator validator = new AIOperationValidator();
@@ -89,7 +79,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private static volatile String componentDbJson;
 
   public AIAgentServiceImpl() {
-    memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
     contextBuilder = new AIContextBuilder(storageIo);
   }
 
@@ -141,18 +130,18 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       updateStatus(projectId, "Building context...");
 
       // Get or create conversation
-      ConversationState conv = getConversation(projectId);
+      AIConversationState conv = getConversation(projectId);
       boolean isNew = (conv == null);
       if (isNew) {
-        conv = new ConversationState(getConfiguredProvider(),
+        conv = new AIConversationState(getConfiguredProvider(),
             UUID.randomUUID().toString(), null);
       }
 
       // Check provider change
       String currentProvider = getConfiguredProvider();
-      if (!currentProvider.equals(conv.providerName)) {
+      if (!currentProvider.equals(conv.getProviderName())) {
         clearConversationInternal(projectId);
-        conv = new ConversationState(currentProvider,
+        conv = new AIConversationState(currentProvider,
             UUID.randomUUID().toString(), null);
         isNew = true;
       }
@@ -163,10 +152,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
       // Build history for stateless providers
-      LLMProvider provider = LLMProviderRegistry.get(conv.providerName);
+      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
       List<ChatMessage> history = Collections.emptyList();
       if (provider.isStateless()) {
-        history = loadConversation(conv.conversationId);
+        history = loadConversation(conv.getConversationId());
       }
       if (AIDebug.enabled()) {
         StringBuilder histInfo = new StringBuilder("History loaded: " + history.size() + " messages");
@@ -181,16 +170,16 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
       AIDebug.log(LOG, "Pre-LLM: toolCount=" + tools.size()
-          + ", provider=" + conv.providerName + ", model=" + getConfiguredModel());
+          + ", provider=" + conv.getProviderName() + ", model=" + getConfiguredModel());
 
       updateStatus(projectId, "Calling AI...");
 
       // Call LLM
       LLMResponse llmResponse = provider.chat(
-          systemPrompt, userMessage, tools, conv.providerRef, history, resolver);
+          systemPrompt, userMessage, tools, conv.getProviderRef(), history, resolver);
 
       // Save user message to history
-      storeMessage(conv.conversationId, "user", userMessage);
+      storeMessage(conv.getConversationId(), "user", userMessage);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -309,7 +298,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       operations = validator.stripWriteOpsIfAdvisor(operations, mode);
 
       // Update conversation state
-      conv = new ConversationState(conv.providerName, conv.conversationId,
+      conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
@@ -318,7 +307,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       if (assistantText.isEmpty() && !operations.isEmpty()) {
         assistantText = summarizeOperations(operations);
       }
-      storeMessage(conv.conversationId, "assistant", assistantText);
+      storeMessage(conv.getConversationId(), "assistant", assistantText);
 
       clearStatus(projectId);
 
@@ -368,25 +357,25 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       updateStatus(projectId, "Continuing AI response...");
 
       // Load conversation state from memcache
-      ConversationState conv = getConversation(projectId);
-      if (conv == null || conv.providerRef == null || conv.providerRef.isEmpty()) {
+      AIConversationState conv = getConversation(projectId);
+      if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
         clearStatus(projectId);
         return errorResponse("No continuation state available. Please start a new request.");
       }
 
       // Get provider and rebuild tools
-      LLMProvider provider = LLMProviderRegistry.get(conv.providerName);
+      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
       List<LLMTool> tools = contextBuilder.buildTools(mode);
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
-      AIDebug.log(LOG, "continueRequest: provider=" + conv.providerName
-          + ", providerRef length=" + conv.providerRef.length());
+      AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
+          + ", providerRef length=" + conv.getProviderRef().length());
 
       updateStatus(projectId, "Calling AI...");
 
       // Call the continuation method
       LLMResponse llmResponse = provider.continueWithToolResults(
-          conv.providerRef, tools, resolver);
+          conv.getProviderRef(), tools, resolver);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -442,7 +431,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       operations = validator.stripWriteOpsIfAdvisor(operations, mode);
 
       // Update conversation state with new providerRef
-      conv = new ConversationState(conv.providerName, conv.conversationId,
+      conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
@@ -451,7 +440,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       if (assistantText.isEmpty() && !operations.isEmpty()) {
         assistantText = summarizeOperations(operations);
       }
-      storeMessage(conv.conversationId, "assistant", assistantText);
+      storeMessage(conv.getConversationId(), "assistant", assistantText);
 
       clearStatus(projectId);
 
@@ -497,12 +486,12 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       return Collections.emptyList();
     }
 
-    ConversationState conv = getConversation(projectId);
+    AIConversationState conv = getConversation(projectId);
     if (conv == null) {
       return Collections.emptyList();
     }
 
-    List<ChatMessage> history = loadConversation(conv.conversationId);
+    List<ChatMessage> history = loadConversation(conv.getConversationId());
     List<AIConversationMessage> result = new ArrayList<>();
     for (ChatMessage msg : history) {
       result.add(new AIConversationMessage(msg.getRole(), msg.getText()));
@@ -512,52 +501,28 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
   @Override
   public String getRequestStatus(long projectId) {
-    String key = statusKey(projectId);
-    Object status = memcache.get(key);
-    return status != null ? status.toString() : "";
+    return storageIo.getAIRequestStatus(projectId);
   }
 
   // ---------- Conversation management ----------
 
-  private static class ConversationState implements java.io.Serializable {
-    final String providerName;
-    final String conversationId;
-    final String providerRef;
-
-    ConversationState(String providerName, String conversationId, String providerRef) {
-      this.providerName = providerName;
-      this.conversationId = conversationId;
-      this.providerRef = providerRef;
-    }
+  private AIConversationState getConversation(long projectId) {
+    return storageIo.getAIConversationState(projectId);
   }
 
-  private ConversationState getConversation(long projectId) {
-    String key = conversationKey(projectId);
-    return (ConversationState) memcache.get(key);
-  }
-
-  private void saveConversation(long projectId, ConversationState state) {
-    String key = conversationKey(projectId);
-    memcache.put(key, state, Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
+  private void saveConversation(long projectId, AIConversationState state) {
+    storageIo.saveAIConversationState(projectId, state, CONVERSATION_TTL_SECONDS);
   }
 
   private void clearConversationInternal(long projectId) {
-    ConversationState conv = getConversation(projectId);
-    String key = conversationKey(projectId);
-    memcache.delete(key);
+    AIConversationState conv = getConversation(projectId);
+    storageIo.clearAIConversationState(projectId);
     clearStatus(projectId);
 
     // Delete stored messages from Datastore
     if (conv != null) {
-      deleteConversationMessages(conv.conversationId);
+      storageIo.deleteAIConversationMessages(conv.getConversationId());
     }
-  }
-
-  private void deleteConversationMessages(String conversationId) {
-    Objectify ofy = ObjectifyService.begin();
-    ofy.delete(ofy.query(ConversationMessageData.class)
-        .filter("conversationId", conversationId)
-        .fetchKeys());
   }
 
   /**
@@ -570,42 +535,27 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private void storeMessage(String conversationId, String role, String text) {
     long now = System.currentTimeMillis();
     int seq = messageSequence++;
-    Objectify ofy = ObjectifyService.begin();
-    ConversationMessageData msg = new ConversationMessageData();
-    msg.conversationId = conversationId;
-    msg.timestamp = now;
-    msg.sequence = seq;
-    msg.role = role;
-    msg.text = text;
-    msg.expiresAt = now + (CONVERSATION_TTL_SECONDS * 1000L);
-    ofy.put(msg);
+    long expiresAt = now + (CONVERSATION_TTL_SECONDS * 1000L);
+    storageIo.storeAIConversationMessage(conversationId, now, seq, role, text, expiresAt);
   }
 
   private List<ChatMessage> loadConversation(String conversationId) {
-    long now = System.currentTimeMillis();
-    Objectify ofy = ObjectifyService.begin();
-    List<ConversationMessageData> messages =
-        ofy.query(ConversationMessageData.class)
-            .filter("conversationId", conversationId)
-            .order("timestamp")
-            .order("sequence")
-            .list();
-
-    return messages.stream()
-        .filter(m -> m.expiresAt > now)
-        .map(m -> new ChatMessage(m.role, m.text))
-        .collect(Collectors.toList());
+    List<String[]> messages = storageIo.loadAIConversationMessages(conversationId);
+    List<ChatMessage> result = new ArrayList<>();
+    for (String[] pair : messages) {
+      result.add(new ChatMessage(pair[0], pair[1]));
+    }
+    return result;
   }
 
-  // ---------- Status updates (Memcache only) ----------
+  // ---------- Status updates ----------
 
   private void updateStatus(long projectId, String status) {
-    memcache.put(statusKey(projectId), status,
-        Expiration.byDeltaSeconds(STATUS_TTL_SECONDS));
+    storageIo.updateAIRequestStatus(projectId, status, STATUS_TTL_SECONDS);
   }
 
   private void clearStatus(long projectId) {
-    memcache.delete(statusKey(projectId));
+    storageIo.clearAIRequestStatus(projectId);
   }
 
   // ---------- Read-only tool resolver ----------
@@ -1008,11 +958,4 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         Collections.singletonList(message));
   }
 
-  private static String conversationKey(long projectId) {
-    return "ai_conv:" + projectId;
-  }
-
-  private static String statusKey(long projectId) {
-    return "ai-status:" + projectId;
-  }
 }

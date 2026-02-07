@@ -93,6 +93,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -2845,6 +2847,98 @@ public class ObjectifyStorageIo implements StorageIo {
     } else {
       return GCS_BUCKET_NAME;
     }
+  }
+
+  // ---------- AI Agent conversation storage ----------
+
+  private static final String AI_CONV_CACHE_KEY_PREFIX = "ai_conv:";
+  private static final String AI_STATUS_CACHE_KEY_PREFIX = "ai_status:";
+
+  @Override
+  public void saveAIConversationState(long projectId, AIConversationState state,
+      int ttlSeconds) {
+    memcache.put(AI_CONV_CACHE_KEY_PREFIX + projectId, state,
+        Expiration.byDeltaSeconds(ttlSeconds));
+  }
+
+  @Override
+  public AIConversationState getAIConversationState(long projectId) {
+    return (AIConversationState) memcache.get(AI_CONV_CACHE_KEY_PREFIX + projectId);
+  }
+
+  @Override
+  public void clearAIConversationState(long projectId) {
+    memcache.delete(AI_CONV_CACHE_KEY_PREFIX + projectId);
+  }
+
+  @Override
+  public void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, String role, String text, long expiresAt) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationMessageData msg = new ConversationMessageData();
+    msg.conversationId = conversationId;
+    msg.timestamp = timestamp;
+    msg.sequence = sequence;
+    msg.role = role;
+    msg.text = text;
+    msg.expiresAt = expiresAt;
+    ofy.put(msg);
+  }
+
+  @Override
+  public List<String[]> loadAIConversationMessages(String conversationId) {
+    long now = System.currentTimeMillis();
+    Objectify ofy = ObjectifyService.begin();
+    // Note: timestamp and sequence are @Unindexed (class-level annotation),
+    // so we cannot use .order() on them — Datastore silently drops entities
+    // from results when ordering by unindexed fields.  Filter on the indexed
+    // conversationId, then sort in memory.
+    List<ConversationMessageData> messages =
+        ofy.query(ConversationMessageData.class)
+            .filter("conversationId", conversationId)
+            .list();
+
+    // Sort by timestamp, then sequence
+    Collections.sort(messages, new Comparator<ConversationMessageData>() {
+      @Override
+      public int compare(ConversationMessageData a, ConversationMessageData b) {
+        int cmp = Long.compare(a.timestamp, b.timestamp);
+        return cmp != 0 ? cmp : Integer.compare(a.sequence, b.sequence);
+      }
+    });
+
+    List<String[]> result = new ArrayList<String[]>();
+    for (ConversationMessageData m : messages) {
+      if (m.expiresAt > now) {
+        result.add(new String[] { m.role, m.text });
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public void deleteAIConversationMessages(String conversationId) {
+    Objectify ofy = ObjectifyService.begin();
+    ofy.delete(ofy.query(ConversationMessageData.class)
+        .filter("conversationId", conversationId)
+        .fetchKeys());
+  }
+
+  @Override
+  public void updateAIRequestStatus(long projectId, String status, int ttlSeconds) {
+    memcache.put(AI_STATUS_CACHE_KEY_PREFIX + projectId, status,
+        Expiration.byDeltaSeconds(ttlSeconds));
+  }
+
+  @Override
+  public void clearAIRequestStatus(long projectId) {
+    memcache.delete(AI_STATUS_CACHE_KEY_PREFIX + projectId);
+  }
+
+  @Override
+  public String getAIRequestStatus(long projectId) {
+    Object status = memcache.get(AI_STATUS_CACHE_KEY_PREFIX + projectId);
+    return status != null ? status.toString() : "";
   }
 
 }
