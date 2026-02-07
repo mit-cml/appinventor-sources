@@ -198,6 +198,23 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     return getComponents().get(instanceName).getType();
   }
 
+  /**
+   * Creates a new mock component from a JSON properties object and adds it
+   * to the given parent container. This is a public wrapper around
+   * {@link com.google.appinventor.client.editor.designer.DesignerEditor#createMockComponent}
+   * for use by {@link AIOperationExecutor}.
+   *
+   * @param propertiesObject JSON object describing the component (must include
+   *     $Type, $Name, and optionally property values)
+   * @param parent the container to add the component to
+   * @return the newly created MockComponent
+   */
+  public MockComponent addMockComponent(
+      com.google.appinventor.shared.properties.json.JSONObject propertiesObject,
+      MockContainer parent) {
+    return createMockComponent(propertiesObject, parent, MockForm.TYPE);
+  }
+
   // private methods
 
   /*
