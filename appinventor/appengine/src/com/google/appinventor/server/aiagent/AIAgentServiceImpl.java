@@ -234,6 +234,11 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         }
       }
 
+      // Convert pseudocode bodies to Blockly XML for block operations
+      if (!operations.isEmpty()) {
+        operations = convertPseudocodeToXml(operations);
+      }
+
       // Belt-and-suspenders: strip write ops in Advisor mode
       operations = validator.stripWriteOpsIfAdvisor(operations, mode);
 
@@ -539,6 +544,98 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       }
     }
     return componentDbJson;
+  }
+
+  /**
+   * Convert pseudocode bodies in block operations to Blockly XML.
+   * Reconstructs full pseudocode statements from the operation fields,
+   * parses them through PseudocodeParser, and replaces the body/initial_value
+   * field with a blocksXml field containing the generated XML.
+   */
+  private List<AIOperation> convertPseudocodeToXml(List<AIOperation> operations) {
+    PseudocodeParser parser = new PseudocodeParser();
+    List<AIOperation> converted = new ArrayList<>();
+
+    for (AIOperation op : operations) {
+      if (op.getType() == AIOperation.Type.SET_EVENT_HANDLER
+          || op.getType() == AIOperation.Type.SET_VARIABLE
+          || op.getType() == AIOperation.Type.SET_PROCEDURE) {
+        try {
+          JSONObject payload = new JSONObject(op.getPayload());
+          String pseudocode = reconstructPseudocode(op.getType(), payload);
+          String blocksXml = parser.parse(pseudocode);
+          payload.put("blocksXml", blocksXml);
+          converted.add(new AIOperation(op.getType(), payload.toString()));
+        } catch (Exception e) {
+          LOG.log(Level.WARNING, "Failed to convert pseudocode for " + op.getType(), e);
+          // Keep the original operation; client-side will report the error
+          converted.add(op);
+        }
+      } else {
+        converted.add(op);
+      }
+    }
+    return converted;
+  }
+
+  /**
+   * Reconstruct a full pseudocode block from an operation's fields.
+   */
+  private String reconstructPseudocode(AIOperation.Type type, JSONObject payload) {
+    switch (type) {
+      case SET_EVENT_HANDLER: {
+        String component = payload.optString("component_name", "");
+        String event = payload.optString("event_name", "");
+        String body = payload.optString("body", "");
+        StringBuilder sb = new StringBuilder();
+        sb.append("when ").append(component).append(".").append(event).append(" do\n");
+        for (String line : body.split("\n")) {
+          sb.append("  ").append(line).append("\n");
+        }
+        return sb.toString();
+      }
+      case SET_VARIABLE: {
+        String name = payload.optString("name", "");
+        String initialValue = payload.optString("initial_value", "0");
+        return "initialize global " + name + " to " + initialValue;
+      }
+      case SET_PROCEDURE: {
+        String name = payload.optString("name", "");
+        String body = payload.optString("body", "");
+        boolean hasReturn = payload.has("returns") && !payload.isNull("returns");
+        StringBuilder sb = new StringBuilder();
+        sb.append("to ").append(name);
+        // Add parameters if present
+        if (payload.has("params")) {
+          JSONArray params = payload.optJSONArray("params");
+          if (params != null && params.length() > 0) {
+            sb.append("(");
+            for (int i = 0; i < params.length(); i++) {
+              if (i > 0) sb.append(", ");
+              sb.append(params.getString(i));
+            }
+            sb.append(")");
+          }
+        }
+        if (hasReturn) {
+          sb.append(" returns\n");
+        } else {
+          sb.append(" do\n");
+        }
+        for (String line : body.split("\n")) {
+          sb.append("  ").append(line).append("\n");
+        }
+        if (hasReturn) {
+          String returnValue = payload.optString("returns", "");
+          if (!returnValue.isEmpty()) {
+            sb.append("  return ").append(returnValue).append("\n");
+          }
+        }
+        return sb.toString();
+      }
+      default:
+        return "";
+    }
   }
 
   private static AIAgentResponse errorResponse(String message) {
