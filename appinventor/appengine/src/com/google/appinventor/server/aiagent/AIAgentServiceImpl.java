@@ -131,7 +131,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       updateStatus(projectId, "Building context...");
 
       // Get or create conversation
-      ConversationState conv = getConversation(userId, projectId);
+      ConversationState conv = getConversation(projectId);
       boolean isNew = (conv == null);
       if (isNew) {
         conv = new ConversationState(getConfiguredProvider(), null);
@@ -140,7 +140,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       // Check provider change
       String currentProvider = getConfiguredProvider();
       if (!currentProvider.equals(conv.providerName)) {
-        clearConversationInternal(userId, projectId);
+        clearConversationInternal(projectId);
         conv = new ConversationState(currentProvider, null);
         isNew = true;
       }
@@ -248,7 +248,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Update conversation state
       conv = new ConversationState(conv.providerName, llmResponse.getProviderRef());
-      saveConversation(userId, projectId, conv);
+      saveConversation(projectId, conv);
 
       // Save assistant response to history
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
@@ -280,7 +280,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     } catch (SecurityException e) {
       throw new SecurityException("You do not have access to this project.");
     }
-    clearConversationInternal(userId, projectId);
+    clearConversationInternal(projectId);
   }
 
   @Override
@@ -319,18 +319,18 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     }
   }
 
-  private ConversationState getConversation(String userId, long projectId) {
-    String key = conversationKey(userId, projectId);
+  private ConversationState getConversation(long projectId) {
+    String key = conversationKey(projectId);
     return (ConversationState) memcache.get(key);
   }
 
-  private void saveConversation(String userId, long projectId, ConversationState state) {
-    String key = conversationKey(userId, projectId);
+  private void saveConversation(long projectId, ConversationState state) {
+    String key = conversationKey(projectId);
     memcache.put(key, state, Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
   }
 
-  private void clearConversationInternal(String userId, long projectId) {
-    String key = conversationKey(userId, projectId);
+  private void clearConversationInternal(long projectId) {
+    String key = conversationKey(projectId);
     memcache.delete(key);
     clearStatus(projectId);
 
@@ -774,11 +774,11 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         Collections.singletonList(message));
   }
 
-  private static String conversationKey(String userId, long projectId) {
-    return "aiconv|" + userId + "|" + projectId;
+  private static String conversationKey(long projectId) {
+    return "ai_conv:" + projectId;
   }
 
   private static String statusKey(long projectId) {
-    return "aistatus|" + projectId;
+    return "ai-status:" + projectId;
   }
 }

@@ -10,12 +10,14 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentServiceAsync;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,6 +34,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -246,10 +249,16 @@ public class AIChatDialog extends DialogBox {
   // ---- Lifecycle ----
 
   /**
-   * Overrides show to load existing conversation history on open.
+   * Overrides show to check AI mode and load existing conversation history.
+   * If the mode is Off, shows a mode selection dialog instead.
    */
   @Override
   public void show() {
+    String mode = getCurrentAIAgentMode();
+    if ("Off".equals(mode)) {
+      showModeSelectionDialog();
+      return;
+    }
     super.show();
     // Restore previous position, or center on first open
     if (lastPopupLeft >= 0 && lastPopupTop >= 0) {
@@ -781,6 +790,119 @@ public class AIChatDialog extends DialogBox {
         .replace(">", "&gt;")
         .replace("\"", "&quot;")
         .replace("\n", "<br>");
+  }
+
+  /**
+   * Returns the current AIAgentMode from the project settings.
+   * Defaults to "Off" if no project is open or the setting is missing.
+   */
+  private String getCurrentAIAgentMode() {
+    ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(getCurrentProjectId());
+    if (projectEditor == null) {
+      return "Off";
+    }
+    String mode = projectEditor.getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE);
+    return (mode == null || mode.isEmpty()) ? "Off" : mode;
+  }
+
+  /**
+   * Returns the project ID of the currently open project, or 0 if none.
+   */
+  private long getCurrentProjectId() {
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    if (toolbar != null) {
+      DesignToolbar.DesignProject project = toolbar.getCurrentProject();
+      if (project != null) {
+        return project.projectId;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * Shows a mode selection dialog when the AI agent mode is Off.
+   * The user picks a permission level; selecting one sets the AIAgentMode
+   * project setting on Screen1 and then opens the chat dialog.
+   */
+  private void showModeSelectionDialog() {
+    final DialogBox modeDialog = new DialogBox(false, true);
+    modeDialog.setText(MESSAGES.aiChatDialogTitle());
+    modeDialog.setAnimationEnabled(true);
+
+    VerticalPanel panel = new VerticalPanel();
+    panel.setSpacing(8);
+    panel.getElement().getStyle().setPadding(12, Unit.PX);
+
+    panel.add(new Label(MESSAGES.aiModeSelectionHeader()));
+
+    final RadioButton advisorRadio = new RadioButton("aiMode",
+        MESSAGES.aiAgentModeAdvisor() + " \u2014 "
+        + MESSAGES.aiAgentModeAdvisorDescription());
+    final RadioButton screenEditorRadio = new RadioButton("aiMode",
+        MESSAGES.aiAgentModeScreenEditor() + " \u2014 "
+        + MESSAGES.aiAgentModeScreenEditorDescription());
+    final RadioButton projectEditorRadio = new RadioButton("aiMode",
+        MESSAGES.aiAgentModeProjectEditor() + " \u2014 "
+        + MESSAGES.aiAgentModeProjectEditorDescription());
+    advisorRadio.setValue(true);
+
+    panel.add(advisorRadio);
+    panel.add(screenEditorRadio);
+    panel.add(projectEditorRadio);
+
+    Label warning = new Label(MESSAGES.aiModeWarning());
+    warning.getElement().getStyle().setColor("#c0392b");
+    warning.getElement().getStyle().setFontSize(12, Unit.PX);
+    panel.add(warning);
+
+    HorizontalPanel buttons = new HorizontalPanel();
+    buttons.setSpacing(8);
+
+    Button selectButton = new Button(MESSAGES.aiModeSelectAndOpen());
+    selectButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        String selectedMode;
+        if (projectEditorRadio.getValue()) {
+          selectedMode = "ProjectEditor";
+        } else if (screenEditorRadio.getValue()) {
+          selectedMode = "ScreenEditor";
+        } else {
+          selectedMode = "Advisor";
+        }
+        // Set the AIAgentMode project setting
+        ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
+            .getOpenProjectEditor(getCurrentProjectId());
+        if (projectEditor != null) {
+          projectEditor.changeProjectSettingsProperty(
+              SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+              SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE,
+              selectedMode);
+        }
+        modeDialog.hide();
+        // Now open the chat dialog (mode is no longer Off)
+        AIChatDialog.this.show();
+      }
+    });
+
+    Button cancelButton = new Button(MESSAGES.aiChatCloseButton());
+    cancelButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        modeDialog.hide();
+      }
+    });
+
+    buttons.add(selectButton);
+    buttons.add(cancelButton);
+    panel.add(buttons);
+
+    modeDialog.setWidget(panel);
+    modeDialog.center();
+    modeDialog.show();
   }
 
 }

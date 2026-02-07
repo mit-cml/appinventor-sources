@@ -5923,4 +5923,30 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Close")
   @Description("Label for the close button in AI chat dialog")
   String aiChatCloseButton();
+
+  // AI mode selection dialog (shown when user clicks AI Assistant with mode Off)
+
+  @DefaultMessage("Choose an AI Agent permission level for this project:")
+  @Description("Header for the AI mode selection dialog")
+  String aiModeSelectionHeader();
+
+  @DefaultMessage("AI can read and explain your project but cannot make changes.")
+  @Description("Description for Advisor AI mode")
+  String aiAgentModeAdvisorDescription();
+
+  @DefaultMessage("AI can modify the current screen (components & blocks).")
+  @Description("Description for Screen Editor AI mode")
+  String aiAgentModeScreenEditorDescription();
+
+  @DefaultMessage("AI can modify all screens and project settings.")
+  @Description("Description for Project Editor AI mode")
+  String aiAgentModeProjectEditorDescription();
+
+  @DefaultMessage("Changes made by AI may be destructive. Ensure you have a backup.")
+  @Description("Warning text shown in the AI mode selection dialog")
+  String aiModeWarning();
+
+  @DefaultMessage("Select & Open")
+  @Description("Button to confirm AI mode selection and open the chat dialog")
+  String aiModeSelectAndOpen();
 }
