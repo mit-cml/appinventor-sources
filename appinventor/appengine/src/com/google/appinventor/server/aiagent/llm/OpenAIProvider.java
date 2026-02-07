@@ -72,7 +72,7 @@ public class OpenAIProvider implements LLMProvider {
     for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
       JSONObject requestBody = new JSONObject();
       requestBody.put("model", model);
-      requestBody.put("max_tokens", MAX_TOKENS);
+      requestBody.put("max_completion_tokens", MAX_TOKENS);
       requestBody.put("messages", messages);
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
