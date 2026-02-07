@@ -21,6 +21,7 @@ public class LLMResponse {
   private final String text;
   private final List<RawToolCall> rawToolCalls;
   private final String providerRef;
+  private final boolean hasMore;
 
   /**
    * Creates a new LLM response.
@@ -30,11 +31,27 @@ public class LLMResponse {
    * @param providerRef  an opaque reference for stateful providers (may be null)
    */
   public LLMResponse(String text, List<RawToolCall> rawToolCalls, String providerRef) {
+    this(text, rawToolCalls, providerRef, false);
+  }
+
+  /**
+   * Creates a new LLM response with continuation flag.
+   *
+   * @param text         the assistant's text reply (may be null or empty)
+   * @param rawToolCalls the list of raw tool calls (may be null or empty)
+   * @param providerRef  an opaque reference for stateful providers (may be null)
+   * @param hasMore      true if the model returned finish_reason "tool_calls"
+   *                     and expects continuation via
+   *                     {@link LLMProvider#continueWithToolResults}
+   */
+  public LLMResponse(String text, List<RawToolCall> rawToolCalls, String providerRef,
+      boolean hasMore) {
     this.text = text;
     this.rawToolCalls = rawToolCalls != null
         ? Collections.unmodifiableList(new ArrayList<>(rawToolCalls))
         : Collections.<RawToolCall>emptyList();
     this.providerRef = providerRef;
+    this.hasMore = hasMore;
   }
 
   /**
@@ -73,10 +90,23 @@ public class LLMResponse {
     return !rawToolCalls.isEmpty();
   }
 
+  /**
+   * Returns true if the model expects continuation (returned
+   * {@code finish_reason: "tool_calls"} and has more operations to emit).
+   * The client should apply the current batch and then call
+   * {@link LLMProvider#continueWithToolResults} to get the next batch.
+   *
+   * @return true if more batches are expected
+   */
+  public boolean hasMore() {
+    return hasMore;
+  }
+
   @Override
   public String toString() {
     return "LLMResponse{text='" + (text != null ? text.substring(0, Math.min(text.length(), 50)) : "null")
         + "', toolCalls=" + rawToolCalls.size()
+        + ", hasMore=" + hasMore
         + ", providerRef='" + providerRef + "'}";
   }
 }

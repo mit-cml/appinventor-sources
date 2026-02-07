@@ -193,7 +193,10 @@ public class GeminiProvider implements LLMProvider {
         for (FunctionCallInfo fc : operationCalls) {
           rawCalls.add(new RawToolCall(fc.name, fc.argsJson));
         }
-        return new LLMResponse(textBuilder.toString(), rawCalls, newProviderRef);
+        // Add the model response to contents for continuation state
+        contents.put(content);
+        String contState = buildContinuationState(contents, systemPrompt, operationCalls);
+        return new LLMResponse(textBuilder.toString(), rawCalls, contState, true);
       }
 
       // Add the model response to contents
@@ -254,6 +257,190 @@ public class GeminiProvider implements LLMProvider {
     throw new LLMProviderException(
         "Gemini tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
         "The AI took too many steps to process your request. Please try again.");
+  }
+
+  @Override
+  public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
+      ReadOnlyToolResolver resolver) throws LLMProviderException {
+
+    JSONObject state;
+    try {
+      state = new JSONObject(continuationState);
+    } catch (JSONException e) {
+      throw new LLMProviderException(
+          "Invalid continuation state: " + e.getMessage(),
+          "Failed to continue the AI response. Please try again.");
+    }
+
+    JSONArray contents = state.getJSONArray("contents");
+    String systemPrompt = state.optString("systemPrompt", "");
+    JSONArray pendingFunctionCalls = state.getJSONArray("pendingFunctionCalls");
+
+    // Append a user content with functionResponse parts for each pending call
+    JSONArray responseParts = new JSONArray();
+    for (int i = 0; i < pendingFunctionCalls.length(); i++) {
+      JSONObject pending = pendingFunctionCalls.getJSONObject(i);
+      JSONObject responsePart = new JSONObject();
+      JSONObject functionResponse = new JSONObject();
+      functionResponse.put("name", pending.getString("name"));
+      functionResponse.put("response", new JSONObject().put("result", "Done."));
+      responsePart.put("functionResponse", functionResponse);
+      responseParts.put(responsePart);
+    }
+    contents.put(new JSONObject()
+        .put("role", "user")
+        .put("parts", responseParts));
+
+    JSONArray toolDeclarations = buildToolDeclarations(tools);
+
+    // Run the same tool-use loop as chat()
+    for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
+      JSONObject requestBody = new JSONObject();
+      requestBody.put("contents", contents);
+
+      if (systemPrompt != null && !systemPrompt.isEmpty()) {
+        JSONObject systemInstruction = new JSONObject();
+        JSONArray systemParts = new JSONArray();
+        systemParts.put(new JSONObject().put("text", systemPrompt));
+        systemInstruction.put("parts", systemParts);
+        requestBody.put("systemInstruction", systemInstruction);
+      }
+
+      if (toolDeclarations.length() > 0) {
+        JSONArray toolsArray = new JSONArray();
+        JSONObject toolsWrapper = new JSONObject();
+        toolsWrapper.put("functionDeclarations", toolDeclarations);
+        toolsArray.put(toolsWrapper);
+        requestBody.put("tools", toolsArray);
+      }
+
+      JSONObject generationConfig = new JSONObject();
+      generationConfig.put("maxOutputTokens", MAX_OUTPUT_TOKENS);
+      requestBody.put("generationConfig", generationConfig);
+
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Gemini continue request (iteration " + iteration + "):\n"
+            + requestBody.toString(2));
+      }
+      JSONObject responseJson = callApi(requestBody);
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Gemini continue response (iteration " + iteration + "):\n"
+            + responseJson.toString(2));
+      }
+
+      JSONArray candidates = responseJson.optJSONArray("candidates");
+      if (candidates == null || candidates.length() == 0) {
+        return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
+      }
+
+      JSONObject candidate = candidates.getJSONObject(0);
+      JSONObject content = candidate.optJSONObject("content");
+      if (content == null) {
+        return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
+      }
+
+      JSONArray parts = content.optJSONArray("parts");
+      if (parts == null) {
+        return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
+      }
+
+      StringBuilder textBuilder = new StringBuilder();
+      List<FunctionCallInfo> functionCalls = new ArrayList<>();
+
+      for (int i = 0; i < parts.length(); i++) {
+        JSONObject part = parts.getJSONObject(i);
+        if (part.has("text")) {
+          textBuilder.append(part.getString("text"));
+        } else if (part.has("functionCall")) {
+          JSONObject fc = part.getJSONObject("functionCall");
+          String name = fc.getString("name");
+          JSONObject args = fc.optJSONObject("args");
+          functionCalls.add(new FunctionCallInfo(
+              name, args != null ? args.toString() : "{}"));
+        }
+      }
+
+      // No function calls → final response
+      if (functionCalls.isEmpty()) {
+        return new LLMResponse(textBuilder.toString(), new ArrayList<RawToolCall>(), null, false);
+      }
+
+      // Classify function calls
+      List<FunctionCallInfo> readOnlyCalls = new ArrayList<>();
+      List<FunctionCallInfo> operationCalls = new ArrayList<>();
+
+      for (FunctionCallInfo fc : functionCalls) {
+        if (resolver != null && resolver.isReadOnly(fc.name)) {
+          readOnlyCalls.add(fc);
+        } else {
+          operationCalls.add(fc);
+        }
+      }
+
+      // No read-only tools → return operations with continuation
+      if (readOnlyCalls.isEmpty()) {
+        List<RawToolCall> rawCalls = new ArrayList<>();
+        for (FunctionCallInfo fc : operationCalls) {
+          rawCalls.add(new RawToolCall(fc.name, fc.argsJson));
+        }
+        contents.put(content);
+        String contState = buildContinuationState(contents, systemPrompt, operationCalls);
+        return new LLMResponse(textBuilder.toString(), rawCalls, contState, true);
+      }
+
+      // Resolve read-only tools and continue the loop
+      contents.put(content);
+      JSONArray roResponseParts = new JSONArray();
+      for (FunctionCallInfo fc : readOnlyCalls) {
+        String result;
+        try {
+          result = resolver.resolve(fc.name, fc.argsJson);
+        } catch (ReadOnlyToolException e) {
+          result = "Error: " + e.getMessage();
+        }
+        JSONObject roPart = new JSONObject();
+        JSONObject fr = new JSONObject();
+        fr.put("name", fc.name);
+        fr.put("response", new JSONObject().put("result", result));
+        roPart.put("functionResponse", fr);
+        roResponseParts.put(roPart);
+      }
+      for (FunctionCallInfo fc : operationCalls) {
+        JSONObject roPart = new JSONObject();
+        JSONObject fr = new JSONObject();
+        fr.put("name", fc.name);
+        fr.put("response", new JSONObject().put("result",
+            "This operation tool call has been queued for execution. "
+            + "Please continue with any remaining read-only lookups you need."));
+        roPart.put("functionResponse", fr);
+        roResponseParts.put(roPart);
+      }
+      contents.put(new JSONObject()
+          .put("role", "user")
+          .put("parts", roResponseParts));
+    }
+
+    throw new LLMProviderException(
+        "Gemini continuation tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
+        "The AI took too many steps to process your request. Please try again.");
+  }
+
+  /**
+   * Serializes the contents array, system prompt, and pending function call
+   * names into a JSON continuation state string.
+   */
+  private String buildContinuationState(JSONArray contents, String systemPrompt,
+      List<FunctionCallInfo> pendingCalls) {
+    JSONObject state = new JSONObject();
+    state.put("continuation", true);
+    state.put("contents", contents);
+    state.put("systemPrompt", systemPrompt != null ? systemPrompt : "");
+    JSONArray pending = new JSONArray();
+    for (FunctionCallInfo fc : pendingCalls) {
+      pending.put(new JSONObject().put("name", fc.name));
+    }
+    state.put("pendingFunctionCalls", pending);
+    return state.toString();
   }
 
   /**

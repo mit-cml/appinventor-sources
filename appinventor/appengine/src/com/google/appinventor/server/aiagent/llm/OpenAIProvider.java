@@ -134,10 +134,16 @@ public class OpenAIProvider implements LLMProvider {
         for (ToolCallInfo info : operationCalls) {
           rawCalls.add(new RawToolCall(info.name, info.argsJson));
         }
+        // Serialize continuation state so the caller can resume
+        // after applying operations (the assistant message with tool_calls
+        // must be in the messages array for tool result submission).
+        messages.put(message);
+        String contState = buildContinuationState(messages, operationCalls);
         return new LLMResponse(
             textContent != null ? textContent : "",
             rawCalls,
-            null);
+            contState,
+            true);
       }
 
       // Add the assistant message with tool_calls to messages
@@ -187,6 +193,154 @@ public class OpenAIProvider implements LLMProvider {
     throw new LLMProviderException(
         "OpenAI tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
         "The AI took too many steps to process your request. Please try again.");
+  }
+
+  @Override
+  public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
+      ReadOnlyToolResolver resolver) throws LLMProviderException {
+
+    JSONObject state;
+    try {
+      state = new JSONObject(continuationState);
+    } catch (JSONException e) {
+      throw new LLMProviderException(
+          "Invalid continuation state: " + e.getMessage(),
+          "Failed to continue the AI response. Please try again.");
+    }
+
+    JSONArray messages = state.getJSONArray("messages");
+    JSONArray pendingToolCalls = state.getJSONArray("pendingToolCalls");
+
+    // Append synthetic "Done." results for each pending tool call
+    for (int i = 0; i < pendingToolCalls.length(); i++) {
+      JSONObject pending = pendingToolCalls.getJSONObject(i);
+      messages.put(new JSONObject()
+          .put("role", "tool")
+          .put("tool_call_id", pending.getString("id"))
+          .put("content", "Done."));
+    }
+
+    JSONArray toolDefs = buildToolDefinitions(tools);
+
+    // Run the same tool-use loop as chat()
+    for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
+      JSONObject requestBody = new JSONObject();
+      requestBody.put("model", model);
+      requestBody.put("max_completion_tokens", MAX_TOKENS);
+      requestBody.put("messages", messages);
+      if (toolDefs.length() > 0) {
+        requestBody.put("tools", toolDefs);
+      }
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "OpenAI continue request (iteration " + iteration + "):\n"
+            + requestBody.toString(2));
+      }
+      JSONObject responseJson = callApi(requestBody);
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "OpenAI continue response (iteration " + iteration + "):\n"
+            + responseJson.toString(2));
+      }
+
+      JSONArray choices = responseJson.optJSONArray("choices");
+      if (choices == null || choices.length() == 0) {
+        return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
+      }
+
+      JSONObject choice = choices.getJSONObject(0);
+      JSONObject message = choice.getJSONObject("message");
+      String finishReason = choice.optString("finish_reason", "stop");
+
+      String textContent = message.optString("content", "");
+      JSONArray toolCallsArr = message.optJSONArray("tool_calls");
+
+      // No tool calls → final response
+      if (toolCallsArr == null || toolCallsArr.length() == 0
+          || !"tool_calls".equals(finishReason)) {
+        return new LLMResponse(
+            textContent != null ? textContent : "",
+            new ArrayList<RawToolCall>(),
+            null,
+            false);
+      }
+
+      // Classify tool calls
+      List<ToolCallInfo> readOnlyCalls = new ArrayList<>();
+      List<ToolCallInfo> operationCalls = new ArrayList<>();
+
+      for (int i = 0; i < toolCallsArr.length(); i++) {
+        JSONObject tc = toolCallsArr.getJSONObject(i);
+        String tcId = tc.getString("id");
+        JSONObject function = tc.getJSONObject("function");
+        String name = function.getString("name");
+        String args = function.optString("arguments", "{}");
+
+        ToolCallInfo info = new ToolCallInfo(tcId, name, args);
+        if (resolver != null && resolver.isReadOnly(name)) {
+          readOnlyCalls.add(info);
+        } else {
+          operationCalls.add(info);
+        }
+      }
+
+      // No read-only tools → return operations with continuation
+      if (readOnlyCalls.isEmpty()) {
+        List<RawToolCall> rawCalls = new ArrayList<>();
+        for (ToolCallInfo info : operationCalls) {
+          rawCalls.add(new RawToolCall(info.name, info.argsJson));
+        }
+        messages.put(message);
+        String contState = buildContinuationState(messages, operationCalls);
+        return new LLMResponse(
+            textContent != null ? textContent : "",
+            rawCalls,
+            contState,
+            true);
+      }
+
+      // Resolve read-only tools and continue the loop
+      messages.put(message);
+      for (ToolCallInfo info : readOnlyCalls) {
+        String result;
+        try {
+          result = resolver.resolve(info.name, info.argsJson);
+        } catch (ReadOnlyToolException e) {
+          result = "Error: " + e.getMessage();
+        }
+        messages.put(new JSONObject()
+            .put("role", "tool")
+            .put("tool_call_id", info.id)
+            .put("content", result));
+      }
+      for (ToolCallInfo info : operationCalls) {
+        messages.put(new JSONObject()
+            .put("role", "tool")
+            .put("tool_call_id", info.id)
+            .put("content", "This operation tool call has been queued for execution. "
+                + "Please continue with any remaining read-only lookups you need."));
+      }
+    }
+
+    throw new LLMProviderException(
+        "OpenAI continuation tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
+        "The AI took too many steps to process your request. Please try again.");
+  }
+
+  /**
+   * Serializes the messages array and pending tool call IDs into a JSON
+   * continuation state string.
+   */
+  private String buildContinuationState(JSONArray messages, List<ToolCallInfo> pendingCalls) {
+    JSONObject state = new JSONObject();
+    state.put("continuation", true);
+    state.put("messages", messages);
+    JSONArray pending = new JSONArray();
+    for (ToolCallInfo info : pendingCalls) {
+      pending.put(new JSONObject()
+          .put("id", info.id)
+          .put("name", info.name));
+    }
+    state.put("pendingToolCalls", pending);
+    return state.toString();
   }
 
   /**

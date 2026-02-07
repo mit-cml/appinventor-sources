@@ -140,10 +140,14 @@ public class OllamaProvider implements LLMProvider {
         for (ToolCallInfo info : operationCalls) {
           rawCalls.add(new RawToolCall(info.name, info.argsJson));
         }
+        // Serialize continuation state
+        messages.put(message);
+        String contState = buildContinuationState(messages, operationCalls);
         return new LLMResponse(
             textContent != null ? textContent : "",
             rawCalls,
-            null);
+            contState,
+            true);
       }
 
       // Add the assistant message with tool_calls to messages
@@ -191,6 +195,144 @@ public class OllamaProvider implements LLMProvider {
     throw new LLMProviderException(
         "Ollama tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
         "The AI took too many steps to process your request. Please try again.");
+  }
+
+  @Override
+  public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
+      ReadOnlyToolResolver resolver) throws LLMProviderException {
+
+    JSONObject state;
+    try {
+      state = new JSONObject(continuationState);
+    } catch (JSONException e) {
+      throw new LLMProviderException(
+          "Invalid continuation state: " + e.getMessage(),
+          "Failed to continue the AI response. Please try again.");
+    }
+
+    JSONArray messages = state.getJSONArray("messages");
+    JSONArray pendingToolCalls = state.getJSONArray("pendingToolCalls");
+
+    // Append synthetic "Done." results for each pending tool call
+    for (int i = 0; i < pendingToolCalls.length(); i++) {
+      messages.put(new JSONObject()
+          .put("role", "tool")
+          .put("content", "Done."));
+    }
+
+    JSONArray toolDefs = buildToolDefinitions(tools);
+
+    // Run the same tool-use loop as chat()
+    for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
+      JSONObject requestBody = new JSONObject();
+      requestBody.put("model", model);
+      requestBody.put("messages", messages);
+      requestBody.put("stream", false);
+      if (toolDefs.length() > 0) {
+        requestBody.put("tools", toolDefs);
+      }
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Ollama continue request (iteration " + iteration + "):\n"
+            + requestBody.toString(2));
+      }
+
+      JSONObject responseJson = callApi(requestBody);
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Ollama continue response (iteration " + iteration + "):\n"
+            + responseJson.toString(2));
+      }
+
+      JSONObject message = responseJson.optJSONObject("message");
+      if (message == null) {
+        return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
+      }
+
+      String textContent = message.optString("content", "");
+      JSONArray toolCallsArr = message.optJSONArray("tool_calls");
+
+      // No tool calls → final response
+      if (toolCallsArr == null || toolCallsArr.length() == 0) {
+        return new LLMResponse(
+            textContent != null ? textContent : "",
+            new ArrayList<RawToolCall>(),
+            null,
+            false);
+      }
+
+      // Classify tool calls
+      List<ToolCallInfo> readOnlyCalls = new ArrayList<>();
+      List<ToolCallInfo> operationCalls = new ArrayList<>();
+
+      for (int i = 0; i < toolCallsArr.length(); i++) {
+        JSONObject tc = toolCallsArr.getJSONObject(i);
+        JSONObject function = tc.getJSONObject("function");
+        String name = function.getString("name");
+        JSONObject args = function.optJSONObject("arguments");
+        String argsJson = args != null ? args.toString() : "{}";
+
+        ToolCallInfo info = new ToolCallInfo(name, argsJson);
+        if (resolver != null && resolver.isReadOnly(name)) {
+          readOnlyCalls.add(info);
+        } else {
+          operationCalls.add(info);
+        }
+      }
+
+      // No read-only tools → return operations with continuation
+      if (readOnlyCalls.isEmpty()) {
+        List<RawToolCall> rawCalls = new ArrayList<>();
+        for (ToolCallInfo info : operationCalls) {
+          rawCalls.add(new RawToolCall(info.name, info.argsJson));
+        }
+        messages.put(message);
+        String contState = buildContinuationState(messages, operationCalls);
+        return new LLMResponse(
+            textContent != null ? textContent : "",
+            rawCalls,
+            contState,
+            true);
+      }
+
+      // Resolve read-only tools and continue the loop
+      messages.put(message);
+      for (ToolCallInfo info : readOnlyCalls) {
+        String result;
+        try {
+          result = resolver.resolve(info.name, info.argsJson);
+        } catch (ReadOnlyToolException e) {
+          result = "Error: " + e.getMessage();
+        }
+        messages.put(new JSONObject()
+            .put("role", "tool")
+            .put("content", result));
+      }
+      for (ToolCallInfo info : operationCalls) {
+        messages.put(new JSONObject()
+            .put("role", "tool")
+            .put("content", "This operation tool call has been queued for execution. "
+                + "Please continue with any remaining read-only lookups you need."));
+      }
+    }
+
+    throw new LLMProviderException(
+        "Ollama continuation tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
+        "The AI took too many steps to process your request. Please try again.");
+  }
+
+  /**
+   * Serializes the messages array and pending tool call names into a JSON
+   * continuation state string.
+   */
+  private String buildContinuationState(JSONArray messages, List<ToolCallInfo> pendingCalls) {
+    JSONObject state = new JSONObject();
+    state.put("continuation", true);
+    state.put("messages", messages);
+    JSONArray pending = new JSONArray();
+    for (ToolCallInfo info : pendingCalls) {
+      pending.put(new JSONObject().put("name", info.name));
+    }
+    state.put("pendingToolCalls", pending);
+    return state.toString();
   }
 
   /**

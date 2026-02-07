@@ -140,7 +140,13 @@ public class AnthropicProvider implements LLMProvider {
         for (ToolUseBlock block : operationBlocks) {
           rawCalls.add(new RawToolCall(block.name, block.inputJson));
         }
-        return new LLMResponse(textBuilder.toString(), rawCalls, null);
+        // Serialize continuation state: the assistant content must be in
+        // the messages array so we can submit tool_result for each tool_use.
+        messages.put(new JSONObject()
+            .put("role", "assistant")
+            .put("content", content));
+        String contState = buildContinuationState(messages, systemPrompt, operationBlocks);
+        return new LLMResponse(textBuilder.toString(), rawCalls, contState, true);
       }
 
       // Resolve read-only tools and continue the loop
@@ -199,6 +205,168 @@ public class AnthropicProvider implements LLMProvider {
     throw new LLMProviderException(
         "Anthropic tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
         "The AI took too many steps to process your request. Please try again.");
+  }
+
+  @Override
+  public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
+      ReadOnlyToolResolver resolver) throws LLMProviderException {
+
+    JSONObject state;
+    try {
+      state = new JSONObject(continuationState);
+    } catch (JSONException e) {
+      throw new LLMProviderException(
+          "Invalid continuation state: " + e.getMessage(),
+          "Failed to continue the AI response. Please try again.");
+    }
+
+    JSONArray messages = state.getJSONArray("messages");
+    String systemPrompt = state.optString("systemPrompt", "");
+    JSONArray pendingToolUseIds = state.getJSONArray("pendingToolUseIds");
+
+    // Append a user message with tool_result blocks for each pending tool_use
+    JSONArray toolResults = new JSONArray();
+    for (int i = 0; i < pendingToolUseIds.length(); i++) {
+      JSONObject pending = pendingToolUseIds.getJSONObject(i);
+      toolResults.put(new JSONObject()
+          .put("type", "tool_result")
+          .put("tool_use_id", pending.getString("id"))
+          .put("content", "Done."));
+    }
+    messages.put(new JSONObject()
+        .put("role", "user")
+        .put("content", toolResults));
+
+    JSONArray toolDefs = buildToolDefinitions(tools);
+
+    // Run the same tool-use loop as chat()
+    for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
+      JSONObject requestBody = new JSONObject();
+      requestBody.put("model", model);
+      requestBody.put("max_tokens", MAX_TOKENS);
+      requestBody.put("system", systemPrompt);
+      requestBody.put("messages", messages);
+      if (toolDefs.length() > 0) {
+        requestBody.put("tools", toolDefs);
+      }
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Anthropic continue request (iteration " + iteration + "):\n"
+            + requestBody.toString(2));
+      }
+
+      JSONObject responseJson = callApi(requestBody);
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Anthropic continue response (iteration " + iteration + "):\n"
+            + responseJson.toString(2));
+      }
+
+      String stopReason = responseJson.optString("stop_reason", "end_turn");
+      JSONArray content = responseJson.optJSONArray("content");
+      if (content == null) {
+        content = new JSONArray();
+      }
+
+      StringBuilder textBuilder = new StringBuilder();
+      List<ToolUseBlock> toolUseBlocks = new ArrayList<>();
+
+      for (int i = 0; i < content.length(); i++) {
+        JSONObject block = content.getJSONObject(i);
+        String blockType = block.optString("type", "");
+        if ("text".equals(blockType)) {
+          textBuilder.append(block.optString("text", ""));
+        } else if ("tool_use".equals(blockType)) {
+          toolUseBlocks.add(new ToolUseBlock(
+              block.getString("id"),
+              block.getString("name"),
+              block.optJSONObject("input") != null
+                  ? block.getJSONObject("input").toString()
+                  : "{}"));
+        }
+      }
+
+      // No tool calls → final response
+      if (toolUseBlocks.isEmpty() || !"tool_use".equals(stopReason)) {
+        return new LLMResponse(textBuilder.toString(), new ArrayList<RawToolCall>(), null, false);
+      }
+
+      // Classify tool calls
+      List<ToolUseBlock> readOnlyBlocks = new ArrayList<>();
+      List<ToolUseBlock> operationBlocks = new ArrayList<>();
+
+      for (ToolUseBlock block : toolUseBlocks) {
+        if (resolver != null && resolver.isReadOnly(block.name)) {
+          readOnlyBlocks.add(block);
+        } else {
+          operationBlocks.add(block);
+        }
+      }
+
+      // No read-only tools → return operations with continuation
+      if (readOnlyBlocks.isEmpty()) {
+        List<RawToolCall> rawCalls = new ArrayList<>();
+        for (ToolUseBlock block : operationBlocks) {
+          rawCalls.add(new RawToolCall(block.name, block.inputJson));
+        }
+        messages.put(new JSONObject()
+            .put("role", "assistant")
+            .put("content", content));
+        String contState = buildContinuationState(messages, systemPrompt, operationBlocks);
+        return new LLMResponse(textBuilder.toString(), rawCalls, contState, true);
+      }
+
+      // Resolve read-only tools and continue the loop
+      messages.put(new JSONObject()
+          .put("role", "assistant")
+          .put("content", content));
+
+      JSONArray readOnlyResults = new JSONArray();
+      for (ToolUseBlock block : readOnlyBlocks) {
+        String result;
+        try {
+          result = resolver.resolve(block.name, block.inputJson);
+        } catch (ReadOnlyToolException e) {
+          result = "Error: " + e.getMessage();
+        }
+        readOnlyResults.put(new JSONObject()
+            .put("type", "tool_result")
+            .put("tool_use_id", block.id)
+            .put("content", result));
+      }
+      for (ToolUseBlock block : operationBlocks) {
+        readOnlyResults.put(new JSONObject()
+            .put("type", "tool_result")
+            .put("tool_use_id", block.id)
+            .put("content", "This operation tool call has been queued for execution. "
+                + "Please continue with any remaining read-only lookups you need."));
+      }
+      messages.put(new JSONObject()
+          .put("role", "user")
+          .put("content", readOnlyResults));
+    }
+
+    throw new LLMProviderException(
+        "Anthropic continuation tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
+        "The AI took too many steps to process your request. Please try again.");
+  }
+
+  /**
+   * Serializes the messages array, system prompt, and pending tool_use IDs
+   * into a JSON continuation state string.
+   */
+  private String buildContinuationState(JSONArray messages, String systemPrompt,
+      List<ToolUseBlock> pendingBlocks) {
+    JSONObject state = new JSONObject();
+    state.put("continuation", true);
+    state.put("messages", messages);
+    state.put("systemPrompt", systemPrompt);
+    JSONArray pending = new JSONArray();
+    for (ToolUseBlock block : pendingBlocks) {
+      pending.put(new JSONObject()
+          .put("id", block.id)
+          .put("name", block.name));
+    }
+    state.put("pendingToolUseIds", pending);
+    return state.toString();
   }
 
   /**

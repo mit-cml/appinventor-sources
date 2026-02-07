@@ -22,6 +22,12 @@ public interface AIAgentServiceAsync {
   void processRequest(AIAgentRequest request, AsyncCallback<AIAgentResponse> callback);
 
   /**
+   * @see AIAgentService#continueRequest(long, String)
+   */
+  void continueRequest(long projectId, String screenName,
+      AsyncCallback<AIAgentResponse> callback);
+
+  /**
    * @see AIAgentService#clearConversation(long)
    */
   void clearConversation(long projectId, AsyncCallback<Void> callback);

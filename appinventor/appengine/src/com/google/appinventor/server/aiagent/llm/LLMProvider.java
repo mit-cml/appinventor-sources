@@ -43,6 +43,25 @@ public interface LLMProvider {
       throws LLMProviderException;
 
   /**
+   * Continues a conversation after operation tool calls have been applied.
+   *
+   * <p>When a previous {@link #chat} or {@code continueWithToolResults} call
+   * returns an {@link LLMResponse} with {@link LLMResponse#hasMore()} set to
+   * {@code true}, the caller should apply the operations and then call this
+   * method to get the next batch. The provider sends synthetic "Done." results
+   * for each pending tool call and re-calls the LLM.
+   *
+   * @param continuationState the serialized conversation state from
+   *                          {@link LLMResponse#getProviderRef()}
+   * @param tools             the tool definitions (same as the original call)
+   * @param resolver          callback for resolving read-only tool calls
+   * @return the next LLM response (may have {@code hasMore = true} again)
+   * @throws LLMProviderException if the API call fails
+   */
+  LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
+      ReadOnlyToolResolver resolver) throws LLMProviderException;
+
+  /**
    * Returns true if this provider is stateless (does not use providerRef
    * for conversation continuity). Stateless providers require the full
    * conversation history to be passed on each call.

@@ -519,7 +519,8 @@ public class AIChatDialog extends DialogBox {
   /**
    * Applies the pending AI operations via the {@link AIOperationExecutor}.
    * Operations are executed asynchronously in phases; the callback reports
-   * the final result.
+   * the final result. If the response has more batches ({@code hasMore}),
+   * a continuation request is sent after successful application.
    */
   private void applyOperations() {
     if (pendingResponse == null) {
@@ -527,6 +528,7 @@ public class AIChatDialog extends DialogBox {
     }
 
     final List<AIOperation> operations = pendingResponse.getOperations();
+    final boolean hasMore = pendingResponse.hasMore();
     hideOperationPreview();
     setRequestInFlight(true);
 
@@ -535,12 +537,54 @@ public class AIChatDialog extends DialogBox {
         new AIOperationExecutor.ExecutionCallback() {
           @Override
           public void onComplete(AIOperationExecutor.ExecutionResult result) {
-            setRequestInFlight(false);
             if (result.isSuccess()) {
               addAiMessage(MESSAGES.aiChatOperationsApplied());
+              if (hasMore) {
+                // More batches expected — request the next one
+                startPollingStatus();
+                fetchContinuation();
+              } else {
+                setRequestInFlight(false);
+              }
             } else {
+              setRequestInFlight(false);
               addAiMessage(MESSAGES.aiChatApplyError() + ": " + result.getErrorMessage());
             }
+          }
+        });
+  }
+
+  /**
+   * Calls the continueRequest RPC to fetch the next batch of operations
+   * from a multi-step AI response. On success, displays the response
+   * via {@link #handleResponse}, which will show the operation preview
+   * for the user to apply or reject.
+   */
+  private void fetchContinuation() {
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId == 0) {
+      setRequestInFlight(false);
+      stopPollingStatus();
+      return;
+    }
+
+    String screenName = getCurrentScreenName();
+
+    aiAgentService.continueRequest(projectId, screenName,
+        new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
+          @Override
+          public void onSuccess(AIAgentResponse response) {
+            setRequestInFlight(false);
+            stopPollingStatus();
+            handleResponse(response);
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            setRequestInFlight(false);
+            stopPollingStatus();
+            addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
           }
         });
   }

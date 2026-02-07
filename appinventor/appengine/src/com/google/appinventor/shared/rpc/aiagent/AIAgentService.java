@@ -28,6 +28,18 @@ public interface AIAgentService extends RemoteService {
   AIAgentResponse processRequest(AIAgentRequest request);
 
   /**
+   * Continue a multi-step AI response. Called after the client has applied
+   * operations from a response where {@link AIAgentResponse#hasMore()} was
+   * {@code true}. Sends synthetic tool results to the LLM and returns the
+   * next batch of operations.
+   *
+   * @param projectId  the project ID
+   * @param screenName the current screen name
+   * @return the next batch of AI operations (may also have hasMore=true)
+   */
+  AIAgentResponse continueRequest(long projectId, String screenName);
+
+  /**
    * Clear the current conversation for a project.
    * Deletes the Memcache entry and all Datastore ConversationMessageData
    * entities. The next processRequest() will start fresh.

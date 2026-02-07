@@ -1,10 +1,18 @@
 [
   {
+    "description": "Advisor mode — text-only advice with no tool calls",
+    "user": "How should I organize a multi-screen quiz app?",
+    "assistant_text": "Here's a good approach for a multi-screen quiz app:\n\n1. **Screen1** — A welcome screen with a Start button. Store the score in a global variable.\n2. **QuestionScreen** — Display one question at a time using a Label and four Button options. Use a global list variable to hold your questions and another for the correct answers. Track the current question index.\n3. **ResultScreen** — Show the final score. Use a Label to display it and a Button to restart.\n\nFor navigation, use `open another screen with start value` to pass the score between screens. Keep your questions in a list so you can easily add more later.\n\nWould you like me to build any of these screens?",
+    "tool_calls": []
+  },
+  {
+    "description": "Simple component addition with explanation",
     "user": "Add a red button that says Hello",
-    "operations": [
+    "assistant_text": "I'll add a red button labeled \"Hello\" to your screen.",
+    "tool_calls": [
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Button",
           "name": "Button1",
           "properties": {
@@ -16,18 +24,20 @@
     ]
   },
   {
+    "description": "Counter app — multiple tools with variables and event handlers",
     "user": "Create a counter app with a label showing the count and a button to increment it",
-    "operations": [
+    "assistant_text": "I'll set up a counter app with a global variable to track the count, a label to display it, and a button that increments it on each click.",
+    "tool_calls": [
       {
-        "type": "SET_VARIABLE",
-        "payload": {
+        "tool": "set_variable",
+        "arguments": {
           "name": "count",
           "initial_value": "0"
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Label",
           "name": "CounterLabel",
           "properties": {
@@ -39,8 +49,8 @@
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Button",
           "name": "IncrementButton",
           "properties": {
@@ -50,8 +60,8 @@
         }
       },
       {
-        "type": "SET_EVENT_HANDLER",
-        "payload": {
+        "tool": "set_event_handler",
+        "arguments": {
           "component_name": "IncrementButton",
           "event_name": "Click",
           "body": "set global count to (global count + 1)\nset CounterLabel.Text to global count"
@@ -60,19 +70,21 @@
     ]
   },
   {
+    "description": "Login screen — layout, multiple components, and validation logic",
     "user": "Make a login screen with username, password, and a submit button that checks if the username is 'admin' and password is '1234'",
-    "operations": [
+    "assistant_text": "I'll build a login screen with a centered layout containing username and password fields, a submit button, and validation logic that checks the credentials.",
+    "tool_calls": [
       {
-        "type": "SET_PROPERTY",
-        "payload": {
+        "tool": "set_property",
+        "arguments": {
           "component_name": "Screen1",
           "property_name": "Title",
           "value": "Login"
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "VerticalArrangement",
           "name": "LoginLayout",
           "properties": {
@@ -84,11 +96,11 @@
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Label",
           "name": "TitleLabel",
-          "container": "LoginLayout",
+          "parent": "LoginLayout",
           "properties": {
             "Text": "Welcome",
             "FontSize": "28",
@@ -99,11 +111,11 @@
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "TextBox",
           "name": "UsernameBox",
-          "container": "LoginLayout",
+          "parent": "LoginLayout",
           "properties": {
             "Hint": "Enter username",
             "Width": "-2"
@@ -111,11 +123,11 @@
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "PasswordTextBox",
           "name": "PasswordBox",
-          "container": "LoginLayout",
+          "parent": "LoginLayout",
           "properties": {
             "Hint": "Enter password",
             "Width": "-2"
@@ -123,11 +135,11 @@
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Button",
           "name": "LoginButton",
-          "container": "LoginLayout",
+          "parent": "LoginLayout",
           "properties": {
             "Text": "Submit",
             "Width": "-2",
@@ -137,15 +149,15 @@
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Notifier",
           "name": "LoginNotifier"
         }
       },
       {
-        "type": "SET_EVENT_HANDLER",
-        "payload": {
+        "tool": "set_event_handler",
+        "arguments": {
           "component_name": "LoginButton",
           "event_name": "Click",
           "body": "if (UsernameBox.Text = \"admin\" and PasswordBox.Text = \"1234\") then\n  call LoginNotifier.ShowAlert(\"Login successful!\")\nelse\n  call LoginNotifier.ShowAlert(\"Invalid username or password.\")"
@@ -154,28 +166,29 @@
     ]
   },
   {
+    "description": "Procedure with return value, variable, and event handler",
     "user": "Add a procedure that calculates the average of a list of numbers and a button that shows the result",
-    "operations": [
+    "assistant_text": "I'll create a `calculateAverage` procedure that takes a list, sums the items, and returns the average. I'll also add a sample list of scores, a label to display the result, and a button to trigger the calculation.",
+    "tool_calls": [
       {
-        "type": "SET_PROCEDURE",
-        "payload": {
+        "tool": "set_procedure",
+        "arguments": {
           "name": "calculateAverage",
-          "parameters": ["numbers"],
+          "params": ["numbers"],
           "returns": true,
-          "body": "initialize local total to 0\n  for each item in numbers\n    set local total to (local total + item)\nreturn (local total / length of list numbers)",
-          "return_value": "(local total / length of list numbers)"
+          "body": "initialize local total to 0\nfor each item in numbers\n  set local total to (local total + item)\nreturn (local total / length of list numbers)"
         }
       },
       {
-        "type": "SET_VARIABLE",
-        "payload": {
+        "tool": "set_variable",
+        "arguments": {
           "name": "scores",
           "initial_value": "list(85, 90, 78, 92, 88)"
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Label",
           "name": "ResultLabel",
           "properties": {
@@ -185,8 +198,8 @@
         }
       },
       {
-        "type": "ADD_COMPONENT",
-        "payload": {
+        "tool": "add_component",
+        "arguments": {
           "component_type": "Button",
           "name": "CalcButton",
           "properties": {
@@ -195,8 +208,8 @@
         }
       },
       {
-        "type": "SET_EVENT_HANDLER",
-        "payload": {
+        "tool": "set_event_handler",
+        "arguments": {
           "component_name": "CalcButton",
           "event_name": "Click",
           "body": "set ResultLabel.Text to join(\"Average: \", call calculateAverage(global scores))"

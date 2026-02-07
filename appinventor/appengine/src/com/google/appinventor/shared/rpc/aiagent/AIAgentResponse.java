@@ -20,6 +20,7 @@ public class AIAgentResponse implements IsSerializable, Serializable {
   private String aiMessage;
   private List<AIOperation> operations;
   private boolean isNewConversation;
+  private boolean hasMore;
   private List<String> errors;
 
   /**
@@ -68,6 +69,14 @@ public class AIAgentResponse implements IsSerializable, Serializable {
 
   public void setNewConversation(boolean newConversation) {
     this.isNewConversation = newConversation;
+  }
+
+  public boolean hasMore() {
+    return hasMore;
+  }
+
+  public void setHasMore(boolean hasMore) {
+    this.hasMore = hasMore;
   }
 
   public List<String> getErrors() {

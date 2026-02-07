@@ -479,19 +479,27 @@ public class AIContextBuilder {
     switch (mode) {
       case "Advisor":
         sb.append("You are in Advisor mode. You can ONLY provide advice and answer questions. ")
-            .append("You CANNOT modify the project. Use lookup_component and lookup_screen ")
-            .append("tools to examine the project, then provide helpful guidance.\n");
+            .append("You CANNOT modify the project — no write tools are available to you. ")
+            .append("Use the lookup_component and lookup_screen tools to examine the project ")
+            .append("when needed, then provide helpful guidance in your text response. ")
+            .append("Your text response is your only way to communicate with the user.\n");
         break;
       case "ScreenEditor":
         sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
             .append("You cannot create, delete, or switch screens. ")
-            .append("Use the available tools to add/remove components, set properties, ")
-            .append("and create/modify event handlers and blocks.\n");
+            .append("To make changes, invoke the provided tools via function calling. ")
+            .append("Always include a text response explaining what you are doing or ")
+            .append("asking clarifying questions — do not return tool calls without ")
+            .append("an accompanying explanation.\n");
         break;
       case "ProjectEditor":
         sb.append("You are in ProjectEditor mode. You have full access to modify the project ")
             .append("including creating/deleting screens, modifying any screen, ")
-            .append("and setting project-level properties.\n");
+            .append("and setting project-level properties. ")
+            .append("To make changes, invoke the provided tools via function calling. ")
+            .append("Always include a text response explaining what you are doing or ")
+            .append("asking clarifying questions — do not return tool calls without ")
+            .append("an accompanying explanation.\n");
         break;
       default:
         break;

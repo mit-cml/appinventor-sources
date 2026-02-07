@@ -322,11 +322,16 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       clearStatus(projectId);
 
+      boolean hasMore = llmResponse.hasMore() && !operations.isEmpty();
       AIDebug.log(LOG, "Final response: operations=" + operations.size()
           + ", errors=" + allErrors.size()
+          + ", hasMore=" + hasMore
           + ", textLen=" + assistantText.length());
 
-      return new AIAgentResponse(assistantText, operations, isNew, allErrors);
+      AIAgentResponse agentResponse =
+          new AIAgentResponse(assistantText, operations, isNew, allErrors);
+      agentResponse.setHasMore(hasMore);
+      return agentResponse;
 
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error", e);
@@ -334,6 +339,139 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       return errorResponse(e.getUserFacingMessage());
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unexpected error in AI agent", e);
+      clearStatus(projectId);
+      return errorResponse("An unexpected error occurred. Please try again.");
+    }
+  }
+
+  @Override
+  public AIAgentResponse continueRequest(long projectId, String screenName) {
+    String userId = userInfoProvider.getUserId();
+
+    // Project ownership check
+    try {
+      storageIo.assertUserHasProject(userId, projectId);
+    } catch (SecurityException e) {
+      return errorResponse("You do not have access to this project.");
+    }
+
+    // Get mode
+    String mode = getProjectAIMode(userId, projectId);
+    if ("Off".equals(mode)) {
+      return errorResponse("AI agent is disabled for this project.");
+    }
+
+    AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
+        + ", screen=" + screenName + ", mode=" + mode);
+
+    try {
+      updateStatus(projectId, "Continuing AI response...");
+
+      // Load conversation state from memcache
+      ConversationState conv = getConversation(projectId);
+      if (conv == null || conv.providerRef == null || conv.providerRef.isEmpty()) {
+        clearStatus(projectId);
+        return errorResponse("No continuation state available. Please start a new request.");
+      }
+
+      // Get provider and rebuild tools
+      LLMProvider provider = LLMProviderRegistry.get(conv.providerName);
+      List<LLMTool> tools = contextBuilder.buildTools(mode);
+      ReadOnlyToolResolver resolver = createResolver(userId, projectId);
+
+      AIDebug.log(LOG, "continueRequest: provider=" + conv.providerName
+          + ", providerRef length=" + conv.providerRef.length());
+
+      updateStatus(projectId, "Calling AI...");
+
+      // Call the continuation method
+      LLMResponse llmResponse = provider.continueWithToolResults(
+          conv.providerRef, tools, resolver);
+
+      // Debug: raw LLM response
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Continue raw LLM response text: "
+            + (llmResponse.getText() != null ? llmResponse.getText() : "(null)"));
+        StringBuilder tcInfo = new StringBuilder("Continue raw tool calls: "
+            + llmResponse.getRawToolCalls().size());
+        for (RawToolCall tc : llmResponse.getRawToolCalls()) {
+          tcInfo.append("\n  ").append(tc.getName()).append(": ").append(tc.getArgumentsJson());
+        }
+        AIDebug.log(LOG, tcInfo.toString());
+      }
+
+      // Parse tool calls
+      List<LLMResponseParser.RawToolCall> rawCalls = new ArrayList<>();
+      for (RawToolCall tc : llmResponse.getRawToolCalls()) {
+        rawCalls.add(new LLMResponseParser.RawToolCall(tc.getName(), tc.getArgumentsJson()));
+      }
+
+      LLMResponseParser.ParseResult parseResult = responseParser.parseToolCalls(rawCalls);
+      List<String> allErrors = new ArrayList<>(parseResult.getErrors());
+      List<AIOperation> operations = parseResult.getOperations();
+
+      // Mode + semantic validation
+      if (!operations.isEmpty()) {
+        updateStatus(projectId, "Validating operations...");
+
+        AIOperationValidator.ValidationResult modeResult =
+            validator.validateForMode(operations, mode);
+        if (modeResult.hasErrors()) {
+          allErrors.addAll(modeResult.getErrors());
+          operations = modeResult.getAccepted();
+        }
+
+        if (!operations.isEmpty()) {
+          AIOperationValidator.ValidationResult semanticResult =
+              validator.validateOperations(operations, getComponentDb());
+          if (semanticResult.hasErrors()) {
+            allErrors.addAll(semanticResult.getErrors());
+            operations = semanticResult.getAccepted();
+          }
+        }
+      }
+
+      // Convert pseudocode bodies to Blockly XML
+      if (!operations.isEmpty()) {
+        Map<String, String> componentTypes =
+            buildComponentTypeMap(userId, projectId, screenName);
+        operations = convertPseudocodeToXml(operations, componentTypes);
+      }
+
+      // Belt-and-suspenders: strip write ops in Advisor mode
+      operations = validator.stripWriteOpsIfAdvisor(operations, mode);
+
+      // Update conversation state with new providerRef
+      conv = new ConversationState(conv.providerName, conv.conversationId,
+          llmResponse.getProviderRef());
+      saveConversation(projectId, conv);
+
+      // Save assistant response to history
+      String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+      if (assistantText.isEmpty() && !operations.isEmpty()) {
+        assistantText = summarizeOperations(operations);
+      }
+      storeMessage(conv.conversationId, "assistant", assistantText);
+
+      clearStatus(projectId);
+
+      boolean hasMore = llmResponse.hasMore() && !operations.isEmpty();
+      AIDebug.log(LOG, "Continue response: operations=" + operations.size()
+          + ", errors=" + allErrors.size()
+          + ", hasMore=" + hasMore
+          + ", textLen=" + assistantText.length());
+
+      AIAgentResponse agentResponse =
+          new AIAgentResponse(assistantText, operations, false, allErrors);
+      agentResponse.setHasMore(hasMore);
+      return agentResponse;
+
+    } catch (LLMProviderException e) {
+      LOG.log(Level.WARNING, "LLM provider error in continuation", e);
+      clearStatus(projectId);
+      return errorResponse(e.getUserFacingMessage());
+    } catch (Exception e) {
+      LOG.log(Level.SEVERE, "Unexpected error in AI agent continuation", e);
       clearStatus(projectId);
       return errorResponse("An unexpected error occurred. Please try again.");
     }
