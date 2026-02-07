@@ -816,7 +816,7 @@ public class AIChatDialog extends DialogBox {
     if (toolbar != null) {
       DesignToolbar.DesignProject project = toolbar.getCurrentProject();
       if (project != null) {
-        return project.projectId;
+        return project.getProjectId();
       }
     }
     return 0;

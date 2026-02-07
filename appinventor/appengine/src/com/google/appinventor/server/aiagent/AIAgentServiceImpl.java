@@ -338,7 +338,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     Objectify ofy = ObjectifyService.begin();
     List<ConversationMessageData> messages =
         ofy.query(ConversationMessageData.class)
-            .filter("userId", userId)
             .filter("projectId", projectId)
             .list();
     for (ConversationMessageData msg : messages) {
@@ -562,6 +561,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private List<AIOperation> convertPseudocodeToXml(List<AIOperation> operations,
       Map<String, String> componentTypes) {
     PseudocodeParser parser = new PseudocodeParser();
+    parser.setComponentInfo(componentTypes, getComponentDb());
     List<AIOperation> converted = new ArrayList<>();
 
     for (AIOperation op : operations) {
@@ -572,6 +572,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           JSONObject payload = new JSONObject(op.getPayload());
           String pseudocode = reconstructPseudocode(op.getType(), payload);
           String blocksXml = parser.parse(pseudocode);
+          if (!parser.getWarnings().isEmpty()) {
+            LOG.info("Pseudocode validation warnings for " + op.getType()
+                + ": " + parser.getWarnings());
+          }
           blocksXml = fillComponentTypes(blocksXml, componentTypes);
           payload.put("blocksXml", blocksXml);
           converted.add(new AIOperation(op.getType(), payload.toString()));
