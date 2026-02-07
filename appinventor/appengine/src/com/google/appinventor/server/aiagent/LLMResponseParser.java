@@ -7,6 +7,7 @@ package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -165,10 +166,37 @@ public class LLMResponseParser {
         }
       }
 
+      // Type coercion for known fields
+      try {
+        coerceTypes(toolName, args);
+      } catch (JSONException e) {
+        errors.add("Type coercion failed for " + toolName + ": " + e.getMessage());
+        continue;
+      }
+
       operations.add(new AIOperation(type, args.toString()));
     }
 
     return new ParseResult(operations, errors);
+  }
+
+  /**
+   * Coerce JSON fields to their expected types.
+   * Ensures {@code properties} in {@code add_component} is a JSON object,
+   * {@code parameters} in {@code set_procedure} is a JSON array, etc.
+   */
+  private void coerceTypes(String toolName, JSONObject args) throws JSONException {
+    if ("add_component".equals(toolName)) {
+      Object properties = args.opt("properties");
+      if (properties instanceof String) {
+        args.put("properties", new JSONObject((String) properties));
+      }
+    } else if ("set_procedure".equals(toolName)) {
+      Object params = args.opt("parameters");
+      if (params instanceof String) {
+        args.put("parameters", new JSONArray((String) params));
+      }
+    }
   }
 
   /**

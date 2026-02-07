@@ -5,6 +5,10 @@
 
 package com.google.appinventor.server.aiagent;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -192,8 +196,152 @@ public class PseudocodeParser {
   // Constructor
   // -------------------------------------------------------------------------
 
+  // Optional component info for semantic validation
+  private Map<String, String> componentTypes;   // instance name → type name
+  private Map<String, CatalogEntry> catalog;    // type name → entry
+  private final List<String> warnings = new ArrayList<>();
+
   public PseudocodeParser() {
     this.xmlGen = new BlocksXmlGenerator();
+  }
+
+  /**
+   * Set component information for semantic validation of component, property,
+   * event and method references in pseudocode.
+   *
+   * @param componentTypes map from instance name to component type name
+   * @param componentDbJson the simple_components.json string (may be null)
+   */
+  public void setComponentInfo(Map<String, String> componentTypes, String componentDbJson) {
+    this.componentTypes = componentTypes;
+    this.catalog = parseCatalog(componentDbJson);
+  }
+
+  /**
+   * Returns validation warnings collected during the last {@link #parse} call.
+   * Warnings indicate component/property/event/method references that could
+   * not be verified against the component database.
+   *
+   * @return unmodifiable list of warning messages
+   */
+  public List<String> getWarnings() {
+    return Collections.unmodifiableList(warnings);
+  }
+
+  // -------------------------------------------------------------------------
+  // Component catalog
+  // -------------------------------------------------------------------------
+
+  private static class CatalogEntry {
+    final Set<String> properties;
+    final Set<String> events;
+    final Set<String> methods;
+
+    CatalogEntry(Set<String> properties, Set<String> events, Set<String> methods) {
+      this.properties = properties;
+      this.events = events;
+      this.methods = methods;
+    }
+  }
+
+  private static Map<String, CatalogEntry> parseCatalog(String json) {
+    Map<String, CatalogEntry> result = new HashMap<>();
+    if (json == null || json.isEmpty()) {
+      return result;
+    }
+    try {
+      JSONArray components = new JSONArray(json);
+      for (int i = 0; i < components.length(); i++) {
+        JSONObject comp = components.getJSONObject(i);
+        String name = comp.optString("name", "");
+        if (name.isEmpty()) {
+          continue;
+        }
+
+        Set<String> props = new HashSet<>();
+        JSONArray blockProps = comp.optJSONArray("blockProperties");
+        if (blockProps != null) {
+          for (int j = 0; j < blockProps.length(); j++) {
+            String pn = blockProps.getJSONObject(j).optString("name", "");
+            if (!pn.isEmpty()) {
+              props.add(pn);
+            }
+          }
+        }
+
+        Set<String> events = new HashSet<>();
+        JSONArray evts = comp.optJSONArray("events");
+        if (evts != null) {
+          for (int j = 0; j < evts.length(); j++) {
+            String en = evts.getJSONObject(j).optString("name", "");
+            if (!en.isEmpty()) {
+              events.add(en);
+            }
+          }
+        }
+
+        Set<String> methods = new HashSet<>();
+        JSONArray meths = comp.optJSONArray("methods");
+        if (meths != null) {
+          for (int j = 0; j < meths.length(); j++) {
+            String mn = meths.getJSONObject(j).optString("name", "");
+            if (!mn.isEmpty()) {
+              methods.add(mn);
+            }
+          }
+        }
+
+        result.put(name, new CatalogEntry(props, events, methods));
+      }
+    } catch (JSONException e) {
+      // Catalog unavailable; validation will be skipped
+    }
+    return result;
+  }
+
+  /**
+   * Resolve a component instance name to its type, then look up the
+   * catalog entry.  Returns null if the type is unknown or not in catalog.
+   */
+  private CatalogEntry resolveInstance(String instanceName) {
+    if (catalog == null || componentTypes == null) {
+      return null;
+    }
+    String typeName = componentTypes.get(instanceName);
+    if (typeName == null) {
+      return null;
+    }
+    return catalog.get(typeName);
+  }
+
+  private void warnEvent(String instanceOrType, String eventName, boolean isGeneric) {
+    CatalogEntry entry = isGeneric
+        ? (catalog != null ? catalog.get(instanceOrType) : null)
+        : resolveInstance(instanceOrType);
+    if (entry != null && !entry.events.contains(eventName)) {
+      warnings.add("Event '" + eventName + "' not found on component type '"
+          + (isGeneric ? instanceOrType : componentTypes.get(instanceOrType)) + "'");
+    }
+  }
+
+  private void warnProperty(String instanceOrType, String propName, boolean isGeneric) {
+    CatalogEntry entry = isGeneric
+        ? (catalog != null ? catalog.get(instanceOrType) : null)
+        : resolveInstance(instanceOrType);
+    if (entry != null && !entry.properties.contains(propName)) {
+      warnings.add("Property '" + propName + "' not found on component type '"
+          + (isGeneric ? instanceOrType : componentTypes.get(instanceOrType)) + "'");
+    }
+  }
+
+  private void warnMethod(String instanceOrType, String methodName, boolean isGeneric) {
+    CatalogEntry entry = isGeneric
+        ? (catalog != null ? catalog.get(instanceOrType) : null)
+        : resolveInstance(instanceOrType);
+    if (entry != null && !entry.methods.contains(methodName)) {
+      warnings.add("Method '" + methodName + "' not found on component type '"
+          + (isGeneric ? instanceOrType : componentTypes.get(instanceOrType)) + "'");
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -208,6 +356,8 @@ public class PseudocodeParser {
    * @throws PseudocodeParseException if the pseudocode is malformed
    */
   public String parse(String pseudocode) throws PseudocodeParseException {
+    warnings.clear();
+
     if (pseudocode == null || pseudocode.trim().isEmpty()) {
       return xmlGen.wrapInXmlBlock("");
     }
@@ -378,6 +528,7 @@ public class PseudocodeParser {
     String instanceName = m.group(1);
     String eventName = m.group(2);
     List<String> params = splitParams(m.group(3));
+    warnEvent(instanceName, eventName, false);
 
     String bodyXml = parseBody(state, baseIndent + 1);
     return xmlGen.generateEventHandler(instanceName, eventName, params, bodyXml);
@@ -391,6 +542,7 @@ public class PseudocodeParser {
     String componentType = m.group(1);
     String eventName = m.group(2);
     List<String> params = splitParams(m.group(3));
+    warnEvent(componentType, eventName, true);
 
     String bodyXml = parseBody(state, baseIndent + 1);
     return xmlGen.generateGenericEventHandler(componentType, eventName, params, bodyXml);
@@ -572,6 +724,7 @@ public class PseudocodeParser {
       String propName = m.group(2);
       String compExprStr = m.group(3);
       String valueExprStr = m.group(4);
+      warnProperty(typeName, propName, true);
       String compXml = parseExprInternal(compExprStr);
       String valueXml = parseExprInternal(valueExprStr);
       return xmlGen.generateGenericPropertySet(typeName, propName, compXml, valueXml);
@@ -583,6 +736,7 @@ public class PseudocodeParser {
       state.advance();
       String instName = m.group(1);
       String propName = m.group(2);
+      warnProperty(instName, propName, false);
       String valueXml = parseExprInternal(m.group(3));
       return xmlGen.generatePropertySet(instName, propName, valueXml);
     }
@@ -595,6 +749,7 @@ public class PseudocodeParser {
       String methodName = m.group(2);
       String compExprStr = m.group(3);
       String argsStr = m.group(4);
+      warnMethod(typeName, methodName, true);
       String compXml = parseExprInternal(compExprStr);
       List<String> argXmls = parseArgList(argsStr);
       return xmlGen.generateGenericMethodCall(typeName, methodName, compXml, argXmls, false);
@@ -607,6 +762,7 @@ public class PseudocodeParser {
       String instOrType = m.group(1);
       String methodName = m.group(2);
       String argsStr = m.group(3);
+      warnMethod(instOrType, methodName, false);
       List<String> argXmls = parseArgList(argsStr);
 
       // Heuristic: if it contains a dot-less name, it's a component method call.

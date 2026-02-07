@@ -7,13 +7,19 @@ package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Stage 2 semantic validation and mode enforcement for AI-generated operations.
@@ -21,6 +27,8 @@ import java.util.Set;
  * AI agent mode restrictions (Advisor, ScreenEditor, ProjectEditor).
  */
 public class AIOperationValidator {
+
+  private static final Logger LOG = Logger.getLogger(AIOperationValidator.class.getName());
 
   /**
    * Result of validation.
@@ -142,8 +150,10 @@ public class AIOperationValidator {
       return new ValidationResult(accepted, errors);
     }
 
+    Map<String, ComponentInfo> catalog = parseComponentDb(componentDb);
+
     for (AIOperation op : operations) {
-      List<String> opErrors = validateSingleOperation(op);
+      List<String> opErrors = validateSingleOperation(op, catalog);
       if (opErrors.isEmpty()) {
         accepted.add(op);
       } else {
@@ -154,7 +164,8 @@ public class AIOperationValidator {
     return new ValidationResult(accepted, errors);
   }
 
-  private List<String> validateSingleOperation(AIOperation op) {
+  private List<String> validateSingleOperation(AIOperation op,
+      Map<String, ComponentInfo> catalog) {
     List<String> errors = new ArrayList<>();
     JSONObject payload;
 
@@ -166,6 +177,10 @@ public class AIOperationValidator {
     }
 
     switch (op.getType()) {
+      case ADD_COMPONENT:
+        validateAddComponent(payload, catalog, errors);
+        break;
+
       case SET_PROPERTY:
         validateProtectedProperty(
             payload.optString("property_name", ""),
@@ -184,6 +199,121 @@ public class AIOperationValidator {
     }
 
     return errors;
+  }
+
+  /**
+   * Validate an ADD_COMPONENT operation against the component catalog.
+   * Checks that the component type exists and that all specified properties
+   * are valid for that type.
+   */
+  private void validateAddComponent(JSONObject payload,
+      Map<String, ComponentInfo> catalog, List<String> errors) {
+    String componentType = payload.optString("component_type", "");
+    if (componentType.isEmpty()) {
+      return; // Missing field is caught by LLMResponseParser
+    }
+
+    if (catalog.isEmpty()) {
+      return; // No catalog available; skip validation
+    }
+
+    ComponentInfo info = catalog.get(componentType);
+    if (info == null) {
+      errors.add("Unknown component type: " + componentType);
+      return;
+    }
+
+    JSONObject props = payload.optJSONObject("properties");
+    if (props != null) {
+      Iterator<String> keys = props.keys();
+      while (keys.hasNext()) {
+        String propName = keys.next();
+        if (propName.startsWith("$")) {
+          continue; // Skip internal metadata ($Type, $Version, etc.)
+        }
+        if (!info.properties.contains(propName)) {
+          errors.add("Unknown property '" + propName
+              + "' for component type " + componentType);
+        }
+      }
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Component catalog parsing
+  // -------------------------------------------------------------------------
+
+  /**
+   * Parsed component type information from simple_components.json.
+   */
+  private static class ComponentInfo {
+    final Set<String> properties;
+    final Set<String> events;
+    final Set<String> methods;
+
+    ComponentInfo(Set<String> properties, Set<String> events, Set<String> methods) {
+      this.properties = properties;
+      this.events = events;
+      this.methods = methods;
+    }
+  }
+
+  /**
+   * Parse the simple_components.json string into a lookup map.
+   */
+  private Map<String, ComponentInfo> parseComponentDb(String componentDb) {
+    Map<String, ComponentInfo> catalog = new HashMap<>();
+    if (componentDb == null || componentDb.isEmpty()) {
+      return catalog;
+    }
+    try {
+      JSONArray components = new JSONArray(componentDb);
+      for (int i = 0; i < components.length(); i++) {
+        JSONObject comp = components.getJSONObject(i);
+        String name = comp.optString("name", "");
+        if (name.isEmpty()) {
+          continue;
+        }
+
+        Set<String> properties = new HashSet<>();
+        JSONArray blockProps = comp.optJSONArray("blockProperties");
+        if (blockProps != null) {
+          for (int j = 0; j < blockProps.length(); j++) {
+            String pName = blockProps.getJSONObject(j).optString("name", "");
+            if (!pName.isEmpty()) {
+              properties.add(pName);
+            }
+          }
+        }
+
+        Set<String> events = new HashSet<>();
+        JSONArray evts = comp.optJSONArray("events");
+        if (evts != null) {
+          for (int j = 0; j < evts.length(); j++) {
+            String eName = evts.getJSONObject(j).optString("name", "");
+            if (!eName.isEmpty()) {
+              events.add(eName);
+            }
+          }
+        }
+
+        Set<String> methods = new HashSet<>();
+        JSONArray meths = comp.optJSONArray("methods");
+        if (meths != null) {
+          for (int j = 0; j < meths.length(); j++) {
+            String mName = meths.getJSONObject(j).optString("name", "");
+            if (!mName.isEmpty()) {
+              methods.add(mName);
+            }
+          }
+        }
+
+        catalog.put(name, new ComponentInfo(properties, events, methods));
+      }
+    } catch (JSONException e) {
+      LOG.warning("Failed to parse component database: " + e.getMessage());
+    }
+    return catalog;
   }
 
   private void validateProtectedProperty(String propertyName, List<String> errors) {
