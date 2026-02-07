@@ -328,15 +328,27 @@ public class StoredData {
     String allowedExtensions;
   }
 
-  // AI Agent conversation message, stored per-user per-project
+  // AI Agent conversation message, keyed by conversationId (UUID).
+  // All providers store messages here; stateless providers use them for LLM context,
+  // stateful providers use them for client-side conversation restore after page reload.
   @Unindexed
-  public static final class ConversationMessageData {
+  public static final class ConversationMessageData implements Serializable {
     @Id Long id;
-    @Indexed public String userId;
-    @Indexed public long projectId;
+
+    // The conversation this message belongs to (plain UUID).
+    @Indexed public String conversationId;
+
+    // Server-side System.currentTimeMillis(); sort key when loading history.
+    public long timestamp;
+
+    // Ordering tiebreaker within the same millisecond. Guarantees user message
+    // always comes before assistant response even if both share the same timestamp.
+    public int sequence;
+
     public String role;      // "user" or "assistant"
-    public String text;
-    @Indexed public long timestamp;
+    public String text;      // Message content (natural language only)
+
+    public long expiresAt;   // timestamp + 24h, for cleanup
   }
 
   public static final class ProjectNotFoundException extends IOException {
