@@ -1046,6 +1046,94 @@ public class BlocklyPanel extends HTMLPanel {
       .verifyAllBlocks();
   }-*/;
 
+  /**
+   * Append blocks to the existing workspace from an XML string.
+   * Saves and restores the main workspace for multi-workspace safety.
+   * Calls block.verify() on new blocks after injection.
+   *
+   * @param xmlString Blockly XML containing blocks to inject
+   */
+  public native void injectBlocksXml(String xmlString) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var previousMainWorkspace = $wnd.Blockly.common.getMainWorkspace();
+    try {
+      $wnd.Blockly.common.setMainWorkspace(workspace);
+      var parser = new DOMParser();
+      var dom = parser.parseFromString(xmlString, 'text/xml');
+      var xmlNode = dom.documentElement;
+      var newBlockIds = $wnd.Blockly.Xml.domToWorkspace(xmlNode, workspace);
+      // Verify new blocks
+      for (var i = 0; i < newBlockIds.length; i++) {
+        var block = workspace.getBlockById(newBlockIds[i]);
+        if (block && block.verify) {
+          block.verify();
+        }
+      }
+    } finally {
+      $wnd.Blockly.common.setMainWorkspace(previousMainWorkspace);
+    }
+  }-*/;
+
+  /**
+   * Delete a top-level block by type and identifying information.
+   * For component_event: matches mutation instance_name + event_name.
+   * For global_declaration: matches NAME field value.
+   * For procedures_defnoreturn/defreturn: matches NAME field value.
+   *
+   * @param blockType the Blockly block type
+   * @param instanceName the component instance name (for component_event), or null
+   * @param identifier the event/variable/procedure name
+   * @return true if a matching block was found and deleted
+   */
+  public native boolean deleteBlockByTypeAndId(String blockType, String instanceName,
+      String identifier) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var topBlocks = workspace.getTopBlocks(false);
+    for (var i = 0; i < topBlocks.length; i++) {
+      var block = topBlocks[i];
+      if (block.type === blockType) {
+        if (blockType === 'component_event') {
+          var mutation = block.mutationToDom && block.mutationToDom();
+          if (mutation
+              && mutation.getAttribute('instance_name') === instanceName
+              && mutation.getAttribute('event_name') === identifier) {
+            block.dispose(true);
+            return true;
+          }
+        } else if (blockType === 'global_declaration') {
+          var nameField = block.getField('NAME');
+          if (nameField && nameField.getValue() === identifier) {
+            block.dispose(true);
+            return true;
+          }
+        } else if (blockType === 'procedures_defnoreturn'
+            || blockType === 'procedures_defreturn') {
+          var nameField = block.getField('NAME');
+          if (nameField && nameField.getValue() === identifier) {
+            block.dispose(true);
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }-*/;
+
+  /**
+   * Replace a block by deleting the existing one (if any) and injecting new XML.
+   * Combines deleteBlockByTypeAndId + injectBlocksXml for create-or-replace semantics.
+   *
+   * @param blockType the Blockly block type
+   * @param instanceName the component instance name (for component_event), or null
+   * @param identifier the event/variable/procedure name
+   * @param newBlockXml Blockly XML for the replacement block
+   */
+  public void replaceBlock(String blockType, String instanceName, String identifier,
+      String newBlockXml) {
+    deleteBlockByTypeAndId(blockType, instanceName, identifier);
+    injectBlocksXml(newBlockXml);
+  }
+
   public native void doFetchBlocksImage(Callback<String,String> callback) /*-{
     var callb = $entry(function(result, error) {
       if (error) {

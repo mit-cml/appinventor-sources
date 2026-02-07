@@ -662,6 +662,32 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     }
   }
 
+  /**
+   * Append blocks to the workspace from an XML string.
+   * Used by AIOperationExecutor to inject AI-generated blocks.
+   */
+  public void injectBlocksXml(String xmlString) {
+    blocksArea.injectBlocksXml(xmlString);
+  }
+
+  /**
+   * Delete a block by type and identifying information.
+   * Used by AIOperationExecutor to remove blocks before replacement.
+   */
+  public boolean deleteBlock(String blockType, String instanceName, String identifier) {
+    return blocksArea.deleteBlockByTypeAndId(blockType, instanceName, identifier);
+  }
+
+  /**
+   * Replace a block: delete existing (if any) then inject new XML.
+   * Used by AIOperationExecutor for create-or-replace semantics on
+   * event handlers, variables, and procedures.
+   */
+  public void replaceBlock(String blockType, String instanceName, String identifier,
+      String newBlockXml) {
+    blocksArea.replaceBlock(blockType, instanceName, identifier, newBlockXml);
+  }
+
   private void updateBlocksTree(DesignerRootComponent root,
                                 SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];
