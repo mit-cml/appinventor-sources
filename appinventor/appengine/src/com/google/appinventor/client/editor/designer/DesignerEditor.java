@@ -604,11 +604,14 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     // Component name and type
     String componentType = properties.get("$Type").asString().getString();
 
-    // Set the name of the component (on instantiation components are assigned a generated name)
+    // Set the name of the component (on instantiation components are assigned a generated name).
+    // $Name may be absent when a component is created programmatically (e.g. by the AI agent)
+    // in order to keep the auto-generated name and allow the caller to use rename() afterward.
     boolean shouldRename = false;
-    String componentName = properties.get("$Name").asString().getString();
+    JSONValue nameVal = properties.get("$Name");
+    String componentName = (nameVal != null) ? nameVal.asString().getString() : null;
 
-    if (componentType.equals("Alexa")) {
+    if (componentName != null && componentType.equals("Alexa")) {
       componentName = componentName.replaceAll("_", ".");
     }
 
@@ -662,10 +665,12 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
       }
     }
 
-    if (shouldRename) {
-      mockComponent.rename(componentName);
-    } else {
-      mockComponent.changeProperty(PROPERTY_NAME_NAME, componentName);
+    if (componentName != null) {
+      if (shouldRename) {
+        mockComponent.rename(componentName);
+      } else {
+        mockComponent.changeProperty(PROPERTY_NAME_NAME, componentName);
+      }
     }
 
     // Set component properties
