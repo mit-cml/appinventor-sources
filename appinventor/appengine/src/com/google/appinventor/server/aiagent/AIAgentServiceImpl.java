@@ -588,7 +588,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         String event = payload.optString("event_name", "");
         String body = payload.optString("body", "");
         StringBuilder sb = new StringBuilder();
-        sb.append("when ").append(component).append(".").append(event).append(" do\n");
+        sb.append("when ").append(component).append(".").append(event).append("() do\n");
         for (String line : body.split("\n")) {
           sb.append("  ").append(line).append("\n");
         }
@@ -604,24 +604,22 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         String body = payload.optString("body", "");
         boolean hasReturn = payload.has("returns") && !payload.isNull("returns");
         StringBuilder sb = new StringBuilder();
-        sb.append("to ").append(name);
+        sb.append("procedure ").append(name).append("(");
         // Add parameters if present
         if (payload.has("params")) {
           JSONArray params = payload.optJSONArray("params");
           if (params != null && params.length() > 0) {
-            sb.append("(");
             for (int i = 0; i < params.length(); i++) {
               if (i > 0) sb.append(", ");
               sb.append(params.getString(i));
             }
-            sb.append(")");
           }
         }
+        sb.append(")");
         if (hasReturn) {
           sb.append(" returns\n");
-        } else {
-          sb.append(" do\n");
         }
+        sb.append("\n");
         for (String line : body.split("\n")) {
           sb.append("  ").append(line).append("\n");
         }
