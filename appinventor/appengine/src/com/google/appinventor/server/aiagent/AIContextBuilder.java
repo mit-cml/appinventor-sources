@@ -1,0 +1,642 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.aiagent;
+
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
+
+import com.google.appinventor.server.aiagent.llm.LLMTool;
+import com.google.appinventor.server.storage.StorageIo;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+/**
+ * Builds the tiered LLM prompt (Layers 1-5) for the AI agent.
+ *
+ * <ul>
+ *   <li>Layer 1: Static system prompt from appinventor_reference.md
+ *   <li>Layer 2: Compact component catalog from component_catalog.json
+ *   <li>Layer 3: On-demand lookup tool definitions (mode-filtered)
+ *   <li>Layer 4: Current app state (per-request, from project files)
+ *   <li>Layer 5: Few-shot examples from few_shot_examples.json
+ * </ul>
+ *
+ * <p>Static content (Layers 1, 2, 5) is cached on first use. Layer 4 is
+ * built fresh per-request from the project state in storage.
+ */
+public class AIContextBuilder {
+
+  private static final Logger LOG = Logger.getLogger(AIContextBuilder.class.getName());
+
+  private static final String RESOURCE_BASE =
+      "/com/google/appinventor/server/aiagent/resources/";
+  private static final String EXTERNAL_COMPS_FOLDER = ASSETS_FOLDER + "/external_comps";
+  private static final String PROJECT_DIRECTORY = "youngandroidproject";
+  private static final String PROJECT_PROPERTIES_FILE =
+      PROJECT_DIRECTORY + "/project.properties";
+
+  // Cached static content (thread-safe: immutable once initialized)
+  private static volatile String cachedReference;
+  private static volatile String cachedCatalog;
+  private static volatile String cachedExamples;
+  private static volatile String cachedPseudocodeGrammar;
+
+  private final StorageIo storageIo;
+  private final BlocksPseudocodeGenerator pseudocodeGenerator;
+
+  public AIContextBuilder(StorageIo storageIo) {
+    this.storageIo = storageIo;
+    this.pseudocodeGenerator = new BlocksPseudocodeGenerator();
+  }
+
+  // ---------- Public API ----------
+
+  /**
+   * Build the complete system prompt for an LLM request.
+   *
+   * @param userId     the authenticated user
+   * @param projectId  the project being edited
+   * @param screenName the currently active screen
+   * @param mode       "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @return the assembled system prompt string
+   */
+  public String build(String userId, long projectId, String screenName, String mode) {
+    StringBuilder sb = new StringBuilder();
+
+    // Layer 1: Static reference
+    sb.append(getReference()).append("\n\n");
+
+    // Layer 2: Component catalog
+    sb.append("## Component Catalog\n\n");
+    sb.append(getCatalog()).append("\n\n");
+
+    // Pseudocode grammar reference
+    sb.append("## Pseudocode Grammar\n\n");
+    sb.append(getPseudocodeGrammar()).append("\n\n");
+
+    // Layer 4: Current app state (per-request)
+    sb.append("## Current Project State\n\n");
+    sb.append(buildProjectState(userId, projectId, screenName, mode));
+    sb.append("\n\n");
+
+    // Layer 5: Few-shot examples
+    sb.append("## Examples\n\n");
+    sb.append(getExamples()).append("\n\n");
+
+    // Mode instructions
+    sb.append(buildModeInstructions(mode));
+
+    return sb.toString();
+  }
+
+  /**
+   * Build the list of LLM tools filtered by mode.
+   *
+   * @param mode "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @return tools available in the given mode
+   */
+  public List<LLMTool> buildTools(String mode) {
+    List<LLMTool> tools = new ArrayList<>();
+
+    // Read-only tools available in all modes
+    tools.add(new LLMTool("lookup_component",
+        "Look up full metadata for a component type from the component database. "
+            + "Returns all properties, events, methods, and their types.",
+        "{\"type\":\"object\",\"properties\":{\"component_type\":{\"type\":\"string\","
+            + "\"description\":\"The component type name, e.g. Button, Label\"}},\"required\":[\"component_type\"]}"));
+    tools.add(new LLMTool("lookup_screen",
+        "Look up the current state of a screen including its component tree and blocks pseudocode.",
+        "{\"type\":\"object\",\"properties\":{\"screen_name\":{\"type\":\"string\","
+            + "\"description\":\"The screen name, e.g. Screen1\"}},\"required\":[\"screen_name\"]}"));
+
+    if ("Advisor".equals(mode)) {
+      return tools;
+    }
+
+    // Write tools for ScreenEditor and ProjectEditor
+    tools.add(new LLMTool("add_component",
+        "Add a new component to the current screen.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"component_type\":{\"type\":\"string\",\"description\":\"Component type, e.g. Button\"},"
+            + "\"name\":{\"type\":\"string\",\"description\":\"Instance name, e.g. Button1\"},"
+            + "\"parent\":{\"type\":\"string\",\"description\":\"Parent container name (default: screen root)\"},"
+            + "\"properties\":{\"type\":\"object\",\"description\":\"Initial property values\"}"
+            + "},\"required\":[\"component_type\",\"name\"]}"));
+
+    tools.add(new LLMTool("delete_component",
+        "Delete a component from the current screen.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"name\":{\"type\":\"string\",\"description\":\"Component instance name\"}"
+            + "},\"required\":[\"name\"]}"));
+
+    tools.add(new LLMTool("set_property",
+        "Set a property value on a component.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
+            + "\"property_name\":{\"type\":\"string\",\"description\":\"Property name\"},"
+            + "\"value\":{\"description\":\"Property value (type depends on property)\"}"
+            + "},\"required\":[\"component_name\",\"property_name\",\"value\"]}"));
+
+    tools.add(new LLMTool("rename_component",
+        "Rename a component instance.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"old_name\":{\"type\":\"string\",\"description\":\"Current component name\"},"
+            + "\"new_name\":{\"type\":\"string\",\"description\":\"New component name\"}"
+            + "},\"required\":[\"old_name\",\"new_name\"]}"));
+
+    tools.add(new LLMTool("set_event_handler",
+        "Create or replace an event handler with blocks pseudocode.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
+            + "\"event_name\":{\"type\":\"string\",\"description\":\"Event name, e.g. Click\"},"
+            + "\"body\":{\"type\":\"string\",\"description\":\"Pseudocode body for the handler\"}"
+            + "},\"required\":[\"component_name\",\"event_name\",\"body\"]}"));
+
+    tools.add(new LLMTool("delete_event_handler",
+        "Delete an event handler.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
+            + "\"event_name\":{\"type\":\"string\",\"description\":\"Event name\"}"
+            + "},\"required\":[\"component_name\",\"event_name\"]}"));
+
+    tools.add(new LLMTool("set_variable",
+        "Create or update a global variable with an initial value in pseudocode.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"name\":{\"type\":\"string\",\"description\":\"Variable name\"},"
+            + "\"initial_value\":{\"type\":\"string\",\"description\":\"Initial value as pseudocode expression\"}"
+            + "},\"required\":[\"name\",\"initial_value\"]}"));
+
+    tools.add(new LLMTool("delete_variable",
+        "Delete a global variable.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"name\":{\"type\":\"string\",\"description\":\"Variable name\"}"
+            + "},\"required\":[\"name\"]}"));
+
+    tools.add(new LLMTool("set_procedure",
+        "Create or replace a procedure (function) with pseudocode.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"name\":{\"type\":\"string\",\"description\":\"Procedure name\"},"
+            + "\"params\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Parameter names\"},"
+            + "\"returns\":{\"type\":\"boolean\",\"description\":\"Whether the procedure returns a value\"},"
+            + "\"body\":{\"type\":\"string\",\"description\":\"Pseudocode body\"}"
+            + "},\"required\":[\"name\",\"body\"]}"));
+
+    tools.add(new LLMTool("delete_procedure",
+        "Delete a procedure.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"name\":{\"type\":\"string\",\"description\":\"Procedure name\"}"
+            + "},\"required\":[\"name\"]}"));
+
+    // Project-level tools only for ProjectEditor
+    if ("ProjectEditor".equals(mode)) {
+      tools.add(new LLMTool("switch_screen",
+          "Switch the active screen context.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to switch to\"}"
+              + "},\"required\":[\"screen_name\"]}"));
+
+      tools.add(new LLMTool("create_screen",
+          "Create a new screen in the project.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"screen_name\":{\"type\":\"string\",\"description\":\"New screen name\"}"
+              + "},\"required\":[\"screen_name\"]}"));
+
+      tools.add(new LLMTool("delete_screen",
+          "Delete a screen from the project.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to delete\"}"
+              + "},\"required\":[\"screen_name\"]}"));
+
+      tools.add(new LLMTool("set_project_property",
+          "Set a project-level property (theme, colors, sizing, etc.).",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"property\":{\"type\":\"string\",\"description\":\"Property name\"},"
+              + "\"value\":{\"type\":\"string\",\"description\":\"Property value\"}"
+              + "},\"required\":[\"property\",\"value\"]}"));
+    }
+
+    return tools;
+  }
+
+  /**
+   * Build the state of a single screen for a lookup_screen tool response.
+   *
+   * @param userId     the authenticated user
+   * @param projectId  the project ID
+   * @param screenName the screen to look up
+   * @return formatted screen state
+   */
+  public String buildScreenState(String userId, long projectId, String screenName) {
+    StringBuilder sb = new StringBuilder();
+    String packagePath = getPackagePath(userId, projectId);
+    if (packagePath == null) {
+      sb.append("(Unable to determine package path)\n");
+      return sb.toString();
+    }
+
+    String scmFileId = packagePath + "/" + screenName + FORM_PROPERTIES_EXTENSION;
+    String bkyFileId = packagePath + "/" + screenName + BLOCKLY_SOURCE_EXTENSION;
+
+    // Component tree
+    sb.append("### Component Tree\n\n");
+    try {
+      String scmContent = storageIo.downloadFile(userId, projectId, scmFileId, "UTF-8");
+      String scmJson = extractScmJson(scmContent);
+      if (scmJson != null) {
+        sb.append(buildComponentTree(new JSONObject(scmJson), 0));
+      } else {
+        sb.append("(empty screen)\n");
+      }
+    } catch (Exception e) {
+      sb.append("(unable to read screen properties)\n");
+    }
+
+    // Blocks pseudocode
+    sb.append("\n### Blocks\n\n");
+    try {
+      String bkyContent = storageIo.downloadFile(userId, projectId, bkyFileId, "UTF-8");
+      String pseudocode = pseudocodeGenerator.generate(bkyContent);
+      if (pseudocode != null && !pseudocode.isEmpty()) {
+        sb.append(pseudocode);
+      } else {
+        sb.append("(no blocks)\n");
+      }
+    } catch (Exception e) {
+      sb.append("(no blocks)\n");
+    }
+
+    return sb.toString();
+  }
+
+  // ---------- Layer builders ----------
+
+  private String buildProjectState(String userId, long projectId,
+      String screenName, String mode) {
+    StringBuilder sb = new StringBuilder();
+
+    // Project overview from project.properties
+    sb.append(buildProjectOverview(userId, projectId));
+    sb.append("\n");
+
+    // Screen list
+    String packagePath = getPackagePath(userId, projectId);
+    List<String> screenNames = listScreenNames(userId, projectId, packagePath);
+    sb.append("### Screens: ");
+    sb.append(String.join(", ", screenNames));
+    sb.append("\n\n");
+
+    // Assets list
+    List<String> assets = listAssets(userId, projectId);
+    if (!assets.isEmpty()) {
+      sb.append("### Assets: ");
+      sb.append(String.join(", ", assets));
+      sb.append("\n\n");
+    }
+
+    // Extension list
+    List<String> extensions = listExtensions(userId, projectId);
+    if (!extensions.isEmpty()) {
+      sb.append("### Extensions: ");
+      sb.append(String.join(", ", extensions));
+      sb.append("\n\n");
+    }
+
+    // Current screen: full state
+    sb.append("### Current Screen: ").append(screenName).append("\n\n");
+    sb.append(buildScreenState(userId, projectId, screenName));
+
+    // Other screens: summaries
+    if ("ProjectEditor".equals(mode)) {
+      for (String other : screenNames) {
+        if (!other.equals(screenName)) {
+          sb.append("\n### Screen: ").append(other).append(" (summary)\n");
+          sb.append(buildScreenSummary(userId, projectId, other, packagePath));
+        }
+      }
+    }
+
+    return sb.toString();
+  }
+
+  private String buildProjectOverview(String userId, long projectId) {
+    StringBuilder sb = new StringBuilder();
+    try {
+      String propsContent = storageIo.downloadFile(
+          userId, projectId, PROJECT_PROPERTIES_FILE, "UTF-8");
+      Properties props = new Properties();
+      props.load(new java.io.StringReader(propsContent));
+
+      String projectName = storageIo.getProjectName(userId, projectId);
+      sb.append("### Project Overview\n");
+      sb.append("- Name: ").append(projectName).append("\n");
+
+      String appName = props.getProperty("aname", projectName);
+      sb.append("- App Name: ").append(appName).append("\n");
+
+      String versionName = props.getProperty("versionname", "");
+      if (!versionName.isEmpty()) {
+        sb.append("- Version: ").append(versionName).append("\n");
+      }
+
+      String theme = props.getProperty("theme", "");
+      if (!theme.isEmpty()) {
+        sb.append("- Theme: ").append(theme).append("\n");
+      }
+
+      String sizing = props.getProperty("sizing", "");
+      if (!sizing.isEmpty()) {
+        sb.append("- Sizing: ").append(sizing).append("\n");
+      }
+
+      String primaryColor = props.getProperty("color.primary", "");
+      if (!primaryColor.isEmpty()) {
+        sb.append("- Primary Color: ").append(primaryColor).append("\n");
+      }
+
+      String accentColor = props.getProperty("color.accent", "");
+      if (!accentColor.isEmpty()) {
+        sb.append("- Accent Color: ").append(accentColor).append("\n");
+      }
+    } catch (Exception e) {
+      sb.append("### Project Overview\n");
+      sb.append("- Name: ").append(storageIo.getProjectName(userId, projectId)).append("\n");
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Build an indented component tree from SCM JSON Properties object.
+   */
+  private String buildComponentTree(JSONObject properties, int depth) {
+    StringBuilder sb = new StringBuilder();
+    String indent = repeatIndent(depth);
+
+    String type = properties.optString("$Type", "?");
+    String name = properties.optString("$Name", "?");
+    sb.append(indent).append(type).append(" (").append(name).append(")");
+
+    // Collect non-default, non-internal properties
+    List<String> propPairs = new ArrayList<>();
+    for (String key : properties.keySet()) {
+      if (key.startsWith("$") || "Uuid".equals(key)) {
+        continue;
+      }
+      propPairs.add(key + "=" + properties.get(key));
+    }
+    if (!propPairs.isEmpty()) {
+      sb.append(" [").append(String.join(", ", propPairs)).append("]");
+    }
+    sb.append("\n");
+
+    // Recurse into children
+    JSONArray children = properties.optJSONArray("$Components");
+    if (children != null) {
+      for (int i = 0; i < children.length(); i++) {
+        sb.append(buildComponentTree(children.getJSONObject(i), depth + 1));
+      }
+    }
+
+    return sb.toString();
+  }
+
+  private String buildScreenSummary(String userId, long projectId,
+      String screenName, String packagePath) {
+    StringBuilder sb = new StringBuilder();
+    if (packagePath == null) {
+      sb.append("(unknown)\n");
+      return sb.toString();
+    }
+
+    String scmFileId = packagePath + "/" + screenName + FORM_PROPERTIES_EXTENSION;
+    try {
+      String scmContent = storageIo.downloadFile(userId, projectId, scmFileId, "UTF-8");
+      String scmJson = extractScmJson(scmContent);
+      if (scmJson != null) {
+        JSONObject props = new JSONObject(scmJson).optJSONObject("Properties");
+        if (props != null) {
+          int componentCount = countComponents(props);
+          sb.append("Components: ").append(componentCount);
+          sb.append(", Title: \"").append(props.optString("Title", screenName)).append("\"");
+        }
+      }
+    } catch (Exception e) {
+      sb.append("(unable to read)");
+    }
+    sb.append("\n");
+    return sb.toString();
+  }
+
+  private int countComponents(JSONObject properties) {
+    int count = 1;
+    JSONArray children = properties.optJSONArray("$Components");
+    if (children != null) {
+      for (int i = 0; i < children.length(); i++) {
+        count += countComponents(children.getJSONObject(i));
+      }
+    }
+    return count;
+  }
+
+  private String buildModeInstructions(String mode) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("## Mode: ").append(mode).append("\n\n");
+    switch (mode) {
+      case "Advisor":
+        sb.append("You are in Advisor mode. You can ONLY provide advice and answer questions. ")
+            .append("You CANNOT modify the project. Use lookup_component and lookup_screen ")
+            .append("tools to examine the project, then provide helpful guidance.\n");
+        break;
+      case "ScreenEditor":
+        sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
+            .append("You cannot create, delete, or switch screens. ")
+            .append("Use the available tools to add/remove components, set properties, ")
+            .append("and create/modify event handlers and blocks.\n");
+        break;
+      case "ProjectEditor":
+        sb.append("You are in ProjectEditor mode. You have full access to modify the project ")
+            .append("including creating/deleting screens, modifying any screen, ")
+            .append("and setting project-level properties.\n");
+        break;
+      default:
+        break;
+    }
+    return sb.toString();
+  }
+
+  // ---------- Helper methods ----------
+
+  /**
+   * Extract the JSON content from an SCM file (strips the #| $JSON ... |# wrapper).
+   */
+  private String extractScmJson(String scmContent) {
+    if (scmContent == null || scmContent.isEmpty()) {
+      return null;
+    }
+    // SCM files are wrapped in #| $JSON ... |#
+    int jsonStart = scmContent.indexOf("{");
+    int jsonEnd = scmContent.lastIndexOf("}");
+    if (jsonStart >= 0 && jsonEnd > jsonStart) {
+      return scmContent.substring(jsonStart, jsonEnd + 1);
+    }
+    return null;
+  }
+
+  /**
+   * Determine the source package path for the project.
+   * Reads project.properties to find the main form and derives the package path.
+   */
+  private String getPackagePath(String userId, long projectId) {
+    try {
+      String propsContent = storageIo.downloadFile(
+          userId, projectId, PROJECT_PROPERTIES_FILE, "UTF-8");
+      Properties props = new Properties();
+      props.load(new java.io.StringReader(propsContent));
+
+      // main=com.example.myapp.Screen1
+      String main = props.getProperty("main", "");
+      if (main.isEmpty()) {
+        return null;
+      }
+      int lastDot = main.lastIndexOf('.');
+      if (lastDot < 0) {
+        return null;
+      }
+      String packageName = main.substring(0, lastDot);
+      return SRC_FOLDER + "/" + packageName.replace('.', '/');
+    } catch (Exception e) {
+      LOG.warning("Failed to read project properties: " + e.getMessage());
+      return null;
+    }
+  }
+
+  private List<String> listScreenNames(String userId, long projectId, String packagePath) {
+    List<String> screens = new ArrayList<>();
+    if (packagePath == null) {
+      return screens;
+    }
+    try {
+      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
+      for (String fileId : files) {
+        if (fileId.startsWith(packagePath + "/") && fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
+          String name = fileId.substring(fileId.lastIndexOf('/') + 1,
+              fileId.length() - FORM_PROPERTIES_EXTENSION.length());
+          screens.add(name);
+        }
+      }
+    } catch (Exception e) {
+      LOG.warning("Failed to list screens: " + e.getMessage());
+    }
+    return screens;
+  }
+
+  private List<String> listAssets(String userId, long projectId) {
+    List<String> assets = new ArrayList<>();
+    try {
+      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
+      for (String fileId : files) {
+        if (fileId.startsWith(ASSETS_FOLDER + "/")
+            && !fileId.startsWith(EXTERNAL_COMPS_FOLDER + "/")) {
+          String name = fileId.substring(ASSETS_FOLDER.length() + 1);
+          assets.add(name);
+        }
+      }
+    } catch (Exception e) {
+      LOG.warning("Failed to list assets: " + e.getMessage());
+    }
+    return assets;
+  }
+
+  private List<String> listExtensions(String userId, long projectId) {
+    List<String> extensions = new ArrayList<>();
+    try {
+      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
+      for (String fileId : files) {
+        if (fileId.startsWith(EXTERNAL_COMPS_FOLDER + "/")
+            && fileId.endsWith("/components.json")) {
+          String extPath = fileId.substring(EXTERNAL_COMPS_FOLDER.length() + 1);
+          String extName = extPath.substring(0, extPath.indexOf('/'));
+          if (!extensions.contains(extName)) {
+            extensions.add(extName);
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.warning("Failed to list extensions: " + e.getMessage());
+    }
+    return extensions;
+  }
+
+  private static String repeatIndent(int depth) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < depth; i++) {
+      sb.append("  ");
+    }
+    return sb.toString();
+  }
+
+  // ---------- Static resource loading ----------
+
+  private static String getReference() {
+    if (cachedReference == null) {
+      cachedReference = loadResource("appinventor_reference.md");
+    }
+    return cachedReference;
+  }
+
+  private static String getCatalog() {
+    if (cachedCatalog == null) {
+      cachedCatalog = loadResource("component_catalog.json");
+    }
+    return cachedCatalog;
+  }
+
+  private static String getExamples() {
+    if (cachedExamples == null) {
+      cachedExamples = loadResource("few_shot_examples.json");
+    }
+    return cachedExamples;
+  }
+
+  private static String getPseudocodeGrammar() {
+    if (cachedPseudocodeGrammar == null) {
+      cachedPseudocodeGrammar = loadResource("pseudocode_grammar.md");
+    }
+    return cachedPseudocodeGrammar;
+  }
+
+  private static String loadResource(String name) {
+    try (InputStream is = AIContextBuilder.class.getResourceAsStream(RESOURCE_BASE + name)) {
+      if (is == null) {
+        LOG.warning("Resource not found: " + RESOURCE_BASE + name);
+        return "(resource not available)";
+      }
+      BufferedReader reader = new BufferedReader(
+          new InputStreamReader(is, StandardCharsets.UTF_8));
+      StringBuilder sb = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        sb.append(line).append("\n");
+      }
+      return sb.toString();
+    } catch (IOException e) {
+      LOG.warning("Failed to load resource " + name + ": " + e.getMessage());
+      return "(resource not available)";
+    }
+  }
+}
