@@ -14,7 +14,7 @@ import java.util.List;
  *
  * <p>Contains the assistant's text reply, any raw tool calls the provider
  * wishes to invoke, and an optional provider reference (used by stateful
- * providers like OpenAI and Gemini to resume conversations).
+ * providers like Gemini to resume conversations).
  */
 public class LLMResponse {
 

@@ -612,7 +612,7 @@ The `AIContextBuilder` dynamically includes/excludes tool definitions based on t
   the LLM can self-correct.
 - `server/aiagent/llm/LLMProviderRegistry.java` - Factory that selects provider based on config
 - `server/aiagent/llm/AnthropicProvider.java` - Claude API (Messages API with tool_use). Stateless.
-- `server/aiagent/llm/OpenAIProvider.java` - OpenAI API (Chat Completions with function calling). Stateful (`previous_response_id`).
+- `server/aiagent/llm/OpenAIProvider.java` - OpenAI API (Chat Completions with function calling). Stateless.
 - `server/aiagent/llm/GeminiProvider.java` - Gemini API (function calling). Stateful (`previous_interaction_id`).
 - `server/aiagent/llm/OllamaProvider.java` - Ollama `/api/chat` endpoint with tool calling. Stateless.
   Requires Ollama 0.3.0+ and a model that supports tool use (Llama 3.1+, Qwen 2.5+,
@@ -660,7 +660,7 @@ re-produce them (potentially refined) in its next turn after seeing the tool res
 | Provider | Config value | API endpoint | Stateful? | API key required? |
 |----------|-------------|--------------|-----------|-------------------|
 | Anthropic | `anthropic` | `api.anthropic.com` Messages API | No (Datastore) | Yes |
-| OpenAI | `openai` | `api.openai.com` Chat Completions | Yes (`previous_response_id`) | Yes |
+| OpenAI | `openai` | `api.openai.com` Chat Completions | No (Datastore) | Yes |
 | Gemini | `gemini` | `generativelanguage.googleapis.com` | Yes (`previous_interaction_id`) | Yes |
 | Ollama | `ollama` | Configurable (`ai.agent.base.url`) `/api/chat` | No (Datastore) | No (optional) |
 
@@ -2934,9 +2934,10 @@ The value is a **three-part** string: `{provider}:{conversationId}:{providerRef}
 - **`providerRef`** — A provider-specific reference needed to continue the conversation.
   For stateful providers this is the provider's native continuation ID; for stateless
   providers this is empty. Examples:
-  - OpenAI: `previous_response_id` (e.g. `resp_abc123`)
-  - Gemini: `previous_interaction_id` (e.g. `interaction_xyz789`)
+  - Gemini: serialized conversation contents as a JSON array (can grow large
+    for long conversations)
   - Anthropic: empty string (stateless — history is loaded from Datastore)
+  - OpenAI: empty string (stateless — history is loaded from Datastore)
   - Ollama: empty string (stateless — history is loaded from Datastore)
 
 ```java
@@ -2945,8 +2946,8 @@ The value is a **three-part** string: `{provider}:{conversationId}:{providerRef}
 // TTL:   24 hours
 //
 // Examples:
-//   "ai_conv:12345" → "openai:f47ac10b-58cc-4372-a567-0e02b2c3d479:resp_abc123"
-//   "ai_conv:12345" → "gemini:a1b2c3d4-e5f6-7890-abcd-ef1234567890:interaction_xyz789"
+//   "ai_conv:12345" → "openai:f47ac10b-58cc-4372-a567-0e02b2c3d479:"
+//   "ai_conv:12345" → "gemini:a1b2c3d4-e5f6-7890-abcd-ef1234567890:<serialized contents>"
 //   "ai_conv:12345" → "anthropic:d4e5f6a7-b8c9-0123-4567-89abcdef0123:"
 //   "ai_conv:12345" → "ollama:11223344-5566-7788-99aa-bbccddeeff00:"
 
@@ -3033,18 +3034,17 @@ purposes:
 1. **Stateless providers** (Anthropic, Ollama) — Messages are loaded from Datastore and
    sent as the `history` parameter to `LLMProvider.chat()` on each call, since these
    providers have no server-side memory.
-2. **Stateful providers** (OpenAI, Gemini) — The provider's own server-side state handles
-   LLM context. The Datastore messages are NOT sent as `history` (that would duplicate
-   context). Instead, they exist solely so the **client can restore the chat UI after a
-   page reload** via `getConversationHistory()`.
+2. **Stateful providers** (Gemini) — The provider serializes the conversation contents
+   into `providerRef` and passes it on each call to maintain context. The Datastore
+   messages are NOT sent as `history` (that would duplicate context). Instead, they exist
+   solely so the **client can restore the chat UI after a page reload** via
+   `getConversationHistory()`.
 
-For stateful providers, the `providerRef` in Memcache carries the native continuation ID:
-- **OpenAI**: `previous_response_id` — passed on each call.
-- **Gemini**: `previous_interaction_id` — passed on each call.
+For the Gemini provider, the `providerRef` in Memcache carries the serialized conversation
+contents as a JSON array. This can grow large for long conversations.
 
 When the Memcache entry expires (24h) or is cleared by the user, the next request starts a
-fresh conversation. The provider-side data may linger longer (30 days for OpenAI) but is
-harmless — it's just unreachable.
+fresh conversation.
 
 **New Objectify entity** in `StoredData.java`:
 

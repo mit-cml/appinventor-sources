@@ -24,11 +24,10 @@ import java.util.logging.Logger;
 /**
  * LLM provider implementation for the OpenAI Chat Completions API.
  *
- * <p>This is a stateful provider: the {@code providerRef} is used to pass
- * a {@code previous_response_id} for conversation continuity, avoiding the
- * need to resend the full history on each call. It uses the function calling
- * feature and implements an internal tool-use loop for read-only tools (up
- * to {@value #MAX_TOOL_ITERATIONS} iterations).
+ * <p>This is a stateless provider: the full conversation history is sent on
+ * each call via the messages array. It uses the function calling feature and
+ * implements an internal tool-use loop for read-only tools (up to
+ * {@value #MAX_TOOL_ITERATIONS} iterations).
  */
 public class OpenAIProvider implements LLMProvider {
 
