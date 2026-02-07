@@ -48,6 +48,7 @@ public class Config implements IsSerializable, Serializable {
   private String iosExtensions;
   private String surveyUrl;
   private boolean iosBuildServer;
+  private boolean aiAgentAvailable;
 
   public Config() {
   }
@@ -274,5 +275,13 @@ public class Config implements IsSerializable, Serializable {
 
   public void setiOSBuildServer(boolean value) {
     iosBuildServer = value;
+  }
+
+  public boolean getAiAgentAvailable() {
+    return aiAgentAvailable;
+  }
+
+  public void setAiAgentAvailable(boolean value) {
+    aiAgentAvailable = value;
   }
 }

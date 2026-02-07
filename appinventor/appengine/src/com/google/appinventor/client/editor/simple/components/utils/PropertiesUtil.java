@@ -13,6 +13,7 @@ import com.google.appinventor.client.editor.simple.components.MockForm;
 
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAIAgentModeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAccelerometerSensitivityChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidAssetSelectorPropertyEditor;
@@ -352,6 +353,8 @@ public class PropertiesUtil {
       return new YoungAndroidChatbotProviderPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_MODEL)) {
       return new YoungAndroidChatbotModelPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_AI_AGENT_MODE)) {
+      return new YoungAndroidAIAgentModeChoicePropertyEditor();
     } else {
       return new TextPropertyEditor();
     }

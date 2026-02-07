@@ -105,6 +105,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setiOSBuildServer(true);
     }
 
+    config.setAiAgentAvailable(Flag.createFlag("ai.agent.available", false).get());
+
     String expirationDate = Flag.createFlag("service.expires.time", "").get();
     if (!expirationDate.isEmpty()) {
       try {

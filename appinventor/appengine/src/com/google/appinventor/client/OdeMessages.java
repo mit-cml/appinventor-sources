@@ -5823,4 +5823,22 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
   @Description("Message shown in the info popup when the user first opens the Neo UI.")
   String neoWelcomeMessage();
+
+  // AI Agent mode choices
+
+  @DefaultMessage("Off")
+  @Description("AI Agent mode: disabled")
+  String aiAgentModeOff();
+
+  @DefaultMessage("Advisor")
+  @Description("AI Agent mode: read-only advice")
+  String aiAgentModeAdvisor();
+
+  @DefaultMessage("Screen Editor")
+  @Description("AI Agent mode: edit current screen")
+  String aiAgentModeScreenEditor();
+
+  @DefaultMessage("Project Editor")
+  @Description("AI Agent mode: full project access")
+  String aiAgentModeProjectEditor();
 }
