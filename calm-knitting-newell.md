@@ -91,6 +91,14 @@ public interface AIAgentService extends RemoteService {
      * to restore the chat UI. Returns an empty list if no conversation exists.
      */
     List<AIConversationMessage> getConversationHistory(long projectId);
+
+    /**
+     * Poll for progress of a running processRequest() call.
+     * Returns the current status message (e.g., "Looking up Button...", "Validating...").
+     * Returns null/empty if no request is in progress.
+     * Lightweight — reads from Memcache only, no Datastore access.
+     */
+    String getRequestStatus(long projectId);
 }
 ```
 
@@ -101,6 +109,7 @@ public interface AIAgentServiceAsync {
     void processRequest(AIAgentRequest request, AsyncCallback<AIAgentResponse> callback);
     void clearConversation(long projectId, AsyncCallback<Void> callback);
     void getConversationHistory(long projectId, AsyncCallback<List<AIConversationMessage>> callback);
+    void getRequestStatus(long projectId, AsyncCallback<String> callback);
 }
 ```
 
@@ -1419,6 +1428,120 @@ private void loadExistingConversation() {
 }
 ```
 
+**Polling-based progress feedback:**
+
+While `processRequest()` is running (10-30+ seconds), the client polls a lightweight
+`getRequestStatus()` RPC every 1 second to show live status updates (e.g., "Building
+context...", "Looking up Button...", "Checking response..."). This follows the same
+pattern as the build system (`ShowProgressBarCommand` + `getBuildResult()`) — the
+long-running RPC and the lightweight polling RPC run on separate App Engine servlet
+instances as independent HTTP requests.
+
+The status indicator is a small text label shown below the user's message bubble while
+waiting for the AI response. It uses a CSS animation (pulsing opacity) to look like a
+typing indicator common in chat UIs. The text updates live as polling returns new
+status messages from the server. It is removed entirely when `processRequest` completes.
+
+```java
+private Timer statusTimer;
+private Label statusLabel;  // Shown below the user's message bubble
+
+private void sendMessage(String text) {
+    // 1. Show user message bubble immediately
+    addMessageBubble("user", text);
+    inputArea.setEnabled(false);
+    sendButton.setEnabled(false);
+
+    // 2. Show initial status indicator
+    statusLabel = addStatusIndicator(MESSAGES.aiStatusThinking());
+
+    // 3. Start polling for status updates
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    statusTimer = new Timer() {
+        @Override
+        public void run() {
+            aiAgentService.getRequestStatus(projectId,
+                new AsyncCallback<String>() {
+                    @Override
+                    public void onSuccess(String status) {
+                        if (status != null && !status.isEmpty()) {
+                            statusLabel.setText(status);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        // Silently ignore — polling is best-effort
+                    }
+                });
+        }
+    };
+    statusTimer.scheduleRepeating(1000);  // Poll every 1 second
+
+    // 4. Fire the main (long-running) RPC
+    AIAgentRequest request = new AIAgentRequest();
+    request.setProjectId(projectId);
+    request.setScreenName(getCurrentScreenName());
+    request.setUserMessage(text);
+
+    aiAgentService.processRequest(request,
+        new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiRequestError()) {
+            @Override
+            public void onSuccess(AIAgentResponse response) {
+                stopPolling();
+                removeStatusIndicator();
+                handleResponse(response);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                stopPolling();
+                removeStatusIndicator();
+                super.onFailure(caught);
+                addSystemMessage(MESSAGES.aiRequestError());
+                inputArea.setEnabled(true);
+                sendButton.setEnabled(true);
+            }
+        });
+}
+
+private void stopPolling() {
+    if (statusTimer != null) {
+        statusTimer.cancel();
+        statusTimer = null;
+    }
+}
+
+/**
+ * Adds a status indicator element to the chat panel. Returns the Label
+ * so its text can be updated by the polling timer.
+ */
+private Label addStatusIndicator(String initialText) {
+    Label label = new Label(initialText);
+    label.addStyleName("ode-AIChatStatusIndicator");  // CSS animation: pulsing opacity
+    chatHistory.add(label);
+    scrollToBottom();
+    return label;
+}
+
+private void removeStatusIndicator() {
+    if (statusLabel != null) {
+        statusLabel.removeFromParent();
+        statusLabel = null;
+    }
+}
+```
+
+**Key polling design decisions:**
+- **1 second interval** — faster than build polling (5-10s) because AI requests are
+  shorter-lived and status changes frequently during tool resolution loops.
+- **Best-effort** — if `getRequestStatus` fails (network, Memcache down), the polling
+  callback silently ignores. The main `processRequest` RPC works independently.
+- **No request ID** — keyed by `projectId` alone. Only one AI request can be in flight
+  per project at a time (enforced by disabling the send button).
+- **Dynamic status text is English-only** — transient progress hints from the server,
+  not permanent UI labels. The initial "Thinking..." uses the i18n'd `aiStatusThinking()`
+  message.
+
 **No modifications to `Ode.ui.xml` needed** (floating dialog is created programmatically, not embedded in layout).
 
 **Modify:**
@@ -2698,8 +2821,12 @@ String aiRejectButton();
 String aiOperationPreviewHeader();
 
 @DefaultMessage("Thinking...")
-@Description("Shown while waiting for AI response")
-String aiThinking();
+@Description("Default AI status message shown while waiting for response, before server sends specific status updates")
+String aiStatusThinking();
+
+@DefaultMessage("The AI assistant is not responding. Please try again.")
+@Description("Error message when AI request fails")
+String aiRequestError();
 
 @DefaultMessage("Type a message...")
 @Description("Placeholder text in the AI chat input field")
@@ -3090,6 +3217,63 @@ All three RPC methods (`processRequest`, `clearConversation`, `getConversationHi
 are declared in the `AIAgentService` interface (see Step 1). Each performs an auth check
 via `storageIo.assertUserHasProject(userId, projectId)` before accessing any data.
 
+**Progress status updates via Memcache:**
+
+As `processRequest()` progresses through each phase, it writes status messages to
+Memcache. These are polled by the client via the lightweight `getRequestStatus()` RPC
+(see Step 1 for the interface, Step 5 for the client-side polling logic). This follows
+the same pattern as the build system's progress tracking in `ObjectifyStorageIo`.
+
+```java
+private static final String AI_STATUS_CACHE_PREFIX = "ai-status:";
+
+/**
+ * Write a progress status message for the currently-running processRequest().
+ * Called at each processing phase. The client polls getRequestStatus() to
+ * read these messages and display them as live status updates.
+ *
+ * Uses a 120-second TTL so the entry auto-expires if processRequest() crashes
+ * or times out without clearing. Prevents stale status from lingering.
+ */
+private void updateStatus(long projectId, String status) {
+    memcache.put(AI_STATUS_CACHE_PREFIX + projectId, status,
+        Expiration.byDeltaSeconds(120));
+}
+
+/**
+ * Clear the progress status when processRequest() completes (success or failure).
+ * Called in a finally block to ensure cleanup.
+ */
+private void clearStatus(long projectId) {
+    memcache.delete(AI_STATUS_CACHE_PREFIX + projectId);
+}
+
+/**
+ * RPC method: Poll for progress of a running processRequest() call.
+ * Returns the current status message, or null if no request is in progress.
+ * Lightweight — reads from Memcache only, no Datastore access.
+ */
+public String getRequestStatus(long projectId) {
+    String userId = userInfoProvider.getUserId();
+    storageIo.assertUserHasProject(userId, projectId);
+    return (String) memcache.get(AI_STATUS_CACHE_PREFIX + projectId);
+}
+```
+
+Status messages are written at each processing phase:
+
+| Phase | Status message | When |
+|-------|---------------|------|
+| Context building | `"Building context..."` | Before `aiContextBuilder.build()` |
+| LLM call | `"Asking AI..."` | Before `llmProvider.chat()` |
+| Read-only tool resolution | `"Looking up {displayName}..."` | Inside `ReadOnlyToolResolver.resolve()` |
+| Validation | `"Checking response..."` | Before `validate()` |
+| Retry | `"Refining response..."` | Before retry `llmProvider.chat()` |
+| Complete | *(cleared)* | In `finally` block at end of `processRequest()` |
+
+The dynamic status messages are English-only — they are transient progress hints, not
+permanent UI labels. This keeps the server layer simple (no dependency on client locale).
+
 **Full request flow in `AIAgentServiceImpl.processRequest()`:**
 
 ```java
@@ -3105,6 +3289,7 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     storageIo.assertUserHasProject(userId, projectId);
     String mode = getProjectAIAgentMode(userId, projectId);
 
+    try {
     // 2. Look up the project's single active conversation from Memcache
     ConversationRef cachedRef = getConversationRef(projectId);
     String providerName = getConfiguredProvider();  // from appengine-web.xml
@@ -3134,14 +3319,18 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     }
 
     // 3. Build system prompt from live project state
+    updateStatus(projectId, "Building context...");
     String systemPrompt = aiContextBuilder.build(userId, projectId, screenName, mode);
 
     // 4. Build read-only tool resolver (lookup_component, lookup_screen)
     //    The resolver is a callback injected into the provider so it can resolve
     //    read-only tools in its native format during the tool-use loop.
+    //    The resolver also calls updateStatus() with tool-specific messages
+    //    (e.g., "Looking up Button...") — see buildReadOnlyToolResolver() below.
     ReadOnlyToolResolver resolver = buildReadOnlyToolResolver(userId, projectId);
 
     // 5. Call LLM (provider runs internal tool-use loop for read-only tools)
+    updateStatus(projectId, "Asking AI...");
     LLMResponse llmResponse;
     try {
         llmResponse = llmProvider.chat(systemPrompt, userMessage,
@@ -3173,10 +3362,12 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
                          providerRef != null ? providerRef : "");
 
     // 7. Validate (§8g) — all-or-nothing with one retry
+    updateStatus(projectId, "Checking response...");
     ValidatedResponse validated = validate(llmResponse, mode);
 
     if (!validated.errors.isEmpty()) {
         // 8. Retry: inject error feedback and re-call LLM once
+        updateStatus(projectId, "Refining response...");
         String feedback = buildValidationErrorFeedback(validated.errors);
         try {
             LLMResponse retryResponse = llmProvider.chat(systemPrompt, feedback,
@@ -3226,6 +3417,12 @@ public AIAgentResponse processRequest(AIAgentRequest request) {
     storeMessage(conversationId, "assistant", llmResponse.getText());
 
     return response;
+
+    } finally {
+        // Always clear the progress status, even on unexpected exceptions.
+        // This prevents stale status messages from lingering in Memcache.
+        clearStatus(projectId);
+    }
 }
 
 /**
@@ -3297,6 +3494,14 @@ private ReadOnlyToolResolver buildReadOnlyToolResolver(String userId, long proje
         public String resolve(String toolName, String argsJson)
                 throws ReadOnlyToolException {
             JSONObject args = new JSONObject(argsJson);
+
+            // Update progress status with a tool-specific message so the
+            // client shows what the AI is looking up (e.g., "Looking up Button...")
+            String displayName = toolName.equals("lookup_component")
+                ? args.getString("component_type")
+                : args.getString("screen_name");
+            updateStatus(projectId, "Looking up " + displayName + "...");
+
             switch (toolName) {
                 case "lookup_component":
                     return resolveLookupComponent(args.getString("component_type"));
@@ -3482,7 +3687,7 @@ String aiConversationRestored();
 | File | Change |
 |------|--------|
 | `client/Ode.java` | Add AIChatDialog field, toggle method, two-layer enablement check |
-| `client/OdeMessages.java` | Add ~28 i18n message definitions for AI UI (Steps 5, 10d + 10e) |
+| `client/OdeMessages.java` | Add ~30 i18n message definitions for AI UI (Steps 5, 10d + 10e), including `aiStatusThinking()` and `aiRequestError()` for polling progress feedback |
 | `client/style/neo/DesignToolbarNeo.java` | Add "AI Assistant" toolbar button |
 | `client/editor/blocks/BlocklyPanel.java` | Add `injectBlocksXml()`, `deleteBlockByTypeAndId()`, `replaceBlock()` JSNI methods |
 | `client/editor/blocks/BlocksEditor.java` | Add public `injectBlocksXml()`, `deleteBlock()`, `replaceBlock()` wrappers |
