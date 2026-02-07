@@ -11,6 +11,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
@@ -25,6 +26,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -917,18 +919,30 @@ public class AIChatDialog extends DialogBox {
         } else {
           selectedMode = "Advisor";
         }
-        // Set the AIAgentMode project setting
+        // Set the AIAgentMode on the Screen1 form component property.
+        // MockForm.onPropertyChange will propagate this to project settings
+        // and the property will be persisted in Screen1.scm for the backend.
         ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
             .getOpenProjectEditor(getCurrentProjectId());
-        if (projectEditor != null) {
-          projectEditor.changeProjectSettingsProperty(
-              SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-              SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE,
-              selectedMode);
+        if (projectEditor instanceof YaProjectEditor) {
+          YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+          MockForm form = (MockForm) yaProjectEditor.getFormFileEditor("Screen1").getRoot();
+          if (form != null) {
+            form.changeProperty(
+                SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE,
+                selectedMode);
+          }
         }
         modeDialog.hide();
-        // Now open the chat dialog (mode is no longer Off)
-        AIChatDialog.this.show();
+        // Force an immediate save so the backend sees the updated mode
+        // in Screen1.scm before the first AI request is sent.
+        Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
+          @Override
+          public void execute() {
+            // Now open the chat dialog (mode is no longer Off)
+            AIChatDialog.this.show();
+          }
+        });
       }
     });
 

@@ -1227,7 +1227,7 @@ Top-level component containing all other components in the program.
 {:.properties}
 
 {:id="Screen.AIAgentMode" .text .wo .do} *AIAgentMode*
-: Sets the AI agent mode for this project. Only effective on Screen1.
+: Sets the AI agent mode for this project.
  Controls what the AI assistant is allowed to do: Off, Advisor (read-only),
  ScreenEditor (current screen), or ProjectEditor (full project).
 

@@ -817,13 +817,9 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       case PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION:
       case PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION:
       case PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION:
-      case PROPERTY_NAME_DEFAULTFILESCOPE: {
-        return false;
-      }
-
+      case PROPERTY_NAME_DEFAULTFILESCOPE:
       case PROPERTY_NAME_AI_AGENT_MODE: {
-        return editor.isScreen1()
-            && Ode.getInstance().getSystemConfig().getAiAgentAvailable();
+        return false;
       }
 
       default: {
