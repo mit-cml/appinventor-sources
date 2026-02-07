@@ -252,6 +252,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Save assistant response to history
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+      if (assistantText.isEmpty() && !operations.isEmpty()) {
+        assistantText = summarizeOperations(operations);
+      }
       saveMessage(userId, projectId, "assistant", assistantText);
 
       clearStatus(projectId);
@@ -701,6 +704,64 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           "component_type=\"" + type + "\"$1");
     }
     return xml;
+  }
+
+  /**
+   * Build a brief summary of operations when the LLM returns no text.
+   */
+  private static String summarizeOperations(List<AIOperation> operations) {
+    StringBuilder sb = new StringBuilder();
+    for (AIOperation op : operations) {
+      try {
+        JSONObject payload = new JSONObject(op.getPayload());
+        switch (op.getType()) {
+          case ADD_COMPONENT:
+            sb.append("Added ").append(payload.optString("component_type"))
+                .append(" '").append(payload.optString("name")).append("'\n");
+            break;
+          case DELETE_COMPONENT:
+            sb.append("Deleted component '").append(payload.optString("name")).append("'\n");
+            break;
+          case SET_PROPERTY:
+            sb.append("Set ").append(payload.optString("component_name"))
+                .append(".").append(payload.optString("property_name"))
+                .append(" to ").append(payload.optString("value")).append("\n");
+            break;
+          case RENAME_COMPONENT:
+            sb.append("Renamed '").append(payload.optString("old_name"))
+                .append("' to '").append(payload.optString("new_name")).append("'\n");
+            break;
+          case SET_EVENT_HANDLER:
+            sb.append("Set event handler for ")
+                .append(payload.optString("component_name"))
+                .append(".").append(payload.optString("event_name")).append("\n");
+            break;
+          case DELETE_EVENT_HANDLER:
+            sb.append("Deleted event handler for ")
+                .append(payload.optString("component_name"))
+                .append(".").append(payload.optString("event_name")).append("\n");
+            break;
+          case SET_VARIABLE:
+            sb.append("Set variable '").append(payload.optString("name")).append("'\n");
+            break;
+          case SET_PROCEDURE:
+            sb.append("Set procedure '").append(payload.optString("name")).append("'\n");
+            break;
+          case CREATE_SCREEN:
+            sb.append("Created screen '").append(payload.optString("screen_name")).append("'\n");
+            break;
+          case DELETE_SCREEN:
+            sb.append("Deleted screen '").append(payload.optString("screen_name")).append("'\n");
+            break;
+          default:
+            sb.append(op.getType().name()).append("\n");
+            break;
+        }
+      } catch (Exception e) {
+        sb.append(op.getType().name()).append("\n");
+      }
+    }
+    return sb.toString().trim();
   }
 
   private static String escapeXmlAttr(String value) {
