@@ -80,24 +80,34 @@ public class AIContextBuilder {
     StringBuilder sb = new StringBuilder();
 
     // Layer 1: Static reference
-    sb.append(getReference()).append("\n\n");
+    String reference = getReference();
+    sb.append(reference).append("\n\n");
+    AIDebug.log(LOG, "Context Layer 1 (reference): " + reference.length() + " chars");
 
     // Layer 2: Component catalog
+    String catalog = getCatalog();
     sb.append("## Component Catalog\n\n");
-    sb.append(getCatalog()).append("\n\n");
+    sb.append(catalog).append("\n\n");
+    AIDebug.log(LOG, "Context Layer 2 (catalog): " + catalog.length() + " chars");
 
     // Pseudocode grammar reference
+    String grammar = getPseudocodeGrammar();
     sb.append("## Pseudocode Grammar\n\n");
-    sb.append(getPseudocodeGrammar()).append("\n\n");
+    sb.append(grammar).append("\n\n");
+    AIDebug.log(LOG, "Context (pseudocode grammar): " + grammar.length() + " chars");
 
     // Layer 4: Current app state (per-request)
+    String projectState = buildProjectState(userId, projectId, screenName, mode);
     sb.append("## Current Project State\n\n");
-    sb.append(buildProjectState(userId, projectId, screenName, mode));
+    sb.append(projectState);
     sb.append("\n\n");
+    AIDebug.log(LOG, "Context Layer 4 (project state): " + projectState.length() + " chars");
 
     // Layer 5: Few-shot examples
+    String examples = getExamples();
     sb.append("## Examples\n\n");
-    sb.append(getExamples()).append("\n\n");
+    sb.append(examples).append("\n\n");
+    AIDebug.log(LOG, "Context Layer 5 (examples): " + examples.length() + " chars");
 
     // Mode instructions
     sb.append(buildModeInstructions(mode));
@@ -202,6 +212,15 @@ public class AIContextBuilder {
         "{\"type\":\"object\",\"properties\":{"
             + "\"name\":{\"type\":\"string\",\"description\":\"Procedure name\"}"
             + "},\"required\":[\"name\"]}"));
+
+    // Log tool list built so far before project-level tools
+    if (AIDebug.enabled()) {
+      StringBuilder toolList = new StringBuilder("Tools for mode " + mode + ":");
+      for (LLMTool t : tools) {
+        toolList.append(" ").append(t.getName());
+      }
+      AIDebug.log(LOG, toolList.toString());
+    }
 
     // Project-level tools only for ProjectEditor
     if ("ProjectEditor".equals(mode)) {

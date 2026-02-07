@@ -132,6 +132,11 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       return errorResponse("AI agent is disabled for this project.");
     }
 
+    // Debug: request entry
+    AIDebug.log(LOG, "processRequest: userId=" + userId + ", projectId=" + projectId
+        + ", screen=" + screenName + ", mode=" + mode
+        + ", msgLen=" + userMessage.length());
+
     try {
       updateStatus(projectId, "Building context...");
 
@@ -155,6 +160,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       // Build system prompt and tools
       String systemPrompt = contextBuilder.build(userId, projectId, screenName, mode);
       List<LLMTool> tools = contextBuilder.buildTools(mode);
+      AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
       // Build history for stateless providers
       LLMProvider provider = LLMProviderRegistry.get(conv.providerName);
@@ -162,9 +168,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       if (provider.isStateless()) {
         history = loadConversation(conv.conversationId);
       }
+      if (AIDebug.enabled()) {
+        StringBuilder histInfo = new StringBuilder("History loaded: " + history.size() + " messages");
+        for (ChatMessage msg : history) {
+          histInfo.append("\n  ").append(msg.getRole())
+              .append(" (").append(msg.getText().length()).append(" chars)");
+        }
+        AIDebug.log(LOG, histInfo.toString());
+      }
 
       // Build read-only tool resolver
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
+
+      AIDebug.log(LOG, "Pre-LLM: toolCount=" + tools.size()
+          + ", provider=" + conv.providerName + ", model=" + getConfiguredModel());
 
       updateStatus(projectId, "Calling AI...");
 
@@ -174,6 +191,18 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Save user message to history
       storeMessage(conv.conversationId, "user", userMessage);
+
+      // Debug: raw LLM response
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Raw LLM response text: "
+            + (llmResponse.getText() != null ? llmResponse.getText() : "(null)"));
+        StringBuilder tcInfo = new StringBuilder("Raw tool calls: "
+            + llmResponse.getRawToolCalls().size());
+        for (RawToolCall tc : llmResponse.getRawToolCalls()) {
+          tcInfo.append("\n  ").append(tc.getName()).append(": ").append(tc.getArgumentsJson());
+        }
+        AIDebug.log(LOG, tcInfo.toString());
+      }
 
       // Parse tool calls
       List<LLMResponseParser.RawToolCall> rawCalls = new ArrayList<>();
@@ -185,6 +214,18 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<String> allErrors = new ArrayList<>(parseResult.getErrors());
       List<AIOperation> operations = parseResult.getOperations();
 
+      // Debug: parse result
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Parse result: operations=" + operations.size()
+            + ", errors=" + allErrors.size());
+        for (AIOperation op : operations) {
+          AIDebug.log(LOG, "  Parsed op: " + op.getType() + " payload=" + op.getPayload());
+        }
+        for (String err : allErrors) {
+          AIDebug.log(LOG, "  Parse error: " + err);
+        }
+      }
+
       // Stage 2: Mode + semantic validation
       if (!operations.isEmpty()) {
         updateStatus(projectId, "Validating operations...");
@@ -195,6 +236,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           allErrors.addAll(modeResult.getErrors());
           operations = modeResult.getAccepted();
         }
+        AIDebug.log(LOG, "Mode validation: accepted=" + operations.size()
+            + ", rejected=" + modeResult.getErrors().size());
 
         if (!operations.isEmpty()) {
           AIOperationValidator.ValidationResult semanticResult =
@@ -203,6 +246,13 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
             allErrors.addAll(semanticResult.getErrors());
             operations = semanticResult.getAccepted();
           }
+          if (AIDebug.enabled()) {
+            AIDebug.log(LOG, "Semantic validation: accepted=" + semanticResult.getAccepted().size()
+                + ", rejected=" + semanticResult.getErrors().size());
+            for (String err : semanticResult.getErrors()) {
+              AIDebug.log(LOG, "  Semantic error: " + err);
+            }
+          }
         }
       }
 
@@ -210,12 +260,16 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       if (!allErrors.isEmpty() && !rawCalls.isEmpty()) {
         String feedback = LLMResponseParser.buildValidationErrorFeedback(allErrors);
         LOG.info("Retrying LLM with validation feedback: " + feedback);
+        AIDebug.log(LOG, "Retry feedback sent: " + feedback);
         updateStatus(projectId, "Retrying with corrections...");
 
         try {
           // Save the assistant message + error as context for retry
           LLMResponse retryResponse = provider.chat(
               systemPrompt, feedback, tools, llmResponse.getProviderRef(), history, resolver);
+
+          AIDebug.log(LOG, "Retry response text: "
+              + (retryResponse.getText() != null ? retryResponse.getText() : "(null)"));
 
           List<LLMResponseParser.RawToolCall> retryCalls = new ArrayList<>();
           for (RawToolCall tc : retryResponse.getRawToolCalls()) {
@@ -235,6 +289,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
                 operations = retrySemantic.getAccepted();
                 allErrors.clear();
                 llmResponse = retryResponse;
+                AIDebug.log(LOG, "Retry succeeded: " + operations.size() + " operations accepted");
               }
             }
           }
@@ -266,6 +321,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       storeMessage(conv.conversationId, "assistant", assistantText);
 
       clearStatus(projectId);
+
+      AIDebug.log(LOG, "Final response: operations=" + operations.size()
+          + ", errors=" + allErrors.size()
+          + ", textLen=" + assistantText.length());
 
       return new AIAgentResponse(assistantText, operations, isNew, allErrors);
 
@@ -555,6 +614,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     return Flag.createFlag("ai.agent.provider", "anthropic").get();
   }
 
+  private static String getConfiguredModel() {
+    return Flag.createFlag("ai.agent.model", "").get();
+  }
+
   private static String getComponentDb() {
     if (componentDbJson == null) {
       try (InputStream is = AIAgentServiceImpl.class.getResourceAsStream(COMPONENT_DB_RESOURCE)) {
@@ -598,12 +661,14 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         try {
           JSONObject payload = new JSONObject(op.getPayload());
           String pseudocode = reconstructPseudocode(op.getType(), payload);
+          AIDebug.log(LOG, "Pseudocode for " + op.getType() + ":\n" + pseudocode);
           String blocksXml = parser.parse(pseudocode);
           if (!parser.getWarnings().isEmpty()) {
             LOG.info("Pseudocode validation warnings for " + op.getType()
                 + ": " + parser.getWarnings());
           }
           blocksXml = fillComponentTypes(blocksXml, componentTypes);
+          AIDebug.log(LOG, "Blockly XML for " + op.getType() + ":\n" + blocksXml);
           payload.put("blocksXml", blocksXml);
           converted.add(new AIOperation(op.getType(), payload.toString()));
         } catch (Exception e) {

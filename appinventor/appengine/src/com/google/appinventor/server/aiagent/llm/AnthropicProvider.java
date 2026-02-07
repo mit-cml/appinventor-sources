@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appinventor.server.aiagent.AIDebug;
+
 /**
  * LLM provider implementation for the Anthropic Messages API (Claude).
  *
@@ -78,8 +80,16 @@ public class AnthropicProvider implements LLMProvider {
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Anthropic request (iteration " + iteration + "):\n"
+            + requestBody.toString(2));
+      }
 
       JSONObject responseJson = callApi(requestBody);
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Anthropic response (iteration " + iteration + "):\n"
+            + responseJson.toString(2));
+      }
 
       // Parse the response content blocks
       String stopReason = responseJson.optString("stop_reason", "end_turn");
@@ -168,9 +178,21 @@ public class AnthropicProvider implements LLMProvider {
           .put("role", "user")
           .put("content", toolResults));
 
-      LOG.info("Anthropic tool-use loop iteration " + (iteration + 1)
-          + ": resolved " + readOnlyBlocks.size() + " read-only tools, "
-          + operationBlocks.size() + " operation tools pending");
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Anthropic tool-use loop iteration " + (iteration + 1)
+            + ": readOnly=" + readOnlyBlocks.size()
+            + ", operations=" + operationBlocks.size());
+        for (ToolUseBlock block : readOnlyBlocks) {
+          AIDebug.log(LOG, "  read-only: " + block.name);
+        }
+        for (ToolUseBlock block : operationBlocks) {
+          AIDebug.log(LOG, "  operation: " + block.name);
+        }
+      } else {
+        LOG.info("Anthropic tool-use loop iteration " + (iteration + 1)
+            + ": resolved " + readOnlyBlocks.size() + " read-only tools, "
+            + operationBlocks.size() + " operation tools pending");
+      }
     }
 
     // Safety limit reached

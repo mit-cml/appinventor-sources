@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Stage 1 structural validation of raw LLM tool calls.
@@ -26,6 +27,8 @@ import java.util.Set;
  * Rejects unknown tool names, malformed JSON, and missing required parameters.
  */
 public class LLMResponseParser {
+
+  private static final Logger LOG = Logger.getLogger(LLMResponseParser.class.getName());
 
   /**
    * Result of parsing raw tool calls.
@@ -126,6 +129,7 @@ public class LLMResponseParser {
 
     for (RawToolCall call : rawToolCalls) {
       String toolName = call.getName();
+      AIDebug.log(LOG, "Parsing tool call: " + toolName + " args=" + call.getArgumentsJson());
 
       // Skip read-only tools (already resolved by the provider)
       if ("lookup_component".equals(toolName) || "lookup_screen".equals(toolName)) {
@@ -169,11 +173,13 @@ public class LLMResponseParser {
       // Type coercion for known fields
       try {
         coerceTypes(toolName, args);
+        AIDebug.log(LOG, "Type coercion OK for " + toolName);
       } catch (JSONException e) {
         errors.add("Type coercion failed for " + toolName + ": " + e.getMessage());
         continue;
       }
 
+      AIDebug.log(LOG, "Parsed operation: " + type + " payload=" + args.toString());
       operations.add(new AIOperation(type, args.toString()));
     }
 

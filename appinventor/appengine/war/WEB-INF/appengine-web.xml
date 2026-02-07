@@ -204,6 +204,7 @@
     <property name="ai.agent.api.key" value="" />
     <property name="ai.agent.base.url" value="" />
     <property name="ai.agent.rate.limit" value="10" />
+    <property name="ai.agent.debug" value="false" />
 
   </system-properties>
 </appengine-web-app>

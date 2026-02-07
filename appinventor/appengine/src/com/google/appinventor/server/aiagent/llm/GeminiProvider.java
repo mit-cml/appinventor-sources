@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appinventor.server.aiagent.AIDebug;
+
 /**
  * LLM provider implementation for the Google Gemini (Generative Language) API.
  *
@@ -99,6 +101,7 @@ public class GeminiProvider implements LLMProvider {
 
       // Include provider ref for stateful continuation
       if (iteration == 0 && providerRef != null && !providerRef.isEmpty()) {
+
         try {
           // The providerRef stores previous conversation turns that the
           // caller has cached, allowing us to resume.
@@ -117,7 +120,15 @@ public class GeminiProvider implements LLMProvider {
         }
       }
 
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Gemini request (iteration " + iteration + "):\n"
+            + requestBody.toString(2));
+      }
       JSONObject responseJson = callApi(requestBody);
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Gemini response (iteration " + iteration + "):\n"
+            + responseJson.toString(2));
+      }
 
       // Parse candidates
       JSONArray candidates = responseJson.optJSONArray("candidates");
@@ -222,9 +233,21 @@ public class GeminiProvider implements LLMProvider {
           .put("role", "user")
           .put("parts", responseParts));
 
-      LOG.info("Gemini tool-use loop iteration " + (iteration + 1)
-          + ": resolved " + readOnlyCalls.size() + " read-only tools, "
-          + operationCalls.size() + " operation tools pending");
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Gemini tool-use loop iteration " + (iteration + 1)
+            + ": readOnly=" + readOnlyCalls.size()
+            + ", operations=" + operationCalls.size());
+        for (FunctionCallInfo fc : readOnlyCalls) {
+          AIDebug.log(LOG, "  read-only: " + fc.name);
+        }
+        for (FunctionCallInfo fc : operationCalls) {
+          AIDebug.log(LOG, "  operation: " + fc.name);
+        }
+      } else {
+        LOG.info("Gemini tool-use loop iteration " + (iteration + 1)
+            + ": resolved " + readOnlyCalls.size() + " read-only tools, "
+            + operationCalls.size() + " operation tools pending");
+      }
     }
 
     // Safety limit reached

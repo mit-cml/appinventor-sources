@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appinventor.server.aiagent.AIDebug;
+
 /**
  * LLM provider implementation for the Ollama local inference server.
  *
@@ -85,8 +87,16 @@ public class OllamaProvider implements LLMProvider {
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Ollama request (iteration " + iteration + "):\n"
+            + requestBody.toString(2));
+      }
 
       JSONObject responseJson = callApi(requestBody);
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Ollama response (iteration " + iteration + "):\n"
+            + responseJson.toString(2));
+      }
 
       // Parse the response
       JSONObject message = responseJson.optJSONObject("message");
@@ -160,9 +170,21 @@ public class OllamaProvider implements LLMProvider {
                 + "Please continue with any remaining read-only lookups you need."));
       }
 
-      LOG.info("Ollama tool-use loop iteration " + (iteration + 1)
-          + ": resolved " + readOnlyCalls.size() + " read-only tools, "
-          + operationCalls.size() + " operation tools pending");
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Ollama tool-use loop iteration " + (iteration + 1)
+            + ": readOnly=" + readOnlyCalls.size()
+            + ", operations=" + operationCalls.size());
+        for (ToolCallInfo info : readOnlyCalls) {
+          AIDebug.log(LOG, "  read-only: " + info.name);
+        }
+        for (ToolCallInfo info : operationCalls) {
+          AIDebug.log(LOG, "  operation: " + info.name);
+        }
+      } else {
+        LOG.info("Ollama tool-use loop iteration " + (iteration + 1)
+            + ": resolved " + readOnlyCalls.size() + " read-only tools, "
+            + operationCalls.size() + " operation tools pending");
+      }
     }
 
     // Safety limit reached

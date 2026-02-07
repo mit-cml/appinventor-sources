@@ -108,7 +108,11 @@ public class AIOperationValidator {
     if ("Advisor".equals(mode)) {
       for (AIOperation op : operations) {
         if (WRITE_OPS.contains(op.getType())) {
-          errors.add("Advisor mode does not allow write operations. Rejected: " + op.getType());
+          String reason = "Advisor mode does not allow write operations. Rejected: " + op.getType();
+          errors.add(reason);
+          AIDebug.log(LOG, "Mode validation REJECTED: " + reason);
+        } else {
+          AIDebug.log(LOG, "Mode validation accepted: " + op.getType());
         }
       }
       if (!errors.isEmpty()) {
@@ -119,8 +123,12 @@ public class AIOperationValidator {
     if ("ScreenEditor".equals(mode)) {
       for (AIOperation op : operations) {
         if (PROJECT_LEVEL_OPS.contains(op.getType())) {
-          errors.add("ScreenEditor mode does not allow project-level operations. "
-              + "Rejected: " + op.getType());
+          String reason = "ScreenEditor mode does not allow project-level operations. "
+              + "Rejected: " + op.getType();
+          errors.add(reason);
+          AIDebug.log(LOG, "Mode validation REJECTED: " + reason);
+        } else {
+          AIDebug.log(LOG, "Mode validation accepted: " + op.getType());
         }
       }
       if (!errors.isEmpty()) {
@@ -129,6 +137,9 @@ public class AIOperationValidator {
     }
 
     // ProjectEditor allows all
+    for (AIOperation op : operations) {
+      AIDebug.log(LOG, "Mode validation accepted: " + op.getType());
+    }
     accepted.addAll(operations);
     return new ValidationResult(accepted, errors);
   }
@@ -156,8 +167,12 @@ public class AIOperationValidator {
       List<String> opErrors = validateSingleOperation(op, catalog);
       if (opErrors.isEmpty()) {
         accepted.add(op);
+        AIDebug.log(LOG, "Semantic validation accepted: " + op.getType());
       } else {
         errors.addAll(opErrors);
+        for (String err : opErrors) {
+          AIDebug.log(LOG, "Semantic validation REJECTED " + op.getType() + ": " + err);
+        }
       }
     }
 
