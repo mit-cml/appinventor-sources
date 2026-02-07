@@ -14,6 +14,8 @@ import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +66,9 @@ public final class TextValidators {
   public static ProjectNameStatus checkNewProjectName(String projectName, boolean quietly) {
 
     // Check the format of the project name
-    if (!isValidIdentifier(projectName)) {
+     ValidationResult result = validateName(projectName);
+     String canonicalName = result.modifiedName;
+    if (!isValidIdentifier(canonicalName)) {
       if (!quietly) {
         Window.alert(MESSAGES.malformedProjectNameError());
       }
@@ -72,19 +76,23 @@ public final class TextValidators {
     }
 
     // Check for names that reserved words
-    if (isReservedName(projectName)) {
+    if (isReservedName(canonicalName)) {
       Window.alert(MESSAGES.reservedNameError());
       return ProjectNameStatus.RESERVED;
     }
 
     // Check that project does not already exist
-    if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
-      if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
-        Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
-        return ProjectNameStatus.DUPLICATEINTRASH;
-      } else if (!quietly) {
-        Window.alert(MESSAGES.duplicateProjectNameError(projectName));
-      }
+    ProjectManager pm = Ode.getInstance().getProjectManager();
+    Project existing = pm.getProject(canonicalName);
+
+   if (existing != null) {
+    if (existing.isInTrash()) {
+    Window.alert(MESSAGES.duplicateTrashProjectNameError(canonicalName));
+    return ProjectNameStatus.DUPLICATEINTRASH;
+  }
+  if (!quietly) {
+    Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
+  }
       return ProjectNameStatus.DUPLICATE;
     }
     return ProjectNameStatus.SUCCESS;
@@ -97,7 +105,9 @@ public final class TextValidators {
   public static boolean checkNewComponentName(String componentName) {
 
     // Check that it meets the formatting requirements.
-    if (!TextValidators.isValidComponentIdentifier(componentName)) {
+    ValidationResult result = validateName(componentName);
+    String canonicalName = result.modifiedName; 
+    if (!TextValidators.isValidComponentIdentifier(canonicalName)) {
       Window.alert(MESSAGES.malformedComponentNameError());
       return false;
     }
@@ -111,20 +121,20 @@ public final class TextValidators {
 
     // Check that it's unique.
     final List<String> names = editor.getComponentInstances();
-    if (names.contains(componentName)) {
+    if (names.contains(canonicalName)) {
       Window.alert(MESSAGES.sameAsComponentInstanceNameError());
       return false;
     }
 
     // Check that it is a variable name used in the Yail code
-    if (TextValidators.isReservedName(componentName)) {
+    if (TextValidators.isReservedName(canonicalName)) {
       Window.alert(MESSAGES.reservedNameError());
       return false;
     }
 
     //Check that it is not a Component type name
     SimpleComponentDatabase COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
-    if (COMPONENT_DATABASE.isComponent(componentName)) {
+    if (COMPONENT_DATABASE.isComponent(canonicalName)) {
       Window.alert(MESSAGES.duplicateComponentNameError());
       return false;
     }
@@ -145,22 +155,24 @@ public final class TextValidators {
    */
   public static ProjectNameStatus checkNewFolderName(String folderName, ProjectFolder parent) {
     // Check the format of the folder name
-    if (!isValidIdentifier(folderName)) {
+    ValidationResult result = validateName(folderName);
+    String canonicalName = result.modifiedName;
+     if (!isValidIdentifier(canonicalName)) {
       // TODO: Decide whether to use new strings
       Window.alert(MESSAGES.malformedProjectNameError());
       return ProjectNameStatus.INVALIDFORMAT;
     }
 
     // Check for names that reserved words
-    if (isReservedName(folderName)) {
+    if (isReservedName(canonicalName)) {
       Window.alert(MESSAGES.reservedNameError());
       return ProjectNameStatus.RESERVED;
     }
 
     // Check that folder does not already exist
     for (ProjectFolder folder : parent.getChildFolders()) {
-      if (folderName.equals(folder.getName())) {
-        Window.alert(MESSAGES.duplicateProjectNameError(folderName));
+      if (canonicalName.equals(folder.getName())) {
+        Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
         return ProjectNameStatus.DUPLICATE;
       }
     }
