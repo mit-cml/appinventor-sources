@@ -25,6 +25,7 @@ public class DesignToolbarNeo extends DesignToolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected ToolbarItem toggleAIChatItem;
 
   @Override
   public void bindUI() {
@@ -36,5 +37,6 @@ public class DesignToolbarNeo extends DesignToolbar {
     super.switchToDesign = switchToDesign;
     super.switchToBlocks = switchToBlocks;
     super.sendToGalleryItem = sendToGalleryItem;
+    super.toggleAIChatItem = toggleAIChatItem;
   }
 }

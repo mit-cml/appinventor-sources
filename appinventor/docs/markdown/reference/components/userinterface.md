@@ -1226,6 +1226,11 @@ Top-level component containing all other components in the program.
 
 {:.properties}
 
+{:id="Screen.AIAgentMode" .text .wo .do} *AIAgentMode*
+: Sets the AI agent mode for this project. Only effective on Screen1.
+ Controls what the AI assistant is allowed to do: Off, Advisor (read-only),
+ ScreenEditor (current screen), or ProjectEditor (full project).
+
 {:id="Screen.AboutScreen" .text} *AboutScreen*
 : Information about the screen. It appears when "About this Application" is selected from the
  system menu. Use it to tell users about your app. In multiple screen apps, each screen has its

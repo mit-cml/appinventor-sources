@@ -48,7 +48,12 @@
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
 
-    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar" 
+    <ai:ToolbarItem name="AIChatToggle" icon="smart_toy" tooltip="{messages.toggleAIChatButton}"
+                    ui:field="toggleAIChatItem" align="right" styleName="ode-ProjectListButton inline">
+      <ya:ToggleAIChatAction/>
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar"
                     ui:field="toggleConsoleItem" align="right" styleName="ode-ProjectListButton bleft primary">
       <ya:ToggleConsoleAction/>
     </ai:ToolbarItem>
