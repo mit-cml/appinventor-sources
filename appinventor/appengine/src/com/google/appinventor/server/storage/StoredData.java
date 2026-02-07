@@ -328,6 +328,17 @@ public class StoredData {
     String allowedExtensions;
   }
 
+  // AI Agent conversation message, stored per-user per-project
+  @Unindexed
+  public static final class ConversationMessageData {
+    @Id Long id;
+    @Indexed public String userId;
+    @Indexed public long projectId;
+    public String role;      // "user" or "assistant"
+    public String text;
+    @Indexed public long timestamp;
+  }
+
   public static final class ProjectNotFoundException extends IOException {
     ProjectNotFoundException(String message) {
       super(message);
