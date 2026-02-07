@@ -344,6 +344,9 @@
     <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server/ios">
       <fileset dir="src/${appinventor.pkg}/server/ios" includes="*.pub" />
     </copy>
+    <copy todir="${AiServerLib-class.dir}/${appinventor.pkg}/server/aiagent/resources">
+      <fileset dir="src/${appinventor.pkg}/server/aiagent/resources" includes="*.md,*.json" />
+    </copy>
     <ai.javac destdir="${AiServerLib-class.dir}">
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>
