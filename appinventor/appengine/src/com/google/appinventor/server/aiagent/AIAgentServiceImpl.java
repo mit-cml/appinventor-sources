@@ -44,7 +44,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -236,7 +238,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Convert pseudocode bodies to Blockly XML for block operations
       if (!operations.isEmpty()) {
-        operations = convertPseudocodeToXml(operations);
+        Map<String, String> componentTypes =
+            buildComponentTypeMap(userId, projectId, screenName);
+        operations = convertPseudocodeToXml(operations, componentTypes);
       }
 
       // Belt-and-suspenders: strip write ops in Advisor mode
@@ -552,7 +556,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
    * parses them through PseudocodeParser, and replaces the body/initial_value
    * field with a blocksXml field containing the generated XML.
    */
-  private List<AIOperation> convertPseudocodeToXml(List<AIOperation> operations) {
+  private List<AIOperation> convertPseudocodeToXml(List<AIOperation> operations,
+      Map<String, String> componentTypes) {
     PseudocodeParser parser = new PseudocodeParser();
     List<AIOperation> converted = new ArrayList<>();
 
@@ -564,6 +569,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           JSONObject payload = new JSONObject(op.getPayload());
           String pseudocode = reconstructPseudocode(op.getType(), payload);
           String blocksXml = parser.parse(pseudocode);
+          blocksXml = fillComponentTypes(blocksXml, componentTypes);
           payload.put("blocksXml", blocksXml);
           converted.add(new AIOperation(op.getType(), payload.toString()));
         } catch (Exception e) {
@@ -634,6 +640,72 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       default:
         return "";
     }
+  }
+
+  /**
+   * Build a map of component instance name to component type from the SCM file.
+   */
+  private Map<String, String> buildComponentTypeMap(String userId, long projectId,
+      String screenName) {
+    Map<String, String> map = new HashMap<>();
+    try {
+      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
+      String scmSuffix = "/" + screenName + ".scm";
+      for (String fileId : files) {
+        if (fileId.endsWith(scmSuffix)) {
+          String scmContent = storageIo.downloadFile(userId, projectId, fileId, "UTF-8");
+          String json = extractScmJson(scmContent);
+          if (json != null) {
+            JSONObject root = new JSONObject(json);
+            JSONObject props = root.optJSONObject("Properties");
+            if (props != null) {
+              collectComponentTypes(props, map);
+            }
+          }
+          break;
+        }
+      }
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "Failed to build component type map", e);
+    }
+    return map;
+  }
+
+  private void collectComponentTypes(JSONObject component, Map<String, String> map) {
+    String type = component.optString("$Type", "");
+    String name = component.optString("$Name", "");
+    if (!type.isEmpty() && !name.isEmpty()) {
+      map.put(name, type);
+    }
+    JSONArray children = component.optJSONArray("$Components");
+    if (children != null) {
+      for (int i = 0; i < children.length(); i++) {
+        collectComponentTypes(children.getJSONObject(i), map);
+      }
+    }
+  }
+
+  /**
+   * Fill in empty component_type attributes in generated Blockly XML
+   * by looking up instance names in the component type map.
+   */
+  private static String fillComponentTypes(String xml, Map<String, String> componentTypes) {
+    // Find all instance_name="X" occurrences and fill in the preceding component_type=""
+    for (Map.Entry<String, String> entry : componentTypes.entrySet()) {
+      String name = escapeXmlAttr(entry.getKey());
+      String type = escapeXmlAttr(entry.getValue());
+      // The generator always emits component_type="" somewhere before instance_name="X"
+      // in the same <mutation> element. Use regex to match and replace.
+      xml = xml.replaceAll(
+          "component_type=\"\"([^/]*instance_name=\"" + java.util.regex.Pattern.quote(name) + "\")",
+          "component_type=\"" + type + "\"$1");
+    }
+    return xml;
+  }
+
+  private static String escapeXmlAttr(String value) {
+    return value.replace("&", "&amp;").replace("\"", "&quot;")
+        .replace("<", "&lt;").replace(">", "&gt;");
   }
 
   private static AIAgentResponse errorResponse(String message) {
