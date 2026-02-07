@@ -5841,4 +5841,78 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Project Editor")
   @Description("AI Agent mode: full project access")
   String aiAgentModeProjectEditor();
+
+  // AI Chat Dialog
+
+  @DefaultMessage("AI Assistant")
+  @Description("Title of the AI chat dialog")
+  String aiChatDialogTitle();
+
+  @DefaultMessage("Send")
+  @Description("Label for the send button in AI chat dialog")
+  String aiChatSendButton();
+
+  @DefaultMessage("Apply")
+  @Description("Label for the apply operations button in AI chat dialog")
+  String aiChatApplyButton();
+
+  @DefaultMessage("Reject")
+  @Description("Label for the reject operations button in AI chat dialog")
+  String aiChatRejectButton();
+
+  @DefaultMessage("New Conversation")
+  @Description("Label for the new conversation button in AI chat dialog")
+  String aiChatNewConversationButton();
+
+  @DefaultMessage("Type your message...")
+  @Description("Placeholder text for the AI chat input area")
+  String aiChatInputPlaceholder();
+
+  @DefaultMessage("Thinking...")
+  @Description("Status shown while the AI is processing a request")
+  String aiChatThinking();
+
+  @DefaultMessage("Proposed Changes:")
+  @Description("Header for the operation preview section in AI chat dialog")
+  String aiChatProposedChanges();
+
+  @DefaultMessage("Operations applied successfully.")
+  @Description("Message shown after AI operations are applied")
+  String aiChatOperationsApplied();
+
+  @DefaultMessage("Operations rejected.")
+  @Description("Message shown after AI operations are rejected")
+  String aiChatOperationsRejected();
+
+  @DefaultMessage("Failed to send message to AI assistant.")
+  @Description("Error message when the AI agent RPC call fails")
+  String aiChatSendError();
+
+  @DefaultMessage("Failed to load conversation history.")
+  @Description("Error message when loading conversation history fails")
+  String aiChatLoadHistoryError();
+
+  @DefaultMessage("Failed to clear conversation.")
+  @Description("Error message when clearing conversation fails")
+  String aiChatClearError();
+
+  @DefaultMessage("No project is currently open.")
+  @Description("Error message when AI chat is opened without an active project")
+  String aiChatNoProject();
+
+  @DefaultMessage("You")
+  @Description("Label for user messages in the AI chat dialog")
+  String aiChatUserLabel();
+
+  @DefaultMessage("AI")
+  @Description("Label for AI messages in the AI chat dialog")
+  String aiChatAiLabel();
+
+  @DefaultMessage("Failed to apply operations.")
+  @Description("Error message when applying AI operations fails")
+  String aiChatApplyError();
+
+  @DefaultMessage("Close")
+  @Description("Label for the close button in AI chat dialog")
+  String aiChatCloseButton();
 }

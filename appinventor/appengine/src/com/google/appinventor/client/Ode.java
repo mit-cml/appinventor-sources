@@ -24,6 +24,7 @@ import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.youngandroid.AIChatDialog;
 import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
@@ -248,6 +249,9 @@ public class Ode implements EntryPoint {
   private boolean tutorialVisible = false;
 
   private boolean consoleVisible = false;
+
+  // Floating AI assistant chat dialog (lazy-initialized)
+  private AIChatDialog aiChatDialog;
 
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
@@ -2514,6 +2518,21 @@ public class Ode implements EntryPoint {
 
   public boolean isConsoleVisible() {
     return consoleVisible;
+  }
+
+  /**
+   * Toggles the AI assistant chat dialog. On the first call the dialog is
+   * lazy-initialized. Subsequent calls show or hide it.
+   */
+  public void toggleAIChatDialog() {
+    if (aiChatDialog == null) {
+      aiChatDialog = new AIChatDialog();
+    }
+    if (aiChatDialog.isShowing()) {
+      aiChatDialog.hideDialog();
+    } else {
+      aiChatDialog.show();
+    }
   }
 
   public void setTutorialURL(String newURL) {
