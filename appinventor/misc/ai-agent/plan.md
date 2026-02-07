@@ -1900,20 +1900,20 @@ public class AIOperationExecutor {
             }
         }
 
-        // Trigger auto-save if anything succeeded.
+        // No explicit scheduleAutoSave() call needed here. All executor operations
+        // go through the same APIs as manual user edits, which already trigger
+        // auto-save via the existing listener chains:
         //
-        // DO NOT call formEditor.onSave() — that is a post-save callback stub (no-op
-        // in DesignerEditor.java:472), not a save trigger.
-        //
-        // The correct mechanism: property changes already fire
-        // DesignerEditor.onComponentPropertyChanged() → EditorManager.scheduleAutoSave()
-        // automatically through the PropertyChangeListener chain (see MockComponent.java:1187,
-        // DesignerEditor.java:312). For operations that don't go through changeProperty()
-        // (e.g., ADD_COMPONENT, DELETE_COMPONENT, RENAME_COMPONENT), we must explicitly
-        // mark the editor as dirty:
-        if (!result.succeeded.isEmpty()) {
-            Ode.getInstance().getEditorManager().scheduleAutoSave(formEditor);
-        }
+        // - SET_PROPERTY → changeProperty() → PropertyChangeListener →
+        //   DesignerEditor.onComponentPropertyChanged() → scheduleAutoSave()
+        // - ADD_COMPONENT → addComponent() → fireComponentAdded →
+        //   DesignerEditor.onComponentAdded() → onStructureChange() → scheduleAutoSave()
+        // - DELETE_COMPONENT → delete() → fireComponentRemoved →
+        //   DesignerEditor.onComponentRemoved() → onStructureChange() → scheduleAutoSave()
+        // - RENAME_COMPONENT → rename() → fireComponentRenamed →
+        //   DesignerEditor.onComponentRenamed() → onStructureChange() → scheduleAutoSave()
+        // - Block injection/deletion → Blockly workspace change events →
+        //   BlocksEditor.onWorkspaceChange() → scheduleAutoSave()
     }
 
     /**
