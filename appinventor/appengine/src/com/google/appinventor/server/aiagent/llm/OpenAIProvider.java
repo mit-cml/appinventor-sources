@@ -56,7 +56,7 @@ public class OpenAIProvider implements LLMProvider {
 
   @Override
   public boolean isStateless() {
-    return false;
+    return true;
   }
 
   @Override
@@ -77,22 +77,12 @@ public class OpenAIProvider implements LLMProvider {
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
-      // Use previous_response_id for stateful conversation on the first
-      // iteration only; subsequent iterations within the tool loop use
-      // the messages array we are building up
-      if (iteration == 0 && providerRef != null && !providerRef.isEmpty()) {
-        requestBody.put("previous_response_id", providerRef);
-      }
-
       JSONObject responseJson = callApi(requestBody);
-
-      // Extract the response ID for stateful continuation
-      String responseId = responseJson.optString("id", null);
 
       // Parse choices
       JSONArray choices = responseJson.optJSONArray("choices");
       if (choices == null || choices.length() == 0) {
-        return new LLMResponse("", new ArrayList<RawToolCall>(), responseId);
+        return new LLMResponse("", new ArrayList<RawToolCall>(), null);
       }
 
       JSONObject choice = choices.getJSONObject(0);
@@ -107,7 +97,7 @@ public class OpenAIProvider implements LLMProvider {
         return new LLMResponse(
             textContent != null ? textContent : "",
             new ArrayList<RawToolCall>(),
-            responseId);
+            null);
       }
 
       // Classify tool calls into read-only and operation tools
@@ -138,7 +128,7 @@ public class OpenAIProvider implements LLMProvider {
         return new LLMResponse(
             textContent != null ? textContent : "",
             rawCalls,
-            responseId);
+            null);
       }
 
       // Add the assistant message with tool_calls to messages
