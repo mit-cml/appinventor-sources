@@ -438,9 +438,9 @@ public class AIOperationExecutor {
   }
 
   private String validateSwitchScreen(JSONObject json) {
-    String screen = getStringField(json, "screen");
+    String screen = getStringField(json, "screen_name");
     if (screen == null || screen.isEmpty()) {
-      return "SWITCH_SCREEN: missing 'screen' field";
+      return "SWITCH_SCREEN: missing 'screen_name' field";
     }
     DesignProject project = getCurrentProject();
     if (project == null) {
@@ -453,9 +453,9 @@ public class AIOperationExecutor {
   }
 
   private String validateCreateScreen(JSONObject json) {
-    String screen = getStringField(json, "screen");
+    String screen = getStringField(json, "screen_name");
     if (screen == null || screen.isEmpty()) {
-      return "CREATE_SCREEN: missing 'screen' field";
+      return "CREATE_SCREEN: missing 'screen_name' field";
     }
     if (!TextValidators.isValidIdentifier(screen)) {
       return "CREATE_SCREEN: '" + screen + "' is not a valid identifier";
@@ -474,9 +474,9 @@ public class AIOperationExecutor {
   }
 
   private String validateDeleteScreen(JSONObject json) {
-    String screen = getStringField(json, "screen");
+    String screen = getStringField(json, "screen_name");
     if (screen == null || screen.isEmpty()) {
-      return "DELETE_SCREEN: missing 'screen' field";
+      return "DELETE_SCREEN: missing 'screen_name' field";
     }
     if ("Screen1".equals(screen)) {
       return "DELETE_SCREEN: cannot delete Screen1";
@@ -492,14 +492,10 @@ public class AIOperationExecutor {
   }
 
   private String validateSetProjectProp(JSONObject json) {
-    String category = getStringField(json, "category");
-    String name = getStringField(json, "name");
+    String property = getStringField(json, "property");
     String value = getStringField(json, "value");
-    if (category == null || category.isEmpty()) {
-      return "SET_PROJECT_PROP: missing 'category' field";
-    }
-    if (name == null || name.isEmpty()) {
-      return "SET_PROJECT_PROP: missing 'name' field";
+    if (property == null || property.isEmpty()) {
+      return "SET_PROJECT_PROP: missing 'property' field";
     }
     if (value == null) {
       return "SET_PROJECT_PROP: missing 'value' field";
@@ -508,10 +504,10 @@ public class AIOperationExecutor {
   }
 
   private String validateAddComponent(JSONObject json) {
-    String type = getStringField(json, "type");
+    String type = getStringField(json, "component_type");
     String name = getStringField(json, "name");
     if (type == null || type.isEmpty()) {
-      return "ADD_COMPONENT: missing 'type' field";
+      return "ADD_COMPONENT: missing 'component_type' field";
     }
     if (name == null || name.isEmpty()) {
       return "ADD_COMPONENT: missing 'name' field";
@@ -562,13 +558,13 @@ public class AIOperationExecutor {
   }
 
   private String validateSetProperty(JSONObject json) {
-    String component = getStringField(json, "component");
-    String property = getStringField(json, "property");
+    String component = getStringField(json, "component_name");
+    String property = getStringField(json, "property_name");
     if (component == null || component.isEmpty()) {
-      return "SET_PROPERTY: missing 'component' field";
+      return "SET_PROPERTY: missing 'component_name' field";
     }
     if (property == null || property.isEmpty()) {
-      return "SET_PROPERTY: missing 'property' field";
+      return "SET_PROPERTY: missing 'property_name' field";
     }
     if (!json.containsKey("value")) {
       return "SET_PROPERTY: missing 'value' field";
@@ -586,13 +582,13 @@ public class AIOperationExecutor {
   }
 
   private String validateRenameComponent(JSONObject json) {
-    String oldName = getStringField(json, "oldName");
-    String newName = getStringField(json, "newName");
+    String oldName = getStringField(json, "old_name");
+    String newName = getStringField(json, "new_name");
     if (oldName == null || oldName.isEmpty()) {
-      return "RENAME_COMPONENT: missing 'oldName' field";
+      return "RENAME_COMPONENT: missing 'old_name' field";
     }
     if (newName == null || newName.isEmpty()) {
-      return "RENAME_COMPONENT: missing 'newName' field";
+      return "RENAME_COMPONENT: missing 'new_name' field";
     }
     if (!TextValidators.isValidIdentifier(newName)) {
       return "RENAME_COMPONENT: '" + newName + "' is not a valid identifier";
@@ -675,7 +671,7 @@ public class AIOperationExecutor {
   }
 
   private void executeSwitchScreen(JSONObject json, final ProjectOpCallback callback) {
-    String screen = getStringField(json, "screen");
+    String screen = getStringField(json, "screen_name");
     long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
     try {
@@ -689,7 +685,7 @@ public class AIOperationExecutor {
   }
 
   private void executeCreateScreen(JSONObject json, final ProjectOpCallback callback) {
-    final String screenName = getStringField(json, "screen");
+    final String screenName = getStringField(json, "screen_name");
     final Ode ode = Ode.getInstance();
     final long projectId = ode.getCurrentYoungAndroidProjectId();
     final Project project = ode.getProjectManager().getProject(projectId);
@@ -730,7 +726,7 @@ public class AIOperationExecutor {
   }
 
   private void executeDeleteScreen(JSONObject json, final ProjectOpCallback callback) {
-    final String screenName = getStringField(json, "screen");
+    final String screenName = getStringField(json, "screen_name");
     final Ode ode = Ode.getInstance();
     final long projectId = ode.getCurrentYoungAndroidProjectId();
     final Project project = ode.getProjectManager().getProject(projectId);
@@ -786,8 +782,7 @@ public class AIOperationExecutor {
   }
 
   private void executeSetProjectProp(JSONObject json, ProjectOpCallback callback) {
-    String category = getStringField(json, "category");
-    String name = getStringField(json, "name");
+    String property = getStringField(json, "property");
     String value = getStringField(json, "value");
 
     try {
@@ -798,7 +793,10 @@ public class AIOperationExecutor {
         callback.onFailure("SET_PROJECT_PROP: no open project editor");
         return;
       }
-      projectEditor.changeProjectSettingsProperty(category, name, value);
+      // The property name is expected in "category/name" format or just "name".
+      // For now, use the YoungAndroid settings category.
+      projectEditor.changeProjectSettingsProperty(
+          "young_android_settings", property, value);
       callback.onSuccess();
     } catch (Exception e) {
       callback.onFailure("SET_PROJECT_PROP: " + e.getMessage());
@@ -853,7 +851,7 @@ public class AIOperationExecutor {
   // -----------------------------------------------------------------------
 
   private void executeAddComponent(JSONObject json) {
-    String type = getStringField(json, "type");
+    String type = getStringField(json, "component_type");
     String name = getStringField(json, "name");
     String parent = getStringField(json, "parent");
 
@@ -913,8 +911,8 @@ public class AIOperationExecutor {
   }
 
   private void executeSetProperty(JSONObject json) {
-    String component = getStringField(json, "component");
-    String property = getStringField(json, "property");
+    String component = getStringField(json, "component_name");
+    String property = getStringField(json, "property_name");
     JSONValue valueJson = json.get("value");
     String value = (valueJson.isString() != null)
         ? valueJson.isString().stringValue()
@@ -927,8 +925,8 @@ public class AIOperationExecutor {
   }
 
   private void executeRenameComponent(JSONObject json) {
-    String oldName = getStringField(json, "oldName");
-    String newName = getStringField(json, "newName");
+    String oldName = getStringField(json, "old_name");
+    String newName = getStringField(json, "new_name");
 
     YaFormEditor formEditor = getCurrentFormEditor();
     Map<String, MockComponent> components = formEditor.getComponents();
@@ -942,8 +940,8 @@ public class AIOperationExecutor {
 
   private void executeSetEventHandler(JSONObject json) {
     String blocksXml = getStringField(json, "blocksXml");
-    String componentName = getStringField(json, "component");
-    String eventName = getStringField(json, "event");
+    String componentName = getStringField(json, "component_name");
+    String eventName = getStringField(json, "event_name");
 
     YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
     // Use replaceBlock to support create-or-replace semantics.
@@ -975,8 +973,7 @@ public class AIOperationExecutor {
       // Procedures can be either "procedures_defnoreturn" or "procedures_defreturn".
       // Try the no-return variant first; the replaceBlock method will silently
       // skip if the block doesn't exist.
-      boolean hasReturn = json.containsKey("hasReturn")
-          && "true".equals(getStringField(json, "hasReturn"));
+      boolean hasReturn = json.containsKey("returns");
       String blockType = hasReturn ? "procedures_defreturn" : "procedures_defnoreturn";
       blocksEditor.replaceBlock(blockType, "", procName, blocksXml);
     } else {
@@ -989,8 +986,8 @@ public class AIOperationExecutor {
   // -----------------------------------------------------------------------
 
   private void executeDeleteEventHandler(JSONObject json) {
-    String componentName = getStringField(json, "component");
-    String eventName = getStringField(json, "event");
+    String componentName = getStringField(json, "component_name");
+    String eventName = getStringField(json, "event_name");
 
     YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
     if (componentName != null && eventName != null) {
