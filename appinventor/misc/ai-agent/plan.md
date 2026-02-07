@@ -1006,7 +1006,12 @@ Container types and what they accept:
 - Map: ONLY accepts Marker, LineString, Polygon, Rectangle, Circle, FeatureCollection
 ```
 
-The Layers 2-5 are then appended after this system prompt (component catalog, on-demand lookup tools, current app state, few-shot examples).
+The remaining layers are then appended after this system prompt (component catalog, pseudocode
+grammar, current app state, few-shot examples). Tool definitions (Layer 3) are NOT embedded in
+the system prompt text — they are returned as a separate `List<LLMTool>` from
+`AIContextBuilder.buildTools(mode)` and passed as structured objects to the LLM provider's
+`chat()` method. This keeps tools in the provider's native structured format rather than
+serializing them into prompt text.
 
 **Layer 2: Compact component catalog** (always included, ~3K tokens)
 
@@ -1291,9 +1296,8 @@ If the user's request involves another screen, the LLM can ask for it or we can 
 **Total baseline context per request: ~10-12K tokens** (reference guide + catalog + few-shot examples + app state). Additional ~1-8K tokens per `lookup_component` call. Well within all major LLM context windows.
 
 **Generation pipeline:**
-1. `AIContextBuilder` assembles the system prompt from Layers 1-3 (static, cached on server startup)
-2. Appends Layer 4 (current app state, built per-request from ProjectService.load())
-3. Appends Layer 5 (few-shot examples, static)
+1. `AIContextBuilder.build()` assembles the system prompt from Layers 1-2 + pseudocode grammar (static, cached on server startup), then appends Layer 4 (current app state, built per-request) and Layer 5 (few-shot examples, static)
+2. `AIContextBuilder.buildTools(mode)` returns a separate `List<LLMTool>` with mode-scoped tool definitions (Layer 3) as structured objects
 4. `AIAgentServiceImpl` constructs a `ReadOnlyToolResolver` callback (resolves
    `lookup_component` from the component DB, `lookup_screen` from storageIo)
 5. `llmProvider.chat()` is called with the resolver. Inside the provider:
@@ -1863,28 +1867,14 @@ public class AIOperationExecutor {
         YaFormEditor formEditor = (YaFormEditor) screen.designerEditor;
         YaBlocksEditor blocksEditor = (YaBlocksEditor) screen.blocksEditor;
 
-        // Assert: editor must be fully loaded before we touch components.
-        //
-        // DesignerEditor.getComponents() returns an EMPTY MAP when loadComplete is
-        // false (DesignerEditor.java:377). If we proceed, every component lookup
-        // returns null and preValidate rejects all operations with confusing errors.
-        //
-        // This should never happen because:
+        // Note: no explicit isLoadComplete() check is needed here because:
         // - SWITCH_SCREEN targets screens whose editors were loaded at project open
         //   (YaProjectEditor loads all screens eagerly in onProjectLoaded)
         // - CREATE_SCREEN's async chain waits for onProjectNodeAdded → file download
         //   → onFileLoaded (which sets loadComplete = true in SimpleEditor.java:582)
         // - The phase chain's deferred scheduling already waits for screensLocked to
         //   clear, which overlaps with the I/O window
-        //
-        // If this assertion fires, it indicates a bug in the async chain above.
-        if (!formEditor.isLoadComplete()) {
-            result.failed = ops.get(0);
-            result.errorMessage = "Internal error: editor not loaded for screen "
-                + project.currentScreen + ". This is a bug — please report it.";
-            result.skipped.addAll(ops);
-            return;
-        }
+        // These guarantees mean the editor is always loaded by the time we reach here.
 
         for (int i = 0; i < ops.size(); i++) {
             AIOperation op = ops.get(i);
@@ -2475,22 +2465,26 @@ public ValidationResult validateForMode(List<AIOperation> ops, String mode) {
             case "Advisor":
                 if (WRITE_OPS.contains(type)) {
                     errors.add("Advisor mode: operation " + type + " not permitted.");
-                    continue;
                 }
                 break;
             case "ScreenEditor":
                 if (PROJECT_LEVEL_OPS.contains(type)) {
                     errors.add("ScreenEditor mode: operation " + type
                         + " not permitted (requires ProjectEditor mode).");
-                    continue;
                 }
                 break;
             case "ProjectEditor":
                 break;
         }
-        accepted.add(op);
     }
-    return new ValidationResult(accepted, errors);
+
+    // All-or-nothing: if ANY operation violates mode rules, reject ALL operations.
+    // The LLM's operations are a coherent batch — partial application after mode
+    // violations would leave the project in an inconsistent state.
+    if (!errors.isEmpty()) {
+        return new ValidationResult(Collections.emptyList(), errors);
+    }
+    return new ValidationResult(ops, Collections.emptyList());
 }
 ```
 
