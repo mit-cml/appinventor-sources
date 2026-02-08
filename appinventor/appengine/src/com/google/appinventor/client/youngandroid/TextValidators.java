@@ -66,14 +66,14 @@ public final class TextValidators {
   public static ProjectNameStatus checkNewProjectName(String projectName, boolean quietly) {
 
     // Check the format of the project name
-     ValidationResult result = validateName(projectName);
-     String canonicalName = result.modifiedName;
-    if (!isValidIdentifier(canonicalName)) {
+    if (!isValidIdentifier(projectName)) {
       if (!quietly) {
         Window.alert(MESSAGES.malformedProjectNameError());
       }
       return ProjectNameStatus.INVALIDFORMAT;
     }
+    ValidationResult result = validateName(projectName);
+    String canonicalName = result.modifiedName;
 
     // Check for names that reserved words
     if (isReservedName(canonicalName)) {
@@ -85,10 +85,10 @@ public final class TextValidators {
     ProjectManager pm = Ode.getInstance().getProjectManager();
     Project existing = pm.getProject(canonicalName);
 
-   if (existing != null) {
-    if (existing.isInTrash()) {
-    Window.alert(MESSAGES.duplicateTrashProjectNameError(canonicalName));
-    return ProjectNameStatus.DUPLICATEINTRASH;
+    if (existing != null) {
+      if (existing.isInTrash()) {
+        Window.alert(MESSAGES.duplicateTrashProjectNameError(canonicalName));
+      return ProjectNameStatus.DUPLICATEINTRASH;
   }
   if (!quietly) {
     Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
@@ -105,12 +105,12 @@ public final class TextValidators {
   public static boolean checkNewComponentName(String componentName) {
 
     // Check that it meets the formatting requirements.
-    ValidationResult result = validateName(componentName);
-    String canonicalName = result.modifiedName; 
-    if (!TextValidators.isValidComponentIdentifier(canonicalName)) {
+    if (!TextValidators.isValidComponentIdentifier(componentName)) {
       Window.alert(MESSAGES.malformedComponentNameError());
       return false;
     }
+    ValidationResult result = validateName(componentName);
+    String canonicalName = result.modifiedName; 
 
     long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     if ( projectId == 0) { // Check we have a current Project
@@ -155,13 +155,13 @@ public final class TextValidators {
    */
   public static ProjectNameStatus checkNewFolderName(String folderName, ProjectFolder parent) {
     // Check the format of the folder name
-    ValidationResult result = validateName(folderName);
-    String canonicalName = result.modifiedName;
-     if (!isValidIdentifier(canonicalName)) {
+     if (!isValidIdentifier(folderName)) {
       // TODO: Decide whether to use new strings
       Window.alert(MESSAGES.malformedProjectNameError());
       return ProjectNameStatus.INVALIDFORMAT;
     }
+    ValidationResult result = validateName(folderName);
+    String canonicalName = result.modifiedName;
 
     // Check for names that reserved words
     if (isReservedName(canonicalName)) {
