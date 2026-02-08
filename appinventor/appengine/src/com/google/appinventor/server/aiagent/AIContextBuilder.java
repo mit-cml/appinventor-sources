@@ -10,6 +10,7 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
 
+import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.server.aiagent.llm.LLMTool;
 import com.google.appinventor.server.storage.StorageIo;
 
@@ -23,7 +24,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 /**
@@ -31,7 +34,7 @@ import java.util.logging.Logger;
  *
  * <ul>
  *   <li>Layer 1: Static system prompt from appinventor_reference.md
- *   <li>Layer 2: Compact component catalog from component_catalog.json
+ *   <li>Layer 2: Compact component catalog from simple_components.json
  *   <li>Layer 3: On-demand lookup tool definitions (mode-filtered)
  *   <li>Layer 4: Current app state (per-request, from project files)
  *   <li>Layer 5: Few-shot examples from few_shot_examples.json
@@ -629,9 +632,125 @@ public class AIContextBuilder {
 
   private static String getCatalog() {
     if (cachedCatalog == null) {
-      cachedCatalog = loadResource("component_catalog.json");
+      cachedCatalog = buildCompactCatalog();
     }
     return cachedCatalog;
+  }
+
+  /**
+   * Build a compact component catalog from simple_components.json.
+   *
+   * <p>Groups components by category with names and brief descriptions only.
+   * Excludes Form (documented inline in the system prompt) and INTERNAL
+   * components. Only components with {@code showOnPalette=true} are included.
+   */
+  private static String buildCompactCatalog() {
+    String json = loadResource("/com/google/appinventor/simple_components.json");
+    if (json.startsWith("(resource")) {
+      LOG.warning("Could not load simple_components.json for catalog");
+      return json;
+    }
+
+    JSONArray components = new JSONArray(json);
+    Map<String, List<String>> byCategory = new TreeMap<>();
+
+    for (int i = 0; i < components.length(); i++) {
+      JSONObject comp = components.getJSONObject(i);
+
+      String name = comp.optString("name", "");
+      String categoryString = comp.optString("categoryString", "");
+      boolean showOnPalette = "true".equals(comp.optString("showOnPalette", "false"));
+      boolean nonVisible = "true".equals(comp.optString("nonVisible", "false"));
+      String helpString = comp.optString("helpString", "");
+
+      // Skip Form (handled in system prompt), INTERNAL, and hidden components
+      if ("Form".equals(name) || "INTERNAL".equals(categoryString) || !showOnPalette) {
+        continue;
+      }
+
+      // Map category enum name to display name
+      String displayCategory;
+      try {
+        displayCategory = ComponentCategory.valueOf(categoryString).getName();
+      } catch (IllegalArgumentException e) {
+        displayCategory = categoryString;
+      }
+
+      // Clean up description
+      String desc = stripHtml(helpString);
+      desc = truncateDescription(desc);
+
+      String entry = "- **" + name + "**";
+      if (nonVisible) {
+        entry += " (non-visible)";
+      }
+      if (!desc.isEmpty()) {
+        entry += ": " + desc;
+      }
+
+      byCategory.computeIfAbsent(displayCategory, k -> new ArrayList<>()).add(entry);
+    }
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("The following component types are available. Use `lookup_component` to get\n");
+    sb.append("full details (properties, events, methods) before using a component.\n");
+
+    for (Map.Entry<String, List<String>> entry : byCategory.entrySet()) {
+      sb.append("\n### ").append(entry.getKey()).append("\n");
+      for (String line : entry.getValue()) {
+        sb.append(line).append("\n");
+      }
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * Strip HTML tags, decode common entities, and collapse whitespace.
+   */
+  private static String stripHtml(String html) {
+    if (html == null || html.isEmpty()) {
+      return "";
+    }
+    String text = html.replaceAll("<[^>]+>", " ");
+    text = text.replace("&amp;", "&")
+               .replace("&lt;", "<")
+               .replace("&gt;", ">")
+               .replace("&quot;", "\"")
+               .replace("&#39;", "'")
+               .replace("&nbsp;", " ");
+    text = text.replaceAll("\\s+", " ").trim();
+    return text;
+  }
+
+  /**
+   * Truncate to the first sentence (period followed by whitespace or end),
+   * capped at 150 characters.
+   */
+  private static String truncateDescription(String text) {
+    if (text == null || text.isEmpty()) {
+      return "";
+    }
+    // Find first sentence boundary
+    int end = -1;
+    for (int i = 0; i < text.length() - 1; i++) {
+      if (text.charAt(i) == '.' && (i + 1 >= text.length() || Character.isWhitespace(text.charAt(i + 1)))) {
+        end = i + 1; // include the period
+        break;
+      }
+    }
+    // If no sentence boundary found, check if text ends with period
+    if (end < 0 && text.endsWith(".")) {
+      end = text.length();
+    }
+    if (end < 0) {
+      end = text.length();
+    }
+    String result = text.substring(0, end).trim();
+    if (result.length() > 150) {
+      result = result.substring(0, 147) + "...";
+    }
+    return result;
   }
 
   private static String getExamples() {
@@ -649,9 +768,10 @@ public class AIContextBuilder {
   }
 
   private static String loadResource(String name) {
-    try (InputStream is = AIContextBuilder.class.getResourceAsStream(RESOURCE_BASE + name)) {
+    String path = name.startsWith("/") ? name : RESOURCE_BASE + name;
+    try (InputStream is = AIContextBuilder.class.getResourceAsStream(path)) {
       if (is == null) {
-        LOG.warning("Resource not found: " + RESOURCE_BASE + name);
+        LOG.warning("Resource not found: " + path);
         return "(resource not available)";
       }
       BufferedReader reader = new BufferedReader(
