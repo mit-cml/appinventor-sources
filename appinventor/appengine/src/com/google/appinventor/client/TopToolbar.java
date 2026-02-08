@@ -56,6 +56,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_REFRESHCOMPANION_BUTTON = "RefreshCompanion";
+  private static final String WIDGET_NAME_SAVE_PROJECT_TO_COMPANION = "SaveProjectToCompanion";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_SETTINGS = "Settings";
   private static final String WIDGET_NAME_AUTOLOAD = "AutoloadLastProject";
@@ -70,6 +71,8 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
   private static final String WIDGET_NAME_PROJECTPROPERTIES = "ProjectProperties";
+  private static final String WIDGET_NAME_EXPORT_ALL_PROJECTS = "ExportAllProjects";
+  private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
@@ -189,12 +192,10 @@ public class TopToolbar extends Composite {
   public void updateMoveToTrash(boolean moveToTrash) {
     if (moveToTrash) {
       // Move projects to trash.
-      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
+      fileDropDown.setItemVisibleById(WIDGET_NAME_DELETE, true);
     } else {
       // Projects are already in trash. Completely delete them.
-      fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
+      fileDropDown.setItemVisibleById(WIDGET_NAME_DELETE, false);
     }
   }
 
@@ -202,46 +203,45 @@ public class TopToolbar extends Composite {
     boolean allowDelete = hasWriteAccess && numSelectedProjects > 0;
     boolean allowExport = numSelectedProjects > 0;
     boolean allowExportAll = numProjects > 0;
-    fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), allowDelete);
-    fileDropDown.setItemEnabled(MESSAGES.deleteFromTrashButton(), allowDelete);
+    fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE, allowDelete);
     String exportProjectLabel = numSelectedProjects > 1
         ? MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects)
         : MESSAGES.exportProjectMenuItem();
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
     fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
-    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
+    fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORT_ALL_PROJECTS, allowExportAll);
   }
 
   public void updateKeystoreStatus(boolean present) {
     isKeystoreCached = true;
     isKeystorePresent = present;
     isKeystoreCheckPending = false;
-    fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), present);
-    fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), present);
+    fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE_KEYSTORE, present);
+    fileDropDown.setItemEnabledById(WIDGET_NAME_DOWNLOAD_KEYSTORE, present);
   }
 
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
       boolean isUsbRunning) {
     if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_WIRELESS_BUTTON, true);
       if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_CHROMEBOOK, true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, false);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, false);
       } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_CHROMEBOOK, false);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, true);
       }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
-      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_REFRESHCOMPANION_BUTTON, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_SAVE_PROJECT_TO_COMPANION, false);
     } else {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
-      if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
-      } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
-      }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
-      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), true);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_WIRELESS_BUTTON, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_CHROMEBOOK, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_REFRESHCOMPANION_BUTTON, true);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_SAVE_PROJECT_TO_COMPANION, true);
     }
   }
 
@@ -324,25 +324,22 @@ public class TopToolbar extends Composite {
     // TODO: This code will work only so long as these menu items stay located in the file/build
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
-    if (view == 0) {  // We are in the Projects view
+    if (view == Ode.PROJECTS) {  // We are in the Projects view
       if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(false);
       }
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), false);
-      fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), projectCount == 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE, projectCount == 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_PROJECTPROPERTIES, false);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORT_ALL_PROJECTS, projectCount > 0);
       fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, false);
-      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), false);
-      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), false);
-      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), false);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_SAVE, false);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_SAVE_AS, false);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_CHECKPOINT, false);
+      buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_APK, false);
+      buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_AAB, false);
       if (Ode.getInstance().hasSecondBuildserver()) {
-        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), false);
-        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), false);
+        buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_APK2, false);
+        buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_AAB2, false);
       }
       if (Ode.getInstance().hasIosBuildServer()) {
         if (AppInventorFeatures.allowIosBuilds()) {
@@ -352,24 +349,22 @@ public class TopToolbar extends Composite {
           buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_IOS_APPSTORE, false);
         }
       }
-    } else { // We have to be in the Designer/Blocks view
+    } else if (view == Ode.DESIGNER) { // We have to be in the Designer/Blocks view
       if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(true);
       }
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), true);
-      fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), true);
-      fileDropDown.setItemEnabled(MESSAGES.trashProjectMenuItem(), true);
-      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), projectCount > 0);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE, true);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_PROJECTPROPERTIES, true);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORT_ALL_PROJECTS, projectCount > 0);
       fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, true);
-      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
-      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
-      fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
-      fileDropDown.setItemEnabled(MESSAGES.projectPropertiesMenuItem(), true);
-      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk(), true);
-      buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab(), true);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_SAVE, true);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_SAVE_AS, true);
+      fileDropDown.setItemEnabledById(WIDGET_NAME_CHECKPOINT, true);
+      buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_APK, true);
+      buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_AAB, true);
       if (Ode.getInstance().hasSecondBuildserver()) {
-        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidApk2(), true);
-        buildDropDown.setItemEnabled(MESSAGES.showExportAndroidAab2(), true);
+        buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_APK2, true);
+        buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_ANDROID_AAB2, true);
       }
       if (Ode.getInstance().hasIosBuildServer()) {
         if (AppInventorFeatures.allowIosBuilds()) {
@@ -393,15 +388,15 @@ public class TopToolbar extends Composite {
           public void onSuccess(Boolean keystoreFileExists) {
             isKeystoreCached = true;
             isKeystorePresent = keystoreFileExists;
-            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), keystoreFileExists);
-            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), keystoreFileExists);
+            fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
+            fileDropDown.setItemEnabledById(WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
           }
 
           @Override
           public void onFailure(Throwable caught) {
             // Enable the MenuItems. If they are clicked, we'll check again if the keystore exists.
-            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), true);
-            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), true);
+            fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE_KEYSTORE, true);
+            fileDropDown.setItemEnabledById(WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
           }
         });
   }
@@ -422,9 +417,8 @@ public class TopToolbar extends Composite {
       public void onSuccess(Boolean keystoreFileExists) {
         isKeystoreCached = true;
         isKeystorePresent = keystoreFileExists;
-        isKeystoreCheckPending = false;
-        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), keystoreFileExists);
-        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), keystoreFileExists);
+        fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
+        fileDropDown.setItemEnabledById(WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
       }
 
       @Override
@@ -433,8 +427,8 @@ public class TopToolbar extends Composite {
         isKeystoreCached = false;
         isKeystorePresent = true;
         isKeystoreCheckPending = false;
-        fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), true);
-        fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), true);
+        fileDropDown.setItemEnabledById(WIDGET_NAME_DELETE_KEYSTORE, true);
+        fileDropDown.setItemEnabledById(WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
       }
     };
     if (useCache && isKeystoreCached) {
