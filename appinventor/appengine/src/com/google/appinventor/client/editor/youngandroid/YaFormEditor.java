@@ -139,6 +139,9 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     super.onShow();
     // Replace the old singleton call with the new panel method
     visibleComponentsPanel.show(root);
+    // Refresh undo/redo button state to match this screen's undo manager
+    Ode.getInstance().getDesignToolbar().updateUndoRedoButtons(
+        undoManager.canUndo(), undoManager.canRedo());
   }
 
   @Override
