@@ -153,6 +153,8 @@ public class DesignToolbar extends Toolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected ToolbarItem undoItem;
+  @UiField protected ToolbarItem redoItem;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -386,6 +388,21 @@ public class DesignToolbar extends Toolbar {
     boolean notOnScreen1 = getCurrentProject() != null
         && !"Screen1".equals(getCurrentProject().currentScreen);
     setButtonEnabled(WIDGET_NAME_REMOVEFORM, notOnScreen1);
+
+    // Hide undo/redo buttons in blocks view, show in designer view
+    setVisibleItem(undoItem, !blocks);
+    setVisibleItem(redoItem, !blocks);
+  }
+
+  /**
+   * Updates the enabled state of the undo and redo toolbar buttons.
+   *
+   * @param canUndo true if undo is available
+   * @param canRedo true if redo is available
+   */
+  public void updateUndoRedoButtons(boolean canUndo, boolean canRedo) {
+    setButtonEnabled(undoItem.getName(), canUndo);
+    setButtonEnabled(redoItem.getName(), canRedo);
   }
 
   public void toggleView() {

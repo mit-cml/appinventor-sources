@@ -14,11 +14,14 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.blocks.BlocksEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
+import com.google.appinventor.client.editor.youngandroid.undo.DesignerUndoManager;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -83,6 +86,8 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
    * A mapping of component UUIDs to mock components in the designer view.
    */
   private final Map<String, MockComponent> componentsDb = new HashMap<>();
+
+  private final DesignerUndoManager undoManager = new DesignerUndoManager(this);
 
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 
@@ -155,6 +160,8 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   @Override
   public void onClose() {
     root.removeDesignerChangeListener(this);
+    root.removeDesignerChangeListener(undoManager);
+    undoManager.clear();
     // Note: our partner YaBlocksEditor will remove itself as a DesignerChangeListener, even
     // though we added it.
   }
@@ -181,6 +188,11 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     if (isLoadComplete() && component.isPropertyPersisted(propertyName)) {
       updatePhone();          // Push changes to the phone if it is connected
     }
+  }
+
+  @Override
+  public void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    // No action needed in YaFormEditor before component removal.
   }
 
   // other public methods
@@ -344,6 +356,16 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     // of in the blocks editor so that we don't risk it missing any updates.
     root.addDesignerChangeListener(((YaProjectEditor) projectEditor)
         .getBlocksFileEditor(root.getName()));
+
+    // Register the undo manager as a change listener and initialize tracking.
+    root.addDesignerChangeListener(undoManager);
+    undoManager.initializePropertyTracking();
+    undoManager.setStateListener(new DesignerUndoManager.UndoRedoStateListener() {
+        @Override
+        public void onUndoRedoStateChanged(boolean canUndo, boolean canRedo) {
+            Ode.getInstance().getDesignToolbar().updateUndoRedoButtons(canUndo, canRedo);
+        }
+    });
   }
 
   /**
@@ -522,6 +544,28 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     if (!isActiveEditor()) {
       return;  // Not the active editor
     }
+    if (event.isControlKeyDown() || event.isMetaKeyDown()) {
+      switch (event.getNativeKeyCode()) {
+        case KeyCodes.KEY_Z:
+          event.preventDefault();
+          if (event.isShiftKeyDown()) {
+            if (undoManager.canRedo()) {
+              undoManager.redo();
+            }
+          } else {
+            if (undoManager.canUndo()) {
+              undoManager.undo();
+            }
+          }
+          return;
+        case KeyCodes.KEY_Y:
+          event.preventDefault();
+          if (undoManager.canRedo()) {
+            undoManager.redo();
+          }
+          return;
+      }
+    }
     if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused()
         && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
       getVisibleComponentsPanel().focusCheckbox();
@@ -530,4 +574,160 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     }
   }
 
+  // --- Undo/Redo support ---
+
+  /**
+   * Returns the undo manager for this form editor.
+   */
+  public DesignerUndoManager getUndoManager() {
+    return undoManager;
+  }
+
+  /**
+   * Finds a component by its UUID across all components in this form.
+   *
+   * @param uuid the component UUID to search for
+   * @return the MockComponent with the given UUID, or null if not found
+   */
+  public MockComponent getComponentByUuid(String uuid) {
+    if (uuid == null) {
+      return null;
+    }
+    // Check the form itself
+    if (uuid.equals(root.getUuid())) {
+      return root;
+    }
+    Map<String, MockComponent> components = getComponents();
+    for (MockComponent component : components.values()) {
+      if (uuid.equals(component.getUuid())) {
+        return component;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Encodes a single component (and its children) as a JSON string.
+   * Used by undo commands to capture component state before deletion.
+   *
+   * @param component the component to encode
+   * @return JSON string representation of the component subtree
+   */
+  public String encodeComponentAsJson(MockComponent component) {
+    StringBuilder sb = new StringBuilder();
+    encodeComponentProperties(component, sb, false);
+    return sb.toString();
+  }
+
+  /**
+   * Recreates a component (and its children) from a JSON string and adds it
+   * to the given container at the specified index. Used by undo/redo commands.
+   *
+   * @param json the JSON representation of the component subtree
+   * @param parent the container to add the component to
+   * @param index the index within the container's children list (-1 for end)
+   * @return the recreated MockComponent, or null on failure
+   */
+  public MockComponent recreateComponentFromJson(String json, MockContainer parent, int index) {
+    try {
+      JSONObject propertiesObject = JSON_PARSER.parse(json).asObject();
+      MockComponent component = createMockComponentForUndo(propertiesObject, parent, index);
+      if (isLoadComplete()) {
+        onStructureChange();
+      }
+      return component;
+    } catch (Exception e) {
+      LOG.severe("Failed to recreate component from JSON: " + e.getMessage());
+      return null;
+    }
+  }
+
+  /**
+   * Removes a component and its subtree for undo purposes.
+   * Cleans up blocks editor registration, non-visible panel, and container.
+   *
+   * @param component the component to remove
+   */
+  public void removeComponentForUndo(MockComponent component) {
+    // Remove from blocks editor
+    BlocksEditor<?, ?> blockEditor = getBlocksEditor();
+    removeComponentFromBlocksEditor(component, blockEditor);
+
+    // Select the form before removal
+    root.setSelectedComponent(root, null);
+
+    // Remove from container
+    MockContainer container = component.getContainer();
+    if (container != null) {
+      container.removeComponent(component, true);
+    }
+
+    // Clean up the component
+    component.onRemoved();
+    component.getProperties().removePropertyChangeListener(component);
+    component.getProperties().clear();
+  }
+
+  /**
+   * Recursively removes a component and its children from the blocks editor.
+   */
+  private void removeComponentFromBlocksEditor(MockComponent component, BlocksEditor<?, ?> blockEditor) {
+    // Remove children first (for containers)
+    for (MockComponent child : new ArrayList<MockComponent>(component.getChildren())) {
+      removeComponentFromBlocksEditor(child, blockEditor);
+    }
+    blockEditor.removeComponent(component.getType(), component.getName(), component.getUuid());
+  }
+
+  /*
+   * Parses the JSON properties and creates the component structure at a specific index.
+   * This overload is used by the undo system to insert at a specific position.
+   */
+  private MockComponent createMockComponentForUndo(JSONObject propertiesObject, MockContainer parent, int index) {
+    Map<String, JSONValue> properties = propertiesObject.getProperties();
+
+    // Component name and type
+    String componentType = properties.get("$Type").asString().getString();
+
+    // Instantiate a mock component for the visual designer
+    MockComponent mockComponent = palettePanel.createMockComponent(componentType,
+        componentDatabase.getComponentType(componentType));
+
+    // Add the component to its parent container at the specified index
+    if (index >= 0 && index <= parent.getChildren().size()) {
+      parent.addComponent(mockComponent, index);
+    } else {
+      parent.addComponent(mockComponent);
+    }
+    if (!mockComponent.isVisibleComponent()) {
+      nonVisibleComponentsPanel.addComponent(mockComponent);
+    }
+
+    // Set the name of the component
+    String componentName = properties.get("$Name").asString().getString();
+    mockComponent.changeProperty("Name", componentName);
+
+    // Set component properties
+    for (String name : properties.keySet()) {
+      if (name.charAt(0) != '$') {
+        mockComponent.changeProperty(name, properties.get(name).asString().getString());
+      }
+    }
+
+    // Add component type to the blocks editor
+    BlocksEditor<?, ?> blockEditor = getBlocksEditor();
+    if (blockEditor != null) {
+      blockEditor.addComponent(mockComponent.getType(), mockComponent.getName(),
+          mockComponent.getUuid());
+    }
+
+    // Add nested components
+    if (properties.containsKey("$Components")) {
+      for (JSONValue nestedComponent : properties.get("$Components").asArray().getElements()) {
+        createMockComponentForUndo(nestedComponent.asObject(), (MockContainer) mockComponent, -1);
+      }
+    }
+
+    return mockComponent;
+  }
 }

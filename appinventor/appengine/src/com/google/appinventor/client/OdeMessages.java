@@ -1107,6 +1107,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
+  @DefaultMessage("Undo")
+  @Description("Tooltip for the undo button in the designer viewer header.")
+  String undoButton();
+
+  @DefaultMessage("Redo")
+  @Description("Tooltip for the redo button in the designer viewer header.")
+  String redoButton();
+
   @DefaultMessage("Display components with visible property set to FALSE")
   @Description("Alternate phrasing of showHiddenComponentsCheckbox.")
   String showInvisiblePropertyComponents();

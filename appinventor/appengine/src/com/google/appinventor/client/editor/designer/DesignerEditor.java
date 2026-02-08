@@ -321,6 +321,11 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   }
 
   @Override
+  public void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    // No action needed in DesignerEditor before component removal.
+  }
+
+  @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
     if (loadComplete) {
       if (permanentlyDeleted) {

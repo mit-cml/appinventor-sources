@@ -256,6 +256,11 @@ abstract class MockTextBoxBase extends MockWrapper implements DesignerChangeList
   }
 
   @Override
+  public void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    // No action needed before component removal.
+  }
+
+  @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
 
   }

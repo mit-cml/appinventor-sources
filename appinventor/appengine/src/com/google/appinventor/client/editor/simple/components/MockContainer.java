@@ -180,7 +180,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeIndex  index at which the inserted component will reside in the children,
    *                     or {@code -1} to insert the component at the end
    */
-  private void addComponent(MockComponent component, int beforeIndex) {
+  public void addComponent(MockComponent component, int beforeIndex) {
 
     // Set the container to be the parent of the component
     component.setContainer(this);
@@ -246,6 +246,8 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *        to another container
    */
   public void removeComponent(MockComponent component, boolean permanentlyDeleted) {
+    // Notify listeners before the component is removed (while it is still in the children list)
+    getRoot().fireBeforeComponentRemoved(component, permanentlyDeleted);
 
     // Remove the component from the list of child components
     children.remove(component);
@@ -261,6 +263,14 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
 
     getRoot().fireComponentRemoved(component, permanentlyDeleted);
+  }
+
+  /**
+   * Returns the index of the given child component in the children list,
+   * or -1 if not found.
+   */
+  public int getChildIndex(MockComponent child) {
+    return children.indexOf(child);
   }
 
   /**
