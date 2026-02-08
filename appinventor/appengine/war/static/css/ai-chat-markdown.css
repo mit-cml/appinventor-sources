@@ -1,0 +1,170 @@
+/* Styles for rendered Markdown in AI chat messages */
+
+.ai-chat-markdown {
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Headings - scaled down for chat context */
+.ai-chat-markdown h1 {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 0.6em 0 0.3em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.2em;
+}
+
+.ai-chat-markdown h2 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0.5em 0 0.3em;
+}
+
+.ai-chat-markdown h3 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0.4em 0 0.2em;
+}
+
+.ai-chat-markdown h4,
+.ai-chat-markdown h5,
+.ai-chat-markdown h6 {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0.3em 0 0.2em;
+}
+
+/* Paragraphs */
+.ai-chat-markdown p {
+  margin: 0.4em 0;
+}
+
+/* First child should not have top margin */
+.ai-chat-markdown > :first-child {
+  margin-top: 0;
+}
+
+/* Last child should not have bottom margin */
+.ai-chat-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+/* Inline code */
+.ai-chat-markdown code {
+  background: rgba(0, 0, 0, 0.08);
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9em;
+}
+
+/* Code blocks */
+.ai-chat-markdown pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 10px 12px;
+  border-radius: 5px;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0.5em 0;
+  font-size: 0.85em;
+  line-height: 1.45;
+}
+
+.ai-chat-markdown pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* Blockquotes */
+.ai-chat-markdown blockquote {
+  border-left: 3px solid #4a90d9;
+  margin: 0.5em 0;
+  padding: 0.3em 0.8em;
+  color: #555;
+  background: rgba(74, 144, 217, 0.06);
+}
+
+.ai-chat-markdown blockquote p {
+  margin: 0.2em 0;
+}
+
+/* Lists */
+.ai-chat-markdown ul,
+.ai-chat-markdown ol {
+  margin: 0.4em 0;
+  padding-left: 1.5em;
+}
+
+.ai-chat-markdown li {
+  margin: 0.15em 0;
+}
+
+.ai-chat-markdown li > p {
+  margin: 0.2em 0;
+}
+
+/* Nested lists */
+.ai-chat-markdown ul ul,
+.ai-chat-markdown ol ol,
+.ai-chat-markdown ul ol,
+.ai-chat-markdown ol ul {
+  margin: 0.1em 0;
+}
+
+/* Links */
+.ai-chat-markdown a {
+  color: #4a90d9;
+  text-decoration: none;
+}
+
+.ai-chat-markdown a:hover {
+  text-decoration: underline;
+}
+
+/* Tables */
+.ai-chat-markdown table {
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+.ai-chat-markdown th,
+.ai-chat-markdown td {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.ai-chat-markdown th {
+  background: rgba(0, 0, 0, 0.06);
+  font-weight: bold;
+}
+
+/* Horizontal rule */
+.ai-chat-markdown hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 0.6em 0;
+}
+
+/* Bold and italic */
+.ai-chat-markdown strong {
+  font-weight: bold;
+}
+
+.ai-chat-markdown em {
+  font-style: italic;
+}
+
+/* Strikethrough */
+.ai-chat-markdown del,
+.ai-chat-markdown s {
+  text-decoration: line-through;
+}

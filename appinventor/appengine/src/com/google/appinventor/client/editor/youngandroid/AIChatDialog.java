@@ -20,13 +20,16 @@ import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -72,10 +75,23 @@ public class AIChatDialog extends DialogBox {
   /** Default dialog height. */
   private static final int DIALOG_HEIGHT = 560;
 
+  /** Minimum dialog width when resizing. */
+  private static final int MIN_DIALOG_WIDTH = 300;
+
+  /** Minimum chat-scroll-panel height when resizing. */
+  private static final int MIN_SCROLL_HEIGHT = 100;
+
+  private static final int RESIZE_HANDLE_SIZE = 12;
+  private static final int EDGE_TOP = 1;
+  private static final int EDGE_RIGHT = 2;
+  private static final int EDGE_BOTTOM = 4;
+  private static final int EDGE_LEFT = 8;
+
   // RPC service
   private final AIAgentServiceAsync aiAgentService;
 
   // UI components
+  private final VerticalPanel mainPanel;
   private final ScrollPanel chatScrollPanel;
   private final FlowPanel chatHistory;
   private final FlowPanel operationPreview;
@@ -95,6 +111,17 @@ public class AIChatDialog extends DialogBox {
   private int lastPopupLeft = -1;
   private int lastPopupTop = -1;
 
+  // Resize state
+  private boolean resizing;
+  private int resizeStartX;
+  private int resizeStartY;
+  private int resizeStartPanelWidth;
+  private int resizeStartScrollHeight;
+  private int resizeStartLeft;
+  private int resizeStartTop;
+  private int resizeEdge;
+  private HandlerRegistration resizePreviewHandler;
+
   /**
    * Constructs the AI chat dialog, building the full UI hierarchy.
    */
@@ -110,7 +137,7 @@ public class AIChatDialog extends DialogBox {
 
     // ---- Build the UI ----
 
-    VerticalPanel mainPanel = new VerticalPanel();
+    mainPanel = new VerticalPanel();
     mainPanel.getElement().getStyle().setPadding(8, Unit.PX);
     mainPanel.setWidth(DIALOG_WIDTH + "px");
 
@@ -246,6 +273,8 @@ public class AIChatDialog extends DialogBox {
     mainPanel.add(bottomBar);
 
     setWidget(mainPanel);
+    configureMarked();
+    setupResizeHandles();
   }
 
   // ---- Lifecycle ----
@@ -416,8 +445,14 @@ public class AIChatDialog extends DialogBox {
     senderLabel.getElement().getStyle().setMarginBottom(2, Unit.PX);
     bubble.add(senderLabel);
 
-    // Use HTML to support line breaks in messages
-    HTML messageHtml = new HTML(escapeAndFormat(text));
+    // Use HTML to support line breaks / Markdown in messages
+    HTML messageHtml;
+    if (isUser) {
+      messageHtml = new HTML(escapeAndFormat(text));
+    } else {
+      messageHtml = new HTML(markdownToSafeHtml(text));
+      messageHtml.addStyleName("ai-chat-markdown");
+    }
     messageHtml.getElement().getStyle().setFontSize(13, Unit.PX);
     messageHtml.getElement().getStyle().setProperty("wordWrap", "break-word");
     bubble.add(messageHtml);
@@ -726,6 +761,153 @@ public class AIChatDialog extends DialogBox {
     statusLabel.setVisible(false);
   }
 
+  // ---- Resize ----
+
+  /**
+   * Adds invisible resize handles at each corner of the dialog.
+   */
+  private void setupResizeHandles() {
+    addCornerHandle("nw-resize", EDGE_TOP | EDGE_LEFT,
+        "0px", null, null, "0px");
+    addCornerHandle("ne-resize", EDGE_TOP | EDGE_RIGHT,
+        "0px", "0px", null, null);
+    addCornerHandle("sw-resize", EDGE_BOTTOM | EDGE_LEFT,
+        null, null, "0px", "0px");
+    addCornerHandle("se-resize", EDGE_BOTTOM | EDGE_RIGHT,
+        null, "0px", "0px", null);
+  }
+
+  /**
+   * Creates a single corner resize handle and appends it to the dialog element.
+   */
+  private void addCornerHandle(String cursor, int edge,
+      String top, String right, String bottom, String left) {
+    com.google.gwt.dom.client.Element handle = Document.get().createDivElement();
+    handle.getStyle().setProperty("position", "absolute");
+    handle.getStyle().setProperty("width", RESIZE_HANDLE_SIZE + "px");
+    handle.getStyle().setProperty("height", RESIZE_HANDLE_SIZE + "px");
+    handle.getStyle().setProperty("cursor", cursor);
+    handle.getStyle().setProperty("zIndex", "10");
+    if (top != null) {
+      handle.getStyle().setProperty("top", top);
+    }
+    if (right != null) {
+      handle.getStyle().setProperty("right", right);
+    }
+    if (bottom != null) {
+      handle.getStyle().setProperty("bottom", bottom);
+    }
+    if (left != null) {
+      handle.getStyle().setProperty("left", left);
+    }
+    getElement().appendChild(handle);
+    attachMouseDown(handle, edge);
+  }
+
+  /**
+   * Attaches a native mousedown listener to a resize handle element.
+   */
+  private native void attachMouseDown(
+      com.google.gwt.dom.client.Element el, int edge) /*-{
+    var self = this;
+    el.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      self.@com.google.appinventor.client.editor.youngandroid.AIChatDialog::startResize(III)(
+          e.clientX, e.clientY, edge);
+    });
+  }-*/;
+
+  /**
+   * Begins a resize operation, capturing mouse events globally.
+   */
+  private void startResize(int clientX, int clientY, int edge) {
+    resizing = true;
+    resizeStartX = clientX;
+    resizeStartY = clientY;
+    resizeStartPanelWidth = mainPanel.getOffsetWidth();
+    resizeStartScrollHeight = chatScrollPanel.getOffsetHeight();
+    resizeStartLeft = getAbsoluteLeft();
+    resizeStartTop = getAbsoluteTop();
+    resizeEdge = edge;
+
+    if (resizePreviewHandler != null) {
+      resizePreviewHandler.removeHandler();
+    }
+    resizePreviewHandler = Event.addNativePreviewHandler(
+        new Event.NativePreviewHandler() {
+          @Override
+          public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+            int type = event.getTypeInt();
+            if (type == Event.ONMOUSEMOVE) {
+              event.cancel();
+              doResize(event.getNativeEvent().getClientX(),
+                  event.getNativeEvent().getClientY());
+            } else if (type == Event.ONMOUSEUP) {
+              event.cancel();
+              stopResize();
+            }
+          }
+        });
+  }
+
+  /**
+   * Processes a mouse-move during an active resize, updating panel dimensions.
+   */
+  private void doResize(int clientX, int clientY) {
+    int dx = clientX - resizeStartX;
+    int dy = clientY - resizeStartY;
+
+    int newPanelWidth = resizeStartPanelWidth;
+    int newScrollHeight = resizeStartScrollHeight;
+    int newLeft = resizeStartLeft;
+    int newTop = resizeStartTop;
+
+    if ((resizeEdge & EDGE_RIGHT) != 0) {
+      newPanelWidth = resizeStartPanelWidth + dx;
+    }
+    if ((resizeEdge & EDGE_LEFT) != 0) {
+      newPanelWidth = resizeStartPanelWidth - dx;
+      newLeft = resizeStartLeft + dx;
+    }
+    if ((resizeEdge & EDGE_BOTTOM) != 0) {
+      newScrollHeight = resizeStartScrollHeight + dy;
+    }
+    if ((resizeEdge & EDGE_TOP) != 0) {
+      newScrollHeight = resizeStartScrollHeight - dy;
+      newTop = resizeStartTop + dy;
+    }
+
+    // Enforce minimum dimensions
+    if (newPanelWidth < MIN_DIALOG_WIDTH) {
+      if ((resizeEdge & EDGE_LEFT) != 0) {
+        newLeft = resizeStartLeft + resizeStartPanelWidth - MIN_DIALOG_WIDTH;
+      }
+      newPanelWidth = MIN_DIALOG_WIDTH;
+    }
+    if (newScrollHeight < MIN_SCROLL_HEIGHT) {
+      if ((resizeEdge & EDGE_TOP) != 0) {
+        newTop = resizeStartTop + resizeStartScrollHeight - MIN_SCROLL_HEIGHT;
+      }
+      newScrollHeight = MIN_SCROLL_HEIGHT;
+    }
+
+    setPopupPosition(newLeft, newTop);
+    mainPanel.setWidth(newPanelWidth + "px");
+    chatScrollPanel.setSize(newPanelWidth + "px", newScrollHeight + "px");
+  }
+
+  /**
+   * Ends the resize operation and removes the global event handler.
+   */
+  private void stopResize() {
+    resizing = false;
+    if (resizePreviewHandler != null) {
+      resizePreviewHandler.removeHandler();
+      resizePreviewHandler = null;
+    }
+  }
+
   // ---- Helpers ----
 
   /**
@@ -837,6 +1019,48 @@ public class AIChatDialog extends DialogBox {
         .replace("\"", "&quot;")
         .replace("\n", "<br>");
   }
+
+  /**
+   * Converts a Markdown string to sanitized HTML using marked.js and DOMPurify.
+   * Falls back to plain-text escaping if the libraries are not loaded.
+   *
+   * @param markdown the raw Markdown text
+   * @return sanitized HTML string
+   */
+  private static native String markdownToSafeHtml(String markdown) /*-{
+    if (!$wnd.marked || !$wnd.DOMPurify) {
+      // Fallback to plain-text escaping
+      return markdown.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+    }
+    var rawHtml = $wnd.marked.parse(markdown);
+    return $wnd.DOMPurify.sanitize(rawHtml, {
+      ALLOWED_TAGS: ['h1','h2','h3','h4','h5','h6','p','br','hr',
+        'b','i','em','strong','del','s','ul','ol','li','a',
+        'code','pre','blockquote','table','thead','tbody','tr','th','td',
+        'span','div','sup','sub'],
+      ALLOWED_ATTR: ['href','target','rel','class'],
+      ALLOW_DATA_ATTR: false
+    });
+  }-*/;
+
+  /**
+   * Configures marked.js options: enables GFM and line breaks,
+   * and makes links open in a new tab.
+   */
+  private static native void configureMarked() /*-{
+    if ($wnd.marked) {
+      var renderer = new $wnd.marked.Renderer();
+      var origLink = renderer.link;
+      renderer.link = function(token) {
+        var html = origLink.call(this, token);
+        return html.replace('<a ', '<a target="_blank" rel="noopener noreferrer" ');
+      };
+      $wnd.marked.setOptions({
+        breaks: true, gfm: true, renderer: renderer
+      });
+    }
+  }-*/;
 
   /**
    * Returns the current AIAgentMode from the project settings.

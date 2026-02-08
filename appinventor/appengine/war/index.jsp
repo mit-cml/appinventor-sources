@@ -81,6 +81,7 @@
     <link type="text/css" rel="stylesheet" href="static/css/DarkTheme.css">
     <link type="text/css" rel="stylesheet" href="static/css/fonts.css">
     <link type="text/css" rel="stylesheet" href="static/css/nano.min.css">
+    <link type="text/css" rel="stylesheet" href="static/css/ai-chat-markdown.css">
     <noscript>
       <div class="floatingBox">
         <h2> App Inventor needs JavaScript enabled to run.</h2>
@@ -130,6 +131,8 @@
     <script type="text/javascript" src="static/js/keyboard-navigation-0.5.13.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>
+    <script type="text/javascript" src="static/js/marked.umd.min.js"></script>
+    <script type="text/javascript" src="static/js/purify.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>
