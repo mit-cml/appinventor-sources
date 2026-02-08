@@ -108,7 +108,7 @@
 
   <target name="release" depends="archive" if="ios.build.run">
     <mkdir dir="${public.build}" />
-    <exec executable="xcodebuild" failonerror="false">
+    <exec executable="xcodebuild">
       <arg value="-exportArchive" />
       <arg value="-archivePath" />
       <arg value="${archive}"/>

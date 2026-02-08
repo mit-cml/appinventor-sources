@@ -398,7 +398,10 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
     _drawingImageView.image?.draw(in: _view.bounds)
     if let context = UIGraphicsGetCurrentContext() {
-      if _paintColor == 0 {
+      let color = argbToColor(_paintColor)
+      var alpha: CGFloat = 0.0
+      color.getRed(nil, green: nil, blue: nil, alpha: &alpha)
+      if alpha == 0.0 {
         context.setBlendMode(.clear)
       } else {
         context.setBlendMode(.normal)
