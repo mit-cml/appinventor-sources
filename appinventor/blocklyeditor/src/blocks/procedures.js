@@ -691,9 +691,6 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
     } else {
       this.setWarningText(null);
     }
-    var bodyInput = this.inputList[this.inputList.length - 1];
-    var savedRendered = this.rendered;
-    this.rendered = false;
     var thisBlock = this;
     Blockly.FieldParameterFlydown.withChangeHanderDisabled(function() {thisBlock.removeInput('HEADER');});
     var oldArgCount = this.inputList.length - 1;
@@ -709,7 +706,6 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
         }
       }
     }
-    this.inputList = [];
     var headerInput = this.appendDummyInput('HEADER').appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
     if (this.horizontalParameters) {
       for (var i = 0; i < this.arguments_.length; i++) {
@@ -722,14 +718,8 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
           .setAlign(Blockly.inputs.Align.RIGHT);
       }
     }
-    this.inputList = this.inputList.concat(bodyInput);
-    this.rendered = savedRendered;
-    if (this.rendered) {
-      for (var i = 0; i < this.inputList.length; i++) {
-        this.inputList[i].init();
-      }
-      this.render();
-    }
+    // Put back body input at end
+    this.moveInputBefore(this.bodyInputName);
   },
   parameterFlydown: function (paramIndex) {
     var initialParamName = this.arguments_[paramIndex];
@@ -848,11 +838,6 @@ Blockly.Blocks['procedures_defanonreturn'] = {
       this.setWarningText(null);
     }
 
-    var bodyInput = this.inputList[this.inputList.length - 1];
-
-    var savedRendered = this.rendered;
-    this.rendered = false;
-
     var thisBlock = this;
     Blockly.FieldParameterFlydown.withChangeHanderDisabled(
         function() {thisBlock.removeInput('HEADER');}
@@ -878,8 +863,6 @@ Blockly.Blocks['procedures_defanonreturn'] = {
       }
     }
 
-    this.inputList = [];
-
     var headerInput =
         this.appendDummyInput('HEADER')
             .appendField(Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE);
@@ -898,15 +881,9 @@ Blockly.Blocks['procedures_defanonreturn'] = {
       }
     }
 
-    this.inputList = this.inputList.concat(bodyInput);
+    // Put back body input at end
+    this.moveInputBefore(this.bodyInputName);
 
-    this.rendered = savedRendered;
-    for (var i = 0; i < this.inputList.length; i++) {
-      this.inputList[i].init();
-    }
-    if (this.rendered) {
-      this.render();
-    }
     // Note: mutateCallers might throw an error if it expects a name,
     // but for anonymous functions usually nothing calls them by name.
     // We can keep it or remove it depending on if Procedure.mutateCallers checks for null names.
