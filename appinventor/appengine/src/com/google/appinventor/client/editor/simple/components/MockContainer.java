@@ -223,7 +223,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param left left margin of the component inside the container
    * @param top top margin of the component inside the container
    */
-  @JsMethod(name = "addComponentAtMargins")
+  @JsMethod(name = "addComponentAtPosition")
   public final void addComponent(MockComponent component, int left, int top) {
     List<MockComponent> visibleChildren = getShowingVisibleChildren();
 
