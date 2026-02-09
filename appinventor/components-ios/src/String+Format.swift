@@ -12,9 +12,15 @@ extension String {
       formatted += f[..<next!]
       switch f[f.index(next!, offsetBy: 1)] {
       case "s":
+        if i >= messageArgs.count {
+          break
+        }
         formatted += String(describing: messageArgs[i])
         i += 1
       case "d", "f":
+        if i >= messageArgs.count {
+          break
+        }
         formatted += (messageArgs[i] as! NSNumber).stringValue
         i += 1
       case "%":
