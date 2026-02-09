@@ -36,9 +36,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -144,8 +142,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         isNew = true;
       }
 
-      // Build system prompt and tools
-      String systemPrompt = contextBuilder.build(userId, projectId, screenName, mode);
+      // Build system prompt and tools (using client-provided blocks YAIL)
+      String blocksYail = request.getBlocksYail();
+      String systemPrompt = contextBuilder.build(userId, projectId, screenName, mode, blocksYail);
       List<LLMTool> tools = contextBuilder.buildTools(mode);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
@@ -285,12 +284,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         }
       }
 
-      // Convert pseudocode bodies to Blockly XML for block operations
-      if (!operations.isEmpty()) {
-        Map<String, String> componentTypes =
-            buildComponentTypeMap(userId, projectId, screenName);
-        operations = convertPseudocodeToXml(operations, componentTypes);
-      }
+      // YAIL-based block operations (WRITE_BLOCK, DELETE_BLOCK) are passed through
+      // as-is to the client. The client handles YAIL parsing and block creation
+      // using the full Blockly runtime.
 
       // Belt-and-suspenders: strip write ops in Advisor mode
       operations = validator.stripWriteOpsIfAdvisor(operations, mode);
@@ -418,12 +414,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         }
       }
 
-      // Convert pseudocode bodies to Blockly XML
-      if (!operations.isEmpty()) {
-        Map<String, String> componentTypes =
-            buildComponentTypeMap(userId, projectId, screenName);
-        operations = convertPseudocodeToXml(operations, componentTypes);
-      }
+      // YAIL-based block operations are passed through to the client as-is.
 
       // Belt-and-suspenders: strip write ops in Advisor mode
       operations = validator.stripWriteOpsIfAdvisor(operations, mode);
@@ -461,6 +452,132 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       LOG.log(Level.SEVERE, "Unexpected error in AI agent continuation", e);
       clearStatus(projectId);
       return errorResponse("An unexpected error occurred. Please try again.");
+    }
+  }
+
+  @Override
+  public AIAgentResponse reportExecutionErrors(long projectId, String screenName,
+      List<String> errors) {
+    String userId = userInfoProvider.getUserId();
+
+    // Security check
+    try {
+      storageIo.assertUserHasProject(userId, projectId);
+    } catch (SecurityException e) {
+      return errorResponse("You do not have access to this project.");
+    }
+
+    // Mode check
+    String mode = getProjectAIMode(userId, projectId);
+    if ("Off".equals(mode)) {
+      return errorResponse("AI agent is disabled for this project.");
+    }
+
+    if (errors == null || errors.isEmpty()) {
+      return errorResponse("No errors to report.");
+    }
+
+    AIDebug.log(LOG, "reportExecutionErrors: userId=" + userId
+        + ", projectId=" + projectId + ", errors=" + errors.size());
+
+    try {
+      updateStatus(projectId, "Retrying with error feedback...");
+
+      // Load conversation state
+      AIConversationState conv = getConversation(projectId);
+      if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
+        clearStatus(projectId);
+        return errorResponse("No conversation state available. Please start a new request.");
+      }
+
+      // Build feedback message from client errors
+      String feedback = LLMResponseParser.buildValidationErrorFeedback(errors);
+      LOG.info("Retrying LLM with client execution errors: " + feedback);
+
+      // Get provider and tools
+      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
+      List<LLMTool> tools = contextBuilder.buildTools(mode);
+      List<ChatMessage> history = loadConversation(conv.getConversationId());
+      ReadOnlyToolResolver resolver = createResolver(userId, projectId);
+
+      // Build system prompt
+      String blocksYail = "";  // Not re-sending blocks YAIL for retry
+      String systemPrompt = contextBuilder.build(userId, projectId, screenName,
+          mode, blocksYail);
+
+      updateStatus(projectId, "Calling AI...");
+
+      // Retry LLM with the error feedback
+      LLMResponse llmResponse = provider.chat(
+          systemPrompt, feedback, tools, conv.getProviderRef(), history, resolver);
+
+      // Parse and validate the retry response
+      List<LLMResponseParser.RawToolCall> rawCalls = new ArrayList<>();
+      for (RawToolCall tc : llmResponse.getRawToolCalls()) {
+        rawCalls.add(new LLMResponseParser.RawToolCall(tc.getName(), tc.getArgumentsJson()));
+      }
+
+      LLMResponseParser.ParseResult parseResult = responseParser.parseToolCalls(rawCalls);
+      List<String> allErrors = new ArrayList<>(parseResult.getErrors());
+      List<AIOperation> operations = parseResult.getOperations();
+
+      // Validate
+      if (!operations.isEmpty()) {
+        updateStatus(projectId, "Validating operations...");
+
+        AIOperationValidator.ValidationResult modeResult =
+            validator.validateForMode(operations, mode);
+        if (modeResult.hasErrors()) {
+          allErrors.addAll(modeResult.getErrors());
+          operations = modeResult.getAccepted();
+        }
+
+        if (!operations.isEmpty()) {
+          AIOperationValidator.ValidationResult semanticResult =
+              validator.validateOperations(operations, getComponentDb());
+          if (semanticResult.hasErrors()) {
+            allErrors.addAll(semanticResult.getErrors());
+            operations = semanticResult.getAccepted();
+          }
+        }
+      }
+
+      // Strip write ops in Advisor mode
+      operations = validator.stripWriteOpsIfAdvisor(operations, mode);
+
+      // Update conversation state
+      conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
+          llmResponse.getProviderRef());
+      saveConversation(projectId, conv);
+
+      // Save error report and retry response to history
+      storeMessage(conv.getConversationId(), "user",
+          "[Execution error feedback] " + feedback);
+      String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+      if (assistantText.isEmpty() && !operations.isEmpty()) {
+        assistantText = summarizeOperations(operations);
+      }
+      storeMessage(conv.getConversationId(), "assistant", assistantText);
+
+      clearStatus(projectId);
+
+      boolean hasMore = llmResponse.hasMore() && !operations.isEmpty();
+      AIDebug.log(LOG, "Error retry response: operations=" + operations.size()
+          + ", errors=" + allErrors.size() + ", hasMore=" + hasMore);
+
+      AIAgentResponse agentResponse =
+          new AIAgentResponse(assistantText, operations, false, allErrors);
+      agentResponse.setHasMore(hasMore);
+      return agentResponse;
+
+    } catch (LLMProviderException e) {
+      LOG.log(Level.WARNING, "LLM provider error in error retry", e);
+      clearStatus(projectId);
+      return errorResponse(e.getUserFacingMessage());
+    } catch (Exception e) {
+      LOG.log(Level.SEVERE, "Unexpected error in error retry", e);
+      clearStatus(projectId);
+      return errorResponse("An unexpected error occurred during retry. Please try again.");
     }
   }
 
@@ -728,166 +845,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   }
 
   /**
-   * Convert pseudocode bodies in block operations to Blockly XML.
-   * Reconstructs full pseudocode statements from the operation fields,
-   * parses them through PseudocodeParser, and replaces the body/initial_value
-   * field with a blocksXml field containing the generated XML.
-   */
-  private List<AIOperation> convertPseudocodeToXml(List<AIOperation> operations,
-      Map<String, String> componentTypes) {
-    PseudocodeParser parser = new PseudocodeParser();
-    parser.setComponentInfo(componentTypes, getComponentDb());
-    List<AIOperation> converted = new ArrayList<>();
-
-    for (AIOperation op : operations) {
-      if (op.getType() == AIOperation.Type.SET_EVENT_HANDLER
-          || op.getType() == AIOperation.Type.SET_VARIABLE
-          || op.getType() == AIOperation.Type.SET_PROCEDURE) {
-        try {
-          JSONObject payload = new JSONObject(op.getPayload());
-          String pseudocode = reconstructPseudocode(op.getType(), payload);
-          AIDebug.log(LOG, "Pseudocode for " + op.getType() + ":\n" + pseudocode);
-          String blocksXml = parser.parse(pseudocode);
-          if (!parser.getWarnings().isEmpty()) {
-            LOG.info("Pseudocode validation warnings for " + op.getType()
-                + ": " + parser.getWarnings());
-          }
-          blocksXml = fillComponentTypes(blocksXml, componentTypes);
-          AIDebug.log(LOG, "Blockly XML for " + op.getType() + ":\n" + blocksXml);
-          payload.put("blocksXml", blocksXml);
-          converted.add(new AIOperation(op.getType(), payload.toString()));
-        } catch (Exception e) {
-          LOG.log(Level.WARNING, "Failed to convert pseudocode for " + op.getType(), e);
-          // Keep the original operation; client-side will report the error
-          converted.add(op);
-        }
-      } else {
-        converted.add(op);
-      }
-    }
-    return converted;
-  }
-
-  /**
-   * Reconstruct a full pseudocode block from an operation's fields.
-   */
-  private String reconstructPseudocode(AIOperation.Type type, JSONObject payload) {
-    switch (type) {
-      case SET_EVENT_HANDLER: {
-        String component = payload.optString("component_name", "");
-        String event = payload.optString("event_name", "");
-        String body = payload.optString("body", "");
-        StringBuilder sb = new StringBuilder();
-        sb.append("when ").append(component).append(".").append(event).append("() do\n");
-        for (String line : body.split("\n")) {
-          sb.append("  ").append(line).append("\n");
-        }
-        return sb.toString();
-      }
-      case SET_VARIABLE: {
-        String name = payload.optString("name", "");
-        String initialValue = payload.optString("initial_value", "0");
-        return "initialize global " + name + " to " + initialValue;
-      }
-      case SET_PROCEDURE: {
-        String name = payload.optString("name", "");
-        String body = payload.optString("body", "");
-        boolean hasReturn = payload.has("returns") && !payload.isNull("returns");
-        StringBuilder sb = new StringBuilder();
-        sb.append("procedure ").append(name).append("(");
-        // Add parameters if present
-        if (payload.has("params")) {
-          JSONArray params = payload.optJSONArray("params");
-          if (params != null && params.length() > 0) {
-            for (int i = 0; i < params.length(); i++) {
-              if (i > 0) sb.append(", ");
-              sb.append(params.getString(i));
-            }
-          }
-        }
-        sb.append(")");
-        if (hasReturn) {
-          sb.append(" returns\n");
-        }
-        sb.append("\n");
-        for (String line : body.split("\n")) {
-          sb.append("  ").append(line).append("\n");
-        }
-        if (hasReturn) {
-          String returnValue = payload.optString("returns", "");
-          if (!returnValue.isEmpty()) {
-            sb.append("  return ").append(returnValue).append("\n");
-          }
-        }
-        return sb.toString();
-      }
-      default:
-        return "";
-    }
-  }
-
-  /**
-   * Build a map of component instance name to component type from the SCM file.
-   */
-  private Map<String, String> buildComponentTypeMap(String userId, long projectId,
-      String screenName) {
-    Map<String, String> map = new HashMap<>();
-    try {
-      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
-      String scmSuffix = "/" + screenName + ".scm";
-      for (String fileId : files) {
-        if (fileId.endsWith(scmSuffix)) {
-          String scmContent = storageIo.downloadFile(userId, projectId, fileId, "UTF-8");
-          String json = extractScmJson(scmContent);
-          if (json != null) {
-            JSONObject root = new JSONObject(json);
-            JSONObject props = root.optJSONObject("Properties");
-            if (props != null) {
-              collectComponentTypes(props, map);
-            }
-          }
-          break;
-        }
-      }
-    } catch (Exception e) {
-      LOG.log(Level.WARNING, "Failed to build component type map", e);
-    }
-    return map;
-  }
-
-  private void collectComponentTypes(JSONObject component, Map<String, String> map) {
-    String type = component.optString("$Type", "");
-    String name = component.optString("$Name", "");
-    if (!type.isEmpty() && !name.isEmpty()) {
-      map.put(name, type);
-    }
-    JSONArray children = component.optJSONArray("$Components");
-    if (children != null) {
-      for (int i = 0; i < children.length(); i++) {
-        collectComponentTypes(children.getJSONObject(i), map);
-      }
-    }
-  }
-
-  /**
-   * Fill in empty component_type attributes in generated Blockly XML
-   * by looking up instance names in the component type map.
-   */
-  private static String fillComponentTypes(String xml, Map<String, String> componentTypes) {
-    // Find all instance_name="X" occurrences and fill in the preceding component_type=""
-    for (Map.Entry<String, String> entry : componentTypes.entrySet()) {
-      String name = escapeXmlAttr(entry.getKey());
-      String type = escapeXmlAttr(entry.getValue());
-      // The generator always emits component_type="" somewhere before instance_name="X"
-      // in the same <mutation> element. Use regex to match and replace.
-      xml = xml.replaceAll(
-          "component_type=\"\"([^/]*instance_name=\"" + java.util.regex.Pattern.quote(name) + "\")",
-          "component_type=\"" + type + "\"$1");
-    }
-    return xml;
-  }
-
-  /**
    * Build a brief summary of operations when the LLM returns no text.
    */
   private static String summarizeOperations(List<AIOperation> operations) {
@@ -912,21 +869,12 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
             sb.append("Renamed '").append(payload.optString("old_name"))
                 .append("' to '").append(payload.optString("new_name")).append("'\n");
             break;
-          case SET_EVENT_HANDLER:
-            sb.append("Set event handler for ")
-                .append(payload.optString("component_name"))
-                .append(".").append(payload.optString("event_name")).append("\n");
+          case WRITE_BLOCK:
+            String yail = payload.optString("yail", "");
+            sb.append("Wrote block: ").append(summarizeYailHead(yail)).append("\n");
             break;
-          case DELETE_EVENT_HANDLER:
-            sb.append("Deleted event handler for ")
-                .append(payload.optString("component_name"))
-                .append(".").append(payload.optString("event_name")).append("\n");
-            break;
-          case SET_VARIABLE:
-            sb.append("Set variable '").append(payload.optString("name")).append("'\n");
-            break;
-          case SET_PROCEDURE:
-            sb.append("Set procedure '").append(payload.optString("name")).append("'\n");
+          case DELETE_BLOCK:
+            sb.append("Deleted block: ").append(payload.optString("block")).append("\n");
             break;
           case CREATE_SCREEN:
             sb.append("Created screen '").append(payload.optString("screen_name")).append("'\n");
@@ -945,9 +893,30 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     return sb.toString().trim();
   }
 
-  private static String escapeXmlAttr(String value) {
-    return value.replace("&", "&amp;").replace("\"", "&quot;")
-        .replace("<", "&lt;").replace(">", "&gt;");
+  /**
+   * Extract a human-readable summary from the head of a YAIL S-expression.
+   * E.g., "(define-event Button1 Click ...)" -> "define-event Button1 Click"
+   */
+  private static String summarizeYailHead(String yail) {
+    if (yail == null || yail.isEmpty()) {
+      return "(unknown)";
+    }
+    // Strip leading whitespace and opening parens
+    String trimmed = yail.trim();
+    if (trimmed.startsWith("(")) {
+      trimmed = trimmed.substring(1).trim();
+    }
+    // Take the first few space-separated tokens
+    String[] tokens = trimmed.split("\\s+", 5);
+    int tokenCount = Math.min(tokens.length, 4);
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < tokenCount; i++) {
+      if (i > 0) sb.append(" ");
+      String token = tokens[i].replaceAll("[()]", "");
+      if (token.isEmpty()) continue;
+      sb.append(token);
+    }
+    return sb.toString();
   }
 
   private static AIAgentResponse errorResponse(String message) {

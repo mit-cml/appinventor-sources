@@ -85,12 +85,8 @@ public class LLMResponseParser {
     TOOL_NAME_TO_TYPE.put("delete_component", AIOperation.Type.DELETE_COMPONENT);
     TOOL_NAME_TO_TYPE.put("set_property", AIOperation.Type.SET_PROPERTY);
     TOOL_NAME_TO_TYPE.put("rename_component", AIOperation.Type.RENAME_COMPONENT);
-    TOOL_NAME_TO_TYPE.put("set_event_handler", AIOperation.Type.SET_EVENT_HANDLER);
-    TOOL_NAME_TO_TYPE.put("delete_event_handler", AIOperation.Type.DELETE_EVENT_HANDLER);
-    TOOL_NAME_TO_TYPE.put("set_variable", AIOperation.Type.SET_VARIABLE);
-    TOOL_NAME_TO_TYPE.put("delete_variable", AIOperation.Type.DELETE_VARIABLE);
-    TOOL_NAME_TO_TYPE.put("set_procedure", AIOperation.Type.SET_PROCEDURE);
-    TOOL_NAME_TO_TYPE.put("delete_procedure", AIOperation.Type.DELETE_PROCEDURE);
+    TOOL_NAME_TO_TYPE.put("write_block", AIOperation.Type.WRITE_BLOCK);
+    TOOL_NAME_TO_TYPE.put("delete_block", AIOperation.Type.DELETE_BLOCK);
     TOOL_NAME_TO_TYPE.put("switch_screen", AIOperation.Type.SWITCH_SCREEN);
     TOOL_NAME_TO_TYPE.put("create_screen", AIOperation.Type.CREATE_SCREEN);
     TOOL_NAME_TO_TYPE.put("delete_screen", AIOperation.Type.DELETE_SCREEN);
@@ -100,12 +96,8 @@ public class LLMResponseParser {
     REQUIRED_FIELDS.put("delete_component", Collections.singletonList("name"));
     REQUIRED_FIELDS.put("set_property", Arrays.asList("component_name", "property_name", "value"));
     REQUIRED_FIELDS.put("rename_component", Arrays.asList("old_name", "new_name"));
-    REQUIRED_FIELDS.put("set_event_handler", Arrays.asList("component_name", "event_name", "body"));
-    REQUIRED_FIELDS.put("delete_event_handler", Arrays.asList("component_name", "event_name"));
-    REQUIRED_FIELDS.put("set_variable", Arrays.asList("name", "initial_value"));
-    REQUIRED_FIELDS.put("delete_variable", Collections.singletonList("name"));
-    REQUIRED_FIELDS.put("set_procedure", Arrays.asList("name", "body"));
-    REQUIRED_FIELDS.put("delete_procedure", Collections.singletonList("name"));
+    REQUIRED_FIELDS.put("write_block", Collections.singletonList("yail"));
+    REQUIRED_FIELDS.put("delete_block", Collections.singletonList("block"));
     REQUIRED_FIELDS.put("switch_screen", Collections.singletonList("screen_name"));
     REQUIRED_FIELDS.put("create_screen", Collections.singletonList("screen_name"));
     REQUIRED_FIELDS.put("delete_screen", Collections.singletonList("screen_name"));
@@ -197,12 +189,8 @@ public class LLMResponseParser {
       if (properties instanceof String) {
         args.put("properties", new JSONObject((String) properties));
       }
-    } else if ("set_procedure".equals(toolName)) {
-      Object params = args.opt("parameters");
-      if (params instanceof String) {
-        args.put("parameters", new JSONArray((String) params));
-      }
     }
+    // write_block and delete_block carry string payloads only — no coercion needed
   }
 
   /**

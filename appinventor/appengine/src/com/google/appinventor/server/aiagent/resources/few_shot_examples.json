@@ -1,8 +1,8 @@
 [
   {
-    "description": "Advisor mode — text-only advice with no tool calls",
+    "description": "Advisor mode -- text-only advice with no tool calls",
     "user": "How should I organize a multi-screen quiz app?",
-    "assistant_text": "Here's a good approach for a multi-screen quiz app:\n\n1. **Screen1** — A welcome screen with a Start button. Store the score in a global variable.\n2. **QuestionScreen** — Display one question at a time using a Label and four Button options. Use a global list variable to hold your questions and another for the correct answers. Track the current question index.\n3. **ResultScreen** — Show the final score. Use a Label to display it and a Button to restart.\n\nFor navigation, use `open another screen with start value` to pass the score between screens. Keep your questions in a list so you can easily add more later.\n\nWould you like me to build any of these screens?",
+    "assistant_text": "Here's a good approach for a multi-screen quiz app:\n\n1. **Screen1** -- A welcome screen with a Start button. Store the score in a global variable.\n2. **QuestionScreen** -- Display one question at a time using a Label and four Button options. Use a global list variable to hold your questions and another for the correct answers. Track the current question index.\n3. **ResultScreen** -- Show the final score. Use a Label to display it and a Button to restart.\n\nFor navigation, use `open another screen with start value` to pass the score between screens. Keep your questions in a list so you can easily add more later.\n\nWould you like me to build any of these screens?",
     "tool_calls": []
   },
   {
@@ -24,15 +24,14 @@
     ]
   },
   {
-    "description": "Counter app — multiple tools with variables and event handlers",
+    "description": "Counter app -- multiple tools with variables and event handlers using YAIL",
     "user": "Create a counter app with a label showing the count and a button to increment it",
     "assistant_text": "I'll set up a counter app with a global variable to track the count, a label to display it, and a button that increments it on each click.",
     "tool_calls": [
       {
-        "tool": "set_variable",
+        "tool": "write_block",
         "arguments": {
-          "name": "count",
-          "initial_value": "0"
+          "yail": "(def g$count 0)"
         }
       },
       {
@@ -60,17 +59,15 @@
         }
       },
       {
-        "tool": "set_event_handler",
+        "tool": "write_block",
         "arguments": {
-          "component_name": "IncrementButton",
-          "event_name": "Click",
-          "body": "set global count to (global count + 1)\nset CounterLabel.Text to global count"
+          "yail": "(define-event IncrementButton Click ()\n  (set-this-form)\n  (set-var! g$count\n    (call-yail-primitive +\n      (*list-for-runtime* (get-var g$count) 1)\n      '(number number)))\n  (set-and-coerce-property! 'CounterLabel 'Text\n    (get-var g$count) 'text))"
         }
       }
     ]
   },
   {
-    "description": "Login screen — layout, multiple components, and validation logic",
+    "description": "Login screen -- layout, multiple components, and validation logic using YAIL",
     "user": "Make a login screen with username, password, and a submit button that checks if the username is 'admin' and password is '1234'",
     "assistant_text": "I'll build a login screen with a centered layout containing username and password fields, a submit button, and validation logic that checks the credentials.",
     "tool_calls": [
@@ -156,63 +153,35 @@
         }
       },
       {
-        "tool": "set_event_handler",
+        "tool": "write_block",
         "arguments": {
-          "component_name": "LoginButton",
-          "event_name": "Click",
-          "body": "if (UsernameBox.Text = \"admin\" and PasswordBox.Text = \"1234\") then\n  call LoginNotifier.ShowAlert(\"Login successful!\")\nelse\n  call LoginNotifier.ShowAlert(\"Invalid username or password.\")"
+          "yail": "(define-event LoginButton Click ()\n  (set-this-form)\n  (if (and-delayed\n        (call-yail-primitive yail-equal?\n          (*list-for-runtime* (get-property 'UsernameBox 'Text) \"admin\")\n          '(text text))\n        (begin\n          (call-yail-primitive yail-equal?\n            (*list-for-runtime* (get-property 'PasswordBox 'Text) \"1234\")\n            '(text text))))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Login successful!\") '(text)))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Invalid username or password.\") '(text)))))"
         }
       }
     ]
   },
   {
-    "description": "Procedure with return value, variable, and event handler",
-    "user": "Add a procedure that calculates the average of a list of numbers and a button that shows the result",
-    "assistant_text": "I'll create a `calculateAverage` procedure that takes a list, sums the items, and returns the average. I'll also add a sample list of scores, a label to display the result, and a button to trigger the calculation.",
+    "description": "Deleting a block",
+    "user": "Remove the click event handler from Button1",
+    "assistant_text": "I'll remove the Click event handler from Button1.",
     "tool_calls": [
       {
-        "tool": "set_procedure",
+        "tool": "delete_block",
         "arguments": {
-          "name": "calculateAverage",
-          "params": ["numbers"],
-          "returns": true,
-          "body": "initialize local total to 0\nfor each item in numbers\n  set local total to (local total + item)\nreturn (local total / length of list numbers)"
+          "block": "define-event Button1 Click"
         }
-      },
+      }
+    ]
+  },
+  {
+    "description": "Procedure with return value using def-return",
+    "user": "Create a procedure called 'double' that takes a number and returns it multiplied by 2",
+    "assistant_text": "I'll create a procedure called 'double' that takes a number parameter and returns it multiplied by 2.",
+    "tool_calls": [
       {
-        "tool": "set_variable",
+        "tool": "write_block",
         "arguments": {
-          "name": "scores",
-          "initial_value": "list(85, 90, 78, 92, 88)"
-        }
-      },
-      {
-        "tool": "add_component",
-        "arguments": {
-          "component_type": "Label",
-          "name": "ResultLabel",
-          "properties": {
-            "Text": "Average: --",
-            "FontSize": "18"
-          }
-        }
-      },
-      {
-        "tool": "add_component",
-        "arguments": {
-          "component_type": "Button",
-          "name": "CalcButton",
-          "properties": {
-            "Text": "Calculate Average"
-          }
-        }
-      },
-      {
-        "tool": "set_event_handler",
-        "arguments": {
-          "component_name": "CalcButton",
-          "event_name": "Click",
-          "body": "set ResultLabel.Text to join(\"Average: \", call calculateAverage(global scores))"
+          "yail": "(def-return (p$double $num)\n  (set-this-form)\n  (call-yail-primitive *\n    (*list-for-runtime* (lexical-value $num) 2)\n    '(number number)))"
         }
       }
     ]

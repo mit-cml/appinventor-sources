@@ -11,6 +11,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.blocks.BlocksEditor;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
@@ -44,6 +45,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -336,7 +338,8 @@ public class AIChatDialog extends DialogBox {
     // Hide any previous operation preview
     hideOperationPreview();
 
-    AIAgentRequest request = new AIAgentRequest(text, projectId, screenName);
+    String blocksYail = getCurrentBlocksYail();
+    AIAgentRequest request = new AIAgentRequest(text, projectId, screenName, blocksYail);
     setRequestInFlight(true);
     startPollingStatus();
 
@@ -524,20 +527,6 @@ public class AIChatDialog extends DialogBox {
       case RENAME_COMPONENT:
         return "~ Rename: " + extractField(payload, "oldName")
             + " -> " + extractField(payload, "newName");
-      case SET_EVENT_HANDLER:
-        return "+ Set event handler: " + extractField(payload, "component")
-            + "." + extractField(payload, "event");
-      case DELETE_EVENT_HANDLER:
-        return "- Delete event handler: " + extractField(payload, "component")
-            + "." + extractField(payload, "event");
-      case SET_VARIABLE:
-        return "+ Set variable: " + extractField(payload, "name");
-      case DELETE_VARIABLE:
-        return "- Delete variable: " + extractField(payload, "name");
-      case SET_PROCEDURE:
-        return "+ Set procedure: " + extractField(payload, "name");
-      case DELETE_PROCEDURE:
-        return "- Delete procedure: " + extractField(payload, "name");
       case SWITCH_SCREEN:
         return "~ Switch to screen: " + extractField(payload, "screen");
       case CREATE_SCREEN:
@@ -583,6 +572,11 @@ public class AIChatDialog extends DialogBox {
               } else {
                 setRequestInFlight(false);
               }
+            } else if (hasYailBlockErrors(result)) {
+              // YAIL block operation failed — report to server for LLM retry
+              addAiMessage(MESSAGES.aiChatApplyError() + ": " + result.getErrorMessage()
+                  + " Retrying...");
+              reportExecutionErrorsToServer(result);
             } else {
               setRequestInFlight(false);
               addAiMessage(MESSAGES.aiChatApplyError() + ": " + result.getErrorMessage());
@@ -655,6 +649,67 @@ public class AIChatDialog extends DialogBox {
         handleResponse(response);
       }
     });
+  }
+
+  // ---- Error feedback ----
+
+  /**
+   * Returns true if the execution result contains failures from YAIL-based
+   * block operations (WRITE_BLOCK or DELETE_BLOCK), which are eligible for
+   * server-side LLM retry.
+   */
+  private boolean hasYailBlockErrors(AIOperationExecutor.ExecutionResult result) {
+    for (AIOperation op : result.getFailed()) {
+      AIOperation.Type type = op.getType();
+      if (type == AIOperation.Type.WRITE_BLOCK || type == AIOperation.Type.DELETE_BLOCK) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Reports client-side execution errors to the server for LLM retry.
+   * Collects error messages from failed and skipped operations, sends them
+   * to the server, and handles the retry response.
+   */
+  private void reportExecutionErrorsToServer(AIOperationExecutor.ExecutionResult result) {
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId == 0) {
+      setRequestInFlight(false);
+      return;
+    }
+    String screenName = getCurrentScreenName();
+
+    // Collect error messages
+    List<String> errors = new ArrayList<>();
+    String mainError = result.getErrorMessage();
+    if (mainError != null && !mainError.isEmpty()) {
+      errors.add(mainError);
+    }
+    // Add context about skipped operations
+    for (AIOperation skipped : result.getSkipped()) {
+      errors.add("Skipped " + skipped.getType() + " due to earlier failure");
+    }
+
+    startPollingStatus();
+    aiAgentService.reportExecutionErrors(projectId, screenName, errors,
+        new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
+          @Override
+          public void onSuccess(AIAgentResponse response) {
+            setRequestInFlight(false);
+            stopPollingStatus();
+            handleResponse(response);
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            setRequestInFlight(false);
+            stopPollingStatus();
+            addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+          }
+        });
   }
 
   // ---- Conversation management ----
@@ -931,6 +986,31 @@ public class AIChatDialog extends DialogBox {
       }
     }
     return "Screen1";
+  }
+
+  /**
+   * Generates YAIL for the current screen's blocks using the client-side
+   * Blockly YAIL generators. Returns only block-level YAIL (event handlers,
+   * global variables, procedures) without form scaffolding.
+   *
+   * @return YAIL string, or empty string if the blocks editor is unavailable
+   */
+  private String getCurrentBlocksYail() {
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    if (toolbar != null) {
+      DesignToolbar.DesignProject project = toolbar.getCurrentProject();
+      if (project != null) {
+        DesignToolbar.Screen screen = project.screens.get(project.currentScreen);
+        if (screen != null && screen.blocksEditor instanceof BlocksEditor) {
+          try {
+            return ((BlocksEditor<?, ?>) screen.blocksEditor).getBlocksYail();
+          } catch (Exception e) {
+            LOG.warning("Failed to generate blocks YAIL: " + e.getMessage());
+          }
+        }
+      }
+    }
+    return "";
   }
 
   /**

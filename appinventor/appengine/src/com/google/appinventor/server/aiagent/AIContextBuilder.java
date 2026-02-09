@@ -58,14 +58,12 @@ public class AIContextBuilder {
   private static volatile String cachedReference;
   private static volatile String cachedCatalog;
   private static volatile String cachedExamples;
-  private static volatile String cachedPseudocodeGrammar;
+  private static volatile String cachedYailGrammar;
 
   private final StorageIo storageIo;
-  private final BlocksPseudocodeGenerator pseudocodeGenerator;
 
   public AIContextBuilder(StorageIo storageIo) {
     this.storageIo = storageIo;
-    this.pseudocodeGenerator = new BlocksPseudocodeGenerator();
   }
 
   // ---------- Public API ----------
@@ -77,9 +75,12 @@ public class AIContextBuilder {
    * @param projectId  the project being edited
    * @param screenName the currently active screen
    * @param mode       "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @param blocksYail client-generated YAIL for the current screen's blocks
+   *                   (may be null or empty if unavailable)
    * @return the assembled system prompt string
    */
-  public String build(String userId, long projectId, String screenName, String mode) {
+  public String build(String userId, long projectId, String screenName, String mode,
+      String blocksYail) {
     StringBuilder sb = new StringBuilder();
 
     // Layer 1: Static reference
@@ -93,14 +94,14 @@ public class AIContextBuilder {
     sb.append(catalog).append("\n\n");
     AIDebug.log(LOG, "Context Layer 2 (catalog): " + catalog.length() + " chars");
 
-    // Pseudocode grammar reference
-    String grammar = getPseudocodeGrammar();
-    sb.append("## Pseudocode Grammar\n\n");
+    // YAIL grammar reference
+    String grammar = getYailGrammar();
+    sb.append("## YAIL Grammar\n\n");
     sb.append(grammar).append("\n\n");
-    AIDebug.log(LOG, "Context (pseudocode grammar): " + grammar.length() + " chars");
+    AIDebug.log(LOG, "Context (YAIL grammar): " + grammar.length() + " chars");
 
     // Layer 4: Current app state (per-request)
-    String projectState = buildProjectState(userId, projectId, screenName, mode);
+    String projectState = buildProjectState(userId, projectId, screenName, mode, blocksYail);
     sb.append("## Current Project State\n\n");
     sb.append(projectState);
     sb.append("\n\n");
@@ -134,7 +135,7 @@ public class AIContextBuilder {
         "{\"type\":\"object\",\"properties\":{\"component_type\":{\"type\":\"string\","
             + "\"description\":\"The component type name, e.g. Button, Label\"}},\"required\":[\"component_type\"]}"));
     tools.add(new LLMTool("lookup_screen",
-        "Look up the current state of a screen including its component tree and blocks pseudocode.",
+        "Look up the current state of a screen including its component tree and blocks YAIL.",
         "{\"type\":\"object\",\"properties\":{\"screen_name\":{\"type\":\"string\","
             + "\"description\":\"The screen name, e.g. Screen1\"}},\"required\":[\"screen_name\"]}"));
 
@@ -173,48 +174,25 @@ public class AIContextBuilder {
             + "\"new_name\":{\"type\":\"string\",\"description\":\"New component name\"}"
             + "},\"required\":[\"old_name\",\"new_name\"]}"));
 
-    tools.add(new LLMTool("set_event_handler",
-        "Create or replace an event handler with blocks pseudocode.",
+    tools.add(new LLMTool("write_block",
+        "Create or replace a top-level block (event handler, global variable, or procedure) "
+            + "using YAIL code. The YAIL form head identifies the block type and target. "
+            + "If a block with the same identity already exists, it is replaced (upsert semantics).",
         "{\"type\":\"object\",\"properties\":{"
-            + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
-            + "\"event_name\":{\"type\":\"string\",\"description\":\"Event name, e.g. Click\"},"
-            + "\"body\":{\"type\":\"string\",\"description\":\"Pseudocode body for the handler\"}"
-            + "},\"required\":[\"component_name\",\"event_name\",\"body\"]}"));
+            + "\"yail\":{\"type\":\"string\",\"description\":\"Complete YAIL S-expression for the "
+            + "top-level block. Must be one of: (define-event ComponentName EventName ...), "
+            + "(def g$varName initialValue), (def (p$procName $param1 ...) body) for procedures "
+            + "without return, or (def-return (p$procName $param1 ...) body) for procedures with return\"}"
+            + "},\"required\":[\"yail\"]}"));
 
-    tools.add(new LLMTool("delete_event_handler",
-        "Delete an event handler.",
+    tools.add(new LLMTool("delete_block",
+        "Delete a top-level block (event handler, global variable, or procedure). "
+            + "The identifier format matches the YAIL form head tokens.",
         "{\"type\":\"object\",\"properties\":{"
-            + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
-            + "\"event_name\":{\"type\":\"string\",\"description\":\"Event name\"}"
-            + "},\"required\":[\"component_name\",\"event_name\"]}"));
-
-    tools.add(new LLMTool("set_variable",
-        "Create or update a global variable with an initial value in pseudocode.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"name\":{\"type\":\"string\",\"description\":\"Variable name\"},"
-            + "\"initial_value\":{\"type\":\"string\",\"description\":\"Initial value as pseudocode expression\"}"
-            + "},\"required\":[\"name\",\"initial_value\"]}"));
-
-    tools.add(new LLMTool("delete_variable",
-        "Delete a global variable.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"name\":{\"type\":\"string\",\"description\":\"Variable name\"}"
-            + "},\"required\":[\"name\"]}"));
-
-    tools.add(new LLMTool("set_procedure",
-        "Create or replace a procedure (function) with pseudocode.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"name\":{\"type\":\"string\",\"description\":\"Procedure name\"},"
-            + "\"params\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Parameter names\"},"
-            + "\"returns\":{\"type\":\"boolean\",\"description\":\"Whether the procedure returns a value\"},"
-            + "\"body\":{\"type\":\"string\",\"description\":\"Pseudocode body\"}"
-            + "},\"required\":[\"name\",\"body\"]}"));
-
-    tools.add(new LLMTool("delete_procedure",
-        "Delete a procedure.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"name\":{\"type\":\"string\",\"description\":\"Procedure name\"}"
-            + "},\"required\":[\"name\"]}"));
+            + "\"block\":{\"type\":\"string\",\"description\":\"Block identifier using YAIL head "
+            + "tokens, e.g. 'define-event Button1 Click', 'def g$score', 'def p$factorial', "
+            + "'def-return p$myFunc'\"}"
+            + "},\"required\":[\"block\"]}"));
 
     // Log tool list built so far before project-level tools
     if (AIDebug.enabled()) {
@@ -289,17 +267,47 @@ public class AIContextBuilder {
       sb.append("(unable to read screen properties)\n");
     }
 
-    // Blocks pseudocode
-    sb.append("\n### Blocks\n\n");
-    try {
-      String bkyContent = storageIo.downloadFile(userId, projectId, bkyFileId, "UTF-8");
-      String pseudocode = pseudocodeGenerator.generate(bkyContent);
-      if (pseudocode != null && !pseudocode.isEmpty()) {
-        sb.append(pseudocode);
-      } else {
-        sb.append("(no blocks)\n");
+    // Blocks YAIL (from server-side .bky file as fallback only)
+    sb.append("\n### Blocks (YAIL)\n\n");
+    sb.append("(no blocks YAIL available from server — use client-provided YAIL)\n");
+
+    return sb.toString();
+  }
+
+  /**
+   * Build the state of the current screen using client-provided blocks YAIL
+   * instead of server-side conversion from .bky files.
+   */
+  private String buildCurrentScreenState(String userId, long projectId,
+      String screenName, String packagePath, String blocksYail) {
+    StringBuilder sb = new StringBuilder();
+
+    // Component tree from SCM file
+    sb.append("#### Component Tree\n\n");
+    if (packagePath != null) {
+      String scmFileId = packagePath + "/" + screenName + FORM_PROPERTIES_EXTENSION;
+      try {
+        String scmContent = storageIo.downloadFile(userId, projectId, scmFileId, "UTF-8");
+        String scmJson = extractScmJson(scmContent);
+        if (scmJson != null) {
+          sb.append(buildComponentTree(new JSONObject(scmJson), 0));
+        } else {
+          sb.append("(empty screen)\n");
+        }
+      } catch (Exception e) {
+        sb.append("(unable to read screen properties)\n");
       }
-    } catch (Exception e) {
+    } else {
+      sb.append("(unable to determine package path)\n");
+    }
+
+    // Blocks YAIL from client
+    sb.append("\n#### Blocks (YAIL)\n\n");
+    if (blocksYail != null && !blocksYail.trim().isEmpty()) {
+      sb.append("```scheme\n");
+      sb.append(blocksYail);
+      sb.append("\n```\n");
+    } else {
       sb.append("(no blocks)\n");
     }
 
@@ -309,7 +317,7 @@ public class AIContextBuilder {
   // ---------- Layer builders ----------
 
   private String buildProjectState(String userId, long projectId,
-      String screenName, String mode) {
+      String screenName, String mode, String blocksYail) {
     StringBuilder sb = new StringBuilder();
 
     // Project overview from project.properties
@@ -339,9 +347,9 @@ public class AIContextBuilder {
       sb.append("\n\n");
     }
 
-    // Current screen: full state
+    // Current screen: component tree from SCM + blocks YAIL from client
     sb.append("### Current Screen: ").append(screenName).append("\n\n");
-    sb.append(buildScreenState(userId, projectId, screenName));
+    sb.append(buildCurrentScreenState(userId, projectId, screenName, packagePath, blocksYail));
 
     // Other screens: summaries
     if ("ProjectEditor".equals(mode)) {
@@ -760,11 +768,11 @@ public class AIContextBuilder {
     return cachedExamples;
   }
 
-  private static String getPseudocodeGrammar() {
-    if (cachedPseudocodeGrammar == null) {
-      cachedPseudocodeGrammar = loadResource("pseudocode_grammar.md");
+  private static String getYailGrammar() {
+    if (cachedYailGrammar == null) {
+      cachedYailGrammar = loadResource("yail_grammar.md");
     }
-    return cachedPseudocodeGrammar;
+    return cachedYailGrammar;
   }
 
   private static String loadResource(String name) {

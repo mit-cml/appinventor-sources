@@ -25,13 +25,9 @@ public class AIOperation implements IsSerializable, Serializable {
     SET_PROPERTY,
     RENAME_COMPONENT,
 
-    // Block operations (ScreenEditor + ProjectEditor modes)
-    SET_EVENT_HANDLER,
-    DELETE_EVENT_HANDLER,
-    SET_VARIABLE,
-    DELETE_VARIABLE,
-    SET_PROCEDURE,
-    DELETE_PROCEDURE,
+    // YAIL-based block operations (ScreenEditor + ProjectEditor modes)
+    WRITE_BLOCK,
+    DELETE_BLOCK,
 
     // Project-level operations (ProjectEditor mode only)
     SWITCH_SCREEN,

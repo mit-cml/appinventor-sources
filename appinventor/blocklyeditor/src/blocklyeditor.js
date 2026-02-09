@@ -33,6 +33,10 @@ goog.require('AI.Blockly.VariableDatabase');
 goog.require('AI.Blockly.WorkspaceSvg');
 goog.require('AI.Events');
 
+// AI Agent YAIL support
+goog.require('AI.YailToBlocks');
+goog.require('AI.Yail.BlocksExport');
+
 // App Inventor Blocks
 goog.require('AI.Blocks.mutators');
 goog.require('AI.Blocks.color');

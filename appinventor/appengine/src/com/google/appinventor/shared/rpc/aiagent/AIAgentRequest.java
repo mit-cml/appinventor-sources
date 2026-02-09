@@ -18,6 +18,7 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private String userMessage;
   private long projectId;
   private String screenName;
+  private String blocksYail;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -36,6 +37,22 @@ public class AIAgentRequest implements IsSerializable, Serializable {
     this.userMessage = userMessage;
     this.projectId = projectId;
     this.screenName = screenName;
+  }
+
+  /**
+   * Creates a new AI agent request with blocks YAIL.
+   *
+   * @param userMessage the natural language request from the user
+   * @param projectId the current project ID
+   * @param screenName the currently visible screen name
+   * @param blocksYail YAIL representation of the current screen's blocks
+   */
+  public AIAgentRequest(String userMessage, long projectId, String screenName,
+      String blocksYail) {
+    this.userMessage = userMessage;
+    this.projectId = projectId;
+    this.screenName = screenName;
+    this.blocksYail = blocksYail;
   }
 
   public String getUserMessage() {
@@ -60,5 +77,17 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setScreenName(String screenName) {
     this.screenName = screenName;
+  }
+
+  /**
+   * Returns the YAIL representation of the current screen's blocks.
+   * Generated client-side by the Blockly YAIL generators.
+   */
+  public String getBlocksYail() {
+    return blocksYail;
+  }
+
+  public void setBlocksYail(String blocksYail) {
+    this.blocksYail = blocksYail;
   }
 }

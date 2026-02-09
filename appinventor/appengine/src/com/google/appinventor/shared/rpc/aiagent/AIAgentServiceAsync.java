@@ -42,4 +42,10 @@ public interface AIAgentServiceAsync {
    * @see AIAgentService#getRequestStatus(long)
    */
   void getRequestStatus(long projectId, AsyncCallback<String> callback);
+
+  /**
+   * @see AIAgentService#reportExecutionErrors(long, String, List)
+   */
+  void reportExecutionErrors(long projectId, String screenName,
+      List<String> errors, AsyncCallback<AIAgentResponse> callback);
 }

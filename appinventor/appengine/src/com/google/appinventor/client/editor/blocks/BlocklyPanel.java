@@ -1134,6 +1134,44 @@ public class BlocklyPanel extends HTMLPanel {
     injectBlocksXml(newBlockXml);
   }
 
+  /**
+   * Generate YAIL for just the blocks in the workspace (no form scaffolding).
+   * Used by the AI agent to get a code representation of current blocks.
+   *
+   * @return YAIL string containing event handlers, global variables, and procedures
+   */
+  public native String getBlocksYail() /*-{
+    return this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
+      .getBlocksYail();
+  }-*/;
+
+  /**
+   * Convert a YAIL string into Blockly blocks and add them to the workspace.
+   * Uses the AI.YailToBlocks module to parse YAIL and create blocks with
+   * upsert semantics (replaces existing block with same identity).
+   *
+   * @param yail the YAIL S-expression string
+   * @return JSON string with {success: boolean, error: ?string, blockId: ?string}
+   */
+  public native String doWriteBlock(String yail) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var result = $wnd.AI.YailToBlocks.convert(workspace, yail);
+    return JSON.stringify(result);
+  }-*/;
+
+  /**
+   * Delete a block identified by its YAIL head tokens.
+   * For example: "define-event Button1 Click", "def g$score", "def p$factorial".
+   *
+   * @param identifier the block identifier string
+   * @return JSON string with {success: boolean, error: ?string}
+   */
+  public native String doDeleteBlock(String identifier) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var result = $wnd.AI.YailToBlocks.deleteBlock(workspace, identifier);
+    return JSON.stringify(result);
+  }-*/;
+
   public native void doFetchBlocksImage(Callback<String,String> callback) /*-{
     var callb = $entry(function(result, error) {
       if (error) {

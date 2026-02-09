@@ -175,36 +175,18 @@ Rename a component. All block references are updated automatically.
 - `old_name` (string, required) — current instance name
 - `new_name` (string, required) — desired new name
 
-### set_event_handler
-Create or replace an event handler on a component.
-- `component_name` (string, required) — component instance name
-- `event_name` (string, required) — event (e.g., "Click", "TextChanged")
-- `body` (string, required) — pseudocode statements (newline-separated)
+### write_block
+Create or replace a top-level block (event handler, global variable, or procedure)
+using a YAIL S-expression. If a block with the same identity already exists, it is
+replaced. See the YAIL Grammar section for the full syntax reference.
+- `yail` (string, required) — complete YAIL S-expression for the block
 
-### delete_event_handler
-Remove an event handler.
-- `component_name` (string, required) — component instance name
-- `event_name` (string, required) — event to remove
-
-### set_variable
-Create or update a global variable.
-- `name` (string, required) — variable name
-- `initial_value` (string, required) — initial value as a pseudocode expression
-
-### delete_variable
-Remove a global variable and its blocks.
-- `name` (string, required) — variable name to delete
-
-### set_procedure
-Create or replace a procedure (function).
-- `name` (string, required) — procedure name
-- `params` (string array) — parameter names
-- `returns` (boolean) — true if the procedure returns a value
-- `body` (string, required) — pseudocode statements (newline-separated)
-
-### delete_procedure
-Remove a procedure and its blocks.
-- `name` (string, required) — procedure name to delete
+### delete_block
+Remove a top-level block identified by its YAIL head tokens.
+- `block` (string, required) — block identifier matching YAIL head tokens:
+  - Event handler: `"define-event ComponentName EventName"`
+  - Global variable: `"def g$variableName"`
+  - Procedure: `"def p$procedureName"`
 
 ### switch_screen
 Change the active screen context for subsequent operations.
@@ -232,7 +214,7 @@ events, or methods you are not certain about.**
 
 ### lookup_screen
 Look up the current state of a screen including its component tree and blocks
-pseudocode.
+YAIL code.
 - `screen_name` (string, required) — the screen name (e.g., "Screen1")
 
 ## 5. Format Conventions

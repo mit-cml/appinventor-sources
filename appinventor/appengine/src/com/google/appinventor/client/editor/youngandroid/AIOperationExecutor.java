@@ -45,10 +45,8 @@ import java.util.logging.Logger;
  *       CREATE_SCREEN, DELETE_SCREEN, SET_PROJECT_PROP</li>
  *   <li>Phase 2 (sync): Designer additions &mdash; ADD_COMPONENT,
  *       SET_PROPERTY, RENAME_COMPONENT</li>
- *   <li>Phase 3 (sync): Block additions &mdash; SET_EVENT_HANDLER,
- *       SET_VARIABLE, SET_PROCEDURE</li>
- *   <li>Phase 4 (sync): Block deletions &mdash; DELETE_EVENT_HANDLER,
- *       DELETE_VARIABLE, DELETE_PROCEDURE</li>
+ *   <li>Phase 3 (sync): Block additions &mdash; WRITE_BLOCK</li>
+ *   <li>Phase 4 (sync): Block deletions &mdash; DELETE_BLOCK</li>
  *   <li>Phase 5 (sync): Designer deletions &mdash; DELETE_COMPONENT</li>
  * </ol>
  *
@@ -152,16 +150,12 @@ public class AIOperationExecutor {
           break;
 
         // Phase 3: block adds
-        case SET_EVENT_HANDLER:
-        case SET_VARIABLE:
-        case SET_PROCEDURE:
+        case WRITE_BLOCK:
           phase3.add(op);
           break;
 
         // Phase 4: block deletes
-        case DELETE_EVENT_HANDLER:
-        case DELETE_VARIABLE:
-        case DELETE_PROCEDURE:
+        case DELETE_BLOCK:
           phase4.add(op);
           break;
 
@@ -324,17 +318,35 @@ public class AIOperationExecutor {
   private void executeSyncPhases(ExecutionState state, List<AIOperation> phase2,
       List<AIOperation> phase3, List<AIOperation> phase4, List<AIOperation> phase5) {
 
-    if (!executeSyncList(state, phase2, phase3, phase4, phase5)) {
-      return; // halted inside phase 2
+    try {
+      if (!executeSyncList(state, phase2, phase3, phase4, phase5)) {
+        return; // halted inside phase 2
+      }
+      if (!executeSyncList(state, phase3, phase4, phase5)) {
+        return; // halted inside phase 3
+      }
+      if (!executeSyncList(state, phase4, phase5)) {
+        return; // halted inside phase 4
+      }
+      executeSyncList(state, phase5);
+      state.finish();
+    } finally {
+      // Force a Companion YAIL update after all sync phases complete (or halt).
+      // This is necessary because:
+      //  1. rename() does not trigger updatePhone() (isPropertyPersisted("$Name")
+      //     returns false), so the last renamed component may have a stale
+      //     auto-generated name in phoneState.formJson.
+      //  2. WRITE_BLOCK suppresses workspace change events (Blockly.Events.disable),
+      //     so onWorkspaceChange is not called and sendComponentData is not triggered
+      //     for new blocks.
+      // The forced update re-encodes the current form (with correct component names)
+      // and ensures the Companion receives both the latest component definitions and
+      // block code.
+      YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
+      if (blocksEditor != null) {
+        blocksEditor.sendComponentData(true);
+      }
     }
-    if (!executeSyncList(state, phase3, phase4, phase5)) {
-      return; // halted inside phase 3
-    }
-    if (!executeSyncList(state, phase4, phase5)) {
-      return; // halted inside phase 4
-    }
-    executeSyncList(state, phase5);
-    state.finish();
   }
 
   /**
@@ -420,18 +432,10 @@ public class AIOperationExecutor {
         return validateSetProperty(json);
       case RENAME_COMPONENT:
         return validateRenameComponent(json);
-      case SET_EVENT_HANDLER:
-        return validateBlockOp(json, "SET_EVENT_HANDLER", true);
-      case DELETE_EVENT_HANDLER:
-        return validateBlockDeleteOp(json, "DELETE_EVENT_HANDLER");
-      case SET_VARIABLE:
-        return validateBlockOp(json, "SET_VARIABLE", true);
-      case DELETE_VARIABLE:
-        return validateBlockDeleteOp(json, "DELETE_VARIABLE");
-      case SET_PROCEDURE:
-        return validateBlockOp(json, "SET_PROCEDURE", true);
-      case DELETE_PROCEDURE:
-        return validateBlockDeleteOp(json, "DELETE_PROCEDURE");
+      case WRITE_BLOCK:
+        return validateWriteBlock(json);
+      case DELETE_BLOCK:
+        return validateDeleteBlock(json);
       default:
         return "Unknown operation type: " + op.getType();
     }
@@ -609,34 +613,34 @@ public class AIOperationExecutor {
   }
 
   /**
-   * Validates a block-creation operation (SET_EVENT_HANDLER, SET_VARIABLE,
-   * SET_PROCEDURE). These require a "blocksXml" field.
+   * Validates a WRITE_BLOCK operation. Requires a 'yail' field containing
+   * a YAIL S-expression, and a blocks editor must be available.
    */
-  private String validateBlockOp(JSONObject json, String opName, boolean requiresXml) {
-    if (requiresXml) {
-      String xml = getStringField(json, "blocksXml");
-      if (xml == null || xml.isEmpty()) {
-        return opName + ": missing 'blocksXml' field";
-      }
+  private String validateWriteBlock(JSONObject json) {
+    String yail = getStringField(json, "yail");
+    if (yail == null || yail.isEmpty()) {
+      return "WRITE_BLOCK: missing 'yail' field";
     }
     YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
     if (blocksEditor == null) {
-      return opName + ": no blocks editor available for current screen";
+      return "WRITE_BLOCK: no blocks editor available for current screen";
     }
     return null;
   }
 
   /**
-   * Validates a block-deletion operation (DELETE_EVENT_HANDLER,
-   * DELETE_VARIABLE, DELETE_PROCEDURE).
+   * Validates a DELETE_BLOCK operation. Requires a 'block' field containing
+   * the YAIL head token identifier, and a blocks editor must be available.
    */
-  private String validateBlockDeleteOp(JSONObject json, String opName) {
+  private String validateDeleteBlock(JSONObject json) {
+    String block = getStringField(json, "block");
+    if (block == null || block.isEmpty()) {
+      return "DELETE_BLOCK: missing 'block' field";
+    }
     YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
     if (blocksEditor == null) {
-      return opName + ": no blocks editor available for current screen";
+      return "DELETE_BLOCK: no blocks editor available for current screen";
     }
-    // The identifier field depends on the type; at minimum we need
-    // something to identify the block.
     return null;
   }
 
@@ -823,23 +827,11 @@ public class AIOperationExecutor {
       case DELETE_COMPONENT:
         executeDeleteComponent(json);
         break;
-      case SET_EVENT_HANDLER:
-        executeSetEventHandler(json);
+      case WRITE_BLOCK:
+        executeWriteBlock(json);
         break;
-      case DELETE_EVENT_HANDLER:
-        executeDeleteEventHandler(json);
-        break;
-      case SET_VARIABLE:
-        executeSetVariable(json);
-        break;
-      case DELETE_VARIABLE:
-        executeDeleteVariable(json);
-        break;
-      case SET_PROCEDURE:
-        executeSetProcedure(json);
-        break;
-      case DELETE_PROCEDURE:
-        executeDeleteProcedure(json);
+      case DELETE_BLOCK:
+        executeDeleteBlockOp(json);
         break;
       default:
         throw new IllegalStateException("Unexpected sync op type: " + op.getType());
@@ -949,85 +941,41 @@ public class AIOperationExecutor {
   }
 
   // -----------------------------------------------------------------------
-  // Phase 3 -- Block adds (SET_EVENT_HANDLER, SET_VARIABLE, SET_PROCEDURE)
+  // Block operations (WRITE_BLOCK, DELETE_BLOCK)
   // -----------------------------------------------------------------------
 
-  private void executeSetEventHandler(JSONObject json) {
-    String blocksXml = getStringField(json, "blocksXml");
-    String componentName = getStringField(json, "component_name");
-    String eventName = getStringField(json, "event_name");
+  private void executeWriteBlock(JSONObject json) {
+    String yail = getStringField(json, "yail");
 
     YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
-    // Use replaceBlock to support create-or-replace semantics.
-    if (componentName != null && eventName != null) {
-      blocksEditor.replaceBlock("component_event", componentName, eventName, blocksXml);
-    } else {
-      blocksEditor.injectBlocksXml(blocksXml);
+    String resultJson = blocksEditor.writeBlock(yail);
+
+    // Parse the result to check for errors.
+    JSONObject result = JSONParser.parseStrict(resultJson).isObject();
+    JSONValue successVal = result.get("success");
+    boolean success = successVal != null && successVal.isBoolean() != null
+        && successVal.isBoolean().booleanValue();
+    if (!success) {
+      String error = getStringField(result, "error");
+      throw new RuntimeException("WRITE_BLOCK failed: " + (error != null ? error : "unknown error"));
     }
   }
 
-  private void executeSetVariable(JSONObject json) {
-    String blocksXml = getStringField(json, "blocksXml");
-    String varName = getStringField(json, "name");
+  private void executeDeleteBlockOp(JSONObject json) {
+    String block = getStringField(json, "block");
 
     YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
-    if (varName != null) {
-      blocksEditor.replaceBlock("global_declaration", "", varName, blocksXml);
-    } else {
-      blocksEditor.injectBlocksXml(blocksXml);
-    }
-  }
+    String resultJson = blocksEditor.deleteBlockByYailId(block);
 
-  private void executeSetProcedure(JSONObject json) {
-    String blocksXml = getStringField(json, "blocksXml");
-    String procName = getStringField(json, "name");
-
-    YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
-    if (procName != null) {
-      // Procedures can be either "procedures_defnoreturn" or "procedures_defreturn".
-      // Try the no-return variant first; the replaceBlock method will silently
-      // skip if the block doesn't exist.
-      boolean hasReturn = json.containsKey("returns");
-      String blockType = hasReturn ? "procedures_defreturn" : "procedures_defnoreturn";
-      blocksEditor.replaceBlock(blockType, "", procName, blocksXml);
-    } else {
-      blocksEditor.injectBlocksXml(blocksXml);
-    }
-  }
-
-  // -----------------------------------------------------------------------
-  // Phase 4 -- Block deletes
-  // -----------------------------------------------------------------------
-
-  private void executeDeleteEventHandler(JSONObject json) {
-    String componentName = getStringField(json, "component_name");
-    String eventName = getStringField(json, "event_name");
-
-    YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
-    if (componentName != null && eventName != null) {
-      blocksEditor.deleteBlock("component_event", componentName, eventName);
-    }
-  }
-
-  private void executeDeleteVariable(JSONObject json) {
-    String varName = getStringField(json, "name");
-
-    YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
-    if (varName != null) {
-      blocksEditor.deleteBlock("global_declaration", "", varName);
-    }
-  }
-
-  private void executeDeleteProcedure(JSONObject json) {
-    String procName = getStringField(json, "name");
-
-    YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
-    if (procName != null) {
-      // Try both procedure types.
-      boolean deleted = blocksEditor.deleteBlock("procedures_defnoreturn", "", procName);
-      if (!deleted) {
-        blocksEditor.deleteBlock("procedures_defreturn", "", procName);
-      }
+    // Parse the result to check for errors.
+    JSONObject result = JSONParser.parseStrict(resultJson).isObject();
+    JSONValue successVal = result.get("success");
+    boolean success = successVal != null && successVal.isBoolean() != null
+        && successVal.isBoolean().booleanValue();
+    if (!success) {
+      String error = getStringField(result, "error");
+      throw new RuntimeException(
+          "DELETE_BLOCK failed: " + (error != null ? error : "unknown error"));
     }
   }
 

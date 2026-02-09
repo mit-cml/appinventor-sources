@@ -66,4 +66,20 @@ public interface AIAgentService extends RemoteService {
    * @return current status message, or null/empty if no request is in progress
    */
   String getRequestStatus(long projectId);
+
+  /**
+   * Report client-side execution errors (e.g., YAIL parse failures) to the
+   * server so the LLM can be retried with error context.
+   *
+   * <p>Called by the client after {@code AIOperationExecutor} encounters
+   * failures when applying operations (typically YAIL-to-Blockly conversion
+   * errors in WRITE_BLOCK or DELETE_BLOCK operations).
+   *
+   * @param projectId  the project ID
+   * @param screenName the current screen name
+   * @param errors     list of error messages from the client executor
+   * @return an updated AI response with corrected operations, or errors
+   */
+  AIAgentResponse reportExecutionErrors(long projectId, String screenName,
+      List<String> errors);
 }

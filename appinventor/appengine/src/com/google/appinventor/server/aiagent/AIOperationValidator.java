@@ -63,12 +63,8 @@ public class AIOperationValidator {
       AIOperation.Type.DELETE_COMPONENT,
       AIOperation.Type.SET_PROPERTY,
       AIOperation.Type.RENAME_COMPONENT,
-      AIOperation.Type.SET_EVENT_HANDLER,
-      AIOperation.Type.DELETE_EVENT_HANDLER,
-      AIOperation.Type.SET_VARIABLE,
-      AIOperation.Type.DELETE_VARIABLE,
-      AIOperation.Type.SET_PROCEDURE,
-      AIOperation.Type.DELETE_PROCEDURE,
+      AIOperation.Type.WRITE_BLOCK,
+      AIOperation.Type.DELETE_BLOCK,
       AIOperation.Type.SWITCH_SCREEN,
       AIOperation.Type.CREATE_SCREEN,
       AIOperation.Type.DELETE_SCREEN,
@@ -202,6 +198,14 @@ public class AIOperationValidator {
             errors);
         break;
 
+      case WRITE_BLOCK:
+        validateWriteBlock(payload, catalog, errors);
+        break;
+
+      case DELETE_BLOCK:
+        validateDeleteBlock(payload, errors);
+        break;
+
       case SET_PROJECT_PROP:
         String projectProp = payload.optString("property", "");
         if (PROTECTED_PROPERTIES.contains(projectProp)) {
@@ -329,6 +333,108 @@ public class AIOperationValidator {
       LOG.warning("Failed to parse component database: " + e.getMessage());
     }
     return catalog;
+  }
+
+  /**
+   * Validate a WRITE_BLOCK operation by skimming the YAIL head tokens.
+   * Does NOT parse the full YAIL body — that's done client-side with the Blockly runtime.
+   * Only extracts the block type and identity for server-side metadata validation.
+   */
+  private void validateWriteBlock(JSONObject payload,
+      Map<String, ComponentInfo> catalog, List<String> errors) {
+    String yail = payload.optString("yail", "").trim();
+    if (yail.isEmpty()) {
+      errors.add("write_block: yail is empty");
+      return;
+    }
+
+    // Strip leading '(' and tokenize the head
+    String stripped = yail.startsWith("(") ? yail.substring(1).trim() : yail;
+    String[] tokens = stripped.split("\\s+", 5);
+    if (tokens.length == 0) {
+      errors.add("write_block: unable to parse YAIL head");
+      return;
+    }
+
+    String formType = tokens[0];
+    switch (formType) {
+      case "define-event":
+        // Expected: (define-event ComponentName EventName ...)
+        if (tokens.length < 3) {
+          errors.add("write_block: define-event requires at least component and event name");
+          return;
+        }
+        String componentName = tokens[1];
+        String eventName = tokens[2];
+        if (!catalog.isEmpty()) {
+          // We can't validate component instance name against catalog (catalog has types, not instances)
+          // but we log it for debugging
+          AIDebug.log(LOG, "write_block: define-event " + componentName + " " + eventName);
+        }
+        break;
+
+      case "def":
+      case "def-return":
+        // Could be: (def g$name value) for global variable
+        //       or: (def (p$name $param...) body) for procedure (no return)
+        //       or: (def-return (p$name $param...) body) for procedure (with return)
+        if (tokens.length < 2) {
+          errors.add("write_block: " + formType + " requires a variable or procedure name");
+          return;
+        }
+        String secondToken = tokens[1].replaceAll("[()]", "");
+        if (secondToken.startsWith("g$")) {
+          AIDebug.log(LOG, "write_block: global variable " + secondToken.substring(2));
+        } else if (secondToken.startsWith("p$")) {
+          AIDebug.log(LOG, "write_block: procedure " + secondToken.substring(2)
+              + ("def-return".equals(formType) ? " (with return)" : ""));
+        } else {
+          // LLM might omit prefix; warn but accept
+          AIDebug.log(LOG, "write_block: " + formType + " with unknown prefix: " + secondToken);
+        }
+        break;
+
+      default:
+        errors.add("write_block: unrecognized YAIL form type '" + formType
+            + "'. Expected 'define-event', 'def', or 'def-return'.");
+        break;
+    }
+  }
+
+  /**
+   * Validate a DELETE_BLOCK operation by parsing the block identifier.
+   */
+  private void validateDeleteBlock(JSONObject payload, List<String> errors) {
+    String block = payload.optString("block", "").trim();
+    if (block.isEmpty()) {
+      errors.add("delete_block: block identifier is empty");
+      return;
+    }
+
+    String[] tokens = block.split("\\s+", 4);
+    if (tokens.length == 0) {
+      errors.add("delete_block: unable to parse block identifier");
+      return;
+    }
+
+    String formType = tokens[0];
+    switch (formType) {
+      case "define-event":
+        if (tokens.length < 3) {
+          errors.add("delete_block: define-event requires component and event name");
+        }
+        break;
+      case "def":
+      case "def-return":
+        if (tokens.length < 2) {
+          errors.add("delete_block: " + formType + " requires a variable or procedure name");
+        }
+        break;
+      default:
+        errors.add("delete_block: unrecognized block type '" + formType
+            + "'. Expected 'define-event', 'def', or 'def-return'.");
+        break;
+    }
   }
 
   private void validateProtectedProperty(String propertyName, List<String> errors) {

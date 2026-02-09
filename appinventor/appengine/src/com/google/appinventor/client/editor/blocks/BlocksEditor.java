@@ -679,6 +679,16 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   }
 
   /**
+   * Generate YAIL for just the blocks in the workspace (no form scaffolding).
+   * Used by the AI agent to send a code representation of the current blocks.
+   *
+   * @return YAIL string containing event handlers, global variables, and procedures
+   */
+  public String getBlocksYail() {
+    return blocksArea.getBlocksYail();
+  }
+
+  /**
    * Replace a block: delete existing (if any) then inject new XML.
    * Used by AIOperationExecutor for create-or-replace semantics on
    * event handlers, variables, and procedures.
@@ -686,6 +696,28 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   public void replaceBlock(String blockType, String instanceName, String identifier,
       String newBlockXml) {
     blocksArea.replaceBlock(blockType, instanceName, identifier, newBlockXml);
+  }
+
+  /**
+   * Convert YAIL to Blockly blocks with upsert semantics.
+   * Used by AIOperationExecutor for the WRITE_BLOCK operation.
+   *
+   * @param yail the YAIL S-expression string
+   * @return JSON string with {success, error, blockId}
+   */
+  public String writeBlock(String yail) {
+    return blocksArea.doWriteBlock(yail);
+  }
+
+  /**
+   * Delete a block identified by its YAIL head tokens.
+   * Used by AIOperationExecutor for the DELETE_BLOCK operation.
+   *
+   * @param identifier e.g. "define-event Button1 Click", "def g$score"
+   * @return JSON string with {success, error}
+   */
+  public String deleteBlockByYailId(String identifier) {
+    return blocksArea.doDeleteBlock(identifier);
   }
 
   private void updateBlocksTree(DesignerRootComponent root,
