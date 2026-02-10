@@ -1408,7 +1408,7 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, loopbac
     var me = this;
     rs.didversioncheck = false; // Re-check
     rs.isUSB = usb;
-    rs.hasfetchassets = false;
+    rs.hasfetchassets = true;
     var RefreshAssets = top.AssetManager_refreshAssets;
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
