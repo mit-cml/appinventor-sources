@@ -24,16 +24,10 @@
     ]
   },
   {
-    "description": "Counter app -- multiple tools with variables and event handlers using YAIL",
+    "description": "Counter app -- Designer ops only (current view: Designer), blocks follow after toggle",
     "user": "Create a counter app with a label showing the count and a button to increment it",
-    "assistant_text": "I'll set up a counter app with a global variable to track the count, a label to display it, and a button that increments it on each click.",
+    "assistant_text": "I'll start by adding the UI components for the counter app. First, I'll place a label to display the count and a button to increment it. After that, I'll switch to the Blocks editor to wire up the logic.",
     "tool_calls": [
-      {
-        "tool": "write_block",
-        "arguments": {
-          "yail": "(def g$count 0)"
-        }
-      },
       {
         "tool": "add_component",
         "arguments": {
@@ -57,19 +51,13 @@
             "Width": "-2"
           }
         }
-      },
-      {
-        "tool": "write_block",
-        "arguments": {
-          "yail": "(define-event IncrementButton Click ()\n  (set-this-form)\n  (set-var! g$count\n    (call-yail-primitive +\n      (*list-for-runtime* (get-var g$count) 1)\n      '(number number)\n      \"+\"))\n  (set-and-coerce-property! 'CounterLabel 'Text\n    (get-var g$count) 'text))"
-        }
       }
     ]
   },
   {
-    "description": "Login screen -- layout, multiple components, and validation logic using YAIL",
+    "description": "Login screen -- Designer ops only (current view: Designer), blocks follow after toggle",
     "user": "Make a login screen with username, password, and a submit button that checks if the username is 'admin' and password is '1234'",
-    "assistant_text": "I'll build a login screen with a centered layout containing username and password fields, a submit button, and validation logic that checks the credentials.",
+    "assistant_text": "I'll build the login screen UI first with a centered layout, input fields, a submit button, and a notifier. Then I'll switch to the Blocks editor to add the credential-checking logic.",
     "tool_calls": [
       {
         "tool": "set_property",
@@ -151,12 +139,6 @@
           "component_type": "Notifier",
           "name": "LoginNotifier"
         }
-      },
-      {
-        "tool": "write_block",
-        "arguments": {
-          "yail": "(define-event LoginButton Click ()\n  (set-this-form)\n  (if (and-delayed\n        (call-yail-primitive yail-equal?\n          (*list-for-runtime* (get-property 'UsernameBox 'Text) \"admin\")\n          '(text text)\n          \"=\")\n        (begin\n          (call-yail-primitive yail-equal?\n            (*list-for-runtime* (get-property 'PasswordBox 'Text) \"1234\")\n            '(text text)\n            \"=\")))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Login successful!\") '(text)))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Invalid username or password.\") '(text)))))"
-        }
       }
     ]
   },
@@ -187,9 +169,9 @@
     ]
   },
   {
-    "description": "Toggle to Blocks view before writing an event handler (current view: Designer)",
+    "description": "Toggle to Blocks view and continue with block ops (current view: Designer)",
     "user": "Add a click handler for Button1 that shows a notification saying 'Hello!'",
-    "assistant_text": "I need to switch to the Blocks editor first to write the event handler. Let me do that now.",
+    "assistant_text": "I'll switch to the Blocks editor and then write the click handler for Button1.",
     "tool_calls": [
       {
         "tool": "toggle_editor",

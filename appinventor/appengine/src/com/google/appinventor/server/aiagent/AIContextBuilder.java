@@ -207,8 +207,8 @@ public class AIContextBuilder {
     tools.add(new LLMTool("toggle_editor",
         "Switch the editor view between Designer and Blocks. "
             + "This tool MUST be called ALONE — do not combine it with any other tools "
-            + "in the same response. After toggling, wait for the next turn to issue "
-            + "further operations.",
+            + "in the same response. After the toggle is confirmed, continue with "
+            + "the operations that require the new view.",
         "{\"type\":\"object\",\"properties\":{"
             + "\"view\":{\"type\":\"string\",\"enum\":[\"Designer\",\"Blocks\"],"
             + "\"description\":\"The editor view to switch to\"}"
@@ -227,8 +227,8 @@ public class AIContextBuilder {
     tools.add(new LLMTool("switch_screen",
         "Switch the active screen context. "
             + "This tool MUST be called ALONE — do not combine it with any other tools "
-            + "in the same response. After switching, wait for the next turn to issue "
-            + "further operations.",
+            + "in the same response. After the switch is confirmed, continue with "
+            + "the operations that require the new screen.",
         "{\"type\":\"object\",\"properties\":{"
             + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to switch to\"}"
             + "},\"required\":[\"screen_name\"]}"));
@@ -554,8 +554,8 @@ public class AIContextBuilder {
       sb.append("- To switch views, use the `toggle_editor` tool.\n");
       sb.append("- `toggle_editor` and `switch_screen` MUST each be called **ALONE** — ")
           .append("never combine them with other tool calls in the same response.\n");
-      sb.append("- After calling `toggle_editor` or `switch_screen`, stop and wait ")
-          .append("for the next turn to issue further operations.\n");
+      sb.append("- After `toggle_editor` or `switch_screen` is confirmed, continue ")
+          .append("with the operations that require the new view or screen.\n");
     }
 
     return sb.toString();

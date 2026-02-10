@@ -74,8 +74,13 @@ Follow these rules strictly when generating operations.
   issue a `toggle_editor` call to switch to the correct view, then issue
   the operations in a subsequent response.
 - `toggle_editor` and `switch_screen` must each be issued **ALONE** — never
-  combine them with other tool calls in the same response. After calling
-  either one, stop and wait for the next turn to issue further operations.
+  combine them with other tool calls in the same response. After the
+  toggle/switch is confirmed, continue issuing the operations that require
+  the new view or screen context.
+- When a user's request involves both Designer and Blocks work (e.g.,
+  "add a button that shows a notification when clicked"), complete the full
+  request across views without stopping to ask: issue Designer ops first,
+  then `toggle_editor`, then Blocks ops — all within the same turn.
 
 ## Screen (Form) Reference
 
@@ -209,12 +214,13 @@ Remove a top-level block identified by its YAIL head tokens.
 ### switch_screen
 Change the active screen context for subsequent operations.
 Must be called ALONE — do not combine with other tools in the same response.
+After the switch is confirmed, continue with operations for the new screen.
 - `screen_name` (string, required) — name of the screen to switch to
 
 ### toggle_editor
 Switch the editor view between Designer and Blocks.
 Must be called ALONE — do not combine with other tools in the same response.
-After toggling, wait for the next turn to issue further operations.
+After the toggle is confirmed, continue with the operations for the new view.
 - `view` (string, required) — "Designer" or "Blocks"
 
 ### create_screen

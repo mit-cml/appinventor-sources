@@ -389,7 +389,23 @@ public class AIChatDialog extends DialogBox {
           reportValidationErrors(validationErrors);
           return;
         }
-        // Exhausted retries — show the errors to the user
+        // Exhausted retries — strip invalid block ops so they are not
+        // presented in the preview or executed.  Non-block operations
+        // (component additions, property changes, etc.) are kept.
+        LOG.warning("Validation retries exhausted. Stripping "
+            + validationErrors.size() + " invalid block operation(s).");
+        List<AIOperation> cleaned = new ArrayList<>();
+        for (AIOperation op : operations) {
+          if (op.getType() != AIOperation.Type.WRITE_BLOCK
+              && op.getType() != AIOperation.Type.DELETE_BLOCK) {
+            cleaned.add(op);
+          }
+        }
+        response.setOperations(cleaned);
+        // Surface the errors so the user sees what went wrong
+        for (String err : validationErrors) {
+          response.getErrors().add(err);
+        }
       }
     }
 
@@ -446,7 +462,9 @@ public class AIChatDialog extends DialogBox {
           if (resultJson != null) {
             String error = extractValidationError(resultJson);
             if (error != null) {
-              errors.add("write_block validation failed: " + error);
+              // Include the failing YAIL so the LLM can see and fix its mistake
+              errors.add("write_block validation failed: " + error
+                  + "\nFailing YAIL: " + yail);
             }
           }
         }
@@ -1224,12 +1242,23 @@ public class AIChatDialog extends DialogBox {
       return fieldName;
     }
     if (json.charAt(start) == '"') {
-      // String value
-      int end = json.indexOf('"', start + 1);
-      if (end < 0) {
-        return json.substring(start + 1);
+      // String value — find closing quote, skipping escaped characters
+      int end = start + 1;
+      while (end < json.length()) {
+        char c = json.charAt(end);
+        if (c == '\\') {
+          end += 2; // skip escape sequence (e.g., \", \\, \n)
+          continue;
+        }
+        if (c == '"') {
+          break;
+        }
+        end++;
       }
-      return json.substring(start + 1, end);
+      if (end >= json.length()) {
+        return unescapeJsonString(json.substring(start + 1));
+      }
+      return unescapeJsonString(json.substring(start + 1, end));
     } else {
       // Non-string value (number, boolean, etc.)
       int end = start;
@@ -1239,6 +1268,35 @@ public class AIChatDialog extends DialogBox {
       }
       return json.substring(start, end).trim();
     }
+  }
+
+  /**
+   * Unescapes a JSON string value (the content between the outer quotes).
+   * Handles standard JSON escape sequences: \", \\, \/, \n, \r, \t.
+   */
+  private static String unescapeJsonString(String s) {
+    if (s.indexOf('\\') < 0) {
+      return s; // fast path: no escapes
+    }
+    StringBuilder sb = new StringBuilder(s.length());
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if (c == '\\' && i + 1 < s.length()) {
+        char next = s.charAt(i + 1);
+        switch (next) {
+          case '"':  sb.append('"');  i++; break;
+          case '\\': sb.append('\\'); i++; break;
+          case '/':  sb.append('/');  i++; break;
+          case 'n':  sb.append('\n'); i++; break;
+          case 'r':  sb.append('\r'); i++; break;
+          case 't':  sb.append('\t'); i++; break;
+          default:   sb.append(c);         break;
+        }
+      } else {
+        sb.append(c);
+      }
+    }
+    return sb.toString();
   }
 
   /**
