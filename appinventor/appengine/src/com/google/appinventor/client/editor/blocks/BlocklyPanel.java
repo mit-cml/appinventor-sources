@@ -1172,6 +1172,29 @@ public class BlocklyPanel extends HTMLPanel {
     return JSON.stringify(result);
   }-*/;
 
+  /**
+   * Validate a YAIL string without creating any blocks (dry-run).
+   * Parses the S-expression and checks structural validity.
+   *
+   * @param yail the YAIL S-expression string to validate
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public native String doValidateYail(String yail) /*-{
+    var result = $wnd.AI.YailToBlocks.validate(yail);
+    return JSON.stringify(result);
+  }-*/;
+
+  /**
+   * Validate a DELETE_BLOCK identifier string without touching the workspace.
+   *
+   * @param identifier the block identifier (e.g., "define-event Button1 Click")
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public native String doValidateDeleteId(String identifier) /*-{
+    var result = $wnd.AI.YailToBlocks.validateDeleteId(identifier);
+    return JSON.stringify(result);
+  }-*/;
+
   public native void doFetchBlocksImage(Callback<String,String> callback) /*-{
     var callb = $entry(function(result, error) {
       if (error) {

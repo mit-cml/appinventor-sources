@@ -33,11 +33,15 @@ public interface AIAgentService extends RemoteService {
    * {@code true}. Sends synthetic tool results to the LLM and returns the
    * next batch of operations.
    *
+   * <p>The {@code blocksYail} parameter supplies the current blocks state
+   * so the system prompt reflects changes made by the previous batch.
+   *
    * @param projectId  the project ID
    * @param screenName the current screen name
+   * @param blocksYail updated YAIL for the current screen's blocks
    * @return the next batch of AI operations (may also have hasMore=true)
    */
-  AIAgentResponse continueRequest(long projectId, String screenName);
+  AIAgentResponse continueRequest(long projectId, String screenName, String blocksYail);
 
   /**
    * Clear the current conversation for a project.
@@ -75,11 +79,15 @@ public interface AIAgentService extends RemoteService {
    * failures when applying operations (typically YAIL-to-Blockly conversion
    * errors in WRITE_BLOCK or DELETE_BLOCK operations).
    *
+   * <p>The {@code blocksYail} parameter supplies the current blocks state
+   * so the retry prompt reflects the workspace as it is now.
+   *
    * @param projectId  the project ID
    * @param screenName the current screen name
    * @param errors     list of error messages from the client executor
+   * @param blocksYail updated YAIL for the current screen's blocks
    * @return an updated AI response with corrected operations, or errors
    */
   AIAgentResponse reportExecutionErrors(long projectId, String screenName,
-      List<String> errors);
+      List<String> errors, String blocksYail);
 }

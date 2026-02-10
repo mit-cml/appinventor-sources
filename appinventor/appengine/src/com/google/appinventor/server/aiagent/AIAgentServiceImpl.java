@@ -35,8 +35,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -46,7 +49,8 @@ import java.util.logging.Logger;
  * Server-side implementation of the AI Agent RPC service.
  *
  * <p>Flow: auth check -> conversation lookup -> context build -> LLM call
- * -> validation -> retry on failure -> response.
+ * -> mode enforcement -> response.  Semantic validation (YAIL parsing,
+ * block structure) is handled client-side by the Blockly runtime.
  */
 public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     implements AIAgentService {
@@ -54,7 +58,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private static final Logger LOG = Logger.getLogger(AIAgentServiceImpl.class.getName());
 
   private static final int MAX_MESSAGE_LENGTH = 2000;
-  private static final int MAX_VALIDATION_RETRIES = 1;
   private static final long RATE_WINDOW_MS = 60_000; // 1 minute
   private static final String COMPONENT_DB_RESOURCE =
       "/com/google/appinventor/simple_components.json";
@@ -65,7 +68,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private final transient StorageIo storageIo = StorageIoInstanceHolder.getInstance();
   private final transient AIContextBuilder contextBuilder;
   private final transient LLMResponseParser responseParser = new LLMResponseParser();
-  private final transient AIOperationValidator validator = new AIOperationValidator();
 
   // Rate limiting: userId -> list of request timestamps
   private static final ConcurrentHashMap<String, List<Long>> rateLimitMap =
@@ -212,84 +214,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         }
       }
 
-      // Stage 2: Mode + semantic validation
-      if (!operations.isEmpty()) {
-        updateStatus(projectId, "Validating operations...");
-
-        AIOperationValidator.ValidationResult modeResult =
-            validator.validateForMode(operations, mode);
-        if (modeResult.hasErrors()) {
-          allErrors.addAll(modeResult.getErrors());
-          operations = modeResult.getAccepted();
-        }
-        AIDebug.log(LOG, "Mode validation: accepted=" + operations.size()
-            + ", rejected=" + modeResult.getErrors().size());
-
-        if (!operations.isEmpty()) {
-          AIOperationValidator.ValidationResult semanticResult =
-              validator.validateOperations(operations, getComponentDb());
-          if (semanticResult.hasErrors()) {
-            allErrors.addAll(semanticResult.getErrors());
-            operations = semanticResult.getAccepted();
-          }
-          if (AIDebug.enabled()) {
-            AIDebug.log(LOG, "Semantic validation: accepted=" + semanticResult.getAccepted().size()
-                + ", rejected=" + semanticResult.getErrors().size());
-            for (String err : semanticResult.getErrors()) {
-              AIDebug.log(LOG, "  Semantic error: " + err);
-            }
-          }
-        }
-      }
-
-      // Retry once if validation failed and we got errors
-      if (!allErrors.isEmpty() && !rawCalls.isEmpty()) {
-        String feedback = LLMResponseParser.buildValidationErrorFeedback(allErrors);
-        LOG.info("Retrying LLM with validation feedback: " + feedback);
-        AIDebug.log(LOG, "Retry feedback sent: " + feedback);
-        updateStatus(projectId, "Retrying with corrections...");
-
-        try {
-          // Save the assistant message + error as context for retry
-          LLMResponse retryResponse = provider.chat(
-              systemPrompt, feedback, tools, llmResponse.getProviderRef(), history, resolver);
-
-          AIDebug.log(LOG, "Retry response text: "
-              + (retryResponse.getText() != null ? retryResponse.getText() : "(null)"));
-
-          List<LLMResponseParser.RawToolCall> retryCalls = new ArrayList<>();
-          for (RawToolCall tc : retryResponse.getRawToolCalls()) {
-            retryCalls.add(new LLMResponseParser.RawToolCall(
-                tc.getName(), tc.getArgumentsJson()));
-          }
-
-          LLMResponseParser.ParseResult retryParse = responseParser.parseToolCalls(retryCalls);
-          if (!retryParse.hasErrors()) {
-            AIOperationValidator.ValidationResult retryMode =
-                validator.validateForMode(retryParse.getOperations(), mode);
-            if (!retryMode.hasErrors()) {
-              AIOperationValidator.ValidationResult retrySemantic =
-                  validator.validateOperations(retryMode.getAccepted(), getComponentDb());
-              if (!retrySemantic.hasErrors()) {
-                // Retry succeeded
-                operations = retrySemantic.getAccepted();
-                allErrors.clear();
-                llmResponse = retryResponse;
-                AIDebug.log(LOG, "Retry succeeded: " + operations.size() + " operations accepted");
-              }
-            }
-          }
-        } catch (LLMProviderException retryEx) {
-          LOG.log(Level.WARNING, "Retry LLM call failed", retryEx);
-        }
-      }
-
-      // YAIL-based block operations (WRITE_BLOCK, DELETE_BLOCK) are passed through
-      // as-is to the client. The client handles YAIL parsing and block creation
-      // using the full Blockly runtime.
-
-      // Belt-and-suspenders: strip write ops in Advisor mode
-      operations = validator.stripWriteOpsIfAdvisor(operations, mode);
+      // Mode enforcement: strip operations that are not allowed in the current mode.
+      // Semantic validation (YAIL parsing, block structure) is handled client-side.
+      operations = enforceMode(operations, mode, allErrors);
 
       // Update conversation state
       conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
@@ -328,7 +255,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   }
 
   @Override
-  public AIAgentResponse continueRequest(long projectId, String screenName) {
+  public AIAgentResponse continueRequest(long projectId, String screenName,
+      String blocksYail) {
     String userId = userInfoProvider.getUserId();
 
     // Project ownership check
@@ -362,14 +290,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<LLMTool> tools = contextBuilder.buildTools(mode);
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
+      // Rebuild the system prompt with updated blocks state so the LLM
+      // sees the result of the previous batch's operations.
+      String updatedSystemPrompt = contextBuilder.build(
+          userId, projectId, screenName, mode, blocksYail);
+      String providerRef = patchSystemPrompt(conv.getProviderRef(), updatedSystemPrompt);
+
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
-          + ", providerRef length=" + conv.getProviderRef().length());
+          + ", providerRef length=" + providerRef.length());
 
       updateStatus(projectId, "Calling AI...");
 
-      // Call the continuation method
+      // Call the continuation method with updated state
       LLMResponse llmResponse = provider.continueWithToolResults(
-          conv.getProviderRef(), tools, resolver);
+          providerRef, tools, resolver);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -393,31 +327,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<String> allErrors = new ArrayList<>(parseResult.getErrors());
       List<AIOperation> operations = parseResult.getOperations();
 
-      // Mode + semantic validation
-      if (!operations.isEmpty()) {
-        updateStatus(projectId, "Validating operations...");
-
-        AIOperationValidator.ValidationResult modeResult =
-            validator.validateForMode(operations, mode);
-        if (modeResult.hasErrors()) {
-          allErrors.addAll(modeResult.getErrors());
-          operations = modeResult.getAccepted();
-        }
-
-        if (!operations.isEmpty()) {
-          AIOperationValidator.ValidationResult semanticResult =
-              validator.validateOperations(operations, getComponentDb());
-          if (semanticResult.hasErrors()) {
-            allErrors.addAll(semanticResult.getErrors());
-            operations = semanticResult.getAccepted();
-          }
-        }
-      }
-
-      // YAIL-based block operations are passed through to the client as-is.
-
-      // Belt-and-suspenders: strip write ops in Advisor mode
-      operations = validator.stripWriteOpsIfAdvisor(operations, mode);
+      // Mode enforcement
+      operations = enforceMode(operations, mode, allErrors);
 
       // Update conversation state with new providerRef
       conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
@@ -457,7 +368,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
   @Override
   public AIAgentResponse reportExecutionErrors(long projectId, String screenName,
-      List<String> errors) {
+      List<String> errors, String blocksYail) {
     String userId = userInfoProvider.getUserId();
 
     // Security check
@@ -500,8 +411,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<ChatMessage> history = loadConversation(conv.getConversationId());
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
-      // Build system prompt
-      String blocksYail = "";  // Not re-sending blocks YAIL for retry
+      // Build system prompt with the current blocks state from the client
       String systemPrompt = contextBuilder.build(userId, projectId, screenName,
           mode, blocksYail);
 
@@ -521,29 +431,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<String> allErrors = new ArrayList<>(parseResult.getErrors());
       List<AIOperation> operations = parseResult.getOperations();
 
-      // Validate
-      if (!operations.isEmpty()) {
-        updateStatus(projectId, "Validating operations...");
-
-        AIOperationValidator.ValidationResult modeResult =
-            validator.validateForMode(operations, mode);
-        if (modeResult.hasErrors()) {
-          allErrors.addAll(modeResult.getErrors());
-          operations = modeResult.getAccepted();
-        }
-
-        if (!operations.isEmpty()) {
-          AIOperationValidator.ValidationResult semanticResult =
-              validator.validateOperations(operations, getComponentDb());
-          if (semanticResult.hasErrors()) {
-            allErrors.addAll(semanticResult.getErrors());
-            operations = semanticResult.getAccepted();
-          }
-        }
-      }
-
-      // Strip write ops in Advisor mode
-      operations = validator.stripWriteOpsIfAdvisor(operations, mode);
+      // Mode enforcement
+      operations = enforceMode(operations, mode, allErrors);
 
       // Update conversation state
       conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
@@ -735,6 +624,108 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       throw new ReadOnlyToolException("Failed to look up screen " + screenName
           + ": " + e.getMessage());
     }
+  }
+
+  // ---------- Mode enforcement ----------
+
+  /** All write operation types (everything except read-only lookups). */
+  private static final Set<AIOperation.Type> WRITE_OPS =
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+          AIOperation.Type.ADD_COMPONENT,
+          AIOperation.Type.DELETE_COMPONENT,
+          AIOperation.Type.SET_PROPERTY,
+          AIOperation.Type.RENAME_COMPONENT,
+          AIOperation.Type.WRITE_BLOCK,
+          AIOperation.Type.DELETE_BLOCK,
+          AIOperation.Type.SWITCH_SCREEN,
+          AIOperation.Type.CREATE_SCREEN,
+          AIOperation.Type.DELETE_SCREEN,
+          AIOperation.Type.SET_PROJECT_PROP)));
+
+  /** Project-level operations only allowed in ProjectEditor mode. */
+  private static final Set<AIOperation.Type> PROJECT_LEVEL_OPS =
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+          AIOperation.Type.SWITCH_SCREEN,
+          AIOperation.Type.CREATE_SCREEN,
+          AIOperation.Type.DELETE_SCREEN,
+          AIOperation.Type.SET_PROJECT_PROP)));
+
+  /**
+   * Enforce mode restrictions on operations.  Returns the filtered list;
+   * rejected operations are reported in {@code errors}.
+   */
+  private List<AIOperation> enforceMode(List<AIOperation> operations,
+      String mode, List<String> errors) {
+    if (operations.isEmpty()) {
+      return operations;
+    }
+
+    List<AIOperation> accepted = new ArrayList<>();
+    for (AIOperation op : operations) {
+      boolean rejected = false;
+
+      if ("Advisor".equals(mode) && WRITE_OPS.contains(op.getType())) {
+        errors.add("Advisor mode does not allow write operations. Rejected: "
+            + op.getType());
+        rejected = true;
+      } else if ("ScreenEditor".equals(mode)
+          && PROJECT_LEVEL_OPS.contains(op.getType())) {
+        errors.add("ScreenEditor mode does not allow project-level operations. "
+            + "Rejected: " + op.getType());
+        rejected = true;
+      }
+
+      if (!rejected) {
+        accepted.add(op);
+      }
+    }
+
+    AIDebug.log(LOG, "Mode enforcement (" + mode + "): accepted="
+        + accepted.size() + ", rejected=" + (operations.size() - accepted.size()));
+    return accepted;
+  }
+
+  // ---------- Continuation state patching ----------
+
+  /**
+   * Patches the serialized provider continuation state to use an updated
+   * system prompt.  This ensures the LLM sees the current project state
+   * (blocks, components) rather than the stale snapshot from the original
+   * request.
+   *
+   * <p>For providers that store the system prompt in the continuation JSON
+   * (e.g. Anthropic's {@code "systemPrompt"} field), the value is replaced
+   * in-place.  For providers that embed it in the messages array (e.g.
+   * OpenAI's first {@code "system"} message), the first system message is
+   * updated.  If the format is unrecognized, the state is returned as-is
+   * (safe fallback — the LLM just sees the old prompt).
+   */
+  private static String patchSystemPrompt(String providerRef, String newSystemPrompt) {
+    try {
+      JSONObject state = new JSONObject(providerRef);
+
+      // Anthropic-style: top-level "systemPrompt" field
+      if (state.has("systemPrompt")) {
+        state.put("systemPrompt", newSystemPrompt);
+        return state.toString();
+      }
+
+      // OpenAI-style: first message with role "system" in the messages array
+      if (state.has("messages")) {
+        JSONArray messages = state.getJSONArray("messages");
+        for (int i = 0; i < messages.length(); i++) {
+          JSONObject msg = messages.getJSONObject(i);
+          if ("system".equals(msg.optString("role"))) {
+            msg.put("content", newSystemPrompt);
+            return state.toString();
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.warning("Failed to patch system prompt in continuation state: " + e.getMessage());
+    }
+    // Unrecognized format — return as-is
+    return providerRef;
   }
 
   // ---------- Helpers ----------

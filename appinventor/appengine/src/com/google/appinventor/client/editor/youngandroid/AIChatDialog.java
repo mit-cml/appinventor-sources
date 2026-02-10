@@ -104,10 +104,14 @@ public class AIChatDialog extends DialogBox {
   private final Button newConversationButton;
   private final Label statusLabel;
 
+  /** Maximum number of client-side validation retries before showing the error. */
+  private static final int MAX_VALIDATION_RETRIES = 5;
+
   // State
   private AIAgentResponse pendingResponse;
   private Timer pollingTimer;
   private boolean requestInFlight;
+  private int validationRetryCount;
 
   // Remembered position so the dialog reopens where the user left it
   private int lastPopupLeft = -1;
@@ -341,15 +345,14 @@ public class AIChatDialog extends DialogBox {
     String blocksYail = getCurrentBlocksYail();
     AIAgentRequest request = new AIAgentRequest(text, projectId, screenName, blocksYail);
     setRequestInFlight(true);
+    validationRetryCount = 0;
     startPollingStatus();
 
     aiAgentService.processRequest(request, new OdeAsyncCallback<AIAgentResponse>(
         MESSAGES.aiChatSendError()) {
       @Override
       public void onSuccess(AIAgentResponse response) {
-        setRequestInFlight(false);
-        stopPollingStatus();
-        handleResponse(response);
+        handleResponseWithValidation(response);
       }
 
       @Override
@@ -360,6 +363,38 @@ public class AIChatDialog extends DialogBox {
         addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
       }
     });
+  }
+
+  /**
+   * Handles an AI response by pre-validating block operations before
+   * showing the preview.  If validation fails and retries are available,
+   * keeps "Calling AI" visible and sends error feedback to the server
+   * for an automatic LLM retry.  The user only sees the operation
+   * preview once all block operations pass validation.
+   */
+  private void handleResponseWithValidation(AIAgentResponse response) {
+    List<AIOperation> operations = response.getOperations();
+
+    // Pre-validate WRITE_BLOCK and DELETE_BLOCK operations client-side
+    if (operations != null && !operations.isEmpty()) {
+      List<String> validationErrors = validateBlockOperations(operations);
+      if (!validationErrors.isEmpty()) {
+        if (validationRetryCount < MAX_VALIDATION_RETRIES) {
+          // Retry: keep "Calling AI" visible, send errors to server
+          validationRetryCount++;
+          LOG.info("Client validation failed (attempt " + validationRetryCount
+              + "/" + MAX_VALIDATION_RETRIES + "), retrying: " + validationErrors);
+          reportValidationErrors(validationErrors);
+          return;
+        }
+        // Exhausted retries — show the errors to the user
+      }
+    }
+
+    // Validation passed (or no block ops, or retries exhausted) — show result
+    setRequestInFlight(false);
+    stopPollingStatus();
+    handleResponse(response);
   }
 
   /**
@@ -385,6 +420,117 @@ public class AIChatDialog extends DialogBox {
     if (operations != null && !operations.isEmpty()) {
       showOperationPreview(response);
     }
+  }
+
+  /**
+   * Validates WRITE_BLOCK and DELETE_BLOCK operations using the client-side
+   * Blockly runtime (dry-run, no blocks created).
+   *
+   * @return list of validation error messages; empty if all operations are valid
+   */
+  private List<String> validateBlockOperations(List<AIOperation> operations) {
+    List<String> errors = new ArrayList<>();
+    BlocksEditor<?, ?> blocksEditor = getCurrentBlocksEditor();
+    if (blocksEditor == null) {
+      // Can't validate without a blocks editor — let execution handle it
+      return errors;
+    }
+
+    for (AIOperation op : operations) {
+      if (op.getType() == AIOperation.Type.WRITE_BLOCK) {
+        String yail = extractField(op.getPayload(), "yail");
+        if (yail != null && !yail.isEmpty()) {
+          String resultJson = blocksEditor.validateYail(yail);
+          if (resultJson != null) {
+            String error = extractValidationError(resultJson);
+            if (error != null) {
+              errors.add("write_block validation failed: " + error);
+            }
+          }
+        }
+      } else if (op.getType() == AIOperation.Type.DELETE_BLOCK) {
+        String block = extractField(op.getPayload(), "block");
+        if (block != null && !block.isEmpty()) {
+          String resultJson = blocksEditor.validateDeleteId(block);
+          if (resultJson != null) {
+            String error = extractValidationError(resultJson);
+            if (error != null) {
+              errors.add("delete_block validation failed: " + error);
+            }
+          }
+        }
+      }
+    }
+    return errors;
+  }
+
+  /**
+   * Extracts the error message from a validation result JSON string.
+   * Returns null if valid, the error string otherwise.
+   */
+  private static String extractValidationError(String resultJson) {
+    // Check for "valid":true or "valid":false
+    if (resultJson.contains("\"valid\":true")
+        || resultJson.contains("\"valid\": true")) {
+      return null;
+    }
+    // Extract the error field value
+    String error = extractField(resultJson, "error");
+    // extractField returns the field name as fallback — treat that as "unknown error"
+    if ("error".equals(error)) {
+      return "unknown validation error";
+    }
+    return error;
+  }
+
+  /**
+   * Reports client-side validation errors to the server for LLM retry.
+   * Keeps "Calling AI" visible and requestInFlight=true during the retry.
+   */
+  private void reportValidationErrors(List<String> errors) {
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId == 0) {
+      setRequestInFlight(false);
+      stopPollingStatus();
+      return;
+    }
+    String screenName = getCurrentScreenName();
+    String blocksYail = getCurrentBlocksYail();
+
+    // Keep polling — "Calling AI" stays visible
+    aiAgentService.reportExecutionErrors(projectId, screenName, errors, blocksYail,
+        new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
+          @Override
+          public void onSuccess(AIAgentResponse response) {
+            // Validate the retry response too
+            handleResponseWithValidation(response);
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            setRequestInFlight(false);
+            stopPollingStatus();
+            addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+          }
+        });
+  }
+
+  /**
+   * Returns the current screen's blocks editor, or null if unavailable.
+   */
+  private BlocksEditor<?, ?> getCurrentBlocksEditor() {
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    if (toolbar != null) {
+      DesignToolbar.DesignProject project = toolbar.getCurrentProject();
+      if (project != null) {
+        DesignToolbar.Screen screen = project.screens.get(project.currentScreen);
+        if (screen != null && screen.blocksEditor instanceof BlocksEditor) {
+          return (BlocksEditor<?, ?>) screen.blocksEditor;
+        }
+      }
+    }
+    return null;
   }
 
   // ---- Chat message display ----
@@ -572,14 +718,9 @@ public class AIChatDialog extends DialogBox {
               } else {
                 setRequestInFlight(false);
               }
-            } else if (hasYailBlockErrors(result)) {
-              // YAIL block operation failed — report to server for LLM retry
-              addAiMessage(MESSAGES.aiChatApplyError() + ": " + result.getErrorMessage()
-                  + " Retrying...");
-              reportExecutionErrorsToServer(result);
             } else {
-              setRequestInFlight(false);
-              addAiMessage(MESSAGES.aiChatApplyError() + ": " + result.getErrorMessage());
+              // Execution failed — report to server for LLM retry
+              reportExecutionErrorsToServer(result);
             }
           }
         });
@@ -587,9 +728,8 @@ public class AIChatDialog extends DialogBox {
 
   /**
    * Calls the continueRequest RPC to fetch the next batch of operations
-   * from a multi-step AI response. On success, displays the response
-   * via {@link #handleResponse}, which will show the operation preview
-   * for the user to apply or reject.
+   * from a multi-step AI response. On success, validates block operations
+   * before showing the preview.
    */
   private void fetchContinuation() {
     long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
@@ -600,14 +740,14 @@ public class AIChatDialog extends DialogBox {
     }
 
     String screenName = getCurrentScreenName();
+    String blocksYail = getCurrentBlocksYail();
+    validationRetryCount = 0;
 
-    aiAgentService.continueRequest(projectId, screenName,
+    aiAgentService.continueRequest(projectId, screenName, blocksYail,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
-            setRequestInFlight(false);
-            stopPollingStatus();
-            handleResponse(response);
+            handleResponseWithValidation(response);
           }
 
           @Override
@@ -642,31 +782,27 @@ public class AIChatDialog extends DialogBox {
         "The user rejected the proposed operations. Please suggest alternatives.",
         projectId, screenName);
 
+    setRequestInFlight(true);
+    validationRetryCount = 0;
+    startPollingStatus();
+
     aiAgentService.processRequest(feedback, new OdeAsyncCallback<AIAgentResponse>(
         MESSAGES.aiChatSendError()) {
       @Override
       public void onSuccess(AIAgentResponse response) {
-        handleResponse(response);
+        handleResponseWithValidation(response);
+      }
+
+      @Override
+      public void onFailure(Throwable caught) {
+        super.onFailure(caught);
+        setRequestInFlight(false);
+        stopPollingStatus();
       }
     });
   }
 
   // ---- Error feedback ----
-
-  /**
-   * Returns true if the execution result contains failures from YAIL-based
-   * block operations (WRITE_BLOCK or DELETE_BLOCK), which are eligible for
-   * server-side LLM retry.
-   */
-  private boolean hasYailBlockErrors(AIOperationExecutor.ExecutionResult result) {
-    for (AIOperation op : result.getFailed()) {
-      AIOperation.Type type = op.getType();
-      if (type == AIOperation.Type.WRITE_BLOCK || type == AIOperation.Type.DELETE_BLOCK) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   /**
    * Reports client-side execution errors to the server for LLM retry.
@@ -680,6 +816,7 @@ public class AIChatDialog extends DialogBox {
       return;
     }
     String screenName = getCurrentScreenName();
+    String blocksYail = getCurrentBlocksYail();
 
     // Collect error messages
     List<String> errors = new ArrayList<>();
@@ -693,13 +830,12 @@ public class AIChatDialog extends DialogBox {
     }
 
     startPollingStatus();
-    aiAgentService.reportExecutionErrors(projectId, screenName, errors,
+    validationRetryCount = 0;
+    aiAgentService.reportExecutionErrors(projectId, screenName, errors, blocksYail,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
-            setRequestInFlight(false);
-            stopPollingStatus();
-            handleResponse(response);
+            handleResponseWithValidation(response);
           }
 
           @Override

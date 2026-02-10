@@ -179,12 +179,15 @@ Rename a component. All block references are updated automatically.
 Create or replace a top-level block (event handler, global variable, or procedure)
 using a YAIL S-expression. If a block with the same identity already exists, it is
 replaced. See the YAIL Grammar section for the full syntax reference.
-- `yail` (string, required) — complete YAIL S-expression for the block
+- `yail` (string, required) — complete YAIL S-expression for the block. Must be one
+  of: `(define-event ...)`, `(define-generic-event ...)`, `(def g$...)`,
+  `(def (p$...) ...)`, or `(def-return (p$...) ...)`
 
 ### delete_block
 Remove a top-level block identified by its YAIL head tokens.
 - `block` (string, required) — block identifier matching YAIL head tokens:
   - Event handler: `"define-event ComponentName EventName"`
+  - Generic event handler: `"define-generic-event ComponentType EventName"`
   - Global variable: `"def g$variableName"`
   - Procedure: `"def p$procedureName"`
 

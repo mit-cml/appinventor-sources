@@ -720,6 +720,26 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     return blocksArea.doDeleteBlock(identifier);
   }
 
+  /**
+   * Validate a YAIL string without creating blocks (dry-run).
+   *
+   * @param yail the YAIL S-expression string to validate
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public String validateYail(String yail) {
+    return blocksArea.doValidateYail(yail);
+  }
+
+  /**
+   * Validate a DELETE_BLOCK identifier without touching the workspace.
+   *
+   * @param identifier block identifier (e.g., "define-event Button1 Click")
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public String validateDeleteId(String identifier) {
+    return blocksArea.doValidateDeleteId(identifier);
+  }
+
   private void updateBlocksTree(DesignerRootComponent root,
                                 SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];

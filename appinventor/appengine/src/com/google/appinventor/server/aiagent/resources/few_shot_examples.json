@@ -61,7 +61,7 @@
       {
         "tool": "write_block",
         "arguments": {
-          "yail": "(define-event IncrementButton Click ()\n  (set-this-form)\n  (set-var! g$count\n    (call-yail-primitive +\n      (*list-for-runtime* (get-var g$count) 1)\n      '(number number)))\n  (set-and-coerce-property! 'CounterLabel 'Text\n    (get-var g$count) 'text))"
+          "yail": "(define-event IncrementButton Click ()\n  (set-this-form)\n  (set-var! g$count\n    (call-yail-primitive +\n      (*list-for-runtime* (get-var g$count) 1)\n      '(number number)\n      \"+\"))\n  (set-and-coerce-property! 'CounterLabel 'Text\n    (get-var g$count) 'text))"
         }
       }
     ]
@@ -155,7 +155,7 @@
       {
         "tool": "write_block",
         "arguments": {
-          "yail": "(define-event LoginButton Click ()\n  (set-this-form)\n  (if (and-delayed\n        (call-yail-primitive yail-equal?\n          (*list-for-runtime* (get-property 'UsernameBox 'Text) \"admin\")\n          '(text text))\n        (begin\n          (call-yail-primitive yail-equal?\n            (*list-for-runtime* (get-property 'PasswordBox 'Text) \"1234\")\n            '(text text))))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Login successful!\") '(text)))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Invalid username or password.\") '(text)))))"
+          "yail": "(define-event LoginButton Click ()\n  (set-this-form)\n  (if (and-delayed\n        (call-yail-primitive yail-equal?\n          (*list-for-runtime* (get-property 'UsernameBox 'Text) \"admin\")\n          '(text text)\n          \"=\")\n        (begin\n          (call-yail-primitive yail-equal?\n            (*list-for-runtime* (get-property 'PasswordBox 'Text) \"1234\")\n            '(text text)\n            \"=\")))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Login successful!\") '(text)))\n    (begin\n      (call-component-method 'LoginNotifier 'ShowAlert\n        (*list-for-runtime* \"Invalid username or password.\") '(text)))))"
         }
       }
     ]
@@ -181,7 +181,7 @@
       {
         "tool": "write_block",
         "arguments": {
-          "yail": "(def-return (p$double $num)\n  (set-this-form)\n  (call-yail-primitive *\n    (*list-for-runtime* (lexical-value $num) 2)\n    '(number number)))"
+          "yail": "(def-return (p$double $num)\n  (set-this-form)\n  (call-yail-primitive *\n    (*list-for-runtime* (lexical-value $num) 2)\n    '(number number)\n    \"*\"))"
         }
       }
     ]

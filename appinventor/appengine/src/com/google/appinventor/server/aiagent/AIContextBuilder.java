@@ -181,6 +181,7 @@ public class AIContextBuilder {
         "{\"type\":\"object\",\"properties\":{"
             + "\"yail\":{\"type\":\"string\",\"description\":\"Complete YAIL S-expression for the "
             + "top-level block. Must be one of: (define-event ComponentName EventName ...), "
+            + "(define-generic-event ComponentType EventName ...), "
             + "(def g$varName initialValue), (def (p$procName $param1 ...) body) for procedures "
             + "without return, or (def-return (p$procName $param1 ...) body) for procedures with return\"}"
             + "},\"required\":[\"yail\"]}"));
@@ -190,8 +191,8 @@ public class AIContextBuilder {
             + "The identifier format matches the YAIL form head tokens.",
         "{\"type\":\"object\",\"properties\":{"
             + "\"block\":{\"type\":\"string\",\"description\":\"Block identifier using YAIL head "
-            + "tokens, e.g. 'define-event Button1 Click', 'def g$score', 'def p$factorial', "
-            + "'def-return p$myFunc'\"}"
+            + "tokens, e.g. 'define-event Button1 Click', 'define-generic-event Button Click', "
+            + "'def g$score', 'def p$factorial', 'def-return p$myFunc'\"}"
             + "},\"required\":[\"block\"]}"));
 
     // Log tool list built so far before project-level tools

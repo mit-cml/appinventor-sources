@@ -14,7 +14,7 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
 ```
 - `ComponentName`: the instance name (e.g., `Button1`)
 - `EventName`: the event (e.g., `Click`, `GotText`)
-- Parameters are prefixed with `$`
+- Parameters are prefixed with `$` (some configurations use `$param_` or `$local_` prefixes; both forms are accepted)
 - `(set-this-form)` must be the first statement in the body
 
 ### Global Variable
@@ -324,11 +324,28 @@ Returns a list of all components of the given type in the current screen.
 
 ### Generic Event Handler
 ```scheme
-(define-generic-event ComponentType EventName ($param1 $param2 ...)
+(define-generic-event ComponentType EventName ($component $param1 $param2 ...)
   (set-this-form)
   <body statements>)
 ```
 Handles events for any component of the given type, rather than a specific instance.
+The first parameter (`$component`) is always the component instance that fired the event.
+
+### Blocking Continuation Methods
+Some methods use an async variant with the same arguments:
+```scheme
+(call-component-method-with-blocking-continuation 'ComponentName 'MethodName
+  (*list-for-runtime* <args>) '(<types>))
+(call-component-type-method-with-blocking-continuation <comp-expr> 'TypeName 'MethodName
+  (*list-for-runtime* <args>) '(component <types>))
+```
+These produce the same block types as their non-blocking counterparts.
+
+### Enum Dropdown (protect-enum)
+```scheme
+(protect-enum (static-field com.example.ClassName "ENUM_NAME") concreteValue)
+```
+Wraps an enum value for use in the REPL. The `static-field` is the authoritative value; the `concreteValue` is a fallback.
 
 ## Control Flow
 
@@ -469,43 +486,43 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
 
 ### Open Another Screen
 ```scheme
-(call-yail-primitive open-another-screen (*list-for-runtime* "ScreenName") '(text))
+(call-yail-primitive open-another-screen (*list-for-runtime* "ScreenName") '(text) "open another screen")
 ```
 
 ### Open Screen With Start Value
 ```scheme
 (call-yail-primitive open-another-screen-with-start-value
-  (*list-for-runtime* "ScreenName" <value>) '(text any))
+  (*list-for-runtime* "ScreenName" <value>) '(text any) "open another screen with start value")
 ```
 
 ### Close Screen
 ```scheme
-(call-yail-primitive close-screen (*list-for-runtime*) '())
+(call-yail-primitive close-screen (*list-for-runtime*) '() "close screen")
 ```
 
 ### Close Screen With Value
 ```scheme
-(call-yail-primitive close-screen-with-value (*list-for-runtime* <value>) '(any))
+(call-yail-primitive close-screen-with-value (*list-for-runtime* <value>) '(any) "close screen with value")
 ```
 
 ### Close Screen With Plain Text
 ```scheme
-(call-yail-primitive close-screen-with-plain-text (*list-for-runtime* <text>) '(text))
+(call-yail-primitive close-screen-with-plain-text (*list-for-runtime* <text>) '(text) "close screen with plain text")
 ```
 
 ### Get Start Value
 ```scheme
-(call-yail-primitive get-start-value (*list-for-runtime*) '())
+(call-yail-primitive get-start-value (*list-for-runtime*) '() "get start value")
 ```
 
 ### Get Plain Start Text
 ```scheme
-(call-yail-primitive get-plain-start-text (*list-for-runtime*) '())
+(call-yail-primitive get-plain-start-text (*list-for-runtime*) '() "get plain start text")
 ```
 
 ### Close Application
 ```scheme
-(call-yail-primitive close-application (*list-for-runtime*) '())
+(call-yail-primitive close-application (*list-for-runtime*) '() "close application")
 ```
 
 ## Examples
@@ -520,14 +537,14 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
 
 ### Global variable with list initial value
 ```scheme
-(def g$myList (call-yail-primitive make-yail-list (*list-for-runtime* 1 2 3) '(number number number)))
+(def g$myList (call-yail-primitive make-yail-list (*list-for-runtime* 1 2 3) '(number number number) "make a list"))
 ```
 
 ### Procedure with return value
 ```scheme
 (def-return (p$factorial $n)
   (set-this-form)
-  (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $n) 0) '(number number))
+  (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $n) 0) '(number number) "=")
     (begin 1)
     (begin
       (call-yail-primitive *
@@ -536,8 +553,8 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
           ((get-var p$factorial)
             (call-yail-primitive -
               (*list-for-runtime* (lexical-value $n) 1)
-              '(number number))))
-        '(number number)))))
+              '(number number) "-")))
+        '(number number) "*"))))
 ```
 
 ### Event handler with if-else and variable update
@@ -546,7 +563,7 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
   (set-this-form)
   (if (call-yail-primitive yail-equal?
         (*list-for-runtime* (get-var g$score) 10)
-        '(number number))
+        '(number number) "=")
     (begin
       (call-component-method 'Notifier1 'ShowAlert
         (*list-for-runtime* "You win!") '(text)))
@@ -554,11 +571,11 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
       (set-var! g$score
         (call-yail-primitive +
           (*list-for-runtime* (get-var g$score) 1)
-          '(number number)))
+          '(number number) "+"))
       (set-and-coerce-property! 'Label1 'Text
         (call-yail-primitive string-append
           (*list-for-runtime* "Score: " (get-var g$score))
-          '(text text))
+          '(text text) "join")
         'text))))
 ```
 
@@ -568,7 +585,14 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
   (set-this-form)
   (let (($total (call-yail-primitive +
                   (*list-for-runtime* (get-var g$price) (get-var g$tax))
-                  '(number number))))
+                  '(number number) "+")))
     (begin
       (set-and-coerce-property! 'Label1 'Text (lexical-value $total) 'text))))
+```
+
+### Generic event handler (any Button)
+```scheme
+(define-generic-event Button Click ($component)
+  (set-this-form)
+  (set-and-coerce-property! 'Label1 'Text "A button was clicked" 'text))
 ```

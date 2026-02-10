@@ -22,9 +22,9 @@ public interface AIAgentServiceAsync {
   void processRequest(AIAgentRequest request, AsyncCallback<AIAgentResponse> callback);
 
   /**
-   * @see AIAgentService#continueRequest(long, String)
+   * @see AIAgentService#continueRequest(long, String, String)
    */
-  void continueRequest(long projectId, String screenName,
+  void continueRequest(long projectId, String screenName, String blocksYail,
       AsyncCallback<AIAgentResponse> callback);
 
   /**
@@ -44,8 +44,8 @@ public interface AIAgentServiceAsync {
   void getRequestStatus(long projectId, AsyncCallback<String> callback);
 
   /**
-   * @see AIAgentService#reportExecutionErrors(long, String, List)
+   * @see AIAgentService#reportExecutionErrors(long, String, List, String)
    */
   void reportExecutionErrors(long projectId, String screenName,
-      List<String> errors, AsyncCallback<AIAgentResponse> callback);
+      List<String> errors, String blocksYail, AsyncCallback<AIAgentResponse> callback);
 }

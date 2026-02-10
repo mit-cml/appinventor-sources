@@ -205,6 +205,25 @@ AI.YailToBlocks.deleteBlock = function(workspace, identifier) {
       }
       break;
 
+    case 'define-generic-event':
+      if (tokens.length < 3) {
+        return {success: false, error: 'define-generic-event requires type and event name'};
+      }
+      var typeName = tokens[1];
+      var eventName = tokens[2];
+      for (var i = 0; i < topBlocks.length; i++) {
+        var block = topBlocks[i];
+        if (block.type === 'component_event' && block.isGeneric
+            && block.typeName === typeName && block.eventName === eventName) {
+          blockToDelete = block;
+          break;
+        }
+      }
+      if (!blockToDelete) {
+        return {success: false, error: 'Generic event handler not found: ' + typeName + '.' + eventName};
+      }
+      break;
+
     default:
       return {success: false, error: 'Unknown block type: ' + formType};
   }
@@ -251,6 +270,8 @@ AI.YailToBlocks.convertTopLevel_ = function(workspace, node) {
       return AI.YailToBlocks.convertDef_(workspace, node, false);
     case 'def-return':
       return AI.YailToBlocks.convertDef_(workspace, node, true);
+    case 'define-generic-event':
+      return AI.YailToBlocks.convertGenericEventHandler_(workspace, node);
     default:
       throw new Error('Unknown top-level form: ' + head);
   }
@@ -303,7 +324,7 @@ AI.YailToBlocks.convertEventHandler_ = function(workspace, node) {
   if (paramsNode.type === 'list') {
     for (var i = 0; i < paramsNode.elements.length; i++) {
       var p = paramsNode.elements[i];
-      var pName = (p.name || String(p.value)).replace(/^\$/, '');
+      var pName = (p.name || String(p.value)).replace(/^\$(?:param_|local_)?/, '');
       params.push(pName);
     }
   }
@@ -329,6 +350,77 @@ AI.YailToBlocks.convertEventHandler_ = function(workspace, node) {
   mutation.setAttribute('instance_name', componentName);
   mutation.setAttribute('event_name', eventName);
   mutation.setAttribute('is_generic', 'false');
+  block.domToMutation(mutation);
+  block.initSvg();
+
+  // Convert body statements (skip set-this-form)
+  var bodyStatements = [];
+  for (var i = 4; i < els.length; i++) {
+    if (AI.SExprParser.isForm(els[i], 'set-this-form')) {
+      continue;
+    }
+    bodyStatements.push(els[i]);
+  }
+
+  if (bodyStatements.length > 0) {
+    var firstStmt = AI.YailToBlocks.convertStatement_(workspace, bodyStatements[0]);
+    if (firstStmt && block.getInput('DO')) {
+      block.getInput('DO').connection.connect(firstStmt.previousConnection);
+      // Chain remaining statements
+      var prevBlock = firstStmt;
+      for (var i = 1; i < bodyStatements.length; i++) {
+        var nextStmt = AI.YailToBlocks.convertStatement_(workspace, bodyStatements[i]);
+        if (nextStmt && prevBlock.nextConnection) {
+          prevBlock.nextConnection.connect(nextStmt.previousConnection);
+          prevBlock = nextStmt;
+        }
+      }
+    }
+  }
+
+  block.render();
+  return block;
+};
+
+// ---- Generic Event Handler ----
+
+/**
+ * Convert (define-generic-event TypeName EventName ($component $params...) (set-this-form) body...)
+ * @private
+ */
+AI.YailToBlocks.convertGenericEventHandler_ = function(workspace, node) {
+  var els = node.elements;
+  // [0]: define-generic-event, [1]: typeName, [2]: eventName, [3]: params, [4..]: body
+  if (els.length < 4) {
+    throw new Error('define-generic-event requires type, event, and params');
+  }
+
+  var typeName = els[1].name || String(els[1].value);
+  var eventName = els[2].name || String(els[2].value);
+
+  // Extract parameter names (first param is always the component instance)
+  var params = [];
+  var paramsNode = els[3];
+  if (paramsNode.type === 'list') {
+    for (var i = 0; i < paramsNode.elements.length; i++) {
+      var p = paramsNode.elements[i];
+      var pName = (p.name || String(p.value)).replace(/^\$(?:param_|local_)?/, '');
+      params.push(pName);
+    }
+  }
+
+  // Delete existing generic event handler if any
+  AI.YailToBlocks.deleteBlock(workspace,
+      'define-generic-event ' + typeName + ' ' + eventName);
+
+  // Create the event block with mutation (generic = true)
+  var block = workspace.newBlock('component_event');
+
+  var mutation = document.createElement('mutation');
+  mutation.setAttribute('component_type', typeName);
+  mutation.setAttribute('instance_name', '');
+  mutation.setAttribute('event_name', eventName);
+  mutation.setAttribute('is_generic', 'true');
   block.domToMutation(mutation);
   block.initSvg();
 
@@ -404,7 +496,7 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
   var params = [];
   for (var i = 1; i < nameList.elements.length; i++) {
     var p = nameList.elements[i];
-    var pName = (p.name || String(p.value)).replace(/^\$/, '');
+    var pName = (p.name || String(p.value)).replace(/^\$(?:param_|local_)?/, '');
     params.push(pName);
   }
 
@@ -532,7 +624,12 @@ AI.YailToBlocks.convertStatement_ = function(workspace, node) {
     case 'let':
       return AI.YailToBlocks.convertLet_(workspace, node, false);
     case 'break':
+    case '*yail-break*':
       return AI.YailToBlocks.convertBreak_(workspace);
+    case 'call-component-method-with-blocking-continuation':
+      return AI.YailToBlocks.convertMethodCall_(workspace, node, false);
+    case 'call-component-type-method-with-blocking-continuation':
+      return AI.YailToBlocks.convertGenericMethodCall_(workspace, node, false);
     default:
       // Try as expression (some expressions can be used as statements)
       var exprBlock = AI.YailToBlocks.convertExpression_(workspace, node);
@@ -580,6 +677,13 @@ AI.YailToBlocks.convertSymbolExpr_ = function(workspace, node) {
   // Boolean constants
   if (name === '#t') return AI.YailToBlocks.makeBoolBlock_(workspace, true);
   if (name === '#f') return AI.YailToBlocks.makeBoolBlock_(workspace, false);
+
+  // Null value constant
+  if (name === '*the-null-value*') {
+    var block = workspace.newBlock('controls_nothing');
+    block.initSvg();
+    return block;
+  }
 
   // Global variable reference (sometimes appears as bare symbol)
   if (name.startsWith('g$')) {
@@ -675,6 +779,20 @@ AI.YailToBlocks.convertListExpr_ = function(workspace, node) {
       return AI.YailToBlocks.convertSetVar_(workspace, node, false);
     case 'set-and-coerce-property!':
       return AI.YailToBlocks.convertSetProperty_(workspace, node);
+    case 'call-component-method-with-blocking-continuation':
+      return AI.YailToBlocks.convertMethodCall_(workspace, node, true);
+    case 'call-component-type-method-with-blocking-continuation':
+      return AI.YailToBlocks.convertGenericMethodCall_(workspace, node, true);
+    case 'protect-enum':
+      return AI.YailToBlocks.convertProtectEnum_(workspace, node);
+    case 'map_nondest':
+    case 'filter_nondest':
+    case 'sortkey_nondest':
+    case 'sortcomparator_nondest':
+    case 'mincomparator-nondest':
+    case 'maxcomparator-nondest':
+    case 'reduceovereach':
+      return AI.YailToBlocks.convertHigherOrderForm_(workspace, node);
     case 'make-exact-yail-integer':
       // (make-exact-yail-integer N) — check for known color constants, else unwrap
       if (node.elements.length >= 2) {
@@ -745,7 +863,7 @@ AI.YailToBlocks.convertGetVar_ = function(workspace, node) {
 
 /** @private */
 AI.YailToBlocks.convertLexicalValue_ = function(workspace, node) {
-  var varName = node.elements[1].name.replace(/^\$/, '');
+  var varName = node.elements[1].name.replace(/^\$(?:param_|local_)?/, '');
   return AI.YailToBlocks.makeVarGetBlock_(workspace, varName);
 };
 
@@ -773,7 +891,7 @@ AI.YailToBlocks.convertSetVar_ = function(workspace, node, isStatement) {
 /** @private */
 AI.YailToBlocks.convertSetLexical_ = function(workspace, node) {
   var els = node.elements;
-  var varName = els[1].name.replace(/^\$/, '');
+  var varName = els[1].name.replace(/^\$(?:param_|local_)?/, '');
   var value = els[2];
 
   var block = workspace.newBlock('lexical_variable_set');
@@ -1102,6 +1220,7 @@ AI.YailToBlocks.PRIMITIVE_MAP_ = {
 
   // Logic
   'yail-not': {block: 'logic_negate', arity: 1},
+  'not': {block: 'logic_negate', arity: 1},          // alias — used in text NEQ wrapping
 
   // Text
   'string-append': {block: 'text_join', arity: 'variadic'},
@@ -1431,7 +1550,7 @@ AI.YailToBlocks.convertForEach_ = function(workspace, node) {
   }
 
   var block = workspace.newBlock('controls_forEach');
-  var itemName = els[1].name.replace(/^\$/, '');
+  var itemName = els[1].name.replace(/^\$(?:param_|local_)?/, '');
   block.setFieldValue(itemName, 'VAR');
   block.initSvg();
 
@@ -1464,10 +1583,10 @@ AI.YailToBlocks.convertForEachDict_ = function(workspace, node, letNode) {
   var keyName = 'key';
   var valueName = 'value';
   if (bindings.elements[0].type === 'list' && bindings.elements[0].elements.length >= 1) {
-    keyName = bindings.elements[0].elements[0].name.replace(/^\$/, '').replace(/^local_/, '');
+    keyName = bindings.elements[0].elements[0].name.replace(/^\$(?:param_|local_)?/, '').replace(/^local_/, '');
   }
   if (bindings.elements[1].type === 'list' && bindings.elements[1].elements.length >= 1) {
-    valueName = bindings.elements[1].elements[0].name.replace(/^\$/, '').replace(/^local_/, '');
+    valueName = bindings.elements[1].elements[0].name.replace(/^\$(?:param_|local_)?/, '').replace(/^local_/, '');
   }
 
   var block = workspace.newBlock('controls_for_each_dict');
@@ -1498,7 +1617,7 @@ AI.YailToBlocks.convertForRange_ = function(workspace, node) {
   var els = node.elements;
   // (forrange $i (begin body) start end step)
   var block = workspace.newBlock('controls_forRange');
-  var varName = els[1].name.replace(/^\$/, '');
+  var varName = els[1].name.replace(/^\$(?:param_|local_)?/, '');
   block.setFieldValue(varName, 'VAR');
   block.initSvg();
 
@@ -1583,7 +1702,7 @@ AI.YailToBlocks.convertLet_ = function(workspace, node, asExpression) {
     if (binding.type === 'list' && binding.elements.length >= 1) {
       var rawName = binding.elements[0].name || String(binding.elements[0].value);
       // Strip $ prefix and optional local_ prefix
-      var name = rawName.replace(/^\$/, '').replace(/^local_/, '');
+      var name = rawName.replace(/^\$(?:param_|local_)?/, '').replace(/^local_/, '');
       varNames.push(name);
     }
   }
@@ -1813,6 +1932,143 @@ AI.YailToBlocks.convertBeginExpr_ = function(workspace, node) {
   return block;
 };
 
+// ---- Protect-enum ----
+
+/**
+ * Convert (protect-enum (static-field ClassName "EnumName") concreteValue)
+ * @private
+ */
+AI.YailToBlocks.convertProtectEnum_ = function(workspace, node) {
+  var els = node.elements;
+  // Prefer the static-field form if present
+  if (els.length >= 2 && AI.SExprParser.isForm(els[1], 'static-field')) {
+    return AI.YailToBlocks.convertStaticField_(workspace, els[1]);
+  }
+  // Fallback: use the concrete value
+  if (els.length >= 3) {
+    return AI.YailToBlocks.convertExpression_(workspace, els[2]);
+  }
+  return null;
+};
+
+// ---- Higher-order list forms ----
+
+/**
+ * Configuration for higher-order list forms.
+ * Maps YAIL form name to block type and argument structure.
+ * @private
+ */
+AI.YailToBlocks.HIGHER_ORDER_MAP_ = {
+  // (map_nondest $var bodyExpr listExpr)
+  'map_nondest': {
+    block: 'lists_map',
+    varFields: ['VAR'], varIndices: [1],
+    bodyInput: 'TO', bodyIndex: 2,
+    listInput: 'LIST', listIndex: 3
+  },
+  // (filter_nondest $var testExpr listExpr)
+  'filter_nondest': {
+    block: 'lists_filter',
+    varFields: ['VAR'], varIndices: [1],
+    bodyInput: 'TEST', bodyIndex: 2,
+    listInput: 'LIST', listIndex: 3
+  },
+  // (sortkey_nondest $var keyExpr listExpr)
+  'sortkey_nondest': {
+    block: 'lists_sort_key',
+    varFields: ['VAR'], varIndices: [1],
+    bodyInput: 'KEY', bodyIndex: 2,
+    listInput: 'LIST', listIndex: 3
+  },
+  // (sortcomparator_nondest $var1 $var2 compareExpr listExpr)
+  'sortcomparator_nondest': {
+    block: 'lists_sort_comparator',
+    varFields: ['VAR1', 'VAR2'], varIndices: [1, 2],
+    bodyInput: 'COMPARE', bodyIndex: 3,
+    listInput: 'LIST', listIndex: 4
+  },
+  // (mincomparator-nondest $var1 $var2 compareExpr listExpr)
+  'mincomparator-nondest': {
+    block: 'lists_minimum_value',
+    varFields: ['VAR1', 'VAR2'], varIndices: [1, 2],
+    bodyInput: 'COMPARE', bodyIndex: 3,
+    listInput: 'LIST', listIndex: 4
+  },
+  // (maxcomparator-nondest $var1 $var2 compareExpr listExpr)
+  'maxcomparator-nondest': {
+    block: 'lists_maximum_value',
+    varFields: ['VAR1', 'VAR2'], varIndices: [1, 2],
+    bodyInput: 'COMPARE', bodyIndex: 3,
+    listInput: 'LIST', listIndex: 4
+  },
+  // (reduceovereach initValue $var2 $var1 combineExpr listExpr)
+  // Note: VAR2 (accumulator) precedes VAR1 (item) in YAIL
+  'reduceovereach': {
+    block: 'lists_reduce',
+    varFields: ['VAR2', 'VAR1'], varIndices: [2, 3],
+    initInput: 'INITANSWER', initIndex: 1,
+    bodyInput: 'COMBINE', bodyIndex: 4,
+    listInput: 'LIST', listIndex: 5
+  }
+};
+
+/**
+ * Convert a higher-order list form to its corresponding block.
+ * @private
+ */
+AI.YailToBlocks.convertHigherOrderForm_ = function(workspace, node) {
+  var head = AI.SExprParser.formHead(node);
+  var info = AI.YailToBlocks.HIGHER_ORDER_MAP_[head];
+  if (!info) return null;
+
+  var els = node.elements;
+  var block = workspace.newBlock(info.block);
+
+  // Set variable field(s)
+  for (var v = 0; v < info.varFields.length; v++) {
+    var varIdx = info.varIndices[v];
+    if (varIdx < els.length) {
+      var varName = (els[varIdx].name || String(els[varIdx].value))
+          .replace(/^\$(?:param_|local_)?/, '');
+      block.setFieldValue(varName, info.varFields[v]);
+    }
+  }
+
+  block.initSvg();
+
+  // Connect init value (reduce only)
+  if (info.initInput && info.initIndex < els.length) {
+    var initBlock = AI.YailToBlocks.convertExpression_(
+        workspace, els[info.initIndex]);
+    if (initBlock && block.getInput(info.initInput)) {
+      block.getInput(info.initInput).connection.connect(
+          initBlock.outputConnection);
+    }
+  }
+
+  // Connect body/compare/key expression
+  if (info.bodyIndex < els.length) {
+    var bodyBlock = AI.YailToBlocks.convertExpression_(
+        workspace, els[info.bodyIndex]);
+    if (bodyBlock && block.getInput(info.bodyInput)) {
+      block.getInput(info.bodyInput).connection.connect(
+          bodyBlock.outputConnection);
+    }
+  }
+
+  // Connect list expression
+  if (info.listIndex < els.length) {
+    var listBlock = AI.YailToBlocks.convertExpression_(
+        workspace, els[info.listIndex]);
+    if (listBlock && block.getInput(info.listInput)) {
+      block.getInput(info.listInput).connection.connect(
+          listBlock.outputConnection);
+    }
+  }
+
+  return block;
+};
+
 // ---- Block factory helpers ----
 
 /** @private */
@@ -1960,4 +2216,207 @@ AI.YailToBlocks.isGlobalVariable_ = function(workspace, name) {
     }
   }
   return false;
+};
+
+// ---- Dry-run validation (no block creation) ----
+
+/**
+ * Validate a YAIL string without creating any blocks.
+ * Parses the S-expression and checks that each top-level form has a
+ * recognized head and the minimum required structure.  This is used
+ * by the client to pre-validate LLM output before showing the
+ * operation preview to the user.
+ *
+ * @param {string} yailString The YAIL S-expression string.
+ * @return {{valid: boolean, error: ?string}}
+ */
+AI.YailToBlocks.validate = function(yailString) {
+  try {
+    var ast = AI.SExprParser.parseAll(yailString);
+    if (ast.length === 0) {
+      return {valid: false, error: 'Empty YAIL input'};
+    }
+
+    for (var i = 0; i < ast.length; i++) {
+      var node = ast[i];
+      var result = AI.YailToBlocks.validateTopLevel_(node);
+      if (!result.valid) {
+        return result;
+      }
+    }
+    return {valid: true, error: null};
+  } catch (e) {
+    return {valid: false, error: e.message};
+  }
+};
+
+/**
+ * Validate a DELETE_BLOCK identifier string without touching the workspace.
+ * Checks that the identifier has the right format (form type + names).
+ *
+ * @param {string} identifier Block identifier (e.g., "define-event Button1 Click").
+ * @return {{valid: boolean, error: ?string}}
+ */
+AI.YailToBlocks.validateDeleteId = function(identifier) {
+  var tokens = identifier.trim().split(/\s+/);
+  if (tokens.length === 0) {
+    return {valid: false, error: 'Empty block identifier'};
+  }
+
+  var formType = tokens[0];
+  switch (formType) {
+    case 'define-event':
+      if (tokens.length < 3) {
+        return {valid: false,
+            error: 'define-event requires component and event name'};
+      }
+      break;
+    case 'define-generic-event':
+      if (tokens.length < 3) {
+        return {valid: false,
+            error: 'define-generic-event requires type and event name'};
+      }
+      break;
+    case 'def':
+    case 'def-return':
+      if (tokens.length < 2) {
+        return {valid: false,
+            error: formType + ' requires a variable or procedure name'};
+      }
+      var name = tokens[1].replace(/[()]/g, '');
+      if (!name.startsWith('g$') && !name.startsWith('p$')) {
+        return {valid: false,
+            error: formType + ': name must start with g$ or p$, got: ' + name};
+      }
+      break;
+    default:
+      return {valid: false, error: 'Unknown block type: ' + formType};
+  }
+  return {valid: true, error: null};
+};
+
+/**
+ * Validate a single top-level S-expression form.
+ * @param {Object} node AST node from the parser.
+ * @return {{valid: boolean, error: ?string}}
+ * @private
+ */
+AI.YailToBlocks.validateTopLevel_ = function(node) {
+  var head = AI.SExprParser.formHead(node);
+  if (!head) {
+    return {valid: false,
+        error: 'Top-level form must be a list starting with a symbol'};
+  }
+
+  switch (head) {
+    case 'define-event':
+      return AI.YailToBlocks.validateEventHead_(node);
+    case 'def':
+      return AI.YailToBlocks.validateDefHead_(node, false);
+    case 'def-return':
+      return AI.YailToBlocks.validateDefHead_(node, true);
+    case 'define-generic-event':
+      return AI.YailToBlocks.validateGenericEventHead_(node);
+    default:
+      return {valid: false,
+          error: 'Unknown top-level form: ' + head
+              + ". Expected 'define-event', 'define-generic-event',"
+              + " 'def', or 'def-return'."};
+  }
+};
+
+/**
+ * Validate (define-event ComponentName EventName ($params...) ...) structure.
+ * @private
+ */
+AI.YailToBlocks.validateEventHead_ = function(node) {
+  var els = node.elements;
+  if (els.length < 4) {
+    return {valid: false,
+        error: 'define-event requires at least component, event, and params'};
+  }
+  var comp = els[1];
+  var evt = els[2];
+  if (comp.type !== 'symbol' || !comp.name) {
+    return {valid: false,
+        error: 'define-event: component name must be a symbol'};
+  }
+  if (evt.type !== 'symbol' || !evt.name) {
+    return {valid: false,
+        error: 'define-event: event name must be a symbol'};
+  }
+  return {valid: true, error: null};
+};
+
+/**
+ * Validate (define-generic-event TypeName EventName ($params...) ...) structure.
+ * @private
+ */
+AI.YailToBlocks.validateGenericEventHead_ = function(node) {
+  var els = node.elements;
+  if (els.length < 4) {
+    return {valid: false,
+        error: 'define-generic-event requires at least type, event, and params'};
+  }
+  var typeName = els[1];
+  var evt = els[2];
+  if (typeName.type !== 'symbol' || !typeName.name) {
+    return {valid: false,
+        error: 'define-generic-event: type name must be a symbol'};
+  }
+  if (evt.type !== 'symbol' || !evt.name) {
+    return {valid: false,
+        error: 'define-generic-event: event name must be a symbol'};
+  }
+  return {valid: true, error: null};
+};
+
+/**
+ * Validate (def g$name value) or (def (p$name ...) body) structure.
+ * @private
+ */
+AI.YailToBlocks.validateDefHead_ = function(node, isReturn) {
+  var formName = isReturn ? 'def-return' : 'def';
+  var els = node.elements;
+  if (els.length < 3) {
+    return {valid: false,
+        error: formName + ' requires at least 3 elements'};
+  }
+
+  var second = els[1];
+  if (second.type === 'symbol') {
+    // Global variable: (def g$name value)
+    if (!second.name.startsWith('g$')) {
+      return {valid: false,
+          error: formName + ': global variable name must start with g$, got: '
+              + second.name};
+    }
+    if (isReturn) {
+      return {valid: false,
+          error: 'def-return cannot be used for global variables;'
+              + ' use def instead'};
+    }
+    return {valid: true, error: null};
+  } else if (second.type === 'list') {
+    // Procedure: (def (p$name $param1 ...) body)
+    if (second.elements.length < 1) {
+      return {valid: false,
+          error: formName + ': procedure parameter list is empty'};
+    }
+    var procNameNode = second.elements[0];
+    if (procNameNode.type !== 'symbol' || !procNameNode.name) {
+      return {valid: false,
+          error: formName + ': procedure name must be a symbol'};
+    }
+    if (!procNameNode.name.startsWith('p$')) {
+      return {valid: false,
+          error: formName + ': procedure name must start with p$, got: '
+              + procNameNode.name};
+    }
+    return {valid: true, error: null};
+  } else {
+    return {valid: false,
+        error: formName + ': unexpected second element type: '
+            + second.type};
+  }
 };
