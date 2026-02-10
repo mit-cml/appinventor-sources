@@ -36,12 +36,14 @@ public interface AIAgentService extends RemoteService {
    * <p>The {@code blocksYail} parameter supplies the current blocks state
    * so the system prompt reflects changes made by the previous batch.
    *
-   * @param projectId  the project ID
-   * @param screenName the current screen name
-   * @param blocksYail updated YAIL for the current screen's blocks
+   * @param projectId   the project ID
+   * @param screenName  the current screen name
+   * @param blocksYail  updated YAIL for the current screen's blocks
+   * @param currentView the active editor view ("Designer" or "Blocks")
    * @return the next batch of AI operations (may also have hasMore=true)
    */
-  AIAgentResponse continueRequest(long projectId, String screenName, String blocksYail);
+  AIAgentResponse continueRequest(long projectId, String screenName, String blocksYail,
+      String currentView);
 
   /**
    * Clear the current conversation for a project.
@@ -82,12 +84,13 @@ public interface AIAgentService extends RemoteService {
    * <p>The {@code blocksYail} parameter supplies the current blocks state
    * so the retry prompt reflects the workspace as it is now.
    *
-   * @param projectId  the project ID
-   * @param screenName the current screen name
-   * @param errors     list of error messages from the client executor
-   * @param blocksYail updated YAIL for the current screen's blocks
+   * @param projectId   the project ID
+   * @param screenName  the current screen name
+   * @param errors      list of error messages from the client executor
+   * @param blocksYail  updated YAIL for the current screen's blocks
+   * @param currentView the active editor view ("Designer" or "Blocks")
    * @return an updated AI response with corrected operations, or errors
    */
   AIAgentResponse reportExecutionErrors(long projectId, String screenName,
-      List<String> errors, String blocksYail);
+      List<String> errors, String blocksYail, String currentView);
 }

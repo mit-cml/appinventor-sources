@@ -343,7 +343,9 @@ public class AIChatDialog extends DialogBox {
     hideOperationPreview();
 
     String blocksYail = getCurrentBlocksYail();
-    AIAgentRequest request = new AIAgentRequest(text, projectId, screenName, blocksYail);
+    String currentView = getCurrentViewString();
+    AIAgentRequest request = new AIAgentRequest(text, projectId, screenName, blocksYail,
+        currentView);
     setRequestInFlight(true);
     validationRetryCount = 0;
     startPollingStatus();
@@ -496,9 +498,11 @@ public class AIChatDialog extends DialogBox {
     }
     String screenName = getCurrentScreenName();
     String blocksYail = getCurrentBlocksYail();
+    String currentView = getCurrentViewString();
 
     // Keep polling — "Calling AI" stays visible
     aiAgentService.reportExecutionErrors(projectId, screenName, errors, blocksYail,
+        currentView,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -681,6 +685,8 @@ public class AIChatDialog extends DialogBox {
         return "- Delete screen: " + extractField(payload, "screen");
       case SET_PROJECT_PROP:
         return "~ Set project property: " + extractField(payload, "name");
+      case TOGGLE_EDITOR:
+        return "~ Switch to " + extractField(payload, "view") + " view";
       default:
         return type.name() + ": " + payload;
     }
@@ -741,9 +747,10 @@ public class AIChatDialog extends DialogBox {
 
     String screenName = getCurrentScreenName();
     String blocksYail = getCurrentBlocksYail();
+    String currentView = getCurrentViewString();
     validationRetryCount = 0;
 
-    aiAgentService.continueRequest(projectId, screenName, blocksYail,
+    aiAgentService.continueRequest(projectId, screenName, blocksYail, currentView,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -817,6 +824,7 @@ public class AIChatDialog extends DialogBox {
     }
     String screenName = getCurrentScreenName();
     String blocksYail = getCurrentBlocksYail();
+    String currentView = getCurrentViewString();
 
     // Collect error messages
     List<String> errors = new ArrayList<>();
@@ -832,6 +840,7 @@ public class AIChatDialog extends DialogBox {
     startPollingStatus();
     validationRetryCount = 0;
     aiAgentService.reportExecutionErrors(projectId, screenName, errors, blocksYail,
+        currentView,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -1147,6 +1156,17 @@ public class AIChatDialog extends DialogBox {
       }
     }
     return "";
+  }
+
+  /**
+   * Returns the current editor view as a string ("Designer" or "Blocks").
+   */
+  private String getCurrentViewString() {
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    if (toolbar != null) {
+      return toolbar.getCurrentView() == DesignToolbar.View.BLOCKS ? "Blocks" : "Designer";
+    }
+    return "Designer";
   }
 
   /**

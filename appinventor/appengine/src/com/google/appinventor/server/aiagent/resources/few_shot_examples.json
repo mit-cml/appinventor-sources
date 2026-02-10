@@ -185,5 +185,18 @@
         }
       }
     ]
+  },
+  {
+    "description": "Toggle to Blocks view before writing an event handler (current view: Designer)",
+    "user": "Add a click handler for Button1 that shows a notification saying 'Hello!'",
+    "assistant_text": "I need to switch to the Blocks editor first to write the event handler. Let me do that now.",
+    "tool_calls": [
+      {
+        "tool": "toggle_editor",
+        "arguments": {
+          "view": "Blocks"
+        }
+      }
+    ]
   }
 ]

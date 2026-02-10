@@ -91,6 +91,7 @@ public class LLMResponseParser {
     TOOL_NAME_TO_TYPE.put("create_screen", AIOperation.Type.CREATE_SCREEN);
     TOOL_NAME_TO_TYPE.put("delete_screen", AIOperation.Type.DELETE_SCREEN);
     TOOL_NAME_TO_TYPE.put("set_project_property", AIOperation.Type.SET_PROJECT_PROP);
+    TOOL_NAME_TO_TYPE.put("toggle_editor", AIOperation.Type.TOGGLE_EDITOR);
 
     REQUIRED_FIELDS.put("add_component", Arrays.asList("component_type", "name"));
     REQUIRED_FIELDS.put("delete_component", Collections.singletonList("name"));
@@ -102,6 +103,7 @@ public class LLMResponseParser {
     REQUIRED_FIELDS.put("create_screen", Collections.singletonList("screen_name"));
     REQUIRED_FIELDS.put("delete_screen", Collections.singletonList("screen_name"));
     REQUIRED_FIELDS.put("set_project_property", Arrays.asList("property", "value"));
+    REQUIRED_FIELDS.put("toggle_editor", Collections.singletonList("view"));
 
     KNOWN_TOOLS.addAll(TOOL_NAME_TO_TYPE.keySet());
     // Read-only tools are handled separately by the provider; not parsed here

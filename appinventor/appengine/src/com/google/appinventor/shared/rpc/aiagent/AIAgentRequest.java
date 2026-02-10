@@ -19,6 +19,7 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private long projectId;
   private String screenName;
   private String blocksYail;
+  private String currentView;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -55,6 +56,24 @@ public class AIAgentRequest implements IsSerializable, Serializable {
     this.blocksYail = blocksYail;
   }
 
+  /**
+   * Creates a new AI agent request with blocks YAIL and current editor view.
+   *
+   * @param userMessage the natural language request from the user
+   * @param projectId the current project ID
+   * @param screenName the currently visible screen name
+   * @param blocksYail YAIL representation of the current screen's blocks
+   * @param currentView the active editor view ("Designer" or "Blocks")
+   */
+  public AIAgentRequest(String userMessage, long projectId, String screenName,
+      String blocksYail, String currentView) {
+    this.userMessage = userMessage;
+    this.projectId = projectId;
+    this.screenName = screenName;
+    this.blocksYail = blocksYail;
+    this.currentView = currentView;
+  }
+
   public String getUserMessage() {
     return userMessage;
   }
@@ -89,5 +108,17 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setBlocksYail(String blocksYail) {
     this.blocksYail = blocksYail;
+  }
+
+  /**
+   * Returns the active editor view ("Designer" or "Blocks").
+   * Defaults to "Designer" when not set (backward compatibility).
+   */
+  public String getCurrentView() {
+    return currentView != null ? currentView : "Designer";
+  }
+
+  public void setCurrentView(String currentView) {
+    this.currentView = currentView;
   }
 }

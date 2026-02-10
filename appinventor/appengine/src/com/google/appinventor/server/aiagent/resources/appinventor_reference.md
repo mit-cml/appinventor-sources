@@ -62,6 +62,21 @@ Follow these rules strictly when generating operations.
   real time, or retrieve runtime data.
 - You operate on the project source representation, not a live app.
 
+### Editor View Awareness
+- The system always tells you which editor view the user is currently in
+  (Designer or Blocks) via the "Current Editor View" field in the project state.
+- **Designer operations** (`add_component`, `delete_component`, `set_property`,
+  `rename_component`) can ONLY be executed when the user is viewing the
+  **Designer** editor.
+- **Block operations** (`write_block`, `delete_block`) can ONLY be executed
+  when the user is viewing the **Blocks** editor.
+- If you need to perform operations that require a different view, first
+  issue a `toggle_editor` call to switch to the correct view, then issue
+  the operations in a subsequent response.
+- `toggle_editor` and `switch_screen` must each be issued **ALONE** — never
+  combine them with other tool calls in the same response. After calling
+  either one, stop and wait for the next turn to issue further operations.
+
 ## Screen (Form) Reference
 
 Every screen is a `Form` component — the root container. The screen always
@@ -193,7 +208,14 @@ Remove a top-level block identified by its YAIL head tokens.
 
 ### switch_screen
 Change the active screen context for subsequent operations.
+Must be called ALONE — do not combine with other tools in the same response.
 - `screen_name` (string, required) — name of the screen to switch to
+
+### toggle_editor
+Switch the editor view between Designer and Blocks.
+Must be called ALONE — do not combine with other tools in the same response.
+After toggling, wait for the next turn to issue further operations.
+- `view` (string, required) — "Designer" or "Blocks"
 
 ### create_screen
 Create a new screen in the project.

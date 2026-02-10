@@ -144,10 +144,12 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         isNew = true;
       }
 
-      // Build system prompt and tools (using client-provided blocks YAIL)
+      // Build system prompt and tools (using client-provided blocks YAIL and view)
       String blocksYail = request.getBlocksYail();
-      String systemPrompt = contextBuilder.build(userId, projectId, screenName, mode, blocksYail);
-      List<LLMTool> tools = contextBuilder.buildTools(mode);
+      String currentView = request.getCurrentView();
+      String systemPrompt = contextBuilder.build(userId, projectId, screenName, mode,
+          blocksYail, currentView);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
       // Build history for stateless providers
@@ -214,9 +216,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         }
       }
 
-      // Mode enforcement: strip operations that are not allowed in the current mode.
-      // Semantic validation (YAIL parsing, block structure) is handled client-side.
-      operations = enforceMode(operations, mode, allErrors);
+      // Mode and view enforcement: strip operations not allowed in the current
+      // mode or editor view.  Semantic validation is handled client-side.
+      operations = enforceMode(operations, mode, currentView, allErrors);
 
       // Update conversation state
       conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
@@ -256,7 +258,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
   @Override
   public AIAgentResponse continueRequest(long projectId, String screenName,
-      String blocksYail) {
+      String blocksYail, String currentView) {
     String userId = userInfoProvider.getUserId();
 
     // Project ownership check
@@ -287,13 +289,13 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Get provider and rebuild tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
       // Rebuild the system prompt with updated blocks state so the LLM
       // sees the result of the previous batch's operations.
       String updatedSystemPrompt = contextBuilder.build(
-          userId, projectId, screenName, mode, blocksYail);
+          userId, projectId, screenName, mode, blocksYail, currentView);
       String providerRef = patchSystemPrompt(conv.getProviderRef(), updatedSystemPrompt);
 
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
@@ -327,8 +329,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<String> allErrors = new ArrayList<>(parseResult.getErrors());
       List<AIOperation> operations = parseResult.getOperations();
 
-      // Mode enforcement
-      operations = enforceMode(operations, mode, allErrors);
+      // Mode and view enforcement
+      operations = enforceMode(operations, mode, currentView, allErrors);
 
       // Update conversation state with new providerRef
       conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
@@ -368,7 +370,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
   @Override
   public AIAgentResponse reportExecutionErrors(long projectId, String screenName,
-      List<String> errors, String blocksYail) {
+      List<String> errors, String blocksYail, String currentView) {
     String userId = userInfoProvider.getUserId();
 
     // Security check
@@ -407,13 +409,13 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Get provider and tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       List<ChatMessage> history = loadConversation(conv.getConversationId());
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
       // Build system prompt with the current blocks state from the client
       String systemPrompt = contextBuilder.build(userId, projectId, screenName,
-          mode, blocksYail);
+          mode, blocksYail, currentView);
 
       updateStatus(projectId, "Calling AI...");
 
@@ -431,8 +433,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<String> allErrors = new ArrayList<>(parseResult.getErrors());
       List<AIOperation> operations = parseResult.getOperations();
 
-      // Mode enforcement
-      operations = enforceMode(operations, mode, allErrors);
+      // Mode and view enforcement
+      operations = enforceMode(operations, mode, currentView, allErrors);
 
       // Update conversation state
       conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
@@ -626,9 +628,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     }
   }
 
-  // ---------- Mode enforcement ----------
+  // ---------- Mode and view enforcement ----------
 
-  /** All write operation types (everything except read-only lookups). */
+  /** All write operation types (everything except read-only lookups and navigation). */
   private static final Set<AIOperation.Type> WRITE_OPS =
       Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
           AIOperation.Type.ADD_COMPONENT,
@@ -637,7 +639,6 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           AIOperation.Type.RENAME_COMPONENT,
           AIOperation.Type.WRITE_BLOCK,
           AIOperation.Type.DELETE_BLOCK,
-          AIOperation.Type.SWITCH_SCREEN,
           AIOperation.Type.CREATE_SCREEN,
           AIOperation.Type.DELETE_SCREEN,
           AIOperation.Type.SET_PROJECT_PROP)));
@@ -645,25 +646,57 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   /** Project-level operations only allowed in ProjectEditor mode. */
   private static final Set<AIOperation.Type> PROJECT_LEVEL_OPS =
       Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-          AIOperation.Type.SWITCH_SCREEN,
           AIOperation.Type.CREATE_SCREEN,
           AIOperation.Type.DELETE_SCREEN,
           AIOperation.Type.SET_PROJECT_PROP)));
 
+  /** Operations that require Designer view. */
+  private static final Set<AIOperation.Type> DESIGNER_OPS =
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+          AIOperation.Type.ADD_COMPONENT,
+          AIOperation.Type.DELETE_COMPONENT,
+          AIOperation.Type.SET_PROPERTY,
+          AIOperation.Type.RENAME_COMPONENT)));
+
+  /** Operations that require Blocks view. */
+  private static final Set<AIOperation.Type> BLOCKS_OPS =
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+          AIOperation.Type.WRITE_BLOCK,
+          AIOperation.Type.DELETE_BLOCK)));
+
+  /** Navigation operations that must appear alone (no other ops in same batch). */
+  private static final Set<AIOperation.Type> SOLO_OPS =
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+          AIOperation.Type.TOGGLE_EDITOR,
+          AIOperation.Type.SWITCH_SCREEN)));
+
   /**
-   * Enforce mode restrictions on operations.  Returns the filtered list;
-   * rejected operations are reported in {@code errors}.
+   * Enforce mode, view, and solo-op restrictions on operations.
+   * Returns the filtered list; rejected operations are reported in {@code errors}.
    */
   private List<AIOperation> enforceMode(List<AIOperation> operations,
-      String mode, List<String> errors) {
+      String mode, String currentView, List<String> errors) {
     if (operations.isEmpty()) {
       return operations;
+    }
+
+    // Solo-op detection: if any solo op is present alongside other ops,
+    // keep only the solo op(s) and reject the rest.
+    boolean hasSoloOp = false;
+    boolean hasOtherOp = false;
+    for (AIOperation op : operations) {
+      if (SOLO_OPS.contains(op.getType())) {
+        hasSoloOp = true;
+      } else {
+        hasOtherOp = true;
+      }
     }
 
     List<AIOperation> accepted = new ArrayList<>();
     for (AIOperation op : operations) {
       boolean rejected = false;
 
+      // Mode enforcement
       if ("Advisor".equals(mode) && WRITE_OPS.contains(op.getType())) {
         errors.add("Advisor mode does not allow write operations. Rejected: "
             + op.getType());
@@ -675,12 +708,33 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         rejected = true;
       }
 
+      // View enforcement
+      if (!rejected && "Designer".equals(currentView)
+          && BLOCKS_OPS.contains(op.getType())) {
+        errors.add("Block operations require Blocks view. Currently in Designer. "
+            + "Rejected: " + op.getType());
+        rejected = true;
+      }
+      if (!rejected && "Blocks".equals(currentView)
+          && DESIGNER_OPS.contains(op.getType())) {
+        errors.add("Designer operations require Designer view. Currently in Blocks. "
+            + "Rejected: " + op.getType());
+        rejected = true;
+      }
+
+      // Solo-op enforcement
+      if (!rejected && hasSoloOp && hasOtherOp && !SOLO_OPS.contains(op.getType())) {
+        errors.add("toggle_editor/switch_screen must be the only operation. "
+            + "Rejected: " + op.getType());
+        rejected = true;
+      }
+
       if (!rejected) {
         accepted.add(op);
       }
     }
 
-    AIDebug.log(LOG, "Mode enforcement (" + mode + "): accepted="
+    AIDebug.log(LOG, "Mode enforcement (" + mode + ", view=" + currentView + "): accepted="
         + accepted.size() + ", rejected=" + (operations.size() - accepted.size()));
     return accepted;
   }
@@ -872,6 +926,13 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
             break;
           case DELETE_SCREEN:
             sb.append("Deleted screen '").append(payload.optString("screen_name")).append("'\n");
+            break;
+          case SWITCH_SCREEN:
+            sb.append("Switched to screen '").append(payload.optString("screen_name"))
+                .append("'\n");
+            break;
+          case TOGGLE_EDITOR:
+            sb.append("Switched to ").append(payload.optString("view")).append(" view\n");
             break;
           default:
             sb.append(op.getType().name()).append("\n");

@@ -71,16 +71,17 @@ public class AIContextBuilder {
   /**
    * Build the complete system prompt for an LLM request.
    *
-   * @param userId     the authenticated user
-   * @param projectId  the project being edited
-   * @param screenName the currently active screen
-   * @param mode       "Advisor", "ScreenEditor", or "ProjectEditor"
-   * @param blocksYail client-generated YAIL for the current screen's blocks
-   *                   (may be null or empty if unavailable)
+   * @param userId      the authenticated user
+   * @param projectId   the project being edited
+   * @param screenName  the currently active screen
+   * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @param blocksYail  client-generated YAIL for the current screen's blocks
+   *                    (may be null or empty if unavailable)
+   * @param currentView the active editor view ("Designer" or "Blocks")
    * @return the assembled system prompt string
    */
   public String build(String userId, long projectId, String screenName, String mode,
-      String blocksYail) {
+      String blocksYail, String currentView) {
     StringBuilder sb = new StringBuilder();
 
     // Layer 1: Static reference
@@ -101,7 +102,8 @@ public class AIContextBuilder {
     AIDebug.log(LOG, "Context (YAIL grammar): " + grammar.length() + " chars");
 
     // Layer 4: Current app state (per-request)
-    String projectState = buildProjectState(userId, projectId, screenName, mode, blocksYail);
+    String projectState = buildProjectState(userId, projectId, screenName, mode, blocksYail,
+        currentView);
     sb.append("## Current Project State\n\n");
     sb.append(projectState);
     sb.append("\n\n");
@@ -114,18 +116,19 @@ public class AIContextBuilder {
     AIDebug.log(LOG, "Context Layer 5 (examples): " + examples.length() + " chars");
 
     // Mode instructions
-    sb.append(buildModeInstructions(mode));
+    sb.append(buildModeInstructions(mode, currentView));
 
     return sb.toString();
   }
 
   /**
-   * Build the list of LLM tools filtered by mode.
+   * Build the list of LLM tools filtered by mode and current editor view.
    *
-   * @param mode "Advisor", "ScreenEditor", or "ProjectEditor"
-   * @return tools available in the given mode
+   * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @param currentView the active editor view ("Designer" or "Blocks")
+   * @return tools available in the given mode and view
    */
-  public List<LLMTool> buildTools(String mode) {
+  public List<LLMTool> buildTools(String mode, String currentView) {
     List<LLMTool> tools = new ArrayList<>();
 
     // Read-only tools available in all modes
@@ -143,57 +146,73 @@ public class AIContextBuilder {
       return tools;
     }
 
-    // Write tools for ScreenEditor and ProjectEditor
-    tools.add(new LLMTool("add_component",
-        "Add a new component to the current screen.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"component_type\":{\"type\":\"string\",\"description\":\"Component type, e.g. Button\"},"
-            + "\"name\":{\"type\":\"string\",\"description\":\"Instance name, e.g. Button1\"},"
-            + "\"parent\":{\"type\":\"string\",\"description\":\"Parent container name (default: screen root)\"},"
-            + "\"properties\":{\"type\":\"object\",\"description\":\"Initial property values\"}"
-            + "},\"required\":[\"component_type\",\"name\"]}"));
+    // Designer tools: only available when viewing Designer
+    if (!"Blocks".equals(currentView)) {
+      tools.add(new LLMTool("add_component",
+          "Add a new component to the current screen.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"component_type\":{\"type\":\"string\",\"description\":\"Component type, e.g. Button\"},"
+              + "\"name\":{\"type\":\"string\",\"description\":\"Instance name, e.g. Button1\"},"
+              + "\"parent\":{\"type\":\"string\",\"description\":\"Parent container name (default: screen root)\"},"
+              + "\"properties\":{\"type\":\"object\",\"description\":\"Initial property values\"}"
+              + "},\"required\":[\"component_type\",\"name\"]}"));
 
-    tools.add(new LLMTool("delete_component",
-        "Delete a component from the current screen.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"name\":{\"type\":\"string\",\"description\":\"Component instance name\"}"
-            + "},\"required\":[\"name\"]}"));
+      tools.add(new LLMTool("delete_component",
+          "Delete a component from the current screen.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"name\":{\"type\":\"string\",\"description\":\"Component instance name\"}"
+              + "},\"required\":[\"name\"]}"));
 
-    tools.add(new LLMTool("set_property",
-        "Set a property value on a component.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
-            + "\"property_name\":{\"type\":\"string\",\"description\":\"Property name\"},"
-            + "\"value\":{\"description\":\"Property value (type depends on property)\"}"
-            + "},\"required\":[\"component_name\",\"property_name\",\"value\"]}"));
+      tools.add(new LLMTool("set_property",
+          "Set a property value on a component.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
+              + "\"property_name\":{\"type\":\"string\",\"description\":\"Property name\"},"
+              + "\"value\":{\"description\":\"Property value (type depends on property)\"}"
+              + "},\"required\":[\"component_name\",\"property_name\",\"value\"]}"));
 
-    tools.add(new LLMTool("rename_component",
-        "Rename a component instance.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"old_name\":{\"type\":\"string\",\"description\":\"Current component name\"},"
-            + "\"new_name\":{\"type\":\"string\",\"description\":\"New component name\"}"
-            + "},\"required\":[\"old_name\",\"new_name\"]}"));
+      tools.add(new LLMTool("rename_component",
+          "Rename a component instance.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"old_name\":{\"type\":\"string\",\"description\":\"Current component name\"},"
+              + "\"new_name\":{\"type\":\"string\",\"description\":\"New component name\"}"
+              + "},\"required\":[\"old_name\",\"new_name\"]}"));
+    }
 
-    tools.add(new LLMTool("write_block",
-        "Create or replace a top-level block (event handler, global variable, or procedure) "
-            + "using YAIL code. The YAIL form head identifies the block type and target. "
-            + "If a block with the same identity already exists, it is replaced (upsert semantics).",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"yail\":{\"type\":\"string\",\"description\":\"Complete YAIL S-expression for the "
-            + "top-level block. Must be one of: (define-event ComponentName EventName ...), "
-            + "(define-generic-event ComponentType EventName ...), "
-            + "(def g$varName initialValue), (def (p$procName $param1 ...) body) for procedures "
-            + "without return, or (def-return (p$procName $param1 ...) body) for procedures with return\"}"
-            + "},\"required\":[\"yail\"]}"));
+    // Blocks tools: only available when viewing Blocks
+    if (!"Designer".equals(currentView)) {
+      tools.add(new LLMTool("write_block",
+          "Create or replace a top-level block (event handler, global variable, or procedure) "
+              + "using YAIL code. The YAIL form head identifies the block type and target. "
+              + "If a block with the same identity already exists, it is replaced (upsert semantics).",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"yail\":{\"type\":\"string\",\"description\":\"Complete YAIL S-expression for the "
+              + "top-level block. Must be one of: (define-event ComponentName EventName ...), "
+              + "(define-generic-event ComponentType EventName ...), "
+              + "(def g$varName initialValue), (def (p$procName $param1 ...) body) for procedures "
+              + "without return, or (def-return (p$procName $param1 ...) body) for procedures with return\"}"
+              + "},\"required\":[\"yail\"]}"));
 
-    tools.add(new LLMTool("delete_block",
-        "Delete a top-level block (event handler, global variable, or procedure). "
-            + "The identifier format matches the YAIL form head tokens.",
+      tools.add(new LLMTool("delete_block",
+          "Delete a top-level block (event handler, global variable, or procedure). "
+              + "The identifier format matches the YAIL form head tokens.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"block\":{\"type\":\"string\",\"description\":\"Block identifier using YAIL head "
+              + "tokens, e.g. 'define-event Button1 Click', 'define-generic-event Button Click', "
+              + "'def g$score', 'def p$factorial', 'def-return p$myFunc'\"}"
+              + "},\"required\":[\"block\"]}"));
+    }
+
+    // Navigation tool: toggle editor view (ScreenEditor and ProjectEditor)
+    tools.add(new LLMTool("toggle_editor",
+        "Switch the editor view between Designer and Blocks. "
+            + "This tool MUST be called ALONE — do not combine it with any other tools "
+            + "in the same response. After toggling, wait for the next turn to issue "
+            + "further operations.",
         "{\"type\":\"object\",\"properties\":{"
-            + "\"block\":{\"type\":\"string\",\"description\":\"Block identifier using YAIL head "
-            + "tokens, e.g. 'define-event Button1 Click', 'define-generic-event Button Click', "
-            + "'def g$score', 'def p$factorial', 'def-return p$myFunc'\"}"
-            + "},\"required\":[\"block\"]}"));
+            + "\"view\":{\"type\":\"string\",\"enum\":[\"Designer\",\"Blocks\"],"
+            + "\"description\":\"The editor view to switch to\"}"
+            + "},\"required\":[\"view\"]}"));
 
     // Log tool list built so far before project-level tools
     if (AIDebug.enabled()) {
@@ -204,14 +223,18 @@ public class AIContextBuilder {
       AIDebug.log(LOG, toolList.toString());
     }
 
+    // Navigation tool: switch screen (ScreenEditor and ProjectEditor)
+    tools.add(new LLMTool("switch_screen",
+        "Switch the active screen context. "
+            + "This tool MUST be called ALONE — do not combine it with any other tools "
+            + "in the same response. After switching, wait for the next turn to issue "
+            + "further operations.",
+        "{\"type\":\"object\",\"properties\":{"
+            + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to switch to\"}"
+            + "},\"required\":[\"screen_name\"]}"));
+
     // Project-level tools only for ProjectEditor
     if ("ProjectEditor".equals(mode)) {
-      tools.add(new LLMTool("switch_screen",
-          "Switch the active screen context.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to switch to\"}"
-              + "},\"required\":[\"screen_name\"]}"));
-
       tools.add(new LLMTool("create_screen",
           "Create a new screen in the project.",
           "{\"type\":\"object\",\"properties\":{"
@@ -318,7 +341,7 @@ public class AIContextBuilder {
   // ---------- Layer builders ----------
 
   private String buildProjectState(String userId, long projectId,
-      String screenName, String mode, String blocksYail) {
+      String screenName, String mode, String blocksYail, String currentView) {
     StringBuilder sb = new StringBuilder();
 
     // Project overview from project.properties
@@ -348,8 +371,9 @@ public class AIContextBuilder {
       sb.append("\n\n");
     }
 
-    // Current screen: component tree from SCM + blocks YAIL from client
-    sb.append("### Current Screen: ").append(screenName).append("\n\n");
+    // Current screen and editor view
+    sb.append("### Current Screen: ").append(screenName).append("\n");
+    sb.append("### Current Editor View: ").append(currentView).append("\n\n");
     sb.append(buildCurrentScreenState(userId, projectId, screenName, packagePath, blocksYail));
 
     // Other screens: summaries
@@ -485,7 +509,7 @@ public class AIContextBuilder {
     return count;
   }
 
-  private String buildModeInstructions(String mode) {
+  private String buildModeInstructions(String mode, String currentView) {
     StringBuilder sb = new StringBuilder();
     sb.append("## Mode: ").append(mode).append("\n\n");
     switch (mode) {
@@ -498,7 +522,7 @@ public class AIContextBuilder {
         break;
       case "ScreenEditor":
         sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
-            .append("You cannot create, delete, or switch screens. ")
+            .append("You cannot create or delete screens. You can switch screens and toggle editor views. ")
             .append("To make changes, invoke the provided tools via function calling. ")
             .append("Always include a text response explaining what you are doing or ")
             .append("asking clarifying questions — do not return tool calls without ")
@@ -516,6 +540,24 @@ public class AIContextBuilder {
       default:
         break;
     }
+
+    // Editor view rules (for modes that allow modifications)
+    if (!"Advisor".equals(mode)) {
+      sb.append("\n### Editor View Rules\n");
+      sb.append("The user is currently viewing the **").append(currentView)
+          .append("** editor.\n");
+      sb.append("- **Designer operations** (`add_component`, `delete_component`, ")
+          .append("`set_property`, `rename_component`) can ONLY be executed when the ")
+          .append("user is viewing the **Designer** editor.\n");
+      sb.append("- **Block operations** (`write_block`, `delete_block`) can ONLY be ")
+          .append("executed when the user is viewing the **Blocks** editor.\n");
+      sb.append("- To switch views, use the `toggle_editor` tool.\n");
+      sb.append("- `toggle_editor` and `switch_screen` MUST each be called **ALONE** — ")
+          .append("never combine them with other tool calls in the same response.\n");
+      sb.append("- After calling `toggle_editor` or `switch_screen`, stop and wait ")
+          .append("for the next turn to issue further operations.\n");
+    }
+
     return sb.toString();
   }
 

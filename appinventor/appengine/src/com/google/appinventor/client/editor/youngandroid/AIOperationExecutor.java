@@ -134,11 +134,12 @@ public class AIOperationExecutor {
 
     for (AIOperation op : operations) {
       switch (op.getType()) {
-        // Phase 1: project-level
+        // Phase 1: project-level and navigation
         case SWITCH_SCREEN:
         case CREATE_SCREEN:
         case DELETE_SCREEN:
         case SET_PROJECT_PROP:
+        case TOGGLE_EDITOR:
           phase1.add(op);
           break;
 
@@ -436,6 +437,8 @@ public class AIOperationExecutor {
         return validateWriteBlock(json);
       case DELETE_BLOCK:
         return validateDeleteBlock(json);
+      case TOGGLE_EDITOR:
+        return validateToggleEditor(json);
       default:
         return "Unknown operation type: " + op.getType();
     }
@@ -452,6 +455,17 @@ public class AIOperationExecutor {
     }
     if (!project.screens.containsKey(screen)) {
       return "SWITCH_SCREEN: screen '" + screen + "' does not exist";
+    }
+    return null;
+  }
+
+  private String validateToggleEditor(JSONObject json) {
+    String view = getStringField(json, "view");
+    if (view == null || view.isEmpty()) {
+      return "TOGGLE_EDITOR: missing 'view' field";
+    }
+    if (!"Designer".equals(view) && !"Blocks".equals(view)) {
+      return "TOGGLE_EDITOR: 'view' must be 'Designer' or 'Blocks', got '" + view + "'";
     }
     return null;
   }
@@ -669,6 +683,9 @@ public class AIOperationExecutor {
       case SET_PROJECT_PROP:
         executeSetProjectProp(json, callback);
         break;
+      case TOGGLE_EDITOR:
+        executeToggleEditor(json, callback);
+        break;
       default:
         callback.onFailure("Unexpected project-level op type: " + op.getType());
     }
@@ -685,6 +702,27 @@ public class AIOperationExecutor {
       waitForScreenReady(callback);
     } catch (Exception e) {
       callback.onFailure("SWITCH_SCREEN: " + e.getMessage());
+    }
+  }
+
+  private void executeToggleEditor(JSONObject json, final ProjectOpCallback callback) {
+    String view = getStringField(json, "view");
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    DesignProject project = getCurrentProject();
+    if (project == null) {
+      callback.onFailure("TOGGLE_EDITOR: no current project");
+      return;
+    }
+    String currentScreen = project.currentScreen;
+    DesignToolbar.View targetView = "Blocks".equals(view)
+        ? DesignToolbar.View.BLOCKS
+        : DesignToolbar.View.DESIGNER;
+    try {
+      toolbar.switchToScreen(projectId, currentScreen, targetView);
+      waitForScreenReady(callback);
+    } catch (Exception e) {
+      callback.onFailure("TOGGLE_EDITOR: " + e.getMessage());
     }
   }
 
