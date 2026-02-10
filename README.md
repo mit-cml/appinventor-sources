@@ -1,7 +1,7 @@
 # Welcome to MIT App Inventor
 
 ## Introduction
-
+  
 Learn more about [MIT App Inventor](http://appinventor.mit.edu).
 
 This code is designed to be run in Google's App Engine. MIT runs a
