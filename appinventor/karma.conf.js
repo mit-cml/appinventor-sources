@@ -24,7 +24,7 @@ module.exports = function(config) {
       'appengine/war/static/js/workspace-search-9.1.10.min.js',
       'appengine/war/static/js/block-dynamic-connection-0.7.16.min.js',
       'appengine/war/static/js/blockly-field-colour-5.0.19.min.js',
-      'appengine/war/static/js/workspace-multiselect-0d3e405.min.js',
+      'appengine/war/static/js/workspace-multiselect-pr120-44c2447.min.js',
       'blocklyeditor/tests/testCommon.js',
       'blocklyeditor/tests/com/google/appinventor/mocha/*.js',
       'blocklyeditor/build/javascript/*.js',

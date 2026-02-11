@@ -52,22 +52,19 @@ suite('Multiselect', function() {
   }
 
   test('copy/paste blocks', async function() {
-    const block1 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 1 } },
-      typeCounts: { 'math_number': 1 }
+    const block1 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 1 }
     }, workspace);
-    const block2 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 2 } },
-      typeCounts: { 'math_number': 1 }
+    const block2 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 2 }
     }, workspace);
+    workspace.cleanUp();
 
     shift('keydown');
     select(block1);
     select(block2);
+    await events(Blockly.Events.SELECTED, 3);
     shift('keyup');
-    await events(Blockly.Events.SELECTED, 2);
     ctrl('c');
     ctrl('v');
     await events(Blockly.Events.BLOCK_CREATE, 2);
@@ -75,22 +72,19 @@ suite('Multiselect', function() {
   });
 
   test('cut/paste blocks', async function() {
-    const block1 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 1 } },
-      typeCounts: { 'math_number': 1 }
+    const block1 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 1 }
     }, workspace);
-    const block2 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 2 } },
-      typeCounts: { 'math_number': 1 }
+    const block2 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 2 }
     }, workspace);
+    workspace.cleanUp();
 
     shift('keydown');
     select(block1);
     select(block2);
+    await events(Blockly.Events.SELECTED, 3);
     shift('keyup');
-    await events(Blockly.Events.SELECTED, 2);
     ctrl('x');
     await events(Blockly.Events.BLOCK_DELETE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 0);
@@ -100,44 +94,38 @@ suite('Multiselect', function() {
   });
 
   test('delete blocks', async function() {
-    const block1 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 1 } },
-      typeCounts: { 'math_number': 1 }
+    const block1 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 1 }
     }, workspace);
-    const block2 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 2 } },
-      typeCounts: { 'math_number': 1 }
+    const block2 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 2 }
     }, workspace);
+    workspace.cleanUp();
 
     shift('keydown');
     select(block1);
     select(block2);
+    await events(Blockly.Events.SELECTED, 3);
     shift('keyup');
-    await events(Blockly.Events.SELECTED, 2);
     del();
     await events(Blockly.Events.BLOCK_DELETE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 0);
   });
 
   test('undo/redo blocks', async function() {
-    const block1 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 1 } },
-      typeCounts: { 'math_number': 1 }
+    const block1 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 1 }
     }, workspace);
-    const block2 = Blockly.clipboard.paste({
-      paster: 'block',
-      blockState: { type: 'math_number', fields: { NUM: 2 } },
-      typeCounts: { 'math_number': 1 }
+    const block2 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 2 }
     }, workspace);
+    workspace.cleanUp();
 
     shift('keydown');
     select(block1);
     select(block2);
+    await events(Blockly.Events.SELECTED, 3);
     shift('keyup');
-    await events(Blockly.Events.SELECTED, 2);
     del();
     await events(Blockly.Events.BLOCK_DELETE, 2);
     ctrl('z');
@@ -146,5 +134,53 @@ suite('Multiselect', function() {
     ctrl('y');
     await events(Blockly.Events.BLOCK_DELETE, 2);
     chai.assert.equal(workspace.getAllBlocks().length, 0);
+  });
+
+  test('select unselected block', async function() {
+    const selectedBlock1 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 1 }
+    }, workspace);
+    const selectedBlock2 = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 2 }
+    }, workspace);
+    const unselectedBlock = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 3 }
+    }, workspace);
+    workspace.cleanUp();
+
+    shift('keydown');
+    select(selectedBlock1);
+    select(selectedBlock2);
+    await events(Blockly.Events.SELECTED, 3);
+    shift('keyup');
+
+    select(unselectedBlock);
+    await events(Blockly.Events.SELECTED, 1);
+    chai.assert.equal(Blockly.common.getSelected(), unselectedBlock);
+  });
+
+  test('select unselected child block', async function() {
+    const selectedBlock = Blockly.serialization.blocks.append({
+      type: 'math_compare',
+      inputs: {
+        A: { block: { type: 'math_number', fields: { NUM: 1 } } },
+        B: { block: { type: 'math_number', fields: { NUM: 2 } } }
+      }
+    }, workspace);
+    const unselectedChildBlock = selectedBlock.getInputTargetBlock('A');
+    const otherSelectedBlock = Blockly.serialization.blocks.append({
+      type: 'math_number', fields: { NUM: 3 }
+    }, workspace);
+    workspace.cleanUp();
+
+    shift('keydown');
+    select(selectedBlock);
+    select(otherSelectedBlock);
+    await events(Blockly.Events.SELECTED, 3);
+    shift('keyup');
+
+    select(unselectedChildBlock);
+    await events(Blockly.Events.SELECTED, 1);
+    chai.assert.equal(Blockly.common.getSelected(), unselectedChildBlock);
   });
 });
