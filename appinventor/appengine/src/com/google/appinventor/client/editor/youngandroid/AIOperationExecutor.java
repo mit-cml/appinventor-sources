@@ -19,6 +19,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
@@ -838,7 +839,7 @@ public class AIOperationExecutor {
       // The property name is expected in "category/name" format or just "name".
       // For now, use the YoungAndroid settings category.
       projectEditor.changeProjectSettingsProperty(
-          "young_android_settings", property, value);
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, property, value);
       callback.onSuccess();
     } catch (Exception e) {
       callback.onFailure("SET_PROJECT_PROP: " + e.getMessage());

@@ -65,8 +65,8 @@ public class AIChatDialog extends DialogBox {
 
   private static final Logger LOG = Logger.getLogger(AIChatDialog.class.getName());
 
-  /** RPC timeout for processRequest (2 minutes). */
-  private static final int RPC_TIMEOUT_MS = 120000;
+  /** RPC timeout for processRequest (5 minutes, must exceed server-side read timeout). */
+  private static final int RPC_TIMEOUT_MS = 300000;
 
   /** Polling interval for request status (1 second). */
   private static final int POLL_INTERVAL_MS = 1000;
@@ -702,7 +702,8 @@ public class AIChatDialog extends DialogBox {
       case DELETE_SCREEN:
         return "- Delete screen: " + extractField(payload, "screen");
       case SET_PROJECT_PROP:
-        return "~ Set project property: " + extractField(payload, "name");
+        return "~ Set project property: " + extractField(payload, "property")
+            + " to " + extractField(payload, "value");
       case TOGGLE_EDITOR:
         return "~ Switch to " + extractField(payload, "view") + " view";
       default:

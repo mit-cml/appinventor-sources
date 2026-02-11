@@ -931,6 +931,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
             sb.append("Switched to screen '").append(payload.optString("screen_name"))
                 .append("'\n");
             break;
+          case SET_PROJECT_PROP:
+            sb.append("Set project property ").append(payload.optString("property"))
+                .append(" to ").append(payload.optString("value")).append("\n");
+            break;
           case TOGGLE_EDITOR:
             sb.append("Switched to ").append(payload.optString("view")).append(" view\n");
             break;
