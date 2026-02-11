@@ -24,18 +24,19 @@ import java.util.logging.Logger;
 import com.google.appinventor.server.aiagent.AIDebug;
 
 /**
- * LLM provider implementation for the OpenAI Chat Completions API.
+ * LLM provider implementation for the OpenAI Responses API.
  *
- * <p>This is a stateless provider: the full conversation history is sent on
- * each call via the messages array. It uses the function calling feature and
- * implements an internal tool-use loop for read-only tools (up to
- * {@value #MAX_TOOL_ITERATIONS} iterations).
+ * <p>This is a stateful provider: conversation context is maintained
+ * server-side via {@code previous_response_id}. Only the new user message
+ * (or tool results) is sent on each call. It uses the function calling
+ * feature and implements an internal tool-use loop for read-only tools
+ * (up to {@value #MAX_TOOL_ITERATIONS} iterations).
  */
 public class OpenAIProvider implements LLMProvider {
 
   private static final Logger LOG = Logger.getLogger(OpenAIProvider.class.getName());
 
-  private static final String API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+  private static final String API_ENDPOINT = "https://api.openai.com/v1/responses";
   private static final int MAX_TOOL_ITERATIONS = 5;
   private static final int MAX_TOKENS = 4096;
   private static final int CONNECT_TIMEOUT_MS = 30000;
@@ -57,7 +58,7 @@ public class OpenAIProvider implements LLMProvider {
 
   @Override
   public boolean isStateless() {
-    return true;
+    return false;
   }
 
   @Override
@@ -65,19 +66,35 @@ public class OpenAIProvider implements LLMProvider {
       String providerRef, List<ChatMessage> history, ReadOnlyToolResolver resolver)
       throws LLMProviderException {
 
-    // Build the messages array
-    JSONArray messages = buildMessages(systemPrompt, history, userMessage);
     JSONArray toolDefs = buildToolDefinitions(tools);
+    String responseId = extractResponseId(providerRef);
 
     // Internal tool-use loop
+    // On the first iteration, input is the user message string.
+    // On subsequent iterations, input is a tool results array and we chain
+    // via previous_response_id.
+    Object currentInput = userMessage;
+
     for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
       JSONObject requestBody = new JSONObject();
       requestBody.put("model", model);
-      requestBody.put("max_completion_tokens", MAX_TOKENS);
-      requestBody.put("messages", messages);
+      requestBody.put("max_output_tokens", MAX_TOKENS);
+      requestBody.put("truncation", "auto");
+
+      if (systemPrompt != null && !systemPrompt.isEmpty()) {
+        requestBody.put("instructions", systemPrompt);
+      }
+
+      requestBody.put("input", currentInput);
+
+      if (responseId != null) {
+        requestBody.put("previous_response_id", responseId);
+      }
+
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
+
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "OpenAI request (iteration " + iteration + "):\n"
             + requestBody.toString(2));
@@ -88,40 +105,24 @@ public class OpenAIProvider implements LLMProvider {
             + responseJson.toString(2));
       }
 
-      // Parse choices
-      JSONArray choices = responseJson.optJSONArray("choices");
-      if (choices == null || choices.length() == 0) {
-        return new LLMResponse("", new ArrayList<RawToolCall>(), null);
-      }
+      // Update response ID for chaining
+      responseId = responseJson.getString("id");
 
-      JSONObject choice = choices.getJSONObject(0);
-      JSONObject message = choice.getJSONObject("message");
-      String finishReason = choice.optString("finish_reason", "stop");
-
-      String textContent = message.optString("content", "");
-      JSONArray toolCalls = message.optJSONArray("tool_calls");
+      // Parse output items
+      ParsedOutput parsed = parseOutputItems(responseJson);
 
       // If no tool calls, return the final response
-      if (toolCalls == null || toolCalls.length() == 0 || !"tool_calls".equals(finishReason)) {
-        return new LLMResponse(
-            textContent != null ? textContent : "",
-            new ArrayList<RawToolCall>(),
-            null);
+      if (parsed.toolCalls.isEmpty()) {
+        String ref = buildSimpleRef(responseId);
+        return new LLMResponse(parsed.text, new ArrayList<RawToolCall>(), ref);
       }
 
       // Classify tool calls into read-only and operation tools
       List<ToolCallInfo> readOnlyCalls = new ArrayList<>();
       List<ToolCallInfo> operationCalls = new ArrayList<>();
 
-      for (int i = 0; i < toolCalls.length(); i++) {
-        JSONObject tc = toolCalls.getJSONObject(i);
-        String tcId = tc.getString("id");
-        JSONObject function = tc.getJSONObject("function");
-        String name = function.getString("name");
-        String args = function.optString("arguments", "{}");
-
-        ToolCallInfo info = new ToolCallInfo(tcId, name, args);
-        if (resolver != null && resolver.isReadOnly(name)) {
+      for (ToolCallInfo info : parsed.toolCalls) {
+        if (resolver != null && resolver.isReadOnly(info.name)) {
           readOnlyCalls.add(info);
         } else {
           operationCalls.add(info);
@@ -134,22 +135,18 @@ public class OpenAIProvider implements LLMProvider {
         for (ToolCallInfo info : operationCalls) {
           rawCalls.add(new RawToolCall(info.name, info.argsJson));
         }
-        // Serialize continuation state so the caller can resume
-        // after applying operations (the assistant message with tool_calls
-        // must be in the messages array for tool result submission).
-        messages.put(message);
-        String contState = buildContinuationState(messages, operationCalls);
+        String contState = buildContinuationState(responseId, systemPrompt, operationCalls);
         return new LLMResponse(
-            textContent != null ? textContent : "",
+            parsed.text,
             rawCalls,
             contState,
             true);
       }
 
-      // Add the assistant message with tool_calls to messages
-      messages.put(message);
+      // Build tool results input for the next iteration
+      JSONArray toolResultsInput = new JSONArray();
 
-      // Resolve read-only tools and add tool results
+      // Resolve read-only tools
       for (ToolCallInfo info : readOnlyCalls) {
         String result;
         try {
@@ -157,20 +154,23 @@ public class OpenAIProvider implements LLMProvider {
         } catch (ReadOnlyToolException e) {
           result = "Error: " + e.getMessage();
         }
-        messages.put(new JSONObject()
-            .put("role", "tool")
-            .put("tool_call_id", info.id)
-            .put("content", result));
+        toolResultsInput.put(new JSONObject()
+            .put("type", "function_call_output")
+            .put("call_id", info.id)
+            .put("output", result));
       }
 
       // For operation tools in a mixed response, send a placeholder result
       for (ToolCallInfo info : operationCalls) {
-        messages.put(new JSONObject()
-            .put("role", "tool")
-            .put("tool_call_id", info.id)
-            .put("content", "This operation tool call has been queued for execution. "
+        toolResultsInput.put(new JSONObject()
+            .put("type", "function_call_output")
+            .put("call_id", info.id)
+            .put("output", "This operation tool call has been queued for execution. "
                 + "Please continue with any remaining read-only lookups you need."));
       }
+
+      // Set up next iteration: chain via previous_response_id and tool results
+      currentInput = toolResultsInput;
 
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "OpenAI tool-use loop iteration " + (iteration + 1)
@@ -208,29 +208,42 @@ public class OpenAIProvider implements LLMProvider {
           "Failed to continue the AI response. Please try again.");
     }
 
-    JSONArray messages = state.getJSONArray("messages");
+    String responseId = state.getString("responseId");
+    String systemPrompt = state.optString("systemPrompt", "");
     JSONArray pendingToolCalls = state.getJSONArray("pendingToolCalls");
 
-    // Append synthetic "Done." results for each pending tool call
+    // Build tool result input items for each pending tool call
+    JSONArray toolResultsInput = new JSONArray();
     for (int i = 0; i < pendingToolCalls.length(); i++) {
       JSONObject pending = pendingToolCalls.getJSONObject(i);
-      messages.put(new JSONObject()
-          .put("role", "tool")
-          .put("tool_call_id", pending.getString("id"))
-          .put("content", "Done."));
+      toolResultsInput.put(new JSONObject()
+          .put("type", "function_call_output")
+          .put("call_id", pending.getString("id"))
+          .put("output", "Done."));
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);
 
     // Run the same tool-use loop as chat()
+    Object currentInput = toolResultsInput;
+
     for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
       JSONObject requestBody = new JSONObject();
       requestBody.put("model", model);
-      requestBody.put("max_completion_tokens", MAX_TOKENS);
-      requestBody.put("messages", messages);
+      requestBody.put("max_output_tokens", MAX_TOKENS);
+      requestBody.put("truncation", "auto");
+
+      if (systemPrompt != null && !systemPrompt.isEmpty()) {
+        requestBody.put("instructions", systemPrompt);
+      }
+
+      requestBody.put("input", currentInput);
+      requestBody.put("previous_response_id", responseId);
+
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
+
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "OpenAI continue request (iteration " + iteration + "):\n"
             + requestBody.toString(2));
@@ -241,64 +254,48 @@ public class OpenAIProvider implements LLMProvider {
             + responseJson.toString(2));
       }
 
-      JSONArray choices = responseJson.optJSONArray("choices");
-      if (choices == null || choices.length() == 0) {
-        return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
-      }
+      // Update response ID for chaining
+      responseId = responseJson.getString("id");
 
-      JSONObject choice = choices.getJSONObject(0);
-      JSONObject message = choice.getJSONObject("message");
-      String finishReason = choice.optString("finish_reason", "stop");
+      // Parse output items
+      ParsedOutput parsed = parseOutputItems(responseJson);
 
-      String textContent = message.optString("content", "");
-      JSONArray toolCallsArr = message.optJSONArray("tool_calls");
-
-      // No tool calls → final response
-      if (toolCallsArr == null || toolCallsArr.length() == 0
-          || !"tool_calls".equals(finishReason)) {
-        return new LLMResponse(
-            textContent != null ? textContent : "",
-            new ArrayList<RawToolCall>(),
-            null,
-            false);
+      // No tool calls -> final response
+      if (parsed.toolCalls.isEmpty()) {
+        String ref = buildSimpleRef(responseId);
+        return new LLMResponse(parsed.text, new ArrayList<RawToolCall>(), ref, false);
       }
 
       // Classify tool calls
       List<ToolCallInfo> readOnlyCalls = new ArrayList<>();
       List<ToolCallInfo> operationCalls = new ArrayList<>();
 
-      for (int i = 0; i < toolCallsArr.length(); i++) {
-        JSONObject tc = toolCallsArr.getJSONObject(i);
-        String tcId = tc.getString("id");
-        JSONObject function = tc.getJSONObject("function");
-        String name = function.getString("name");
-        String args = function.optString("arguments", "{}");
-
-        ToolCallInfo info = new ToolCallInfo(tcId, name, args);
-        if (resolver != null && resolver.isReadOnly(name)) {
+      for (ToolCallInfo info : parsed.toolCalls) {
+        if (resolver != null && resolver.isReadOnly(info.name)) {
           readOnlyCalls.add(info);
         } else {
           operationCalls.add(info);
         }
       }
 
-      // No read-only tools → return operations with continuation
+      // No read-only tools -> return operations with continuation
       if (readOnlyCalls.isEmpty()) {
         List<RawToolCall> rawCalls = new ArrayList<>();
         for (ToolCallInfo info : operationCalls) {
           rawCalls.add(new RawToolCall(info.name, info.argsJson));
         }
-        messages.put(message);
-        String contState = buildContinuationState(messages, operationCalls);
+        String contState = buildContinuationState(responseId, systemPrompt, operationCalls);
         return new LLMResponse(
-            textContent != null ? textContent : "",
+            parsed.text,
             rawCalls,
             contState,
             true);
       }
 
-      // Resolve read-only tools and continue the loop
-      messages.put(message);
+      // Build tool results input for the next iteration
+      JSONArray nextToolResults = new JSONArray();
+
+      // Resolve read-only tools
       for (ToolCallInfo info : readOnlyCalls) {
         String result;
         try {
@@ -306,18 +303,21 @@ public class OpenAIProvider implements LLMProvider {
         } catch (ReadOnlyToolException e) {
           result = "Error: " + e.getMessage();
         }
-        messages.put(new JSONObject()
-            .put("role", "tool")
-            .put("tool_call_id", info.id)
-            .put("content", result));
+        nextToolResults.put(new JSONObject()
+            .put("type", "function_call_output")
+            .put("call_id", info.id)
+            .put("output", result));
       }
+
       for (ToolCallInfo info : operationCalls) {
-        messages.put(new JSONObject()
-            .put("role", "tool")
-            .put("tool_call_id", info.id)
-            .put("content", "This operation tool call has been queued for execution. "
+        nextToolResults.put(new JSONObject()
+            .put("type", "function_call_output")
+            .put("call_id", info.id)
+            .put("output", "This operation tool call has been queued for execution. "
                 + "Please continue with any remaining read-only lookups you need."));
       }
+
+      currentInput = nextToolResults;
     }
 
     throw new LLMProviderException(
@@ -326,13 +326,41 @@ public class OpenAIProvider implements LLMProvider {
   }
 
   /**
-   * Serializes the messages array and pending tool call IDs into a JSON
-   * continuation state string.
+   * Extracts the response ID from a providerRef string.
+   * Handles both JSON format ({@code {"responseId":"resp_xxx"}}) and null.
+   *
+   * @return the response ID, or null if providerRef is null/empty/invalid
    */
-  private String buildContinuationState(JSONArray messages, List<ToolCallInfo> pendingCalls) {
+  private String extractResponseId(String providerRef) {
+    if (providerRef == null || providerRef.isEmpty()) {
+      return null;
+    }
+    try {
+      JSONObject ref = new JSONObject(providerRef);
+      return ref.optString("responseId", null);
+    } catch (JSONException e) {
+      LOG.warning("Failed to parse providerRef: " + e.getMessage());
+      return null;
+    }
+  }
+
+  /**
+   * Builds a simple providerRef JSON string containing the response ID.
+   */
+  private String buildSimpleRef(String responseId) {
+    return new JSONObject().put("responseId", responseId).toString();
+  }
+
+  /**
+   * Serializes the response ID, system prompt, and pending tool call IDs
+   * into a JSON continuation state string.
+   */
+  private String buildContinuationState(String responseId, String systemPrompt,
+      List<ToolCallInfo> pendingCalls) {
     JSONObject state = new JSONObject();
     state.put("continuation", true);
-    state.put("messages", messages);
+    state.put("responseId", responseId);
+    state.put("systemPrompt", systemPrompt != null ? systemPrompt : "");
     JSONArray pending = new JSONArray();
     for (ToolCallInfo info : pendingCalls) {
       pending.put(new JSONObject()
@@ -344,40 +372,46 @@ public class OpenAIProvider implements LLMProvider {
   }
 
   /**
-   * Builds the messages array from system prompt, conversation history,
-   * and the current user message.
+   * Parses the {@code output} array from an OpenAI Responses API response,
+   * extracting text content and tool call information.
    */
-  private JSONArray buildMessages(String systemPrompt, List<ChatMessage> history,
-      String userMessage) {
-    JSONArray messages = new JSONArray();
+  private ParsedOutput parseOutputItems(JSONObject responseJson) {
+    StringBuilder text = new StringBuilder();
+    List<ToolCallInfo> toolCalls = new ArrayList<>();
 
-    // System message first
-    if (systemPrompt != null && !systemPrompt.isEmpty()) {
-      messages.put(new JSONObject()
-          .put("role", "system")
-          .put("content", systemPrompt));
+    JSONArray output = responseJson.optJSONArray("output");
+    if (output == null) {
+      return new ParsedOutput(text.toString(), toolCalls);
     }
 
-    // Conversation history
-    if (history != null) {
-      for (ChatMessage msg : history) {
-        messages.put(new JSONObject()
-            .put("role", msg.getRole())
-            .put("content", msg.getText()));
+    for (int i = 0; i < output.length(); i++) {
+      JSONObject item = output.getJSONObject(i);
+      String type = item.getString("type");
+
+      if ("message".equals(type)) {
+        JSONArray content = item.optJSONArray("content");
+        if (content != null) {
+          for (int j = 0; j < content.length(); j++) {
+            JSONObject contentItem = content.getJSONObject(j);
+            if ("output_text".equals(contentItem.getString("type"))) {
+              text.append(contentItem.getString("text"));
+            }
+          }
+        }
+      } else if ("function_call".equals(type)) {
+        String callId = item.getString("call_id");
+        String name = item.getString("name");
+        String args = item.optString("arguments", "{}");
+        toolCalls.add(new ToolCallInfo(callId, name, args));
       }
     }
 
-    // Current user message
-    messages.put(new JSONObject()
-        .put("role", "user")
-        .put("content", userMessage));
-
-    return messages;
+    return new ParsedOutput(text.toString(), toolCalls);
   }
 
   /**
    * Translates generic {@link LLMTool} definitions into the OpenAI
-   * function-calling format.
+   * Responses API function tool format.
    */
   private JSONArray buildToolDefinitions(List<LLMTool> tools) {
     JSONArray toolDefs = new JSONArray();
@@ -396,20 +430,17 @@ public class OpenAIProvider implements LLMProvider {
             .put("properties", new JSONObject());
       }
 
-      JSONObject functionDef = new JSONObject()
-          .put("name", tool.getName())
-          .put("description", tool.getDescription())
-          .put("parameters", parameters);
-
       toolDefs.put(new JSONObject()
           .put("type", "function")
-          .put("function", functionDef));
+          .put("name", tool.getName())
+          .put("description", tool.getDescription())
+          .put("parameters", parameters));
     }
     return toolDefs;
   }
 
   /**
-   * Makes an HTTP POST to the OpenAI Chat Completions API.
+   * Makes an HTTP POST to the OpenAI Responses API.
    */
   private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
     HttpURLConnection conn = null;
@@ -505,6 +536,8 @@ public class OpenAIProvider implements LLMProvider {
 
   /**
    * Internal representation of an OpenAI tool call.
+   * The {@code id} field holds the {@code call_id} from Responses API
+   * {@code function_call} output items.
    */
   private static class ToolCallInfo {
     final String id;
@@ -515,6 +548,19 @@ public class OpenAIProvider implements LLMProvider {
       this.id = id;
       this.name = name;
       this.argsJson = argsJson;
+    }
+  }
+
+  /**
+   * Holds the parsed text content and tool calls from a Responses API output.
+   */
+  private static class ParsedOutput {
+    final String text;
+    final List<ToolCallInfo> toolCalls;
+
+    ParsedOutput(String text, List<ToolCallInfo> toolCalls) {
+      this.text = text;
+      this.toolCalls = toolCalls;
     }
   }
 }
