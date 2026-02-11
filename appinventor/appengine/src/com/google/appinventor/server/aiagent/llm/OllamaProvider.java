@@ -163,6 +163,7 @@ public class OllamaProvider implements LLMProvider {
         }
         messages.put(new JSONObject()
             .put("role", "tool")
+            .put("tool_name", info.name)
             .put("content", result));
       }
 
@@ -170,6 +171,7 @@ public class OllamaProvider implements LLMProvider {
       for (ToolCallInfo info : operationCalls) {
         messages.put(new JSONObject()
             .put("role", "tool")
+            .put("tool_name", info.name)
             .put("content", "This operation tool call has been queued for execution. "
                 + "Please continue with any remaining read-only lookups you need."));
       }
@@ -215,8 +217,10 @@ public class OllamaProvider implements LLMProvider {
 
     // Append synthetic "Done." results for each pending tool call
     for (int i = 0; i < pendingToolCalls.length(); i++) {
+      JSONObject pending = pendingToolCalls.getJSONObject(i);
       messages.put(new JSONObject()
           .put("role", "tool")
+          .put("tool_name", pending.getString("name"))
           .put("content", "Done."));
     }
 
@@ -304,11 +308,13 @@ public class OllamaProvider implements LLMProvider {
         }
         messages.put(new JSONObject()
             .put("role", "tool")
+            .put("tool_name", info.name)
             .put("content", result));
       }
       for (ToolCallInfo info : operationCalls) {
         messages.put(new JSONObject()
             .put("role", "tool")
+            .put("tool_name", info.name)
             .put("content", "This operation tool call has been queued for execution. "
                 + "Please continue with any remaining read-only lookups you need."));
       }
