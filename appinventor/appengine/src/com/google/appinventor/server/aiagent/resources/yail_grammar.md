@@ -4,6 +4,58 @@ YAIL (Young Android Intermediate Language) is an S-expression-based language der
 Use the `write_block` tool to create or replace blocks, providing complete YAIL S-expressions.
 Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as identifier.
 
+## Code Style Rules
+
+**Inline expressions over local variables.** Only use `let` (local variables) when the same value is needed in more than one place to avoid code duplication, or when mutations via `set-lexical!` are required. Do NOT introduce local variables just for readability or semantics — prefer composing expressions directly inline.
+
+```scheme
+;; BAD — unnecessary local variable
+(let (($name (get-property 'TextBox1 'Text)))
+  (begin
+    (set-and-coerce-property! 'Label1 'Text (lexical-value $name) 'text)))
+
+;; GOOD — inline the expression directly
+(set-and-coerce-property! 'Label1 'Text (get-property 'TextBox1 'Text) 'text)
+
+;; OK — local variable used in two places
+(let (($name (get-property 'TextBox1 'Text)))
+  (begin
+    (set-and-coerce-property! 'Label1 'Text (lexical-value $name) 'text)
+    (set-and-coerce-property! 'Label2 'Text (lexical-value $name) 'text)))
+```
+
+**Event handlers over procedures.** Put code directly in event handlers. Only create a procedure (`def`/`def-return`) when the same logic is needed in more than one event handler AND it represents a coherent, reusable operation. A single-use helper procedure is never justified.
+
+```scheme
+;; BAD — unnecessary procedure for single-use code
+(def (p$updateLabel)
+  (set-this-form)
+  (set-and-coerce-property! 'Label1 'Text "clicked" 'text))
+
+(define-event Button1 Click ()
+  (set-this-form)
+  ((get-var p$updateLabel)))
+
+;; GOOD — code directly in the event handler
+(define-event Button1 Click ()
+  (set-this-form)
+  (set-and-coerce-property! 'Label1 'Text "clicked" 'text))
+
+;; OK — procedure shared by multiple handlers
+(def (p$resetForm)
+  (set-this-form)
+  (set-and-coerce-property! 'Label1 'Text "" 'text)
+  (set-and-coerce-property! 'TextBox1 'Text "" 'text))
+
+(define-event ResetButton Click ()
+  (set-this-form)
+  ((get-var p$resetForm)))
+
+(define-event Screen1 Initialize ()
+  (set-this-form)
+  ((get-var p$resetForm)))
+```
+
 ## Top-Level Forms
 
 ### Event Handler
@@ -132,10 +184,10 @@ These operate on a single list argument:
 |-----------|-------------|
 | `yail-not` | Boolean NOT |
 
-Short-circuit logic uses special forms:
+Short-circuit logic uses special forms (variadic, no `begin` wrappers):
 ```scheme
-(and-delayed <expr1> (begin <expr2>))  ;; AND
-(or-delayed <expr1> (begin <expr2>))   ;; OR
+(and-delayed <expr1> <expr2> ...)  ;; AND (2 or more args)
+(or-delayed <expr1> <expr2> ...)   ;; OR (2 or more args)
 ```
 
 #### Text Primitives
@@ -596,3 +648,297 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
   (set-this-form)
   (set-and-coerce-property! 'Label1 'Text "A button was clicked" 'text))
 ```
+
+---
+
+## Argument Order Reference for `call-yail-primitive`
+
+The argument order inside `(*list-for-runtime* ...)` is critical. The arguments must appear in the exact order shown below. Getting the order wrong will cause runtime errors or incorrect behavior.
+
+Recall the general form:
+```scheme
+(call-yail-primitive PRIMITIVE_NAME
+  (*list-for-runtime* ARG1 ARG2 ...)
+  '(TYPE1 TYPE2 ...) "description")
+```
+
+### Math Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `+` | `a b` | `(number number)` | addition |
+| `-` | `a b` | `(number number)` | subtraction |
+| `*` | `a b` | `(number number)` | multiplication |
+| `yail-divide` | `a b` | `(number number)` | division |
+| `modulo` | `a b` | `(number number)` | modulo |
+| `expt` | `base exp` | `(number number)` | power |
+| `atan2-degrees` | `y x` | `(number number)` | atan2 (y FIRST, then x) |
+| `format-as-decimal` | `number places` | `(number number)` | format decimal |
+| `random-integer` | `low high` | `(number number)` | random integer in range |
+| `yail-floor` | `n` | `(number)` | floor |
+| `yail-ceiling` | `n` | `(number)` | ceiling |
+| `yail-round` | `n` | `(number)` | round |
+| `sin-degrees` | `n` | `(number)` | sine (degrees) |
+| `cos-degrees` | `n` | `(number)` | cosine (degrees) |
+| `tan-degrees` | `n` | `(number)` | tangent (degrees) |
+| `asin-degrees` | `n` | `(number)` | arcsine (degrees) |
+| `acos-degrees` | `n` | `(number)` | arccosine (degrees) |
+| `atan-degrees` | `n` | `(number)` | arctangent (degrees) |
+| `math-convert-dec-hex` | `n` | `(text)` | decimal to hex |
+| `math-convert-hex-dec` | `s` | `(text)` | hex to decimal |
+| `math-convert-bin-dec` | `s` | `(text)` | binary to decimal |
+| `math-convert-dec-bin` | `n` | `(text)` | decimal to binary |
+| `random-fraction` | *(none)* | `()` | random float 0–1 |
+| `random-set-seed` | `seed` | `(number)` | set random seed |
+
+### Comparison Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `yail-equal?` | `a b` | `(any any)` | generic equality |
+| `yail-not-equal?` | `a b` | `(any any)` | generic not-equal |
+| `<` | `a b` | `(number number)` | less than |
+| `>` | `a b` | `(number number)` | greater than |
+| `<=` | `a b` | `(number number)` | less or equal |
+| `>=` | `a b` | `(number number)` | greater or equal |
+| `string=?` | `a b` | `(text text)` | text equality |
+| `string<?` | `a b` | `(text text)` | text less than |
+| `string>?` | `a b` | `(text text)` | text greater than |
+
+> **Note:** Text not-equal uses `(not (call-yail-primitive string=? ...))`.
+
+### Text Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `string-append` | `s1 s2 ...` | `(text text ...)` | join (variadic) |
+| `string-length` | `s` | `(text)` | length |
+| `string-substring` | `text start length` | `(text number number)` | substring (**3rd arg is LENGTH, not end index**) |
+| `string-replace-all` | `text needle replacement` | `(text text text)` | replace all |
+| `string-contains` | `text piece` | `(text text)` | contains check |
+| `string-starts-at` | `text piece` | `(text text)` | find index of piece in text |
+| `string-split-at-first` | `text at` | `(text text)` | split at first occurrence |
+| `string-split-at-first-of-any` | `text at` | `(text list)` | split at first of any |
+| `string-split` | `text at` | `(text text)` | split at every occurrence |
+| `string-split-at-any` | `text at` | `(text list)` | split at any |
+| `string-split-at-spaces` | `text` | `(text)` | split at spaces |
+| `string-trim` | `text` | `(text)` | trim whitespace |
+| `string-to-upper-case` | `text` | `(text)` | uppercase |
+| `string-to-lower-case` | `text` | `(text)` | lowercase |
+| `string-reverse` | `text` | `(text)` | reverse |
+| `text-deobfuscate` | `text confounder` | `(text number)` | deobfuscate |
+| `string-empty?` | `text` | `(text)` | is empty check |
+
+### List Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `make-yail-list` | `item1 item2 ...` | `(any any ...)` | create list (variadic) |
+| `yail-list-length` | `list` | `(list)` | list length |
+| `yail-list-copy` | `list` | `(list)` | copy list |
+| `yail-list-reverse` | `list` | `(list)` | reverse list |
+| `yail-list-to-csv-row` | `list` | `(list)` | list to CSV row |
+| `yail-list-to-csv-table` | `list` | `(list)` | list to CSV table |
+| `yail-list-from-csv-row` | `text` | `(text)` | CSV row to list |
+| `yail-list-from-csv-table` | `text` | `(text)` | CSV table to list |
+| `yail-list-member?` | `item list` | `(any list)` | member check (**item FIRST**) |
+| `yail-list-index` | `item list` | `(any list)` | index of (**item FIRST**) |
+| `yail-list-get-item` | `list index` | `(list number)` | get item at index |
+| `yail-list-remove-item!` | `list index` | `(list number)` | remove item at index |
+| `yail-list-set-item!` | `list index value` | `(list number any)` | set item at index |
+| `yail-list-insert-item!` | `list index item` | `(list number any)` | insert at index |
+| `yail-list-append!` | `list1 list2` | `(list list)` | append list2 to list1 |
+| `yail-list-join-with-separator` | `list separator` | `(list text)` | join with separator |
+| `yail-list-pick-random` | `list` | `(list)` | pick random item |
+| `yail-list-add-to-list!` | `list item1 item2 ...` | `(list any any ...)` | add items to list (variadic) |
+| `yail-list-empty?` | `list` | `(list)` | is list empty |
+| `yail-list-slice` | `list index1 index2` | `(list number number)` | slice from index1 to index2 |
+| `yail-alist-lookup` | `key list default` | `(any list any)` | lookup in list of pairs |
+
+### Dictionary Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `make-yail-dictionary` | `pair1 pair2 ...` | `(pair pair ...)` | create dict (variadic) |
+| `make-dictionary-pair` | `key value` | `(key any)` | create key-value pair |
+| `yail-dictionary-set-pair` | `key dict value` | `(any dict any)` | set pair (**key, dict, value** — unusual order!) |
+| `yail-dictionary-delete-pair` | `dict key` | `(dict any)` | delete pair (**dict, key** — different order from set!) |
+| `yail-dictionary-lookup` | `key dict default` | `(any dict any)` | lookup with default |
+| `yail-dictionary-recursive-lookup` | `keys dict default` | `(list dict any)` | recursive lookup |
+| `yail-dictionary-recursive-set` | `keys dict value` | `(list dict any)` | recursive set |
+| `yail-dictionary-walk` | `path dict` | `(any dict)` | walk path |
+| `yail-dictionary-is-key-in` | `key dict` | `(any dict)` | key exists check |
+| `yail-dictionary-length` | `dict` | `(dict)` | dictionary size |
+| `yail-dictionary-alist-to-dict` | `list` | `(list)` | pairs list to dict |
+| `yail-dictionary-dict-to-alist` | `dict` | `(dict)` | dict to pairs list |
+| `yail-dictionary-combine-dicts` | `dict1 dict2` | `(dict dict)` | merge dict2 into dict1 |
+| `yail-dictionary-is-dict?` | `thing` | `(any)` | is dictionary check |
+
+### Color Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `make-color` | `colorList` | `(list)` | make color from RGB(A) list |
+| `split-color` | `color` | `(number)` | split color to components |
+
+### Screen Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `open-another-screen` | `screenName` | `(text)` | open screen |
+| `open-another-screen-with-start-value` | `screenName value` | `(text any)` | open screen with value |
+| `close-screen-with-value` | `value` | `(any)` | close screen returning value |
+| `close-screen-with-plain-text` | `text` | `(text)` | close screen returning plain text |
+
+### Critical Notes
+
+1. **`string-substring` uses LENGTH**: The third argument is the length of the substring, NOT an end index. Example: `(call-yail-primitive string-substring (*list-for-runtime* "hello" 1 3) '(text number number) "segment")` returns `"hel"`.
+
+2. **`yail-list-member?` and `yail-list-index` take item BEFORE list**: Unlike most list operations, these take the item as the first argument and the list second.
+
+3. **Dictionary `set-pair` vs `delete-pair` have DIFFERENT argument orders**: `set-pair` is `(key, dict, value)` but `delete-pair` is `(dict, key)`. Do not confuse them.
+
+4. **`atan2-degrees` takes y BEFORE x**: This follows the standard mathematical convention `atan2(y, x)`.
+
+5. **Variadic primitives**: `string-append`, `make-yail-list`, `make-yail-dictionary`, `+`, `-`, `*` can take 2 or more arguments. The types list must have a matching number of type entries.
+
+---
+
+## Real-World Examples
+
+The following examples are drawn from real App Inventor projects and demonstrate common YAIL patterns.
+
+### Procedure returning boolean with or-delayed
+Check if a string starts with "http://" or "https://":
+```scheme
+(def-return (p$isAPK $input)
+  (or-delayed
+    (call-yail-primitive yail-equal?
+      (*list-for-runtime*
+        (call-yail-primitive string-starts-at
+          (*list-for-runtime* (lexical-value $input) "http://")
+          '(text text) "starts at")
+        1)
+      '(any any) "=")
+    (call-yail-primitive yail-equal?
+      (*list-for-runtime*
+        (call-yail-primitive string-starts-at
+          (*list-for-runtime* (lexical-value $input) "https://")
+          '(text text) "starts at")
+        1)
+      '(any any) "=")))
+```
+Note: `string-starts-at` returns the 1-based index (or 0 if not found). Comparing its result to `1` checks if the string starts with the piece. Arguments to `or-delayed` are bare expressions with no `(begin ...)` wrappers.
+
+### Procedure with string-split and list indexing
+Parse a code string containing a semicolon-separated server address and code:
+```scheme
+(def-return (p$extractServer $code)
+  (if (call-yail-primitive string-contains
+        (*list-for-runtime* (lexical-value $code) ";")
+        '(text text) "string contains")
+    (let (($codes (call-yail-primitive string-split
+                    (*list-for-runtime* (lexical-value $code) ";")
+                    '(text text) "split")))
+      (begin
+        ((get-var p$setServer)
+          (call-yail-primitive yail-list-get-item
+            (*list-for-runtime* (lexical-value $codes) 1)
+            '(list number) "select list item")
+          #f)
+        (call-yail-primitive yail-list-get-item
+          (*list-for-runtime* (lexical-value $codes) 2)
+          '(list number) "select list item")))
+    (lexical-value $code)))
+```
+Note: `string-split` returns a yail list. `yail-list-get-item` takes `(list, index)` — the list comes first. Procedure calls use `((get-var p$name) arg1 arg2)` form.
+
+### Event handler with property negation
+Toggle a boolean property using `yail-not`:
+```scheme
+(define-event CheckBox1 Changed ()
+  (set-this-form)
+  (set-and-coerce-property! 'PhoneStatus1 'WebRTC
+    (call-yail-primitive yail-not
+      (*list-for-runtime* (get-property 'CheckBox1 'Checked))
+      '(boolean) "not")
+    'boolean))
+```
+
+### Nested list construction for key-value data
+Build a list of key-value pairs for a POST request:
+```scheme
+(call-yail-primitive make-yail-list
+  (*list-for-runtime*
+    (call-yail-primitive make-yail-list
+      (*list-for-runtime* "key" (lexical-value $code))
+      '(any any) "make a list")
+    (call-yail-primitive make-yail-list
+      (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()))
+      '(any any) "make a list")
+    (call-yail-primitive make-yail-list
+      (*list-for-runtime* "version" (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()))
+      '(any any) "make a list"))
+  '(any any any) "make a list")
+```
+Note: each inner `make-yail-list` creates a 2-element pair. The outer `make-yail-list` groups them. The types list has one entry per argument.
+
+### Event with string-starts-at comparison (WiFi check)
+Check if a string starts with "Error":
+```scheme
+(define-event Screen1 Initialize ()
+  (set-this-form)
+  (if (call-yail-primitive yail-equal?
+        (*list-for-runtime*
+          1
+          (call-yail-primitive string-starts-at
+            (*list-for-runtime*
+              (call-component-method 'PhoneStatus1 'GetWifiIpAddress
+                (*list-for-runtime*) '())
+              "Error")
+            '(text text) "starts at"))
+        '(any any) "=")
+    (begin
+      (call-component-method 'Notifier1 'ShowChooseDialog
+        (*list-for-runtime*
+          "Your Device does not appear to have a WiFi Connection"
+          "No WiFi"
+          "Continue without WiFi"
+          "Exit"
+          #f)
+        '(text text text text boolean)))))
+```
+
+### String-append with 3+ arguments
+Build a URL from parts:
+```scheme
+(set-and-coerce-property! 'Web1 'Url
+  (call-yail-primitive string-append
+    (*list-for-runtime* "http://" (get-var g$server) "/rendezvous/")
+    '(text text text) "join")
+  'text)
+```
+Note: `string-append` is variadic — the types list must have one `text` entry per argument.
+
+### Procedure call with conditional branching
+Process input differently based on a check:
+```scheme
+(def (p$processcode $x)
+  (if ((get-var p$isAPK) (lexical-value $x))
+    (begin
+      (call-component-method 'PhoneStatus1 'installURL
+        (*list-for-runtime* (lexical-value $x)) '(text)))
+    (begin
+      (set-and-coerce-property! 'PhoneStatus1 'WebRTC
+        (call-yail-primitive yail-not
+          (*list-for-runtime* (get-property 'CheckBox1 'Checked))
+          '(boolean) "not")
+        'boolean)
+      ((get-var p$callrendezvous)
+        (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode
+          (*list-for-runtime*
+            ((get-var p$extractServer) (lexical-value $x))
+            (get-var g$server))
+          '(text text))))))
+```
+Note: procedure calls `((get-var p$name) args...)` can be nested as arguments to other calls. `call-component-method` return values can be used directly as arguments.
