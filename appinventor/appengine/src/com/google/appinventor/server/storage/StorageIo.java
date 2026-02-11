@@ -705,19 +705,35 @@ public interface StorageIo {
    * @param conversationId  the conversation UUID
    * @param timestamp       server-side timestamp (millis)
    * @param sequence        ordering tiebreaker within same millisecond
-   * @param role            "user" or "assistant"
-   * @param text            message content
-   * @param expiresAt       expiration timestamp (millis)
+   * @param role            "user", "assistant", or "tool_result"
+   * @param text            message content (human-readable summary)
    */
   void storeAIConversationMessage(String conversationId, long timestamp,
       int sequence, String role, String text);
+
+  /**
+   * Stores an AI conversation message with optional structured content.
+   *
+   * @param conversationId    the conversation UUID
+   * @param timestamp         server-side timestamp (millis)
+   * @param sequence          ordering tiebreaker within same millisecond
+   * @param role              "user", "assistant", or "tool_result"
+   * @param text              message content (human-readable summary)
+   * @param structuredContent provider-agnostic JSON array of content parts,
+   *                          or null for plain-text-only messages
+   */
+  void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, String role, String text, String structuredContent);
 
   /**
    * Loads all non-expired AI conversation messages for a conversation,
    * ordered by timestamp and sequence.
    *
    * @param conversationId the conversation UUID
-   * @return list of [role, text] string arrays, ordered chronologically
+   * @return list of [role, text, structuredContent] string arrays, ordered
+   *         chronologically.  The structuredContent element may be null for
+   *         plain-text-only messages or messages stored before structured
+   *         content was introduced.
    */
   List<String[]> loadAIConversationMessages(String conversationId);
 

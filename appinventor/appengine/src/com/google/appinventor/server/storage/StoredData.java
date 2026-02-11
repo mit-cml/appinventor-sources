@@ -345,8 +345,13 @@ public class StoredData {
     // always comes before assistant response even if both share the same timestamp.
     public int sequence;
 
-    public String role;      // "user" or "assistant"
-    public String text;      // Message content (natural language only)
+    public String role;      // "user", "assistant", or "tool_result"
+    public String text;      // Message content (natural language summary)
+
+    // Provider-agnostic JSON array of structured content parts (tool calls
+    // or tool results).  Null for plain-text-only messages and for messages
+    // stored before this field was introduced (backward compatible).
+    public String structuredContent;
 
     public long expiresAt;   // timestamp + 24h, for cleanup
   }

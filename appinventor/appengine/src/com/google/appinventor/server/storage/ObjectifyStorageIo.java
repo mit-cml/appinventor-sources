@@ -2876,6 +2876,12 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public void storeAIConversationMessage(String conversationId, long timestamp,
       int sequence, String role, String text) {
+    storeAIConversationMessage(conversationId, timestamp, sequence, role, text, null);
+  }
+
+  @Override
+  public void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, String role, String text, String structuredContent) {
     Objectify ofy = ObjectifyService.begin();
     ConversationMessageData msg = new ConversationMessageData();
     msg.conversationId = conversationId;
@@ -2884,6 +2890,16 @@ public class ObjectifyStorageIo implements StorageIo {
     msg.role = role;
     msg.text = text;
     msg.expiresAt = (timestamp + CONVERSATION_TTL_SECONDS) * 1000L;
+
+    // Safety: if the structured content would push the entity past ~900KB,
+    // drop it and fall back to text-only (Datastore limit is 1MB per entity).
+    if (structuredContent != null && structuredContent.length() > 900_000) {
+      LOG.warning("Structured content too large (" + structuredContent.length()
+          + " chars), storing text-only fallback");
+      structuredContent = null;
+    }
+    msg.structuredContent = structuredContent;
+
     ofy.put(msg);
   }
 
@@ -2912,7 +2928,7 @@ public class ObjectifyStorageIo implements StorageIo {
     List<String[]> result = new ArrayList<String[]>();
     for (ConversationMessageData m : messages) {
       if (m.expiresAt > now) {
-        result.add(new String[] { m.role, m.text });
+        result.add(new String[] { m.role, m.text, m.structuredContent });
       }
     }
     return result;

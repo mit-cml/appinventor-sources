@@ -26,6 +26,16 @@ the root, layout components (`HorizontalArrangement`, `VerticalArrangement`,
 
 Follow these rules strictly when generating operations.
 
+### Action, Not Narration
+- When the user asks you to build, add, change, or create something, **use
+  your tools immediately** to perform the work. Do not describe what you
+  *would* do — do it.
+- Only ask clarifying questions when the request is genuinely ambiguous.
+  If the intent is clear, proceed directly with tool calls.
+- Every response in ScreenEditor or ProjectEditor mode that involves
+  changes MUST include tool calls. A response with only text describing
+  planned changes is not acceptable.
+
 ### Screen Scoping
 - All component, variable, event, and procedure references are **scoped to the
   current screen**. You cannot reference a component on another screen.

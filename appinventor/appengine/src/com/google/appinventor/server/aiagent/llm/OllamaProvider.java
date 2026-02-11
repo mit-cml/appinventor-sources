@@ -359,9 +359,21 @@ public class OllamaProvider implements LLMProvider {
     // Conversation history
     if (history != null) {
       for (ChatMessage msg : history) {
-        messages.put(new JSONObject()
-            .put("role", msg.getRole())
-            .put("content", msg.getText()));
+        if (msg.hasStructuredContent()) {
+          if ("assistant".equals(msg.getRole())) {
+            messages.put(buildStructuredAssistantMessage(msg));
+          } else if ("tool_result".equals(msg.getRole())) {
+            addStructuredToolResultMessages(messages, msg);
+          } else {
+            messages.put(new JSONObject()
+                .put("role", msg.getRole())
+                .put("content", msg.getText()));
+          }
+        } else {
+          messages.put(new JSONObject()
+              .put("role", msg.getRole())
+              .put("content", msg.getText()));
+        }
       }
     }
 
@@ -371,6 +383,55 @@ public class OllamaProvider implements LLMProvider {
         .put("content", userMessage));
 
     return messages;
+  }
+
+  /**
+   * Translates a stored assistant message with structured content to
+   * Ollama's native format (content + tool_calls array).
+   */
+  private JSONObject buildStructuredAssistantMessage(ChatMessage msg) {
+    JSONArray parts = new JSONArray(msg.getStructuredContent());
+    StringBuilder textContent = new StringBuilder();
+    JSONArray toolCalls = new JSONArray();
+
+    for (int i = 0; i < parts.length(); i++) {
+      JSONObject part = parts.getJSONObject(i);
+      String type = part.getString("type");
+      if ("text".equals(type)) {
+        textContent.append(part.getString("text"));
+      } else if ("tool_use".equals(type)) {
+        toolCalls.put(new JSONObject()
+            .put("function", new JSONObject()
+                .put("name", part.getString("name"))
+                .put("arguments", part.getJSONObject("input"))));
+      }
+    }
+
+    JSONObject message = new JSONObject()
+        .put("role", "assistant");
+    if (textContent.length() > 0) {
+      message.put("content", textContent.toString());
+    }
+    if (toolCalls.length() > 0) {
+      message.put("tool_calls", toolCalls);
+    }
+    return message;
+  }
+
+  /**
+   * Translates a stored tool_result message to Ollama's native format.
+   * Ollama uses tool_name (not tool_call_id) to identify tool results.
+   */
+  private void addStructuredToolResultMessages(JSONArray messages, ChatMessage msg) {
+    JSONArray parts = new JSONArray(msg.getStructuredContent());
+    for (int i = 0; i < parts.length(); i++) {
+      JSONObject part = parts.getJSONObject(i);
+      messages.put(new JSONObject()
+          .put("role", "tool")
+          .put("tool_name", part.optString("tool_name",
+              part.optString("tool_use_id", "")))
+          .put("content", part.getString("content")));
+    }
   }
 
   /**

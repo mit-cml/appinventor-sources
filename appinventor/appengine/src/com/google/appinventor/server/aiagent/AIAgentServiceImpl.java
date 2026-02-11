@@ -90,7 +90,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     String userMessage = request.getUserMessage();
 
     // Reset per-request sequence counter
-    messageSequence = 0;
+    messageSequence.set(0);
 
     // Input validation
     if (userMessage == null || userMessage.trim().isEmpty()) {
@@ -173,14 +173,15 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       AIDebug.log(LOG, "Pre-LLM: toolCount=" + tools.size()
           + ", provider=" + conv.getProviderName() + ", model=" + getConfiguredModel());
 
+      // Save user message to history BEFORE calling the LLM,
+      // so it is persisted even if the LLM call fails.
+      storeMessage(conv.getConversationId(), "user", userMessage);
+
       updateStatus(projectId, "Calling AI...");
 
       // Call LLM
       LLMResponse llmResponse = provider.chat(
           systemPrompt, userMessage, tools, conv.getProviderRef(), history, resolver);
-
-      // Save user message to history
-      storeMessage(conv.getConversationId(), "user", userMessage);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -220,17 +221,68 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       // mode or editor view.  Semantic validation is handled client-side.
       operations = enforceMode(operations, mode, currentView, allErrors);
 
+      // Auto-continue: if the model narrated but didn't use tools in a write
+      // mode, prompt it to execute.  Limited to one retry to avoid loops.
+      String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+      if (operations.isEmpty() && allErrors.isEmpty()
+          && !"Advisor".equals(mode)
+          && !assistantText.isEmpty()
+          && !llmResponse.hasMore()) {
+        AIDebug.log(LOG, "Auto-continue: model narrated without tool calls, retrying");
+
+        // Store the narrative response and send a follow-up prompt
+        storeMessage(conv.getConversationId(), "assistant", assistantText);
+        String followUp = "Please proceed and execute the changes you described "
+            + "using the available tools. Do not describe what you will do — "
+            + "use the tools now.";
+        storeMessage(conv.getConversationId(), "user", followUp);
+
+        List<ChatMessage> updatedHistory = provider.isStateless()
+            ? loadConversation(conv.getConversationId())
+            : Collections.<ChatMessage>emptyList();
+
+        updateStatus(projectId, "Calling AI...");
+        LLMResponse retryResponse = provider.chat(
+            systemPrompt, followUp, tools, llmResponse.getProviderRef(),
+            updatedHistory, resolver);
+
+        // Re-parse the retry response
+        rawCalls = new ArrayList<>();
+        for (RawToolCall tc : retryResponse.getRawToolCalls()) {
+          rawCalls.add(new LLMResponseParser.RawToolCall(
+              tc.getName(), tc.getArgumentsJson()));
+        }
+        parseResult = responseParser.parseToolCalls(rawCalls);
+        allErrors = new ArrayList<>(parseResult.getErrors());
+        operations = parseResult.getOperations();
+        operations = enforceMode(operations, mode, currentView, allErrors);
+
+        // Use the retry response for the remainder of processing
+        llmResponse = retryResponse;
+        String retryText = retryResponse.getText() != null ? retryResponse.getText() : "";
+        if (!retryText.isEmpty()) {
+          assistantText = assistantText + "\n\n" + retryText;
+        }
+      }
+
       // Update conversation state
       conv = new AIConversationState(conv.getProviderName(), conv.getConversationId(),
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
-      // Save assistant response to history
-      String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+      // Save assistant response to history (with structured content if tool calls present)
       if (assistantText.isEmpty() && !operations.isEmpty()) {
         assistantText = summarizeOperations(operations);
       }
-      storeMessage(conv.getConversationId(), "assistant", assistantText);
+      if (!llmResponse.getRawToolCalls().isEmpty()) {
+        String[] pair = buildStructuredContentPair(assistantText,
+            llmResponse.getRawToolCalls());
+        storeMessage(conv.getConversationId(), "assistant", assistantText, pair[0]);
+        storeMessage(conv.getConversationId(), "tool_result",
+            "[Tool results applied]", pair[1]);
+      } else {
+        storeMessage(conv.getConversationId(), "assistant", assistantText);
+      }
 
       clearStatus(projectId);
 
@@ -260,6 +312,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   public AIAgentResponse continueRequest(long projectId, String screenName,
       String blocksYail, String currentView) {
     String userId = userInfoProvider.getUserId();
+    messageSequence.set(0);
 
     // Project ownership check
     try {
@@ -337,12 +390,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
-      // Save assistant response to history
+      // Save assistant response to history (with structured content if tool calls present)
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
       if (assistantText.isEmpty() && !operations.isEmpty()) {
         assistantText = summarizeOperations(operations);
       }
-      storeMessage(conv.getConversationId(), "assistant", assistantText);
+      if (!llmResponse.getRawToolCalls().isEmpty()) {
+        String[] pair = buildStructuredContentPair(assistantText,
+            llmResponse.getRawToolCalls());
+        storeMessage(conv.getConversationId(), "assistant", assistantText, pair[0]);
+        storeMessage(conv.getConversationId(), "tool_result",
+            "[Tool results applied]", pair[1]);
+      } else {
+        storeMessage(conv.getConversationId(), "assistant", assistantText);
+      }
 
       clearStatus(projectId);
 
@@ -372,6 +433,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   public AIAgentResponse reportExecutionErrors(long projectId, String screenName,
       List<String> errors, String blocksYail, String currentView) {
     String userId = userInfoProvider.getUserId();
+    messageSequence.set(0);
 
     // Security check
     try {
@@ -410,12 +472,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       // Get provider and tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
-      List<ChatMessage> history = loadConversation(conv.getConversationId());
+      List<ChatMessage> history = Collections.emptyList();
+      if (provider.isStateless()) {
+        history = loadConversation(conv.getConversationId());
+      }
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
       // Build system prompt with the current blocks state from the client
       String systemPrompt = contextBuilder.build(userId, projectId, screenName,
           mode, blocksYail, currentView);
+
+      // Save error feedback to history BEFORE calling the LLM,
+      // so it is persisted even if the LLM call fails.
+      storeMessage(conv.getConversationId(), "user",
+          "[Execution error feedback] " + feedback);
 
       updateStatus(projectId, "Calling AI...");
 
@@ -441,14 +511,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
-      // Save error report and retry response to history
-      storeMessage(conv.getConversationId(), "user",
-          "[Execution error feedback] " + feedback);
+      // Save retry response to history (with structured content if tool calls present)
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
       if (assistantText.isEmpty() && !operations.isEmpty()) {
         assistantText = summarizeOperations(operations);
       }
-      storeMessage(conv.getConversationId(), "assistant", assistantText);
+      if (!llmResponse.getRawToolCalls().isEmpty()) {
+        String[] pair = buildStructuredContentPair(assistantText,
+            llmResponse.getRawToolCalls());
+        storeMessage(conv.getConversationId(), "assistant", assistantText, pair[0]);
+        storeMessage(conv.getConversationId(), "tool_result",
+            "[Tool results applied]", pair[1]);
+      } else {
+        storeMessage(conv.getConversationId(), "assistant", assistantText);
+      }
 
       clearStatus(projectId);
 
@@ -500,6 +576,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     List<ChatMessage> history = loadConversation(conv.getConversationId());
     List<AIConversationMessage> result = new ArrayList<>();
     for (ChatMessage msg : history) {
+      // Skip internal tool_result messages in client-facing history
+      if ("tool_result".equals(msg.getRole())) {
+        continue;
+      }
       result.add(new AIConversationMessage(msg.getRole(), msg.getText()));
     }
     return result;
@@ -534,21 +614,36 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   /**
    * Per-request sequence counter. Ensures unique ordering when multiple messages
    * are stored within the same millisecond (user + assistant in one request).
-   * Reset to 0 at the start of each processRequest() call.
+   * Reset to 0 at the start of each RPC method that stores messages.
+   * ThreadLocal to avoid races when concurrent requests share this servlet.
    */
-  private int messageSequence;
+  private static final ThreadLocal<Integer> messageSequence =
+      new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+          return 0;
+        }
+      };
 
   private void storeMessage(String conversationId, String role, String text) {
+    storeMessage(conversationId, role, text, null);
+  }
+
+  private void storeMessage(String conversationId, String role, String text,
+      String structuredContent) {
     long now = System.currentTimeMillis();
-    int seq = messageSequence++;
-    storageIo.storeAIConversationMessage(conversationId, now, seq, role, text);
+    int seq = messageSequence.get();
+    messageSequence.set(seq + 1);
+    storageIo.storeAIConversationMessage(conversationId, now, seq, role, text,
+        structuredContent);
   }
 
   private List<ChatMessage> loadConversation(String conversationId) {
     List<String[]> messages = storageIo.loadAIConversationMessages(conversationId);
     List<ChatMessage> result = new ArrayList<>();
-    for (String[] pair : messages) {
-      result.add(new ChatMessage(pair[0], pair[1]));
+    for (String[] tuple : messages) {
+      String structuredContent = tuple.length > 2 ? tuple[2] : null;
+      result.add(new ChatMessage(tuple[0], tuple[1], structuredContent));
     }
     return result;
   }
@@ -978,6 +1073,56 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   private static AIAgentResponse errorResponse(String message) {
     return new AIAgentResponse(message, Collections.<AIOperation>emptyList(), false,
         Collections.singletonList(message));
+  }
+
+  // ---------- Structured content helpers ----------
+
+  /**
+   * Builds a provider-agnostic JSON pair from an LLM response that includes
+   * tool calls.  Returns a two-element array:
+   * <ul>
+   *   <li>[0] = assistant structured content (text + tool_use parts)</li>
+   *   <li>[1] = tool_result structured content (matching result parts)</li>
+   * </ul>
+   *
+   * @param text      the assistant's text reply (may be null or empty)
+   * @param toolCalls the raw tool calls from the LLM response
+   * @return [assistantContent, toolResultContent] JSON strings
+   */
+  private static String[] buildStructuredContentPair(String text,
+      List<RawToolCall> toolCalls) {
+    JSONArray assistantParts = new JSONArray();
+    JSONArray resultParts = new JSONArray();
+
+    if (text != null && !text.isEmpty()) {
+      assistantParts.put(new JSONObject()
+          .put("type", "text")
+          .put("text", text));
+    }
+    for (RawToolCall tc : toolCalls) {
+      String toolUseId = "tc_" + UUID.randomUUID().toString().substring(0, 8);
+
+      // Assistant's tool_use block
+      JSONObject usePart = new JSONObject();
+      usePart.put("type", "tool_use");
+      usePart.put("id", toolUseId);
+      usePart.put("name", tc.getName());
+      try {
+        usePart.put("input", new JSONObject(tc.getArgumentsJson()));
+      } catch (Exception e) {
+        usePart.put("input", new JSONObject());
+      }
+      assistantParts.put(usePart);
+
+      // Corresponding tool_result block
+      JSONObject resultPart = new JSONObject();
+      resultPart.put("type", "tool_result");
+      resultPart.put("tool_use_id", toolUseId);
+      resultPart.put("tool_name", tc.getName());
+      resultPart.put("content", "Done.");
+      resultParts.put(resultPart);
+    }
+    return new String[] { assistantParts.toString(), resultParts.toString() };
   }
 
 }

@@ -382,15 +382,74 @@ public class AnthropicProvider implements LLMProvider {
         if ("system".equals(role)) {
           continue; // system prompt is handled separately
         }
-        messages.put(new JSONObject()
-            .put("role", role)
-            .put("content", msg.getText()));
+
+        if (msg.hasStructuredContent()) {
+          if ("assistant".equals(role)) {
+            messages.put(buildStructuredAssistantMessage(msg));
+          } else if ("tool_result".equals(role)) {
+            messages.put(buildStructuredToolResultMessage(msg));
+          } else {
+            messages.put(new JSONObject()
+                .put("role", role)
+                .put("content", msg.getText()));
+          }
+        } else {
+          messages.put(new JSONObject()
+              .put("role", role)
+              .put("content", msg.getText()));
+        }
       }
     }
     messages.put(new JSONObject()
         .put("role", "user")
         .put("content", userMessage));
     return messages;
+  }
+
+  /**
+   * Translates a stored assistant message with structured content to
+   * Anthropic's native content blocks format.
+   */
+  private JSONObject buildStructuredAssistantMessage(ChatMessage msg) {
+    JSONArray content = new JSONArray();
+    JSONArray parts = new JSONArray(msg.getStructuredContent());
+    for (int i = 0; i < parts.length(); i++) {
+      JSONObject part = parts.getJSONObject(i);
+      String type = part.getString("type");
+      if ("text".equals(type)) {
+        content.put(new JSONObject()
+            .put("type", "text")
+            .put("text", part.getString("text")));
+      } else if ("tool_use".equals(type)) {
+        content.put(new JSONObject()
+            .put("type", "tool_use")
+            .put("id", part.getString("id"))
+            .put("name", part.getString("name"))
+            .put("input", part.getJSONObject("input")));
+      }
+    }
+    return new JSONObject()
+        .put("role", "assistant")
+        .put("content", content);
+  }
+
+  /**
+   * Translates a stored tool_result message to Anthropic's native format.
+   * Anthropic expects tool_result blocks inside a user message.
+   */
+  private JSONObject buildStructuredToolResultMessage(ChatMessage msg) {
+    JSONArray content = new JSONArray();
+    JSONArray parts = new JSONArray(msg.getStructuredContent());
+    for (int i = 0; i < parts.length(); i++) {
+      JSONObject part = parts.getJSONObject(i);
+      content.put(new JSONObject()
+          .put("type", "tool_result")
+          .put("tool_use_id", part.getString("tool_use_id"))
+          .put("content", part.getString("content")));
+    }
+    return new JSONObject()
+        .put("role", "user")
+        .put("content", content);
   }
 
   /**
