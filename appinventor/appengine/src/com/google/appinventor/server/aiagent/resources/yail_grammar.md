@@ -28,6 +28,37 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
     (set-and-coerce-property! 'ListView1 'Elements (lexical-value $combined) 'list)))
 ```
 
+**Global variable initializers cannot reference other globals.** The initializer expression in `(def g$name <value>)` CANNOT contain `(get-var g$...)` references to other global variables, procedure calls `((get-var p$...))`, or component method/property blocks. App Inventor flags these as "This block cannot be in a definition" errors. Only use literal values, `make-yail-list`, `make-yail-dictionary`, and other pure constructors with literal arguments in global variable initializers. If a variable's value is composed from other values, inline those values directly instead of referencing separate global variables. If the globals are genuinely needed independently, initialize the dependent variable with a placeholder and assign the real value in `Screen1 Initialize`.
+
+```scheme
+;; BAD — get-var inside a global variable initializer (causes error)
+(def g$LABEL_A "Alpha")
+(def g$LABEL_B "Beta")
+(def g$ALL_LABELS
+  (call-yail-primitive make-yail-list
+    (*list-for-runtime* (get-var g$LABEL_A) (get-var g$LABEL_B))
+    '(text text) "make a list"))
+
+;; GOOD (preferred) — inline the values directly
+(def g$ALL_LABELS
+  (call-yail-primitive make-yail-list
+    (*list-for-runtime* "Alpha" "Beta")
+    '(text text) "make a list"))
+
+;; OK — if the separate globals are needed elsewhere, use a placeholder
+;; and assign the real value in Screen1 Initialize
+(def g$LABEL_A "Alpha")
+(def g$LABEL_B "Beta")
+(def g$ALL_LABELS (call-yail-primitive make-yail-list (*list-for-runtime*) '() "make a list"))
+
+(define-event Screen1 Initialize ()
+  (set-this-form)
+  (set-var! g$ALL_LABELS
+    (call-yail-primitive make-yail-list
+      (*list-for-runtime* (get-var g$LABEL_A) (get-var g$LABEL_B))
+      '(text text) "make a list")))
+```
+
 **Constants as global variables.** Do not hardcode string or number literals directly in event handlers when they represent a meaningful constant, a configuration value, or appear more than once. Define them as global variables so they are easy to find and change in one place.
 
 ```scheme
