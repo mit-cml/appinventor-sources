@@ -81,34 +81,34 @@ public class LLMResponseParser {
   private static final Set<String> KNOWN_TOOLS = new HashSet<>();
 
   static {
-    TOOL_NAME_TO_TYPE.put("add_component", AIOperation.Type.ADD_COMPONENT);
-    TOOL_NAME_TO_TYPE.put("delete_component", AIOperation.Type.DELETE_COMPONENT);
-    TOOL_NAME_TO_TYPE.put("set_property", AIOperation.Type.SET_PROPERTY);
-    TOOL_NAME_TO_TYPE.put("rename_component", AIOperation.Type.RENAME_COMPONENT);
-    TOOL_NAME_TO_TYPE.put("write_block", AIOperation.Type.WRITE_BLOCK);
-    TOOL_NAME_TO_TYPE.put("delete_block", AIOperation.Type.DELETE_BLOCK);
-    TOOL_NAME_TO_TYPE.put("switch_screen", AIOperation.Type.SWITCH_SCREEN);
-    TOOL_NAME_TO_TYPE.put("create_screen", AIOperation.Type.CREATE_SCREEN);
-    TOOL_NAME_TO_TYPE.put("delete_screen", AIOperation.Type.DELETE_SCREEN);
-    TOOL_NAME_TO_TYPE.put("set_project_property", AIOperation.Type.SET_PROJECT_PROP);
-    TOOL_NAME_TO_TYPE.put("toggle_editor", AIOperation.Type.TOGGLE_EDITOR);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.ADD_COMPONENT, AIOperation.Type.ADD_COMPONENT);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.DELETE_COMPONENT, AIOperation.Type.DELETE_COMPONENT);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.SET_PROPERTY, AIOperation.Type.SET_PROPERTY);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.RENAME_COMPONENT, AIOperation.Type.RENAME_COMPONENT);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.WRITE_BLOCK, AIOperation.Type.WRITE_BLOCK);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.DELETE_BLOCK, AIOperation.Type.DELETE_BLOCK);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.SWITCH_SCREEN, AIOperation.Type.SWITCH_SCREEN);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.CREATE_SCREEN, AIOperation.Type.CREATE_SCREEN);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.DELETE_SCREEN, AIOperation.Type.DELETE_SCREEN);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.SET_PROJECT_PROPERTY, AIOperation.Type.SET_PROJECT_PROP);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.TOGGLE_EDITOR, AIOperation.Type.TOGGLE_EDITOR);
 
-    REQUIRED_FIELDS.put("add_component", Arrays.asList("component_type", "name"));
-    REQUIRED_FIELDS.put("delete_component", Collections.singletonList("name"));
-    REQUIRED_FIELDS.put("set_property", Arrays.asList("component_name", "property_name", "value"));
-    REQUIRED_FIELDS.put("rename_component", Arrays.asList("old_name", "new_name"));
-    REQUIRED_FIELDS.put("write_block", Collections.singletonList("yail"));
-    REQUIRED_FIELDS.put("delete_block", Collections.singletonList("block"));
-    REQUIRED_FIELDS.put("switch_screen", Collections.singletonList("screen_name"));
-    REQUIRED_FIELDS.put("create_screen", Collections.singletonList("screen_name"));
-    REQUIRED_FIELDS.put("delete_screen", Collections.singletonList("screen_name"));
-    REQUIRED_FIELDS.put("set_project_property", Arrays.asList("property", "value"));
-    REQUIRED_FIELDS.put("toggle_editor", Collections.singletonList("view"));
+    REQUIRED_FIELDS.put(AIToolNames.ADD_COMPONENT, Arrays.asList("component_type", "name"));
+    REQUIRED_FIELDS.put(AIToolNames.DELETE_COMPONENT, Collections.singletonList("name"));
+    REQUIRED_FIELDS.put(AIToolNames.SET_PROPERTY, Arrays.asList("component_name", "property_name", "value"));
+    REQUIRED_FIELDS.put(AIToolNames.RENAME_COMPONENT, Arrays.asList("old_name", "new_name"));
+    REQUIRED_FIELDS.put(AIToolNames.WRITE_BLOCK, Collections.singletonList("yail"));
+    REQUIRED_FIELDS.put(AIToolNames.DELETE_BLOCK, Collections.singletonList("block"));
+    REQUIRED_FIELDS.put(AIToolNames.SWITCH_SCREEN, Collections.singletonList("screen_name"));
+    REQUIRED_FIELDS.put(AIToolNames.CREATE_SCREEN, Collections.singletonList("screen_name"));
+    REQUIRED_FIELDS.put(AIToolNames.DELETE_SCREEN, Collections.singletonList("screen_name"));
+    REQUIRED_FIELDS.put(AIToolNames.SET_PROJECT_PROPERTY, Arrays.asList("property", "value"));
+    REQUIRED_FIELDS.put(AIToolNames.TOGGLE_EDITOR, Collections.singletonList("view"));
 
     KNOWN_TOOLS.addAll(TOOL_NAME_TO_TYPE.keySet());
     // Read-only tools are handled separately by the provider; not parsed here
-    KNOWN_TOOLS.add("lookup_component");
-    KNOWN_TOOLS.add("lookup_screen");
+    KNOWN_TOOLS.add(AIToolNames.LOOKUP_COMPONENT);
+    KNOWN_TOOLS.add(AIToolNames.LOOKUP_SCREEN);
   }
 
   /**
@@ -126,7 +126,7 @@ public class LLMResponseParser {
       AIDebug.log(LOG, "Parsing tool call: " + toolName + " args=" + call.getArgumentsJson());
 
       // Skip read-only tools (already resolved by the provider)
-      if ("lookup_component".equals(toolName) || "lookup_screen".equals(toolName)) {
+      if (AIToolNames.LOOKUP_COMPONENT.equals(toolName) || AIToolNames.LOOKUP_SCREEN.equals(toolName)) {
         continue;
       }
 
@@ -186,7 +186,7 @@ public class LLMResponseParser {
    * {@code parameters} in {@code set_procedure} is a JSON array, etc.
    */
   private void coerceTypes(String toolName, JSONObject args) throws JSONException {
-    if ("add_component".equals(toolName)) {
+    if (AIToolNames.ADD_COMPONENT.equals(toolName)) {
       Object properties = args.opt("properties");
       if (properties instanceof String) {
         args.put("properties", new JSONObject((String) properties));

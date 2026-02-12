@@ -161,12 +161,12 @@ public class AIContextBuilder {
     List<LLMTool> tools = new ArrayList<>();
 
     // Read-only tools available in all modes
-    tools.add(new LLMTool("lookup_component",
+    tools.add(new LLMTool(AIToolNames.LOOKUP_COMPONENT,
         "Look up full metadata for a component type from the component database. "
             + "Returns all properties, events, methods, and their types.",
         "{\"type\":\"object\",\"properties\":{\"component_type\":{\"type\":\"string\","
             + "\"description\":\"The component type name, e.g. Button, Label\"}},\"required\":[\"component_type\"]}"));
-    tools.add(new LLMTool("lookup_screen",
+    tools.add(new LLMTool(AIToolNames.LOOKUP_SCREEN,
         "Look up the current state of a screen including its component tree and blocks YAIL.",
         "{\"type\":\"object\",\"properties\":{\"screen_name\":{\"type\":\"string\","
             + "\"description\":\"The screen name, e.g. Screen1\"}},\"required\":[\"screen_name\"]}"));
@@ -177,7 +177,7 @@ public class AIContextBuilder {
 
     // Designer tools: only available when viewing Designer
     if (!"Blocks".equals(currentView)) {
-      tools.add(new LLMTool("add_component",
+      tools.add(new LLMTool(AIToolNames.ADD_COMPONENT,
           "Add a new component to the current screen.",
           "{\"type\":\"object\",\"properties\":{"
               + "\"component_type\":{\"type\":\"string\",\"description\":\"Component type, e.g. Button\"},"
@@ -186,13 +186,13 @@ public class AIContextBuilder {
               + "\"properties\":{\"type\":\"object\",\"description\":\"Initial property values\"}"
               + "},\"required\":[\"component_type\",\"name\"]}"));
 
-      tools.add(new LLMTool("delete_component",
+      tools.add(new LLMTool(AIToolNames.DELETE_COMPONENT,
           "Delete a component from the current screen.",
           "{\"type\":\"object\",\"properties\":{"
               + "\"name\":{\"type\":\"string\",\"description\":\"Component instance name\"}"
               + "},\"required\":[\"name\"]}"));
 
-      tools.add(new LLMTool("set_property",
+      tools.add(new LLMTool(AIToolNames.SET_PROPERTY,
           "Set a property value on a component.",
           "{\"type\":\"object\",\"properties\":{"
               + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
@@ -200,7 +200,7 @@ public class AIContextBuilder {
               + "\"value\":{\"description\":\"Property value (type depends on property)\"}"
               + "},\"required\":[\"component_name\",\"property_name\",\"value\"]}"));
 
-      tools.add(new LLMTool("rename_component",
+      tools.add(new LLMTool(AIToolNames.RENAME_COMPONENT,
           "Rename a component instance.",
           "{\"type\":\"object\",\"properties\":{"
               + "\"old_name\":{\"type\":\"string\",\"description\":\"Current component name\"},"
@@ -210,7 +210,7 @@ public class AIContextBuilder {
 
     // Blocks tools: only available when viewing Blocks
     if (!"Designer".equals(currentView)) {
-      tools.add(new LLMTool("write_block",
+      tools.add(new LLMTool(AIToolNames.WRITE_BLOCK,
           "Create or replace a top-level block (event handler, global variable, or procedure) "
               + "using YAIL code. The YAIL form head identifies the block type and target. "
               + "If a block with the same identity already exists, it is replaced (upsert semantics).",
@@ -222,7 +222,7 @@ public class AIContextBuilder {
               + "without return, or (def-return (p$procName $param1 ...) body) for procedures with return\"}"
               + "},\"required\":[\"yail\"]}"));
 
-      tools.add(new LLMTool("delete_block",
+      tools.add(new LLMTool(AIToolNames.DELETE_BLOCK,
           "Delete a top-level block (event handler, global variable, or procedure). "
               + "The identifier format matches the YAIL form head tokens.",
           "{\"type\":\"object\",\"properties\":{"
@@ -233,7 +233,7 @@ public class AIContextBuilder {
     }
 
     // Navigation tool: toggle editor view (ScreenEditor and ProjectEditor)
-    tools.add(new LLMTool("toggle_editor",
+    tools.add(new LLMTool(AIToolNames.TOGGLE_EDITOR,
         "Switch the editor view between Designer and Blocks. "
             + "This tool MUST be called ALONE — do not combine it with any other tools "
             + "in the same response. After the toggle is confirmed, continue with "
@@ -253,7 +253,7 @@ public class AIContextBuilder {
     }
 
     // Navigation tool: switch screen (ScreenEditor and ProjectEditor)
-    tools.add(new LLMTool("switch_screen",
+    tools.add(new LLMTool(AIToolNames.SWITCH_SCREEN,
         "Switch the active screen context. "
             + "This tool MUST be called ALONE — do not combine it with any other tools "
             + "in the same response. After the switch is confirmed, continue with "
@@ -264,19 +264,19 @@ public class AIContextBuilder {
 
     // Project-level tools only for ProjectEditor
     if ("ProjectEditor".equals(mode)) {
-      tools.add(new LLMTool("create_screen",
+      tools.add(new LLMTool(AIToolNames.CREATE_SCREEN,
           "Create a new screen in the project.",
           "{\"type\":\"object\",\"properties\":{"
               + "\"screen_name\":{\"type\":\"string\",\"description\":\"New screen name\"}"
               + "},\"required\":[\"screen_name\"]}"));
 
-      tools.add(new LLMTool("delete_screen",
+      tools.add(new LLMTool(AIToolNames.DELETE_SCREEN,
           "Delete a screen from the project.",
           "{\"type\":\"object\",\"properties\":{"
               + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to delete\"}"
               + "},\"required\":[\"screen_name\"]}"));
 
-      tools.add(new LLMTool("set_project_property",
+      tools.add(new LLMTool(AIToolNames.SET_PROJECT_PROPERTY,
           "Set a project-level property (theme, colors, sizing, etc.).",
           "{\"type\":\"object\",\"properties\":{"
               + "\"property\":{\"type\":\"string\",\"description\":\"Property name\"},"
