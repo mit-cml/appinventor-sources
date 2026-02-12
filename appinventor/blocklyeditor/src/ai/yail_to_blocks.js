@@ -515,9 +515,18 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
   var block = workspace.newBlock(blockType);
   block.setFieldValue(procName, 'NAME');
 
-  // Set parameters via mutation
-  if (params.length > 0 && block.setProcedureParameters) {
-    block.setProcedureParameters(params, params);
+  // Set parameters via domToMutation (the correct API for definition blocks).
+  // Note: setProcedureParameters only exists on *caller* blocks, not on
+  // procedure definition blocks.  domToMutation → updateParams_ correctly
+  // populates arguments_ and rebuilds the parameter flydown fields.
+  if (params.length > 0) {
+    var mutation = document.createElement('mutation');
+    for (var j = 0; j < params.length; j++) {
+      var arg = document.createElement('arg');
+      arg.setAttribute('name', params[j]);
+      mutation.appendChild(arg);
+    }
+    block.domToMutation(mutation);
   }
 
   block.initSvg();
