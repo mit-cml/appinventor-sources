@@ -28,20 +28,20 @@ public interface LLMProvider {
    * tools. Any non-read-only tool calls will be included in the returned
    * {@link LLMResponse#getRawToolCalls()}.
    *
-   * @param systemPrompt the system prompt to set context
-   * @param userContext   per-request context (e.g. mode instructions) to send
-   *                      as a separate user message before the user's message,
-   *                      or null/empty to skip
-   * @param userMessage  the user's message
-   * @param tools        the list of tool definitions available to the LLM
-   * @param providerRef  opaque reference from a previous response (for
-   *                     stateful providers), or null for the first call
-   * @param history      conversation history (role + text pairs)
-   * @param resolver     callback for resolving read-only tool calls
+   * @param systemPrompt  the system prompt to set context
+   * @param contextMessages per-request context messages (e.g. mode instructions,
+   *                        current screen state) each sent as a separate user
+   *                        message before the user's message; may be null or empty
+   * @param userMessage   the user's message
+   * @param tools         the list of tool definitions available to the LLM
+   * @param providerRef   opaque reference from a previous response (for
+   *                      stateful providers), or null for the first call
+   * @param history       conversation history (role + text pairs)
+   * @param resolver      callback for resolving read-only tool calls
    * @return the LLM response
    * @throws LLMProviderException if the API call fails
    */
-  LLMResponse chat(String systemPrompt, String userContext, String userMessage,
+  LLMResponse chat(String systemPrompt, List<String> contextMessages, String userMessage,
       List<LLMTool> tools, String providerRef, List<ChatMessage> history,
       ReadOnlyToolResolver resolver) throws LLMProviderException;
 

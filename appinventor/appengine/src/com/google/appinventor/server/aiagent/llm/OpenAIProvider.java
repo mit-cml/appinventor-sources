@@ -64,9 +64,10 @@ public class OpenAIProvider implements LLMProvider {
   }
 
   @Override
-  public LLMResponse chat(String systemPrompt, String userContext, String userMessage,
-      List<LLMTool> tools, String providerRef, List<ChatMessage> history,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+  public LLMResponse chat(String systemPrompt, List<String> contextMessages,
+      String userMessage, List<LLMTool> tools, String providerRef,
+      List<ChatMessage> history, ReadOnlyToolResolver resolver)
+      throws LLMProviderException {
 
     JSONArray toolDefs = buildToolDefinitions(tools);
     String responseId = extractResponseId(providerRef);
@@ -80,7 +81,7 @@ public class OpenAIProvider implements LLMProvider {
     // via previous_response_id.
     Object currentInput;
     JSONArray pendingCalls = extractPendingToolCalls(providerRef);
-    boolean hasContext = userContext != null && !userContext.isEmpty();
+    boolean hasContext = contextMessages != null && !contextMessages.isEmpty();
     if (pendingCalls != null && pendingCalls.length() > 0) {
       JSONArray inputArray = new JSONArray();
       for (int i = 0; i < pendingCalls.length(); i++) {
@@ -91,9 +92,13 @@ public class OpenAIProvider implements LLMProvider {
             .put("output", "Done."));
       }
       if (hasContext) {
-        inputArray.put(new JSONObject()
-            .put("role", "user")
-            .put("content", userContext));
+        for (String ctx : contextMessages) {
+          if (ctx != null && !ctx.isEmpty()) {
+            inputArray.put(new JSONObject()
+                .put("role", "user")
+                .put("content", ctx));
+          }
+        }
       }
       inputArray.put(new JSONObject()
           .put("role", "user")
@@ -101,9 +106,13 @@ public class OpenAIProvider implements LLMProvider {
       currentInput = inputArray;
     } else if (hasContext) {
       JSONArray inputArray = new JSONArray();
-      inputArray.put(new JSONObject()
-          .put("role", "user")
-          .put("content", userContext));
+      for (String ctx : contextMessages) {
+        if (ctx != null && !ctx.isEmpty()) {
+          inputArray.put(new JSONObject()
+              .put("role", "user")
+              .put("content", ctx));
+        }
+      }
       inputArray.put(new JSONObject()
           .put("role", "user")
           .put("content", userMessage));

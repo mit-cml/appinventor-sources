@@ -72,12 +72,13 @@ public class OllamaProvider implements LLMProvider {
   }
 
   @Override
-  public LLMResponse chat(String systemPrompt, String userContext, String userMessage,
-      List<LLMTool> tools, String providerRef, List<ChatMessage> history,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+  public LLMResponse chat(String systemPrompt, List<String> contextMessages,
+      String userMessage, List<LLMTool> tools, String providerRef,
+      List<ChatMessage> history, ReadOnlyToolResolver resolver)
+      throws LLMProviderException {
 
     // Build the messages array
-    JSONArray messages = buildMessages(systemPrompt, history, userContext, userMessage);
+    JSONArray messages = buildMessages(systemPrompt, history, contextMessages, userMessage);
     JSONArray toolDefs = buildToolDefinitions(tools);
 
     // Internal tool-use loop
@@ -348,7 +349,7 @@ public class OllamaProvider implements LLMProvider {
    * and the current user message.
    */
   private JSONArray buildMessages(String systemPrompt, List<ChatMessage> history,
-      String userContext, String userMessage) {
+      List<String> contextMessages, String userMessage) {
     JSONArray messages = new JSONArray();
 
     // System message first
@@ -379,14 +380,18 @@ public class OllamaProvider implements LLMProvider {
       }
     }
 
-    // Per-request context as a separate user turn before the user's message
-    if (userContext != null && !userContext.isEmpty()) {
-      messages.put(new JSONObject()
-          .put("role", "user")
-          .put("content", userContext));
-      messages.put(new JSONObject()
-          .put("role", "assistant")
-          .put("content", "Understood."));
+    // Per-request context as separate user/assistant turns before the user's message
+    if (contextMessages != null) {
+      for (String ctx : contextMessages) {
+        if (ctx != null && !ctx.isEmpty()) {
+          messages.put(new JSONObject()
+              .put("role", "user")
+              .put("content", ctx));
+          messages.put(new JSONObject()
+              .put("role", "assistant")
+              .put("content", "Understood."));
+        }
+      }
     }
 
     // Current user message

@@ -64,12 +64,13 @@ public class AnthropicProvider implements LLMProvider {
   }
 
   @Override
-  public LLMResponse chat(String systemPrompt, String userContext, String userMessage,
-      List<LLMTool> tools, String providerRef, List<ChatMessage> history,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+  public LLMResponse chat(String systemPrompt, List<String> contextMessages,
+      String userMessage, List<LLMTool> tools, String providerRef,
+      List<ChatMessage> history, ReadOnlyToolResolver resolver)
+      throws LLMProviderException {
 
     // Build the messages array from history + current user message
-    JSONArray messages = buildMessages(history, userContext, userMessage);
+    JSONArray messages = buildMessages(history, contextMessages, userMessage);
     JSONArray toolDefs = buildToolDefinitions(tools);
 
     // Internal tool-use loop
@@ -375,8 +376,8 @@ public class AnthropicProvider implements LLMProvider {
    * Builds the messages array from conversation history and the current
    * user message.
    */
-  private JSONArray buildMessages(List<ChatMessage> history, String userContext,
-      String userMessage) {
+  private JSONArray buildMessages(List<ChatMessage> history,
+      List<String> contextMessages, String userMessage) {
     JSONArray messages = new JSONArray();
     if (history != null) {
       for (ChatMessage msg : history) {
@@ -403,14 +404,18 @@ public class AnthropicProvider implements LLMProvider {
         }
       }
     }
-    // Per-request context as a separate user message before the user's message
-    if (userContext != null && !userContext.isEmpty()) {
-      messages.put(new JSONObject()
-          .put("role", "user")
-          .put("content", userContext));
-      messages.put(new JSONObject()
-          .put("role", "assistant")
-          .put("content", "Understood."));
+    // Per-request context as separate user/assistant turns before the user's message
+    if (contextMessages != null) {
+      for (String ctx : contextMessages) {
+        if (ctx != null && !ctx.isEmpty()) {
+          messages.put(new JSONObject()
+              .put("role", "user")
+              .put("content", ctx));
+          messages.put(new JSONObject()
+              .put("role", "assistant")
+              .put("content", "Understood."));
+        }
+      }
     }
     messages.put(new JSONObject()
         .put("role", "user")

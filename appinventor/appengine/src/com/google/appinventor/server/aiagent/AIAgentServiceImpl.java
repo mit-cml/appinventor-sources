@@ -144,12 +144,12 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         isNew = true;
       }
 
-      // Build system prompt, user context, and tools
+      // Build system prompt, context messages, and tools
       String blocksYail = request.getBlocksYail();
       String currentView = request.getCurrentView();
-      String systemPrompt = contextBuilder.build(userId, projectId, screenName, mode,
-          blocksYail, currentView);
-      String userContext = contextBuilder.buildUserContext(mode, currentView);
+      String systemPrompt = contextBuilder.build();
+      List<String> contextMessages = contextBuilder.buildContextMessages(
+          userId, projectId, screenName, mode, blocksYail, currentView);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
@@ -180,9 +180,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       updateStatus(projectId, "Calling AI...");
 
-      // Call LLM (mode context is sent as a separate message by the provider)
+      // Call LLM (context messages are sent as separate turns by the provider)
       LLMResponse llmResponse = provider.chat(
-          systemPrompt, userContext, userMessage, tools, conv.getProviderRef(),
+          systemPrompt, contextMessages, userMessage, tools, conv.getProviderRef(),
           history, resolver);
 
       // Debug: raw LLM response
@@ -245,8 +245,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
         updateStatus(projectId, "Calling AI...");
         LLMResponse retryResponse = provider.chat(
-            systemPrompt, userContext, followUp, tools, llmResponse.getProviderRef(),
-            updatedHistory, resolver);
+            systemPrompt, contextMessages, followUp, tools,
+            llmResponse.getProviderRef(), updatedHistory, resolver);
 
         // Re-parse the retry response
         rawCalls = new ArrayList<>();
@@ -352,11 +352,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
-      // Rebuild the system prompt with updated blocks state so the LLM
-      // sees the result of the previous batch's operations.
-      String updatedSystemPrompt = contextBuilder.build(
-          userId, projectId, screenName, mode, blocksYail, currentView);
-      String providerRef = patchSystemPrompt(conv.getProviderRef(), updatedSystemPrompt);
+      // Patch the static system prompt into continuation state
+      String systemPrompt = contextBuilder.build();
+      String providerRef = patchSystemPrompt(conv.getProviderRef(), systemPrompt);
 
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
           + ", providerRef length=" + providerRef.length());
@@ -486,12 +484,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       }
       ReadOnlyToolResolver resolver = createResolver(userId, projectId);
 
-      // Build system prompt with the current blocks state from the client
-      String systemPrompt = contextBuilder.build(userId, projectId, screenName,
-          mode, blocksYail, currentView);
-
-      // Mode context sent as a separate message by the provider
-      String userContext = contextBuilder.buildUserContext(mode, currentView);
+      // Build system prompt and context messages with current blocks state
+      String systemPrompt = contextBuilder.build();
+      List<String> contextMessages = contextBuilder.buildContextMessages(
+          userId, projectId, screenName, mode, blocksYail, currentView);
 
       // Save error feedback to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.
@@ -502,7 +498,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Retry LLM with the error feedback
       LLMResponse llmResponse = provider.chat(
-          systemPrompt, userContext, feedback, tools, conv.getProviderRef(),
+          systemPrompt, contextMessages, feedback, tools, conv.getProviderRef(),
           history, resolver);
 
       // Parse and validate the retry response

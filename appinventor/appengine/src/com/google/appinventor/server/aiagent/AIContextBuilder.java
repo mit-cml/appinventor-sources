@@ -32,25 +32,30 @@ import java.util.logging.Logger;
 /**
  * Builds the LLM system prompt and tool definitions for the AI agent.
  *
- * <p>The <strong>system prompt</strong> is assembled by {@link #build} from:
+ * <p>The <strong>system prompt</strong> is fully static and assembled by
+ * {@link #build()} from:
  * <ul>
  *   <li>Layer 1: Static reference and rules from appinventor_reference.md
  *   <li>Layer 2: Compact component catalog from simple_components.json
  *   <li>Layer 3: YAIL grammar reference from yail_grammar.md
- *   <li>Layer 4: Current app state (per-request, from project files)
- *   <li>Layer 5: Few-shot examples from few_shot_examples.json
+ *   <li>Layer 4: Few-shot examples from few_shot_examples.json
  * </ul>
  *
- * <p>Per-request <strong>mode instructions</strong> are built by
- * {@link #buildUserContext} and sent as a separate user message before the
- * user's actual message, keeping mode-specific rules out of the system prompt.
+ * <p>Per-request <strong>context messages</strong> are built by
+ * {@link #buildContextMessages} and sent as separate user messages before
+ * the user's actual message:
+ * <ol>
+ *   <li>Mode and view: current mode instructions and editor view rules
+ *   <li>Project overview: metadata, screen list, assets, extensions
+ *   <li>Current screen: component tree and blocks YAIL
+ * </ol>
  *
  * <p>Tool definitions are built separately by {@link #buildTools} and passed
  * via each provider's native tool/function-calling API parameter, filtered
  * by mode and current editor view.
  *
- * <p>Static content (Layers 1, 2, 3, 5) is cached on first use. Layer 4
- * is built fresh per-request.
+ * <p>All system prompt layers are cached on first use. Context messages
+ * are built fresh per-request.
  */
 public class AIContextBuilder {
 
@@ -80,20 +85,11 @@ public class AIContextBuilder {
   /**
    * Build the system prompt for an LLM request.
    *
-   * <p>The static layers (reference, catalog, grammar, examples) are cached
-   * on first use. The project state layer is built fresh per-request.
+   * <p>All layers are cached on first use.
    *
-   * @param userId      the authenticated user
-   * @param projectId   the project being edited
-   * @param screenName  the currently active screen
-   * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
-   * @param blocksYail  client-generated YAIL for the current screen's blocks
-   *                    (may be null or empty if unavailable)
-   * @param currentView the active editor view ("Designer" or "Blocks")
    * @return the assembled system prompt string
    */
-  public String build(String userId, long projectId, String screenName, String mode,
-      String blocksYail, String currentView) {
+  public String build() {
     StringBuilder sb = new StringBuilder();
 
     // Layer 1: Static reference
@@ -113,38 +109,84 @@ public class AIContextBuilder {
     sb.append(grammar).append("\n\n");
     AIDebug.log(LOG, "Context Layer 3 (YAIL grammar): " + grammar.length() + " chars");
 
-    // Layer 4: Current app state (per-request)
-    String projectState = buildProjectState(userId, projectId, screenName, mode, blocksYail,
-        currentView);
-    sb.append("## Current Project State\n\n");
-    sb.append(projectState);
-    sb.append("\n\n");
-    AIDebug.log(LOG, "Context Layer 4 (project state): " + projectState.length() + " chars");
-
-    // Layer 5: Few-shot examples
+    // Layer 4: Few-shot examples
     String examples = getExamples();
     sb.append("## Examples\n\n");
     sb.append(examples).append("\n\n");
-    AIDebug.log(LOG, "Context Layer 5 (examples): " + examples.length() + " chars");
+    AIDebug.log(LOG, "Context Layer 4 (examples): " + examples.length() + " chars");
 
     return sb.toString();
   }
 
   /**
-   * Build the per-request user context prefix containing mode instructions.
+   * Build the per-request context messages sent as separate user messages
+   * before the user's actual message.
    *
-   * <p>This content is prepended to the user's message (not the system prompt)
-   * so the mode-specific instructions are delivered as user-side context
-   * rather than polluting the system prompt with dynamic content.
+   * <p>Returns three context messages:
+   * <ol>
+   *   <li>Mode and view: current mode instructions and editor view rules
+   *   <li>Project overview: project metadata, screen list, assets,
+   *       extensions, and other screen summaries
+   *   <li>Current screen: component tree and blocks YAIL
+   * </ol>
    *
+   * @param userId      the authenticated user
+   * @param projectId   the project being edited
+   * @param screenName  the currently active screen
    * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @param blocksYail  client-generated YAIL for the current screen's blocks
+   *                    (may be null or empty if unavailable)
    * @param currentView the active editor view ("Designer" or "Blocks")
-   * @return the mode instructions string
+   * @return list of context message strings
    */
-  public String buildUserContext(String mode, String currentView) {
-    String modeInstructions = buildModeInstructions(mode, currentView);
-    AIDebug.log(LOG, "User context (mode): " + modeInstructions.length() + " chars");
-    return modeInstructions;
+  public List<String> buildContextMessages(String userId, long projectId, String screenName,
+      String mode, String blocksYail, String currentView) {
+    List<String> messages = new ArrayList<>();
+    String packagePath = getPackagePath(userId, projectId);
+    List<String> screenNames = listScreenNames(userId, projectId, packagePath);
+
+    // Message 1: Mode and view
+    String modeCtx = buildModeInstructions(mode, currentView);
+    messages.add(modeCtx);
+    AIDebug.log(LOG, "Context message 1 (mode): " + modeCtx.length() + " chars");
+
+    // Message 2: Project overview
+    StringBuilder project = new StringBuilder();
+    project.append("[Current project state — supersedes any previous project state]\n\n");
+    project.append("## Project State\n\n");
+    project.append(buildProjectOverview(userId, projectId)).append("\n");
+    project.append("### Screens: ").append(String.join(", ", screenNames)).append("\n\n");
+    List<String> assets = listAssets(userId, projectId);
+    if (!assets.isEmpty()) {
+      project.append("### Assets: ").append(String.join(", ", assets)).append("\n\n");
+    }
+    List<String> extensions = listExtensions(userId, projectId);
+    if (!extensions.isEmpty()) {
+      project.append("### Extensions: ").append(String.join(", ", extensions)).append("\n\n");
+    }
+    if ("ProjectEditor".equals(mode)) {
+      for (String other : screenNames) {
+        if (!other.equals(screenName)) {
+          project.append("### Screen: ").append(other).append(" (summary)\n");
+          project.append(buildScreenSummary(userId, projectId, other, packagePath));
+        }
+      }
+    }
+    String projectCtx = project.toString();
+    messages.add(projectCtx);
+    AIDebug.log(LOG, "Context message 2 (project): " + projectCtx.length() + " chars");
+
+    // Message 3: Current screen
+    StringBuilder screen = new StringBuilder();
+    screen.append("[Current screen state — supersedes any previous screen state]\n\n");
+    screen.append("## Current Screen: ").append(screenName).append("\n\n");
+    screen.append(buildCurrentScreenState(userId, projectId, screenName, packagePath,
+        blocksYail));
+    String screenCtx = screen.toString();
+    messages.add(screenCtx);
+    AIDebug.log(LOG, "Context message 3 (screen): " + screenCtx.length() + " chars");
+
+    return messages;
   }
 
   /**
@@ -366,54 +408,6 @@ public class AIContextBuilder {
 
   // ---------- Layer builders ----------
 
-  private String buildProjectState(String userId, long projectId,
-      String screenName, String mode, String blocksYail, String currentView) {
-    StringBuilder sb = new StringBuilder();
-
-    // Project overview from project.properties
-    sb.append(buildProjectOverview(userId, projectId));
-    sb.append("\n");
-
-    // Screen list
-    String packagePath = getPackagePath(userId, projectId);
-    List<String> screenNames = listScreenNames(userId, projectId, packagePath);
-    sb.append("### Screens: ");
-    sb.append(String.join(", ", screenNames));
-    sb.append("\n\n");
-
-    // Assets list
-    List<String> assets = listAssets(userId, projectId);
-    if (!assets.isEmpty()) {
-      sb.append("### Assets: ");
-      sb.append(String.join(", ", assets));
-      sb.append("\n\n");
-    }
-
-    // Extension list
-    List<String> extensions = listExtensions(userId, projectId);
-    if (!extensions.isEmpty()) {
-      sb.append("### Extensions: ");
-      sb.append(String.join(", ", extensions));
-      sb.append("\n\n");
-    }
-
-    // Current screen and editor view
-    sb.append("### Current Screen: ").append(screenName).append("\n");
-    sb.append("### Current Editor View: ").append(currentView).append("\n\n");
-    sb.append(buildCurrentScreenState(userId, projectId, screenName, packagePath, blocksYail));
-
-    // Other screens: summaries
-    if ("ProjectEditor".equals(mode)) {
-      for (String other : screenNames) {
-        if (!other.equals(screenName)) {
-          sb.append("\n### Screen: ").append(other).append(" (summary)\n");
-          sb.append(buildScreenSummary(userId, projectId, other, packagePath));
-        }
-      }
-    }
-
-    return sb.toString();
-  }
 
   private String buildProjectOverview(String userId, long projectId) {
     StringBuilder sb = new StringBuilder();
