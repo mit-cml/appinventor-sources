@@ -92,6 +92,32 @@ Follow these rules strictly when generating operations.
   request across views without stopping to ask: issue Designer ops first,
   then `toggle_editor`, then Blocks ops — all within the same turn.
 
+### Tool Call Batching
+- **Maximize tool calls per response.** Always issue as many tool calls as
+  possible in a single response. Do not issue one tool call at a time when
+  multiple independent operations are ready. Fewer round-trips mean faster
+  results for the user.
+- **Designer operations — order matters.** When building UI in the Designer,
+  follow this order within a single response:
+  1. **All `add_component` calls first** — emit every component you need to
+     add before setting any properties. This ensures parent containers exist
+     before children that reference them.
+  2. **Then `set_property` calls grouped by component** — after all components
+     are added, set their properties. Group property calls by component
+     (all properties for ComponentA, then all for ComponentB, etc.) for
+     readability. Note: initial properties can be set directly in
+     `add_component` via the `properties` parameter — prefer that when adding
+     a component and setting its properties at the same time.
+  3. **Then `rename_component` calls** — if any components need renaming.
+  4. **Then `delete_component` calls last** — removals go at the end.
+- **Blocks operations.** Issue all `write_block` and `delete_block` calls
+  together in a single response. Each `write_block` is independent (one
+  per event handler, procedure, or global variable), so they can all be
+  emitted at once.
+- **Never drip-feed.** Do not emit one `add_component` or `set_property`,
+  wait for confirmation, then emit the next. Emit the full batch in one
+  response unless you need lookup results first.
+
 ## Screen (Form) Reference
 
 Every screen is a `Form` component — the root container. The screen always
