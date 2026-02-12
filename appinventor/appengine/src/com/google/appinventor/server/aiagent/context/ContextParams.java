@@ -5,8 +5,6 @@
 
 package com.google.appinventor.server.aiagent.context;
 
-import com.google.appinventor.server.storage.StorageIo;
-
 /**
  * Value class carrying per-request parameters shared across context modules.
  */
@@ -18,17 +16,20 @@ public class ContextParams {
   private final String mode;
   private final String blocksYail;
   private final String currentView;
-  private final StorageIo storageIo;
+  private final String screenComponentsJson;
+  private final String projectSnapshot;
 
   public ContextParams(String userId, long projectId, String screenName,
-      String mode, String blocksYail, String currentView, StorageIo storageIo) {
+      String mode, String blocksYail, String currentView,
+      String screenComponentsJson, String projectSnapshot) {
     this.userId = userId;
     this.projectId = projectId;
     this.screenName = screenName;
     this.mode = mode;
     this.blocksYail = blocksYail;
     this.currentView = currentView;
-    this.storageIo = storageIo;
+    this.screenComponentsJson = screenComponentsJson;
+    this.projectSnapshot = projectSnapshot;
   }
 
   public String getUserId() {
@@ -55,7 +56,11 @@ public class ContextParams {
     return currentView;
   }
 
-  public StorageIo getStorageIo() {
-    return storageIo;
+  public String getScreenComponentsJson() {
+    return screenComponentsJson;
+  }
+
+  public String getProjectSnapshot() {
+    return projectSnapshot;
   }
 }

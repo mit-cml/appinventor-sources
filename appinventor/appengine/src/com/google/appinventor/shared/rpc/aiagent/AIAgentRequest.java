@@ -20,6 +20,8 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private String screenName;
   private String blocksYail;
   private String currentView;
+  private String screenComponentsJson;
+  private String projectSnapshot;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -74,6 +76,29 @@ public class AIAgentRequest implements IsSerializable, Serializable {
     this.currentView = currentView;
   }
 
+  /**
+   * Creates a new AI agent request with all fields including client-side context.
+   *
+   * @param userMessage the natural language request from the user
+   * @param projectId the current project ID
+   * @param screenName the currently visible screen name
+   * @param blocksYail YAIL representation of the current screen's blocks
+   * @param currentView the active editor view ("Designer" or "Blocks")
+   * @param screenComponentsJson live component tree JSON from the designer
+   * @param projectSnapshot JSON with project metadata from the client
+   */
+  public AIAgentRequest(String userMessage, long projectId, String screenName,
+      String blocksYail, String currentView,
+      String screenComponentsJson, String projectSnapshot) {
+    this.userMessage = userMessage;
+    this.projectId = projectId;
+    this.screenName = screenName;
+    this.blocksYail = blocksYail;
+    this.currentView = currentView;
+    this.screenComponentsJson = screenComponentsJson;
+    this.projectSnapshot = projectSnapshot;
+  }
+
   public String getUserMessage() {
     return userMessage;
   }
@@ -120,5 +145,28 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setCurrentView(String currentView) {
     this.currentView = currentView;
+  }
+
+  /**
+   * Returns the live component tree JSON from the current screen's designer.
+   * This is the inner Properties object from the SCM format.
+   */
+  public String getScreenComponentsJson() {
+    return screenComponentsJson;
+  }
+
+  public void setScreenComponentsJson(String screenComponentsJson) {
+    this.screenComponentsJson = screenComponentsJson;
+  }
+
+  /**
+   * Returns the project metadata snapshot JSON built client-side.
+   */
+  public String getProjectSnapshot() {
+    return projectSnapshot;
+  }
+
+  public void setProjectSnapshot(String projectSnapshot) {
+    this.projectSnapshot = projectSnapshot;
   }
 }

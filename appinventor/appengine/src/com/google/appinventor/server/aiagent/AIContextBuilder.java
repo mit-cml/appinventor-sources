@@ -117,19 +117,22 @@ public class AIContextBuilder {
    *   <li>Current screen: component tree and blocks YAIL
    * </ol>
    *
-   * @param userId      the authenticated user
-   * @param projectId   the project being edited
-   * @param screenName  the currently active screen
-   * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
-   * @param blocksYail  client-generated YAIL for the current screen's blocks
-   *                    (may be null or empty if unavailable)
-   * @param currentView the active editor view ("Designer" or "Blocks")
+   * @param userId               the authenticated user
+   * @param projectId            the project being edited
+   * @param screenName           the currently active screen
+   * @param mode                 "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @param blocksYail           client-generated YAIL for the current screen's blocks
+   *                             (may be null or empty if unavailable)
+   * @param currentView          the active editor view ("Designer" or "Blocks")
+   * @param screenComponentsJson live component tree JSON from the client
+   * @param projectSnapshot      project metadata JSON from the client
    * @return list of context message strings
    */
   public List<String> buildContextMessages(String userId, long projectId, String screenName,
-      String mode, String blocksYail, String currentView) {
+      String mode, String blocksYail, String currentView,
+      String screenComponentsJson, String projectSnapshot) {
     ContextParams params = new ContextParams(userId, projectId, screenName, mode,
-        blocksYail, currentView, storageIo);
+        blocksYail, currentView, screenComponentsJson, projectSnapshot);
     List<String> messages = new ArrayList<>();
 
     // Message 1: Mode and view
@@ -167,7 +170,11 @@ public class AIContextBuilder {
         "{\"type\":\"object\",\"properties\":{\"component_type\":{\"type\":\"string\","
             + "\"description\":\"The component type name, e.g. Button, Label\"}},\"required\":[\"component_type\"]}"));
     tools.add(new LLMTool(AIToolNames.LOOKUP_SCREEN,
-        "Look up the current state of a screen including its component tree and blocks YAIL.",
+        "Look up the saved state of a screen including its component tree. "
+            + "Note: this reads from the server's last-saved data, which may not "
+            + "reflect unsaved changes. For the current screen, the component tree "
+            + "in the context messages above is the authoritative source. "
+            + "Use this tool only for non-current screens.",
         "{\"type\":\"object\",\"properties\":{\"screen_name\":{\"type\":\"string\","
             + "\"description\":\"The screen name, e.g. Screen1\"}},\"required\":[\"screen_name\"]}"));
 

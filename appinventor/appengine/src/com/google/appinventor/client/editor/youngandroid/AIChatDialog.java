@@ -12,8 +12,12 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.blocks.BlocksEditor;
+import com.google.appinventor.client.editor.designer.DesignerEditor;
+import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentServiceAsync;
@@ -366,18 +370,13 @@ public class AIChatDialog extends DialogBox {
       return;
     }
 
-    String screenName = getCurrentScreenName();
-
     addUserMessage(text);
     inputArea.setText("");
 
     // Hide any previous operation preview
     hideOperationPreview();
 
-    String blocksYail = getCurrentBlocksYail();
-    String currentView = getCurrentViewString();
-    AIAgentRequest request = new AIAgentRequest(text, projectId, screenName, blocksYail,
-        currentView);
+    AIAgentRequest request = buildRequest(text);
     setRequestInFlight(true);
     validationRetryCount = 0;
     startPollingStatus();
@@ -554,13 +553,9 @@ public class AIChatDialog extends DialogBox {
       stopPollingStatus();
       return;
     }
-    String screenName = getCurrentScreenName();
-    String blocksYail = getCurrentBlocksYail();
-    String currentView = getCurrentViewString();
 
     // Keep polling — "Calling AI" stays visible
-    aiAgentService.reportExecutionErrors(projectId, screenName, errors, blocksYail,
-        currentView,
+    aiAgentService.reportExecutionErrors(buildRequest(null), errors,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -897,12 +892,9 @@ public class AIChatDialog extends DialogBox {
       return;
     }
 
-    String screenName = getCurrentScreenName();
-    String blocksYail = getCurrentBlocksYail();
-    String currentView = getCurrentViewString();
     validationRetryCount = 0;
 
-    aiAgentService.continueRequest(projectId, screenName, blocksYail, currentView,
+    aiAgentService.continueRequest(buildRequest(null),
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -936,10 +928,8 @@ public class AIChatDialog extends DialogBox {
     if (projectId == 0) {
       return;
     }
-    String screenName = getCurrentScreenName();
-    AIAgentRequest feedback = new AIAgentRequest(
-        "The user rejected the proposed operations. Please suggest alternatives.",
-        projectId, screenName);
+    AIAgentRequest feedback = buildRequest(
+        "The user rejected the proposed operations. Please suggest alternatives.");
 
     setRequestInFlight(true);
     validationRetryCount = 0;
@@ -974,9 +964,6 @@ public class AIChatDialog extends DialogBox {
       setRequestInFlight(false);
       return;
     }
-    String screenName = getCurrentScreenName();
-    String blocksYail = getCurrentBlocksYail();
-    String currentView = getCurrentViewString();
 
     // Collect error messages
     List<String> errors = new ArrayList<>();
@@ -991,8 +978,7 @@ public class AIChatDialog extends DialogBox {
 
     startPollingStatus();
     validationRetryCount = 0;
-    aiAgentService.reportExecutionErrors(projectId, screenName, errors, blocksYail,
-        currentView,
+    aiAgentService.reportExecutionErrors(buildRequest(null), errors,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -1489,6 +1475,244 @@ public class AIChatDialog extends DialogBox {
       });
     }
   }-*/;
+
+  // ---- Client-side context builders ----
+
+  /**
+   * Builds the live component tree JSON from the current screen's designer.
+   * Returns the inner Properties JSON (same structure as
+   * {@code DesignerEditor.encodeComponentProperties()}).
+   */
+  private String buildScreenComponentsJson() {
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    if (toolbar == null) {
+      return null;
+    }
+    DesignToolbar.DesignProject designProject = toolbar.getCurrentProject();
+    if (designProject == null) {
+      return null;
+    }
+    DesignToolbar.Screen screen = designProject.screens.get(designProject.currentScreen);
+    if (screen == null || !(screen.designerEditor instanceof YaFormEditor)) {
+      return null;
+    }
+    try {
+      return ((YaFormEditor) screen.designerEditor).getPropertiesJson();
+    } catch (Exception e) {
+      LOG.warning("Failed to build screen components JSON: " + e.getMessage());
+      return null;
+    }
+  }
+
+  /**
+   * Builds the project metadata snapshot JSON from client-side data.
+   */
+  private String buildProjectSnapshot() {
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    if (toolbar == null) {
+      return null;
+    }
+    DesignToolbar.DesignProject designProject = toolbar.getCurrentProject();
+    if (designProject == null) {
+      return null;
+    }
+
+    ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(designProject.getProjectId());
+    if (projectEditor == null) {
+      return null;
+    }
+
+    try {
+      StringBuilder json = new StringBuilder("{");
+
+      // Project name
+      json.append("\"projectName\":").append(jsonString(designProject.name));
+
+      // App name
+      String appName = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME);
+      json.append(",\"appName\":").append(jsonString(
+          appName != null ? appName : designProject.name));
+
+      // Version name
+      String versionName = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME);
+      if (versionName != null && !versionName.isEmpty()) {
+        json.append(",\"versionName\":").append(jsonString(versionName));
+      }
+
+      // Theme
+      String theme = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_THEME);
+      if (theme != null && !theme.isEmpty()) {
+        json.append(",\"theme\":").append(jsonString(theme));
+      }
+
+      // Sizing
+      String sizing = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
+      if (sizing != null && !sizing.isEmpty()) {
+        json.append(",\"sizing\":").append(jsonString(sizing));
+      }
+
+      // Colors
+      String primaryColor = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR);
+      if (primaryColor != null && !primaryColor.isEmpty()) {
+        json.append(",\"primaryColor\":").append(jsonString(primaryColor));
+      }
+
+      String accentColor = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR);
+      if (accentColor != null && !accentColor.isEmpty()) {
+        json.append(",\"accentColor\":").append(jsonString(accentColor));
+      }
+
+      // Screen names
+      json.append(",\"screenNames\":[");
+      String screenSep = "";
+      for (String screenName : designProject.screens.keySet()) {
+        json.append(screenSep).append(jsonString(screenName));
+        screenSep = ",";
+      }
+      json.append("]");
+
+      // Assets (excluding external_comps/)
+      YoungAndroidProjectNode projectNode = (YoungAndroidProjectNode)
+          Ode.getInstance().getProjectManager().getProject(designProject.getProjectId())
+              .getRootNode();
+      if (projectNode.getAssetsFolder() != null) {
+        json.append(",\"assets\":[");
+        String assetSep = "";
+        for (ProjectNode child : projectNode.getAssetsFolder().getChildren()) {
+          String fileId = child.getFileId();
+          if (!fileId.contains("/external_comps/")) {
+            json.append(assetSep).append(jsonString(child.getName()));
+            assetSep = ",";
+          }
+        }
+        json.append("]");
+      }
+
+      // Extensions
+      if (projectEditor instanceof YaProjectEditor) {
+        List<String> extensions = ((YaProjectEditor) projectEditor).getExternalComponents();
+        if (!extensions.isEmpty()) {
+          json.append(",\"extensions\":[");
+          String extSep = "";
+          for (String ext : extensions) {
+            json.append(extSep).append(jsonString(ext));
+            extSep = ",";
+          }
+          json.append("]");
+        }
+      }
+
+      // Screen summaries (only in ProjectEditor mode)
+      String mode = getCurrentAIAgentMode();
+      if ("ProjectEditor".equals(mode) && projectEditor instanceof YaProjectEditor) {
+        YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+        String currentScreen = designProject.currentScreen;
+        json.append(",\"screenSummaries\":{");
+        String sumSep = "";
+        for (String screenName : designProject.screens.keySet()) {
+          if (!screenName.equals(currentScreen)) {
+            DesignerEditor<?, ?, ?, ?, ?> formEditor =
+                yaProjectEditor.getFormFileEditor(screenName);
+            if (formEditor != null) {
+              MockForm form = (MockForm) formEditor.getRoot();
+              if (form != null) {
+                int count = countComponentsRecursive(form);
+                String title = form.getPropertyValue("Title");
+                if (title == null || title.isEmpty()) {
+                  title = screenName;
+                }
+                json.append(sumSep).append(jsonString(screenName)).append(":{");
+                json.append("\"componentCount\":").append(count);
+                json.append(",\"title\":").append(jsonString(title));
+                json.append("}");
+                sumSep = ",";
+              }
+            }
+          }
+        }
+        json.append("}");
+      }
+
+      json.append("}");
+      return json.toString();
+    } catch (Exception e) {
+      LOG.warning("Failed to build project snapshot: " + e.getMessage());
+      return null;
+    }
+  }
+
+  /**
+   * Recursively counts the number of components in a MockComponent tree.
+   */
+  private int countComponentsRecursive(MockComponent component) {
+    int count = 1;
+    for (MockComponent child : component.getChildren()) {
+      count += countComponentsRecursive(child);
+    }
+    return count;
+  }
+
+  /**
+   * Builds a fully-populated {@link AIAgentRequest} with client-side context.
+   *
+   * @param userMessage the user's message, or null for continuation/error requests
+   */
+  private AIAgentRequest buildRequest(String userMessage) {
+    long projectId = getCurrentProjectId();
+    String screenName = getCurrentScreenName();
+    String blocksYail = getCurrentBlocksYail();
+    String currentView = getCurrentViewString();
+    String screenComponentsJson = buildScreenComponentsJson();
+    String projectSnapshot = buildProjectSnapshot();
+    return new AIAgentRequest(userMessage, projectId, screenName,
+        blocksYail, currentView, screenComponentsJson, projectSnapshot);
+  }
+
+  /**
+   * Produces a JSON-escaped string literal (with surrounding quotes).
+   */
+  private static String jsonString(String value) {
+    if (value == null) {
+      return "\"\"";
+    }
+    StringBuilder sb = new StringBuilder("\"");
+    for (int i = 0; i < value.length(); i++) {
+      char c = value.charAt(i);
+      switch (c) {
+        case '"':  sb.append("\\\""); break;
+        case '\\': sb.append("\\\\"); break;
+        case '\n': sb.append("\\n");  break;
+        case '\r': sb.append("\\r");  break;
+        case '\t': sb.append("\\t");  break;
+        default:
+          if (c < 0x20) {
+            sb.append("\\u");
+            String hex = Integer.toHexString(c);
+            for (int pad = hex.length(); pad < 4; pad++) {
+              sb.append('0');
+            }
+            sb.append(hex);
+          } else {
+            sb.append(c);
+          }
+      }
+    }
+    sb.append("\"");
+    return sb.toString();
+  }
 
   /**
    * Returns the current AIAgentMode from the project settings.

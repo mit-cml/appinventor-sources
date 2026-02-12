@@ -14,31 +14,30 @@ import org.json.JSONObject;
 /**
  * Builds the current screen context: component tree and blocks YAIL.
  *
+ * <p>For the current screen, uses the client-provided
+ * {@code screenComponentsJson} so unsaved designer changes are reflected.
+ *
  * <p>Also provides {@link #buildScreenState} for the read-only
- * {@code lookup_screen} tool.
+ * {@code lookup_screen} tool, which still reads from StorageIo.
  */
 public class ScreenModule extends ContextModule {
 
   @Override
   public String build(ContextParams params) {
-    StorageIo storageIo = params.getStorageIo();
-    String userId = params.getUserId();
-    long projectId = params.getProjectId();
     String screenName = params.getScreenName();
     String blocksYail = params.getBlocksYail();
-    String packagePath = ProjectFiles.getPackagePath(userId, projectId, storageIo);
+    String screenComponentsJson = params.getScreenComponentsJson();
 
     StringBuilder screen = new StringBuilder();
     screen.append("[Current screen state — supersedes any previous screen state]\n\n");
     screen.append("## Current Screen: ").append(screenName).append("\n\n");
-    screen.append(buildCurrentScreenState(userId, projectId, screenName,
-        packagePath, blocksYail, storageIo));
+    screen.append(buildCurrentScreenState(screenName, blocksYail, screenComponentsJson));
     return screen.toString();
   }
 
   /**
    * Build the state of a single screen for a {@code lookup_screen} tool
-   * response.
+   * response. Reads from StorageIo (server-saved data).
    */
   public String buildScreenState(String userId, long projectId, String screenName,
       StorageIo storageIo) {
@@ -70,26 +69,20 @@ public class ScreenModule extends ContextModule {
     return sb.toString();
   }
 
-  private String buildCurrentScreenState(String userId, long projectId,
-      String screenName, String packagePath, String blocksYail, StorageIo storageIo) {
+  private String buildCurrentScreenState(String screenName, String blocksYail,
+      String screenComponentsJson) {
     StringBuilder sb = new StringBuilder();
 
     sb.append("#### Component Tree\n\n");
-    if (packagePath != null) {
-      String scmFileId = packagePath + "/" + screenName + FORM_PROPERTIES_EXTENSION;
+    if (screenComponentsJson != null && !screenComponentsJson.isEmpty()) {
       try {
-        String scmContent = storageIo.downloadFile(userId, projectId, scmFileId, "UTF-8");
-        String scmJson = ContextUtils.extractScmJson(scmContent);
-        if (scmJson != null) {
-          sb.append(ContextUtils.buildComponentTree(new JSONObject(scmJson), 0));
-        } else {
-          sb.append("(empty screen)\n");
-        }
+        JSONObject props = new JSONObject(screenComponentsJson);
+        sb.append(ContextUtils.buildComponentTree(props, 0));
       } catch (Exception e) {
-        sb.append("(unable to read screen properties)\n");
+        sb.append("(unable to parse screen components JSON)\n");
       }
     } else {
-      sb.append("(unable to determine package path)\n");
+      sb.append("(screen component tree unavailable)\n");
     }
 
     sb.append("\n#### Blocks (YAIL)\n\n");

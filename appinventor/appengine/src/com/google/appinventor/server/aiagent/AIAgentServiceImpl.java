@@ -74,22 +74,24 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     }
 
     return engine.processRequest(ctx.userId, projectId, request.getScreenName(),
-        userMessage, request.getBlocksYail(), request.getCurrentView(), ctx.mode);
+        userMessage, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
+        request.getScreenComponentsJson(), request.getProjectSnapshot());
   }
 
   @Override
-  public AIAgentResponse continueRequest(long projectId, String screenName,
-      String blocksYail, String currentView) {
+  public AIAgentResponse continueRequest(AIAgentRequest request) {
+    long projectId = request.getProjectId();
     RequestContext ctx = validateRequest(projectId);
     if (ctx.error != null) return ctx.error;
 
-    return engine.continueRequest(ctx.userId, projectId, screenName,
-        blocksYail, currentView, ctx.mode);
+    return engine.continueRequest(ctx.userId, projectId, request.getScreenName(),
+        request.getBlocksYail(), request.getCurrentView(), ctx.mode,
+        request.getScreenComponentsJson(), request.getProjectSnapshot());
   }
 
   @Override
-  public AIAgentResponse reportExecutionErrors(long projectId, String screenName,
-      List<String> errors, String blocksYail, String currentView) {
+  public AIAgentResponse reportExecutionErrors(AIAgentRequest request, List<String> errors) {
+    long projectId = request.getProjectId();
     RequestContext ctx = validateRequest(projectId);
     if (ctx.error != null) return ctx.error;
 
@@ -97,8 +99,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       return AIAgentEngine.errorResponse("No errors to report.");
     }
 
-    return engine.reportExecutionErrors(ctx.userId, projectId, screenName,
-        errors, blocksYail, currentView, ctx.mode);
+    return engine.reportExecutionErrors(ctx.userId, projectId, request.getScreenName(),
+        errors, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
+        request.getScreenComponentsJson(), request.getProjectSnapshot());
   }
 
   @Override

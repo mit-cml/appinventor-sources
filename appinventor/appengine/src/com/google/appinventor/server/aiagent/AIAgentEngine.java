@@ -98,17 +98,20 @@ public class AIAgentEngine {
   /**
    * Process a new user message.
    *
-   * @param userId      the authenticated user ID
-   * @param projectId   the project being edited
-   * @param screenName  the currently active screen
-   * @param userMessage the user's sanitized, validated message
-   * @param blocksYail  client-generated YAIL for the current screen's blocks
-   * @param currentView the active editor view ("Designer" or "Blocks")
-   * @param mode        the AI agent mode ("Advisor", "ScreenEditor", or "ProjectEditor")
+   * @param userId               the authenticated user ID
+   * @param projectId            the project being edited
+   * @param screenName           the currently active screen
+   * @param userMessage          the user's sanitized, validated message
+   * @param blocksYail           client-generated YAIL for the current screen's blocks
+   * @param currentView          the active editor view ("Designer" or "Blocks")
+   * @param mode                 the AI agent mode ("Advisor", "ScreenEditor", or "ProjectEditor")
+   * @param screenComponentsJson live component tree JSON from the client
+   * @param projectSnapshot      project metadata JSON from the client
    * @return the AI agent response
    */
   public AIAgentResponse processRequest(String userId, long projectId, String screenName,
-      String userMessage, String blocksYail, String currentView, String mode) {
+      String userMessage, String blocksYail, String currentView, String mode,
+      String screenComponentsJson, String projectSnapshot) {
     AIDebug.log(LOG, "processRequest: userId=" + userId + ", projectId=" + projectId
         + ", screen=" + screenName + ", mode=" + mode
         + ", msgLen=" + userMessage.length());
@@ -124,7 +127,8 @@ public class AIAgentEngine {
       // Build system prompt, context messages, and tools
       String systemPrompt = contextBuilder.build();
       List<String> contextMessages = contextBuilder.buildContextMessages(
-          userId, projectId, screenName, mode, blocksYail, currentView);
+          userId, projectId, screenName, mode, blocksYail, currentView,
+          screenComponentsJson, projectSnapshot);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
@@ -217,16 +221,19 @@ public class AIAgentEngine {
   /**
    * Continue a multi-turn response.
    *
-   * @param userId      the authenticated user ID
-   * @param projectId   the project being edited
-   * @param screenName  the currently active screen
-   * @param blocksYail  client-generated YAIL for the current screen's blocks
-   * @param currentView the active editor view ("Designer" or "Blocks")
-   * @param mode        the AI agent mode
+   * @param userId               the authenticated user ID
+   * @param projectId            the project being edited
+   * @param screenName           the currently active screen
+   * @param blocksYail           client-generated YAIL for the current screen's blocks
+   * @param currentView          the active editor view ("Designer" or "Blocks")
+   * @param mode                 the AI agent mode
+   * @param screenComponentsJson live component tree JSON from the client
+   * @param projectSnapshot      project metadata JSON from the client
    * @return the AI agent response
    */
   public AIAgentResponse continueRequest(String userId, long projectId, String screenName,
-      String blocksYail, String currentView, String mode) {
+      String blocksYail, String currentView, String mode,
+      String screenComponentsJson, String projectSnapshot) {
     AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
         + ", screen=" + screenName + ", mode=" + mode);
 
@@ -295,17 +302,20 @@ public class AIAgentEngine {
   /**
    * Report client-side execution errors and retry with feedback.
    *
-   * @param userId      the authenticated user ID
-   * @param projectId   the project being edited
-   * @param screenName  the currently active screen
-   * @param errors      the execution errors from the client
-   * @param blocksYail  client-generated YAIL for the current screen's blocks
-   * @param currentView the active editor view ("Designer" or "Blocks")
-   * @param mode        the AI agent mode
+   * @param userId               the authenticated user ID
+   * @param projectId            the project being edited
+   * @param screenName           the currently active screen
+   * @param errors               the execution errors from the client
+   * @param blocksYail           client-generated YAIL for the current screen's blocks
+   * @param currentView          the active editor view ("Designer" or "Blocks")
+   * @param mode                 the AI agent mode
+   * @param screenComponentsJson live component tree JSON from the client
+   * @param projectSnapshot      project metadata JSON from the client
    * @return the AI agent response
    */
   public AIAgentResponse reportExecutionErrors(String userId, long projectId, String screenName,
-      List<String> errors, String blocksYail, String currentView, String mode) {
+      List<String> errors, String blocksYail, String currentView, String mode,
+      String screenComponentsJson, String projectSnapshot) {
     AIDebug.log(LOG, "reportExecutionErrors: userId=" + userId
         + ", projectId=" + projectId + ", errors=" + errors.size());
 
@@ -335,7 +345,8 @@ public class AIAgentEngine {
       // Build system prompt and context messages with current blocks state
       String systemPrompt = contextBuilder.build();
       List<String> contextMessages = contextBuilder.buildContextMessages(
-          userId, projectId, screenName, mode, blocksYail, currentView);
+          userId, projectId, screenName, mode, blocksYail, currentView,
+          screenComponentsJson, projectSnapshot);
 
       // Save error feedback to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.

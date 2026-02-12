@@ -33,17 +33,11 @@ public interface AIAgentService extends RemoteService {
    * {@code true}. Sends synthetic tool results to the LLM and returns the
    * next batch of operations.
    *
-   * <p>The {@code blocksYail} parameter supplies the current blocks state
-   * so the system prompt reflects changes made by the previous batch.
-   *
-   * @param projectId   the project ID
-   * @param screenName  the current screen name
-   * @param blocksYail  updated YAIL for the current screen's blocks
-   * @param currentView the active editor view ("Designer" or "Blocks")
+   * @param request the request containing project ID, screen name, blocks YAIL,
+   *                current view, and client-side context snapshots
    * @return the next batch of AI operations (may also have hasMore=true)
    */
-  AIAgentResponse continueRequest(long projectId, String screenName, String blocksYail,
-      String currentView);
+  AIAgentResponse continueRequest(AIAgentRequest request);
 
   /**
    * Clear the current conversation for a project.
@@ -81,16 +75,10 @@ public interface AIAgentService extends RemoteService {
    * failures when applying operations (typically YAIL-to-Blockly conversion
    * errors in WRITE_BLOCK or DELETE_BLOCK operations).
    *
-   * <p>The {@code blocksYail} parameter supplies the current blocks state
-   * so the retry prompt reflects the workspace as it is now.
-   *
-   * @param projectId   the project ID
-   * @param screenName  the current screen name
-   * @param errors      list of error messages from the client executor
-   * @param blocksYail  updated YAIL for the current screen's blocks
-   * @param currentView the active editor view ("Designer" or "Blocks")
+   * @param request the request containing project ID, screen name, blocks YAIL,
+   *                current view, and client-side context snapshots
+   * @param errors  list of error messages from the client executor
    * @return an updated AI response with corrected operations, or errors
    */
-  AIAgentResponse reportExecutionErrors(long projectId, String screenName,
-      List<String> errors, String blocksYail, String currentView);
+  AIAgentResponse reportExecutionErrors(AIAgentRequest request, List<String> errors);
 }

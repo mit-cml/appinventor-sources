@@ -49,7 +49,7 @@
     </ai:ToolbarItem>
 
     <ai:ToolbarItem name="AIChatToggle" icon="smart_toy" tooltip="{messages.toggleAIChatButton}"
-                    ui:field="toggleAIChatItem" align="right" styleName="ode-ProjectListButton inline">
+                    ui:field="toggleAIChatItem" align="right" styleName="ode-ProjectListButton inline right-spacer">
       <ya:ToggleAIChatAction/>
     </ai:ToolbarItem>
 

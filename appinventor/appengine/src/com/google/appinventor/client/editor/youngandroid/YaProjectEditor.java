@@ -112,6 +112,14 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private final Map<String, String> extensionToNodeName = new HashMap<>();
   private final Map<String, Set<String>> extensionsInNode = new HashMap<>();
 
+  /**
+   * Returns an unmodifiable view of the external component (extension)
+   * package names loaded in this project.
+   */
+  public List<String> getExternalComponents() {
+    return Collections.unmodifiableList(externalComponents);
+  }
+
   // Database of component type descriptions
   private final SimpleComponentDatabase COMPONENT_DATABASE;
 

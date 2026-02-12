@@ -195,6 +195,17 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     return root;
   }
 
+  /**
+   * Returns the live component tree as a JSON string (the inner Properties
+   * object from the SCM format). Used by the AI chat dialog to send the
+   * current designer state to the server without requiring a save.
+   */
+  public String getPropertiesJson() {
+    StringBuilder sb = new StringBuilder();
+    encodeComponentProperties(root, sb, false);
+    return sb.toString();
+  }
+
   public String getComponentInstanceTypeName(String instanceName) {
     return getComponents().get(instanceName).getType();
   }
