@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * <p>Provider selection and configuration are driven by system properties
  * (set in appengine-web.xml), accessed through the {@link Flag} mechanism:
  * <ul>
- *   <li>{@code ai.agent.provider} -- provider name (anthropic, openai, gemini, ollama)</li>
+ *   <li>{@code ai.agent.provider} -- provider name (anthropic, openai, gemini, ollama, minimax)</li>
  *   <li>{@code ai.agent.api.key} -- API key for the selected provider</li>
  *   <li>{@code ai.agent.model} -- model name override</li>
  *   <li>{@code ai.agent.base.url} -- base URL override (primarily for Ollama)</li>
@@ -45,12 +45,13 @@ public class LLMProviderRegistry {
     DEFAULT_MODELS.put("openai", "gpt-4o");
     DEFAULT_MODELS.put("gemini", "gemini-2.0-flash");
     DEFAULT_MODELS.put("ollama", "llama3.1");
+    DEFAULT_MODELS.put("minimax", "MiniMax-M2");
   }
 
   /**
    * Returns an {@link LLMProvider} instance for the given provider name.
    *
-   * @param providerName the provider name ("anthropic", "openai", "gemini", or "ollama")
+   * @param providerName the provider name ("anthropic", "openai", "gemini", "ollama", or "minimax")
    * @return the configured provider instance
    * @throws LLMProviderException if the provider name is unknown or configuration is invalid
    */
@@ -93,11 +94,15 @@ public class LLMProviderRegistry {
         }
         return new OllamaProvider(baseUrl, model, apiKey);
 
+      case "minimax":
+        validateApiKey(apiKey, "MiniMax");
+        return new MiniMaxProvider(apiKey, model);
+
       default:
         throw new LLMProviderException(
             "Unknown LLM provider: " + providerName,
             "The configured AI provider is not supported. "
-                + "Supported providers: anthropic, openai, gemini, ollama.");
+                + "Supported providers: anthropic, openai, gemini, ollama, minimax.");
     }
   }
 
