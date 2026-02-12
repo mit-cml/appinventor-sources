@@ -6,10 +6,77 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
 
 ## Code Style Rules
 
-**Inline expressions over local variables.** Only use `let` (local variables) when the same value is needed in more than one place to avoid code duplication, or when mutations via `set-lexical!` are required. Do NOT introduce local variables just for readability or semantics — prefer composing expressions directly inline.
+**Statement primitives cannot be used as values.** Primitives ending with `!` that mutate data in place (`yail-list-set-item!`, `yail-list-remove-item!`, `yail-list-insert-item!`, `yail-list-append!`, `yail-list-add-to-list!`, `yail-dictionary-set-pair`, `yail-dictionary-delete-pair`, `yail-dictionary-recursive-set`, `yail-dictionary-combine-dicts`) are **statement blocks** — they have no output connector and **CANNOT** be nested inside expressions. They must appear as standalone statements in a `begin`, event handler body, or procedure body. When you need to mutate a collection and then use it as a value, use `let` to bind the collection to a local variable, mutate it with the statement primitive, then reference the variable.
 
 ```scheme
-;; BAD — unnecessary local variable
+;; BAD — yail-list-append! is a statement, cannot be used as a value
+(set-and-coerce-property! 'ListView1 'Elements
+  (call-yail-primitive yail-list-append!
+    (*list-for-runtime* (get-var g$list1) (get-var g$list2))
+    '(list list) "append to list")
+  'list)
+
+;; GOOD — mutate in a statement, then use the variable as the value
+;; NOTE: let body requires (begin ...) when it contains multiple statements
+(let (($combined (call-yail-primitive yail-list-copy
+          (*list-for-runtime* (get-var g$list1))
+          '(list) "copy list")))
+  (begin
+    (call-yail-primitive yail-list-append!
+      (*list-for-runtime* (lexical-value $combined) (get-var g$list2))
+      '(list list) "append to list")
+    (set-and-coerce-property! 'ListView1 'Elements (lexical-value $combined) 'list)))
+```
+
+**Constants as global variables.** Do not hardcode string or number literals directly in event handlers when they represent a meaningful constant, a configuration value, or appear more than once. Define them as global variables so they are easy to find and change in one place.
+
+```scheme
+;; BAD — magic string repeated in two handlers
+(define-event Screen1 Initialize ()
+  (set-this-form)
+  (set-and-coerce-property! 'CategorySpinner 'Selection "Select a category..." 'text))
+
+(define-event ResetButton Click ()
+  (set-this-form)
+  (set-and-coerce-property! 'CategorySpinner 'Selection "Select a category..." 'text))
+
+;; GOOD — constant extracted to a global variable
+(def g$PLACEHOLDER "Select a category...")
+
+(define-event Screen1 Initialize ()
+  (set-this-form)
+  (set-and-coerce-property! 'CategorySpinner 'Selection (get-var g$PLACEHOLDER) 'text))
+
+(define-event ResetButton Click ()
+  (set-this-form)
+  (set-and-coerce-property! 'CategorySpinner 'Selection (get-var g$PLACEHOLDER) 'text))
+```
+
+**Eliminate duplication with variables.** If the same expression or value appears more than once within a block, extract it into a local variable (`let`) or global variable (`def g$...`). Duplicated expressions make code harder to maintain and produce unnecessarily large blocks. This includes repeated string literals, repeated property reads, and repeated computed values.
+
+```scheme
+;; BAD — same list literal duplicated in both branches
+(if (call-yail-primitive string=? (*list-for-runtime* (lexical-value $selection) "All") '(text text) "=")
+  (begin
+    (set-and-coerce-property! 'MenuListView 'Elements
+      (call-yail-primitive make-yail-list (*list-for-runtime* "No items found.") '(text) "make a list") 'list))
+  (begin
+    (set-and-coerce-property! 'MenuListView 'Elements
+      (call-yail-primitive make-yail-list (*list-for-runtime* "No items found.") '(text) "make a list") 'list)))
+
+;; GOOD — shared value extracted to a local variable
+(let (($empty (call-yail-primitive make-yail-list (*list-for-runtime* "No items found.") '(text) "make a list")))
+  (if (call-yail-primitive string=? (*list-for-runtime* (lexical-value $selection) "All") '(text text) "=")
+    (begin
+      (set-and-coerce-property! 'MenuListView 'Elements (lexical-value $empty) 'list))
+    (begin
+      (set-and-coerce-property! 'MenuListView 'Elements (lexical-value $empty) 'list))))
+```
+
+**Inline expressions over local variables.** Only use `let` (local variables) when the same value is needed in more than one place (see above), when mutations via `set-lexical!` are required, or when a statement primitive must be sequenced before a value is used (see statement primitives rule). Do NOT introduce local variables just for readability or semantics — prefer composing expressions directly inline.
+
+```scheme
+;; BAD — unnecessary local variable used once
 (let (($name (get-property 'TextBox1 'Text)))
   (begin
     (set-and-coerce-property! 'Label1 'Text (lexical-value $name) 'text)))
@@ -17,11 +84,56 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
 ;; GOOD — inline the expression directly
 (set-and-coerce-property! 'Label1 'Text (get-property 'TextBox1 'Text) 'text)
 
-;; OK — local variable used in two places
+;; OK — local variable used in two places (deduplication)
 (let (($name (get-property 'TextBox1 'Text)))
   (begin
     (set-and-coerce-property! 'Label1 'Text (lexical-value $name) 'text)
     (set-and-coerce-property! 'Label2 'Text (lexical-value $name) 'text)))
+```
+
+**Prefer mutator blocks over repeated blocks.** Many blocks in App Inventor have mutators that allow adding extra input slots. Always use a single mutator block instead of nesting multiple separate blocks when the operation supports it.
+
+- **Variadic math:** Use `(+ a b c)` or `(call-yail-primitive + (*list-for-runtime* a b c) '(number number number) "+")` — do NOT nest as `(+ (+ a b) c)`. The same applies to `*`, `string-append`, `make-yail-list`, and `make-yail-dictionary`.
+- **If/elseif/else:** Use a single nested-if chain for multi-way conditionals — do NOT use separate disconnected `if` blocks. The nested pattern automatically renders as one mutator block with elseif slots.
+- **Add items to list:** Use `yail-list-add-to-list!` with multiple items — do NOT call it repeatedly for each item.
+
+```scheme
+;; BAD — nested binary additions (renders as 2 separate + blocks)
+(call-yail-primitive +
+  (*list-for-runtime*
+    (call-yail-primitive +
+      (*list-for-runtime* (get-var g$a) (get-var g$b))
+      '(number number) "+")
+    (get-var g$c))
+  '(number number) "+")
+
+;; GOOD — single variadic addition (renders as 1 block with 3 slots)
+(call-yail-primitive + (*list-for-runtime* (get-var g$a) (get-var g$b) (get-var g$c)) '(number number number) "+")
+
+;; BAD — separate if blocks for a multi-way condition
+(if <cond1> (begin <body1>))
+(if <cond2> (begin <body2>))
+(if <cond3> (begin <body3>))
+
+;; GOOD — single if/elseif/else chain (renders as 1 mutator block)
+(if <cond1>
+  (begin <body1>)
+  (if <cond2>
+    (begin <body2>)
+    (begin <body3>)))
+
+;; BAD — repeated add-to-list calls
+(call-yail-primitive yail-list-add-to-list!
+  (*list-for-runtime* (get-var g$myList) "apple") '(list any) "add items to list")
+(call-yail-primitive yail-list-add-to-list!
+  (*list-for-runtime* (get-var g$myList) "banana") '(list any) "add items to list")
+(call-yail-primitive yail-list-add-to-list!
+  (*list-for-runtime* (get-var g$myList) "cherry") '(list any) "add items to list")
+
+;; GOOD — single variadic add-to-list (renders as 1 mutator block with 3 item slots)
+(call-yail-primitive yail-list-add-to-list!
+  (*list-for-runtime* (get-var g$myList) "apple" "banana" "cherry")
+  '(list any any any) "add items to list")
 ```
 
 **Event handlers over procedures.** Put code directly in event handlers. Only create a procedure (`def`/`def-return`) when the same logic is needed in more than one event handler AND it represents a coherent, reusable operation. A single-use helper procedure is never justified.
@@ -220,16 +332,19 @@ Short-circuit logic uses special forms (variadic, no `begin` wrappers):
 | `string=?` | String equal (comparison) |
 
 #### List Primitives
+
+Primitives marked **STATEMENT** are void — they mutate in place and have no output connector. They cannot be nested inside expressions; use them only as standalone statements.
+
 | Primitive | Description |
 |-----------|-------------|
 | `make-yail-list` | Create list (variadic) |
 | `yail-list-get-item` | Get item at index |
-| `yail-list-set-item!` | Set item at index |
+| `yail-list-set-item!` | **STATEMENT** — Set item at index |
 | `yail-list-length` | List length |
-| `yail-list-add-to-list!` | Add items to list (variadic) |
-| `yail-list-remove-item!` | Remove item at index |
-| `yail-list-insert-item!` | Insert item at index |
-| `yail-list-append!` | Append two lists |
+| `yail-list-add-to-list!` | **STATEMENT** — Add items to list (variadic) |
+| `yail-list-remove-item!` | **STATEMENT** — Remove item at index |
+| `yail-list-insert-item!` | **STATEMENT** — Insert item at index |
+| `yail-list-append!` | **STATEMENT** — Append list2 to list1 |
 | `yail-list-copy` | Copy list |
 | `yail-list-member?` | Is item in list? |
 | `yail-list-index` | Index of item |
@@ -287,22 +402,25 @@ The compare expression should return `#t` if `$item1` should come before `$item2
 ```
 
 #### Dictionary Primitives
+
+Primitives marked **STATEMENT** are void — they mutate in place and have no output connector. They cannot be nested inside expressions; use them only as standalone statements.
+
 | Primitive | Description |
 |-----------|-------------|
 | `make-yail-dictionary` | Create dictionary (variadic pairs) |
 | `make-dictionary-pair` | Create a key-value pair |
 | `yail-dictionary-lookup` | Look up key (with default) |
-| `yail-dictionary-set-pair` | Set key-value |
-| `yail-dictionary-delete-pair` | Delete key |
+| `yail-dictionary-set-pair` | **STATEMENT** — Set key-value |
+| `yail-dictionary-delete-pair` | **STATEMENT** — Delete key |
 | `yail-dictionary-recursive-lookup` | Nested lookup |
-| `yail-dictionary-recursive-set` | Nested set |
+| `yail-dictionary-recursive-set` | **STATEMENT** — Nested set |
 | `yail-dictionary-get-keys` | Get all keys |
 | `yail-dictionary-get-values` | Get all values |
 | `yail-dictionary-is-key-in` | Check if key exists |
 | `yail-dictionary-length` | Dictionary size |
 | `yail-dictionary-alist-to-dict` | List of pairs to dict |
 | `yail-dictionary-dict-to-alist` | Dict to list of pairs |
-| `yail-dictionary-combine-dicts` | Merge dictionaries |
+| `yail-dictionary-combine-dicts` | **STATEMENT** — Merge dictionaries |
 | `yail-dictionary-copy` | Copy dictionary |
 | `yail-dictionary-walk` | Walk tree by key path |
 | `yail-dictionary?` | Is it a dictionary? |
@@ -731,6 +849,8 @@ Recall the general form:
 
 ### List Primitives
 
+Primitives marked **STATEMENT** are void — they mutate in place, have no output connector, and **cannot be nested inside expressions**. Use them only as standalone statements.
+
 | Primitive | Args in `*list-for-runtime*` | Types | Description |
 |---|---|---|---|
 | `make-yail-list` | `item1 item2 ...` | `(any any ...)` | create list (variadic) |
@@ -744,34 +864,36 @@ Recall the general form:
 | `yail-list-member?` | `item list` | `(any list)` | member check (**item FIRST**) |
 | `yail-list-index` | `item list` | `(any list)` | index of (**item FIRST**) |
 | `yail-list-get-item` | `list index` | `(list number)` | get item at index |
-| `yail-list-remove-item!` | `list index` | `(list number)` | remove item at index |
-| `yail-list-set-item!` | `list index value` | `(list number any)` | set item at index |
-| `yail-list-insert-item!` | `list index item` | `(list number any)` | insert at index |
-| `yail-list-append!` | `list1 list2` | `(list list)` | append list2 to list1 |
+| `yail-list-remove-item!` | `list index` | `(list number)` | **STATEMENT** — remove item at index |
+| `yail-list-set-item!` | `list index value` | `(list number any)` | **STATEMENT** — set item at index |
+| `yail-list-insert-item!` | `list index item` | `(list number any)` | **STATEMENT** — insert at index |
+| `yail-list-append!` | `list1 list2` | `(list list)` | **STATEMENT** — append list2 to list1 |
 | `yail-list-join-with-separator` | `list separator` | `(list text)` | join with separator |
 | `yail-list-pick-random` | `list` | `(list)` | pick random item |
-| `yail-list-add-to-list!` | `list item1 item2 ...` | `(list any any ...)` | add items to list (variadic) |
+| `yail-list-add-to-list!` | `list item1 item2 ...` | `(list any any ...)` | **STATEMENT** — add items to list (variadic) |
 | `yail-list-empty?` | `list` | `(list)` | is list empty |
 | `yail-list-slice` | `list index1 index2` | `(list number number)` | slice from index1 to index2 |
 | `yail-alist-lookup` | `key list default` | `(any list any)` | lookup in list of pairs |
 
 ### Dictionary Primitives
 
+Primitives marked **STATEMENT** are void — they mutate in place, have no output connector, and **cannot be nested inside expressions**.
+
 | Primitive | Args in `*list-for-runtime*` | Types | Description |
 |---|---|---|---|
 | `make-yail-dictionary` | `pair1 pair2 ...` | `(pair pair ...)` | create dict (variadic) |
 | `make-dictionary-pair` | `key value` | `(key any)` | create key-value pair |
-| `yail-dictionary-set-pair` | `key dict value` | `(any dict any)` | set pair (**key, dict, value** — unusual order!) |
-| `yail-dictionary-delete-pair` | `dict key` | `(dict any)` | delete pair (**dict, key** — different order from set!) |
+| `yail-dictionary-set-pair` | `key dict value` | `(any dict any)` | **STATEMENT** — set pair (**key, dict, value** — unusual order!) |
+| `yail-dictionary-delete-pair` | `dict key` | `(dict any)` | **STATEMENT** — delete pair (**dict, key** — different order from set!) |
 | `yail-dictionary-lookup` | `key dict default` | `(any dict any)` | lookup with default |
 | `yail-dictionary-recursive-lookup` | `keys dict default` | `(list dict any)` | recursive lookup |
-| `yail-dictionary-recursive-set` | `keys dict value` | `(list dict any)` | recursive set |
+| `yail-dictionary-recursive-set` | `keys dict value` | `(list dict any)` | **STATEMENT** — recursive set |
 | `yail-dictionary-walk` | `path dict` | `(any dict)` | walk path |
 | `yail-dictionary-is-key-in` | `key dict` | `(any dict)` | key exists check |
 | `yail-dictionary-length` | `dict` | `(dict)` | dictionary size |
 | `yail-dictionary-alist-to-dict` | `list` | `(list)` | pairs list to dict |
 | `yail-dictionary-dict-to-alist` | `dict` | `(dict)` | dict to pairs list |
-| `yail-dictionary-combine-dicts` | `dict1 dict2` | `(dict dict)` | merge dict2 into dict1 |
+| `yail-dictionary-combine-dicts` | `dict1 dict2` | `(dict dict)` | **STATEMENT** — merge dict2 into dict1 |
 | `yail-dictionary-is-dict?` | `thing` | `(any)` | is dictionary check |
 
 ### Color Primitives
@@ -801,6 +923,8 @@ Recall the general form:
 4. **`atan2-degrees` takes y BEFORE x**: This follows the standard mathematical convention `atan2(y, x)`.
 
 5. **Variadic primitives**: `string-append`, `make-yail-list`, `make-yail-dictionary`, `+`, `-`, `*` can take 2 or more arguments. The types list must have a matching number of type entries.
+
+6. **Statement primitives are NOT values**: Mutating primitives (`yail-list-append!`, `yail-list-add-to-list!`, `yail-list-set-item!`, `yail-list-remove-item!`, `yail-list-insert-item!`, `yail-dictionary-set-pair`, `yail-dictionary-delete-pair`, `yail-dictionary-recursive-set`, `yail-dictionary-combine-dicts`) are statement blocks with no output. They **CANNOT** be used as arguments to other expressions — doing so produces disconnected blocks. Use `let` to bind the collection, mutate it with the statement primitive, then reference the variable.
 
 ---
 

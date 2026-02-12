@@ -592,8 +592,8 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
 AI.YailToBlocks.convertStatement_ = function(workspace, node) {
   var head = AI.SExprParser.formHead(node);
   if (!head) {
-    // Not a list form — try as expression and wrap if needed
-    return null;
+    // No symbol head — may be a procedure call like ((get-var p$X) args...)
+    return AI.YailToBlocks.convertExpression_(workspace, node);
   }
 
   switch (head) {
