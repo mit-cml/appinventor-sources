@@ -5,28 +5,19 @@
 
 package com.google.appinventor.server.aiagent;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.BLOCKLY_SOURCE_EXTENSION;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
-
-import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.server.aiagent.context.CatalogModule;
+import com.google.appinventor.server.aiagent.context.ContextParams;
+import com.google.appinventor.server.aiagent.context.ExamplesModule;
+import com.google.appinventor.server.aiagent.context.GrammarModule;
+import com.google.appinventor.server.aiagent.context.ModeModule;
+import com.google.appinventor.server.aiagent.context.ProjectModule;
+import com.google.appinventor.server.aiagent.context.ReferenceModule;
+import com.google.appinventor.server.aiagent.context.ScreenModule;
 import com.google.appinventor.server.aiagent.llm.LLMTool;
 import com.google.appinventor.server.storage.StorageIo;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
 /**
@@ -61,18 +52,14 @@ public class AIContextBuilder {
 
   private static final Logger LOG = Logger.getLogger(AIContextBuilder.class.getName());
 
-  private static final String RESOURCE_BASE =
-      "/com/google/appinventor/server/aiagent/resources/";
-  private static final String EXTERNAL_COMPS_FOLDER = ASSETS_FOLDER + "/external_comps";
-  private static final String PROJECT_DIRECTORY = "youngandroidproject";
-  private static final String PROJECT_PROPERTIES_FILE =
-      PROJECT_DIRECTORY + "/project.properties";
-
-  // Cached static content (thread-safe: immutable once initialized)
-  private static volatile String cachedReference;
-  private static volatile String cachedCatalog;
-  private static volatile String cachedExamples;
-  private static volatile String cachedYailGrammar;
+  // Context modules
+  private final ReferenceModule referenceModule = new ReferenceModule();
+  private final CatalogModule catalogModule = new CatalogModule();
+  private final GrammarModule grammarModule = new GrammarModule();
+  private final ExamplesModule examplesModule = new ExamplesModule();
+  private final ModeModule modeModule = new ModeModule();
+  private final ProjectModule projectModule = new ProjectModule();
+  private final ScreenModule screenModule = new ScreenModule();
 
   private final StorageIo storageIo;
 
@@ -93,24 +80,24 @@ public class AIContextBuilder {
     StringBuilder sb = new StringBuilder();
 
     // Layer 1: Static reference
-    String reference = getReference();
+    String reference = referenceModule.build(null);
     sb.append(reference).append("\n\n");
     AIDebug.log(LOG, "Context Layer 1 (reference): " + reference.length() + " chars");
 
     // Layer 2: Component catalog
-    String catalog = getCatalog();
+    String catalog = catalogModule.build(null);
     sb.append("## Component Catalog\n\n");
     sb.append(catalog).append("\n\n");
     AIDebug.log(LOG, "Context Layer 2 (catalog): " + catalog.length() + " chars");
 
     // Layer 3: YAIL grammar reference
-    String grammar = getYailGrammar();
+    String grammar = grammarModule.build(null);
     sb.append("## YAIL Grammar\n\n");
     sb.append(grammar).append("\n\n");
     AIDebug.log(LOG, "Context Layer 3 (YAIL grammar): " + grammar.length() + " chars");
 
     // Layer 4: Few-shot examples
-    String examples = getExamples();
+    String examples = examplesModule.build(null);
     sb.append("## Examples\n\n");
     sb.append(examples).append("\n\n");
     AIDebug.log(LOG, "Context Layer 4 (examples): " + examples.length() + " chars");
@@ -141,48 +128,22 @@ public class AIContextBuilder {
    */
   public List<String> buildContextMessages(String userId, long projectId, String screenName,
       String mode, String blocksYail, String currentView) {
+    ContextParams params = new ContextParams(userId, projectId, screenName, mode,
+        blocksYail, currentView, storageIo);
     List<String> messages = new ArrayList<>();
-    String packagePath = getPackagePath(userId, projectId);
-    List<String> screenNames = listScreenNames(userId, projectId, packagePath);
 
     // Message 1: Mode and view
-    String modeCtx = buildModeInstructions(mode, currentView);
+    String modeCtx = modeModule.build(params);
     messages.add(modeCtx);
     AIDebug.log(LOG, "Context message 1 (mode): " + modeCtx.length() + " chars");
 
     // Message 2: Project overview
-    StringBuilder project = new StringBuilder();
-    project.append("[Current project state — supersedes any previous project state]\n\n");
-    project.append("## Project State\n\n");
-    project.append(buildProjectOverview(userId, projectId)).append("\n");
-    project.append("### Screens: ").append(String.join(", ", screenNames)).append("\n\n");
-    List<String> assets = listAssets(userId, projectId);
-    if (!assets.isEmpty()) {
-      project.append("### Assets: ").append(String.join(", ", assets)).append("\n\n");
-    }
-    List<String> extensions = listExtensions(userId, projectId);
-    if (!extensions.isEmpty()) {
-      project.append("### Extensions: ").append(String.join(", ", extensions)).append("\n\n");
-    }
-    if ("ProjectEditor".equals(mode)) {
-      for (String other : screenNames) {
-        if (!other.equals(screenName)) {
-          project.append("### Screen: ").append(other).append(" (summary)\n");
-          project.append(buildScreenSummary(userId, projectId, other, packagePath));
-        }
-      }
-    }
-    String projectCtx = project.toString();
+    String projectCtx = projectModule.build(params);
     messages.add(projectCtx);
     AIDebug.log(LOG, "Context message 2 (project): " + projectCtx.length() + " chars");
 
     // Message 3: Current screen
-    StringBuilder screen = new StringBuilder();
-    screen.append("[Current screen state — supersedes any previous screen state]\n\n");
-    screen.append("## Current Screen: ").append(screenName).append("\n\n");
-    screen.append(buildCurrentScreenState(userId, projectId, screenName, packagePath,
-        blocksYail));
-    String screenCtx = screen.toString();
+    String screenCtx = screenModule.build(params);
     messages.add(screenCtx);
     AIDebug.log(LOG, "Context message 3 (screen): " + screenCtx.length() + " chars");
 
@@ -335,528 +296,6 @@ public class AIContextBuilder {
    * @return formatted screen state
    */
   public String buildScreenState(String userId, long projectId, String screenName) {
-    StringBuilder sb = new StringBuilder();
-    String packagePath = getPackagePath(userId, projectId);
-    if (packagePath == null) {
-      sb.append("(Unable to determine package path)\n");
-      return sb.toString();
-    }
-
-    String scmFileId = packagePath + "/" + screenName + FORM_PROPERTIES_EXTENSION;
-    String bkyFileId = packagePath + "/" + screenName + BLOCKLY_SOURCE_EXTENSION;
-
-    // Component tree
-    sb.append("### Component Tree\n\n");
-    try {
-      String scmContent = storageIo.downloadFile(userId, projectId, scmFileId, "UTF-8");
-      String scmJson = extractScmJson(scmContent);
-      if (scmJson != null) {
-        sb.append(buildComponentTree(new JSONObject(scmJson), 0));
-      } else {
-        sb.append("(empty screen)\n");
-      }
-    } catch (Exception e) {
-      sb.append("(unable to read screen properties)\n");
-    }
-
-    // Blocks YAIL (from server-side .bky file as fallback only)
-    sb.append("\n### Blocks (YAIL)\n\n");
-    sb.append("(no blocks YAIL available from server — use client-provided YAIL)\n");
-
-    return sb.toString();
-  }
-
-  /**
-   * Build the state of the current screen using client-provided blocks YAIL
-   * instead of server-side conversion from .bky files.
-   */
-  private String buildCurrentScreenState(String userId, long projectId,
-      String screenName, String packagePath, String blocksYail) {
-    StringBuilder sb = new StringBuilder();
-
-    // Component tree from SCM file
-    sb.append("#### Component Tree\n\n");
-    if (packagePath != null) {
-      String scmFileId = packagePath + "/" + screenName + FORM_PROPERTIES_EXTENSION;
-      try {
-        String scmContent = storageIo.downloadFile(userId, projectId, scmFileId, "UTF-8");
-        String scmJson = extractScmJson(scmContent);
-        if (scmJson != null) {
-          sb.append(buildComponentTree(new JSONObject(scmJson), 0));
-        } else {
-          sb.append("(empty screen)\n");
-        }
-      } catch (Exception e) {
-        sb.append("(unable to read screen properties)\n");
-      }
-    } else {
-      sb.append("(unable to determine package path)\n");
-    }
-
-    // Blocks YAIL from client
-    sb.append("\n#### Blocks (YAIL)\n\n");
-    if (blocksYail != null && !blocksYail.trim().isEmpty()) {
-      sb.append("```scheme\n");
-      sb.append(blocksYail);
-      sb.append("\n```\n");
-    } else {
-      sb.append("(no blocks)\n");
-    }
-
-    return sb.toString();
-  }
-
-  // ---------- Layer builders ----------
-
-
-  private String buildProjectOverview(String userId, long projectId) {
-    StringBuilder sb = new StringBuilder();
-    try {
-      String propsContent = storageIo.downloadFile(
-          userId, projectId, PROJECT_PROPERTIES_FILE, "UTF-8");
-      Properties props = new Properties();
-      props.load(new java.io.StringReader(propsContent));
-
-      String projectName = storageIo.getProjectName(userId, projectId);
-      sb.append("### Project Overview\n");
-      sb.append("- Name: ").append(projectName).append("\n");
-
-      String appName = props.getProperty("aname", projectName);
-      sb.append("- App Name: ").append(appName).append("\n");
-
-      String versionName = props.getProperty("versionname", "");
-      if (!versionName.isEmpty()) {
-        sb.append("- Version: ").append(versionName).append("\n");
-      }
-
-      String theme = props.getProperty("theme", "");
-      if (!theme.isEmpty()) {
-        sb.append("- Theme: ").append(theme).append("\n");
-      }
-
-      String sizing = props.getProperty("sizing", "");
-      if (!sizing.isEmpty()) {
-        sb.append("- Sizing: ").append(sizing).append("\n");
-      }
-
-      String primaryColor = props.getProperty("color.primary", "");
-      if (!primaryColor.isEmpty()) {
-        sb.append("- Primary Color: ").append(primaryColor).append("\n");
-      }
-
-      String accentColor = props.getProperty("color.accent", "");
-      if (!accentColor.isEmpty()) {
-        sb.append("- Accent Color: ").append(accentColor).append("\n");
-      }
-    } catch (Exception e) {
-      sb.append("### Project Overview\n");
-      sb.append("- Name: ").append(storageIo.getProjectName(userId, projectId)).append("\n");
-    }
-    return sb.toString();
-  }
-
-  /**
-   * Build an indented component tree from SCM JSON Properties object.
-   */
-  private String buildComponentTree(JSONObject properties, int depth) {
-    StringBuilder sb = new StringBuilder();
-    String indent = repeatIndent(depth);
-
-    String type = properties.optString("$Type", "?");
-    String name = properties.optString("$Name", "?");
-    sb.append(indent).append(type).append(" (").append(name).append(")");
-
-    // Collect non-default, non-internal properties
-    List<String> propPairs = new ArrayList<>();
-    for (Object keyObj : properties.keySet()) {
-      String key = (String) keyObj;
-      if (key.startsWith("$") || "Uuid".equals(key)) {
-        continue;
-      }
-      propPairs.add(key + "=" + properties.get(key));
-    }
-    if (!propPairs.isEmpty()) {
-      sb.append(" [").append(String.join(", ", propPairs)).append("]");
-    }
-    sb.append("\n");
-
-    // Recurse into children
-    JSONArray children = properties.optJSONArray("$Components");
-    if (children != null) {
-      for (int i = 0; i < children.length(); i++) {
-        sb.append(buildComponentTree(children.getJSONObject(i), depth + 1));
-      }
-    }
-
-    return sb.toString();
-  }
-
-  private String buildScreenSummary(String userId, long projectId,
-      String screenName, String packagePath) {
-    StringBuilder sb = new StringBuilder();
-    if (packagePath == null) {
-      sb.append("(unknown)\n");
-      return sb.toString();
-    }
-
-    String scmFileId = packagePath + "/" + screenName + FORM_PROPERTIES_EXTENSION;
-    try {
-      String scmContent = storageIo.downloadFile(userId, projectId, scmFileId, "UTF-8");
-      String scmJson = extractScmJson(scmContent);
-      if (scmJson != null) {
-        JSONObject props = new JSONObject(scmJson).optJSONObject("Properties");
-        if (props != null) {
-          int componentCount = countComponents(props);
-          sb.append("Components: ").append(componentCount);
-          sb.append(", Title: \"").append(props.optString("Title", screenName)).append("\"");
-        }
-      }
-    } catch (Exception e) {
-      sb.append("(unable to read)");
-    }
-    sb.append("\n");
-    return sb.toString();
-  }
-
-  private int countComponents(JSONObject properties) {
-    int count = 1;
-    JSONArray children = properties.optJSONArray("$Components");
-    if (children != null) {
-      for (int i = 0; i < children.length(); i++) {
-        count += countComponents(children.getJSONObject(i));
-      }
-    }
-    return count;
-  }
-
-  private String buildModeInstructions(String mode, String currentView) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("[Current mode and view — supersedes any previous mode instructions]\n\n");
-    sb.append("## Mode: ").append(mode).append("\n\n");
-    switch (mode) {
-      case "Advisor":
-        sb.append("You are in Advisor mode. You can ONLY provide advice and answer questions. ")
-            .append("You CANNOT modify the project — no write tools are available to you. ")
-            .append("Use the lookup_component and lookup_screen tools to examine the project ")
-            .append("when needed, then provide helpful guidance in your text response. ")
-            .append("Your text response is your only way to communicate with the user.\n");
-        break;
-      case "ScreenEditor":
-        sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
-            .append("You cannot create or delete screens. You can switch screens and toggle editor views. ")
-            .append("To make changes, invoke the provided tools via function calling. ")
-            .append("Always include a text response explaining what you are doing or ")
-            .append("asking clarifying questions — do not return tool calls without ")
-            .append("an accompanying explanation.\n");
-        break;
-      case "ProjectEditor":
-        sb.append("You are in ProjectEditor mode. You have full access to modify the project ")
-            .append("including creating/deleting screens, modifying any screen, ")
-            .append("and setting project-level properties. ")
-            .append("To make changes, invoke the provided tools via function calling. ")
-            .append("Always include a text response explaining what you are doing or ")
-            .append("asking clarifying questions — do not return tool calls without ")
-            .append("an accompanying explanation.\n");
-        break;
-      default:
-        break;
-    }
-
-    // Editor view rules (for modes that allow modifications)
-    if (!"Advisor".equals(mode)) {
-      sb.append("\n### Editor View Rules\n");
-      sb.append("The user is currently viewing the **").append(currentView)
-          .append("** editor.\n");
-      sb.append("- **Designer operations** (`add_component`, `delete_component`, ")
-          .append("`set_property`, `rename_component`) can ONLY be executed when the ")
-          .append("user is viewing the **Designer** editor.\n");
-      sb.append("- **Block operations** (`write_block`, `delete_block`) can ONLY be ")
-          .append("executed when the user is viewing the **Blocks** editor.\n");
-      sb.append("- To switch views, use the `toggle_editor` tool.\n");
-      sb.append("- `toggle_editor` and `switch_screen` MUST each be called **ALONE** — ")
-          .append("never combine them with other tool calls in the same response.\n");
-      sb.append("- After `toggle_editor` or `switch_screen` is confirmed, continue ")
-          .append("with the operations that require the new view or screen.\n");
-    }
-
-    return sb.toString();
-  }
-
-  // ---------- Helper methods ----------
-
-  /**
-   * Extract the JSON content from an SCM file (strips the #| $JSON ... |# wrapper).
-   */
-  private String extractScmJson(String scmContent) {
-    if (scmContent == null || scmContent.isEmpty()) {
-      return null;
-    }
-    // SCM files are wrapped in #| $JSON ... |#
-    int jsonStart = scmContent.indexOf("{");
-    int jsonEnd = scmContent.lastIndexOf("}");
-    if (jsonStart >= 0 && jsonEnd > jsonStart) {
-      return scmContent.substring(jsonStart, jsonEnd + 1);
-    }
-    return null;
-  }
-
-  /**
-   * Determine the source package path for the project.
-   * Reads project.properties to find the main form and derives the package path.
-   */
-  private String getPackagePath(String userId, long projectId) {
-    try {
-      String propsContent = storageIo.downloadFile(
-          userId, projectId, PROJECT_PROPERTIES_FILE, "UTF-8");
-      Properties props = new Properties();
-      props.load(new java.io.StringReader(propsContent));
-
-      // main=com.example.myapp.Screen1
-      String main = props.getProperty("main", "");
-      if (main.isEmpty()) {
-        return null;
-      }
-      int lastDot = main.lastIndexOf('.');
-      if (lastDot < 0) {
-        return null;
-      }
-      String packageName = main.substring(0, lastDot);
-      return SRC_FOLDER + "/" + packageName.replace('.', '/');
-    } catch (Exception e) {
-      LOG.warning("Failed to read project properties: " + e.getMessage());
-      return null;
-    }
-  }
-
-  private List<String> listScreenNames(String userId, long projectId, String packagePath) {
-    List<String> screens = new ArrayList<>();
-    if (packagePath == null) {
-      return screens;
-    }
-    try {
-      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
-      for (String fileId : files) {
-        if (fileId.startsWith(packagePath + "/") && fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
-          String name = fileId.substring(fileId.lastIndexOf('/') + 1,
-              fileId.length() - FORM_PROPERTIES_EXTENSION.length());
-          screens.add(name);
-        }
-      }
-    } catch (Exception e) {
-      LOG.warning("Failed to list screens: " + e.getMessage());
-    }
-    return screens;
-  }
-
-  private List<String> listAssets(String userId, long projectId) {
-    List<String> assets = new ArrayList<>();
-    try {
-      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
-      for (String fileId : files) {
-        if (fileId.startsWith(ASSETS_FOLDER + "/")
-            && !fileId.startsWith(EXTERNAL_COMPS_FOLDER + "/")) {
-          String name = fileId.substring(ASSETS_FOLDER.length() + 1);
-          assets.add(name);
-        }
-      }
-    } catch (Exception e) {
-      LOG.warning("Failed to list assets: " + e.getMessage());
-    }
-    return assets;
-  }
-
-  private List<String> listExtensions(String userId, long projectId) {
-    List<String> extensions = new ArrayList<>();
-    try {
-      List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
-      for (String fileId : files) {
-        if (fileId.startsWith(EXTERNAL_COMPS_FOLDER + "/")
-            && fileId.endsWith("/components.json")) {
-          String extPath = fileId.substring(EXTERNAL_COMPS_FOLDER.length() + 1);
-          String extName = extPath.substring(0, extPath.indexOf('/'));
-          if (!extensions.contains(extName)) {
-            extensions.add(extName);
-          }
-        }
-      }
-    } catch (Exception e) {
-      LOG.warning("Failed to list extensions: " + e.getMessage());
-    }
-    return extensions;
-  }
-
-  private static String repeatIndent(int depth) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < depth; i++) {
-      sb.append("  ");
-    }
-    return sb.toString();
-  }
-
-  // ---------- Static resource loading ----------
-
-  private static String getReference() {
-    if (cachedReference == null) {
-      cachedReference = loadResource("appinventor_reference.md");
-    }
-    return cachedReference;
-  }
-
-  private static String getCatalog() {
-    if (cachedCatalog == null) {
-      cachedCatalog = buildCompactCatalog();
-    }
-    return cachedCatalog;
-  }
-
-  /**
-   * Build a compact component catalog from simple_components.json.
-   *
-   * <p>Groups components by category with names and brief descriptions only.
-   * Excludes Form (documented inline in the system prompt) and INTERNAL
-   * components. Only components with {@code showOnPalette=true} are included.
-   */
-  private static String buildCompactCatalog() {
-    String json = loadResource("/com/google/appinventor/simple_components.json");
-    if (json.startsWith("(resource")) {
-      LOG.warning("Could not load simple_components.json for catalog");
-      return json;
-    }
-
-    JSONArray components = new JSONArray(json);
-    Map<String, List<String>> byCategory = new TreeMap<>();
-
-    for (int i = 0; i < components.length(); i++) {
-      JSONObject comp = components.getJSONObject(i);
-
-      String name = comp.optString("name", "");
-      String categoryString = comp.optString("categoryString", "");
-      boolean showOnPalette = "true".equals(comp.optString("showOnPalette", "false"));
-      boolean nonVisible = "true".equals(comp.optString("nonVisible", "false"));
-      String helpString = comp.optString("helpString", "");
-
-      // Skip Form (handled in system prompt), INTERNAL, and hidden components
-      if ("Form".equals(name) || "INTERNAL".equals(categoryString) || !showOnPalette) {
-        continue;
-      }
-
-      // Map category enum name to display name
-      String displayCategory;
-      try {
-        displayCategory = ComponentCategory.valueOf(categoryString).getName();
-      } catch (IllegalArgumentException e) {
-        displayCategory = categoryString;
-      }
-
-      // Clean up description
-      String desc = stripHtml(helpString);
-      desc = truncateDescription(desc);
-
-      String entry = "- **" + name + "**";
-      if (nonVisible) {
-        entry += " (non-visible)";
-      }
-      if (!desc.isEmpty()) {
-        entry += ": " + desc;
-      }
-
-      byCategory.computeIfAbsent(displayCategory, k -> new ArrayList<>()).add(entry);
-    }
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("The following component types are available. Use `lookup_component` to get\n");
-    sb.append("full details (properties, events, methods) before using a component.\n");
-
-    for (Map.Entry<String, List<String>> entry : byCategory.entrySet()) {
-      sb.append("\n### ").append(entry.getKey()).append("\n");
-      for (String line : entry.getValue()) {
-        sb.append(line).append("\n");
-      }
-    }
-
-    return sb.toString();
-  }
-
-  /**
-   * Strip HTML tags, decode common entities, and collapse whitespace.
-   */
-  private static String stripHtml(String html) {
-    if (html == null || html.isEmpty()) {
-      return "";
-    }
-    String text = html.replaceAll("<[^>]+>", " ");
-    text = text.replace("&amp;", "&")
-               .replace("&lt;", "<")
-               .replace("&gt;", ">")
-               .replace("&quot;", "\"")
-               .replace("&#39;", "'")
-               .replace("&nbsp;", " ");
-    text = text.replaceAll("\\s+", " ").trim();
-    return text;
-  }
-
-  /**
-   * Truncate to the first sentence (period followed by whitespace or end),
-   * capped at 150 characters.
-   */
-  private static String truncateDescription(String text) {
-    if (text == null || text.isEmpty()) {
-      return "";
-    }
-    // Find first sentence boundary
-    int end = -1;
-    for (int i = 0; i < text.length() - 1; i++) {
-      if (text.charAt(i) == '.' && (i + 1 >= text.length() || Character.isWhitespace(text.charAt(i + 1)))) {
-        end = i + 1; // include the period
-        break;
-      }
-    }
-    // If no sentence boundary found, check if text ends with period
-    if (end < 0 && text.endsWith(".")) {
-      end = text.length();
-    }
-    if (end < 0) {
-      end = text.length();
-    }
-    String result = text.substring(0, end).trim();
-    if (result.length() > 150) {
-      result = result.substring(0, 147) + "...";
-    }
-    return result;
-  }
-
-  private static String getExamples() {
-    if (cachedExamples == null) {
-      cachedExamples = loadResource("few_shot_examples.json");
-    }
-    return cachedExamples;
-  }
-
-  private static String getYailGrammar() {
-    if (cachedYailGrammar == null) {
-      cachedYailGrammar = loadResource("yail_grammar.md");
-    }
-    return cachedYailGrammar;
-  }
-
-  private static String loadResource(String name) {
-    String path = name.startsWith("/") ? name : RESOURCE_BASE + name;
-    try (InputStream is = AIContextBuilder.class.getResourceAsStream(path)) {
-      if (is == null) {
-        LOG.warning("Resource not found: " + path);
-        return "(resource not available)";
-      }
-      BufferedReader reader = new BufferedReader(
-          new InputStreamReader(is, StandardCharsets.UTF_8));
-      StringBuilder sb = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        sb.append(line).append("\n");
-      }
-      return sb.toString();
-    } catch (IOException e) {
-      LOG.warning("Failed to load resource " + name + ": " + e.getMessage());
-      return "(resource not available)";
-    }
+    return screenModule.buildScreenState(userId, projectId, screenName, storageIo);
   }
 }
