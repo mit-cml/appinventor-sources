@@ -696,12 +696,17 @@ AI.YailToBlocks.convertSymbolExpr_ = function(workspace, node) {
     return AI.YailToBlocks.makeNumberBlock_(workspace, num);
   }
 
-  // LLM tolerance: check if bare symbol matches a known global variable
+  // LLM tolerance: some models emit bare variable names without the g$
+  // prefix, e.g. (set-var! myVar 5) instead of (set-var! g$myVar 5).
+  // If the symbol matches a known global variable in the workspace, treat
+  // it as a variable reference.  This is unambiguous because the check is
+  // gated on the workspace's actual variable list — a bare symbol that
+  // does NOT match any variable falls through to the text fallback below.
   if (AI.YailToBlocks.isGlobalVariable_(workspace, name)) {
     return AI.YailToBlocks.makeVarGetBlock_(workspace, 'global ' + name);
   }
 
-  // Fallback: treat as text
+  // Fallback: treat unrecognized symbol as text literal
   return AI.YailToBlocks.makeTextBlock_(workspace, name);
 };
 
@@ -802,8 +807,15 @@ AI.YailToBlocks.convertListExpr_ = function(workspace, node) {
       }
       return null;
     default:
-      // LLM tolerance: check for shortened primitive forms like (+ a b)
-      // instead of full (call-yail-primitive + (*list-for-runtime* a b) '(number number) "+")
+      // LLM tolerance: some models emit shortened primitive forms like
+      //   (+ a b)
+      // instead of the canonical call-yail-primitive wrapper:
+      //   (call-yail-primitive + (*list-for-runtime* a b) '(number number) "+")
+      // If the head symbol matches a known YAIL primitive in PRIMITIVE_MAP_,
+      // treat all remaining elements as arguments.  This is unambiguous
+      // because PRIMITIVE_MAP_ only contains reserved YAIL primitive names
+      // (e.g. +, string-append, make-yail-list) — no valid non-primitive
+      // YAIL form starts with these symbols.
       var primInfo = AI.YailToBlocks.PRIMITIVE_MAP_[head];
       if (primInfo) {
         return AI.YailToBlocks.convertShortPrimitive_(workspace, node, primInfo);
@@ -814,7 +826,13 @@ AI.YailToBlocks.convertListExpr_ = function(workspace, node) {
 
 /**
  * Convert a shortened primitive form like (+ a b) where the LLM omitted
- * the full call-yail-primitive wrapper.
+ * the full call-yail-primitive wrapper.  All elements after the head
+ * symbol are treated as arguments (no type annotation or description
+ * to strip — those only appear inside the call-yail-primitive form).
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {Object} node AST node whose head matched PRIMITIVE_MAP_.
+ * @param {Object} info Entry from PRIMITIVE_MAP_ ({block, arity, mode?}).
+ * @return {?Blockly.Block}
  * @private
  */
 AI.YailToBlocks.convertShortPrimitive_ = function(workspace, node, info) {
@@ -1355,6 +1373,27 @@ AI.YailToBlocks.convertPrimitive_ = function(workspace, node, asExpression) {
     var argList = els[2].elements;
     for (var i = 1; i < argList.length; i++) {
       args.push(argList[i]);
+    }
+  } else if (els.length > 2) {
+    // LLM tolerance: some models emit call-yail-primitive without the
+    // *list-for-runtime* wrapper, passing arguments directly:
+    //   (call-yail-primitive name arg1 arg2 ... '(types...) "desc")
+    // instead of the canonical form:
+    //   (call-yail-primitive name (*list-for-runtime* arg1 arg2 ...) '(types...) "desc")
+    //
+    // To recover the arguments we collect els[2..end] and strip the
+    // trailing (quoted-list, string) metadata pair if present.  This is
+    // unambiguous because the type annotation is always a quoted list of
+    // type-name symbols and the description is always a string — no YAIL
+    // primitive accepts that combination as its final two arguments.
+    var raw = els.slice(2);
+    if (raw.length >= 2
+        && raw[raw.length - 1].type === 'string'
+        && raw[raw.length - 2].type === 'quoted') {
+      raw = raw.slice(0, raw.length - 2);
+    }
+    for (var i = 0; i < raw.length; i++) {
+      args.push(raw[i]);
     }
   }
 
