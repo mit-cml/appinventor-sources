@@ -65,12 +65,12 @@ public class GeminiProvider implements LLMProvider {
   }
 
   @Override
-  public LLMResponse chat(String systemPrompt, String userMessage, List<LLMTool> tools,
-      String providerRef, List<ChatMessage> history, ReadOnlyToolResolver resolver)
-      throws LLMProviderException {
+  public LLMResponse chat(String systemPrompt, String userContext, String userMessage,
+      List<LLMTool> tools, String providerRef, List<ChatMessage> history,
+      ReadOnlyToolResolver resolver) throws LLMProviderException {
 
     // Build the contents array from history + current user message
-    JSONArray contents = buildContents(history, userMessage);
+    JSONArray contents = buildContents(history, userContext, userMessage);
     JSONArray toolDeclarations = buildToolDeclarations(tools);
 
     // Internal tool-use loop
@@ -449,7 +449,8 @@ public class GeminiProvider implements LLMProvider {
    * Builds the contents array from conversation history and the current
    * user message.
    */
-  private JSONArray buildContents(List<ChatMessage> history, String userMessage) {
+  private JSONArray buildContents(List<ChatMessage> history, String userContext,
+      String userMessage) {
     JSONArray contents = new JSONArray();
     if (history != null) {
       for (ChatMessage msg : history) {
@@ -465,6 +466,19 @@ public class GeminiProvider implements LLMProvider {
             .put("role", geminiRole)
             .put("parts", parts));
       }
+    }
+    // Per-request context as a separate user turn before the user's message
+    if (userContext != null && !userContext.isEmpty()) {
+      JSONArray ctxParts = new JSONArray();
+      ctxParts.put(new JSONObject().put("text", userContext));
+      contents.put(new JSONObject()
+          .put("role", "user")
+          .put("parts", ctxParts));
+      JSONArray ackParts = new JSONArray();
+      ackParts.put(new JSONObject().put("text", "Understood."));
+      contents.put(new JSONObject()
+          .put("role", "model")
+          .put("parts", ackParts));
     }
     JSONArray userParts = new JSONArray();
     userParts.put(new JSONObject().put("text", userMessage));

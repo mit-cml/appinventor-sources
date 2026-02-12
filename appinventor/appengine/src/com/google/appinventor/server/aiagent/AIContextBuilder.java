@@ -32,22 +32,25 @@ import java.util.logging.Logger;
 /**
  * Builds the LLM system prompt and tool definitions for the AI agent.
  *
- * <p>The system prompt is assembled from these layers:
+ * <p>The <strong>system prompt</strong> is assembled by {@link #build} from:
  * <ul>
  *   <li>Layer 1: Static reference and rules from appinventor_reference.md
- *   <li>Layer 2: Mode-specific instructions (Advisor/ScreenEditor/ProjectEditor)
- *   <li>Layer 3: Compact component catalog from simple_components.json
- *   <li>Layer 4: YAIL grammar reference from yail_grammar.md
- *   <li>Layer 5: Current app state (per-request, from project files)
- *   <li>Layer 6: Few-shot examples from few_shot_examples.json
+ *   <li>Layer 2: Compact component catalog from simple_components.json
+ *   <li>Layer 3: YAIL grammar reference from yail_grammar.md
+ *   <li>Layer 4: Current app state (per-request, from project files)
+ *   <li>Layer 5: Few-shot examples from few_shot_examples.json
  * </ul>
+ *
+ * <p>Per-request <strong>mode instructions</strong> are built by
+ * {@link #buildUserContext} and sent as a separate user message before the
+ * user's actual message, keeping mode-specific rules out of the system prompt.
  *
  * <p>Tool definitions are built separately by {@link #buildTools} and passed
  * via each provider's native tool/function-calling API parameter, filtered
  * by mode and current editor view.
  *
- * <p>Static content (Layers 1, 3, 4, 6) is cached on first use. Layers 2
- * and 5 are built fresh per-request.
+ * <p>Static content (Layers 1, 2, 3, 5) is cached on first use. Layer 4
+ * is built fresh per-request.
  */
 public class AIContextBuilder {
 
@@ -75,7 +78,10 @@ public class AIContextBuilder {
   // ---------- Public API ----------
 
   /**
-   * Build the complete system prompt for an LLM request.
+   * Build the system prompt for an LLM request.
+   *
+   * <p>The static layers (reference, catalog, grammar, examples) are cached
+   * on first use. The project state layer is built fresh per-request.
    *
    * @param userId      the authenticated user
    * @param projectId   the project being edited
@@ -95,38 +101,50 @@ public class AIContextBuilder {
     sb.append(reference).append("\n\n");
     AIDebug.log(LOG, "Context Layer 1 (reference): " + reference.length() + " chars");
 
-    // Layer 2: Mode instructions
-    String modeInstructions = buildModeInstructions(mode, currentView);
-    sb.append(modeInstructions).append("\n\n");
-    AIDebug.log(LOG, "Context Layer 2 (mode): " + modeInstructions.length() + " chars");
-
-    // Layer 3: Component catalog
+    // Layer 2: Component catalog
     String catalog = getCatalog();
     sb.append("## Component Catalog\n\n");
     sb.append(catalog).append("\n\n");
-    AIDebug.log(LOG, "Context Layer 3 (catalog): " + catalog.length() + " chars");
+    AIDebug.log(LOG, "Context Layer 2 (catalog): " + catalog.length() + " chars");
 
-    // Layer 4: YAIL grammar reference
+    // Layer 3: YAIL grammar reference
     String grammar = getYailGrammar();
     sb.append("## YAIL Grammar\n\n");
     sb.append(grammar).append("\n\n");
-    AIDebug.log(LOG, "Context Layer 4 (YAIL grammar): " + grammar.length() + " chars");
+    AIDebug.log(LOG, "Context Layer 3 (YAIL grammar): " + grammar.length() + " chars");
 
-    // Layer 5: Current app state (per-request)
+    // Layer 4: Current app state (per-request)
     String projectState = buildProjectState(userId, projectId, screenName, mode, blocksYail,
         currentView);
     sb.append("## Current Project State\n\n");
     sb.append(projectState);
     sb.append("\n\n");
-    AIDebug.log(LOG, "Context Layer 5 (project state): " + projectState.length() + " chars");
+    AIDebug.log(LOG, "Context Layer 4 (project state): " + projectState.length() + " chars");
 
-    // Layer 6: Few-shot examples
+    // Layer 5: Few-shot examples
     String examples = getExamples();
     sb.append("## Examples\n\n");
     sb.append(examples).append("\n\n");
-    AIDebug.log(LOG, "Context Layer 6 (examples): " + examples.length() + " chars");
+    AIDebug.log(LOG, "Context Layer 5 (examples): " + examples.length() + " chars");
 
     return sb.toString();
+  }
+
+  /**
+   * Build the per-request user context prefix containing mode instructions.
+   *
+   * <p>This content is prepended to the user's message (not the system prompt)
+   * so the mode-specific instructions are delivered as user-side context
+   * rather than polluting the system prompt with dynamic content.
+   *
+   * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @param currentView the active editor view ("Designer" or "Blocks")
+   * @return the mode instructions string
+   */
+  public String buildUserContext(String mode, String currentView) {
+    String modeInstructions = buildModeInstructions(mode, currentView);
+    AIDebug.log(LOG, "User context (mode): " + modeInstructions.length() + " chars");
+    return modeInstructions;
   }
 
   /**
@@ -519,6 +537,7 @@ public class AIContextBuilder {
 
   private String buildModeInstructions(String mode, String currentView) {
     StringBuilder sb = new StringBuilder();
+    sb.append("[Current mode and view — supersedes any previous mode instructions]\n\n");
     sb.append("## Mode: ").append(mode).append("\n\n");
     switch (mode) {
       case "Advisor":

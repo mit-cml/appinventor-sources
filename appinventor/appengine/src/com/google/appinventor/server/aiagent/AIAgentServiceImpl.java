@@ -144,11 +144,12 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         isNew = true;
       }
 
-      // Build system prompt and tools (using client-provided blocks YAIL and view)
+      // Build system prompt, user context, and tools
       String blocksYail = request.getBlocksYail();
       String currentView = request.getCurrentView();
       String systemPrompt = contextBuilder.build(userId, projectId, screenName, mode,
           blocksYail, currentView);
+      String userContext = contextBuilder.buildUserContext(mode, currentView);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
@@ -179,9 +180,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       updateStatus(projectId, "Calling AI...");
 
-      // Call LLM
+      // Call LLM (mode context is sent as a separate message by the provider)
       LLMResponse llmResponse = provider.chat(
-          systemPrompt, userMessage, tools, conv.getProviderRef(), history, resolver);
+          systemPrompt, userContext, userMessage, tools, conv.getProviderRef(),
+          history, resolver);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -243,7 +245,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
         updateStatus(projectId, "Calling AI...");
         LLMResponse retryResponse = provider.chat(
-            systemPrompt, followUp, tools, llmResponse.getProviderRef(),
+            systemPrompt, userContext, followUp, tools, llmResponse.getProviderRef(),
             updatedHistory, resolver);
 
         // Re-parse the retry response
@@ -488,6 +490,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       String systemPrompt = contextBuilder.build(userId, projectId, screenName,
           mode, blocksYail, currentView);
 
+      // Mode context sent as a separate message by the provider
+      String userContext = contextBuilder.buildUserContext(mode, currentView);
+
       // Save error feedback to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.
       storeMessage(conv.getConversationId(), "user",
@@ -497,7 +502,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Retry LLM with the error feedback
       LLMResponse llmResponse = provider.chat(
-          systemPrompt, feedback, tools, conv.getProviderRef(), history, resolver);
+          systemPrompt, userContext, feedback, tools, conv.getProviderRef(),
+          history, resolver);
 
       // Parse and validate the retry response
       List<LLMResponseParser.RawToolCall> rawCalls = new ArrayList<>();
