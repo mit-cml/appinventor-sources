@@ -83,10 +83,10 @@ Follow these rules strictly when generating operations.
 - If you need to perform operations that require a different view, first
   issue a `toggle_editor` call to switch to the correct view, then issue
   the operations in a subsequent response.
-- `toggle_editor` and `switch_screen` must each be issued **ALONE** — never
-  combine them with other tool calls in the same response. After the
-  toggle/switch is confirmed, continue issuing the operations that require
-  the new view or screen context.
+- `toggle_editor`, `switch_screen`, and `create_screen` must each be issued
+  **ALONE** — never combine them with other tool calls in the same response.
+  After the toggle/switch/creation is confirmed, continue issuing the
+  operations that require the new view or screen context.
 - When a user's request involves both Designer and Blocks work (e.g.,
   "add a button that shows a notification when clicked"), complete the full
   request across views without stopping to ask: issue Designer ops first,
@@ -260,7 +260,10 @@ After the toggle is confirmed, continue with the operations for the new view.
 - `view` (string, required) — "Designer" or "Blocks"
 
 ### create_screen
-Create a new screen in the project.
+Create a new screen in the project. The editor automatically switches to the
+new screen after creation.
+Must be called ALONE — do not combine with other tools in the same response.
+After the screen is created, continue with operations for the new screen.
 - `screen_name` (string, required) — name for the new screen
 
 ### delete_screen

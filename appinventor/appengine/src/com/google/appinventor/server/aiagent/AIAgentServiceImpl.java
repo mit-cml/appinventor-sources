@@ -766,11 +766,12 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           AIOperation.Type.WRITE_BLOCK,
           AIOperation.Type.DELETE_BLOCK)));
 
-  /** Navigation operations that must appear alone (no other ops in same batch). */
+  /** Operations that must appear alone (no other ops in same batch). */
   private static final Set<AIOperation.Type> SOLO_OPS =
       Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
           AIOperation.Type.TOGGLE_EDITOR,
-          AIOperation.Type.SWITCH_SCREEN)));
+          AIOperation.Type.SWITCH_SCREEN,
+          AIOperation.Type.CREATE_SCREEN)));
 
   /**
    * Enforce mode, view, and solo-op restrictions on operations.
@@ -826,7 +827,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
       // Solo-op enforcement
       if (!rejected && hasSoloOp && hasOtherOp && !SOLO_OPS.contains(op.getType())) {
-        errors.add("toggle_editor/switch_screen must be the only operation. "
+        errors.add("toggle_editor/switch_screen/create_screen must be the only operation. "
             + "Rejected: " + op.getType());
         rejected = true;
       }
