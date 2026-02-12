@@ -421,6 +421,7 @@ public class Ode implements EntryPoint {
     // screenShotMaybe() so build the runnable now
     hideChaff();
     hideTutorials();
+    hideAIChatDialog();
     Runnable next = new Runnable() {
         @Override
         public void run() {
@@ -661,6 +662,11 @@ public class Ode implements EntryPoint {
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
+    // Notify the AI chat dialog that the active project changed so it can
+    // refresh its conversation or close if the project context is gone.
+    if (aiChatDialog != null) {
+      aiChatDialog.onProjectChanged();
+    }
   }
 
   /**
@@ -2532,6 +2538,17 @@ public class Ode implements EntryPoint {
       aiChatDialog.hideDialog();
     } else {
       aiChatDialog.show();
+    }
+  }
+
+  /**
+   * Hides the AI chat dialog if it is currently showing.
+   * Called when leaving the project design area (e.g. switching to the
+   * projects list) because the chat is scoped to the active project.
+   */
+  public void hideAIChatDialog() {
+    if (aiChatDialog != null && aiChatDialog.isShowing()) {
+      aiChatDialog.hideDialog();
     }
   }
 

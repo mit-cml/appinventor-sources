@@ -113,6 +113,9 @@ public class AIChatDialog extends DialogBox {
   private boolean requestInFlight;
   private int validationRetryCount;
 
+  /** The project ID whose conversation is currently displayed. */
+  private long currentProjectId;
+
   // Remembered position so the dialog reopens where the user left it
   private int lastPopupLeft = -1;
   private int lastPopupTop = -1;
@@ -303,7 +306,36 @@ public class AIChatDialog extends DialogBox {
     } else {
       center();
     }
+    currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     loadExistingConversation();
+  }
+
+  /**
+   * Notifies the dialog that the active project has changed.
+   * If the dialog is visible and the project differs from the one currently
+   * displayed, the conversation is reloaded for the new project.
+   * If there is no open project (e.g. the user returned to the project list),
+   * the dialog is closed.
+   */
+  public void onProjectChanged() {
+    long newProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (newProjectId == 0) {
+      // No project open — close the dialog
+      if (isShowing()) {
+        hideDialog();
+      }
+      return;
+    }
+    if (isShowing() && newProjectId != currentProjectId) {
+      currentProjectId = newProjectId;
+      // Cancel any in-flight request from the previous project
+      if (requestInFlight) {
+        setRequestInFlight(false);
+        stopPollingStatus();
+      }
+      hideOperationPreview();
+      loadExistingConversation();
+    }
   }
 
   /**
