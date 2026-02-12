@@ -41,6 +41,8 @@ public class OllamaProvider implements LLMProvider {
 
   private static final String CHAT_PATH = "/api/chat";
   private static final int MAX_TOOL_ITERATIONS = 5;
+  private static final int MAX_RETRIES = 3;
+  private static final long INITIAL_BACKOFF_MS = 1000;
   private static final int CONNECT_TIMEOUT_MS = 30000;
   private static final int READ_TIMEOUT_MS = 180000; // Ollama can be slow on CPU
 
@@ -468,64 +470,116 @@ public class OllamaProvider implements LLMProvider {
   }
 
   /**
-   * Makes an HTTP POST to the Ollama chat API.
+   * Makes an HTTP POST to the Ollama chat API with automatic retry
+   * and exponential backoff for transient errors (429 rate-limit, 5xx).
    */
   private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
-    HttpURLConnection conn = null;
-    try {
-      URL url = new URL(baseUrl + CHAT_PATH);
-      conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("POST");
-      conn.setDoOutput(true);
-      conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
-      conn.setReadTimeout(READ_TIMEOUT_MS);
+    long backoffMs = INITIAL_BACKOFF_MS;
+    LLMProviderException lastException = null;
 
-      conn.setRequestProperty("Content-Type", "application/json");
-
-      // Optional API key for authenticated proxies
-      if (apiKey != null && !apiKey.isEmpty()) {
-        conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+    for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      if (attempt > 0) {
+        LOG.info("Ollama API retry attempt " + attempt + " after " + backoffMs + "ms backoff");
+        try {
+          Thread.sleep(backoffMs);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new LLMProviderException(
+              "Interrupted during retry backoff",
+              "The request was interrupted. Please try again.");
+        }
+        backoffMs *= 2;
       }
 
-      byte[] body = requestBody.toString().getBytes(StandardCharsets.UTF_8);
-      conn.setRequestProperty("Content-Length", String.valueOf(body.length));
+      HttpURLConnection conn = null;
+      try {
+        URL url = new URL(baseUrl + CHAT_PATH);
+        conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        conn.setReadTimeout(READ_TIMEOUT_MS);
 
-      try (OutputStream os = conn.getOutputStream()) {
-        os.write(body);
-        os.flush();
-      }
+        conn.setRequestProperty("Content-Type", "application/json");
 
-      int statusCode = conn.getResponseCode();
-      String responseText = readResponse(conn, statusCode);
+        // Optional API key for authenticated proxies
+        if (apiKey != null && !apiKey.isEmpty()) {
+          conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+        }
 
-      if (statusCode < 200 || statusCode >= 300) {
+        byte[] body = requestBody.toString().getBytes(StandardCharsets.UTF_8);
+        conn.setRequestProperty("Content-Length", String.valueOf(body.length));
+
+        try (OutputStream os = conn.getOutputStream()) {
+          os.write(body);
+          os.flush();
+        }
+
+        int statusCode = conn.getResponseCode();
+        String responseText = readResponse(conn, statusCode);
+
+        if (statusCode >= 200 && statusCode < 300) {
+          return new JSONObject(responseText);
+        }
+
         LOG.warning("Ollama API error (HTTP " + statusCode + "): " + responseText);
+
+        // Retry on 429 (rate limit) and 5xx (server errors)
+        if (isRetryable(statusCode) && attempt < MAX_RETRIES) {
+          lastException = new LLMProviderException(
+              "Ollama API returned HTTP " + statusCode + ": " + responseText,
+              mapHttpErrorToUserMessage(statusCode));
+          continue;
+        }
+
         String userMsg = mapHttpErrorToUserMessage(statusCode);
         throw new LLMProviderException(
             "Ollama API returned HTTP " + statusCode + ": " + responseText,
             userMsg);
-      }
 
-      return new JSONObject(responseText);
-
-    } catch (IOException e) {
-      LOG.log(Level.WARNING, "Ollama API connection error", e);
-      throw new LLMProviderException(
-          "Failed to connect to Ollama at " + baseUrl + ": " + e.getMessage(),
-          "Could not reach the local AI service. "
-              + "Please verify Ollama is running and accessible.",
-          e);
-    } catch (JSONException e) {
-      LOG.log(Level.WARNING, "Failed to parse Ollama API response", e);
-      throw new LLMProviderException(
-          "Invalid JSON response from Ollama API: " + e.getMessage(),
-          "Received an unexpected response from the AI service.",
-          e);
-    } finally {
-      if (conn != null) {
-        conn.disconnect();
+      } catch (IOException e) {
+        if (attempt < MAX_RETRIES) {
+          LOG.log(Level.WARNING,
+              "Ollama API connection error (attempt " + (attempt + 1) + ")", e);
+          lastException = new LLMProviderException(
+              "Failed to connect to Ollama at " + baseUrl + ": " + e.getMessage(),
+              "Could not reach the local AI service. "
+                  + "Please verify Ollama is running and accessible.",
+              e);
+          continue;
+        }
+        LOG.log(Level.WARNING, "Ollama API connection error (final attempt)", e);
+        throw new LLMProviderException(
+            "Failed to connect to Ollama at " + baseUrl + ": " + e.getMessage(),
+            "Could not reach the local AI service. "
+                + "Please verify Ollama is running and accessible.",
+            e);
+      } catch (JSONException e) {
+        LOG.log(Level.WARNING, "Failed to parse Ollama API response", e);
+        throw new LLMProviderException(
+            "Invalid JSON response from Ollama API: " + e.getMessage(),
+            "Received an unexpected response from the AI service.",
+            e);
+      } finally {
+        if (conn != null) {
+          conn.disconnect();
+        }
       }
     }
+
+    if (lastException != null) {
+      throw lastException;
+    }
+    throw new LLMProviderException(
+        "Ollama API failed after " + MAX_RETRIES + " retries",
+        "The AI service is currently unavailable. Please try again later.");
+  }
+
+  /**
+   * Returns whether an HTTP status code is eligible for automatic retry.
+   */
+  private static boolean isRetryable(int statusCode) {
+    return statusCode == 429 || statusCode >= 500;
   }
 
   /**

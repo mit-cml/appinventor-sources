@@ -417,11 +417,20 @@ public class AIChatDialog extends DialogBox {
 
   /**
    * Processes a successful AI agent response.
+   *
+   * <p>When the response contains operations that require user approval,
+   * the AI message is deferred — it is not shown in the chat until the
+   * user applies or rejects.  This avoids showing past-tense summaries
+   * (e.g. "Wrote block: ...") alongside a pending approval prompt.</p>
    */
   private void handleResponse(AIAgentResponse response) {
-    // Display the AI message
+    List<AIOperation> operations = response.getOperations();
+    boolean hasOps = operations != null && !operations.isEmpty();
+
+    // Display the AI message only when there are no pending operations.
+    // When operations exist, the message is deferred until apply/reject.
     String aiMessage = response.getAiMessage();
-    if (aiMessage != null && !aiMessage.isEmpty()) {
+    if (aiMessage != null && !aiMessage.isEmpty() && !hasOps) {
       addAiMessage(aiMessage);
     }
 
@@ -434,8 +443,7 @@ public class AIChatDialog extends DialogBox {
     }
 
     // Show operation preview if there are operations
-    List<AIOperation> operations = response.getOperations();
-    if (operations != null && !operations.isEmpty()) {
+    if (hasOps) {
       showOperationPreview(response);
     }
   }
@@ -652,8 +660,23 @@ public class AIChatDialog extends DialogBox {
     for (AIOperation op : operations) {
       Label opLabel = new Label(formatOperation(op));
       opLabel.getElement().getStyle().setFontSize(12, Unit.PX);
-      opLabel.getElement().getStyle().setMarginBottom(2, Unit.PX);
+      opLabel.getElement().getStyle().setMarginBottom(3, Unit.PX);
       opLabel.getElement().getStyle().setPaddingLeft(8, Unit.PX);
+      opLabel.getElement().getStyle().setProperty("fontFamily",
+          "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace");
+      // Color-code by operation category
+      AIOperation.Type type = op.getType();
+      if (type == AIOperation.Type.ADD_COMPONENT
+          || type == AIOperation.Type.CREATE_SCREEN
+          || type == AIOperation.Type.WRITE_BLOCK) {
+        opLabel.getElement().getStyle().setColor("#2e7d32"); // green for additions
+      } else if (type == AIOperation.Type.DELETE_COMPONENT
+          || type == AIOperation.Type.DELETE_SCREEN
+          || type == AIOperation.Type.DELETE_BLOCK) {
+        opLabel.getElement().getStyle().setColor("#c62828"); // red for deletions
+      } else {
+        opLabel.getElement().getStyle().setColor("#1565c0"); // blue for modifications
+      }
       operationPreview.add(opLabel);
     }
 
@@ -685,30 +708,92 @@ public class AIChatDialog extends DialogBox {
     // Field names must match the JSON payload keys used by AIOperationExecutor.
     switch (type) {
       case ADD_COMPONENT:
-        return "+ Add component: " + extractField(payload, "type")
+        return "+ Add component: " + extractField(payload, "component_type")
             + " (" + extractField(payload, "name") + ")";
       case DELETE_COMPONENT:
         return "- Delete component: " + extractField(payload, "name");
       case SET_PROPERTY:
-        return "~ Set property: " + extractField(payload, "component")
-            + "." + extractField(payload, "property");
+        return "~ Set " + extractField(payload, "component_name")
+            + "." + extractField(payload, "property_name")
+            + " to " + extractField(payload, "value");
       case RENAME_COMPONENT:
-        return "~ Rename: " + extractField(payload, "oldName")
-            + " -> " + extractField(payload, "newName");
+        return "~ Rename: " + extractField(payload, "old_name")
+            + " -> " + extractField(payload, "new_name");
       case SWITCH_SCREEN:
-        return "~ Switch to screen: " + extractField(payload, "screen");
+        return "~ Switch to screen: " + extractField(payload, "screen_name");
       case CREATE_SCREEN:
-        return "+ Create screen: " + extractField(payload, "screen");
+        return "+ Create screen: " + extractField(payload, "screen_name");
       case DELETE_SCREEN:
-        return "- Delete screen: " + extractField(payload, "screen");
+        return "- Delete screen: " + extractField(payload, "screen_name");
       case SET_PROJECT_PROP:
         return "~ Set project property: " + extractField(payload, "property")
             + " to " + extractField(payload, "value");
+      case WRITE_BLOCK:
+        return "+ Write block: " + summarizeYail(extractField(payload, "yail"));
+      case DELETE_BLOCK:
+        return "- Delete block: " + extractField(payload, "block");
       case TOGGLE_EDITOR:
         return "~ Switch to " + extractField(payload, "view") + " view";
       default:
         return type.name() + ": " + payload;
     }
+  }
+
+  /**
+   * Extracts a human-readable summary from a YAIL block definition.
+   * Recognizes event handlers, global variables, and procedures.
+   *
+   * @param yail the raw YAIL string
+   * @return a short description such as "Screen1.Initialize (event)"
+   */
+  private static String summarizeYail(String yail) {
+    if (yail == null || yail.isEmpty()) {
+      return "block";
+    }
+    yail = yail.trim();
+    if (yail.startsWith("(define-event ")) {
+      // Pattern: (define-event ComponentName EventName (...) ...)
+      String rest = yail.substring("(define-event ".length()).trim();
+      int space1 = rest.indexOf(' ');
+      if (space1 > 0) {
+        String component = rest.substring(0, space1);
+        String afterComponent = rest.substring(space1 + 1).trim();
+        int end = endOfToken(afterComponent);
+        String event = end > 0 ? afterComponent.substring(0, end) : afterComponent;
+        return component + "." + event + " (event)";
+      }
+    }
+    if (yail.startsWith("(def g$")) {
+      // Pattern: (def g$varName ...)
+      String rest = yail.substring("(def g$".length());
+      int end = endOfToken(rest);
+      if (end > 0) {
+        return rest.substring(0, end) + " (variable)";
+      }
+    }
+    if (yail.startsWith("(def (p$")) {
+      // Pattern: (def (p$procedureName ...) ...)
+      String rest = yail.substring("(def (p$".length());
+      int end = endOfToken(rest);
+      if (end > 0) {
+        return rest.substring(0, end) + " (procedure)";
+      }
+    }
+    return "block";
+  }
+
+  /**
+   * Returns the index of the first whitespace or delimiter character in {@code s},
+   * or -1 if the string contains only token characters.
+   */
+  private static int endOfToken(String s) {
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if (c == ' ' || c == ')' || c == '(' || c == '\n' || c == '\r' || c == '\t') {
+        return i;
+      }
+    }
+    return -1;
   }
 
   // ---- Operation execution ----
@@ -726,6 +811,7 @@ public class AIChatDialog extends DialogBox {
 
     final List<AIOperation> operations = pendingResponse.getOperations();
     final boolean hasMore = pendingResponse.hasMore();
+    final String deferredMessage = pendingResponse.getAiMessage();
     hideOperationPreview();
     setRequestInFlight(true);
 
@@ -735,7 +821,11 @@ public class AIChatDialog extends DialogBox {
           @Override
           public void onComplete(AIOperationExecutor.ExecutionResult result) {
             if (result.isSuccess()) {
-              addAiMessage(MESSAGES.aiChatOperationsApplied());
+              // Show the deferred AI message (LLM explanatory text), if any
+              if (deferredMessage != null && !deferredMessage.isEmpty()) {
+                addAiMessage(deferredMessage);
+              }
+              addAiMessage(buildAppliedSummary(operations));
               if (hasMore) {
                 // More batches expected — request the next one
                 startPollingStatus();
@@ -749,6 +839,17 @@ public class AIChatDialog extends DialogBox {
             }
           }
         });
+  }
+
+  /**
+   * Builds a human-readable summary of successfully applied operations.
+   */
+  private String buildAppliedSummary(List<AIOperation> operations) {
+    StringBuilder sb = new StringBuilder(MESSAGES.aiChatOperationsApplied());
+    for (AIOperation op : operations) {
+      sb.append('\n').append(formatOperation(op));
+    }
+    return sb.toString();
   }
 
   /**

@@ -270,18 +270,23 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
-      // Save assistant response to history (with structured content if tool calls present)
-      if (assistantText.isEmpty() && !operations.isEmpty()) {
-        assistantText = summarizeOperations(operations);
+      // Save assistant response to history (with structured content if tool calls present).
+      // When the LLM returns no text but has operations, generate a summary for the
+      // conversation history so the LLM retains context.  The client-facing aiMessage
+      // only carries the LLM's own text — the client shows a pending-approval preview
+      // and builds its own summary after the user applies or rejects.
+      String historyText = assistantText;
+      if (historyText.isEmpty() && !operations.isEmpty()) {
+        historyText = summarizeOperations(operations);
       }
       if (!llmResponse.getRawToolCalls().isEmpty()) {
-        String[] pair = buildStructuredContentPair(assistantText,
+        String[] pair = buildStructuredContentPair(historyText,
             llmResponse.getRawToolCalls());
-        storeMessage(conv.getConversationId(), "assistant", assistantText, pair[0]);
+        storeMessage(conv.getConversationId(), "assistant", historyText, pair[0]);
         storeMessage(conv.getConversationId(), "tool_result",
             "[Tool results applied]", pair[1]);
       } else {
-        storeMessage(conv.getConversationId(), "assistant", assistantText);
+        storeMessage(conv.getConversationId(), "assistant", historyText);
       }
 
       clearStatus(projectId);
@@ -390,19 +395,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
-      // Save assistant response to history (with structured content if tool calls present)
+      // Save assistant response to history — see processRequest for rationale.
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
-      if (assistantText.isEmpty() && !operations.isEmpty()) {
-        assistantText = summarizeOperations(operations);
+      String historyText = assistantText;
+      if (historyText.isEmpty() && !operations.isEmpty()) {
+        historyText = summarizeOperations(operations);
       }
       if (!llmResponse.getRawToolCalls().isEmpty()) {
-        String[] pair = buildStructuredContentPair(assistantText,
+        String[] pair = buildStructuredContentPair(historyText,
             llmResponse.getRawToolCalls());
-        storeMessage(conv.getConversationId(), "assistant", assistantText, pair[0]);
+        storeMessage(conv.getConversationId(), "assistant", historyText, pair[0]);
         storeMessage(conv.getConversationId(), "tool_result",
             "[Tool results applied]", pair[1]);
       } else {
-        storeMessage(conv.getConversationId(), "assistant", assistantText);
+        storeMessage(conv.getConversationId(), "assistant", historyText);
       }
 
       clearStatus(projectId);
@@ -511,19 +517,20 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
           llmResponse.getProviderRef());
       saveConversation(projectId, conv);
 
-      // Save retry response to history (with structured content if tool calls present)
+      // Save retry response to history — see processRequest for rationale.
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
-      if (assistantText.isEmpty() && !operations.isEmpty()) {
-        assistantText = summarizeOperations(operations);
+      String historyText = assistantText;
+      if (historyText.isEmpty() && !operations.isEmpty()) {
+        historyText = summarizeOperations(operations);
       }
       if (!llmResponse.getRawToolCalls().isEmpty()) {
-        String[] pair = buildStructuredContentPair(assistantText,
+        String[] pair = buildStructuredContentPair(historyText,
             llmResponse.getRawToolCalls());
-        storeMessage(conv.getConversationId(), "assistant", assistantText, pair[0]);
+        storeMessage(conv.getConversationId(), "assistant", historyText, pair[0]);
         storeMessage(conv.getConversationId(), "tool_result",
             "[Tool results applied]", pair[1]);
       } else {
-        storeMessage(conv.getConversationId(), "assistant", assistantText);
+        storeMessage(conv.getConversationId(), "assistant", historyText);
       }
 
       clearStatus(projectId);

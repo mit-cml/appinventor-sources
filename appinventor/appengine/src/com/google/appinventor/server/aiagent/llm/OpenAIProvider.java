@@ -38,6 +38,8 @@ public class OpenAIProvider implements LLMProvider {
 
   private static final String API_ENDPOINT = "https://api.openai.com/v1/responses";
   private static final int MAX_TOOL_ITERATIONS = 5;
+  private static final int MAX_RETRIES = 3;
+  private static final long INITIAL_BACKOFF_MS = 1000;
   private static final int MAX_TOKENS = 4096;
   private static final int CONNECT_TIMEOUT_MS = 30000;
   private static final int READ_TIMEOUT_MS = 120000;
@@ -70,10 +72,30 @@ public class OpenAIProvider implements LLMProvider {
     String responseId = extractResponseId(providerRef);
 
     // Internal tool-use loop
-    // On the first iteration, input is the user message string.
+    // On the first iteration, input is the user message string — unless the
+    // previous response had unresolved tool calls (continuation state), in
+    // which case we must submit function_call_output items alongside the new
+    // user message to satisfy the Responses API contract.
     // On subsequent iterations, input is a tool results array and we chain
     // via previous_response_id.
-    Object currentInput = userMessage;
+    Object currentInput;
+    JSONArray pendingCalls = extractPendingToolCalls(providerRef);
+    if (pendingCalls != null && pendingCalls.length() > 0) {
+      JSONArray inputArray = new JSONArray();
+      for (int i = 0; i < pendingCalls.length(); i++) {
+        JSONObject pc = pendingCalls.getJSONObject(i);
+        inputArray.put(new JSONObject()
+            .put("type", "function_call_output")
+            .put("call_id", pc.getString("id"))
+            .put("output", "Done."));
+      }
+      inputArray.put(new JSONObject()
+          .put("role", "user")
+          .put("content", userMessage));
+      currentInput = inputArray;
+    } else {
+      currentInput = userMessage;
+    }
 
     for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
       JSONObject requestBody = new JSONObject();
@@ -326,6 +348,27 @@ public class OpenAIProvider implements LLMProvider {
   }
 
   /**
+   * Extracts pending tool calls from a continuation-state providerRef.
+   *
+   * @return the pending tool calls array, or null if providerRef is not a
+   *         continuation state or has no pending calls
+   */
+  private JSONArray extractPendingToolCalls(String providerRef) {
+    if (providerRef == null || providerRef.isEmpty()) {
+      return null;
+    }
+    try {
+      JSONObject ref = new JSONObject(providerRef);
+      if (ref.optBoolean("continuation", false) && ref.has("pendingToolCalls")) {
+        return ref.getJSONArray("pendingToolCalls");
+      }
+    } catch (JSONException e) {
+      // Not a continuation state
+    }
+    return null;
+  }
+
+  /**
    * Extracts the response ID from a providerRef string.
    * Handles both JSON format ({@code {"responseId":"resp_xxx"}}) and null.
    *
@@ -440,59 +483,121 @@ public class OpenAIProvider implements LLMProvider {
   }
 
   /**
-   * Makes an HTTP POST to the OpenAI Responses API.
+   * Makes an HTTP POST to the OpenAI Responses API with automatic retry
+   * and exponential backoff for transient errors (429 rate-limit, 5xx).
    */
   private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
-    HttpURLConnection conn = null;
-    try {
-      URL url = new URL(API_ENDPOINT);
-      conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("POST");
-      conn.setDoOutput(true);
-      conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
-      conn.setReadTimeout(READ_TIMEOUT_MS);
+    long backoffMs = INITIAL_BACKOFF_MS;
+    LLMProviderException lastException = null;
 
-      conn.setRequestProperty("Content-Type", "application/json");
-      conn.setRequestProperty("Authorization", "Bearer " + apiKey);
-
-      byte[] body = requestBody.toString().getBytes(StandardCharsets.UTF_8);
-      conn.setRequestProperty("Content-Length", String.valueOf(body.length));
-
-      try (OutputStream os = conn.getOutputStream()) {
-        os.write(body);
-        os.flush();
+    for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      if (attempt > 0) {
+        LOG.info("OpenAI API retry attempt " + attempt + " after " + backoffMs + "ms backoff");
+        try {
+          Thread.sleep(backoffMs);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new LLMProviderException(
+              "Interrupted during retry backoff",
+              "The request was interrupted. Please try again.");
+        }
+        backoffMs *= 2;
       }
 
-      int statusCode = conn.getResponseCode();
-      String responseText = readResponse(conn, statusCode);
+      HttpURLConnection conn = null;
+      try {
+        URL url = new URL(API_ENDPOINT);
+        conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        conn.setReadTimeout(READ_TIMEOUT_MS);
 
-      if (statusCode < 200 || statusCode >= 300) {
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+
+        byte[] body = requestBody.toString().getBytes(StandardCharsets.UTF_8);
+        conn.setRequestProperty("Content-Length", String.valueOf(body.length));
+
+        try (OutputStream os = conn.getOutputStream()) {
+          os.write(body);
+          os.flush();
+        }
+
+        int statusCode = conn.getResponseCode();
+        String responseText = readResponse(conn, statusCode);
+
+        if (statusCode >= 200 && statusCode < 300) {
+          return new JSONObject(responseText);
+        }
+
         LOG.warning("OpenAI API error (HTTP " + statusCode + "): " + responseText);
+
+        // Retry on 429 (rate limit) and 5xx (server errors)
+        if (isRetryable(statusCode) && attempt < MAX_RETRIES) {
+          // Respect Retry-After header if present
+          String retryAfter = conn.getHeaderField("Retry-After");
+          if (retryAfter != null) {
+            try {
+              long retryMs = Long.parseLong(retryAfter) * 1000;
+              backoffMs = Math.max(backoffMs, retryMs);
+            } catch (NumberFormatException ignored) {
+              // Use default backoff
+            }
+          }
+          lastException = new LLMProviderException(
+              "OpenAI API returned HTTP " + statusCode + ": " + responseText,
+              mapHttpErrorToUserMessage(statusCode));
+          continue;
+        }
+
         String userMsg = mapHttpErrorToUserMessage(statusCode);
         throw new LLMProviderException(
             "OpenAI API returned HTTP " + statusCode + ": " + responseText,
             userMsg);
-      }
 
-      return new JSONObject(responseText);
-
-    } catch (IOException e) {
-      LOG.log(Level.WARNING, "OpenAI API connection error", e);
-      throw new LLMProviderException(
-          "Failed to connect to OpenAI API: " + e.getMessage(),
-          "Could not reach the AI service. Please try again later.",
-          e);
-    } catch (JSONException e) {
-      LOG.log(Level.WARNING, "Failed to parse OpenAI API response", e);
-      throw new LLMProviderException(
-          "Invalid JSON response from OpenAI API: " + e.getMessage(),
-          "Received an unexpected response from the AI service.",
-          e);
-    } finally {
-      if (conn != null) {
-        conn.disconnect();
+      } catch (IOException e) {
+        // Retry connection errors
+        if (attempt < MAX_RETRIES) {
+          LOG.log(Level.WARNING, "OpenAI API connection error (attempt " + (attempt + 1) + ")", e);
+          lastException = new LLMProviderException(
+              "Failed to connect to OpenAI API: " + e.getMessage(),
+              "Could not reach the AI service. Please try again later.",
+              e);
+          continue;
+        }
+        LOG.log(Level.WARNING, "OpenAI API connection error (final attempt)", e);
+        throw new LLMProviderException(
+            "Failed to connect to OpenAI API: " + e.getMessage(),
+            "Could not reach the AI service. Please try again later.",
+            e);
+      } catch (JSONException e) {
+        LOG.log(Level.WARNING, "Failed to parse OpenAI API response", e);
+        throw new LLMProviderException(
+            "Invalid JSON response from OpenAI API: " + e.getMessage(),
+            "Received an unexpected response from the AI service.",
+            e);
+      } finally {
+        if (conn != null) {
+          conn.disconnect();
+        }
       }
     }
+
+    // Should not reach here, but just in case
+    if (lastException != null) {
+      throw lastException;
+    }
+    throw new LLMProviderException(
+        "OpenAI API failed after " + MAX_RETRIES + " retries",
+        "The AI service is currently unavailable. Please try again later.");
+  }
+
+  /**
+   * Returns whether an HTTP status code is eligible for automatic retry.
+   */
+  private static boolean isRetryable(int statusCode) {
+    return statusCode == 429 || statusCode >= 500;
   }
 
   /**
