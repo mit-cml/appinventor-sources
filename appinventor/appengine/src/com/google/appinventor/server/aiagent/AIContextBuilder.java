@@ -130,13 +130,16 @@ public class AIContextBuilder {
    * @param currentView          the active editor view ("Designer" or "Blocks")
    * @param screenComponentsJson live component tree JSON from the client
    * @param projectSnapshot      project metadata JSON from the client
+   * @param blockWarnings        JSON with block warnings/errors from the client
+   *                             (may be null or empty)
    * @return list of context message strings
    */
   public List<String> buildContextMessages(String userId, long projectId, String screenName,
       String mode, String blocksYail, String currentView,
-      String screenComponentsJson, String projectSnapshot) {
+      String screenComponentsJson, String projectSnapshot,
+      String blockWarnings) {
     ContextParams params = new ContextParams(userId, projectId, screenName, mode,
-        blocksYail, currentView, screenComponentsJson, projectSnapshot);
+        blocksYail, currentView, screenComponentsJson, projectSnapshot, blockWarnings);
     List<String> messages = new ArrayList<>();
 
     // Message 1: Mode and view

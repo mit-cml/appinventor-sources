@@ -1146,6 +1146,87 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   /**
+   * Collect warnings and errors from the Blockly WarningHandler.
+   * Walks up to the top-level block for each warning/error to provide
+   * a meaningful identity string the LLM can correlate with YAIL blocks.
+   *
+   * @return JSON string with errors, warnings, errorCount, warningCount
+   */
+  public native String getBlocksWarningsAndErrors() /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var handler = workspace.getWarningHandler();
+    var result = { errors: [], warnings: [], errorCount: 0, warningCount: 0 };
+    if (!handler) return JSON.stringify(result);
+
+    // Helper: walk up to the top-level block
+    function getTopBlock(block) {
+      while (block.getParent()) {
+        block = block.getParent();
+      }
+      return block;
+    }
+
+    // Helper: describe a top-level block for the LLM
+    function describeBlock(block) {
+      var top = getTopBlock(block);
+      if (top.type === 'component_event') {
+        var selector = top.getField('COMPONENT_SELECTOR');
+        var eventName = top.getField('EVENT_NAME');
+        var comp = selector ? selector.getValue() : '?';
+        var evt = eventName ? eventName.getValue() : '?';
+        return comp + '.' + evt + ' event handler';
+      } else if (top.type === 'global_declaration') {
+        var name = top.getField('NAME');
+        return 'global variable ' + (name ? name.getValue() : '?');
+      } else if (top.type === 'procedures_defnoreturn' || top.type === 'procedures_defreturn') {
+        var name = top.getField('NAME');
+        return 'procedure ' + (name ? name.getValue() : '?');
+      } else if (top.type === 'component_method') {
+        var selector = top.getField('COMPONENT_SELECTOR');
+        var method = top.getField('METHOD_NAME');
+        return (selector ? selector.getValue() : '?') + '.' + (method ? method.getValue() : '?') + ' method call';
+      }
+      return top.type;
+    }
+
+    // Collect errors
+    var errorHash = handler.errorIdHash;
+    if (errorHash) {
+      for (var blockId in errorHash) {
+        if (errorHash.hasOwnProperty(blockId)) {
+          var block = workspace.getBlockById(blockId);
+          if (block && block.error) {
+            var text = block.error.getText ? block.error.getText() : '';
+            if (text) {
+              result.errors.push({ block: describeBlock(block), message: text });
+            }
+          }
+        }
+      }
+    }
+
+    // Collect warnings
+    var warningHash = handler.warningIdHash;
+    if (warningHash) {
+      for (var blockId in warningHash) {
+        if (warningHash.hasOwnProperty(blockId)) {
+          var block = workspace.getBlockById(blockId);
+          if (block && block.warning) {
+            var text = block.warning.getText ? block.warning.getText() : '';
+            if (text) {
+              result.warnings.push({ block: describeBlock(block), message: text });
+            }
+          }
+        }
+      }
+    }
+
+    result.errorCount = result.errors.length;
+    result.warningCount = result.warnings.length;
+    return JSON.stringify(result);
+  }-*/;
+
+  /**
    * Convert a YAIL string into Blockly blocks and add them to the workspace.
    * Uses the AI.YailToBlocks module to parse YAIL and create blocks with
    * upsert semantics (replaces existing block with same identity).

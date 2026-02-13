@@ -22,6 +22,7 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private String currentView;
   private String screenComponentsJson;
   private String projectSnapshot;
+  private String blockWarnings;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -168,5 +169,16 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setProjectSnapshot(String projectSnapshot) {
     this.projectSnapshot = projectSnapshot;
+  }
+
+  /**
+   * Returns the block warnings/errors JSON collected from the Blockly WarningHandler.
+   */
+  public String getBlockWarnings() {
+    return blockWarnings;
+  }
+
+  public void setBlockWarnings(String blockWarnings) {
+    this.blockWarnings = blockWarnings;
   }
 }

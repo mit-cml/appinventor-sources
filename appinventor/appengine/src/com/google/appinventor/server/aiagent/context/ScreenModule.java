@@ -9,6 +9,7 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 
 import com.google.appinventor.server.storage.StorageIo;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -27,11 +28,13 @@ public class ScreenModule extends ContextModule {
     String screenName = params.getScreenName();
     String blocksYail = params.getBlocksYail();
     String screenComponentsJson = params.getScreenComponentsJson();
+    String blockWarnings = params.getBlockWarnings();
 
     StringBuilder screen = new StringBuilder();
     screen.append("[Current screen state — supersedes any previous screen state]\n\n");
     screen.append("## Current Screen: ").append(screenName).append("\n\n");
-    screen.append(buildCurrentScreenState(screenName, blocksYail, screenComponentsJson));
+    screen.append(buildCurrentScreenState(screenName, blocksYail,
+        screenComponentsJson, blockWarnings));
     return screen.toString();
   }
 
@@ -70,7 +73,7 @@ public class ScreenModule extends ContextModule {
   }
 
   private String buildCurrentScreenState(String screenName, String blocksYail,
-      String screenComponentsJson) {
+      String screenComponentsJson, String blockWarnings) {
     StringBuilder sb = new StringBuilder();
 
     sb.append("#### Component Tree\n\n");
@@ -94,6 +97,63 @@ public class ScreenModule extends ContextModule {
       sb.append("(no blocks)\n");
     }
 
+    // Block warnings and errors section
+    String warningsSection = formatBlockWarnings(blockWarnings);
+    if (warningsSection != null) {
+      sb.append("\n").append(warningsSection);
+    }
+
     return sb.toString();
+  }
+
+  /**
+   * Parses the block warnings JSON and formats it as human-readable text.
+   * Returns null if there are no warnings or errors.
+   */
+  private String formatBlockWarnings(String blockWarningsJson) {
+    if (blockWarningsJson == null || blockWarningsJson.isEmpty()) {
+      return null;
+    }
+    try {
+      JSONObject json = new JSONObject(blockWarningsJson);
+      int errorCount = json.optInt("errorCount", 0);
+      int warningCount = json.optInt("warningCount", 0);
+      if (errorCount == 0 && warningCount == 0) {
+        return null;
+      }
+
+      StringBuilder sb = new StringBuilder();
+      sb.append("#### Block Warnings and Errors\n\n");
+
+      if (errorCount > 0) {
+        JSONArray errors = json.optJSONArray("errors");
+        sb.append("Errors (").append(errorCount).append("):\n");
+        if (errors != null) {
+          for (int i = 0; i < errors.length(); i++) {
+            JSONObject entry = errors.getJSONObject(i);
+            sb.append("- ").append(entry.optString("block", "unknown block"))
+                .append(": ").append(entry.optString("message", "")).append("\n");
+          }
+        }
+        sb.append("\n");
+      }
+
+      if (warningCount > 0) {
+        JSONArray warnings = json.optJSONArray("warnings");
+        sb.append("Warnings (").append(warningCount).append("):\n");
+        if (warnings != null) {
+          for (int i = 0; i < warnings.length(); i++) {
+            JSONObject entry = warnings.getJSONObject(i);
+            sb.append("- ").append(entry.optString("block", "unknown block"))
+                .append(": ").append(entry.optString("message", "")).append("\n");
+          }
+        }
+        sb.append("\n");
+      }
+
+      return sb.toString();
+    } catch (Exception e) {
+      return null;
+    }
   }
 }

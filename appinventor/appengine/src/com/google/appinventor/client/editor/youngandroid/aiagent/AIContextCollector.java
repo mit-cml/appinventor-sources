@@ -45,8 +45,10 @@ public class AIContextCollector {
     String currentView = getCurrentViewString();
     String screenComponentsJson = buildScreenComponentsJson();
     String projectSnapshot = buildProjectSnapshot();
-    return new AIAgentRequest(userMessage, projectId, screenName,
+    AIAgentRequest request = new AIAgentRequest(userMessage, projectId, screenName,
         blocksYail, currentView, screenComponentsJson, projectSnapshot);
+    request.setBlockWarnings(getCurrentBlocksWarningsAndErrors());
+    return request;
   }
 
   /**
@@ -128,6 +130,29 @@ public class AIContextCollector {
             return ((BlocksEditor<?, ?>) screen.blocksEditor).getBlocksYail();
           } catch (Exception e) {
             LOG.warning("Failed to generate blocks YAIL: " + e.getMessage());
+          }
+        }
+      }
+    }
+    return "";
+  }
+
+  /**
+   * Collects warnings and errors from the current screen's Blockly workspace.
+   *
+   * @return JSON string from WarningHandler, or empty string if unavailable
+   */
+  private String getCurrentBlocksWarningsAndErrors() {
+    DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+    if (toolbar != null) {
+      DesignToolbar.DesignProject project = toolbar.getCurrentProject();
+      if (project != null) {
+        DesignToolbar.Screen screen = project.screens.get(project.currentScreen);
+        if (screen != null && screen.blocksEditor instanceof BlocksEditor) {
+          try {
+            return ((BlocksEditor<?, ?>) screen.blocksEditor).getBlocksWarningsAndErrors();
+          } catch (Exception e) {
+            LOG.warning("Failed to collect block warnings: " + e.getMessage());
           }
         }
       }

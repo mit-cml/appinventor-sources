@@ -18,10 +18,12 @@ public class ContextParams {
   private final String currentView;
   private final String screenComponentsJson;
   private final String projectSnapshot;
+  private final String blockWarnings;
 
   public ContextParams(String userId, long projectId, String screenName,
       String mode, String blocksYail, String currentView,
-      String screenComponentsJson, String projectSnapshot) {
+      String screenComponentsJson, String projectSnapshot,
+      String blockWarnings) {
     this.userId = userId;
     this.projectId = projectId;
     this.screenName = screenName;
@@ -30,6 +32,7 @@ public class ContextParams {
     this.currentView = currentView;
     this.screenComponentsJson = screenComponentsJson;
     this.projectSnapshot = projectSnapshot;
+    this.blockWarnings = blockWarnings;
   }
 
   public String getUserId() {
@@ -62,5 +65,9 @@ public class ContextParams {
 
   public String getProjectSnapshot() {
     return projectSnapshot;
+  }
+
+  public String getBlockWarnings() {
+    return blockWarnings;
   }
 }

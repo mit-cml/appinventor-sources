@@ -689,6 +689,16 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   }
 
   /**
+   * Collect warnings and errors from the Blockly WarningHandler.
+   * Used by the AI agent to provide block validation context to the LLM.
+   *
+   * @return JSON string with errors, warnings, errorCount, warningCount
+   */
+  public String getBlocksWarningsAndErrors() {
+    return blocksArea.getBlocksWarningsAndErrors();
+  }
+
+  /**
    * Replace a block: delete existing (if any) then inject new XML.
    * Used by AIOperationExecutor for create-or-replace semantics on
    * event handlers, variables, and procedures.
