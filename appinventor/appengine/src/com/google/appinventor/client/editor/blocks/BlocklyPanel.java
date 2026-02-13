@@ -1219,14 +1219,13 @@ public class BlocklyPanel extends HTMLPanel {
     // Collect errors
     var errorHash = handler.errorIdHash;
     if (errorHash) {
-      for (var blockId in errorHash) {
-        if (errorHash.hasOwnProperty(blockId)) {
-          var block = workspace.getBlockById(blockId);
-          if (block && block.error) {
-            var text = block.error.getText ? block.error.getText() : '';
-            if (text) {
-              result.errors.push({ block: describeBlock(block), message: text });
-            }
+      var errorIds = Object.keys(errorHash);
+      for (var i = 0; i < errorIds.length; i++) {
+        var block = workspace.getBlockById(errorIds[i]);
+        if (block && block.error) {
+          var text = block.error.getText ? block.error.getText() : '';
+          if (text) {
+            result.errors.push({ block: describeBlock(block), message: text });
           }
         }
       }
@@ -1235,14 +1234,13 @@ public class BlocklyPanel extends HTMLPanel {
     // Collect warnings
     var warningHash = handler.warningIdHash;
     if (warningHash) {
-      for (var blockId in warningHash) {
-        if (warningHash.hasOwnProperty(blockId)) {
-          var block = workspace.getBlockById(blockId);
-          if (block && block.warning) {
-            var text = block.warning.getText ? block.warning.getText() : '';
-            if (text) {
-              result.warnings.push({ block: describeBlock(block), message: text });
-            }
+      var warningIds = Object.keys(warningHash);
+      for (var i = 0; i < warningIds.length; i++) {
+        var block = workspace.getBlockById(warningIds[i]);
+        if (block && block.warning) {
+          var text = block.warning.getText ? block.warning.getText() : '';
+          if (text) {
+            result.warnings.push({ block: describeBlock(block), message: text });
           }
         }
       }
