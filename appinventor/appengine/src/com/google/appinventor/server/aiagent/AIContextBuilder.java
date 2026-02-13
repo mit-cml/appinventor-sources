@@ -67,6 +67,10 @@ public class AIContextBuilder {
     this.storageIo = storageIo;
   }
 
+  StorageIo getStorageIo() {
+    return storageIo;
+  }
+
   // ---------- Public API ----------
 
   /**
