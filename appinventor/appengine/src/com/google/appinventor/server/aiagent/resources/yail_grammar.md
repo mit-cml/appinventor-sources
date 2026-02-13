@@ -217,7 +217,7 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
 (def g$variableName <initial-value-expression>)
 ```
 - Variable names are prefixed with `g$`
-- Initial value is any expression (number, string, list, etc.)
+- Initial value is **required** — every global variable must be initialized with a concrete value. YAIL has no concept of `null`, `nil`, or `undefined`. Use the appropriate zero value for the variable's intended type: `0` for numbers, `""` for text, `#f` for booleans, or an empty list/dictionary.
 
 ### Procedure (no return value)
 ```scheme
@@ -643,10 +643,8 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
 (begin <expression> "ignored")
 ```
 
-### Null Value
-```scheme
-(get-var *the-null-value*)
-```
+### No Null Concept
+YAIL has **no** `null` literal, keyword, or "nothing" block. Do not use `null`, `(get-var g$null)`, or `(get-var *the-null-value*)` — none of these are valid. Always use a typed zero value instead: `0` for numbers, `""` for text, `#f` for booleans, or an empty list/dictionary.
 
 ## Variables
 
