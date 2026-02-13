@@ -151,6 +151,9 @@ public class OpenAIProvider implements LLMProvider {
             + responseJson.toString(2));
       }
 
+      // Check for incomplete response (e.g. max_output_tokens exceeded)
+      checkResponseStatus(responseJson);
+
       // Update response ID for chaining
       responseId = responseJson.getString("id");
 
@@ -300,6 +303,9 @@ public class OpenAIProvider implements LLMProvider {
             + responseJson.toString(2));
       }
 
+      // Check for incomplete response (e.g. max_output_tokens exceeded)
+      checkResponseStatus(responseJson);
+
       // Update response ID for chaining
       responseId = responseJson.getString("id");
 
@@ -436,6 +442,32 @@ public class OpenAIProvider implements LLMProvider {
     }
     state.put("pendingToolCalls", pending);
     return state.toString();
+  }
+
+  /**
+   * Checks the response status and throws if the response is incomplete.
+   * The OpenAI Responses API sets {@code status} to {@code "incomplete"}
+   * when the output is truncated (e.g. max_output_tokens exceeded).
+   */
+  private void checkResponseStatus(JSONObject responseJson) throws LLMProviderException {
+    String status = responseJson.optString("status", "completed");
+    if ("incomplete".equals(status)) {
+      String reason = "";
+      JSONObject details = responseJson.optJSONObject("incomplete_details");
+      if (details != null) {
+        reason = details.optString("reason", "unknown");
+      }
+      LOG.warning("OpenAI response incomplete: " + reason);
+      if ("max_output_tokens".equals(reason)) {
+        throw new LLMProviderException(
+            "OpenAI response truncated: incomplete (reason=" + reason + ")",
+            "The AI response was too long and got cut off. "
+                + "Please try a simpler request or break it into smaller steps.");
+      }
+      throw new LLMProviderException(
+          "OpenAI response incomplete: " + reason,
+          "The AI response was incomplete. Please try again.");
+    }
   }
 
   /**

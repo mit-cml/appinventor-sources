@@ -96,6 +96,10 @@ public class AnthropicProvider implements LLMProvider {
 
       // Parse the response content blocks
       String stopReason = responseJson.optString("stop_reason", "end_turn");
+
+      // Check for truncated response (max_tokens exceeded)
+      checkStopReason(stopReason);
+
       JSONArray content = responseJson.optJSONArray("content");
       if (content == null) {
         content = new JSONArray();
@@ -264,6 +268,10 @@ public class AnthropicProvider implements LLMProvider {
       }
 
       String stopReason = responseJson.optString("stop_reason", "end_turn");
+
+      // Check for truncated response (max_tokens exceeded)
+      checkStopReason(stopReason);
+
       JSONArray content = responseJson.optJSONArray("content");
       if (content == null) {
         content = new JSONArray();
@@ -467,6 +475,20 @@ public class AnthropicProvider implements LLMProvider {
     return new JSONObject()
         .put("role", "user")
         .put("content", content);
+  }
+
+  /**
+   * Checks the stop reason and throws if the response was truncated.
+   * Anthropic returns {@code stop_reason: "max_tokens"} when output is cut off.
+   */
+  private void checkStopReason(String stopReason) throws LLMProviderException {
+    if ("max_tokens".equals(stopReason)) {
+      LOG.warning("Anthropic response truncated: stop_reason=max_tokens");
+      throw new LLMProviderException(
+          "Anthropic response truncated: stop_reason=max_tokens",
+          "The AI response was too long and got cut off. "
+              + "Please try a simpler request or break it into smaller steps.");
+    }
   }
 
   /**

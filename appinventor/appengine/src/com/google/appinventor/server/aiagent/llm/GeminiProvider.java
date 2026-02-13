@@ -140,6 +140,10 @@ public class GeminiProvider implements LLMProvider {
       }
 
       JSONObject candidate = candidates.getJSONObject(0);
+
+      // Check for truncated or blocked response
+      checkFinishReason(candidate);
+
       JSONObject content = candidate.optJSONObject("content");
       if (content == null) {
         return new LLMResponse("", new ArrayList<RawToolCall>(), null);
@@ -337,6 +341,10 @@ public class GeminiProvider implements LLMProvider {
       }
 
       JSONObject candidate = candidates.getJSONObject(0);
+
+      // Check for truncated or blocked response
+      checkFinishReason(candidate);
+
       JSONObject content = candidate.optJSONObject("content");
       if (content == null) {
         return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
@@ -491,6 +499,29 @@ public class GeminiProvider implements LLMProvider {
         .put("role", "user")
         .put("parts", userParts));
     return contents;
+  }
+
+  /**
+   * Checks the candidate's finish reason and throws if the response was
+   * truncated or blocked.  Gemini returns {@code finishReason: "MAX_TOKENS"}
+   * when output is cut off and {@code "SAFETY"} when blocked by filters.
+   */
+  private void checkFinishReason(JSONObject candidate) throws LLMProviderException {
+    String finishReason = candidate.optString("finishReason", "");
+    if ("MAX_TOKENS".equals(finishReason)) {
+      LOG.warning("Gemini response truncated: finishReason=MAX_TOKENS");
+      throw new LLMProviderException(
+          "Gemini response truncated: finishReason=MAX_TOKENS",
+          "The AI response was too long and got cut off. "
+              + "Please try a simpler request or break it into smaller steps.");
+    }
+    if ("SAFETY".equals(finishReason)) {
+      LOG.warning("Gemini response blocked: finishReason=SAFETY");
+      throw new LLMProviderException(
+          "Gemini response blocked by safety filters: finishReason=SAFETY",
+          "The AI response was blocked by safety filters. "
+              + "Please rephrase your request.");
+    }
   }
 
   /**
