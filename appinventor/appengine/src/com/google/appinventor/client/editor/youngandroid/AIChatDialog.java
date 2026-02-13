@@ -170,8 +170,9 @@ public class AIChatDialog extends DialogBox
     inputPanel.setSpacing(4);
 
     inputArea = new TextArea();
-    inputArea.setCharacterWidth(40);
     inputArea.setVisibleLines(3);
+    inputArea.setWidth("100%");
+    inputArea.getElement().getStyle().setProperty("boxSizing", "border-box");
     inputArea.getElement().setAttribute("placeholder", MESSAGES.aiChatInputPlaceholder());
     inputArea.getElement().getStyle().setProperty("resize", "vertical");
     inputArea.getElement().getStyle().setProperty("borderRadius", "3px");
@@ -187,6 +188,7 @@ public class AIChatDialog extends DialogBox
       }
     });
     inputPanel.add(inputArea);
+    inputPanel.setCellWidth(inputArea, "100%");
 
     sendButton = new Button(MESSAGES.aiChatSendButton());
     sendButton.getElement().getStyle().setProperty("background", "#4a90d9");
