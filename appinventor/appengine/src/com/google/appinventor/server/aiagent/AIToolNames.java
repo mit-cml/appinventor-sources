@@ -38,9 +38,10 @@ public final class AIToolNames {
   // ---------- Navigation tools ----------
 
   public static final String TOGGLE_EDITOR = "toggle_editor";
-  public static final String SWITCH_SCREEN = "switch_screen";
 
   // ---------- Project-level tools (ProjectEditor mode) ----------
+
+  public static final String SWITCH_SCREEN = "switch_screen";
 
   public static final String CREATE_SCREEN = "create_screen";
   public static final String DELETE_SCREEN = "delete_screen";

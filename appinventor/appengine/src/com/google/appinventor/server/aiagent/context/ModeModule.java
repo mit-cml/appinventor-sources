@@ -29,7 +29,7 @@ public class ModeModule extends ContextModule {
         break;
       case "ScreenEditor":
         sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
-            .append("You cannot create or delete screens. You can switch screens and toggle editor views. ")
+            .append("You cannot create, delete, or switch screens. You can toggle editor views. ")
             .append("To make changes, invoke the provided tools via function calling. ")
             .append("Always include a text response explaining what you are doing or ")
             .append("asking clarifying questions — do not return tool calls without ")
@@ -58,10 +58,16 @@ public class ModeModule extends ContextModule {
       sb.append("- **Block operations** (`write_block`, `delete_block`) can ONLY be ")
           .append("executed when the user is viewing the **Blocks** editor.\n");
       sb.append("- To switch views, use the `toggle_editor` tool.\n");
-      sb.append("- `toggle_editor` and `switch_screen` MUST each be called **ALONE** — ")
-          .append("never combine them with other tool calls in the same response.\n");
-      sb.append("- After `toggle_editor` or `switch_screen` is confirmed, continue ")
-          .append("with the operations that require the new view or screen.\n");
+      sb.append("- `toggle_editor` MUST be called **ALONE** — ")
+          .append("never combine it with other tool calls in the same response.\n");
+      sb.append("- After `toggle_editor` is confirmed, continue ")
+          .append("with the operations that require the new view.\n");
+      if ("ProjectEditor".equals(mode)) {
+        sb.append("- `switch_screen` MUST also be called **ALONE** — ")
+            .append("never combine it with other tool calls in the same response.\n");
+        sb.append("- After `switch_screen` is confirmed, continue ")
+            .append("with the operations that require the new screen.\n");
+      }
     }
 
     return sb.toString();

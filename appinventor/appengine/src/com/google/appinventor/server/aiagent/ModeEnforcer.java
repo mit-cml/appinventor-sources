@@ -37,6 +37,7 @@ public final class ModeEnforcer {
           AIOperation.Type.RENAME_COMPONENT,
           AIOperation.Type.WRITE_BLOCK,
           AIOperation.Type.DELETE_BLOCK,
+          AIOperation.Type.SWITCH_SCREEN,
           AIOperation.Type.CREATE_SCREEN,
           AIOperation.Type.DELETE_SCREEN,
           AIOperation.Type.SET_PROJECT_PROP)));
@@ -44,6 +45,7 @@ public final class ModeEnforcer {
   /** Project-level operations only allowed in ProjectEditor mode. */
   static final Set<AIOperation.Type> PROJECT_LEVEL_OPS =
       Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+          AIOperation.Type.SWITCH_SCREEN,
           AIOperation.Type.CREATE_SCREEN,
           AIOperation.Type.DELETE_SCREEN,
           AIOperation.Type.SET_PROJECT_PROP)));

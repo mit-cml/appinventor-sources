@@ -266,18 +266,16 @@ public class AIContextBuilder {
       AIDebug.log(LOG, toolList.toString());
     }
 
-    // Navigation tool: switch screen (ScreenEditor and ProjectEditor)
-    tools.add(new LLMTool(AIToolNames.SWITCH_SCREEN,
-        "Switch the active screen context. "
-            + "This tool MUST be called ALONE — do not combine it with any other tools "
-            + "in the same response. After the switch is confirmed, continue with "
-            + "the operations that require the new screen.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to switch to\"}"
-            + "},\"required\":[\"screen_name\"]}"));
-
     // Project-level tools only for ProjectEditor
     if ("ProjectEditor".equals(mode)) {
+      tools.add(new LLMTool(AIToolNames.SWITCH_SCREEN,
+          "Switch the active screen context. "
+              + "This tool MUST be called ALONE — do not combine it with any other tools "
+              + "in the same response. After the switch is confirmed, continue with "
+              + "the operations that require the new screen.",
+          "{\"type\":\"object\",\"properties\":{"
+              + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to switch to\"}"
+              + "},\"required\":[\"screen_name\"]}"));
       tools.add(new LLMTool(AIToolNames.CREATE_SCREEN,
           "Create a new screen in the project.",
           "{\"type\":\"object\",\"properties\":{"

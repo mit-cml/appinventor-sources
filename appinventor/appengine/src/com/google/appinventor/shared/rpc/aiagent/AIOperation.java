@@ -30,12 +30,12 @@ public class AIOperation implements IsSerializable, Serializable {
     DELETE_BLOCK,
 
     // Project-level operations (ProjectEditor mode only)
+    SWITCH_SCREEN,
     CREATE_SCREEN,
     DELETE_SCREEN,
     SET_PROJECT_PROP,
 
-    // Navigation operations (Advisor + ScreenEditor + ProjectEditor modes)
-    SWITCH_SCREEN,
+    // Navigation operations (ScreenEditor + ProjectEditor modes)
     TOGGLE_EDITOR
   }
 

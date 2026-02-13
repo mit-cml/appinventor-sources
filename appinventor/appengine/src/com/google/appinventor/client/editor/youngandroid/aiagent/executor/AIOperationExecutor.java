@@ -25,7 +25,8 @@ import java.util.logging.Logger;
  * dependencies between operation types are respected:
  * <ol>
  *   <li>Phase 1 (async): Project-level &mdash; SWITCH_SCREEN,
- *       CREATE_SCREEN, DELETE_SCREEN, SET_PROJECT_PROP, TOGGLE_EDITOR</li>
+ *       CREATE_SCREEN, DELETE_SCREEN, SET_PROJECT_PROP,
+ *       TOGGLE_EDITOR</li>
  *   <li>Phase 2 (sync): Designer additions &mdash; ADD_COMPONENT,
  *       SET_PROPERTY, RENAME_COMPONENT</li>
  *   <li>Phase 3 (sync): Block additions &mdash; WRITE_BLOCK</li>
