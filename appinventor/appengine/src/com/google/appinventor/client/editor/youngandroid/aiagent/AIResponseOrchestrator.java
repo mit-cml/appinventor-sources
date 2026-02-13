@@ -39,8 +39,8 @@ public class AIResponseOrchestrator {
 
   private static final Logger LOG = Logger.getLogger(AIResponseOrchestrator.class.getName());
 
-  /** RPC timeout for processRequest (5 minutes, must exceed server-side read timeout). */
-  private static final int RPC_TIMEOUT_MS = 300000;
+  /** RPC timeout for processRequest (12 minutes, must exceed server-side read timeout). */
+  private static final int RPC_TIMEOUT_MS = 720000;
 
   /** Polling interval for request status (1 second). */
   private static final int POLL_INTERVAL_MS = 1000;

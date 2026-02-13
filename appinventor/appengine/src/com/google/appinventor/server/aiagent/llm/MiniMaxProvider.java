@@ -42,9 +42,9 @@ public class MiniMaxProvider implements LLMProvider {
   private static final int MAX_TOOL_ITERATIONS = 5;
   private static final int MAX_RETRIES = 3;
   private static final long INITIAL_BACKOFF_MS = 1000;
-  private static final int MAX_TOKENS = 4096;
+  private static final int MAX_TOKENS = 131072;
   private static final int CONNECT_TIMEOUT_MS = 30000;
-  private static final int READ_TIMEOUT_MS = 120000;
+  private static final int READ_TIMEOUT_MS = 600000;
 
   private final String apiKey;
   private final String model;
@@ -102,6 +102,10 @@ public class MiniMaxProvider implements LLMProvider {
       }
 
       JSONObject choice = choices.getJSONObject(0);
+
+      // Check for truncated response (output length exceeded)
+      checkFinishReason(choice);
+
       JSONObject message = choice.optJSONObject("message");
       if (message == null) {
         return new LLMResponse("", new ArrayList<RawToolCall>(), null);
@@ -251,6 +255,10 @@ public class MiniMaxProvider implements LLMProvider {
       }
 
       JSONObject choice = choices.getJSONObject(0);
+
+      // Check for truncated response (output length exceeded)
+      checkFinishReason(choice);
+
       JSONObject message = choice.optJSONObject("message");
       if (message == null) {
         return new LLMResponse("", new ArrayList<RawToolCall>(), null, false);
@@ -455,6 +463,22 @@ public class MiniMaxProvider implements LLMProvider {
           .put("tool_call_id", part.optString("tool_use_id",
               part.optString("tool_call_id", "")))
           .put("content", part.getString("content")));
+    }
+  }
+
+  /**
+   * Checks the choice's finish_reason and throws if the response was truncated.
+   * MiniMax (OpenAI-compatible) returns {@code finish_reason: "length"} when
+   * output is cut off by the token limit.
+   */
+  private void checkFinishReason(JSONObject choice) throws LLMProviderException {
+    String finishReason = choice.optString("finish_reason", "");
+    if ("length".equals(finishReason)) {
+      LOG.warning("MiniMax response truncated: finish_reason=length");
+      throw new LLMProviderException(
+          "MiniMax response truncated: finish_reason=length",
+          "The AI response was too long and got cut off. "
+              + "Please try a simpler request or break it into smaller steps.");
     }
   }
 

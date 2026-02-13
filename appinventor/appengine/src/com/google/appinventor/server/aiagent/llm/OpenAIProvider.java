@@ -42,7 +42,7 @@ public class OpenAIProvider implements LLMProvider {
   private static final long INITIAL_BACKOFF_MS = 1000;
   private static final int MAX_TOKENS = 128000;
   private static final int CONNECT_TIMEOUT_MS = 30000;
-  private static final int READ_TIMEOUT_MS = 120000;
+  private static final int READ_TIMEOUT_MS = 600000;
 
   private final String apiKey;
   private final String model;

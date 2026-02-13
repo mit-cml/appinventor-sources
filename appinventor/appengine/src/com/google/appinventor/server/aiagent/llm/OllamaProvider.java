@@ -45,7 +45,7 @@ public class OllamaProvider implements LLMProvider {
   private static final long INITIAL_BACKOFF_MS = 1000;
   private static final int NUM_PREDICT = 65536;
   private static final int CONNECT_TIMEOUT_MS = 30000;
-  private static final int READ_TIMEOUT_MS = 180000; // Ollama can be slow on CPU
+  private static final int READ_TIMEOUT_MS = 300000; // Ollama can be slow on CPU
 
   private final String baseUrl;
   private final String model;
