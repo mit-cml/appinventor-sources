@@ -230,11 +230,25 @@ final class AIProjectOperations {
     Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
       @Override
       public void execute() {
-        DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+        Ode ode = Ode.getInstance();
+        DesignToolbar toolbar = ode.getDesignToolbar();
         DesignProject project = toolbar.projectMap.get(projectId);
         if (project != null && project.screens.containsKey(screenName)
-            && !Ode.getInstance().screensLocked()) {
-          then.run();
+            && !ode.screensLocked()) {
+          // The screen is registered in DesignToolbar, but the file editor
+          // may not yet be inserted into the ProjectEditor's DeckPanel
+          // (insertFileEditor runs in a deferred command).  Switching before
+          // that insertion causes an IndexOutOfBoundsException.
+          Screen screen = project.screens.get(screenName);
+          ProjectEditor projectEditor =
+              ode.getEditorManager().getOpenProjectEditor(projectId);
+          if (projectEditor != null
+              && projectEditor.getFileEditor(
+                  screen.designerEditor.getFileId()) != null) {
+            then.run();
+          } else {
+            Scheduler.get().scheduleDeferred(this);
+          }
         } else {
           Scheduler.get().scheduleDeferred(this);
         }
