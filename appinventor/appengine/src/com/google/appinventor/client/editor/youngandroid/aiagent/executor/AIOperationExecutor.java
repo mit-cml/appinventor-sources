@@ -1,0 +1,323 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2025 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.client.editor.youngandroid.aiagent.executor;
+
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
+import com.google.appinventor.client.editor.youngandroid.aiagent.validator.AIOperationValidator;
+import com.google.appinventor.shared.rpc.aiagent.AIOperation;
+
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.json.client.JSONParser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Applies AI-generated operations to the current project editor.
+ *
+ * <p>Operations are grouped into five execution phases to ensure that
+ * dependencies between operation types are respected:
+ * <ol>
+ *   <li>Phase 1 (async): Project-level &mdash; SWITCH_SCREEN,
+ *       CREATE_SCREEN, DELETE_SCREEN, SET_PROJECT_PROP, TOGGLE_EDITOR</li>
+ *   <li>Phase 2 (sync): Designer additions &mdash; ADD_COMPONENT,
+ *       SET_PROPERTY, RENAME_COMPONENT</li>
+ *   <li>Phase 3 (sync): Block additions &mdash; WRITE_BLOCK</li>
+ *   <li>Phase 4 (sync): Block deletions &mdash; DELETE_BLOCK</li>
+ *   <li>Phase 5 (sync): Designer deletions &mdash; DELETE_COMPONENT</li>
+ * </ol>
+ *
+ * <p>Each operation is validated immediately before execution (not all at
+ * once up front) because earlier operations change editor state. On the
+ * first failure the executor halts; remaining operations are reported as
+ * skipped. There is no rollback.</p>
+ */
+public class AIOperationExecutor {
+
+  private static final Logger LOG = Logger.getLogger(AIOperationExecutor.class.getName());
+
+  // ---- Public types ----
+
+  /**
+   * Result returned after executing a batch of AI operations.
+   */
+  public static class ExecutionResult {
+    private final List<AIOperation> succeeded;
+    private final List<AIOperation> failed;
+    private final List<AIOperation> skipped;
+    private final String errorMessage;
+
+    ExecutionResult(List<AIOperation> succeeded, List<AIOperation> failed,
+        List<AIOperation> skipped, String errorMessage) {
+      this.succeeded = succeeded;
+      this.failed = failed;
+      this.skipped = skipped;
+      this.errorMessage = errorMessage;
+    }
+
+    public List<AIOperation> getSucceeded() { return succeeded; }
+    public List<AIOperation> getFailed() { return failed; }
+    public List<AIOperation> getSkipped() { return skipped; }
+    public String getErrorMessage() { return errorMessage; }
+    public boolean isSuccess() { return failed.isEmpty(); }
+  }
+
+  /**
+   * Callback invoked when all phases have completed (or an error halts
+   * execution).
+   */
+  public interface ExecutionCallback {
+    void onComplete(ExecutionResult result);
+  }
+
+  // ---- Public API ----
+
+  /**
+   * Execute a list of AI operations against the current editor.
+   * Operations are grouped into phases and executed in order.
+   */
+  public void execute(List<AIOperation> operations, ExecutionCallback callback) {
+    List<AIOperation> phase1 = new ArrayList<>();
+    List<AIOperation> phase2 = new ArrayList<>();
+    List<AIOperation> phase3 = new ArrayList<>();
+    List<AIOperation> phase4 = new ArrayList<>();
+    List<AIOperation> phase5 = new ArrayList<>();
+
+    for (AIOperation op : operations) {
+      switch (op.getType()) {
+        case SWITCH_SCREEN:
+        case CREATE_SCREEN:
+        case DELETE_SCREEN:
+        case SET_PROJECT_PROP:
+        case TOGGLE_EDITOR:
+          phase1.add(op);
+          break;
+        case ADD_COMPONENT:
+        case SET_PROPERTY:
+        case RENAME_COMPONENT:
+          phase2.add(op);
+          break;
+        case WRITE_BLOCK:
+          phase3.add(op);
+          break;
+        case DELETE_BLOCK:
+          phase4.add(op);
+          break;
+        case DELETE_COMPONENT:
+          phase5.add(op);
+          break;
+        default:
+          LOG.warning("Unknown operation type: " + op.getType());
+          break;
+      }
+    }
+
+    ExecutionState state = new ExecutionState(callback);
+    runPhase1(state, phase1, 0, phase2, phase3, phase4, phase5);
+  }
+
+  // ---- Execution state ----
+
+  private static class ExecutionState {
+    final ExecutionCallback callback;
+    final List<AIOperation> succeeded = new ArrayList<>();
+    final List<AIOperation> failed = new ArrayList<>();
+    final List<AIOperation> skipped = new ArrayList<>();
+    String errorMessage;
+    boolean halted;
+
+    ExecutionState(ExecutionCallback callback) {
+      this.callback = callback;
+    }
+
+    void markFailed(AIOperation op, String message) {
+      failed.add(op);
+      errorMessage = message;
+      halted = true;
+    }
+
+    void markSucceeded(AIOperation op) {
+      succeeded.add(op);
+    }
+
+    void skipRemaining(List<AIOperation> ops, int startIndex) {
+      for (int i = startIndex; i < ops.size(); i++) {
+        skipped.add(ops.get(i));
+      }
+    }
+
+    void skipAll(List<AIOperation> ops) {
+      skipped.addAll(ops);
+    }
+
+    void finish() {
+      callback.onComplete(
+          new ExecutionResult(succeeded, failed, skipped, errorMessage));
+    }
+  }
+
+  // ---- Phase 1: async project-level operations ----
+
+  private void runPhase1(final ExecutionState state, final List<AIOperation> phase1,
+      final int index, final List<AIOperation> phase2, final List<AIOperation> phase3,
+      final List<AIOperation> phase4, final List<AIOperation> phase5) {
+
+    if (state.halted || index >= phase1.size()) {
+      if (state.halted) {
+        state.skipRemaining(phase1, index);
+        state.skipAll(phase2);
+        state.skipAll(phase3);
+        state.skipAll(phase4);
+        state.skipAll(phase5);
+        state.finish();
+      } else {
+        runSyncPhases(state, phase2, phase3, phase4, phase5);
+      }
+      return;
+    }
+
+    final AIOperation op = phase1.get(index);
+    try {
+      String error = AIOperationValidator.validate(op);
+      if (error != null) {
+        state.markFailed(op, error);
+        state.skipRemaining(phase1, index + 1);
+        state.skipAll(phase2);
+        state.skipAll(phase3);
+        state.skipAll(phase4);
+        state.skipAll(phase5);
+        state.finish();
+        return;
+      }
+
+      AIProjectOperations.execute(op, new AIProjectOperations.ProjectOpCallback() {
+        @Override
+        public void onSuccess() {
+          state.markSucceeded(op);
+          Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+              runPhase1(state, phase1, index + 1, phase2, phase3, phase4, phase5);
+            }
+          });
+        }
+
+        @Override
+        public void onFailure(String message) {
+          state.markFailed(op, message);
+          state.skipRemaining(phase1, index + 1);
+          state.skipAll(phase2);
+          state.skipAll(phase3);
+          state.skipAll(phase4);
+          state.skipAll(phase5);
+          state.finish();
+        }
+      });
+    } catch (Exception e) {
+      LOG.log(Level.SEVERE, "Phase 1 exception", e);
+      state.markFailed(op, "Exception: " + e.getMessage());
+      state.skipRemaining(phase1, index + 1);
+      state.skipAll(phase2);
+      state.skipAll(phase3);
+      state.skipAll(phase4);
+      state.skipAll(phase5);
+      state.finish();
+    }
+  }
+
+  // ---- Phases 2-5: synchronous ----
+
+  private void runSyncPhases(ExecutionState state, List<AIOperation> phase2,
+      List<AIOperation> phase3, List<AIOperation> phase4, List<AIOperation> phase5) {
+    try {
+      if (!runSyncList(state, phase2, phase3, phase4, phase5)) {
+        return;
+      }
+      if (!runSyncList(state, phase3, phase4, phase5)) {
+        return;
+      }
+      if (!runSyncList(state, phase4, phase5)) {
+        return;
+      }
+      runSyncList(state, phase5);
+      state.finish();
+    } finally {
+      // Force a Companion YAIL update after all sync phases complete (or halt).
+      // rename() and WRITE_BLOCK suppress normal update triggers, so an
+      // explicit sendComponentData ensures the Companion receives the latest
+      // component definitions and block code.
+      YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+      if (blocksEditor != null) {
+        blocksEditor.sendComponentData(true);
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private boolean runSyncList(ExecutionState state, List<AIOperation> current,
+      List<AIOperation>... remaining) {
+    for (int i = 0; i < current.size(); i++) {
+      AIOperation op = current.get(i);
+      try {
+        String error = AIOperationValidator.validate(op);
+        if (error != null) {
+          state.markFailed(op, error);
+          state.skipRemaining(current, i + 1);
+          for (List<AIOperation> rest : remaining) {
+            state.skipAll(rest);
+          }
+          state.finish();
+          return false;
+        }
+
+        dispatchSyncOp(op);
+        state.markSucceeded(op);
+      } catch (Exception e) {
+        LOG.log(Level.SEVERE, "Sync execution exception for " + op.getType(), e);
+        state.markFailed(op,
+            "Exception executing " + op.getType() + ": " + e.getMessage());
+        state.skipRemaining(current, i + 1);
+        for (List<AIOperation> rest : remaining) {
+          state.skipAll(rest);
+        }
+        state.finish();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private void dispatchSyncOp(AIOperation op) {
+    com.google.gwt.json.client.JSONObject json =
+        JSONParser.parseStrict(op.getPayload()).isObject();
+
+    switch (op.getType()) {
+      case ADD_COMPONENT:
+        AIDesignerOperations.executeAddComponent(json);
+        break;
+      case SET_PROPERTY:
+        AIDesignerOperations.executeSetProperty(json);
+        break;
+      case RENAME_COMPONENT:
+        AIDesignerOperations.executeRenameComponent(json);
+        break;
+      case DELETE_COMPONENT:
+        AIDesignerOperations.executeDeleteComponent(json);
+        break;
+      case WRITE_BLOCK:
+        AIBlockOperations.executeWriteBlock(json);
+        break;
+      case DELETE_BLOCK:
+        AIBlockOperations.executeDeleteBlock(json);
+        break;
+      default:
+        throw new IllegalStateException("Unexpected sync op type: " + op.getType());
+    }
+  }
+}

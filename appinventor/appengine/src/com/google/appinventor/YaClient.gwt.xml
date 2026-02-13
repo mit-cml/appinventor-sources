@@ -74,6 +74,9 @@
   <source path="client/editor/simple/components"/>
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
+  <source path="client/editor/youngandroid/aiagent"/>
+  <source path="client/editor/youngandroid/aiagent/executor"/>
+  <source path="client/editor/youngandroid/aiagent/validator"/>
   <source path="client/editor/youngandroid/properties"/>
   <source path="client/editor/youngandroid/i18n"/>
   <source path="client/editor/youngandroid/i18n/msg"/>
