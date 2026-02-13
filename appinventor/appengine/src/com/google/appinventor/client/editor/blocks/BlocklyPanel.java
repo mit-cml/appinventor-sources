@@ -1166,14 +1166,27 @@ public class BlocklyPanel extends HTMLPanel {
       return block;
     }
 
+    // Helper: get component name from a block — handles both instance
+    // (COMPONENT_SELECTOR field) and generic (component_type mutation) variants
+    function getComponentName(blk) {
+      var selector = blk.getField('COMPONENT_SELECTOR');
+      if (selector) return selector.getValue();
+      // Generic blocks store the type in the mutation
+      var mutation = blk.mutationToDom && blk.mutationToDom();
+      if (mutation) {
+        var ct = mutation.getAttribute('component_type');
+        if (ct) return 'any ' + ct;
+      }
+      return '?';
+    }
+
     // Helper: describe a top-level block for the LLM
     function describeBlock(block) {
       var top = getTopBlock(block);
       if (top.type === 'component_event') {
-        var selector = top.getField('COMPONENT_SELECTOR');
-        var eventName = top.getField('EVENT_NAME');
-        var comp = selector ? selector.getValue() : '?';
-        var evt = eventName ? eventName.getValue() : '?';
+        var comp = getComponentName(top);
+        var eventField = top.getField('EVENT_NAME');
+        var evt = eventField ? eventField.getValue() : '?';
         return comp + '.' + evt + ' event handler';
       } else if (top.type === 'global_declaration') {
         var name = top.getField('NAME');
@@ -1182,11 +1195,25 @@ public class BlocklyPanel extends HTMLPanel {
         var name = top.getField('NAME');
         return 'procedure ' + (name ? name.getValue() : '?');
       } else if (top.type === 'component_method') {
-        var selector = top.getField('COMPONENT_SELECTOR');
+        var comp = getComponentName(top);
         var method = top.getField('METHOD_NAME');
-        return (selector ? selector.getValue() : '?') + '.' + (method ? method.getValue() : '?') + ' method call';
+        return comp + '.' + (method ? method.getValue() : '?') + ' method call';
+      } else if (top.type === 'component_set_get') {
+        var comp = getComponentName(top);
+        var prop = top.getField('PROP');
+        var mutation = top.mutationToDom && top.mutationToDom();
+        var setOrGet = mutation ? mutation.getAttribute('set_or_get') : 'get';
+        return comp + '.' + (prop ? prop.getValue() : '?')
+            + (setOrGet === 'set' ? ' property setter' : ' property getter');
+      } else if (top.type === 'component_component_block') {
+        var comp = getComponentName(top);
+        return comp + ' component reference';
+      } else if (top.type === 'component_all_component_block') {
+        var typeSelector = top.getField('COMPONENT_TYPE_SELECTOR');
+        return 'all ' + (typeSelector ? typeSelector.getValue() : '?') + ' components';
       }
-      return top.type;
+      // Fallback: use the block type, replacing underscores for readability
+      return top.type.replace(/_/g, ' ');
     }
 
     // Collect errors
