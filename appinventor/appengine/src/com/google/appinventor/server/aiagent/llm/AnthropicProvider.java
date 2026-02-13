@@ -40,7 +40,7 @@ public class AnthropicProvider implements LLMProvider {
   private static final int MAX_TOOL_ITERATIONS = 5;
   private static final int MAX_RETRIES = 3;
   private static final long INITIAL_BACKOFF_MS = 1000;
-  private static final int MAX_TOKENS = 4096;
+  private static final int MAX_TOKENS = 128000;
   private static final int CONNECT_TIMEOUT_MS = 30000;
   private static final int READ_TIMEOUT_MS = 120000;
 

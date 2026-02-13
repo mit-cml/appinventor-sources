@@ -41,7 +41,7 @@ public class GeminiProvider implements LLMProvider {
   private static final int MAX_TOOL_ITERATIONS = 5;
   private static final int MAX_RETRIES = 3;
   private static final long INITIAL_BACKOFF_MS = 1000;
-  private static final int MAX_OUTPUT_TOKENS = 4096;
+  private static final int MAX_OUTPUT_TOKENS = 65536;
   private static final int CONNECT_TIMEOUT_MS = 30000;
   private static final int READ_TIMEOUT_MS = 120000;
 
