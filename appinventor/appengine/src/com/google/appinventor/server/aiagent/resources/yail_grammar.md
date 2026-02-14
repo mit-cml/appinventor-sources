@@ -59,6 +59,34 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
       '(text text) "make a list")))
 ```
 
+**`let` bindings cannot reference sibling bindings.** YAIL's `let` follows standard Scheme semantics: all initializer expressions are evaluated in the **enclosing** environment before any of the new bindings take effect. A binding in the same `let` block is NOT available to other initializers — using `(lexical-value $x)` where `$x` is defined in the same `let` will fail. When one binding depends on another, use **nested** `let` blocks so the outer binding is in scope when the inner initializer runs.
+
+```scheme
+;; BAD — $win references $p, but both are in the same let (error)
+(let (($p (get-var g$CURRENT_PLAYER))
+      ($win (or-delayed
+              (and-delayed
+                (call-yail-primitive string=?
+                  (*list-for-runtime* (get-property 'Cell1 'Text) (lexical-value $p))
+                  '(text text) "text=")
+                (call-yail-primitive string=?
+                  (*list-for-runtime* (get-property 'Cell2 'Text) (lexical-value $p))
+                  '(text text) "text=")))))
+  (begin ...))
+
+;; GOOD — nested let so $p is in scope when $win is initialized
+(let (($p (get-var g$CURRENT_PLAYER)))
+  (let (($win (or-delayed
+                (and-delayed
+                  (call-yail-primitive string=?
+                    (*list-for-runtime* (get-property 'Cell1 'Text) (lexical-value $p))
+                    '(text text) "text=")
+                  (call-yail-primitive string=?
+                    (*list-for-runtime* (get-property 'Cell2 'Text) (lexical-value $p))
+                    '(text text) "text=")))))
+    (begin ...)))
+```
+
 **Constants as global variables.** Do not hardcode string or number literals directly in event handlers when they represent a meaningful constant, a configuration value, or appear more than once. Define them as global variables so they are easy to find and change in one place.
 
 ```scheme
