@@ -283,6 +283,14 @@ public class AIResponseOrchestrator {
   }
 
   /**
+   * Resets the auto-accept-all flag without affecting other state.
+   * Called when the dialog is closed or the active project changes.
+   */
+  public void resetAutoAcceptAll() {
+    autoAcceptAll = false;
+  }
+
+  /**
    * Returns whether a request is currently in flight.
    */
   public boolean isRequestInFlight() {

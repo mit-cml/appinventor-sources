@@ -300,6 +300,7 @@ public class AIChatDialog extends DialogBox
     }
     if (isShowing() && newProjectId != currentProjectId) {
       currentProjectId = newProjectId;
+      orchestrator.resetAutoAcceptAll();
       if (orchestrator.isRequestInFlight()) {
         orchestrator.cancelInFlight();
       }
@@ -313,6 +314,7 @@ public class AIChatDialog extends DialogBox
   public void hideDialog() {
     lastPopupLeft = getPopupLeft();
     lastPopupTop = getPopupTop();
+    orchestrator.resetAutoAcceptAll();
     orchestrator.stopPollingStatus();
     hide();
   }
