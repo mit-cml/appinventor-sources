@@ -1839,15 +1839,21 @@ AI.YailToBlocks.convertLogicOp_ = function(workspace, node, op) {
   var els = node.elements;
   var numOperands = els.length - 1; // skip the operator symbol
   var block = workspace.newBlock('logic_operation');
-  block.setFieldValue(op, 'OP');
 
   // Set up mutation for more than 2 operands (default itemCount_ is 2).
+  // Must happen BEFORE setFieldValue so the OP value is applied to the
+  // recreated dropdown field (domToMutation disposes and recreates it).
   if (numOperands > 2 && block.domToMutation) {
     var mutation = document.createElement('mutation');
     mutation.setAttribute('items', String(numOperands));
     block.domToMutation(mutation);
   }
   block.initSvg();
+
+  // Set OP after mutation + initSvg so the value is applied to the final
+  // stable field.  domToMutation installs a setValue wrapper that calls
+  // updateFields, which updates the "and"/"or" labels on BOOL2+ inputs.
+  block.setFieldValue(op, 'OP');
 
   // Connect operands: els[1]→A, els[2]→B, els[3]→BOOL2, els[4]→BOOL3, ...
   for (var i = 0; i < numOperands; i++) {
