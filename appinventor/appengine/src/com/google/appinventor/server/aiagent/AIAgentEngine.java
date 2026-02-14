@@ -21,6 +21,7 @@ import com.google.appinventor.server.storage.StoredData.MessageRole;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
+import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
@@ -312,10 +313,10 @@ public class AIAgentEngine {
    * @return the AI agent response
    */
   public AIAgentResponse reportExecutionErrors(String userId, long projectId, String screenName,
-      List<String> errors, String blocksYail, String currentView, String mode,
+      List<AIOperationResult> results, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings) {
     AIDebug.log(LOG, "reportExecutionErrors: userId=" + userId
-        + ", projectId=" + projectId + ", errors=" + errors.size());
+        + ", projectId=" + projectId + ", results=" + results.size());
 
     try {
       conversationManager.updateStatus(projectId, "Retrying with error feedback...");
@@ -327,31 +328,30 @@ public class AIAgentEngine {
         return errorResponse("No conversation state available. Please start a new request.");
       }
 
-      // Parse structured error feedback from client (SUCCEEDED:/FAILED:/SKIPPED: prefixes).
-      // Unprefixed strings are treated as failures for backward compatibility.
+      // Extract structured results directly from typed DTOs.
       List<String> succeededSummaries = new ArrayList<>();
       List<String> failedDetails = new ArrayList<>();
       List<String> skippedSummaries = new ArrayList<>();
-      for (String err : errors) {
-        if (err.startsWith("SUCCEEDED:")) {
-          succeededSummaries.add(err.substring("SUCCEEDED:".length()));
-        } else if (err.startsWith("FAILED:")) {
-          failedDetails.add(err.substring("FAILED:".length()));
-        } else if (err.startsWith("SKIPPED:")) {
-          skippedSummaries.add(err.substring("SKIPPED:".length()));
-        } else {
-          failedDetails.add(err);
+      for (AIOperationResult r : results) {
+        switch (r.getStatus()) {
+          case SUCCEEDED:
+            succeededSummaries.add(r.getSummary());
+            break;
+          case FAILED:
+            String detail = r.getSummary();
+            if (r.getErrorDetail() != null && !r.getErrorDetail().isEmpty()) {
+              detail += " -- Error: " + r.getErrorDetail();
+            }
+            failedDetails.add(detail);
+            break;
+          case SKIPPED:
+            skippedSummaries.add(r.getSummary());
+            break;
         }
       }
 
-      String feedback;
-      if (!succeededSummaries.isEmpty() || !skippedSummaries.isEmpty()) {
-        feedback = LLMResponseParser.buildExecutionErrorFeedback(
-            succeededSummaries, failedDetails, skippedSummaries);
-      } else {
-        // Legacy format -- use the simpler feedback builder
-        feedback = LLMResponseParser.buildValidationErrorFeedback(errors);
-      }
+      String feedback = LLMResponseParser.buildExecutionErrorFeedback(
+          succeededSummaries, failedDetails, skippedSummaries);
       LOG.info("Retrying LLM with client execution errors: " + feedback);
 
       // Get provider and tools

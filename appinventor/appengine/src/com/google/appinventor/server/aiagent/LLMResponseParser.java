@@ -196,21 +196,6 @@ public class LLMResponseParser {
   }
 
   /**
-   * Build a structured error message suitable for LLM retry feedback.
-   * Used by the pre-validation path (block YAIL validation) where no
-   * operations have been applied yet.
-   */
-  public static String buildValidationErrorFeedback(List<String> errors) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("The following errors were found in your tool calls:\n");
-    for (int i = 0; i < errors.size(); i++) {
-      sb.append(i + 1).append(". ").append(errors.get(i)).append("\n");
-    }
-    sb.append("\nPlease fix these issues and try again.");
-    return sb.toString();
-  }
-
-  /**
    * Build rich error feedback that includes which operations were already applied
    * (do not re-emit), which failed (fix and retry), and which were skipped (re-emit).
    * This gives the LLM accurate context to avoid re-emitting already-applied operations.

@@ -13,6 +13,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
+import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
 
@@ -94,17 +95,18 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   }
 
   @Override
-  public AIAgentResponse reportExecutionErrors(AIAgentRequest request, List<String> errors) {
+  public AIAgentResponse reportExecutionErrors(AIAgentRequest request,
+      List<AIOperationResult> results) {
     long projectId = request.getProjectId();
     RequestContext ctx = validateRequest(projectId);
     if (ctx.error != null) return ctx.error;
 
-    if (errors == null || errors.isEmpty()) {
-      return AIAgentEngine.errorResponse("No errors to report.");
+    if (results == null || results.isEmpty()) {
+      return AIAgentEngine.errorResponse("No results to report.");
     }
 
     return engine.reportExecutionErrors(ctx.userId, projectId, request.getScreenName(),
-        errors, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
+        results, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
         request.getBlockWarnings());
   }

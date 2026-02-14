@@ -18,7 +18,7 @@ public class AIOperation implements IsSerializable, Serializable {
   /**
    * Enumeration of all supported AI operation types.
    */
-  public enum Type {
+  public enum Type implements IsSerializable {
     // Component operations (ScreenEditor + ProjectEditor modes)
     ADD_COMPONENT,
     DELETE_COMPONENT,

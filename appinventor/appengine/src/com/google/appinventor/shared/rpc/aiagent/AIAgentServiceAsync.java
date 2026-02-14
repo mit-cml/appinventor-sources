@@ -45,6 +45,6 @@ public interface AIAgentServiceAsync {
   /**
    * @see AIAgentService#reportExecutionErrors(AIAgentRequest, List)
    */
-  void reportExecutionErrors(AIAgentRequest request, List<String> errors,
+  void reportExecutionErrors(AIAgentRequest request, List<AIOperationResult> results,
       AsyncCallback<AIAgentResponse> callback);
 }

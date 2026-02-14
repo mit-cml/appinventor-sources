@@ -16,6 +16,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentServiceAsync;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
+import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.client.editor.youngandroid.aiagent.executor.AIOperationExecutor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -370,7 +371,7 @@ public class AIResponseOrchestrator {
               + "/" + MAX_VALIDATION_RETRIES + "), retrying. Preserved "
               + preservedValidOps.size() + " valid op(s), "
               + invalidOps.size() + " failed.");
-          reportValidationErrors(validOps, validationErrors);
+          reportValidationErrors(operations, validationErrors);
           return;
         }
 
@@ -521,14 +522,11 @@ public class AIResponseOrchestrator {
    * Reports client-side validation errors to the server for LLM retry.
    * Keeps "Calling AI" visible and requestInFlight=true during the retry.
    *
-   * <p>Builds structured error strings with {@code SUCCEEDED:} and
-   * {@code FAILED:} prefixes so the server uses
-   * {@code buildExecutionErrorFeedback()} instead of the legacy
-   * {@code buildValidationErrorFeedback()}. This tells the LLM exactly
-   * which operations passed validation (and should NOT be re-emitted)
-   * and which failed (and need fixing).</p>
+   * <p>Builds structured {@link AIOperationResult} DTOs so the server
+   * knows exactly which operations passed validation (and should NOT be
+   * re-emitted) and which failed (and need fixing).</p>
    */
-  private void reportValidationErrors(List<AIOperation> validOps,
+  private void reportValidationErrors(List<AIOperation> operations,
       Map<Integer, String> validationErrors) {
     long projectId = contextCollector.getCurrentProjectId();
     if (projectId == 0) {
@@ -538,19 +536,21 @@ public class AIResponseOrchestrator {
       return;
     }
 
-    // Build structured feedback with SUCCEEDED:/FAILED: prefixes so the
-    // server routes through buildExecutionErrorFeedback() and the LLM
-    // learns which operations to skip on retry.
-    List<String> structuredErrors = new ArrayList<>();
-    for (AIOperation op : validOps) {
-      structuredErrors.add("SUCCEEDED:" + AIOperationFormatter.formatOperation(op));
-    }
-    for (String errorDetail : validationErrors.values()) {
-      structuredErrors.add("FAILED:" + errorDetail);
+    // Build structured per-operation results using typed DTOs.
+    List<AIOperationResult> results = new ArrayList<>();
+    for (int i = 0; i < operations.size(); i++) {
+      AIOperation op = operations.get(i);
+      if (validationErrors.containsKey(i)) {
+        results.add(AIOperationResult.failed(
+            AIOperationFormatter.formatOperation(op), validationErrors.get(i)));
+      } else {
+        results.add(AIOperationResult.succeeded(
+            AIOperationFormatter.formatOperation(op)));
+      }
     }
 
     // Keep polling — "Calling AI" stays visible
-    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), structuredErrors,
+    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), results,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -619,24 +619,26 @@ public class AIResponseOrchestrator {
       return;
     }
 
-    // Collect structured per-operation results so the LLM knows exactly what
-    // was applied (do not re-emit), what failed, and what was skipped.
-    List<String> errors = new ArrayList<>();
+    // Build structured per-operation results using typed DTOs.
+    List<AIOperationResult> results = new ArrayList<>();
     for (AIOperation op : result.getSucceeded()) {
-      errors.add("SUCCEEDED:" + AIOperationFormatter.formatOperation(op));
+      results.add(AIOperationResult.succeeded(
+          AIOperationFormatter.formatOperation(op)));
     }
     for (AIOperation op : result.getFailed()) {
       String mainError = result.getErrorMessage();
-      errors.add("FAILED:" + AIOperationFormatter.formatOperation(op)
-          + " -- Error: " + (mainError != null ? mainError : "unknown"));
+      results.add(AIOperationResult.failed(
+          AIOperationFormatter.formatOperation(op),
+          mainError != null ? mainError : "unknown"));
     }
     for (AIOperation op : result.getSkipped()) {
-      errors.add("SKIPPED:" + AIOperationFormatter.formatOperation(op));
+      results.add(AIOperationResult.skipped(
+          AIOperationFormatter.formatOperation(op)));
     }
 
     startPollingStatus();
     validationRetryCount = 0;
-    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), errors,
+    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), results,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
