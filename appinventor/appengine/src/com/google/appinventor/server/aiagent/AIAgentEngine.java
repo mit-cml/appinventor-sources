@@ -22,7 +22,6 @@ import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
-import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
 
 import org.json.JSONArray;
@@ -85,19 +84,6 @@ public class AIAgentEngine {
       this.operations = operations;
       this.errors = errors;
       this.toolCallStatuses = toolCallStatuses;
-    }
-  }
-
-  /** Mutable holder for the auto-continue loop's outputs. */
-  static class LLMResult {
-    LLMResponse response;
-    ParsedResult parsed;
-    String assistantText;
-
-    LLMResult(LLMResponse response, ParsedResult parsed, String assistantText) {
-      this.response = response;
-      this.parsed = parsed;
-      this.assistantText = assistantText;
     }
   }
 
@@ -200,20 +186,14 @@ public class AIAgentEngine {
         }
       }
 
-      // Auto-continue: if the model narrated but didn't use tools in a write
-      // mode, prompt it to execute.  Limited to one retry to avoid loops.
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
-      LLMResult result = autoRetryIfNarrative(
-          new LLMResult(llmResponse, parsed, assistantText),
-          mode, currentView, conv, provider, systemPrompt,
-          contextMessages, tools, resolver, projectId);
 
-      AIDebug.log(LOG, "Final response: operations=" + result.parsed.operations.size()
-          + ", errors=" + result.parsed.errors.size()
-          + ", hasMore=" + (result.response.hasMore() && !result.parsed.operations.isEmpty())
-          + ", textLen=" + result.assistantText.length());
+      AIDebug.log(LOG, "Final response: operations=" + parsed.operations.size()
+          + ", errors=" + parsed.errors.size()
+          + ", hasMore=" + (llmResponse.hasMore() && !parsed.operations.isEmpty())
+          + ", textLen=" + assistantText.length());
 
-      return finalizeResponse(result.response, result.assistantText, result.parsed,
+      return finalizeResponse(llmResponse, assistantText, parsed,
           conv, projectId, isNew);
 
     } catch (LLMProviderException e) {
@@ -559,48 +539,6 @@ public class AIAgentEngine {
     statuses.removeAll(Collections.singleton(null));
 
     return new ParsedResult(accepted, allErrors, statuses);
-  }
-
-  /**
-   * If the model narrated but didn't use tools in a write mode, send a
-   * follow-up prompt asking it to execute.  Limited to one retry to avoid
-   * loops.  Returns the original result unchanged when no retry is needed.
-   */
-  LLMResult autoRetryIfNarrative(LLMResult result, String mode,
-      String currentView, AIConversationState conv, LLMProvider provider,
-      String systemPrompt, List<String> contextMessages, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver, long projectId) throws LLMProviderException {
-    if (!result.parsed.operations.isEmpty() || !result.parsed.errors.isEmpty()
-        || AI_AGENT_MODE_ADVISOR.equals(mode)
-        || result.assistantText.isEmpty()
-        || result.response.hasMore()) {
-      return result;
-    }
-    AIDebug.log(LOG, "Auto-continue: model narrated without tool calls, retrying");
-
-    conversationManager.storeMessage(conv.getConversationId(), "assistant",
-        result.assistantText);
-    String followUp = "Please proceed and execute the changes you described "
-        + "using the available tools. Do not describe what you will do — "
-        + "use the tools now.";
-    conversationManager.storeMessage(conv.getConversationId(), "user", followUp);
-
-    List<ChatMessage> updatedHistory = provider.isStateless()
-        ? conversationManager.loadConversation(conv.getConversationId())
-        : Collections.<ChatMessage>emptyList();
-
-    conversationManager.updateStatus(projectId, "Calling AI...");
-    LLMResponse retryResponse = provider.chat(
-        systemPrompt, contextMessages, followUp, tools,
-        result.response.getProviderRef(), updatedHistory, resolver);
-
-    ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView);
-
-    String retryText = retryResponse.getText() != null ? retryResponse.getText() : "";
-    String combined = retryText.isEmpty()
-        ? result.assistantText
-        : result.assistantText + "\n\n" + retryText;
-    return new LLMResult(retryResponse, retryParsed, combined);
   }
 
   AIAgentResponse finalizeResponse(LLMResponse llmResponse, String assistantText,
