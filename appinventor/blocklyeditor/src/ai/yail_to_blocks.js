@@ -65,7 +65,13 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
       // Clean up any blocks created before the error so broken
       // half-initialized blocks don't persist in the workspace.
       for (var j = 0; j < createdBlocks.length; j++) {
-        try { createdBlocks[j].dispose(false); } catch (ignore) {}
+        try {
+          // Don't dispose blocks that were updated in place — they existed
+          // before this conversion and destroying them would break callers.
+          if (!createdBlocks[j].aiUpdatedInPlace_) {
+            createdBlocks[j].dispose(false);
+          }
+        } catch (ignore) {}
       }
       Blockly.Events.enable();
       return {success: false, error: e.message, blockId: null};
@@ -246,6 +252,128 @@ AI.YailToBlocks.deleteBlock = function(workspace, identifier) {
     }
   }
   return {success: true, error: null};
+};
+
+/**
+ * Find an existing procedure definition block by name.
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {string} procName The procedure name (without p$ prefix).
+ * @return {?Blockly.Block} The procedure definition block, or null.
+ * @private
+ */
+AI.YailToBlocks.findProcBlock_ = function(workspace, procName) {
+  var topBlocks = workspace.getTopBlocks(false);
+  for (var i = 0; i < topBlocks.length; i++) {
+    var block = topBlocks[i];
+    if ((block.type === 'procedures_defnoreturn' || block.type === 'procedures_defreturn')
+        && block.getFieldValue('NAME') === procName) {
+      return block;
+    }
+  }
+  return null;
+};
+
+/**
+ * Disconnect and dispose all blocks connected to a given input.
+ * For statement inputs, walks the next-connection chain to dispose all
+ * chained statement blocks (dispose only removes descendants, not siblings).
+ * @param {!Blockly.Block} block The parent block.
+ * @param {string} inputName The name of the input to clear.
+ * @private
+ */
+AI.YailToBlocks.clearInputBlocks_ = function(block, inputName) {
+  var input = block.getInput(inputName);
+  if (!input || !input.connection) return;
+  var target = input.connection.targetBlock();
+  if (!target) return;
+
+  // Disconnect from the parent input first.
+  input.connection.disconnect();
+
+  if (input.type === Blockly.NEXT_STATEMENT) {
+    // Statement input: collect the full chain, then dispose in reverse
+    // so that disconnecting later blocks doesn't cascade unexpectedly.
+    var stmts = [];
+    var current = target;
+    while (current) {
+      stmts.push(current);
+      current = current.getNextBlock();
+    }
+    for (var i = stmts.length - 1; i >= 0; i--) {
+      if (stmts[i].previousConnection && stmts[i].previousConnection.isConnected()) {
+        stmts[i].previousConnection.disconnect();
+      }
+      if (stmts[i].nextConnection && stmts[i].nextConnection.isConnected()) {
+        stmts[i].nextConnection.disconnect();
+      }
+      stmts[i].dispose(false);
+    }
+  } else {
+    // Value input: dispose the target (recursively disposes its children).
+    target.dispose(false);
+  }
+};
+
+/**
+ * Connect body forms to a procedure definition block.
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {!Blockly.Block} block The procedure definition block.
+ * @param {!Array<Object>} bodyForms The parsed YAIL body forms.
+ * @param {boolean} isReturn Whether this is a return procedure.
+ * @private
+ */
+AI.YailToBlocks.connectProcedureBody_ = function(workspace, block, bodyForms, isReturn) {
+  if (bodyForms.length === 0) return;
+
+  if (isReturn) {
+    // For return procedures, the body is a single expression in the RETURN input.
+    // If multiple forms, wrap in a do_then_return block.
+    if (bodyForms.length === 1) {
+      var retBlock = AI.YailToBlocks.convertExpression_(workspace, bodyForms[0]);
+      if (retBlock && block.getInput('RETURN')) {
+        block.getInput('RETURN').connection.connect(retBlock.outputConnection);
+      }
+    } else {
+      var doReturn = workspace.newBlock('controls_do_then_return');
+      doReturn.initSvg();
+      var stmtNodes = bodyForms.slice(0, bodyForms.length - 1);
+      var firstStmt = AI.YailToBlocks.convertStatement_(workspace, stmtNodes[0]);
+      if (firstStmt && doReturn.getInput('STM')) {
+        doReturn.getInput('STM').connection.connect(firstStmt.previousConnection);
+        var prev = firstStmt;
+        for (var i = 1; i < stmtNodes.length; i++) {
+          var next = AI.YailToBlocks.convertStatement_(workspace, stmtNodes[i]);
+          if (next && prev.nextConnection && next.previousConnection) {
+            prev.nextConnection.connect(next.previousConnection);
+            prev = next;
+          }
+        }
+      }
+      var retExpr = AI.YailToBlocks.convertExpression_(
+          workspace, bodyForms[bodyForms.length - 1]);
+      if (retExpr && doReturn.getInput('VALUE')) {
+        doReturn.getInput('VALUE').connection.connect(retExpr.outputConnection);
+      }
+      if (block.getInput('RETURN')) {
+        block.getInput('RETURN').connection.connect(doReturn.outputConnection);
+      }
+    }
+  } else {
+    // For no-return procedures, chain statements in STACK input.
+    var firstStmt = AI.YailToBlocks.convertStatement_(workspace, bodyForms[0]);
+    if (firstStmt && block.getInput('STACK')) {
+      block.getInput('STACK').connection.connect(
+          firstStmt.previousConnection || firstStmt.outputConnection);
+      var prevBlock = firstStmt;
+      for (var i = 1; i < bodyForms.length; i++) {
+        var nextStmt = AI.YailToBlocks.convertStatement_(workspace, bodyForms[i]);
+        if (nextStmt && prevBlock.nextConnection) {
+          prevBlock.nextConnection.connect(nextStmt.previousConnection);
+          prevBlock = nextStmt;
+        }
+      }
+    }
+  }
 };
 
 // ---- Internal: Top-level form dispatch ----
@@ -501,9 +629,6 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
     params.push(pName);
   }
 
-  // Delete existing procedure if any
-  AI.YailToBlocks.deleteBlock(workspace, 'def p$' + procName);
-
   // Collect body forms (skip set-this-form)
   var bodyForms = [];
   for (var i = 2; i < els.length; i++) {
@@ -512,14 +637,52 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
   }
 
   var blockType = isReturn ? 'procedures_defreturn' : 'procedures_defnoreturn';
+  var existingBlock = AI.YailToBlocks.findProcBlock_(workspace, procName);
 
+  if (existingBlock && existingBlock.type === blockType) {
+    // ===== SAME TYPE: UPDATE IN PLACE =====
+    // This preserves all procedure caller blocks — deleting the definition
+    // would set every caller's PROCNAME to "none" and strip their args.
+    var block = existingBlock;
+    AI.YailToBlocks.lastDeletedPosition_ = block.getRelativeToSurfaceXY();
+
+    // Update parameters if they changed.
+    if (!Blockly.LexicalVariable.stringListsEqual(params, block.arguments_)) {
+      block.updateParams_(params);
+      Blockly.Procedures.mutateCallers(block);
+    }
+
+    // Clear the existing body and connect the new one.
+    var bodyInputName = isReturn ? 'RETURN' : 'STACK';
+    AI.YailToBlocks.clearInputBlocks_(block, bodyInputName);
+    AI.YailToBlocks.connectProcedureBody_(workspace, block, bodyForms, isReturn);
+
+    // Mark so the error-cleanup path in convert() won't dispose this block.
+    block.aiUpdatedInPlace_ = true;
+
+    block.render();
+    return block;
+  }
+
+  if (existingBlock) {
+    // Existing procedure has a different return type.  The caller blocks
+    // are fundamentally different (statement vs expression), so this is
+    // almost certainly an LLM error — reject rather than silently break.
+    var existingKind = existingBlock.type === 'procedures_defreturn'
+        ? 'returns a value' : 'does not return a value';
+    var requestedKind = isReturn ? 'def-return' : 'def';
+    throw new Error('Procedure "' + procName + '" already exists and '
+        + existingKind + '. Cannot change to ' + requestedKind
+        + '. Delete the procedure first or use the matching form.');
+  }
+
+  // ===== CREATE FROM SCRATCH =====
   var block = workspace.newBlock(blockType);
   block.setFieldValue(procName, 'NAME');
 
   // Set parameters via domToMutation (the correct API for definition blocks).
-  // Note: setProcedureParameters only exists on *caller* blocks, not on
-  // procedure definition blocks.  domToMutation → updateParams_ correctly
-  // populates arguments_ and rebuilds the parameter flydown fields.
+  // domToMutation → updateParams_ populates arguments_ and rebuilds the
+  // parameter flydown fields.
   if (params.length > 0) {
     var mutation = document.createElement('mutation');
     for (var j = 0; j < params.length; j++) {
@@ -531,60 +694,7 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
   }
 
   block.initSvg();
-
-  // Connect body
-  if (bodyForms.length > 0) {
-    if (isReturn) {
-      // For return procedures, the body is a single expression in the RETURN input
-      // If multiple forms, wrap in a begin-like structure
-      if (bodyForms.length === 1) {
-        var retBlock = AI.YailToBlocks.convertExpression_(workspace, bodyForms[0]);
-        if (retBlock && block.getInput('RETURN')) {
-          block.getInput('RETURN').connection.connect(retBlock.outputConnection);
-        }
-      } else {
-        // Multiple body forms — create a do_then_return wrapper
-        var doReturn = workspace.newBlock('controls_do_then_return');
-        doReturn.initSvg();
-        var stmtNodes = bodyForms.slice(0, bodyForms.length - 1);
-        var firstStmt = AI.YailToBlocks.convertStatement_(workspace, stmtNodes[0]);
-        if (firstStmt && doReturn.getInput('STM')) {
-          doReturn.getInput('STM').connection.connect(firstStmt.previousConnection);
-          var prev = firstStmt;
-          for (var i = 1; i < stmtNodes.length; i++) {
-            var next = AI.YailToBlocks.convertStatement_(workspace, stmtNodes[i]);
-            if (next && prev.nextConnection && next.previousConnection) {
-              prev.nextConnection.connect(next.previousConnection);
-              prev = next;
-            }
-          }
-        }
-        var retExpr = AI.YailToBlocks.convertExpression_(
-            workspace, bodyForms[bodyForms.length - 1]);
-        if (retExpr && doReturn.getInput('VALUE')) {
-          doReturn.getInput('VALUE').connection.connect(retExpr.outputConnection);
-        }
-        if (block.getInput('RETURN')) {
-          block.getInput('RETURN').connection.connect(doReturn.outputConnection);
-        }
-      }
-    } else {
-      // For no-return procedures, chain statements in STACK input
-      var firstStmt = AI.YailToBlocks.convertStatement_(workspace, bodyForms[0]);
-      if (firstStmt && block.getInput('STACK')) {
-        block.getInput('STACK').connection.connect(
-            firstStmt.previousConnection || firstStmt.outputConnection);
-        var prevBlock = firstStmt;
-        for (var i = 1; i < bodyForms.length; i++) {
-          var nextStmt = AI.YailToBlocks.convertStatement_(workspace, bodyForms[i]);
-          if (nextStmt && prevBlock.nextConnection) {
-            prevBlock.nextConnection.connect(nextStmt.previousConnection);
-            prevBlock = nextStmt;
-          }
-        }
-      }
-    }
-  }
+  AI.YailToBlocks.connectProcedureBody_(workspace, block, bodyForms, isReturn);
 
   block.render();
   return block;
