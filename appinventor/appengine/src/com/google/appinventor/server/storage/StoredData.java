@@ -328,6 +328,15 @@ public class StoredData {
     String allowedExtensions;
   }
 
+  /**
+   * Allowed roles for AI conversation messages.
+   */
+  public enum MessageRole {
+    USER,
+    ASSISTANT,
+    TOOL_RESULT
+  }
+
   // AI Agent conversation message, keyed by conversationId (UUID).
   // All providers store messages here; stateless providers use them for LLM context,
   // stateful providers use them for client-side conversation restore after page reload.
@@ -345,7 +354,7 @@ public class StoredData {
     // always comes before assistant response even if both share the same timestamp.
     public int sequence;
 
-    public String role;      // "user", "assistant", or "tool_result"
+    public String role;       // MessageRole.name().toLowerCase() string
     public String text;      // Message content (natural language summary)
 
     // Provider-agnostic JSON array of structured content parts (tool calls
@@ -353,7 +362,10 @@ public class StoredData {
     // stored before this field was introduced (backward compatible).
     public String structuredContent;
 
-    public long expiresAt;   // timestamp + 24h, for cleanup
+    // Whether this message should be shown in the client chat UI.
+    public boolean display;
+
+    @Indexed public long expiresAt;   // timestamp + 24h, for cleanup
   }
 
   public static final class ProjectNotFoundException extends IOException {

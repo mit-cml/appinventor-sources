@@ -9,12 +9,12 @@ import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.server.aiagent.llm.RawToolCall;
 import com.google.appinventor.server.storage.AIConversationState;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StoredData.MessageRole;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,27 +73,22 @@ public class ConversationManager {
 
   // ---------- Message persistence ----------
 
-  public void storeMessage(String conversationId, String role, String text) {
-    storeMessage(conversationId, role, text, null);
+  public void storeMessage(String conversationId, MessageRole role, String text,
+      boolean display) {
+    storeMessage(conversationId, role, text, null, display);
   }
 
-  public void storeMessage(String conversationId, String role, String text,
-      String structuredContent) {
+  public void storeMessage(String conversationId, MessageRole role, String text,
+      String structuredContent, boolean display) {
     long now = System.currentTimeMillis();
     int seq = messageSequence.get();
     messageSequence.set(seq + 1);
     storageIo.storeAIConversationMessage(conversationId, now, seq, role, text,
-        structuredContent);
+        structuredContent, display);
   }
 
   public List<ChatMessage> loadConversation(String conversationId) {
-    List<String[]> messages = storageIo.loadAIConversationMessages(conversationId);
-    List<ChatMessage> result = new ArrayList<>();
-    for (String[] tuple : messages) {
-      String structuredContent = tuple.length > 2 ? tuple[2] : null;
-      result.add(new ChatMessage(tuple[0], tuple[1], structuredContent));
-    }
-    return result;
+    return storageIo.loadAIConversationMessages(conversationId);
   }
 
   // ---------- Status updates ----------

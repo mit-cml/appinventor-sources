@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
@@ -705,11 +706,12 @@ public interface StorageIo {
    * @param conversationId  the conversation UUID
    * @param timestamp       server-side timestamp (millis)
    * @param sequence        ordering tiebreaker within same millisecond
-   * @param role            "user", "assistant", or "tool_result"
+   * @param role            the message role
    * @param text            message content (human-readable summary)
+   * @param display         true if this message should appear in the client chat UI
    */
   void storeAIConversationMessage(String conversationId, long timestamp,
-      int sequence, String role, String text);
+      int sequence, StoredData.MessageRole role, String text, boolean display);
 
   /**
    * Stores an AI conversation message with optional structured content.
@@ -717,25 +719,24 @@ public interface StorageIo {
    * @param conversationId    the conversation UUID
    * @param timestamp         server-side timestamp (millis)
    * @param sequence          ordering tiebreaker within same millisecond
-   * @param role              "user", "assistant", or "tool_result"
+   * @param role              the message role
    * @param text              message content (human-readable summary)
    * @param structuredContent provider-agnostic JSON array of content parts,
    *                          or null for plain-text-only messages
+   * @param display           true if this message should appear in the client chat UI
    */
   void storeAIConversationMessage(String conversationId, long timestamp,
-      int sequence, String role, String text, String structuredContent);
+      int sequence, StoredData.MessageRole role, String text,
+      String structuredContent, boolean display);
 
   /**
    * Loads all non-expired AI conversation messages for a conversation,
    * ordered by timestamp and sequence.
    *
    * @param conversationId the conversation UUID
-   * @return list of [role, text, structuredContent] string arrays, ordered
-   *         chronologically.  The structuredContent element may be null for
-   *         plain-text-only messages or messages stored before structured
-   *         content was introduced.
+   * @return list of {@link ChatMessage} instances ordered chronologically
    */
-  List<String[]> loadAIConversationMessages(String conversationId);
+  List<ChatMessage> loadAIConversationMessages(String conversationId);
 
   /**
    * Deletes all AI conversation messages for a conversation from the Datastore.

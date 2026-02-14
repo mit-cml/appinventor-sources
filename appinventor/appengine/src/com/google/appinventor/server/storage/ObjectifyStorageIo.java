@@ -26,6 +26,7 @@ import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
+import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
 import com.google.appinventor.server.storage.StoredData.ConversationMessageData;
@@ -2875,21 +2876,24 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public void storeAIConversationMessage(String conversationId, long timestamp,
-      int sequence, String role, String text) {
-    storeAIConversationMessage(conversationId, timestamp, sequence, role, text, null);
+      int sequence, StoredData.MessageRole role, String text, boolean display) {
+    storeAIConversationMessage(conversationId, timestamp, sequence, role, text,
+        null, display);
   }
 
   @Override
   public void storeAIConversationMessage(String conversationId, long timestamp,
-      int sequence, String role, String text, String structuredContent) {
+      int sequence, StoredData.MessageRole role, String text,
+      String structuredContent, boolean display) {
     Objectify ofy = ObjectifyService.begin();
     ConversationMessageData msg = new ConversationMessageData();
     msg.conversationId = conversationId;
     msg.timestamp = timestamp;
     msg.sequence = sequence;
-    msg.role = role;
+    msg.role = role.name().toLowerCase();
     msg.text = text;
-    msg.expiresAt = (timestamp + CONVERSATION_TTL_SECONDS) * 1000L;
+    msg.display = display;
+    msg.expiresAt = timestamp + CONVERSATION_TTL_SECONDS * 1000L;
 
     // Safety: if the structured content would push the entity past ~900KB,
     // drop it and fall back to text-only (Datastore limit is 1MB per entity).
@@ -2904,7 +2908,7 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
-  public List<String[]> loadAIConversationMessages(String conversationId) {
+  public List<ChatMessage> loadAIConversationMessages(String conversationId) {
     long now = System.currentTimeMillis();
     Objectify ofy = ObjectifyService.begin();
     // Note: timestamp and sequence are @Unindexed (class-level annotation),
@@ -2925,10 +2929,12 @@ public class ObjectifyStorageIo implements StorageIo {
       }
     });
 
-    List<String[]> result = new ArrayList<String[]>();
+    List<ChatMessage> result = new ArrayList<>();
     for (ConversationMessageData m : messages) {
       if (m.expiresAt > now) {
-        result.add(new String[] { m.role, m.text, m.structuredContent });
+        result.add(new ChatMessage(
+            m.role != null ? m.role : "user",
+            m.text, m.structuredContent, m.display));
       }
     }
     return result;

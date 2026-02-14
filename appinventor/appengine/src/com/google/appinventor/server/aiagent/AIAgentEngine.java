@@ -17,6 +17,7 @@ import com.google.appinventor.server.aiagent.llm.ReadOnlyToolResolver;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.AIConversationState;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StoredData.MessageRole;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
@@ -150,7 +151,8 @@ public class AIAgentEngine {
 
       // Save user message to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.
-      conversationManager.storeMessage(conv.getConversationId(), "user", userMessage);
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.USER, userMessage, true);
 
       conversationManager.updateStatus(projectId, "Calling AI...");
 
@@ -251,8 +253,8 @@ public class AIAgentEngine {
 
       // Save continuation marker to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.
-      conversationManager.storeMessage(conv.getConversationId(), "user",
-          "[Continuation requested]");
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.USER, "[Continuation requested]", false);
 
       conversationManager.updateStatus(projectId, "Calling AI...");
 
@@ -369,8 +371,8 @@ public class AIAgentEngine {
 
       // Save error feedback to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.
-      conversationManager.storeMessage(conv.getConversationId(), "user",
-          "[Execution error feedback] " + feedback);
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.USER, "[Execution error feedback] " + feedback, false);
 
       conversationManager.updateStatus(projectId, "Calling AI...");
 
@@ -415,8 +417,7 @@ public class AIAgentEngine {
     List<ChatMessage> history = conversationManager.loadConversation(conv.getConversationId());
     List<AIConversationMessage> result = new ArrayList<>();
     for (ChatMessage msg : history) {
-      // Skip internal tool_result messages in client-facing history
-      if ("tool_result".equals(msg.getRole())) {
+      if (!msg.isDisplay()) {
         continue;
       }
       result.add(new AIConversationMessage(msg.getRole(), msg.getText()));
@@ -568,12 +569,16 @@ public class AIAgentEngine {
     if (!llmResponse.getRawToolCalls().isEmpty()) {
       String[] pair = ConversationManager.buildStructuredContentPair(
           historyText, llmResponse.getRawToolCalls(), parsed.toolCallStatuses);
-      conversationManager.storeMessage(conv.getConversationId(), "assistant",
-          historyText, pair[0]);
-      conversationManager.storeMessage(conv.getConversationId(), "tool_result",
-          "[Tool results applied]", pair[1]);
+      // Display the assistant message only when the LLM produced real text;
+      // generated operation summaries are for LLM context only.
+      boolean displayAssistant = !assistantText.isEmpty();
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.ASSISTANT, historyText, pair[0], displayAssistant);
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.TOOL_RESULT, "[Tool results applied]", pair[1], false);
     } else {
-      conversationManager.storeMessage(conv.getConversationId(), "assistant", historyText);
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.ASSISTANT, historyText, true);
     }
 
     conversationManager.clearStatus(projectId);

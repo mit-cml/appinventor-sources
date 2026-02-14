@@ -31,6 +31,7 @@ public class ChatMessage {
   private final String role;
   private final String text;
   private final String structuredContent;
+  private final boolean display;
 
   /**
    * Creates a new chat message with text only (no structured content).
@@ -44,6 +45,7 @@ public class ChatMessage {
 
   /**
    * Creates a new chat message with optional structured content.
+   * Defaults to {@code display = true}.
    *
    * @param role              the role of the message sender
    * @param text              the text content (human-readable summary)
@@ -51,9 +53,23 @@ public class ChatMessage {
    *                          or null for plain-text-only messages
    */
   public ChatMessage(String role, String text, String structuredContent) {
+    this(role, text, structuredContent, true);
+  }
+
+  /**
+   * Creates a new chat message with optional structured content and display flag.
+   *
+   * @param role              the role of the message sender
+   * @param text              the text content (human-readable summary)
+   * @param structuredContent provider-agnostic JSON array of content parts,
+   *                          or null for plain-text-only messages
+   * @param display           true if this message should appear in the client chat UI
+   */
+  public ChatMessage(String role, String text, String structuredContent, boolean display) {
     this.role = role;
     this.text = text;
     this.structuredContent = structuredContent;
+    this.display = display;
   }
 
   /**
@@ -94,9 +110,19 @@ public class ChatMessage {
     return structuredContent != null && !structuredContent.isEmpty();
   }
 
+  /**
+   * Returns true if this message should be shown in the client chat UI.
+   *
+   * @return true if displayable
+   */
+  public boolean isDisplay() {
+    return display;
+  }
+
   @Override
   public String toString() {
     return "ChatMessage{role='" + role + "', text='" + text
-        + "', hasStructured=" + hasStructuredContent() + "}";
+        + "', hasStructured=" + hasStructuredContent()
+        + ", display=" + display + "}";
   }
 }
