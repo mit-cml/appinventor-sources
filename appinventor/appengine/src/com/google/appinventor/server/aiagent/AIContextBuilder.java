@@ -15,6 +15,10 @@ import com.google.appinventor.server.aiagent.context.ReferenceModule;
 import com.google.appinventor.server.aiagent.context.ScreenModule;
 import com.google.appinventor.server.aiagent.llm.LLMTool;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.shared.settings.SettingsConstants;
+
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +189,7 @@ public class AIContextBuilder {
         "{\"type\":\"object\",\"properties\":{\"screen_name\":{\"type\":\"string\","
             + "\"description\":\"The screen name, e.g. Screen1\"}},\"required\":[\"screen_name\"]}"));
 
-    if ("Advisor".equals(mode)) {
+    if (AI_AGENT_MODE_ADVISOR.equals(mode)) {
       return tools;
     }
 
@@ -267,7 +271,7 @@ public class AIContextBuilder {
     }
 
     // Project-level tools only for ProjectEditor
-    if ("ProjectEditor".equals(mode)) {
+    if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
       tools.add(new LLMTool(AIToolNames.SWITCH_SCREEN,
           "Switch the active screen context. "
               + "This tool MUST be called ALONE — do not combine it with any other tools "

@@ -14,6 +14,8 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -165,7 +167,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       return RequestContext.fail("You do not have access to this project.");
     }
     String mode = engine.getProjectAIMode(userId, projectId);
-    if ("Off".equals(mode)) {
+    if (AI_AGENT_MODE_OFF.equals(mode)) {
       return RequestContext.fail("AI agent is disabled for this project.");
     }
     return RequestContext.ok(userId, mode);

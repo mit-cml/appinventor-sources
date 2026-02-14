@@ -6,6 +6,7 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
+import com.google.appinventor.shared.settings.SettingsConstants;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -15,10 +16,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class YoungAndroidAIAgentModeChoicePropertyEditor extends ChoicePropertyEditor {
 
   private static final Choice[] modes = new Choice[] {
-    new Choice(MESSAGES.aiAgentModeOff(), "Off"),
-    new Choice(MESSAGES.aiAgentModeAdvisor(), "Advisor"),
-    new Choice(MESSAGES.aiAgentModeScreenEditor(), "ScreenEditor"),
-    new Choice(MESSAGES.aiAgentModeProjectEditor(), "ProjectEditor")
+    new Choice(MESSAGES.aiAgentModeOff(), SettingsConstants.AI_AGENT_MODE_OFF),
+    new Choice(MESSAGES.aiAgentModeAdvisor(), SettingsConstants.AI_AGENT_MODE_ADVISOR),
+    new Choice(MESSAGES.aiAgentModeScreenEditor(), SettingsConstants.AI_AGENT_MODE_SCREEN_EDITOR),
+    new Choice(MESSAGES.aiAgentModeProjectEditor(), SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR)
   };
 
   public YoungAndroidAIAgentModeChoicePropertyEditor() {

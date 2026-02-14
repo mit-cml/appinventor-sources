@@ -7,6 +7,9 @@ package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_SCREEN_EDITOR;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,11 +101,11 @@ public final class ModeEnforcer {
       boolean rejected = false;
 
       // Mode enforcement
-      if ("Advisor".equals(mode) && WRITE_OPS.contains(op.getType())) {
+      if (AI_AGENT_MODE_ADVISOR.equals(mode) && WRITE_OPS.contains(op.getType())) {
         errors.add("Advisor mode does not allow write operations. Rejected: "
             + op.getType());
         rejected = true;
-      } else if ("ScreenEditor".equals(mode)
+      } else if (AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)
           && PROJECT_LEVEL_OPS.contains(op.getType())) {
         errors.add("ScreenEditor mode does not allow project-level operations. "
             + "Rejected: " + op.getType());

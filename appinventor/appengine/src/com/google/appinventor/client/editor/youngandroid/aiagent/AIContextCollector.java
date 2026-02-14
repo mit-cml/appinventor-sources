@@ -19,6 +19,9 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
+
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -104,12 +107,12 @@ public class AIContextCollector {
     ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
         .getOpenProjectEditor(getCurrentProjectId());
     if (projectEditor == null) {
-      return "Off";
+      return AI_AGENT_MODE_OFF;
     }
     String mode = projectEditor.getProjectSettingsProperty(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE);
-    return (mode == null || mode.isEmpty()) ? "Off" : mode;
+    return (mode == null || mode.isEmpty()) ? AI_AGENT_MODE_OFF : mode;
   }
 
   /**
@@ -310,7 +313,7 @@ public class AIContextCollector {
 
       // Screen summaries (only in ProjectEditor mode)
       String mode = getCurrentAIAgentMode();
-      if ("ProjectEditor".equals(mode) && projectEditor instanceof YaProjectEditor) {
+      if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode) && projectEditor instanceof YaProjectEditor) {
         YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
         String currentScreen = designProject.currentScreen;
         json.append(",\"screenSummaries\":{");

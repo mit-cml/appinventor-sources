@@ -80,6 +80,12 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE = "NSLocationWhenInUseUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE = "AIAgentMode";
 
+  // AIAgentMode values
+  public static final String AI_AGENT_MODE_OFF = "Off";
+  public static final String AI_AGENT_MODE_ADVISOR = "Advisor";
+  public static final String AI_AGENT_MODE_SCREEN_EDITOR = "ScreenEditor";
+  public static final String AI_AGENT_MODE_PROJECT_EDITOR = "ProjectEditor";
+
   /**
    * Settings for the Blocks editor.
    */

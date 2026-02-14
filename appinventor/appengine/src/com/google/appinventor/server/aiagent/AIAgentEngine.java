@@ -22,6 +22,9 @@ import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -455,7 +458,7 @@ public class AIAgentEngine {
             JSONObject props = root.optJSONObject("Properties");
             if (props != null) {
               String mode = props.optString(
-                  SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE, "Off");
+                  SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE, AI_AGENT_MODE_OFF);
               if (!mode.isEmpty()) {
                 return mode;
               }
@@ -466,7 +469,7 @@ public class AIAgentEngine {
     } catch (Exception e) {
       LOG.log(Level.WARNING, "Failed to read AI agent mode for project " + projectId, e);
     }
-    return "Off";
+    return AI_AGENT_MODE_OFF;
   }
 
   // ---------- Conversation init ----------
@@ -568,7 +571,7 @@ public class AIAgentEngine {
       String systemPrompt, List<String> contextMessages, List<LLMTool> tools,
       ReadOnlyToolResolver resolver, long projectId) throws LLMProviderException {
     if (!result.parsed.operations.isEmpty() || !result.parsed.errors.isEmpty()
-        || "Advisor".equals(mode)
+        || AI_AGENT_MODE_ADVISOR.equals(mode)
         || result.assistantText.isEmpty()
         || result.response.hasMore()) {
       return result;

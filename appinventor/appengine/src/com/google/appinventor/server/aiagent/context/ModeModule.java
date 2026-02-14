@@ -5,6 +5,10 @@
 
 package com.google.appinventor.server.aiagent.context;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_SCREEN_EDITOR;
+
 /**
  * Builds mode instructions and editor view rules for the current request.
  */
@@ -19,36 +23,30 @@ public class ModeModule extends ContextModule {
     StringBuilder sb = new StringBuilder();
     sb.append("[Current mode and view — supersedes any previous mode instructions]\n\n");
     sb.append("## Mode: ").append(mode).append("\n\n");
-    switch (mode) {
-      case "Advisor":
-        sb.append("You are in Advisor mode. You can ONLY provide advice and answer questions. ")
-            .append("You CANNOT modify the project — no write tools are available to you. ")
-            .append("Use the lookup_component and lookup_screen tools to examine the project ")
-            .append("when needed, then provide helpful guidance in your text response. ")
-            .append("Your text response is your only way to communicate with the user.\n");
-        break;
-      case "ScreenEditor":
-        sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
-            .append("You cannot create, delete, or switch screens. You can toggle editor views. ")
-            .append("To make changes, invoke the provided tools via function calling. ")
-            .append("Always include a text response explaining what you are doing or ")
-            .append("asking clarifying questions — do not return tool calls without ")
-            .append("an accompanying explanation.\n");
-        break;
-      case "ProjectEditor":
-        sb.append("You are in ProjectEditor mode. You have full access to modify the project ")
-            .append("including creating/deleting screens, modifying any screen, ")
-            .append("and setting project-level properties. ")
-            .append("To make changes, invoke the provided tools via function calling. ")
-            .append("Always include a text response explaining what you are doing or ")
-            .append("asking clarifying questions — do not return tool calls without ")
-            .append("an accompanying explanation.\n");
-        break;
-      default:
-        break;
+    if (AI_AGENT_MODE_ADVISOR.equals(mode)) {
+      sb.append("You are in Advisor mode. You can ONLY provide advice and answer questions. ")
+          .append("You CANNOT modify the project — no write tools are available to you. ")
+          .append("Use the lookup_component and lookup_screen tools to examine the project ")
+          .append("when needed, then provide helpful guidance in your text response. ")
+          .append("Your text response is your only way to communicate with the user.\n");
+    } else if (AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)) {
+      sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
+          .append("You cannot create, delete, or switch screens. You can toggle editor views. ")
+          .append("To make changes, invoke the provided tools via function calling. ")
+          .append("Always include a text response explaining what you are doing or ")
+          .append("asking clarifying questions — do not return tool calls without ")
+          .append("an accompanying explanation.\n");
+    } else if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
+      sb.append("You are in ProjectEditor mode. You have full access to modify the project ")
+          .append("including creating/deleting screens, modifying any screen, ")
+          .append("and setting project-level properties. ")
+          .append("To make changes, invoke the provided tools via function calling. ")
+          .append("Always include a text response explaining what you are doing or ")
+          .append("asking clarifying questions — do not return tool calls without ")
+          .append("an accompanying explanation.\n");
     }
 
-    if (!"Advisor".equals(mode)) {
+    if (!AI_AGENT_MODE_ADVISOR.equals(mode)) {
       sb.append("\n### Editor View Rules\n");
       sb.append("The user is currently viewing the **").append(currentView)
           .append("** editor.\n");
@@ -62,7 +60,7 @@ public class ModeModule extends ContextModule {
           .append("never combine it with other tool calls in the same response.\n");
       sb.append("- After `toggle_editor` is confirmed, continue ")
           .append("with the operations that require the new view.\n");
-      if ("ProjectEditor".equals(mode)) {
+      if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
         sb.append("- `switch_screen` MUST also be called **ALONE** — ")
             .append("never combine it with other tool calls in the same response.\n");
         sb.append("- After `switch_screen` is confirmed, continue ")

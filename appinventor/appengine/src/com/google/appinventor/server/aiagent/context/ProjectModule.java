@@ -5,6 +5,8 @@
 
 package com.google.appinventor.server.aiagent.context;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -80,7 +82,7 @@ public class ProjectModule extends ContextModule {
     }
 
     // Screen summaries (ProjectEditor mode only)
-    if ("ProjectEditor".equals(mode)) {
+    if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
       JSONObject summaries = snapshot.optJSONObject("screenSummaries");
       if (summaries != null) {
         Iterator<String> keys = summaries.keys();

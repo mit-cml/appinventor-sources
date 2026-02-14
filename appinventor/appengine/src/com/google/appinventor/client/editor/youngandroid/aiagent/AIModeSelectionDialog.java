@@ -12,6 +12,11 @@ import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.shared.settings.SettingsConstants;
+
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_SCREEN_EDITOR;
+
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -90,11 +95,11 @@ public class AIModeSelectionDialog {
       public void onClick(ClickEvent event) {
         String selectedMode;
         if (projectEditorRadio.getValue()) {
-          selectedMode = "ProjectEditor";
+          selectedMode = AI_AGENT_MODE_PROJECT_EDITOR;
         } else if (screenEditorRadio.getValue()) {
-          selectedMode = "ScreenEditor";
+          selectedMode = AI_AGENT_MODE_SCREEN_EDITOR;
         } else {
-          selectedMode = "Advisor";
+          selectedMode = AI_AGENT_MODE_ADVISOR;
         }
         // Set the AIAgentMode on the Screen1 form component property.
         // MockForm.onPropertyChange will propagate this to project settings
