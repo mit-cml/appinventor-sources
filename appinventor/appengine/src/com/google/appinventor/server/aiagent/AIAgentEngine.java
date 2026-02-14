@@ -249,6 +249,11 @@ public class AIAgentEngine {
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
           + ", providerRef length=" + providerRef.length());
 
+      // Save continuation marker to history BEFORE calling the LLM,
+      // so it is persisted even if the LLM call fails.
+      conversationManager.storeMessage(conv.getConversationId(), "user",
+          "[Continuation requested]");
+
       conversationManager.updateStatus(projectId, "Calling AI...");
 
       // Call the continuation method with updated state
