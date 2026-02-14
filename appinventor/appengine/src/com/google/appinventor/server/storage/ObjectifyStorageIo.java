@@ -2948,6 +2948,21 @@ public class ObjectifyStorageIo implements StorageIo {
         .fetchKeys());
   }
 
+  // Cleanup expired conversation messages. Called opportunistically when
+  // storing new messages. Removes up to 10 at a time to limit processing,
+  // similar to cleanupNonces().
+  @Override
+  public void cleanupConversationMessages() {
+    Objectify datastore = ObjectifyService.begin();
+    try {
+      datastore.delete(datastore.query(ConversationMessageData.class)
+          .filter("expiresAt <", System.currentTimeMillis())
+          .limit(10).fetchKeys());
+    } catch (Exception ex) {
+      LOG.log(Level.WARNING, "Exception during cleanupConversationMessages", ex);
+    }
+  }
+
   @Override
   public void updateAIRequestStatus(long projectId, String status) {
     memcache.put(AI_STATUS_CACHE_KEY_PREFIX + projectId, status,

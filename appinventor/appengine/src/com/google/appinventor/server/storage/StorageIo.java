@@ -581,6 +581,9 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
+  // Cleanup expired AI conversation messages
+  void cleanupConversationMessages();
+
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
 

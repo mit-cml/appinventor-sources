@@ -85,6 +85,7 @@ public class ConversationManager {
     messageSequence.set(seq + 1);
     storageIo.storeAIConversationMessage(conversationId, now, seq, role, text,
         structuredContent, display);
+    storageIo.cleanupConversationMessages();
   }
 
   public List<ChatMessage> loadConversation(String conversationId) {
