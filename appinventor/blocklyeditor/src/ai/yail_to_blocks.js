@@ -395,7 +395,8 @@ AI.YailToBlocks.convertGenericEventHandler_ = function(workspace, node) {
     throw new Error('define-generic-event requires type, event, and params');
   }
 
-  var typeName = els[1].name || String(els[1].value);
+  var typeName = AI.YailToBlocks.shortComponentType_(
+      els[1].name || String(els[1].value));
   var eventName = els[2].name || String(els[2].value);
 
   // Extract parameter names (first param is always the component instance)
@@ -999,7 +1000,8 @@ AI.YailToBlocks.convertGenericGetProperty_ = function(workspace, node) {
   var els = node.elements;
   // (get-property-and-check componentExpr 'TypeName 'PropertyName)
   var componentExpr = els[1];
-  var typeName = AI.YailToBlocks.unquoteSymbol_(els[2]);
+  var typeName = AI.YailToBlocks.shortComponentType_(
+      AI.YailToBlocks.unquoteSymbol_(els[2]));
   var propertyName = AI.YailToBlocks.unquoteSymbol_(els[3]);
 
   var block = workspace.newBlock('component_set_get');
@@ -1027,7 +1029,8 @@ AI.YailToBlocks.convertGenericSetProperty_ = function(workspace, node) {
   var els = node.elements;
   // (set-and-coerce-property-and-check! componentExpr 'TypeName 'PropertyName value 'type)
   var componentExpr = els[1];
-  var typeName = AI.YailToBlocks.unquoteSymbol_(els[2]);
+  var typeName = AI.YailToBlocks.shortComponentType_(
+      AI.YailToBlocks.unquoteSymbol_(els[2]));
   var propertyName = AI.YailToBlocks.unquoteSymbol_(els[3]);
   var value = els[4];
 
@@ -1821,9 +1824,8 @@ AI.YailToBlocks.convertGetComponent_ = function(workspace, node) {
 AI.YailToBlocks.convertGetAllComponents_ = function(workspace, node) {
   var els = node.elements;
   // (get-all-components com.google.appinventor.components.runtime.Button)
-  var fqcn = els[1].name || String(els[1].value);
-  // Extract short type name from FQCN
-  var componentType = fqcn.substring(fqcn.lastIndexOf('.') + 1);
+  var componentType = AI.YailToBlocks.shortComponentType_(
+      els[1].name || String(els[1].value));
 
   var block = workspace.newBlock('component_all_component_block');
   var mutation = document.createElement('mutation');
@@ -1842,7 +1844,8 @@ AI.YailToBlocks.convertGenericMethodCall_ = function(workspace, node, asExpressi
   var els = node.elements;
   // (call-component-type-method <componentExpr> 'TypeName 'MethodName (*list-for-runtime* args...) '(types...))
   var componentExpr = els[1];
-  var typeName = AI.YailToBlocks.unquoteSymbol_(els[2]);
+  var typeName = AI.YailToBlocks.shortComponentType_(
+      AI.YailToBlocks.unquoteSymbol_(els[2]));
   var methodName = AI.YailToBlocks.unquoteSymbol_(els[3]);
 
   var block = workspace.newBlock('component_method');
@@ -2245,6 +2248,19 @@ AI.YailToBlocks.unquoteSymbol_ = function(node) {
     return node.value;
   }
   return String(node.value || node.name || '');
+};
+
+/**
+ * Extract the short component type name from a possibly fully-qualified
+ * Java class name (e.g. 'com.google.appinventor.components.runtime.Button'
+ * becomes 'Button').  Returns the input unchanged when it contains no dots.
+ * @param {string} typeName
+ * @return {string}
+ * @private
+ */
+AI.YailToBlocks.shortComponentType_ = function(typeName) {
+  var dot = typeName.lastIndexOf('.');
+  return dot >= 0 ? typeName.substring(dot + 1) : typeName;
 };
 
 /**
