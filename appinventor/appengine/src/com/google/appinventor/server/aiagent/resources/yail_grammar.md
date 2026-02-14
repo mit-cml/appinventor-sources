@@ -172,7 +172,6 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
 ```scheme
 ;; BAD — unnecessary procedure for single-use code
 (def (p$updateLabel)
-  (set-this-form)
   (set-and-coerce-property! 'Label1 'Text "clicked" 'text))
 
 (define-event Button1 Click ()
@@ -186,7 +185,6 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
 
 ;; OK — procedure shared by multiple handlers
 (def (p$resetForm)
-  (set-this-form)
   (set-and-coerce-property! 'Label1 'Text "" 'text)
   (set-and-coerce-property! 'TextBox1 'Text "" 'text))
 
@@ -222,14 +220,12 @@ Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as 
 ### Procedure (no return value)
 ```scheme
 (def (p$procedureName $param1 $param2 ...)
-  (set-this-form)
   <body statements>)
 ```
 
 ### Procedure (with return value)
 ```scheme
 (def-return (p$procedureName $param1 $param2 ...)
-  (set-this-form)
   <body expression>)
 ```
 - Use `def-return` instead of `def` when the procedure returns a value
@@ -742,7 +738,6 @@ YAIL has **no** `null` literal, keyword, or "nothing" block. Do not use `null`, 
 ### Procedure with return value
 ```scheme
 (def-return (p$factorial $n)
-  (set-this-form)
   (if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value $n) 0) '(number number) "=")
     (begin 1)
     (begin
