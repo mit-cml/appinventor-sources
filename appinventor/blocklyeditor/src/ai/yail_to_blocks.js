@@ -1727,25 +1727,29 @@ AI.YailToBlocks.convertBreak_ = function(workspace) {
 /** @private */
 AI.YailToBlocks.convertLogicOp_ = function(workspace, node, op) {
   var els = node.elements;
+  var numOperands = els.length - 1; // skip the operator symbol
   var block = workspace.newBlock('logic_operation');
   block.setFieldValue(op, 'OP');
+
+  // Set up mutation for more than 2 operands (default itemCount_ is 2).
+  if (numOperands > 2 && block.domToMutation) {
+    var mutation = document.createElement('mutation');
+    mutation.setAttribute('items', String(numOperands));
+    block.domToMutation(mutation);
+  }
   block.initSvg();
 
-  if (els.length > 1) {
-    var aBlock = AI.YailToBlocks.convertExpression_(workspace, els[1]);
-    if (aBlock && block.getInput('A')) {
-      block.getInput('A').connection.connect(aBlock.outputConnection);
+  // Connect operands: els[1]→A, els[2]→B, els[3]→BOOL2, els[4]→BOOL3, ...
+  for (var i = 0; i < numOperands; i++) {
+    var expr = els[i + 1];
+    // Unwrap (begin ...) wrapper if present
+    if (AI.SExprParser.isForm(expr, 'begin') && expr.elements.length >= 2) {
+      expr = expr.elements[expr.elements.length - 1];
     }
-  }
-  if (els.length > 2) {
-    // The second arg is often wrapped in (begin ...)
-    var bExpr = els[2];
-    if (AI.SExprParser.isForm(bExpr, 'begin') && bExpr.elements.length >= 2) {
-      bExpr = bExpr.elements[bExpr.elements.length - 1];
-    }
-    var bBlock = AI.YailToBlocks.convertExpression_(workspace, bExpr);
-    if (bBlock && block.getInput('B')) {
-      block.getInput('B').connection.connect(bBlock.outputConnection);
+    var inputName = i > 1 ? 'BOOL' + i : ['A', 'B'][i];
+    var exprBlock = AI.YailToBlocks.convertExpression_(workspace, expr);
+    if (exprBlock && block.getInput(inputName)) {
+      block.getInput(inputName).connection.connect(exprBlock.outputConnection);
     }
   }
 
