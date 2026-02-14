@@ -228,7 +228,7 @@ public class AIChatDialog extends DialogBox
 
     // Edit-mode warning (shown only before the first message is sent)
     editModeWarning = new Label();
-    editModeWarning.getElement().getStyle().setColor("#c0392b");
+    editModeWarning.getElement().getStyle().setColor("#4a90d9");
     editModeWarning.getElement().getStyle().setFontSize(11, Unit.PX);
     editModeWarning.getElement().getStyle().setMarginTop(2, Unit.PX);
     editModeWarning.getElement().getStyle().setMarginBottom(4, Unit.PX);
