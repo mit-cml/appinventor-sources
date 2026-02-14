@@ -8,14 +8,16 @@ package com.google.appinventor.client.editor.youngandroid.aiagent.executor;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.DesignProject;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.Screen;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIJsonUtils;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
@@ -198,13 +200,20 @@ final class AIProjectOperations {
       long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
       ProjectEditor projectEditor =
           Ode.getInstance().getEditorManager().getOpenProjectEditor(projectId);
-      if (projectEditor == null) {
-        callback.onFailure("SET_PROJECT_PROP: no open project editor");
-        return;
+      if (projectEditor instanceof YaProjectEditor) {
+        YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+        YaFormEditor formEditor =
+            (YaFormEditor) yaProjectEditor.getFormFileEditor("Screen1");
+        if (formEditor != null) {
+          MockForm form = formEditor.getForm();
+          if (form != null) {
+            form.changeProperty(property, value);
+            callback.onSuccess();
+            return;
+          }
+        }
       }
-      projectEditor.changeProjectSettingsProperty(
-          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, property, value);
-      callback.onSuccess();
+      callback.onFailure("SET_PROJECT_PROP: Screen1 form editor not available");
     } catch (Exception e) {
       callback.onFailure("SET_PROJECT_PROP: " + e.getMessage());
     }

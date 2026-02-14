@@ -185,6 +185,12 @@ These are designer-only settings that apply to the whole app, not per-screen:
 | TutorialURL | Tutorial URL for the project |
 | DefaultFileScope | Default file scope (App, Asset, etc.) |
 
+**Note:** Project-level properties control app-wide settings and Material Design
+theming. Theme colors (PrimaryColor, PrimaryColorDark, AccentColor) affect
+theming elements like the action bar and ripple effects — they do not override
+per-screen properties. Each screen has its own properties (such as
+BackgroundColor, Title, ScreenOrientation) set independently via `set_property`.
+
 ## 3. How to Respond
 
 You have two output channels and you should use both appropriately:
