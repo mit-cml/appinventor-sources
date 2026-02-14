@@ -59,6 +59,7 @@ public class AIChatDialog extends DialogBox
   private final TextArea inputArea;
   private final Button sendButton;
   private final Button applyButton;
+  private final Button applyAndAcceptAllButton;
   private final Button rejectButton;
   private final Button newConversationButton;
   private final Label statusLabel;
@@ -147,6 +148,20 @@ public class AIChatDialog extends DialogBox
     });
     applyButton.setVisible(false);
     actionButtons.add(applyButton);
+
+    applyAndAcceptAllButton = new Button(MESSAGES.aiChatApplyAndAcceptAllButton());
+    applyAndAcceptAllButton.getElement().getStyle().setProperty("background", "#FF9800");
+    applyAndAcceptAllButton.getElement().getStyle().setColor("white");
+    applyAndAcceptAllButton.getElement().getStyle().setProperty("borderRadius", "3px");
+    applyAndAcceptAllButton.getElement().getStyle().setProperty("cursor", "pointer");
+    applyAndAcceptAllButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        orchestrator.applyAndAcceptAll();
+      }
+    });
+    applyAndAcceptAllButton.setVisible(false);
+    actionButtons.add(applyAndAcceptAllButton);
 
     rejectButton = new Button(MESSAGES.aiChatRejectButton());
     rejectButton.getElement().getStyle().setProperty("background", "#f44336");
@@ -372,6 +387,7 @@ public class AIChatDialog extends DialogBox
 
     operationPreview.setVisible(true);
     applyButton.setVisible(true);
+    applyAndAcceptAllButton.setVisible(true);
     rejectButton.setVisible(true);
   }
 
@@ -379,6 +395,7 @@ public class AIChatDialog extends DialogBox
   public void hideOperationPreview() {
     operationPreview.setVisible(false);
     applyButton.setVisible(false);
+    applyAndAcceptAllButton.setVisible(false);
     rejectButton.setVisible(false);
   }
 

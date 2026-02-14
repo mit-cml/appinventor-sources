@@ -5864,6 +5864,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label for the apply operations button in AI chat dialog")
   String aiChatApplyButton();
 
+  @DefaultMessage("Apply And Accept All")
+  @Description("Label for the apply-and-accept-all button in AI chat dialog")
+  String aiChatApplyAndAcceptAllButton();
+
   @DefaultMessage("Reject")
   @Description("Label for the reject operations button in AI chat dialog")
   String aiChatRejectButton();

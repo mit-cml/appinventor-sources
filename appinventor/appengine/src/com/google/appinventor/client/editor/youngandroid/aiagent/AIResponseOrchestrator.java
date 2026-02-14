@@ -71,6 +71,7 @@ public class AIResponseOrchestrator {
   private Timer pollingTimer;
   private boolean requestInFlight;
   private int validationRetryCount;
+  private boolean autoAcceptAll;
 
   /**
    * Constructs an orchestrator with the given context collector and callback.
@@ -119,6 +120,15 @@ public class AIResponseOrchestrator {
   }
 
   /**
+   * Applies the current batch and automatically applies all subsequent
+   * batches without requiring user confirmation for each one.
+   */
+  public void applyAndAcceptAll() {
+    autoAcceptAll = true;
+    applyOperations();
+  }
+
+  /**
    * Applies the pending AI operations via the {@link AIOperationExecutor}.
    * Operations are executed asynchronously in phases; the callback reports
    * the final result. If the response has more batches ({@code hasMore}),
@@ -153,6 +163,7 @@ public class AIResponseOrchestrator {
                 startPollingStatus();
                 fetchContinuation();
               } else {
+                autoAcceptAll = false;
                 requestInFlight = false;
                 callback.setRequestInFlight(false);
               }
@@ -173,6 +184,7 @@ public class AIResponseOrchestrator {
       return;
     }
 
+    autoAcceptAll = false;
     pendingResponse = null;
     callback.addAiMessage(MESSAGES.aiChatOperationsRejected());
     callback.hideOperationPreview();
@@ -262,6 +274,7 @@ public class AIResponseOrchestrator {
    * Cancels any in-flight request, stops polling, and resets state.
    */
   public void cancelInFlight() {
+    autoAcceptAll = false;
     requestInFlight = false;
     pendingResponse = null;
     callback.setRequestInFlight(false);
@@ -361,7 +374,12 @@ public class AIResponseOrchestrator {
     // Show operation preview if there are operations
     if (hasOps) {
       pendingResponse = response;
-      callback.showOperationPreview(response);
+      if (autoAcceptAll) {
+        // Auto-accept mode: skip user confirmation and apply immediately
+        applyOperations();
+      } else {
+        callback.showOperationPreview(response);
+      }
     }
   }
 
