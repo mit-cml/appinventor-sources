@@ -4,6 +4,14 @@ YAIL (Young Android Intermediate Language) is an S-expression-based language der
 Use the `write_block` tool to create or replace blocks, providing complete YAIL S-expressions.
 Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as identifier.
 
+## Error Recovery
+
+When you receive error feedback about failed `write_block` operations, follow these rules:
+
+- **Re-emit only the failed block.** Operations that passed validation have already been accepted. Do NOT re-emit them. Only re-emit the specific block(s) that failed, with the syntax issue fixed.
+- **Parenthesis balancing.** YAIL is S-expression-based — every `(` must have a matching `)`. For complex blocks with deep nesting (`if`/`begin`/`let`/`or-delayed`/`and-delayed`), carefully verify that each opening form is properly closed. Pay special attention to `if` expressions, which require exactly one condition, one then-branch, and optionally one else-branch — each wrapped in its own `(begin ...)`.
+- **Reduce complexity.** When a procedure body is very large (many nested conditions or repeated sub-expressions), break it into smaller helper procedures. This reduces nesting depth and makes parenthesis errors less likely. For instance, if a procedure has 8+ nested `and-delayed`/`or-delayed` branches, extract the check into a separate `def-return` procedure.
+
 ## Code Style Rules
 
 **Statement primitives cannot be used as values.** Primitives ending with `!` that mutate data in place (`yail-list-set-item!`, `yail-list-remove-item!`, `yail-list-insert-item!`, `yail-list-append!`, `yail-list-add-to-list!`, `yail-dictionary-set-pair`, `yail-dictionary-delete-pair`, `yail-dictionary-recursive-set`, `yail-dictionary-combine-dicts`) are **statement blocks** — they have no output connector and **CANNOT** be nested inside expressions. They must appear as standalone statements in a `begin`, event handler body, or procedure body. When you need to mutate a collection and then use it as a value, use `let` to bind the collection to a local variable, mutate it with the statement primitive, then reference the variable.

@@ -370,8 +370,7 @@ public class AIResponseOrchestrator {
               + "/" + MAX_VALIDATION_RETRIES + "), retrying. Preserved "
               + preservedValidOps.size() + " valid op(s), "
               + invalidOps.size() + " failed.");
-          reportValidationErrors(
-              new ArrayList<>(validationErrors.values()));
+          reportValidationErrors(validOps, validationErrors);
           return;
         }
 
@@ -521,8 +520,16 @@ public class AIResponseOrchestrator {
   /**
    * Reports client-side validation errors to the server for LLM retry.
    * Keeps "Calling AI" visible and requestInFlight=true during the retry.
+   *
+   * <p>Builds structured error strings with {@code SUCCEEDED:} and
+   * {@code FAILED:} prefixes so the server uses
+   * {@code buildExecutionErrorFeedback()} instead of the legacy
+   * {@code buildValidationErrorFeedback()}. This tells the LLM exactly
+   * which operations passed validation (and should NOT be re-emitted)
+   * and which failed (and need fixing).</p>
    */
-  private void reportValidationErrors(List<String> errors) {
+  private void reportValidationErrors(List<AIOperation> validOps,
+      Map<Integer, String> validationErrors) {
     long projectId = contextCollector.getCurrentProjectId();
     if (projectId == 0) {
       requestInFlight = false;
@@ -531,8 +538,19 @@ public class AIResponseOrchestrator {
       return;
     }
 
+    // Build structured feedback with SUCCEEDED:/FAILED: prefixes so the
+    // server routes through buildExecutionErrorFeedback() and the LLM
+    // learns which operations to skip on retry.
+    List<String> structuredErrors = new ArrayList<>();
+    for (AIOperation op : validOps) {
+      structuredErrors.add("SUCCEEDED:" + AIOperationFormatter.formatOperation(op));
+    }
+    for (String errorDetail : validationErrors.values()) {
+      structuredErrors.add("FAILED:" + errorDetail);
+    }
+
     // Keep polling — "Calling AI" stays visible
-    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), errors,
+    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), structuredErrors,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
