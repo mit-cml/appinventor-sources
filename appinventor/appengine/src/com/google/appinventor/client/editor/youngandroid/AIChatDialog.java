@@ -6,6 +6,9 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_SCREEN_EDITOR;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -63,6 +66,7 @@ public class AIChatDialog extends DialogBox
   private final Button rejectButton;
   private final Button newConversationButton;
   private final Label statusLabel;
+  private final Label editModeWarning;
 
   // Delegates
   private final AIChatRenderer renderer;
@@ -220,6 +224,15 @@ public class AIChatDialog extends DialogBox
 
     mainPanel.add(inputPanel);
 
+    // Edit-mode warning (shown only before the first message is sent)
+    editModeWarning = new Label(MESSAGES.aiChatEditModeWarning());
+    editModeWarning.getElement().getStyle().setColor("#c0392b");
+    editModeWarning.getElement().getStyle().setFontSize(11, Unit.PX);
+    editModeWarning.getElement().getStyle().setMarginTop(2, Unit.PX);
+    editModeWarning.getElement().getStyle().setMarginBottom(4, Unit.PX);
+    editModeWarning.setVisible(false);
+    mainPanel.add(editModeWarning);
+
     // Bottom toolbar: new conversation + close
     HorizontalPanel bottomBar = new HorizontalPanel();
     bottomBar.setSpacing(4);
@@ -264,7 +277,7 @@ public class AIChatDialog extends DialogBox
   @Override
   public void show() {
     String mode = contextCollector.getCurrentAIAgentMode();
-    if ("Off".equals(mode)) {
+    if (AI_AGENT_MODE_OFF.equals(mode)) {
       new AIModeSelectionDialog(contextCollector, new Runnable() {
         @Override
         public void run() {
@@ -281,6 +294,7 @@ public class AIChatDialog extends DialogBox
       center();
     }
     currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    updateEditModeWarning();
     orchestrator.loadExistingConversation();
   }
 
@@ -319,6 +333,20 @@ public class AIChatDialog extends DialogBox
     hide();
   }
 
+  // ---- Edit-mode warning ----
+
+  /**
+   * Shows the edit-mode warning when the current AI mode can modify the
+   * project. Called when the dialog opens or the conversation is cleared;
+   * hidden once the first message is sent or history is loaded.
+   */
+  private void updateEditModeWarning() {
+    String mode = contextCollector.getCurrentAIAgentMode();
+    boolean isEditMode = AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)
+        || AI_AGENT_MODE_PROJECT_EDITOR.equals(mode);
+    editModeWarning.setVisible(isEditMode);
+  }
+
   // ---- Send message ----
 
   /**
@@ -338,6 +366,7 @@ public class AIChatDialog extends DialogBox
 
     renderer.addUserMessage(text);
     inputArea.setText("");
+    editModeWarning.setVisible(false);
     hideOperationPreview();
     orchestrator.sendMessage(text);
   }
@@ -347,6 +376,7 @@ public class AIChatDialog extends DialogBox
   @Override
   public void addUserMessage(String text) {
     renderer.addUserMessage(text);
+    editModeWarning.setVisible(false);
   }
 
   @Override
@@ -420,6 +450,7 @@ public class AIChatDialog extends DialogBox
   @Override
   public void clearChatHistory() {
     renderer.clear();
+    updateEditModeWarning();
   }
 
   // ---- ResizeTarget implementation ----

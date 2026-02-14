@@ -5950,6 +5950,12 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Warning text shown in the AI mode selection dialog")
   String aiModeWarning();
 
+  @DefaultMessage("AI is in edit mode and can modify your project. "
+      + "Consider saving a checkpoint (Project \u2192 Save project as) before proceeding.")
+  @Description("Warning shown in the chat dialog when AI is in an editing mode "
+      + "and no messages have been sent yet")
+  String aiChatEditModeWarning();
+
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")
   String aiModeSelectAndOpen();
