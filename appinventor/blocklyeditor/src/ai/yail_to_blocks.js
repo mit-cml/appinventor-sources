@@ -853,10 +853,14 @@ AI.YailToBlocks.convertShortPrimitive_ = function(workspace, node, info) {
     block.setFieldValue(info.mode, 'OP');
   }
 
-  // For variadic blocks, set up mutation with the correct item count before initSvg
+  // For variadic blocks, set up mutation with the correct item count before initSvg.
+  // Some variadic blocks have fixed inputs before the repeating slots (e.g.
+  // lists_add_items has a LIST input followed by ITEM0..N).  The mutation
+  // 'items' count must exclude those fixed inputs.
   if (info.arity === 'variadic' && block.domToMutation) {
     var mutation = document.createElement('mutation');
-    mutation.setAttribute('items', String(args.length));
+    var itemCount = args.length - (info.fixedInputs || 0);
+    mutation.setAttribute('items', String(itemCount));
     block.domToMutation(mutation);
   }
 
@@ -1291,7 +1295,7 @@ AI.YailToBlocks.PRIMITIVE_MAP_ = {
   'yail-list-set-item!': {block: 'lists_replace_item', arity: 3},
   'yail-list-length': {block: 'lists_length', arity: 1},
   'yail-list-empty?': {block: 'lists_is_empty', arity: 1},
-  'yail-list-add-to-list!': {block: 'lists_add_items', arity: 'variadic'},
+  'yail-list-add-to-list!': {block: 'lists_add_items', arity: 'variadic', fixedInputs: 1},
   'yail-list-remove-item!': {block: 'lists_remove_item', arity: 2},
   'yail-list-insert-item!': {block: 'lists_insert_item', arity: 3},
   'yail-list-append!': {block: 'lists_append_list', arity: 2},
@@ -1414,10 +1418,12 @@ AI.YailToBlocks.convertPrimitive_ = function(workspace, node, asExpression) {
     block.setFieldValue(info.mode, 'OP');
   }
 
-  // For variadic blocks, set up mutation with the correct item count before initSvg
+  // For variadic blocks, set up mutation with the correct item count before initSvg.
+  // Subtract fixedInputs so LIST+ITEM0 doesn't become LIST+ITEM0+ITEM1.
   if (info.arity === 'variadic' && block.domToMutation) {
     var mutation = document.createElement('mutation');
-    mutation.setAttribute('items', String(args.length));
+    var itemCount = args.length - (info.fixedInputs || 0);
+    mutation.setAttribute('items', String(itemCount));
     block.domToMutation(mutation);
   }
 
@@ -1443,6 +1449,20 @@ AI.YailToBlocks.convertPrimitive_ = function(workspace, node, asExpression) {
  */
 AI.YailToBlocks.getInputNames_ = function(info, argCount, block) {
   if (info.arity === 'variadic') {
+    // When the block has fixed inputs before the repeating slots (e.g.
+    // lists_add_items has a LIST input then ITEM0..N), discover all value
+    // input names from the block so the first YAIL arg maps to LIST
+    // instead of being mis-routed to ITEM0.
+    if (info.fixedInputs && block && block.inputList) {
+      var valueInputs = [];
+      for (var i = 0; i < block.inputList.length; i++) {
+        var input = block.inputList[i];
+        if (input.type === Blockly.INPUT_VALUE) {
+          valueInputs.push(input.name);
+        }
+      }
+      return valueInputs.slice(0, argCount);
+    }
     var prefix = (block && block.repeatingInputName) || 'NUM';
     var names = [];
     for (var i = 0; i < argCount; i++) {
