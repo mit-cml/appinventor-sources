@@ -362,8 +362,7 @@ AI.YailToBlocks.connectProcedureBody_ = function(workspace, block, bodyForms, is
     // For no-return procedures, chain statements in STACK input.
     var firstStmt = AI.YailToBlocks.convertStatement_(workspace, bodyForms[0]);
     if (firstStmt && block.getInput('STACK')) {
-      block.getInput('STACK').connection.connect(
-          firstStmt.previousConnection || firstStmt.outputConnection);
+      block.getInput('STACK').connection.connect(firstStmt.previousConnection);
       var prevBlock = firstStmt;
       for (var i = 1; i < bodyForms.length; i++) {
         var nextStmt = AI.YailToBlocks.convertStatement_(workspace, bodyForms[i]);
@@ -711,50 +710,81 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
  */
 AI.YailToBlocks.convertStatement_ = function(workspace, node) {
   var head = AI.SExprParser.formHead(node);
+  var block;
+
   if (!head) {
     // No symbol head — may be a procedure call like ((get-var p$X) args...)
-    return AI.YailToBlocks.convertExpression_(workspace, node);
+    block = AI.YailToBlocks.convertExpression_(workspace, node);
+  } else {
+    switch (head) {
+      case 'set-var!':
+        block = AI.YailToBlocks.convertSetVar_(workspace, node, true);
+        break;
+      case 'set-lexical!':
+        block = AI.YailToBlocks.convertSetLexical_(workspace, node);
+        break;
+      case 'set-and-coerce-property!':
+        block = AI.YailToBlocks.convertSetProperty_(workspace, node);
+        break;
+      case 'set-and-coerce-property-and-check!':
+        block = AI.YailToBlocks.convertGenericSetProperty_(workspace, node);
+        break;
+      case 'call-component-method':
+        block = AI.YailToBlocks.convertMethodCall_(workspace, node, false);
+        break;
+      case 'call-component-type-method':
+        block = AI.YailToBlocks.convertGenericMethodCall_(workspace, node, false);
+        break;
+      case 'call-yail-primitive':
+        block = AI.YailToBlocks.convertPrimitive_(workspace, node, false);
+        break;
+      case 'if':
+        block = AI.YailToBlocks.convertIf_(workspace, node, false);
+        break;
+      case 'while':
+        block = AI.YailToBlocks.convertWhile_(workspace, node);
+        break;
+      case 'foreach':
+        block = AI.YailToBlocks.convertForEach_(workspace, node);
+        break;
+      case 'forrange':
+        block = AI.YailToBlocks.convertForRange_(workspace, node);
+        break;
+      case 'begin':
+        block = AI.YailToBlocks.convertBeginStatements_(workspace, node);
+        break;
+      case 'let':
+        block = AI.YailToBlocks.convertLet_(workspace, node, false);
+        break;
+      case 'break':
+      case '*yail-break*':
+        block = AI.YailToBlocks.convertBreak_(workspace);
+        break;
+      case 'call-component-method-with-blocking-continuation':
+        block = AI.YailToBlocks.convertMethodCall_(workspace, node, false);
+        break;
+      case 'call-component-type-method-with-blocking-continuation':
+        block = AI.YailToBlocks.convertGenericMethodCall_(workspace, node, false);
+        break;
+      default:
+        block = AI.YailToBlocks.convertExpression_(workspace, node);
+        break;
+    }
   }
 
-  switch (head) {
-    case 'set-var!':
-      return AI.YailToBlocks.convertSetVar_(workspace, node, true);
-    case 'set-lexical!':
-      return AI.YailToBlocks.convertSetLexical_(workspace, node);
-    case 'set-and-coerce-property!':
-      return AI.YailToBlocks.convertSetProperty_(workspace, node);
-    case 'set-and-coerce-property-and-check!':
-      return AI.YailToBlocks.convertGenericSetProperty_(workspace, node);
-    case 'call-component-method':
-      return AI.YailToBlocks.convertMethodCall_(workspace, node, false);
-    case 'call-component-type-method':
-      return AI.YailToBlocks.convertGenericMethodCall_(workspace, node, false);
-    case 'call-yail-primitive':
-      return AI.YailToBlocks.convertPrimitive_(workspace, node, false);
-    case 'if':
-      return AI.YailToBlocks.convertIf_(workspace, node, false);
-    case 'while':
-      return AI.YailToBlocks.convertWhile_(workspace, node);
-    case 'foreach':
-      return AI.YailToBlocks.convertForEach_(workspace, node);
-    case 'forrange':
-      return AI.YailToBlocks.convertForRange_(workspace, node);
-    case 'begin':
-      return AI.YailToBlocks.convertBeginStatements_(workspace, node);
-    case 'let':
-      return AI.YailToBlocks.convertLet_(workspace, node, false);
-    case 'break':
-    case '*yail-break*':
-      return AI.YailToBlocks.convertBreak_(workspace);
-    case 'call-component-method-with-blocking-continuation':
-      return AI.YailToBlocks.convertMethodCall_(workspace, node, false);
-    case 'call-component-type-method-with-blocking-continuation':
-      return AI.YailToBlocks.convertGenericMethodCall_(workspace, node, false);
-    default:
-      // Try as expression (some expressions can be used as statements)
-      var exprBlock = AI.YailToBlocks.convertExpression_(workspace, node);
-      return exprBlock;
+  // Ensure the result is actually a statement block (has previousConnection).
+  // Expression-only blocks (e.g. math_add, text) cannot chain in statement
+  // slots and would be left orphaned in the workspace.  Dispose and throw
+  // so the top-level convert() error handler cleans up properly.
+  if (block && !block.previousConnection) {
+    var desc = head || (node && node.type) || 'unknown';
+    block.dispose(false);
+    throw new Error('Expression "' + desc + '" cannot be used in statement'
+        + ' position. Use set-var! to store the result, or use def-return'
+        + ' for procedures that return a value.');
   }
+
+  return block;
 };
 
 // ---- Expression Conversion ----
@@ -2060,6 +2090,20 @@ AI.YailToBlocks.convertBeginToStatements_ = function(workspace, node) {
 
   var stmts = node.elements.slice(1); // skip 'begin' symbol
   if (stmts.length === 0) return null;
+
+  // Detect (begin <expr> "ignored") — the controls_eval_but_ignore block.
+  // Its YAIL generator emits exactly this form: (begin <VALUE> "ignored").
+  // The block wraps an expression as a statement, discarding its value.
+  if (stmts.length === 2
+      && stmts[1].type === 'string' && stmts[1].value === 'ignored') {
+    var block = workspace.newBlock('controls_eval_but_ignore');
+    block.initSvg();
+    var valueBlock = AI.YailToBlocks.convertExpression_(workspace, stmts[0]);
+    if (valueBlock && block.getInput('VALUE')) {
+      block.getInput('VALUE').connection.connect(valueBlock.outputConnection);
+    }
+    return block;
+  }
 
   var firstBlock = AI.YailToBlocks.convertStatement_(workspace, stmts[0]);
   if (!firstBlock) return null;

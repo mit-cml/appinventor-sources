@@ -258,13 +258,15 @@ When you receive error feedback about failed `write_block` operations, follow th
 (def (p$procedureName $param1 $param2 ...)
   <body statements>)
 ```
+- The body must contain **statement** forms: `set-var!`, `set-lexical!`, `set-and-coerce-property!`, `call-component-method`, `if` (with `begin` branches), `while`, `foreach`, `forrange`, `let`, procedure calls, or `(begin <expr> "ignored")`. Pure value expressions (math, comparisons, text operations, literals) are **not** valid statements.
 
 ### Procedure (with return value)
 ```scheme
 (def-return (p$procedureName $param1 $param2 ...)
   <body expression>)
 ```
-- Use `def-return` instead of `def` when the procedure returns a value
+- Use `def-return` instead of `def` when the procedure computes and returns a value
+- If the body computes a value (e.g., arithmetic, string operations, comparisons), use `def-return` — do **not** use `def` with `(begin <expr> "ignored")`
 - Procedure names are prefixed with `p$`
 - Parameters are prefixed with `$`
 
@@ -688,7 +690,24 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
 ```scheme
 (begin <expression> "ignored")
 ```
-The `<expression>` must be a meaningful side-effect expression (e.g., a method call). Do **not** use `(begin "ignored")` alone as a "do nothing" placeholder.
+This wraps a **return-value expression** so it can be used in statement position (the `controls_eval_but_ignore` block). Use it **only** when calling a return-value procedure or method for its side effects while discarding the result:
+```scheme
+;; OK — calling a return procedure for its side effects
+(begin ((get-var p$computeAndSave) 42) "ignored")
+
+;; OK — calling a method that returns a value you don't need
+(begin (call-component-method 'Web1 'UriEncode (*list-for-runtime* "test") '(text)) "ignored")
+```
+Do **not** use this with pure value expressions (math, comparisons, text operations, variable gets, literals) — those have no side effects, so evaluating and ignoring them is pointless and likely a logic error. Do **not** use `(begin "ignored")` alone as a "do nothing" placeholder.
+```scheme
+;; BAD — pure expression with no side effects
+(begin (call-yail-primitive + (*list-for-runtime* 1 2) '(number number) "+") "ignored")
+
+;; BAD — if you need the result, use def-return instead of def
+(def (p$wrong) (begin (call-yail-primitive + (*list-for-runtime* 1 2) '(number number) "+") "ignored"))
+;; GOOD
+(def-return (p$right) (call-yail-primitive + (*list-for-runtime* 1 2) '(number number) "+"))
+```
 
 ### No Null Concept
 YAIL has **no** `null` literal, keyword, or "nothing" block. Do not use `null`, `(get-var g$null)`, or `(get-var *the-null-value*)` — none of these are valid. Always use a typed zero value instead: `0` for numbers, `""` for text, `#f` for booleans, or an empty list/dictionary.
