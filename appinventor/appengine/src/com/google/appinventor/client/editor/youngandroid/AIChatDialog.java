@@ -227,7 +227,7 @@ public class AIChatDialog extends DialogBox
     mainPanel.add(inputPanel);
 
     // Edit-mode warning (shown only before the first message is sent)
-    editModeWarning = new Label(MESSAGES.aiChatEditModeWarning());
+    editModeWarning = new Label();
     editModeWarning.getElement().getStyle().setColor("#c0392b");
     editModeWarning.getElement().getStyle().setFontSize(11, Unit.PX);
     editModeWarning.getElement().getStyle().setMarginTop(2, Unit.PX);
@@ -368,9 +368,15 @@ public class AIChatDialog extends DialogBox
    */
   private void updateEditModeWarning() {
     String mode = contextCollector.getCurrentAIAgentMode();
-    boolean isEditMode = AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)
-        || AI_AGENT_MODE_PROJECT_EDITOR.equals(mode);
-    editModeWarning.setVisible(isEditMode);
+    if (AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)) {
+      editModeWarning.setText(MESSAGES.aiChatScreenEditorWarning());
+      editModeWarning.setVisible(true);
+    } else if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
+      editModeWarning.setText(MESSAGES.aiChatProjectEditorWarning());
+      editModeWarning.setVisible(true);
+    } else {
+      editModeWarning.setVisible(false);
+    }
   }
 
   // ---- Send message ----

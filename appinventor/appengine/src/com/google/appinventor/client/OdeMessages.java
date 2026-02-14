@@ -5950,11 +5950,17 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Warning text shown in the AI mode selection dialog")
   String aiModeWarning();
 
-  @DefaultMessage("AI is in edit mode and can modify your project. "
-      + "Consider saving a checkpoint (Project \u2192 Save project as) before proceeding.")
-  @Description("Warning shown in the chat dialog when AI is in an editing mode "
-      + "and no messages have been sent yet")
-  String aiChatEditModeWarning();
+  @DefaultMessage("AI is in Screen Editor mode and can modify components and blocks "
+      + "on the current screen. Consider saving a checkpoint (Project \u2192 Save "
+      + "project as) before proceeding.")
+  @Description("Warning shown in the chat dialog when AI is in Screen Editor mode")
+  String aiChatScreenEditorWarning();
+
+  @DefaultMessage("AI is in Project Editor mode and can modify all screens, components, "
+      + "blocks, and project settings. Consider saving a checkpoint (Project \u2192 Save "
+      + "project as) before proceeding.")
+  @Description("Warning shown in the chat dialog when AI is in Project Editor mode")
+  String aiChatProjectEditorWarning();
 
   @DefaultMessage("Auto-accept all is enabled.")
   @Description("Notice shown below the input area when auto-accept-all mode is active")
