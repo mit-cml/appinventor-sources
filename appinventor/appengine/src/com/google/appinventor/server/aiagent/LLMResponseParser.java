@@ -197,6 +197,8 @@ public class LLMResponseParser {
 
   /**
    * Build a structured error message suitable for LLM retry feedback.
+   * Used by the pre-validation path (block YAIL validation) where no
+   * operations have been applied yet.
    */
   public static String buildValidationErrorFeedback(List<String> errors) {
     StringBuilder sb = new StringBuilder();
@@ -205,6 +207,51 @@ public class LLMResponseParser {
       sb.append(i + 1).append(". ").append(errors.get(i)).append("\n");
     }
     sb.append("\nPlease fix these issues and try again.");
+    return sb.toString();
+  }
+
+  /**
+   * Build rich error feedback that includes which operations were already applied
+   * (do not re-emit), which failed (fix and retry), and which were skipped (re-emit).
+   * This gives the LLM accurate context to avoid re-emitting already-applied operations.
+   */
+  public static String buildExecutionErrorFeedback(
+      List<String> succeededSummaries,
+      List<String> failedDetails,
+      List<String> skippedSummaries) {
+    StringBuilder sb = new StringBuilder();
+
+    if (!succeededSummaries.isEmpty()) {
+      sb.append("The following operations were ALREADY APPLIED successfully ");
+      sb.append("(do NOT re-emit these):\n");
+      for (int i = 0; i < succeededSummaries.size(); i++) {
+        sb.append("  ").append(i + 1).append(". ")
+            .append(succeededSummaries.get(i)).append("\n");
+      }
+      sb.append("\n");
+    }
+
+    if (!failedDetails.isEmpty()) {
+      sb.append("The following operations FAILED during execution:\n");
+      for (int i = 0; i < failedDetails.size(); i++) {
+        sb.append("  ").append(i + 1).append(". ")
+            .append(failedDetails.get(i)).append("\n");
+      }
+      sb.append("\n");
+    }
+
+    if (!skippedSummaries.isEmpty()) {
+      sb.append("The following operations were SKIPPED (never executed, ");
+      sb.append("halted after the failure above):\n");
+      for (int i = 0; i < skippedSummaries.size(); i++) {
+        sb.append("  ").append(i + 1).append(". ")
+            .append(skippedSummaries.get(i)).append("\n");
+      }
+      sb.append("\n");
+    }
+
+    sb.append("Please fix the failed operation(s) and re-emit ONLY the failed ");
+    sb.append("and skipped operations. Do NOT re-emit the already-applied ones.");
     return sb.toString();
   }
 }

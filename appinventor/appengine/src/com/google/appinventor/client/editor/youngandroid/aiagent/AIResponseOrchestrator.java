@@ -525,15 +525,19 @@ public class AIResponseOrchestrator {
       return;
     }
 
-    // Collect error messages
+    // Collect structured per-operation results so the LLM knows exactly what
+    // was applied (do not re-emit), what failed, and what was skipped.
     List<String> errors = new ArrayList<>();
-    String mainError = result.getErrorMessage();
-    if (mainError != null && !mainError.isEmpty()) {
-      errors.add(mainError);
+    for (AIOperation op : result.getSucceeded()) {
+      errors.add("SUCCEEDED:" + AIOperationFormatter.formatOperation(op));
     }
-    // Add context about skipped operations
-    for (AIOperation skipped : result.getSkipped()) {
-      errors.add("Skipped " + skipped.getType() + " due to earlier failure");
+    for (AIOperation op : result.getFailed()) {
+      String mainError = result.getErrorMessage();
+      errors.add("FAILED:" + AIOperationFormatter.formatOperation(op)
+          + " -- Error: " + (mainError != null ? mainError : "unknown"));
+    }
+    for (AIOperation op : result.getSkipped()) {
+      errors.add("SKIPPED:" + AIOperationFormatter.formatOperation(op));
     }
 
     startPollingStatus();

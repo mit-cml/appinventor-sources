@@ -84,12 +84,36 @@ public class OpenAIProvider implements LLMProvider {
     boolean hasContext = contextMessages != null && !contextMessages.isEmpty();
     if (pendingCalls != null && pendingCalls.length() > 0) {
       JSONArray inputArray = new JSONArray();
+      // chat() is called for follow-up messages (new question, user rejection,
+      // error retry, etc.) — we don't know if the client applied the previous
+      // operations.  Use "Not yet applied." for ACCEPTED ops and the real
+      // rejection message for server-rejected ops.  Only
+      // continueWithToolResults() (the explicit success path) sends "Done.".
+      JSONArray prevToolCallResults = null;
+      if (providerRef != null) {
+        try {
+          JSONObject refObj = new JSONObject(providerRef);
+          prevToolCallResults = refObj.optJSONArray("toolCallResults");
+        } catch (JSONException ignored) {
+          // Not JSON or no toolCallResults
+        }
+      }
       for (int i = 0; i < pendingCalls.length(); i++) {
         JSONObject pc = pendingCalls.getJSONObject(i);
+        String resultContent = "Not yet applied.";
+        if (prevToolCallResults != null && i < prevToolCallResults.length()) {
+          String annotated = prevToolCallResults.getJSONObject(i)
+              .optString("result", "Not yet applied.");
+          // Preserve rejection info, but don't claim "Done." for accepted ops
+          // since we don't know if the client applied them in this code path.
+          if (annotated.startsWith("REJECTED:")) {
+            resultContent = annotated;
+          }
+        }
         inputArray.put(new JSONObject()
             .put("type", "function_call_output")
             .put("call_id", pc.getString("id"))
-            .put("output", "Done."));
+            .put("output", resultContent));
       }
       if (hasContext) {
         for (String ctx : contextMessages) {
@@ -261,14 +285,21 @@ public class OpenAIProvider implements LLMProvider {
     String systemPrompt = state.optString("systemPrompt", "");
     JSONArray pendingToolCalls = state.getJSONArray("pendingToolCalls");
 
-    // Build tool result input items for each pending tool call
+    // Build tool result input items for each pending tool call.
+    // Use per-call results when available (annotated by AIAgentEngine) instead
+    // of blanket "Done." so the LLM knows which tool calls were rejected.
+    JSONArray toolCallResults = state.optJSONArray("toolCallResults");
     JSONArray toolResultsInput = new JSONArray();
     for (int i = 0; i < pendingToolCalls.length(); i++) {
       JSONObject pending = pendingToolCalls.getJSONObject(i);
+      String resultContent = "Done.";
+      if (toolCallResults != null && i < toolCallResults.length()) {
+        resultContent = toolCallResults.getJSONObject(i).optString("result", "Done.");
+      }
       toolResultsInput.put(new JSONObject()
           .put("type", "function_call_output")
           .put("call_id", pending.getString("id"))
-          .put("output", "Done."));
+          .put("output", resultContent));
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);

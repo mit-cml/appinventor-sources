@@ -283,14 +283,21 @@ public class GeminiProvider implements LLMProvider {
     String systemPrompt = state.optString("systemPrompt", "");
     JSONArray pendingFunctionCalls = state.getJSONArray("pendingFunctionCalls");
 
-    // Append a user content with functionResponse parts for each pending call
+    // Append a user content with functionResponse parts for each pending call.
+    // Use per-call results when available (annotated by AIAgentEngine) instead
+    // of blanket "Done." so the LLM knows which tool calls were rejected.
+    JSONArray toolCallResults = state.optJSONArray("toolCallResults");
     JSONArray responseParts = new JSONArray();
     for (int i = 0; i < pendingFunctionCalls.length(); i++) {
       JSONObject pending = pendingFunctionCalls.getJSONObject(i);
+      String resultContent = "Done.";
+      if (toolCallResults != null && i < toolCallResults.length()) {
+        resultContent = toolCallResults.getJSONObject(i).optString("result", "Done.");
+      }
       JSONObject responsePart = new JSONObject();
       JSONObject functionResponse = new JSONObject();
       functionResponse.put("name", pending.getString("name"));
-      functionResponse.put("response", new JSONObject().put("result", "Done."));
+      functionResponse.put("response", new JSONObject().put("result", resultContent));
       responsePart.put("functionResponse", functionResponse);
       responseParts.put(responsePart);
     }

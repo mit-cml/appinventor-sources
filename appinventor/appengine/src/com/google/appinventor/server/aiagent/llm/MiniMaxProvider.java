@@ -218,13 +218,20 @@ public class MiniMaxProvider implements LLMProvider {
     JSONArray messages = state.getJSONArray("messages");
     JSONArray pendingToolCalls = state.getJSONArray("pendingToolCalls");
 
-    // Append synthetic "Done." results for each pending tool call
+    // Append tool results for each pending tool call.
+    // Use per-call results when available (annotated by AIAgentEngine) instead
+    // of blanket "Done." so the LLM knows which tool calls were rejected.
+    JSONArray toolCallResults = state.optJSONArray("toolCallResults");
     for (int i = 0; i < pendingToolCalls.length(); i++) {
       JSONObject pending = pendingToolCalls.getJSONObject(i);
+      String resultContent = "Done.";
+      if (toolCallResults != null && i < toolCallResults.length()) {
+        resultContent = toolCallResults.getJSONObject(i).optString("result", "Done.");
+      }
       messages.put(new JSONObject()
           .put("role", "tool")
           .put("tool_call_id", pending.getString("id"))
-          .put("content", "Done."));
+          .put("content", resultContent));
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);

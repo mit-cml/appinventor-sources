@@ -27,7 +27,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,10 +75,13 @@ public class AIAgentEngine {
   static class ParsedResult {
     final List<AIOperation> operations;
     final List<String> errors;
+    final List<ToolCallStatus> toolCallStatuses;
 
-    ParsedResult(List<AIOperation> operations, List<String> errors) {
+    ParsedResult(List<AIOperation> operations, List<String> errors,
+        List<ToolCallStatus> toolCallStatuses) {
       this.operations = operations;
       this.errors = errors;
+      this.toolCallStatuses = toolCallStatuses;
     }
   }
 
@@ -332,8 +337,31 @@ public class AIAgentEngine {
         return errorResponse("No conversation state available. Please start a new request.");
       }
 
-      // Build feedback message from client errors
-      String feedback = LLMResponseParser.buildValidationErrorFeedback(errors);
+      // Parse structured error feedback from client (SUCCEEDED:/FAILED:/SKIPPED: prefixes).
+      // Unprefixed strings are treated as failures for backward compatibility.
+      List<String> succeededSummaries = new ArrayList<>();
+      List<String> failedDetails = new ArrayList<>();
+      List<String> skippedSummaries = new ArrayList<>();
+      for (String err : errors) {
+        if (err.startsWith("SUCCEEDED:")) {
+          succeededSummaries.add(err.substring("SUCCEEDED:".length()));
+        } else if (err.startsWith("FAILED:")) {
+          failedDetails.add(err.substring("FAILED:".length()));
+        } else if (err.startsWith("SKIPPED:")) {
+          skippedSummaries.add(err.substring("SKIPPED:".length()));
+        } else {
+          failedDetails.add(err);
+        }
+      }
+
+      String feedback;
+      if (!succeededSummaries.isEmpty() || !skippedSummaries.isEmpty()) {
+        feedback = LLMResponseParser.buildExecutionErrorFeedback(
+            succeededSummaries, failedDetails, skippedSummaries);
+      } else {
+        // Legacy format -- use the simpler feedback builder
+        feedback = LLMResponseParser.buildValidationErrorFeedback(errors);
+      }
       LOG.info("Retrying LLM with client execution errors: " + feedback);
 
       // Get provider and tools
@@ -468,15 +496,66 @@ public class AIAgentEngine {
 
   ParsedResult parseAndEnforce(LLMResponse llmResponse,
       String mode, String currentView) {
-    List<LLMResponseParser.RawToolCall> rawCalls = new ArrayList<>();
-    for (RawToolCall tc : llmResponse.getRawToolCalls()) {
-      rawCalls.add(new LLMResponseParser.RawToolCall(tc.getName(), tc.getArgumentsJson()));
+    List<RawToolCall> rawToolCalls = llmResponse.getRawToolCalls();
+    List<ToolCallStatus> statuses = new ArrayList<>();
+    List<AIOperation> allParsedOps = new ArrayList<>();
+    List<String> allErrors = new ArrayList<>();
+    // Track which raw-tool-call index produced each parsed operation.
+    List<Integer> parsedToRawIndex = new ArrayList<>();
+
+    for (int i = 0; i < rawToolCalls.size(); i++) {
+      RawToolCall tc = rawToolCalls.get(i);
+      LLMResponseParser.RawToolCall wrapped =
+          new LLMResponseParser.RawToolCall(tc.getName(), tc.getArgumentsJson());
+      LLMResponseParser.ParseResult result =
+          responseParser.parseToolCalls(Collections.singletonList(wrapped));
+
+      String argsSummary = tc.getArgumentsJson();
+      if (argsSummary.length() > 100) {
+        argsSummary = argsSummary.substring(0, 100) + "...";
+      }
+
+      if (result.hasErrors()) {
+        statuses.add(new ToolCallStatus(tc.getName(), argsSummary,
+            ToolCallOutcome.PARSE_REJECTED, result.getErrors().get(0)));
+        allErrors.addAll(result.getErrors());
+      } else if (!result.getOperations().isEmpty()) {
+        allParsedOps.add(result.getOperations().get(0));
+        parsedToRawIndex.add(i);
+        statuses.add(null); // placeholder, updated after enforcement
+      }
+      // read-only tool calls silently skipped by the parser produce no op and no error
     }
-    LLMResponseParser.ParseResult parseResult = responseParser.parseToolCalls(rawCalls);
-    List<String> errors = new ArrayList<>(parseResult.getErrors());
-    List<AIOperation> operations = ModeEnforcer.enforce(parseResult.getOperations(),
-        mode, currentView, errors);
-    return new ParsedResult(operations, errors);
+
+    // Run mode enforcement on the parsed operations.
+    List<String> enforceErrors = new ArrayList<>();
+    List<AIOperation> accepted = ModeEnforcer.enforce(
+        allParsedOps, mode, currentView, enforceErrors);
+    allErrors.addAll(enforceErrors);
+
+    // Determine which parsed ops survived enforcement using identity.
+    Set<AIOperation> acceptedSet = new HashSet<>(accepted);
+    for (int j = 0; j < allParsedOps.size(); j++) {
+      int rawIdx = parsedToRawIndex.get(j);
+      RawToolCall tc = rawToolCalls.get(rawIdx);
+      String argsSummary = tc.getArgumentsJson();
+      if (argsSummary.length() > 100) {
+        argsSummary = argsSummary.substring(0, 100) + "...";
+      }
+
+      if (acceptedSet.contains(allParsedOps.get(j))) {
+        statuses.set(rawIdx, new ToolCallStatus(tc.getName(), argsSummary,
+            ToolCallOutcome.ACCEPTED, null));
+      } else {
+        statuses.set(rawIdx, new ToolCallStatus(tc.getName(), argsSummary,
+            ToolCallOutcome.MODE_REJECTED, "Rejected by mode/view enforcement"));
+      }
+    }
+
+    // Remove null placeholders (should not remain, but defensive).
+    statuses.removeAll(Collections.singleton(null));
+
+    return new ParsedResult(accepted, allErrors, statuses);
   }
 
   /**
@@ -523,9 +602,14 @@ public class AIAgentEngine {
 
   AIAgentResponse finalizeResponse(LLMResponse llmResponse, String assistantText,
       ParsedResult parsed, AIConversationState conv, long projectId, boolean isNew) {
+    // Annotate the continuation state with per-tool-call results so that
+    // continueWithToolResults() can send accurate feedback instead of blanket "Done.".
+    String annotatedRef = annotateToolCallResults(
+        llmResponse.getProviderRef(), parsed.toolCallStatuses);
+
     // Save updated conversation state
     AIConversationState updated = new AIConversationState(conv.getProviderName(),
-        conv.getConversationId(), llmResponse.getProviderRef());
+        conv.getConversationId(), annotatedRef);
     conversationManager.saveConversation(projectId, updated);
 
     // Save assistant response to history (with structured content if tool calls present).
@@ -537,7 +621,7 @@ public class AIAgentEngine {
     }
     if (!llmResponse.getRawToolCalls().isEmpty()) {
       String[] pair = ConversationManager.buildStructuredContentPair(
-          historyText, llmResponse.getRawToolCalls());
+          historyText, llmResponse.getRawToolCalls(), parsed.toolCallStatuses);
       conversationManager.storeMessage(conv.getConversationId(), "assistant",
           historyText, pair[0]);
       conversationManager.storeMessage(conv.getConversationId(), "tool_result",
@@ -553,6 +637,50 @@ public class AIAgentEngine {
         assistantText, parsed.operations, isNew, parsed.errors);
     response.setHasMore(hasMore);
     return response;
+  }
+
+  // ---------- Continuation state annotation ----------
+
+  /**
+   * Annotates the continuation state with per-tool-call results so that
+   * {@link LLMProvider#continueWithToolResults} can send accurate feedback
+   * instead of blanket "Done." for all pending tool calls.
+   *
+   * <p>Adds a {@code "toolCallResults"} JSON array to the continuation state,
+   * positionally aligned with the pending tool call IDs.
+   */
+  static String annotateToolCallResults(String providerRef,
+      List<ToolCallStatus> statuses) {
+    if (providerRef == null || providerRef.isEmpty() || statuses == null) {
+      return providerRef;
+    }
+    try {
+      JSONObject state = new JSONObject(providerRef);
+      if (!state.optBoolean("continuation", false)) {
+        return providerRef;
+      }
+
+      JSONArray results = new JSONArray();
+      for (ToolCallStatus s : statuses) {
+        JSONObject entry = new JSONObject();
+        entry.put("name", s.getToolName());
+        switch (s.getOutcome()) {
+          case ACCEPTED:
+            entry.put("result", "Done.");
+            break;
+          case PARSE_REJECTED:
+          case MODE_REJECTED:
+            entry.put("result", "REJECTED: " + s.getErrorMessage());
+            break;
+        }
+        results.put(entry);
+      }
+      state.put("toolCallResults", results);
+      return state.toString();
+    } catch (Exception e) {
+      LOG.warning("Failed to annotate tool call results: " + e.getMessage());
+      return providerRef;
+    }
   }
 
   // ---------- Continuation state patching ----------

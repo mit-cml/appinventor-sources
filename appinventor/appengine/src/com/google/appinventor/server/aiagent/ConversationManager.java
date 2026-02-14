@@ -209,7 +209,7 @@ public class ConversationManager {
    * @return [assistantContent, toolResultContent] JSON strings
    */
   public static String[] buildStructuredContentPair(String text,
-      List<RawToolCall> toolCalls) {
+      List<RawToolCall> toolCalls, List<ToolCallStatus> statuses) {
     JSONArray assistantParts = new JSONArray();
     JSONArray resultParts = new JSONArray();
 
@@ -218,10 +218,11 @@ public class ConversationManager {
           .put("type", "text")
           .put("text", text));
     }
-    for (RawToolCall tc : toolCalls) {
+    for (int i = 0; i < toolCalls.size(); i++) {
+      RawToolCall tc = toolCalls.get(i);
       String toolUseId = "tc_" + UUID.randomUUID().toString().substring(0, 8);
 
-      // Assistant's tool_use block
+      // Assistant's tool_use block (always included -- the LLM did emit this call)
       JSONObject usePart = new JSONObject();
       usePart.put("type", "tool_use");
       usePart.put("id", toolUseId);
@@ -233,12 +234,23 @@ public class ConversationManager {
       }
       assistantParts.put(usePart);
 
-      // Corresponding tool_result block
+      // Tool result: use per-call status when available.
+      // ACCEPTED operations get a neutral "Pending client execution." because
+      // at history-storage time we don't yet know if the client will succeed.
+      // REJECTED operations get the error so the LLM sees what went wrong.
+      String resultContent = "Pending client execution.";
+      if (statuses != null && i < statuses.size()) {
+        ToolCallStatus status = statuses.get(i);
+        if (status != null && status.getOutcome() != ToolCallOutcome.ACCEPTED) {
+          resultContent = "REJECTED: " + status.getErrorMessage();
+        }
+      }
+
       JSONObject resultPart = new JSONObject();
       resultPart.put("type", "tool_result");
       resultPart.put("tool_use_id", toolUseId);
       resultPart.put("tool_name", tc.getName());
-      resultPart.put("content", "Done.");
+      resultPart.put("content", resultContent);
       resultParts.put(resultPart);
     }
     return new String[] { assistantParts.toString(), resultParts.toString() };

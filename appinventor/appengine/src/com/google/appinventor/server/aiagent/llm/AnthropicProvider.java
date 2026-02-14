@@ -231,14 +231,21 @@ public class AnthropicProvider implements LLMProvider {
     String systemPrompt = state.optString("systemPrompt", "");
     JSONArray pendingToolUseIds = state.getJSONArray("pendingToolUseIds");
 
-    // Append a user message with tool_result blocks for each pending tool_use
+    // Append a user message with tool_result blocks for each pending tool_use.
+    // Use per-call results when available (annotated by AIAgentEngine) instead
+    // of blanket "Done." so the LLM knows which tool calls were rejected.
+    JSONArray toolCallResults = state.optJSONArray("toolCallResults");
     JSONArray toolResults = new JSONArray();
     for (int i = 0; i < pendingToolUseIds.length(); i++) {
       JSONObject pending = pendingToolUseIds.getJSONObject(i);
+      String resultContent = "Done.";
+      if (toolCallResults != null && i < toolCallResults.length()) {
+        resultContent = toolCallResults.getJSONObject(i).optString("result", "Done.");
+      }
       toolResults.put(new JSONObject()
           .put("type", "tool_result")
           .put("tool_use_id", pending.getString("id"))
-          .put("content", "Done."));
+          .put("content", resultContent));
     }
     messages.put(new JSONObject()
         .put("role", "user")
