@@ -23,7 +23,9 @@ import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -74,6 +76,11 @@ public class AIResponseOrchestrator {
   private int validationRetryCount;
   private boolean autoAcceptAll;
 
+  /** Operations that passed validation and are held across retries. */
+  private List<AIOperation> preservedValidOps;
+  /** Original AI message preserved from the first response in a retry sequence. */
+  private String preservedAiMessage;
+
   private void setAutoAcceptAll(boolean value) {
     autoAcceptAll = value;
     callback.setAutoAcceptVisible(value);
@@ -105,6 +112,8 @@ public class AIResponseOrchestrator {
     requestInFlight = true;
     callback.setRequestInFlight(true);
     validationRetryCount = 0;
+    preservedValidOps = null;
+    preservedAiMessage = null;
     startPollingStatus();
 
     aiAgentService.processRequest(request, new OdeAsyncCallback<AIAgentResponse>(
@@ -206,6 +215,8 @@ public class AIResponseOrchestrator {
     requestInFlight = true;
     callback.setRequestInFlight(true);
     validationRetryCount = 0;
+    preservedValidOps = null;
+    preservedAiMessage = null;
     startPollingStatus();
 
     aiAgentService.processRequest(feedback, new OdeAsyncCallback<AIAgentResponse>(
@@ -283,6 +294,8 @@ public class AIResponseOrchestrator {
     setAutoAcceptAll(false);
     requestInFlight = false;
     pendingResponse = null;
+    preservedValidOps = null;
+    preservedAiMessage = null;
     callback.setRequestInFlight(false);
     stopPollingStatus();
     callback.hideOperationPreview();
@@ -317,40 +330,85 @@ public class AIResponseOrchestrator {
    * showing the preview. If validation fails and retries are available,
    * keeps "Calling AI" visible and sends error feedback to the server
    * for an automatic LLM retry.
+   *
+   * <p>Valid operations from a batch with mixed results are preserved
+   * across retries in {@link #preservedValidOps} and merged back once
+   * all remaining failures are fixed (or retries are exhausted).</p>
    */
   private void handleResponseWithValidation(AIAgentResponse response) {
     List<AIOperation> operations = response.getOperations();
 
     // Pre-validate WRITE_BLOCK and DELETE_BLOCK operations client-side
     if (operations != null && !operations.isEmpty()) {
-      List<String> validationErrors = validateBlockOperations(operations);
+      Map<Integer, String> validationErrors = validateBlockOperations(operations);
       if (!validationErrors.isEmpty()) {
-        if (validationRetryCount < MAX_VALIDATION_RETRIES) {
-          // Retry: keep "Calling AI" visible, send errors to server
-          validationRetryCount++;
-          LOG.info("Client validation failed (attempt " + validationRetryCount
-              + "/" + MAX_VALIDATION_RETRIES + "), retrying: " + validationErrors);
-          reportValidationErrors(validationErrors);
-          return;
-        }
-        // Exhausted retries — strip invalid block ops so they are not
-        // presented in the preview or executed. Non-block operations
-        // (component additions, property changes, etc.) are kept.
-        LOG.warning("Validation retries exhausted. Stripping "
-            + validationErrors.size() + " invalid block operation(s).");
-        List<AIOperation> cleaned = new ArrayList<>();
-        for (AIOperation op : operations) {
-          if (op.getType() != AIOperation.Type.WRITE_BLOCK
-              && op.getType() != AIOperation.Type.DELETE_BLOCK) {
-            cleaned.add(op);
+        // Separate valid operations from invalid ones
+        List<AIOperation> validOps = new ArrayList<>();
+        List<AIOperation> invalidOps = new ArrayList<>();
+        for (int i = 0; i < operations.size(); i++) {
+          if (validationErrors.containsKey(i)) {
+            invalidOps.add(operations.get(i));
+          } else {
+            validOps.add(operations.get(i));
           }
         }
-        response.setOperations(cleaned);
-        // Surface the errors so the user sees what went wrong
-        for (String err : validationErrors) {
+
+        if (validationRetryCount < MAX_VALIDATION_RETRIES) {
+          // Preserve the valid operations and original AI message
+          if (preservedValidOps == null) {
+            preservedValidOps = new ArrayList<>(validOps);
+            preservedAiMessage = response.getAiMessage();
+          } else {
+            preservedValidOps.addAll(validOps);
+          }
+
+          // Send only the validation errors for the failed operations.
+          // The valid operations are preserved client-side and will be
+          // merged back once the LLM fixes the failures.
+          validationRetryCount++;
+          LOG.info("Client validation failed (attempt " + validationRetryCount
+              + "/" + MAX_VALIDATION_RETRIES + "), retrying. Preserved "
+              + preservedValidOps.size() + " valid op(s), "
+              + invalidOps.size() + " failed.");
+          reportValidationErrors(
+              new ArrayList<>(validationErrors.values()));
+          return;
+        }
+
+        // Exhausted retries — combine preserved valid ops with any valid
+        // ops from this final response, strip only the still-invalid ones.
+        LOG.warning("Validation retries exhausted. Stripping "
+            + validationErrors.size() + " invalid block operation(s).");
+        List<AIOperation> merged = new ArrayList<>();
+        if (preservedValidOps != null) {
+          merged.addAll(preservedValidOps);
+        }
+        merged.addAll(validOps);
+        response.setOperations(merged);
+        for (String err : validationErrors.values()) {
           response.getErrors().add(err);
         }
+        if (preservedAiMessage != null) {
+          response.setAiMessage(preservedAiMessage);
+        }
+        preservedValidOps = null;
+        preservedAiMessage = null;
       }
+    }
+
+    // If validation passed and there are preserved ops from earlier
+    // retries, merge them into the response.
+    if (preservedValidOps != null && !preservedValidOps.isEmpty()) {
+      List<AIOperation> merged = new ArrayList<>(preservedValidOps);
+      if (operations != null) {
+        merged.addAll(operations);
+      }
+      response.setOperations(merged);
+      if (preservedAiMessage != null) {
+        response.setAiMessage(preservedAiMessage);
+      }
+      preservedValidOps = null;
+      preservedAiMessage = null;
     }
 
     // Validation passed (or no block ops, or retries exhausted) — show result
@@ -401,17 +459,19 @@ public class AIResponseOrchestrator {
    * Validates WRITE_BLOCK and DELETE_BLOCK operations using the client-side
    * Blockly runtime (dry-run, no blocks created).
    *
-   * @return list of validation error messages; empty if all operations are valid
+   * @return map from operation index to error message for failed operations;
+   *         empty if all operations are valid
    */
-  private List<String> validateBlockOperations(List<AIOperation> operations) {
-    List<String> errors = new ArrayList<>();
+  private Map<Integer, String> validateBlockOperations(List<AIOperation> operations) {
+    Map<Integer, String> errors = new HashMap<>();
     BlocksEditor<?, ?> blocksEditor = contextCollector.getCurrentBlocksEditor();
     if (blocksEditor == null) {
       // Can't validate without a blocks editor — let execution handle it
       return errors;
     }
 
-    for (AIOperation op : operations) {
+    for (int i = 0; i < operations.size(); i++) {
+      AIOperation op = operations.get(i);
       if (op.getType() == AIOperation.Type.WRITE_BLOCK) {
         String yail = AIJsonUtils.extractField(op.getPayload(), "yail");
         if (yail != null && !yail.isEmpty()) {
@@ -420,7 +480,7 @@ public class AIResponseOrchestrator {
             String error = extractValidationError(resultJson);
             if (error != null) {
               // Include the failing YAIL so the LLM can see and fix its mistake
-              errors.add("write_block validation failed: " + error
+              errors.put(i, "write_block validation failed: " + error
                   + "\nFailing YAIL: " + yail);
             }
           }
@@ -432,7 +492,7 @@ public class AIResponseOrchestrator {
           if (resultJson != null) {
             String error = extractValidationError(resultJson);
             if (error != null) {
-              errors.add("delete_block validation failed: " + error);
+              errors.put(i, "delete_block validation failed: " + error);
             }
           }
         }
@@ -507,6 +567,8 @@ public class AIResponseOrchestrator {
     }
 
     validationRetryCount = 0;
+    preservedValidOps = null;
+    preservedAiMessage = null;
 
     aiAgentService.continueRequest(contextCollector.buildRequest(null),
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
