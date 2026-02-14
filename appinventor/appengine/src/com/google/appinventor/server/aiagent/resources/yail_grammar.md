@@ -557,6 +557,20 @@ Wraps an enum value for use in the REPL. The `static-field` is the authoritative
   (begin <then-statements>)
   (begin <else-statements>))
 ```
+**Empty branches:** When logic is only needed for the false case, negate the condition and use if-only (no else) instead of an if-else with an empty then-branch:
+```scheme
+;; CORRECT — negate and use if-only
+(if (call-yail-primitive yail-not
+      (*list-for-runtime* <condition>)
+      '(boolean) "not")
+  (begin <body>))
+
+;; WRONG — do not use if-else with a dummy then-branch
+(if <condition>
+  (begin "ignored")
+  (begin <body>))
+```
+
 Nested if-else for elseif chains:
 ```scheme
 (if <cond1>
@@ -638,6 +652,7 @@ Exits the enclosing `foreach`, `forrange`, or `while` loop.
 ```scheme
 (begin <expression> "ignored")
 ```
+The `<expression>` must be a meaningful side-effect expression (e.g., a method call). Do **not** use `(begin "ignored")` alone as a "do nothing" placeholder.
 
 ### No Null Concept
 YAIL has **no** `null` literal, keyword, or "nothing" block. Do not use `null`, `(get-var g$null)`, or `(get-var *the-null-value*)` — none of these are valid. Always use a typed zero value instead: `0` for numbers, `""` for text, `#f` for booleans, or an empty list/dictionary.
