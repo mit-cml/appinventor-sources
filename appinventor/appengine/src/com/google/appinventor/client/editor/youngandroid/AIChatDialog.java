@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -67,6 +68,7 @@ public class AIChatDialog extends DialogBox
   private final Button newConversationButton;
   private final Label statusLabel;
   private final Label editModeWarning;
+  private final FlowPanel autoAcceptPanel;
 
   // Delegates
   private final AIChatRenderer renderer;
@@ -232,6 +234,30 @@ public class AIChatDialog extends DialogBox
     editModeWarning.getElement().getStyle().setMarginBottom(4, Unit.PX);
     editModeWarning.setVisible(false);
     mainPanel.add(editModeWarning);
+
+    // Auto-accept notice (shown while auto-accept-all is active)
+    autoAcceptPanel = new FlowPanel();
+    autoAcceptPanel.getElement().getStyle().setFontSize(11, Unit.PX);
+    autoAcceptPanel.getElement().getStyle().setColor("#e65100");
+    autoAcceptPanel.getElement().getStyle().setMarginTop(2, Unit.PX);
+    autoAcceptPanel.getElement().getStyle().setMarginBottom(4, Unit.PX);
+    autoAcceptPanel.setVisible(false);
+
+    InlineLabel autoAcceptText = new InlineLabel(MESSAGES.aiChatAutoAcceptEnabled() + " ");
+    autoAcceptPanel.add(autoAcceptText);
+
+    InlineLabel autoAcceptDisable = new InlineLabel(MESSAGES.aiChatAutoAcceptDisable());
+    autoAcceptDisable.getElement().getStyle().setProperty("textDecoration", "underline");
+    autoAcceptDisable.getElement().getStyle().setProperty("cursor", "pointer");
+    autoAcceptDisable.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        orchestrator.resetAutoAcceptAll();
+      }
+    });
+    autoAcceptPanel.add(autoAcceptDisable);
+
+    mainPanel.add(autoAcceptPanel);
 
     // Bottom toolbar: new conversation + close
     HorizontalPanel bottomBar = new HorizontalPanel();
@@ -445,6 +471,11 @@ public class AIChatDialog extends DialogBox
   @Override
   public void setStatusVisible(boolean visible) {
     statusLabel.setVisible(visible);
+  }
+
+  @Override
+  public void setAutoAcceptVisible(boolean visible) {
+    autoAcceptPanel.setVisible(visible);
   }
 
   @Override

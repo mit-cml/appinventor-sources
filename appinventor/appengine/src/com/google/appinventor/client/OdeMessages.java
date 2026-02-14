@@ -5956,6 +5956,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
       + "and no messages have been sent yet")
   String aiChatEditModeWarning();
 
+  @DefaultMessage("Auto-accept all is enabled.")
+  @Description("Notice shown below the input area when auto-accept-all mode is active")
+  String aiChatAutoAcceptEnabled();
+
+  @DefaultMessage("Click here to disable it.")
+  @Description("Clickable text to disable auto-accept mode")
+  String aiChatAutoAcceptDisable();
+
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")
   String aiModeSelectAndOpen();

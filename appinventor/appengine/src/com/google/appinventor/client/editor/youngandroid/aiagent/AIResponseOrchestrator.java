@@ -59,6 +59,7 @@ public class AIResponseOrchestrator {
     void setRequestInFlight(boolean inFlight);
     void setStatusText(String text);
     void setStatusVisible(boolean visible);
+    void setAutoAcceptVisible(boolean visible);
     void clearChatHistory();
   }
 
@@ -72,6 +73,11 @@ public class AIResponseOrchestrator {
   private boolean requestInFlight;
   private int validationRetryCount;
   private boolean autoAcceptAll;
+
+  private void setAutoAcceptAll(boolean value) {
+    autoAcceptAll = value;
+    callback.setAutoAcceptVisible(value);
+  }
 
   /**
    * Constructs an orchestrator with the given context collector and callback.
@@ -124,7 +130,7 @@ public class AIResponseOrchestrator {
    * batches without requiring user confirmation for each one.
    */
   public void applyAndAcceptAll() {
-    autoAcceptAll = true;
+    setAutoAcceptAll(true);
     applyOperations();
   }
 
@@ -163,7 +169,7 @@ public class AIResponseOrchestrator {
                 startPollingStatus();
                 fetchContinuation();
               } else {
-                autoAcceptAll = false;
+                setAutoAcceptAll(false);
                 requestInFlight = false;
                 callback.setRequestInFlight(false);
               }
@@ -184,7 +190,7 @@ public class AIResponseOrchestrator {
       return;
     }
 
-    autoAcceptAll = false;
+    setAutoAcceptAll(false);
     pendingResponse = null;
     callback.addAiMessage(MESSAGES.aiChatOperationsRejected());
     callback.hideOperationPreview();
@@ -274,7 +280,7 @@ public class AIResponseOrchestrator {
    * Cancels any in-flight request, stops polling, and resets state.
    */
   public void cancelInFlight() {
-    autoAcceptAll = false;
+    setAutoAcceptAll(false);
     requestInFlight = false;
     pendingResponse = null;
     callback.setRequestInFlight(false);
@@ -287,7 +293,7 @@ public class AIResponseOrchestrator {
    * Called when the dialog is closed or the active project changes.
    */
   public void resetAutoAcceptAll() {
-    autoAcceptAll = false;
+    setAutoAcceptAll(false);
   }
 
   /**
