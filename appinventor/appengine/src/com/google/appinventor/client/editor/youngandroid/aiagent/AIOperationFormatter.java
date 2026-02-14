@@ -100,6 +100,18 @@ public final class AIOperationFormatter {
         return component + "." + event + " (event)";
       }
     }
+    if (yail.startsWith("(define-generic-event ")) {
+      // Pattern: (define-generic-event ComponentType EventName (...) ...)
+      String rest = yail.substring("(define-generic-event ".length()).trim();
+      int space1 = rest.indexOf(' ');
+      if (space1 > 0) {
+        String componentType = rest.substring(0, space1);
+        String afterType = rest.substring(space1 + 1).trim();
+        int end = endOfToken(afterType);
+        String event = end > 0 ? afterType.substring(0, end) : afterType;
+        return "any " + componentType + "." + event + " (generic event)";
+      }
+    }
     if (yail.startsWith("(def g$")) {
       // Pattern: (def g$varName ...)
       String rest = yail.substring("(def g$".length());
@@ -111,6 +123,14 @@ public final class AIOperationFormatter {
     if (yail.startsWith("(def (p$")) {
       // Pattern: (def (p$procedureName ...) ...)
       String rest = yail.substring("(def (p$".length());
+      int end = endOfToken(rest);
+      if (end > 0) {
+        return rest.substring(0, end) + " (procedure)";
+      }
+    }
+    if (yail.startsWith("(def-return (p$")) {
+      // Pattern: (def-return (p$procedureName ...) ...)
+      String rest = yail.substring("(def-return (p$".length());
       int end = endOfToken(rest);
       if (end > 0) {
         return rest.substring(0, end) + " (procedure)";
