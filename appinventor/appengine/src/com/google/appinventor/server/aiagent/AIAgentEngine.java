@@ -313,13 +313,28 @@ public class AIAgentEngine {
    * @return the AI agent response
    */
   public AIAgentResponse reportExecutionErrors(String userId, long projectId, String screenName,
-      List<AIOperationResult> results, String blocksYail, String currentView, String mode,
-      String screenComponentsJson, String projectSnapshot, String blockWarnings) {
+      List<AIOperationResult> results, int retryAttempt, int totalTools, String blocksYail,
+      String currentView, String mode, String screenComponentsJson, String projectSnapshot,
+      String blockWarnings) {
     AIDebug.log(LOG, "reportExecutionErrors: userId=" + userId
-        + ", projectId=" + projectId + ", results=" + results.size());
+        + ", projectId=" + projectId + ", results=" + results.size()
+        + ", retryAttempt=" + retryAttempt + ", totalTools=" + totalTools);
 
     try {
-      conversationManager.updateStatus(projectId, "Retrying with error feedback...");
+      // Count per-status totals for the status message.
+      // Use totalTools from the client when available — on subsequent retries
+      // the results list shrinks (only failed/skipped ops are re-emitted).
+      int failedCount = 0;
+      for (AIOperationResult r : results) {
+        if (r.getStatus() == AIOperationResult.Status.FAILED) {
+          failedCount++;
+        }
+      }
+      int totalCount = totalTools > 0 ? totalTools : results.size();
+
+      String retryInfo = failedCount + " out of " + totalCount + " tools failed"
+          + (retryAttempt > 0 ? ", retry attempt " + retryAttempt : "");
+      conversationManager.updateStatus(projectId, "Analyzing errors (" + retryInfo + ")...");
 
       // Load conversation state
       AIConversationState conv = conversationManager.getConversation(projectId);
@@ -374,7 +389,7 @@ public class AIAgentEngine {
       conversationManager.storeMessage(conv.getConversationId(),
           MessageRole.USER, "[Execution error feedback] " + feedback, false);
 
-      conversationManager.updateStatus(projectId, "Calling AI...");
+      conversationManager.updateStatus(projectId, "Calling AI (" + retryInfo + ")...");
 
       // Retry LLM with the error feedback
       LLMResponse llmResponse = provider.chat(

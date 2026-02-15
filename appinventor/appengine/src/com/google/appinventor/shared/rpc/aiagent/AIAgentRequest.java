@@ -23,6 +23,8 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private String screenComponentsJson;
   private String projectSnapshot;
   private String blockWarnings;
+  private int retryAttempt;
+  private int totalTools;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -180,5 +182,31 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setBlockWarnings(String blockWarnings) {
     this.blockWarnings = blockWarnings;
+  }
+
+  /**
+   * Returns the retry attempt number (1-based) for error retry requests.
+   * Returns 0 for non-retry requests.
+   */
+  public int getRetryAttempt() {
+    return retryAttempt;
+  }
+
+  public void setRetryAttempt(int retryAttempt) {
+    this.retryAttempt = retryAttempt;
+  }
+
+  /**
+   * Returns the original total number of tools in the batch before retries.
+   * On subsequent retries the results list shrinks (only failed/skipped ops
+   * are re-emitted), so this preserves the original denominator for status
+   * messages like "3 out of 5 tools failed". Returns 0 when not set.
+   */
+  public int getTotalTools() {
+    return totalTools;
+  }
+
+  public void setTotalTools(int totalTools) {
+    this.totalTools = totalTools;
   }
 }

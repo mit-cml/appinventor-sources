@@ -106,7 +106,8 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     }
 
     return engine.reportExecutionErrors(ctx.userId, projectId, request.getScreenName(),
-        results, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
+        results, request.getRetryAttempt(), request.getTotalTools(),
+        request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
         request.getBlockWarnings());
   }

@@ -51,6 +51,9 @@ public class AIResponseOrchestrator {
   /** Maximum number of client-side validation retries before showing the error. */
   private static final int MAX_VALIDATION_RETRIES = 5;
 
+  /** Maximum number of execution error retries before giving up. */
+  private static final int MAX_EXECUTION_RETRIES = 3;
+
   /**
    * Callback interface for UI updates from the orchestrator.
    */
@@ -75,7 +78,11 @@ public class AIResponseOrchestrator {
   private Timer pollingTimer;
   private boolean requestInFlight;
   private int validationRetryCount;
+  private int executionRetryCount;
   private boolean autoAcceptAll;
+
+  /** Original total number of tools in the batch, preserved across retries. */
+  private int originalToolCount;
 
   /** Operations that passed validation and are held across retries. */
   private List<AIOperation> preservedValidOps;
@@ -113,6 +120,8 @@ public class AIResponseOrchestrator {
     requestInFlight = true;
     callback.setRequestInFlight(true);
     validationRetryCount = 0;
+    executionRetryCount = 0;
+    originalToolCount = 0;
     preservedValidOps = null;
     preservedAiMessage = null;
     startPollingStatus();
@@ -216,6 +225,8 @@ public class AIResponseOrchestrator {
     requestInFlight = true;
     callback.setRequestInFlight(true);
     validationRetryCount = 0;
+    executionRetryCount = 0;
+    originalToolCount = 0;
     preservedValidOps = null;
     preservedAiMessage = null;
     startPollingStatus();
@@ -297,6 +308,8 @@ public class AIResponseOrchestrator {
     pendingResponse = null;
     preservedValidOps = null;
     preservedAiMessage = null;
+    executionRetryCount = 0;
+    originalToolCount = 0;
     callback.setRequestInFlight(false);
     stopPollingStatus();
     callback.hideOperationPreview();
@@ -359,6 +372,7 @@ public class AIResponseOrchestrator {
           if (preservedValidOps == null) {
             preservedValidOps = new ArrayList<>(validOps);
             preservedAiMessage = response.getAiMessage();
+            originalToolCount = operations.size();
           } else {
             preservedValidOps.addAll(validOps);
           }
@@ -550,23 +564,7 @@ public class AIResponseOrchestrator {
     }
 
     // Keep polling — "Calling AI" stays visible
-    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), results,
-        new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
-          @Override
-          public void onSuccess(AIAgentResponse response) {
-            // Validate the retry response too
-            handleResponseWithValidation(response);
-          }
-
-          @Override
-          public void onFailure(Throwable caught) {
-            super.onFailure(caught);
-            requestInFlight = false;
-            callback.setRequestInFlight(false);
-            stopPollingStatus();
-            callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
-          }
-        });
+    sendRetryRequest(results, validationRetryCount, originalToolCount);
   }
 
   // ---- Continuation ----
@@ -585,6 +583,8 @@ public class AIResponseOrchestrator {
     }
 
     validationRetryCount = 0;
+    executionRetryCount = 0;
+    originalToolCount = 0;
     preservedValidOps = null;
     preservedAiMessage = null;
 
@@ -619,6 +619,16 @@ public class AIResponseOrchestrator {
       return;
     }
 
+    if (executionRetryCount >= MAX_EXECUTION_RETRIES) {
+      LOG.warning("Execution retries exhausted (" + MAX_EXECUTION_RETRIES
+          + "). Stopping retry loop.");
+      requestInFlight = false;
+      callback.setRequestInFlight(false);
+      callback.addAiMessage(MESSAGES.aiChatSendError()
+          + ": execution failed after " + MAX_EXECUTION_RETRIES + " retries.");
+      return;
+    }
+
     // Build structured per-operation results using typed DTOs.
     List<AIOperationResult> results = new ArrayList<>();
     for (AIOperation op : result.getSucceeded()) {
@@ -638,7 +648,23 @@ public class AIResponseOrchestrator {
 
     startPollingStatus();
     validationRetryCount = 0;
-    aiAgentService.reportExecutionErrors(contextCollector.buildRequest(null), results,
+    if (executionRetryCount == 0) {
+      originalToolCount = results.size();
+    }
+    executionRetryCount++;
+    sendRetryRequest(results, executionRetryCount, originalToolCount);
+  }
+
+  /**
+   * Sends the retry RPC to the server with the given operation results
+   * and retry attempt number. Shared by validation and execution retries.
+   */
+  private void sendRetryRequest(List<AIOperationResult> results, int retryAttempt,
+      int totalTools) {
+    AIAgentRequest retryRequest = contextCollector.buildRequest(null);
+    retryRequest.setRetryAttempt(retryAttempt);
+    retryRequest.setTotalTools(totalTools);
+    aiAgentService.reportExecutionErrors(retryRequest, results,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
