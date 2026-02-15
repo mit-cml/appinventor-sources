@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" width="240" height="190">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" width="240" height="160">
   <defs>
     <style>
       .asm-b1 { animation: asmDrop1 5s ease-out infinite; }
@@ -33,51 +33,62 @@
         66%, 75% { transform: translateX(0); opacity: 1; }
         90%, 100% { transform: translateX(80px); opacity: 0; }
       }
-      .block-text { font-family: sans-serif; font-size: 10px; font-weight: bold; fill: #fff; }
+      .bt { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
     </style>
   </defs>
 
-  <!-- Block 1: Event hat block (gold) -->
-  <!-- Hat body: ~0..43, tab: 43..48 -->
-  <g transform="translate(30, 20)">
+  <!-- Event block with C-shape statement input (gold) -->
+  <!-- W=165, header=28, inner pocket=28, bottom=8. Total=72 -->
+  <!-- Inner notch at H50, inner left at x=20, concave arcs 0,0 -->
+  <g transform="translate(20, 10)">
     <g class="asm-b1">
-      <path d="M 0,15 C 5,0 25,-2 50,0 C 75,-2 95,0 100,0 L 165,0 A 5,5 0 0,1 170,5 L 170,38 A 5,5 0 0,1 165,43 L 32,43 L 32,48 L 20,48 L 20,43 L 5,43 A 5,5 0 0,1 0,38 Z"
-        fill="#B18E35" stroke="#8a6c28" stroke-width="1.2"/>
-      <text class="block-text" x="12" y="28">when Screen1 .Initialize</text>
+      <path transform="translate(1,1)" fill="#8e722a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 157 V 28 H 50 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 14 a 8 8 0 0,0 8,8 H 165 V 72 h -157 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#b18e35" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 157 V 28 H 50 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 14 a 8 8 0 0,0 8,8 H 165 V 72 h -157 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#c8b072" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 165 M 28,58 a 8.5 8.5 0 0,0 6,2.5 H 165 M 0.5,64 V 8"/>
+      <text class="bt" x="14" y="18">when Screen1 .Initialize</text>
+      <text class="bt" x="14" y="42" font-size="10" opacity="0.8">do</text>
     </g>
   </g>
 
-  <!-- Block 2: Setter (dark green) - notch top, tab bottom -->
-  <!-- body: 0..38, tab: 38..43, notch: 0..5 -->
-  <!-- y=20+43=63 so notch aligns with hat block tab -->
-  <g transform="translate(30, 63)">
+  <!-- Child block: Setter (dark green) inside event block. x=20, y=10+28=38 -->
+  <g transform="translate(40, 38)">
     <g class="asm-b2">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 165,0 A 5,5 0 0,1 170,5 L 170,33 A 5,5 0 0,1 165,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
-        fill="#266643" stroke="#1a4d31" stroke-width="1.2"/>
-      <text class="block-text" x="12" y="22">set Label1 .Text to</text>
-      <!-- Puzzle socket on right for value input -->
-      <path d="M 145,10 L 151,10 L 151,14 C 155,14 155,22 151,22 L 151,26 L 145,26 Z"
-        fill="#1f5536" stroke="#1a4d31" stroke-width="0.8"/>
+      <path transform="translate(1,1)" fill="#1e5236"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 118 V 28 h -118 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#266643" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 118 V 28 h -118 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#6d9980" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 145 M 0.5,20 V 8"/>
+      <text class="bt" x="38" y="18">set Label1 .Text  to</text>
     </g>
   </g>
 
-  <!-- Block 3: Method (purple) - notch top, no tab bottom -->
-  <!-- y=63+38=101 -->
-  <g transform="translate(30, 101)">
+  <!-- Child block: Method (purple) inside, below setter. y=38+28=66 -->
+  <g transform="translate(40, 66)">
     <g class="asm-b3">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 165,0 A 5,5 0 0,1 170,5 L 170,33 A 5,5 0 0,1 165,38 L 5,38 A 5,5 0 0,1 0,33 Z"
-        fill="#7C5385" stroke="#5f3f67" stroke-width="1.2"/>
-      <text class="block-text" x="12" y="22">call Notifier1 .ShowAlert</text>
+      <path transform="translate(1,1)" fill="#63426a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 118 V 28 h -140 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#7c5385" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 118 V 28 h -140 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#a387aa" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 145 M 0.5,20 V 8"/>
+      <text class="bt" x="38" y="18">call Notifier1 .Show</text>
     </g>
   </g>
 
-  <!-- Value block: Text (pink) - slides in from right to connect to Block 2 -->
-  <!-- Vertically centered on Block 2's socket -->
-  <g transform="translate(175, 73)">
+  <!-- Value block (pink) — slides in from right -->
+  <g transform="translate(175, 48)">
     <g class="asm-val">
-      <path d="M 6,0 L 0,0 L 0,4 C -4,4 -4,12 0,12 L 0,16 L 6,16 L 56,16 A 4,4 0 0,0 60,12 L 60,4 A 4,4 0 0,0 56,0 Z"
-        fill="#B32D5E" stroke="#8c2249" stroke-width="1"/>
-      <text class="block-text" x="16" y="12" font-size="9">"Hello!"</text>
+      <path transform="translate(1,1)" fill="#8f244b"
+        d="m 0,4 a 4 4 0 0,1 4,-4 h 48 a 4 4 0 0,1 4,4 V 16 a 4 4 0 0,1 -4,4 H 4 a 4 4 0 0,1 -4,-4 V 12.5 c 0,-10 -8,-8 -8,-7.5 s 8,-2.5 8,7.5 z"/>
+      <path fill="#B32D5E" stroke="none"
+        d="m 0,4 a 4 4 0 0,1 4,-4 h 48 a 4 4 0 0,1 4,4 V 16 a 4 4 0 0,1 -4,4 H 4 a 4 4 0 0,1 -4,-4 V 12.5 c 0,-10 -8,-8 -8,-7.5 s 8,-2.5 8,7.5 z"/>
+      <path fill="none" stroke="#cc7195" stroke-width="1"
+        d="m 0.5,4 a 3.5 3.5 0 0,1 3.5,-3.5 H 52"/>
+      <text class="bt" x="10" y="14" font-size="10">"Hello!"</text>
     </g>
   </g>
 </svg>

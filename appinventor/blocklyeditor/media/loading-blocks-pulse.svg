@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" width="220" height="180">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 150" width="210" height="150">
   <defs>
     <style>
       .pulse-b1 { animation: pulseGlow 2.4s ease-in-out infinite; }
@@ -9,58 +9,71 @@
         0%, 100% { opacity: 0.55; filter: brightness(0.85); }
         50%      { opacity: 1;    filter: brightness(1.15); }
       }
-      .pulse-shimmer {
-        animation: shimmer 2.4s linear infinite;
-      }
+      .pulse-shimmer { animation: shimmer 2.4s linear infinite; }
       @keyframes shimmer {
         0%   { transform: translateX(-180px); }
         100% { transform: translateX(180px); }
       }
-      .block-text { font-family: sans-serif; font-size: 10px; font-weight: bold; fill: #fff; }
+      .bt { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
     </style>
+    <linearGradient id="shimmerGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
     <clipPath id="stack-clip">
-      <rect x="25" y="10" width="170" height="165"/>
+      <rect x="20" y="5" width="165" height="140"/>
     </clipPath>
   </defs>
 
-  <!-- Block 1: Event (gold) -->
-  <g class="pulse-b1" transform="translate(30, 14)">
-    <path d="M 0,5 A 5,5 0 0,1 5,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-      fill="#B18E35" stroke="#8a6c28" stroke-width="1"/>
-    <text class="block-text" x="12" y="22">when .Initialize</text>
+  <!-- W=155 H=28 R=8. Spacing=28. -->
+
+  <!-- Block 1: Event (gold) — no notch, tab. y=10 -->
+  <g class="pulse-b1" transform="translate(25, 10)">
+    <path transform="translate(1,1)" fill="#8e722a"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="#b18e35" stroke="none"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="none" stroke="#c8b072" stroke-width="1"
+      d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 155 M 0.5,20 V 8"/>
+    <text class="bt" x="14" y="18">when .Initialize</text>
   </g>
 
-  <!-- Block 2: Setter (dark green) -->
-  <!-- y=14+36=50 -->
-  <g class="pulse-b2" transform="translate(30, 50)">
-    <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-      fill="#266643" stroke="#1a4d31" stroke-width="1"/>
-    <text class="block-text" x="42" y="22">set Label .Text to</text>
+  <!-- Block 2: Setter (dark green) — y=10+28=38 -->
+  <g class="pulse-b2" transform="translate(25, 38)">
+    <path transform="translate(1,1)" fill="#1e5236"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="#266643" stroke="none"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="none" stroke="#6d9980" stroke-width="1"
+      d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,20 V 8"/>
+    <text class="bt" x="38" y="18">set Label1 .Text  to</text>
   </g>
 
-  <!-- Block 3: Logic (green) -->
-  <!-- y=50+36=86 -->
-  <g class="pulse-b3" transform="translate(30, 86)">
-    <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-      fill="#77AB41" stroke="#5d8532" stroke-width="1"/>
-    <text class="block-text" x="42" y="22">if  done  then</text>
+  <!-- Block 3: Logic (green) — y=38+28=66 -->
+  <g class="pulse-b3" transform="translate(25, 66)">
+    <path transform="translate(1,1)" fill="#5f8934"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="#77AB41" stroke="none"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="none" stroke="#a3c47e" stroke-width="1"
+      d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,20 V 8"/>
+    <text class="bt" x="38" y="18">if  done  then</text>
   </g>
 
-  <!-- Block 4: Procedure (purple) - bottom -->
-  <!-- y=86+36=122 -->
-  <g class="pulse-b4" transform="translate(30, 122)">
-    <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-      fill="#7C5385" stroke="#5f3f67" stroke-width="1"/>
-    <text class="block-text" x="42" y="22">call  showResult</text>
+  <!-- Block 4: Procedure (purple) — notch, no tab. y=66+28=94 -->
+  <g class="pulse-b4" transform="translate(25, 94)">
+    <path transform="translate(1,1)" fill="#63426a"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -147 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="#7c5385" stroke="none"
+      d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -147 a 8 8 0 0,1 -8,-8 z"/>
+    <path fill="none" stroke="#a387aa" stroke-width="1"
+      d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
+    <text class="bt" x="38" y="18">call  showResult</text>
   </g>
 
-  <!-- Shimmer overlay -->
+  <!-- Shimmer sweep -->
   <g clip-path="url(#stack-clip)">
-    <rect class="pulse-shimmer" x="25" y="10" width="60" height="165" fill="url(#shimmerGrad)" opacity="0.3"/>
+    <rect class="pulse-shimmer" x="20" y="5" width="60" height="140" fill="url(#shimmerGrad)" opacity="0.3"/>
   </g>
-  <linearGradient id="shimmerGrad" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-    <stop offset="0.5" stop-color="#fff" stop-opacity="0.6"/>
-    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-  </linearGradient>
 </svg>

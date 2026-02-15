@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 210" width="220" height="210">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 170" width="210" height="170">
   <defs>
     <style>
       .cas-b1 { animation: casFall1 3.5s ease-in infinite; }
@@ -41,57 +41,74 @@
         50%, 72% { transform: translateY(0) rotate(0deg); opacity: 1; }
         85%, 100% { transform: translateY(180px); opacity: 0; }
       }
-      .block-text { font-family: sans-serif; font-size: 10px; font-weight: bold; fill: #fff; }
+      .bt { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
     </style>
   </defs>
 
-  <!-- Block 1: Event (gold) - no notch top, tab bottom -->
-  <!-- body: 0..36, tab: 36..41 -->
-  <g transform="translate(30, 8)">
+  <!-- W=155 H=26 R=8. Spacing=26. -->
+
+  <!-- Block 1: Event (gold) — no notch, tab. y=8 -->
+  <g transform="translate(25, 8)">
     <g class="cas-b1">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-        fill="#B18E35" stroke="#8a6c28" stroke-width="1"/>
-      <text class="block-text" x="12" y="22">when .Initialize</text>
+      <path transform="translate(1,1)" fill="#8e722a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#b18e35" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#c8b072" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 155 M 0.5,18 V 8"/>
+      <text class="bt" x="14" y="17">when .Initialize</text>
     </g>
   </g>
 
-  <!-- Block 2: Logic (green) - notch top, tab bottom -->
-  <!-- y=8+36=44 -->
-  <g transform="translate(30, 44)">
+  <!-- Block 2: Logic (green) — y=8+26=34 -->
+  <g transform="translate(25, 34)">
     <g class="cas-b2">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-        fill="#77AB41" stroke="#5d8532" stroke-width="1"/>
-      <text class="block-text" x="42" y="22">if  result  then</text>
+      <path transform="translate(1,1)" fill="#5f8934"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#77AB41" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#a3c47e" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
+      <text class="bt" x="38" y="17">if  result  then</text>
     </g>
   </g>
 
-  <!-- Block 3: Variable (orange) -->
-  <!-- y=44+36=80 -->
-  <g transform="translate(30, 80)">
+  <!-- Block 3: Variable (orange) — y=34+26=60 -->
+  <g transform="translate(25, 60)">
     <g class="cas-b3">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-        fill="#D05F2D" stroke="#a44a23" stroke-width="1"/>
-      <text class="block-text" x="42" y="22">set  count  to</text>
+      <path transform="translate(1,1)" fill="#a64c24"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#D05F2D" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#de9673" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
+      <text class="bt" x="38" y="17">set  count  to</text>
     </g>
   </g>
 
-  <!-- Block 4: Math (blue) -->
-  <!-- y=80+36=116 -->
-  <g transform="translate(30, 116)">
+  <!-- Block 4: Math (blue) — y=60+26=86 -->
+  <g transform="translate(25, 86)">
     <g class="cas-b4">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-        fill="#3F71B5" stroke="#30578c" stroke-width="1"/>
-      <text class="block-text" x="42" y="22">set  x  +  1</text>
+      <path transform="translate(1,1)" fill="#325a91"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#3F71B5" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#7fa1cc" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
+      <text class="bt" x="38" y="17">  x  +  1</text>
     </g>
   </g>
 
-  <!-- Block 5: Procedure (purple) - notch top, no tab bottom -->
-  <!-- y=116+36=152 -->
-  <g transform="translate(30, 152)">
+  <!-- Block 5: Procedure (purple) — notch, no tab. y=86+26=112 -->
+  <g transform="translate(25, 112)">
     <g class="cas-b5">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 5,36 A 5,5 0 0,1 0,31 Z"
-        fill="#7C5385" stroke="#5f3f67" stroke-width="1"/>
-      <text class="block-text" x="42" y="22">call  doSomething</text>
+      <path transform="translate(1,1)" fill="#63426a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -147 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#7c5385" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -147 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#a387aa" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
+      <text class="bt" x="38" y="17">call  doSomething</text>
     </g>
   </g>
 </svg>

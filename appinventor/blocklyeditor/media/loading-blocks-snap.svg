@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 190" width="220" height="190">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 155" width="210" height="155">
   <defs>
     <style>
       .snap-b1 { animation: snapIn1 4.5s cubic-bezier(.4,0,.2,1) infinite; }
@@ -37,56 +37,62 @@
         78%  { opacity: 1; }
         88%, 100% { transform: translate(-200px, 30px); opacity: 0; }
       }
-      .block-text { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
+      .bt { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
     </style>
   </defs>
 
-  <!-- Block 1: Event block (gold) - no notch top, tab bottom -->
-  <!-- body: 0..38, tab: 38..43 -->
-  <g transform="translate(30, 20)">
+  <!-- W=155 H=28 R=8. Spacing=28. Left corners only rounded, right square. -->
+  <!-- 3-path system: dark(translate 1,1) → main(fill) → light(stroke) -->
+
+  <!-- Block 1: Event (gold) — no notch top, tab bottom -->
+  <g transform="translate(25, 12)">
     <g class="snap-b1">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
-        fill="#B18E35" stroke="#8a6c28" stroke-width="1.2"/>
-      <rect x="7" y="8" width="90" height="14" rx="3" fill="#9a7a2d" opacity="0.5"/>
-      <text class="block-text" x="52" y="19">when .Initialize</text>
-      <rect x="103" y="8" width="48" height="14" rx="3" fill="#9a7a2d" opacity="0.5"/>
+      <path transform="translate(1,1)" fill="#8e722a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#b18e35" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#c8b072" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 155 M 0.5,20 V 8"/>
+      <text class="bt" x="14" y="18">when  .Initialize</text>
     </g>
   </g>
 
-  <!-- Block 2: Control/Logic (green) - notch top, tab bottom -->
-  <!-- Positioned at y=20+38=58 so notch (0..5) aligns with Block 1 tab (38..43) -->
-  <g transform="translate(30, 58)">
+  <!-- Block 2: Logic (green) — notch top, tab bottom. y=12+28=40 -->
+  <g transform="translate(25, 40)">
     <g class="snap-b2">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
-        fill="#77AB41" stroke="#5d8532" stroke-width="1.2"/>
-      <rect x="7" y="8" width="50" height="14" rx="3" fill="#639133" opacity="0.5"/>
-      <text class="block-text" x="32" y="19">if</text>
-      <rect x="62" y="8" width="38" height="14" rx="3" fill="#639133" opacity="0.5"/>
-      <text class="block-text" x="81" y="19">then</text>
+      <path transform="translate(1,1)" fill="#5f8934"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#77AB41" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#a3c47e" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,20 V 8"/>
+      <text class="bt" x="38" y="18">if         then</text>
     </g>
   </g>
 
-  <!-- Block 3: Setter (dark green) - notch top, tab bottom -->
-  <!-- y=58+38=96 -->
-  <g transform="translate(30, 96)">
+  <!-- Block 3: Setter (dark green) — notch, tab. y=40+28=68 -->
+  <g transform="translate(25, 68)">
     <g class="snap-b3">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
-        fill="#266643" stroke="#1a4d31" stroke-width="1.2"/>
-      <rect x="7" y="8" width="94" height="14" rx="3" fill="#1f5536" opacity="0.5"/>
-      <text class="block-text" x="54" y="19">set Label.Text</text>
-      <rect x="107" y="8" width="20" height="14" rx="3" fill="#1f5536" opacity="0.5"/>
-      <text class="block-text" x="117" y="19">to</text>
+      <path transform="translate(1,1)" fill="#1e5236"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#266643" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#6d9980" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,20 V 8"/>
+      <text class="bt" x="38" y="18">set Label1 .Text  to</text>
     </g>
   </g>
 
-  <!-- Block 4: Procedure (purple) - notch top, no tab bottom -->
-  <!-- y=96+38=134 -->
-  <g transform="translate(30, 134)">
+  <!-- Block 4: Procedure (purple) — notch, NO tab. y=68+28=96 -->
+  <g transform="translate(25, 96)">
     <g class="snap-b4">
-      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 5,38 A 5,5 0 0,1 0,33 Z"
-        fill="#7C5385" stroke="#5f3f67" stroke-width="1.2"/>
-      <rect x="7" y="8" width="106" height="14" rx="3" fill="#654470" opacity="0.5"/>
-      <text class="block-text" x="60" y="19">call Notifier.Show</text>
+      <path transform="translate(1,1)" fill="#63426a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -147 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#7c5385" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -147 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#a387aa" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,20 V 8"/>
+      <text class="bt" x="38" y="18">call Notifier1 .Show</text>
     </g>
   </g>
 </svg>
