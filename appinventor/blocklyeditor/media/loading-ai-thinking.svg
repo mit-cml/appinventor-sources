@@ -39,49 +39,72 @@
     <circle cx="210.5" cy="24.5" r="5" fill="none" stroke="#aaa" stroke-width="1.5" opacity="0.5"/>
   </g>
 
-  <!-- Block stack — event block with C-shape + child block, floats as unit -->
-  <!-- Event: W=155, header=28, inner=28, bottom=8, total=72 -->
-  <g transform="translate(15, 12)">
+  <!-- Block stack — event block with C-shape + call block + setter with string value, floats as unit -->
+  <!-- Event: W=190, header=26, inner=52 (2 blocks of 26), bottom=8, indent=30, total=86 -->
+  <g transform="translate(8, 10)">
     <g class="ai-stack">
-      <!-- Event block (gold) C-shape -->
+      <!-- Event block (gold) C-shape, indent=30 for wider "do" area -->
       <path transform="translate(1,1)" fill="#8e722a"
-        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 H 50 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 14 a 8 8 0 0,0 8,8 H 155 V 72 h -147 a 8 8 0 0,1 -8,-8 z"/>
+        d="m 0,8 a 8 8 0 0,1 8,-8 h 182 V 26 H 60 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 36 a 8 8 0 0,0 8,8 H 190 V 86 h -182 a 8 8 0 0,1 -8,-8 z"/>
       <path fill="#b18e35" stroke="none"
-        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 H 50 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 14 a 8 8 0 0,0 8,8 H 155 V 72 h -147 a 8 8 0 0,1 -8,-8 z"/>
+        d="m 0,8 a 8 8 0 0,1 8,-8 h 182 V 26 H 60 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 36 a 8 8 0 0,0 8,8 H 190 V 86 h -182 a 8 8 0 0,1 -8,-8 z"/>
       <path fill="none" stroke="#c8b072" stroke-width="1"
-        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 155 M 28,58 a 8.5 8.5 0 0,0 6,2.5 H 155 M 0.5,64 V 8"/>
-      <text class="bt" x="14" y="18">when Screen1 .Click</text>
-      <text class="bt" x="14" y="42" font-size="10" opacity="0.8">do</text>
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 190 M 38,78 a 8.5 8.5 0 0,0 6,2.5 H 190 M 0.5,78 V 8"/>
+      <text class="bt" x="10" y="18">when Screen1 .Initialize</text>
+      <text class="bt" x="10" y="44" font-size="10" opacity="0.8">do</text>
 
-      <!-- Child block: Setter (dark green) at inner position -->
-      <g transform="translate(20, 28)">
+      <!-- Child block 1: call Load AI Agent (purple) -->
+      <g transform="translate(30, 26)">
+        <path transform="translate(1,1)" fill="#63426a"
+          d="m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 95 V 26 h -95 l -6,4 -3,0 -6,-4 H 0 z"/>
+        <path fill="#7c5385" stroke="none"
+          d="m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 95 V 26 h -95 l -6,4 -3,0 -6,-4 H 0 z"/>
+        <path fill="none" stroke="#a387aa" stroke-width="1"
+          d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 125 M 0.5,24.5 V 8"/>
+        <text class="bt" x="10" y="17">call Load AI Agent</text>
+      </g>
+
+      <!-- Child block 2: set Label1 .Text to (green, W=120) + string value (pink, W=120) -->
+      <g transform="translate(30, 52)">
+        <!-- Green setter block with value connector -->
         <path transform="translate(1,1)" fill="#1e5236"
-          d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 108 V 26 h -130 a 8 8 0 0,1 -8,-8 z"/>
+          d="m 0,0 h 15 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
         <path fill="#266643" stroke="none"
-          d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 108 V 26 h -130 a 8 8 0 0,1 -8,-8 z"/>
-        <path fill="none" stroke="#6d9980" stroke-width="1"
-          d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 135 M 0.5,18 V 8"/>
-        <text class="bt" x="38" y="17">set Label1 .Text  to</text>
+          d="m 0,0 h 15 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+        <path fill="none" stroke="#67947b" stroke-width="1"
+          d="m 0.5,0.5 H 15 l 6,4 3,0 6,-4 H 120 M 120,5 m -5,14.3 l 3.68,-2.1 M 0.5,18 V 0.5"/>
+        <text class="bt" x="10" y="17">set Label1 .Text  to</text>
+
+        <!-- Pink string value block: "AI is thinking..." -->
+        <g transform="translate(112, 0)">
+          <path transform="translate(1,1)" fill="#8f244b"
+            d="m 8,0 h 112 V 26 h -112 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+          <path fill="#b32d5e" stroke="none"
+            d="m 8,0 h 112 V 26 h -112 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+          <path fill="none" stroke="#ca6c8e" stroke-width="1"
+            d="m 8.5,0.5 H 119 M 8.5,24.5 V 20 v -1.5 m -7.36,-0.5 q -1.52,-5.5 0,-11 m 7.36,1 V 0.5"/>
+          <text class="bt" x="16" y="17">"AI is thinking..."</text>
+        </g>
       </g>
     </g>
   </g>
 
   <!-- Sparkle particles -->
-  <g transform="translate(15, 12)">
-    <circle class="sparkle sp-d1" cx="165" cy="5" r="2.5" fill="#F5A623"/>
-    <circle class="sparkle sp-d2" cx="-8" cy="40" r="2" fill="#77AB41"/>
-    <circle class="sparkle sp-d3" cx="168" cy="50" r="3" fill="#3F71B5"/>
-    <circle class="sparkle sp-d4" cx="-5" cy="75" r="2" fill="#B32D5E"/>
-    <circle class="sparkle sp-d5" cx="162" cy="78" r="2.5" fill="#7C5385"/>
-    <circle class="sparkle sp-d6" cx="80" cy="-8" r="2" fill="#D05F2D"/>
+  <g transform="translate(8, 10)">
+    <circle class="sparkle sp-d1" cx="195" cy="3" r="2.5" fill="#F5A623"/>
+    <circle class="sparkle sp-d2" cx="-10" cy="48" r="2" fill="#77AB41"/>
+    <circle class="sparkle sp-d3" cx="240" cy="58" r="3" fill="#3F71B5"/>
+    <circle class="sparkle sp-d4" cx="-7" cy="88" r="2" fill="#B32D5E"/>
+    <circle class="sparkle sp-d5" cx="232" cy="82" r="2.5" fill="#7C5385"/>
+    <circle class="sparkle sp-d6" cx="95" cy="-10" r="2" fill="#D05F2D"/>
   </g>
-  <g class="sparkle sp-d2" transform="translate(188, 60)">
+  <g class="sparkle sp-d2" transform="translate(218, 46)">
     <path d="M 0,-5 L 1.5,-1.5 L 5,0 L 1.5,1.5 L 0,5 L -1.5,1.5 L -5,0 L -1.5,-1.5 Z" fill="#F5A623" opacity="0.8"/>
   </g>
-  <g class="sparkle sp-d4" transform="translate(5, 45)">
+  <g class="sparkle sp-d4" transform="translate(3, 56)">
     <path d="M 0,-4 L 1.2,-1.2 L 4,0 L 1.2,1.2 L 0,4 L -1.2,1.2 L -4,0 L -1.2,-1.2 Z" fill="#49A6D4" opacity="0.8"/>
   </g>
-  <g class="sparkle sp-d6" transform="translate(165, 25)">
+  <g class="sparkle sp-d6" transform="translate(195, 18)">
     <path d="M 0,-3.5 L 1,-1 L 3.5,0 L 1,1 L 0,3.5 L -1,1 L -3.5,0 L -1,-1 Z" fill="#77AB41" opacity="0.8"/>
   </g>
 
