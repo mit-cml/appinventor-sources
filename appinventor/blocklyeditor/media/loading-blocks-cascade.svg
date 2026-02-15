@@ -56,50 +56,68 @@
         d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
       <path fill="none" stroke="#c8b072" stroke-width="1"
         d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 155 M 0.5,18 V 8"/>
-      <text class="bt" x="14" y="17">when .Initialize</text>
+      <text class="bt" x="14" y="17">when Screen1 .Initialize</text>
     </g>
   </g>
 
-  <!-- Block 2: Logic (green) — y=8+26=34 -->
+  <!-- Block 2: Setter (dark green) with value — y=8+26=34 -->
   <g transform="translate(25, 34)">
     <g class="cas-b2">
-      <path transform="translate(1,1)" fill="#5f8934"
-        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
-      <path fill="#77AB41" stroke="none"
-        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
-      <path fill="none" stroke="#a3c47e" stroke-width="1"
-        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
-      <text class="bt" x="38" y="17">if  result  then</text>
+      <path transform="translate(1,1)" fill="#1e5236"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#266643" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#6d9980" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 120 M 0.5,18 V 8"/>
+      <text class="bt" x="10" y="17">set Label1 .Text  to</text>
+      <g transform="translate(112, 0)">
+        <path transform="translate(1,1)" fill="#8f244b"
+          d="m 8,0 h 42 V 26 h -42 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="#b32d5e" stroke="none"
+          d="m 8,0 h 42 V 26 h -42 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="none" stroke="#ca6c8e" stroke-width="1"
+          d="m 8.5,0.5 H 49"/>
+        <text class="bt" x="14" y="17" font-size="10">"Hello!"</text>
+      </g>
     </g>
   </g>
 
-  <!-- Block 3: Variable (orange) — y=34+26=60 -->
+  <!-- Block 3: Method (purple) — y=34+26=60 -->
   <g transform="translate(25, 60)">
     <g class="cas-b3">
-      <path transform="translate(1,1)" fill="#a64c24"
+      <path transform="translate(1,1)" fill="#63426a"
         d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
-      <path fill="#D05F2D" stroke="none"
+      <path fill="#7c5385" stroke="none"
         d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
-      <path fill="none" stroke="#de9673" stroke-width="1"
+      <path fill="none" stroke="#a387aa" stroke-width="1"
         d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
-      <text class="bt" x="38" y="17">set  count  to</text>
+      <text class="bt" x="38" y="17">call Sound1 .Play</text>
     </g>
   </g>
 
-  <!-- Block 4: Math (blue) — y=60+26=86 -->
+  <!-- Block 4: Setter (dark green) with value — y=60+26=86 -->
   <g transform="translate(25, 86)">
     <g class="cas-b4">
-      <path transform="translate(1,1)" fill="#325a91"
-        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
-      <path fill="#3F71B5" stroke="none"
-        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
-      <path fill="none" stroke="#7fa1cc" stroke-width="1"
-        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
-      <text class="bt" x="38" y="17">  x  +  1</text>
+      <path transform="translate(1,1)" fill="#1e5236"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#266643" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#6d9980" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 120 M 0.5,18 V 8"/>
+      <text class="bt" x="10" y="17">set Button1 .Text  to</text>
+      <g transform="translate(112, 0)">
+        <path transform="translate(1,1)" fill="#8f244b"
+          d="m 8,0 h 32 V 26 h -32 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="#b32d5e" stroke="none"
+          d="m 8,0 h 32 V 26 h -32 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="none" stroke="#ca6c8e" stroke-width="1"
+          d="m 8.5,0.5 H 39"/>
+        <text class="bt" x="14" y="17" font-size="10">"OK"</text>
+      </g>
     </g>
   </g>
 
-  <!-- Block 5: Procedure (purple) — notch, no tab. y=86+26=112 -->
+  <!-- Block 5: Method (purple) — notch, no tab. y=86+26=112 -->
   <g transform="translate(25, 112)">
     <g class="cas-b5">
       <path transform="translate(1,1)" fill="#63426a"
@@ -108,7 +126,7 @@
         d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 26 h -147 a 8 8 0 0,1 -8,-8 z"/>
       <path fill="none" stroke="#a387aa" stroke-width="1"
         d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,18 V 8"/>
-      <text class="bt" x="38" y="17">call  doSomething</text>
+      <text class="bt" x="38" y="17">call Notifier1 .ShowAlert</text>
     </g>
   </g>
 </svg>
