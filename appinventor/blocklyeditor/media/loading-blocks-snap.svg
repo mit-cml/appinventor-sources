@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 190" width="220" height="190">
+  <defs>
+    <style>
+      .snap-b1 { animation: snapIn1 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      .snap-b2 { animation: snapIn2 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      .snap-b3 { animation: snapIn3 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      .snap-b4 { animation: snapIn4 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      @keyframes snapIn1 {
+        0%   { transform: translate(-200px, -30px); opacity: 0; }
+        8%   { opacity: 1; }
+        18%  { transform: translate(3px, 1px); }
+        22%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(200px, -30px); opacity: 0; }
+      }
+      @keyframes snapIn2 {
+        0%, 6% { transform: translate(200px, 10px); opacity: 0; }
+        14%  { opacity: 1; }
+        24%  { transform: translate(-3px, -1px); }
+        28%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(-200px, 10px); opacity: 0; }
+      }
+      @keyframes snapIn3 {
+        0%, 12% { transform: translate(-200px, 20px); opacity: 0; }
+        20%  { opacity: 1; }
+        30%  { transform: translate(3px, -1px); }
+        34%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(200px, 20px); opacity: 0; }
+      }
+      @keyframes snapIn4 {
+        0%, 18% { transform: translate(200px, 30px); opacity: 0; }
+        26%  { opacity: 1; }
+        36%  { transform: translate(-3px, 1px); }
+        40%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(-200px, 30px); opacity: 0; }
+      }
+      .block-text { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
+    </style>
+  </defs>
+
+  <!-- Block 1: Event block (gold) - no notch top, tab bottom -->
+  <!-- body: 0..38, tab: 38..43 -->
+  <g transform="translate(30, 20)">
+    <g class="snap-b1">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
+        fill="#B18E35" stroke="#8a6c28" stroke-width="1.2"/>
+      <rect x="7" y="8" width="90" height="14" rx="3" fill="#9a7a2d" opacity="0.5"/>
+      <text class="block-text" x="52" y="19">when .Initialize</text>
+      <rect x="103" y="8" width="48" height="14" rx="3" fill="#9a7a2d" opacity="0.5"/>
+    </g>
+  </g>
+
+  <!-- Block 2: Control/Logic (green) - notch top, tab bottom -->
+  <!-- Positioned at y=20+38=58 so notch (0..5) aligns with Block 1 tab (38..43) -->
+  <g transform="translate(30, 58)">
+    <g class="snap-b2">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
+        fill="#77AB41" stroke="#5d8532" stroke-width="1.2"/>
+      <rect x="7" y="8" width="50" height="14" rx="3" fill="#639133" opacity="0.5"/>
+      <text class="block-text" x="32" y="19">if</text>
+      <rect x="62" y="8" width="38" height="14" rx="3" fill="#639133" opacity="0.5"/>
+      <text class="block-text" x="81" y="19">then</text>
+    </g>
+  </g>
+
+  <!-- Block 3: Setter (dark green) - notch top, tab bottom -->
+  <!-- y=58+38=96 -->
+  <g transform="translate(30, 96)">
+    <g class="snap-b3">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
+        fill="#266643" stroke="#1a4d31" stroke-width="1.2"/>
+      <rect x="7" y="8" width="94" height="14" rx="3" fill="#1f5536" opacity="0.5"/>
+      <text class="block-text" x="54" y="19">set Label.Text</text>
+      <rect x="107" y="8" width="20" height="14" rx="3" fill="#1f5536" opacity="0.5"/>
+      <text class="block-text" x="117" y="19">to</text>
+    </g>
+  </g>
+
+  <!-- Block 4: Procedure (purple) - notch top, no tab bottom -->
+  <!-- y=96+38=134 -->
+  <g transform="translate(30, 134)">
+    <g class="snap-b4">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,33 A 5,5 0 0,1 155,38 L 5,38 A 5,5 0 0,1 0,33 Z"
+        fill="#7C5385" stroke="#5f3f67" stroke-width="1.2"/>
+      <rect x="7" y="8" width="106" height="14" rx="3" fill="#654470" opacity="0.5"/>
+      <text class="block-text" x="60" y="19">call Notifier.Show</text>
+    </g>
+  </g>
+</svg>

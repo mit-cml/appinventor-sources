@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 210" width="220" height="210">
+  <defs>
+    <style>
+      .cas-b1 { animation: casFall1 3.5s ease-in infinite; }
+      .cas-b2 { animation: casFall2 3.5s ease-in infinite; }
+      .cas-b3 { animation: casFall3 3.5s ease-in infinite; }
+      .cas-b4 { animation: casFall4 3.5s ease-in infinite; }
+      .cas-b5 { animation: casFall5 3.5s ease-in infinite; }
+      @keyframes casFall1 {
+        0%   { transform: translateY(-120px) rotate(-8deg); opacity: 0; }
+        4%   { opacity: 1; }
+        14%  { transform: translateY(4px) rotate(0deg); }
+        18%, 72% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        85%, 100% { transform: translateY(180px); opacity: 0; }
+      }
+      @keyframes casFall2 {
+        0%, 8% { transform: translateY(-120px) rotate(6deg); opacity: 0; }
+        12%  { opacity: 1; }
+        22%  { transform: translateY(4px) rotate(0deg); }
+        26%, 72% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        85%, 100% { transform: translateY(180px); opacity: 0; }
+      }
+      @keyframes casFall3 {
+        0%, 16% { transform: translateY(-120px) rotate(-5deg); opacity: 0; }
+        20%  { opacity: 1; }
+        30%  { transform: translateY(4px) rotate(0deg); }
+        34%, 72% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        85%, 100% { transform: translateY(180px); opacity: 0; }
+      }
+      @keyframes casFall4 {
+        0%, 24% { transform: translateY(-120px) rotate(7deg); opacity: 0; }
+        28%  { opacity: 1; }
+        38%  { transform: translateY(4px) rotate(0deg); }
+        42%, 72% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        85%, 100% { transform: translateY(180px); opacity: 0; }
+      }
+      @keyframes casFall5 {
+        0%, 32% { transform: translateY(-120px) rotate(-4deg); opacity: 0; }
+        36%  { opacity: 1; }
+        46%  { transform: translateY(4px) rotate(0deg); }
+        50%, 72% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        85%, 100% { transform: translateY(180px); opacity: 0; }
+      }
+      .block-text { font-family: sans-serif; font-size: 10px; font-weight: bold; fill: #fff; }
+    </style>
+  </defs>
+
+  <!-- Block 1: Event (gold) - no notch top, tab bottom -->
+  <!-- body: 0..36, tab: 36..41 -->
+  <g transform="translate(30, 8)">
+    <g class="cas-b1">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
+        fill="#B18E35" stroke="#8a6c28" stroke-width="1"/>
+      <text class="block-text" x="12" y="22">when .Initialize</text>
+    </g>
+  </g>
+
+  <!-- Block 2: Logic (green) - notch top, tab bottom -->
+  <!-- y=8+36=44 -->
+  <g transform="translate(30, 44)">
+    <g class="cas-b2">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
+        fill="#77AB41" stroke="#5d8532" stroke-width="1"/>
+      <text class="block-text" x="42" y="22">if  result  then</text>
+    </g>
+  </g>
+
+  <!-- Block 3: Variable (orange) -->
+  <!-- y=44+36=80 -->
+  <g transform="translate(30, 80)">
+    <g class="cas-b3">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
+        fill="#D05F2D" stroke="#a44a23" stroke-width="1"/>
+      <text class="block-text" x="42" y="22">set  count  to</text>
+    </g>
+  </g>
+
+  <!-- Block 4: Math (blue) -->
+  <!-- y=80+36=116 -->
+  <g transform="translate(30, 116)">
+    <g class="cas-b4">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 32,36 L 32,41 L 20,41 L 20,36 L 5,36 A 5,5 0 0,1 0,31 Z"
+        fill="#3F71B5" stroke="#30578c" stroke-width="1"/>
+      <text class="block-text" x="42" y="22">set  x  +  1</text>
+    </g>
+  </g>
+
+  <!-- Block 5: Procedure (purple) - notch top, no tab bottom -->
+  <!-- y=116+36=152 -->
+  <g transform="translate(30, 152)">
+    <g class="cas-b5">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 155,0 A 5,5 0 0,1 160,5 L 160,31 A 5,5 0 0,1 155,36 L 5,36 A 5,5 0 0,1 0,31 Z"
+        fill="#7C5385" stroke="#5f3f67" stroke-width="1"/>
+      <text class="block-text" x="42" y="22">call  doSomething</text>
+    </g>
+  </g>
+</svg>

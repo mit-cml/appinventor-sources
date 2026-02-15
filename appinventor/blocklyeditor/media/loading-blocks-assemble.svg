@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" width="240" height="190">
+  <defs>
+    <style>
+      .asm-b1 { animation: asmDrop1 5s ease-out infinite; }
+      .asm-b2 { animation: asmDrop2 5s ease-out infinite; }
+      .asm-b3 { animation: asmDrop3 5s ease-out infinite; }
+      .asm-val { animation: asmSlide 5s ease-out infinite; }
+      @keyframes asmDrop1 {
+        0%   { transform: translateY(-80px); opacity: 0; }
+        5%   { opacity: 1; }
+        12%  { transform: translateY(3px); }
+        16%, 75% { transform: translateY(0); opacity: 1; }
+        90%, 100% { transform: translateY(-80px); opacity: 0; }
+      }
+      @keyframes asmDrop2 {
+        0%, 16% { transform: translateY(-80px); opacity: 0; }
+        21% { opacity: 1; }
+        30% { transform: translateY(3px); }
+        34%, 75% { transform: translateY(0); opacity: 1; }
+        90%, 100% { transform: translateY(-80px); opacity: 0; }
+      }
+      @keyframes asmDrop3 {
+        0%, 34% { transform: translateY(-80px); opacity: 0; }
+        39% { opacity: 1; }
+        48% { transform: translateY(3px); }
+        52%, 75% { transform: translateY(0); opacity: 1; }
+        90%, 100% { transform: translateY(-80px); opacity: 0; }
+      }
+      @keyframes asmSlide {
+        0%, 48% { transform: translateX(80px); opacity: 0; }
+        53% { opacity: 1; }
+        62% { transform: translateX(-3px); }
+        66%, 75% { transform: translateX(0); opacity: 1; }
+        90%, 100% { transform: translateX(80px); opacity: 0; }
+      }
+      .block-text { font-family: sans-serif; font-size: 10px; font-weight: bold; fill: #fff; }
+    </style>
+  </defs>
+
+  <!-- Block 1: Event hat block (gold) -->
+  <!-- Hat body: ~0..43, tab: 43..48 -->
+  <g transform="translate(30, 20)">
+    <g class="asm-b1">
+      <path d="M 0,15 C 5,0 25,-2 50,0 C 75,-2 95,0 100,0 L 165,0 A 5,5 0 0,1 170,5 L 170,38 A 5,5 0 0,1 165,43 L 32,43 L 32,48 L 20,48 L 20,43 L 5,43 A 5,5 0 0,1 0,38 Z"
+        fill="#B18E35" stroke="#8a6c28" stroke-width="1.2"/>
+      <text class="block-text" x="12" y="28">when Screen1 .Initialize</text>
+    </g>
+  </g>
+
+  <!-- Block 2: Setter (dark green) - notch top, tab bottom -->
+  <!-- body: 0..38, tab: 38..43, notch: 0..5 -->
+  <!-- y=20+43=63 so notch aligns with hat block tab -->
+  <g transform="translate(30, 63)">
+    <g class="asm-b2">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 165,0 A 5,5 0 0,1 170,5 L 170,33 A 5,5 0 0,1 165,38 L 32,38 L 32,43 L 20,43 L 20,38 L 5,38 A 5,5 0 0,1 0,33 Z"
+        fill="#266643" stroke="#1a4d31" stroke-width="1.2"/>
+      <text class="block-text" x="12" y="22">set Label1 .Text to</text>
+      <!-- Puzzle socket on right for value input -->
+      <path d="M 145,10 L 151,10 L 151,14 C 155,14 155,22 151,22 L 151,26 L 145,26 Z"
+        fill="#1f5536" stroke="#1a4d31" stroke-width="0.8"/>
+    </g>
+  </g>
+
+  <!-- Block 3: Method (purple) - notch top, no tab bottom -->
+  <!-- y=63+38=101 -->
+  <g transform="translate(30, 101)">
+    <g class="asm-b3">
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 20,0 L 20,5 L 32,5 L 32,0 L 165,0 A 5,5 0 0,1 170,5 L 170,33 A 5,5 0 0,1 165,38 L 5,38 A 5,5 0 0,1 0,33 Z"
+        fill="#7C5385" stroke="#5f3f67" stroke-width="1.2"/>
+      <text class="block-text" x="12" y="22">call Notifier1 .ShowAlert</text>
+    </g>
+  </g>
+
+  <!-- Value block: Text (pink) - slides in from right to connect to Block 2 -->
+  <!-- Vertically centered on Block 2's socket -->
+  <g transform="translate(175, 73)">
+    <g class="asm-val">
+      <path d="M 6,0 L 0,0 L 0,4 C -4,4 -4,12 0,12 L 0,16 L 6,16 L 56,16 A 4,4 0 0,0 60,12 L 60,4 A 4,4 0 0,0 56,0 Z"
+        fill="#B32D5E" stroke="#8c2249" stroke-width="1"/>
+      <text class="block-text" x="16" y="12" font-size="9">"Hello!"</text>
+    </g>
+  </g>
+</svg>

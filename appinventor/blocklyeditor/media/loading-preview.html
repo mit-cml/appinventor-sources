@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>App Inventor Block Loading Animations - Preview</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f5f5f5; padding: 20px; }
+    h1 { color: #333; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 900px; }
+    .card {
+      background: #fff; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;
+    }
+    .card h3 { margin: 0 0 10px; color: #555; }
+    .card p { color: #888; font-size: 13px; margin: 8px 0 0; }
+    .preview { border: 1px dashed #ddd; border-radius: 8px; padding: 10px; background: #fafafa; }
+    .dark-preview { background: #1e1e1e; border-color: #444; }
+    .full-width { grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+  <h1>App Inventor Block Loading Animations</h1>
+  <p>All animations are pure SVG with CSS animations. No JavaScript required.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>1. Blocks Snapping Together</h3>
+      <div class="preview">
+        <img src="loading-blocks-snap.svg" width="220" height="200"/>
+      </div>
+      <p>Blocks slide in from alternating sides and snap into a connected stack.</p>
+    </div>
+
+    <div class="card">
+      <h3>2. Blocks Assembling (Puzzle)</h3>
+      <div class="preview">
+        <img src="loading-blocks-assemble.svg" width="240" height="200"/>
+      </div>
+      <p>Blocks drop in one by one; a value block slides in to connect from the right.</p>
+    </div>
+
+    <div class="card">
+      <h3>3. Blocks Cascading Down</h3>
+      <div class="preview">
+        <img src="loading-blocks-cascade.svg" width="220" height="210"/>
+      </div>
+      <p>Five blocks fall and cascade into place with slight rotation.</p>
+    </div>
+
+    <div class="card">
+      <h3>4. Pulsing Block Stack</h3>
+      <div class="preview">
+        <img src="loading-blocks-pulse.svg" width="220" height="180"/>
+      </div>
+      <p>Pre-assembled stack pulses with staggered glow and a shimmer sweep.</p>
+    </div>
+
+    <div class="card full-width">
+      <h3>5. AI Is Thinking</h3>
+      <div class="preview">
+        <img src="loading-ai-thinking.svg" width="280" height="200"/>
+      </div>
+      <p>Block stack floats gently with sparkle particles and animated "thinking" dots. Spinning gear icon.</p>
+    </div>
+
+    <div class="card">
+      <h3>Dark Background Test</h3>
+      <div class="preview dark-preview">
+        <img src="loading-ai-thinking.svg" width="280" height="200"/>
+      </div>
+      <p>Same AI thinking animation on dark background.</p>
+    </div>
+
+    <div class="card">
+      <h3>Dark Background - Pulse</h3>
+      <div class="preview dark-preview">
+        <img src="loading-blocks-pulse.svg" width="220" height="180"/>
+      </div>
+      <p>Pulse animation on dark background.</p>
+    </div>
+  </div>
+</body>
+</html>

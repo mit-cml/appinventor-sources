@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 200" width="280" height="200">
+  <defs>
+    <style>
+      /* Blocks float gently - entire stack moves together */
+      .ai-stack { animation: aiFloat 3s ease-in-out infinite; }
+      @keyframes aiFloat {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-5px); }
+      }
+
+      /* Sparkles around the blocks */
+      .sparkle { animation: sparklePop 2s ease-in-out infinite; }
+      .sparkle-d1 { animation-delay: 0s; }
+      .sparkle-d2 { animation-delay: 0.5s; }
+      .sparkle-d3 { animation-delay: 1s; }
+      .sparkle-d4 { animation-delay: 1.5s; }
+      .sparkle-d5 { animation-delay: 0.3s; }
+      .sparkle-d6 { animation-delay: 0.8s; }
+      @keyframes sparklePop {
+        0%, 100% { opacity: 0; transform: scale(0.3); }
+        50%      { opacity: 1; transform: scale(1); }
+      }
+
+      /* Rotating gear */
+      .gear-wrap { transform-origin: 216.5px 22.5px; animation: spin 4s linear infinite; }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+
+      /* Pulsing dots for "thinking" */
+      .dot { animation: dotPulse 1.5s ease-in-out infinite; }
+      .dot-d1 { animation-delay: 0s; }
+      .dot-d2 { animation-delay: 0.3s; }
+      .dot-d3 { animation-delay: 0.6s; }
+      @keyframes dotPulse {
+        0%, 100% { opacity: 0.2; }
+        50%      { opacity: 1; }
+      }
+
+      .block-text { font-family: sans-serif; font-size: 10px; font-weight: bold; fill: #fff; }
+      .label-text { font-family: sans-serif; font-size: 13px; fill: #666; font-weight: 600; }
+    </style>
+  </defs>
+
+  <!-- Small gear icon (top-right area) -->
+  <g class="gear-wrap">
+    <path d="M 215,38 L 218,38 L 219,34 L 222,33 L 225,36 L 228,34 L 227,30 L 229,28 L 233,29 L 234,26 L 230,24 L 230,21 L 234,19 L 233,16 L 229,17 L 227,15 L 228,11 L 225,9 L 222,12 L 219,11 L 218,7 L 215,7 L 214,11 L 211,12 L 208,9 L 205,11 L 206,15 L 204,17 L 200,16 L 199,19 L 203,21 L 203,24 L 199,26 L 200,29 L 204,28 L 206,30 L 205,34 L 208,36 L 211,33 L 214,34 Z"
+      fill="none" stroke="#aaa" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="216.5" cy="22.5" r="5" fill="none" stroke="#aaa" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Block stack - all blocks float together as one unit -->
+  <g transform="translate(20, 20)">
+    <g class="ai-stack">
+      <!-- Block 1: Event (gold) - no notch top, tab bottom -->
+      <!-- body: 0..34, tab: 34..39 -->
+      <path d="M 0,5 A 5,5 0 0,1 5,0 L 145,0 A 5,5 0 0,1 150,5 L 150,29 A 5,5 0 0,1 145,34 L 30,34 L 30,39 L 18,39 L 18,34 L 5,34 A 5,5 0 0,1 0,29 Z"
+        fill="#B18E35" stroke="#8a6c28" stroke-width="1"/>
+      <text class="block-text" x="10" y="21">when .Initialize</text>
+
+      <!-- Block 2: Setter (dark green) - notch top, tab bottom -->
+      <!-- y=34, notch: 34..39 aligns with Block 1 tab -->
+      <g transform="translate(0, 34)">
+        <path d="M 0,5 A 5,5 0 0,1 5,0 L 18,0 L 18,5 L 30,5 L 30,0 L 145,0 A 5,5 0 0,1 150,5 L 150,29 A 5,5 0 0,1 145,34 L 30,34 L 30,39 L 18,39 L 18,34 L 5,34 A 5,5 0 0,1 0,29 Z"
+          fill="#266643" stroke="#1a4d31" stroke-width="1"/>
+        <text class="block-text" x="38" y="21">set Label .Text to</text>
+      </g>
+
+      <!-- Block 3: Method (purple) - notch top, no tab bottom -->
+      <!-- y=34+34=68 -->
+      <g transform="translate(0, 68)">
+        <path d="M 0,5 A 5,5 0 0,1 5,0 L 18,0 L 18,5 L 30,5 L 30,0 L 145,0 A 5,5 0 0,1 150,5 L 150,29 A 5,5 0 0,1 145,34 L 5,34 A 5,5 0 0,1 0,29 Z"
+          fill="#7C5385" stroke="#5f3f67" stroke-width="1"/>
+        <text class="block-text" x="38" y="21">call Clock .Timer</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Sparkle particles around blocks -->
+  <g transform="translate(20, 20)">
+    <circle class="sparkle sparkle-d1" cx="160" cy="8" r="2.5" fill="#F5A623"/>
+    <circle class="sparkle sparkle-d2" cx="-10" cy="45" r="2" fill="#77AB41"/>
+    <circle class="sparkle sparkle-d3" cx="165" cy="55" r="3" fill="#3F71B5"/>
+    <circle class="sparkle sparkle-d4" cx="-5" cy="90" r="2" fill="#B32D5E"/>
+    <circle class="sparkle sparkle-d5" cx="155" cy="90" r="2.5" fill="#7C5385"/>
+    <circle class="sparkle sparkle-d6" cx="80" cy="-10" r="2" fill="#D05F2D"/>
+  </g>
+
+  <!-- 4-point star sparkles -->
+  <g class="sparkle sparkle-d2" transform="translate(190, 70)">
+    <path d="M 0,-5 L 1.5,-1.5 L 5,0 L 1.5,1.5 L 0,5 L -1.5,1.5 L -5,0 L -1.5,-1.5 Z" fill="#F5A623" opacity="0.8"/>
+  </g>
+  <g class="sparkle sparkle-d4" transform="translate(8, 55)">
+    <path d="M 0,-4 L 1.2,-1.2 L 4,0 L 1.2,1.2 L 0,4 L -1.2,1.2 L -4,0 L -1.2,-1.2 Z" fill="#49A6D4" opacity="0.8"/>
+  </g>
+  <g class="sparkle sparkle-d6" transform="translate(155, 32)">
+    <path d="M 0,-3.5 L 1,-1 L 3.5,0 L 1,1 L 0,3.5 L -1,1 L -3.5,0 L -1,-1 Z" fill="#77AB41" opacity="0.8"/>
+  </g>
+
+  <!-- "AI is thinking" label with animated dots -->
+  <text class="label-text" x="45" y="160">AI is thinking</text>
+  <circle class="dot dot-d1" cx="155" cy="156" r="4" fill="#888"/>
+  <circle class="dot dot-d2" cx="166" cy="156" r="4" fill="#888"/>
+  <circle class="dot dot-d3" cx="177" cy="156" r="4" fill="#888"/>
+</svg>
