@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import com.google.appinventor.components.runtime.Form;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
@@ -24,6 +25,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.graphics.drawable.Drawable;
+import java.io.IOException;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -37,43 +42,42 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.RetValManager;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
- * The Notifier component displays alert messages and creates Android log entries through
+ * The Notifier component displays alert messages and creates Android log
+ * entries through
  * an assortment of methods.
  *
  * @author halabelson@google.com (Hal Abelson)
  */
 
-@DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
-    category = ComponentCategory.USERINTERFACE,
-    description = "The Notifier component displays alert dialogs, messages, and temporary alerts, " +
-        "and creates Android log entries through the following methods: " +
-        "<ul>" +
-        "<li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li>" +
-        "<li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, " +
-        "for example, yes or no, after which the AfterChoosing event is raised.</li>" +
-        "<li> ShowTextDialog: lets the user enter text in response to the message, after " +
-        "which the AfterTextInput event is raised. " +
-        "<li> ShowPasswordDialog: lets the user enter password in response to the message, after " +
-        "which the AfterTextInput event is raised. " +
-        "<li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li>" +
-        "<li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by " +
-        "the user. It can only be dismissed by using the DismissProgressDialog block.</li>" +
-        "<li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li>" +
-        "<li> LogError: logs an error message to the Android log. </li>" +
-        "<li> LogInfo: logs an info message to the Android log.</li>" +
-        "<li> LogWarning: logs a warning message to the Android log.</li>" +
-        "<li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:" +
-        "&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, " +
-        "&lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li>" +
-        "<li>You can also use the font tag to specify color, for example, &lt;font color=\"blue\"&gt;.  Some of the " +
-        "available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, " +
-        "red, silver, teal, white, and yellow</li>" +
-        "</ul>",
-    nonVisible = true,
-    iconName = "images/notifier.png")
+@DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION, category = ComponentCategory.USERINTERFACE, description = "The Notifier component displays alert dialogs, messages, and temporary alerts, "
+    +
+    "and creates Android log entries through the following methods: " +
+    "<ul>" +
+    "<li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li>" +
+    "<li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, " +
+    "for example, yes or no, after which the AfterChoosing event is raised.</li>" +
+    "<li> ShowTextDialog: lets the user enter text in response to the message, after " +
+    "which the AfterTextInput event is raised. " +
+    "<li> ShowPasswordDialog: lets the user enter password in response to the message, after " +
+    "which the AfterTextInput event is raised. " +
+    "<li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li>" +
+    "<li> ShowProgressDialog: displays an alert with a loading spinner that cannot be dismissed by " +
+    "the user. It can only be dismissed by using the DismissProgressDialog block.</li>" +
+    "<li> DismissProgressDialog: Dismisses the progress dialog displayed by ShowProgressDialog.</li>" +
+    "<li> LogError: logs an error message to the Android log. </li>" +
+    "<li> LogInfo: logs an info message to the Android log.</li>" +
+    "<li> LogWarning: logs a warning message to the Android log.</li>" +
+    "<li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:" +
+    "&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, " +
+    "&lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li>" +
+    "<li>You can also use the font tag to specify color, for example, &lt;font color=\"blue\"&gt;.  Some of the " +
+    "available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, " +
+    "red, silver, teal, white, and yellow</li>" +
+    "</ul>", nonVisible = true, iconName = "images/notifier.png")
 @SimpleObject
 
 public final class Notifier extends AndroidNonvisibleComponent implements Component {
@@ -83,7 +87,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private final Handler handler;
   private ProgressDialog progressDialog;
 
-  //Length of Notifier message display
+  // Length of Notifier message display
   private int notifierLength = Component.TOAST_LENGTH_LONG;
 
   // Notifier background color
@@ -97,7 +101,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *
    * @param container the enclosing component
    */
-  public Notifier (ComponentContainer container) {
+  public Notifier(ComponentContainer container) {
     super(container.$form());
     activity = container.$context();
     handler = new Handler();
@@ -105,19 +109,22 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Shows a dialog box with an optional title and message (use empty strings if they are not
-   * wanted). This dialog box contains a spinning artifact to indicate that the program is working.
-   * It cannot be canceled by the user but must be dismissed by the App Inventor Program by using
+   * Shows a dialog box with an optional title and message (use empty strings if
+   * they are not
+   * wanted). This dialog box contains a spinning artifact to indicate that the
+   * program is working.
+   * It cannot be canceled by the user but must be dismissed by the App Inventor
+   * Program by using
    * the {@link #DismissProgressDialog()} method.
    *
    * @param message the text in the alert box
-   * @param title the title for the alert box
+   * @param title   the title for the alert box
    */
   @SimpleFunction(description = "Shows a dialog box with an optional title and message "
-    + "(use empty strings if they are not wanted). This dialog box contains a spinning "
-    + "artifact to indicate that the program is working. It cannot be canceled by the user "
-    + "but must be dismissed by the App Inventor Program by using the DismissProgressDialog "
-    + "block.")
+      + "(use empty strings if they are not wanted). This dialog box contains a spinning "
+      + "artifact to indicate that the program is working. It cannot be canceled by the user "
+      + "but must be dismissed by the App Inventor Program by using the DismissProgressDialog "
+      + "block.")
   public void ShowProgressDialog(String message, String title) {
     progressDialog(message, title);
   }
@@ -136,8 +143,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * This method creates the actual ProgressDialog. If one is already being
    * displayed, then it dismisses it, and creates this new one.
+   * 
    * @param message the message for the dialog
-   * @param title the title for the dialog
+   * @param title   the title for the dialog
    */
   public void progressDialog(String message, String title) {
     if (progressDialog != null) {
@@ -151,8 +159,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Display an alert dialog with a single button that dismisses the alert.
    *
-   * @param message the text in the alert box
-   * @param title the title for the alert box
+   * @param message    the text in the alert box
+   * @param title      the title for the alert box
    * @param buttonText the text on the button
    */
   @SimpleFunction
@@ -160,9 +168,71 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     oneButtonAlert(activity, message, title, buttonText);
   }
 
-  // This method is declared static, with an explicit activity input, so that other
+  /**
+   * Display an alert dialog with a single button and an icon.
+   *
+   * @param message    the text in the alert box
+   * @param title      the title for the alert box
+   * @param icon       the path to the icon
+   * @param buttonText the text on the button
+   */
+  @SimpleFunction(description = "Display an alert dialog with a single button and an icon.")
+  public void ShowImageDialog(String message, String title, String icon, String buttonText) {
+    oneButtonAlert(activity, message, title, icon, buttonText);
+  }
+
+  // This method is declared static, with an explicit activity input, so that
+  // other
   // components can use it
-  public static void oneButtonAlert(Activity activity,String message, String title, String buttonText, final Runnable callBack) {
+  public static void oneButtonAlert(Activity activity, String message, String title, String icon, String buttonText) {
+    Log.i(LOG_TAG, "One button alert " + message);
+    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+    alertDialog.setTitle(title);
+    // prevents the user from escaping the dialog by hitting the Back button
+    alertDialog.setCancelable(false);
+    alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+        buttonText, new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
+
+    LinearLayout layout = new LinearLayout(activity);
+    layout.setOrientation(LinearLayout.VERTICAL);
+    layout.setPadding(20, 20, 20, 20);
+    layout.setGravity(Gravity.CENTER_HORIZONTAL); // Center content horizontally
+
+    ImageView imageView = new ImageView(activity);
+    try {
+      Drawable drawable = MediaUtil.getBitmapDrawable((Form) activity, icon);
+      imageView.setImageDrawable(drawable);
+      // Limit image size to avoid taking up the whole screen
+      LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
+          LinearLayout.LayoutParams.WRAP_CONTENT,
+          LinearLayout.LayoutParams.WRAP_CONTENT);
+      imageParams.gravity = Gravity.CENTER_HORIZONTAL;
+      // Optional: Set a max height/width programmatically if needed, but WRAP_CONTENT
+      // is usually fine for icons
+      // unless the image is huge.
+      layout.addView(imageView, imageParams);
+    } catch (IOException e) {
+      Log.e(LOG_TAG, "Unable to load icon: " + icon);
+    }
+
+    TextView textView = new TextView(activity);
+    textView.setText(stringToHTML(message));
+    textView.setPadding(0, 20, 0, 0); // Add some space between image and text
+    textView.setGravity(Gravity.CENTER_HORIZONTAL);
+    layout.addView(textView);
+
+    alertDialog.setView(layout);
+    alertDialog.show();
+  }
+
+  // This method is declared static, with an explicit activity input, so that
+  // other
+  // components can use it
+  public static void oneButtonAlert(Activity activity, String message, String title, String buttonText,
+      final Runnable callBack) {
     Log.i(LOG_TAG, "One button alert " + message);
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
@@ -171,19 +241,21 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setMessage(stringToHTML(message));
     alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
         buttonText, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        if (callBack != null) {
-          callBack.run();
-        }
-      }});
+          public void onClick(DialogInterface dialog, int which) {
+            if (callBack != null) {
+              callBack.run();
+            }
+          }
+        });
     alertDialog.show();
   }
 
   // A version of oneButtonAlert that doesn't accept a callback. We provide this
-  // for backwards compatibility in case extensions out there are using this (older)
+  // for backwards compatibility in case extensions out there are using this
+  // (older)
   // version which didn't accept a callback
-  public static void oneButtonAlert(Activity activity,String message, String title, String buttonText) {
-    oneButtonAlert(activity, message, title, buttonText, null);
+  public static void oneButtonAlert(Activity activity, String message, String title, String buttonText) {
+    oneButtonAlert(activity, message, title, buttonText, (Runnable) null);
   }
 
   // converts a string that includes HTML tags to a spannable string that can
@@ -193,18 +265,22 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Shows a dialog box with two buttons, from which the user can choose. If `cancelable` is
-   * `true`{:.logic.block} there will be an additional CANCEL button. Pressing a button will raise
+   * Shows a dialog box with two buttons, from which the user can choose. If
+   * `cancelable` is
+   * `true`{:.logic.block} there will be an additional CANCEL button. Pressing a
+   * button will raise
    * the {@link #AfterChoosing(String)} event. The "choice" parameter to
-   * {@link #AfterChoosing(String)} will be the text on the button that was pressed, or "Cancel" if
-   * the CANCEL button was pressed. If canceled, the {@link #TextInputCanceled()} event will also
+   * {@link #AfterChoosing(String)} will be the text on the button that was
+   * pressed, or "Cancel" if
+   * the CANCEL button was pressed. If canceled, the {@link #TextInputCanceled()}
+   * event will also
    * run.
    *
-   * @param message the text in the alert box
-   * @param title the title for the alert box
+   * @param message     the text in the alert box
+   * @param title       the title for the alert box
    * @param button1Text the text on the left-hand button
    * @param button2Text the text on the right-hand button
-   * @param cancelable indicates if additional CANCEL button should be added
+   * @param cancelable  indicates if additional CANCEL button should be added
    */
   @SimpleFunction(description = "Shows a dialog box with two buttons, from which the user can choose. "
       + " If cancelable is true there will be an additional CANCEL button. "
@@ -219,22 +295,30 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
         button1Text,
         button2Text,
         cancelable,
-        new Runnable() {public void run() {AfterChoosing(button1Text);}},
-        new Runnable() {public void run() {AfterChoosing(button2Text);}},
+        new Runnable() {
+          public void run() {
+            AfterChoosing(button1Text);
+          }
+        },
+        new Runnable() {
+          public void run() {
+            AfterChoosing(button2Text);
+          }
+        },
         new Runnable() {
           public void run() {
             ChoosingCanceled();
             AfterChoosing(activity.getString(android.R.string.cancel)); // backward compatible
           }
-        }
-    );
+        });
   }
 
   // This method takes three runnables that specify the actions to be performed
-  // when the buttons are pressed.  It's declared static with an explicit activity input
+  // when the buttons are pressed. It's declared static with an explicit activity
+  // input
   // so that other components can use it.
-  public static void twoButtonDialog(Activity activity, String message,  String title,
-      final String button1Text,  final String button2Text, boolean cancelable,
+  public static void twoButtonDialog(Activity activity, String message, String title,
+      final String button1Text, final String button2Text, boolean cancelable,
       final Runnable positiveAction, final Runnable negativeAction, final Runnable cancelAction) {
     Log.i(LOG_TAG, "ShowChooseDialog: " + message);
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
@@ -243,34 +327,35 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setCancelable(false);
     alertDialog.setMessage(stringToHTML(message));
 
-    // Warning: The SDK button names are confusing.  If there are
-    // three buttons, they go in the order  POSITIVE | NEUTRAL | NEGATIVE
+    // Warning: The SDK button names are confusing. If there are
+    // three buttons, they go in the order POSITIVE | NEUTRAL | NEGATIVE
     // In our notifier, we want choices like YES | NO | CANCEL, so NO maps to
     // neutral and CANCEL maps to NEGATIVE.
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, button1Text,
         new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        positiveAction.run();
-      }
-    });
+          public void onClick(DialogInterface dialog, int which) {
+            positiveAction.run();
+          }
+        });
     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, button2Text,
         new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        negativeAction.run();
-      }
-    });
+          public void onClick(DialogInterface dialog, int which) {
+            negativeAction.run();
+          }
+        });
 
-    //If cancelable is true, then a 3rd button, with text of Cancel will be added
+    // If cancelable is true, then a 3rd button, with text of Cancel will be added
     // and will raise AfterChoosing when pressed.
-    if (cancelable)  {
-      // TODO(hal): It would be safer and more consistent to pass in cancelButtonText as a parameter.
+    if (cancelable) {
+      // TODO(hal): It would be safer and more consistent to pass in cancelButtonText
+      // as a parameter.
       final String cancelButtonText = activity.getString(android.R.string.cancel);
       alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
           new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {
-          cancelAction.run();
-        }
-      });
+            public void onClick(DialogInterface dialog, int which) {
+              cancelAction.run();
+            }
+          });
     }
     alertDialog.show();
   }
@@ -278,10 +363,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Event after the user has made a selection for
    * {@link #ShowChooseDialog(String, String, String, String, boolean)}.
+   * 
    * @param choice is the text on the button the user pressed
    */
-  @SimpleEvent(
-    description = "Event after the user has made a selection for ShowChooseDialog.")
+  @SimpleEvent(description = "Event after the user has made a selection for ShowChooseDialog.")
   public void AfterChoosing(String choice) {
     EventDispatcher.dispatchEvent(this, "AfterChoosing", choice);
   }
@@ -290,73 +375,94 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * Event raised when the user cancels choosing an option.
    * {@link #ShowChooseDialog(String, String, String, String, boolean)}.
    */
-  @SimpleEvent(
-    description = "Event raised when the user canceled ShowChooseDialog.")
+  @SimpleEvent(description = "Event raised when the user canceled ShowChooseDialog.")
   public void ChoosingCanceled() {
     EventDispatcher.dispatchEvent(this, "ChoosingCanceled");
   }
 
   /**
    * Shows a dialog box where the user can enter text, after which the
-   * {@link #AfterTextInput(String)}  event will be raised. If `cancelable` is `true`{:.logic.block}
+   * {@link #AfterTextInput(String)} event will be raised. If `cancelable` is
+   * `true`{:.logic.block}
    * there will be an additional CANCEL button. Entering text will raise the
    * {@link #AfterTextInput(String)} event. The "response" parameter to
-   * {@link #AfterTextInput(String)}  will be the text that was entered, or "Cancel" if the CANCEL
-   * button was pressed. If canceled, the {@link #TextInputCanceled()} event will also run.
+   * {@link #AfterTextInput(String)} will be the text that was entered, or
+   * "Cancel" if the CANCEL
+   * button was pressed. If canceled, the {@link #TextInputCanceled()} event will
+   * also run.
    *
-   * @param message the text in the alert box
-   * @param title the title for the alert box
-   * @param cancelable indicates whether the user should be able to cancel out of dialog.
-   *                   When true, an additional CANCEL button will be added allowing user to cancel
-   *                   out of dialog. If selected, it will raise AfterTextInput with text of CANCEL.
+   * @param message    the text in the alert box
+   * @param title      the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of
+   *                   dialog.
+   *                   When true, an additional CANCEL button will be added
+   *                   allowing user to cancel
+   *                   out of dialog. If selected, it will raise AfterTextInput
+   *                   with text of CANCEL.
    */
   @SimpleFunction(description = "Shows a dialog box where the user can enter text, after which the "
-     + "AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. "
-     + "Entering text will raise the AfterTextInput event.  The \"response\" parameter to AfterTextInput "
-     + "will be the text that was entered, or \"Cancel\" if the CANCEL button was pressed.")
+      + "AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. "
+      + "Entering text will raise the AfterTextInput event.  The \"response\" parameter to AfterTextInput "
+      + "will be the text that was entered, or \"Cancel\" if the CANCEL button was pressed.")
 
   public void ShowTextDialog(String message, String title, boolean cancelable) {
     textInputDialog(message, title, cancelable, false);
   }
 
   /**
-   * Shows a dialog box where the user can enter password (input is masked), after which the
-   * {@link #AfterTextInput(String)} event will be raised. If `cancelable` is `true`{:.logic.block}
-   * there will be an additional CANCEL button. The {@link #AfterTextInput(String)} and
+   * Shows a dialog box where the user can enter password (input is masked), after
+   * which the
+   * {@link #AfterTextInput(String)} event will be raised. If `cancelable` is
+   * `true`{:.logic.block}
+   * there will be an additional CANCEL button. The
+   * {@link #AfterTextInput(String)} and
    * {@link #TextInputCanceled()} events behave the same way as described in
    * {@link #ShowTextDialog(String, String, boolean)}.
    *
-   * @param message the text in the alert box
-   * @param title the title for the alert box
-   * @param cancelable indicates whether the user should be able to cancel out of dialog.
-   *                   When true, an additional CANCEL button will be added allowing user to cancel
-   *                   out of dialog. If selected, it will raise AfterTextInput with text of CANCEL.
+   * @param message    the text in the alert box
+   * @param title      the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of
+   *                   dialog.
+   *                   When true, an additional CANCEL button will be added
+   *                   allowing user to cancel
+   *                   out of dialog. If selected, it will raise AfterTextInput
+   *                   with text of CANCEL.
    */
   @SimpleFunction(description = "Shows a dialog box where the user can enter password (input is masked), "
-     + "after which the AfterTextInput event will be raised.  If cancelable is true there will be an "
-     + "additional CANCEL button. Entering password will raise the AfterTextInput event.  The \"response\" "
-     + "parameter to AfterTextInput will be the entered password, or \"Cancel\" if CANCEL button was pressed.")
+      + "after which the AfterTextInput event will be raised.  If cancelable is true there will be an "
+      + "additional CANCEL button. Entering password will raise the AfterTextInput event.  The \"response\" "
+      + "parameter to AfterTextInput will be the entered password, or \"Cancel\" if CANCEL button was pressed.")
 
   public void ShowPasswordDialog(String message, String title, boolean cancelable) {
     textInputDialog(message, title, cancelable, true);
   }
 
   /**
-   * Display an alert with a text entry. If cancelable is true, then also displays a "CANCEL"
+   * Display an alert with a text entry. If cancelable is true, then also displays
+   * a "CANCEL"
    * button, allowing user to cancel out of dialog.
-   * Raises the AfterTextInput event when the text has been entered and the user presses "OK".
-   * Raises the AfterTextInput event when users presses CANCEL, passing the text "CANCEL" to AfterTextInput
+   * Raises the AfterTextInput event when the text has been entered and the user
+   * presses "OK".
+   * Raises the AfterTextInput event when users presses CANCEL, passing the text
+   * "CANCEL" to AfterTextInput
    *
-   * @param message the text in the alert box
-   * @param title the title for the alert box
-   * @param cancelable indicates whether the user should be able to cancel out of dialog.
-   *                   When true, an additional CANCEL button will be added allowing user to cancel
-   *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
-   * @param maskInput When true, input text is masked. Suitable for sensitive information like passwords.
+   * @param message    the text in the alert box
+   * @param title      the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of
+   *                   dialog.
+   *                   When true, an additional CANCEL button will be added
+   *                   allowing user to cancel
+   *                   out of dialog. On selection, will raise AfterTextInput with
+   *                   text of CANCEL.
+   * @param maskInput  When true, input text is masked. Suitable for sensitive
+   *                   information like passwords.
    */
-  // TODO(hal):  It would be cleaner to define this in terms of oneButtonAlert and generalize
-  // oneButtonAlert so it can be used both for messages and text input.  We could have merged
-  // this method into ShowTextDialog, but that would make it harder to do the generalization.
+  // TODO(hal): It would be cleaner to define this in terms of oneButtonAlert and
+  // generalize
+  // oneButtonAlert so it can be used both for messages and text input. We could
+  // have merged
+  // this method into ShowTextDialog, but that would make it harder to do the
+  // generalization.
   private void textInputDialog(String message, String title, boolean cancelable, boolean maskInput) {
     final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
@@ -377,15 +483,15 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
           }
         });
 
-    //If cancelable, then add the CANCEL button
-    if (cancelable)  {
+    // If cancelable, then add the CANCEL button
+    if (cancelable) {
       final String cancelButtonText = activity.getString(android.R.string.cancel);
       alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
           new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
               HideKeyboard((View) input);
               if (!TextInputCanceled()) {
-                //User pressed CANCEL. Raise AfterTextInput with CANCEL
+                // User pressed CANCEL. Raise AfterTextInput with CANCEL
                 AfterTextInput(cancelButtonText);
               }
             }
@@ -395,21 +501,22 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-  * Hide soft keyboard after user either enters text or cancels.
-  */
+   * Hide soft keyboard after user either enters text or cancels.
+   */
   public void HideKeyboard(View view) {
     if (view != null) {
       InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.hideSoftInputFromWindow(view.getWindowToken(),  0);
+      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
   }
 
   /**
-   * Event raised after the user has responded to {@link #ShowTextDialog(String, String, boolean)}.
+   * Event raised after the user has responded to
+   * {@link #ShowTextDialog(String, String, boolean)}.
+   * 
    * @param response is the text that was entered
    */
-  @SimpleEvent(
-    description = "Event raised after the user has responded to ShowTextDialog.")
+  @SimpleEvent(description = "Event raised after the user has responded to ShowTextDialog.")
   public void AfterTextInput(String response) {
     EventDispatcher.dispatchEvent(this, "AfterTextInput", response);
   }
@@ -421,13 +528,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *
    * @return true if the event was successfully dispatched, otherwise false.
    */
-  @SimpleEvent(
-      description = "Event raised when the user canceled ShowTextDialog.")
+  @SimpleEvent(description = "Event raised when the user canceled ShowTextDialog.")
   public boolean TextInputCanceled() {
     return EventDispatcher.dispatchEvent(this, "TextInputCanceled");
   }
-
-
 
   /**
    * Display a temporary notification.
@@ -444,25 +548,22 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Specifies the length of time that the alert is shown -- either "short" or "long".
+   * Specifies the length of time that the alert is shown -- either "short" or
+   * "long".
    *
-   * @param length  Length of time that an alert is visible
+   * @param length Length of time that an alert is visible
    */
-  @DesignerProperty(
-      editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
-      defaultValue = Component.TOAST_LENGTH_LONG + "")
-  @SimpleProperty(
-      userVisible = false)
-  public void NotifierLength(int length){
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH, defaultValue = Component.TOAST_LENGTH_LONG
+      + "")
+  @SimpleProperty(userVisible = false)
+  public void NotifierLength(int length) {
     notifierLength = length;
   }
 
   /**
    * @suppressdoc
    */
-  @SimpleProperty(
-      description="Specifies the length of time that the alert is shown -- either \"short\" or \"long\".",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "Specifies the length of time that the alert is shown -- either \"short\" or \"long\".", category = PropertyCategory.APPEARANCE)
   public int NotifierLength() {
     return notifierLength;
   }
@@ -470,12 +571,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Specifies the background color for alerts (not dialogs).
    *
-   * @param argb  background RGB color with alpha
+   * @param argb background RGB color with alpha
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
-  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).",
-      category = PropertyCategory.APPEARANCE)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
+  @SimpleProperty(description = "Specifies the background color for alerts (not dialogs).", category = PropertyCategory.APPEARANCE)
   public void BackgroundColor(@IsColor int argb) {
     backgroundColor = argb;
   }
@@ -483,10 +582,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Returns the alert's text color.
    *
-   * @return  text RGB color with alpha
+   * @return text RGB color with alpha
    */
-  @SimpleProperty(description = "Specifies the text color for alerts (not dialogs).",
-      category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(description = "Specifies the text color for alerts (not dialogs).", category = PropertyCategory.APPEARANCE)
   @IsColor
   public int TextColor() {
     return textColor;
@@ -495,25 +593,25 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Specifies the text color for alerts (not dialogs).
    *
-   * @param argb  text RGB color with alpha
+   * @param argb text RGB color with alpha
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR, defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void TextColor(int argb) {
     textColor = argb;
   }
 
   // show a toast using a TextView, which allows us to set the
-  // font size.  The default toast is too small.
-  private void toastNow (String message) {
+  // font size. The default toast is too small.
+  private void toastNow(String message) {
     // The notifier font size for more recent releases seems too
     // small compared to early releases.
-    // This sets the fontsize according to SDK level,  There is almost certainly
+    // This sets the fontsize according to SDK level, There is almost certainly
     // a better way to do this, with display metrics for example, but
     // I (Hal) can't figure it out.
     int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
-        ? 22 : 15;
+        ? 22
+        : 15;
     Toast toast = Toast.makeText(activity, message, notifierLength);
     toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
     TextView textView = new TextView(activity);
@@ -523,27 +621,35 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
-    // Note: The space added to the message below is a patch to work around a bug where,
-    // in a message with multiple words, the trailing words do not appear.  Whether this
-    // bug happens depends on the version of the OS and the exact characters in the message.
-    // The cause of the bug is that the textView parameter are not being set correctly -- I don't know
-    // why not.   But as a result, Android will sometimes compute the length of the required
-    // textbox as one or two pixels short.  Then, when the message is displayed, the
-    // wordwrap mechanism pushes the rest of the words to a "next line" that does not
-    // exist.  Adding the space ensures that the width allocated for the text will be adequate.
+    // Note: The space added to the message below is a patch to work around a bug
+    // where,
+    // in a message with multiple words, the trailing words do not appear. Whether
+    // this
+    // bug happens depends on the version of the OS and the exact characters in the
+    // message.
+    // The cause of the bug is that the textView parameter are not being set
+    // correctly -- I don't know
+    // why not. But as a result, Android will sometimes compute the length of the
+    // required
+    // textbox as one or two pixels short. Then, when the message is displayed, the
+    // wordwrap mechanism pushes the rest of the words to a "next line" that does
+    // not
+    // exist. Adding the space ensures that the width allocated for the text will be
+    // adequate.
     textView.setText(message + " ");
     toast.setView(textView);
     toast.show();
   }
 
   /**
-   * Writes an error message to the Android system log. See the Google Android documentation for
+   * Writes an error message to the Android system log. See the Google Android
+   * documentation for
    * how to access the log.
    *
    * @param message the error message
    */
   @SimpleFunction(description = "Writes an error message to the Android system log. " +
-     "See the Google Android documentation for how to access the log.")
+      "See the Google Android documentation for how to access the log.")
   public void LogError(String message) {
     Log.e(LOG_TAG, message);
     if (form.isRepl()) {
@@ -552,13 +658,14 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Writes a warning message to the Android log. See the Google Android documentation for how to
+   * Writes a warning message to the Android log. See the Google Android
+   * documentation for how to
    * access the log.
    *
    * @param message the warning message
    */
   @SimpleFunction(description = "Writes a warning message to the Android log. " +
-     "See the Google Android documentation for how to access the log.")
+      "See the Google Android documentation for how to access the log.")
   public void LogWarning(String message) {
     Log.w(LOG_TAG, message);
     if (form.isRepl()) {
