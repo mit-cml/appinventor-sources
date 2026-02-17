@@ -33,6 +33,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
 
 import com.google.appinventor.shared.settings.Settings;
@@ -48,7 +49,8 @@ public class YoungAndroidSettingsBuilder {
   private String projectName = "";
   private String qualifiedFormName = "";
   private String icon = "";
-  private String versionCode = "1";
+  private String versionCode = "1"; 
+  private String androidMinSdk = "14";
   private String versionName = "1.0";
   private String usesLocation = "false";
   private String appName = "";
@@ -87,6 +89,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_ICON));
     versionCode = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_VERSION_CODE));
+    androidMinSdk = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK));
     versionName = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_VERSION_NAME));
     usesLocation = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -291,6 +295,7 @@ public class YoungAndroidSettingsBuilder {
     JSONObject object = new JSONObject();
     object.put(YOUNG_ANDROID_SETTINGS_ICON, icon);
     object.put(YOUNG_ANDROID_SETTINGS_VERSION_CODE, versionCode);
+    object.put(YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK, androidMinSdk);
     object.put(YOUNG_ANDROID_SETTINGS_VERSION_NAME, versionName);
     object.put(YOUNG_ANDROID_SETTINGS_USES_LOCATION, usesLocation);
     object.put(YOUNG_ANDROID_SETTINGS_APP_NAME, appName);
@@ -335,6 +340,7 @@ public class YoungAndroidSettingsBuilder {
     result.put("build", "../build");
     addPropertyIfSet(result, "icon", icon);
     addPropertyIfSet(result, "versioncode", versionCode);
+    addPropertyIfSet(result, "androidminsdk", androidMinSdk);
     addPropertyIfSet(result, "versionname", versionName);
     addPropertyIfSet(result, "useslocation", usesLocation);
     addPropertyIfSet(result, "sizing", sizing);
@@ -391,6 +397,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.qualifiedFormName.equals(qualifiedFormName);
       result &= other.icon.equals(icon);
       result &= other.versionCode.equals(versionCode);
+      result &= other.androidMinSdk.equals(androidMinSdk);
       result &= other.versionName.equals(versionName);
       result &= other.usesLocation.equals(usesLocation);
       result &= other.sizing.equals(sizing);

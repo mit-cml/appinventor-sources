@@ -42,6 +42,9 @@ public final class YoungAndroidSettings extends Settings {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE, "1",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK, "14",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME, "1.0",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
