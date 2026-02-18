@@ -439,38 +439,35 @@ public final class ListView extends AndroidViewComponent {
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
-    if (!items.isEmpty()) {
-      for (int i = 0; i < items.size(); ++i) {
-        Object item = items.get(i);
-        if (item instanceof YailDictionary) {
-          if (((YailDictionary) item).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-            if (((YailDictionary) item).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() == value) {
-              selectionIndex = i + 1;
-              selectionDetailText = ElementsUtil.toStringEmptyIfNull(((YailDictionary) item)
-                                                                         .get(Component.LISTVIEW_KEY_DESCRIPTION));
-              break;
-            }
-            // Not found
-            selectionIndex = 0;
-            selectionDetailText = "Not Found";
-          } else {
-            if (item.toString().equals(value)) {
-              selectionIndex = i + 1;
-              break;
-            }
-            selectionIndex = 0;
-          }
-        } else {
-          if (item.toString().equals(value)) {
-            selectionIndex = i + 1;
-            break;
-          }
-          selectionIndex = 0;
-        }
+    boolean found = false;
+
+for (int i = 0; i < items.size(); i++) {
+  Object item = items.get(i);
+  if (item instanceof YailDictionary) {
+    if (((YailDictionary) item).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
+      Object rawValue = ((YailDictionary) item).get(Component.LISTVIEW_KEY_MAIN_TEXT);
+      if (rawValue != null && rawValue.toString().equals(value)) {
+        selectionIndex = i + 1;
+        selectionDetailText = ElementsUtil.toStringEmptyIfNull(
+            ((YailDictionary) item).get(Component.LISTVIEW_KEY_DESCRIPTION));
+        found = true;
+        break;
       }
-      SelectionIndex(selectionIndex);
+    }
+  } else {
+    if (item != null && item.toString().equals(value)) {
+      selectionIndex = i + 1;
+      found = true;
+      break;
     }
   }
+}
+
+// Post-loop: handle not-found case
+if (!found) {
+  selectionIndex = 0;
+  selectionDetailText = "";
+}
 
   /**
    * Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
@@ -1168,6 +1165,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleFunction(description = "Add new Item to list at the end.")
   public void AddItem(String mainText, String detailText, String imageName) {
+    int insertedIndex = items.size();
     if (!items.isEmpty()) {
       Object o = items.get(0);
       if (o instanceof YailDictionary) {
@@ -1187,7 +1185,9 @@ public final class ListView extends AndroidViewComponent {
       }
     }
     updateAdapterData();
-    listAdapterWithRecyclerView.notifyItemChanged(listAdapterWithRecyclerView.getItemCount() - 1);
+    if (listAdapterWithRecyclerView != null) {
+    listAdapterWithRecyclerView.notifyItemInserted(insertedIndex);
+    }
   }
 
   /**
@@ -1195,12 +1195,15 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleFunction(description = "Add new Items to list at the end.")
   public void AddItems(List<Object> itemsList) {
-    if (!itemsList.isEmpty()) {
+    if (itemsList == null || itemsList.isEmpty()) {
+    return;
+    }
       int positionStart = items.size();
       int itemCount = itemsList.size();
       items.addAll(itemsList);
       updateAdapterData();
-      listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
+      if (listAdapterWithRecyclerView != null) {
+    listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
   }
 
@@ -1246,12 +1249,15 @@ public final class ListView extends AndroidViewComponent {
           ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
       return;
     }
-    if (!itemsList.isEmpty()) {
+    if (itemsList == null || itemsList.isEmpty()) {
+    return;
+    }
       int positionStart = index - 1;
       int itemCount = itemsList.size();
       items.addAll(positionStart, itemsList);
       updateAdapterData();
-      listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
+      if (listAdapterWithRecyclerView != null) {
+    listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
   }
 
