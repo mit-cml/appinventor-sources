@@ -839,7 +839,7 @@ Blockly.Blocks.component_method = {
           .setCheck(check);
 
       if (oldInputValues[i] && input.connection) {
-        Blockly.icons.MutatorIcon.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
+        oldInputValues[i].outputConnection.reconnect(this, 'ARG' + i);
       }
     }
 
@@ -1256,7 +1256,7 @@ Blockly.Blocks.component_set_get = {
 
     if (oldInput) {
       this.getInput('VALUE').init();
-      Blockly.icons.MutatorIcon.reconnect(oldInput.outputConnection, this, 'VALUE');
+      oldInput.outputConnection.reconnect(this, 'VALUE');
     }
 
     //for non-generic blocks, set the value of the component drop down
