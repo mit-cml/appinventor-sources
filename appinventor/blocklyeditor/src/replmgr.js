@@ -1150,7 +1150,7 @@ Blockly.ReplMgr.setDoitResult = function(block, value) {
         text = result + text;
     }
     block.setCommentText(text);
-    block.getIcon(Blockly.icons.CommentIcon.TYPE).setVisible(true);
+    block.getIcon(Blockly.icons.CommentIcon.TYPE).setBubbleVisible(true);
 };
 
 Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
