@@ -398,6 +398,9 @@ Spreadsheet is a non-visible component for storing and receiving data from
 : The callback event for the [`ReadSheet`](#Spreadsheet.ReadSheet) block. The `sheetData` is a
  list of rows.
 
+{:id="Spreadsheet.GotSheetList"} GotSheetList(*sheetNames*{:.list})
+: The callback event for the ListSheets block, called once the list of sheets has been retrieved.
+
 ### Methods  {#Spreadsheet-Methods}
 
 {:.methods}
@@ -433,6 +436,9 @@ Spreadsheet is a non-visible component for storing and receiving data from
 : Converts the integer representation of rows and columns for the corners of
  the range to A1-Notation used in Google Sheets. For example, selecting the
  range from row 1, col 2 to row 3, col 4 corresponds to the string "B1:D3".
+
+{:id="Spreadsheet.ListSheets" class="method"} <i/> ListSheets()
+: Lists the names of all sheets in the spreadsheet. Triggers the GotSheetList callback event with a list of sheet names.
 
 {:id="Spreadsheet.ReadCell" class="method"} <i/> ReadCell(*sheetName*{:.text},*cellReference*{:.text})
 : On the page with the provided sheetName, reads the cell at the given
