@@ -444,12 +444,13 @@ public final class ListView extends AndroidViewComponent {
 for (int i = 0; i < items.size(); i++) {
   Object item = items.get(i);
   if (item instanceof YailDictionary) {
-    if (((YailDictionary) item).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-      Object rawValue = ((YailDictionary) item).get(Component.LISTVIEW_KEY_MAIN_TEXT);
+    YailDictionary dict = (YailDictionary) item;
+    if (dict.containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
+      Object rawValue = dict.get(Component.LISTVIEW_KEY_MAIN_TEXT);
       if (rawValue != null && rawValue.toString().equals(value)) {
         selectionIndex = i + 1;
         selectionDetailText = ElementsUtil.toStringEmptyIfNull(
-            ((YailDictionary) item).get(Component.LISTVIEW_KEY_DESCRIPTION));
+            dict.get(Component.LISTVIEW_KEY_DESCRIPTION));
         found = true;
         break;
       }
@@ -464,10 +465,11 @@ for (int i = 0; i < items.size(); i++) {
 }
 
 // Post-loop: handle not-found case
-if (!found) {
-  selectionIndex = 0;
-  selectionDetailText = "";
-}
+  if (!found) {
+    selectionIndex = 0;
+    selectionDetailText = "";
+  }
+} 
 
   /**
    * Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
@@ -1196,13 +1198,13 @@ if (!found) {
   @SimpleFunction(description = "Add new Items to list at the end.")
   public void AddItems(List<Object> itemsList) {
     if (itemsList == null || itemsList.isEmpty()) {
-    return;
-    }
+      return;
+    } 
       int positionStart = items.size();
       int itemCount = itemsList.size();
       items.addAll(itemsList);
       updateAdapterData();
-      if (listAdapterWithRecyclerView != null) {
+    if (listAdapterWithRecyclerView != null) {
     listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
   }
@@ -1250,13 +1252,13 @@ if (!found) {
       return;
     }
     if (itemsList == null || itemsList.isEmpty()) {
-    return;
+      return;
     }
       int positionStart = index - 1;
       int itemCount = itemsList.size();
       items.addAll(positionStart, itemsList);
       updateAdapterData();
-      if (listAdapterWithRecyclerView != null) {
+    if (listAdapterWithRecyclerView != null) {
     listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
   }
