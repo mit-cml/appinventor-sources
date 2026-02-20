@@ -325,7 +325,7 @@ Spreadsheet is a non-visible component for storing and receiving data from
 : The JSON File with credentials for the Service Account
 
 {:id="Spreadsheet.SpreadsheetID" .text} *SpreadsheetID*
-: The ID for the Google Sheets file you want to edit. You can find the spreadsheetID in the URL of the Google Sheets file.
+: The ID for the Google Sheets file you want to edit. You can find the spreadsheetID in the URL of the Google Sheets file. Look for the part between '/d/' and '/edit' in the URL, e.g. in https://docs.google.com/spreadsheets/d/1234abcd/edit the ID is '1234abcd'.
 
 ### Events  {#Spreadsheet-Events}
 

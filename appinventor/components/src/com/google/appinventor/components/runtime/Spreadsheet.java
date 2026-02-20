@@ -245,7 +245,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty(description = "The ID for the Google Sheets file you want to edit. You can "
-      + "find the spreadsheetID in the URL of the Google Sheets file.")
+      + "find the spreadsheetID in the URL of the Google Sheets file. Look for the part between "
+      + "'/d/' and '/edit' in the URL, e.g. in "
+      + "https://docs.google.com/spreadsheets/d/1234abcd/edit the ID is '1234abcd'.")
   public void SpreadsheetID(String spreadsheetID) {
     if (spreadsheetID.startsWith("https:")) {
       // URL: https://docs.google.com/spreadsheets/d/<id>/edit#gid=0
