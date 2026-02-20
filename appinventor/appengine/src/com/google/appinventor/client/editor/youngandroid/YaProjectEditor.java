@@ -300,6 +300,18 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       }
     }
 
+    // Guard: if the lastOpened screen was deleted, fall back to Screen1 so that
+    // subsequent isLastOpened() calls (including async file-load callbacks) use
+    // the correct value before anything tries to switch to a non-existent screen.
+    String lastOpened = this.getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED);
+    if (!editorMap.containsKey(lastOpened)) {
+      changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED,
+          YoungAndroidSourceNode.SCREEN1_FORM_NAME);
+    }
+
     // Add the screens to the design toolbar, along with their associated editors
     DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
     for (String formName : editorMap.keySet()) {
@@ -419,6 +431,11 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     // Screen Editorss
     if (node instanceof YoungAndroidFormNode) {
       formName = ((YoungAndroidFormNode) node).getFormName();
+      if (isLastOpened(formName)) {
+        changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED,
+            YoungAndroidSourceNode.SCREEN1_FORM_NAME);
+      }
       removeFormEditor(formName);
     }
     else if (node instanceof YoungAndroidBlocksNode) {
