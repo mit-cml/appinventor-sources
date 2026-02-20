@@ -3159,7 +3159,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "Spinner": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Enabled property was added.
+    2: "noUpgrade"
 
   }, // End Spinner upgraders
 
