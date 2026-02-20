@@ -1,0 +1,162 @@
+package com.google.appinventor.components.runtime.ar;
+
+import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesAssets;
+
+import android.util.Log;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.ar.core.Anchor;
+import com.google.ar.core.Pose;
+import com.google.ar.core.Trackable;
+
+
+@UsesAssets(fileNames = "cube.obj, Palette.png")
+@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
+    description = "A component that displays a box in an ARView3D.  The box is positioned " +
+        "at a point and can be colored or textured as well as rotated.",
+    category = ComponentCategory.AR)
+@SimpleObject public final class BoxNode extends ARNodeBase implements ARBox {
+
+    private float width = 1.0f;
+    private float height = 1.0f;
+    private float length = 1.0f;
+    private float cornerRadius = 0;
+
+    public BoxNode(final ARNodeContainer container) {
+      super(container);
+      //parentSession = session;
+      container.addNode(this);
+    }
+
+
+    @Override
+    @SimpleFunction(description = "Changes the capsules's scale by the given scalar, maintaining bottom position if physics enabled.")
+    public void ScaleBy(float scalar) {
+        Log.i("BoxNode", "Scaling box " + name + " by " + scalar);
+
+        float oldScale = Scale();
+        float newScale = oldScale * Math.abs(scalar);
+
+        // Update physics immediately if enabled to maintain bottom position
+        if (EnablePhysics()) {
+            float previousSize = width * Scale();
+            // Adjust Y position to maintain ground contact
+            float[] currentPos = getCurrentPosition();
+            currentPos[1] = currentPos[1] - previousSize + (width * newScale);
+            setCurrentPosition(currentPos);
+        }
+    }
+
+    @Override
+    @SimpleFunction(description = "move a capsule node properties at the " +
+        "specified (x,y,z) position.")
+    public void MoveBy(float x, float y, float z){
+
+        float[] position = { 0, 0, 0};
+        float[] rotation = {0, 0, 0, 1};
+
+        //float[] currentAnchorPoseRotation = rotation;
+
+        if (this.Anchor() != null) {
+            float[] translations = this.Anchor().getPose().getTranslation();
+            position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
+            //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+        }
+
+        Pose newPose = new Pose(position, rotation);
+        if (this.trackable != null){
+            Anchor(this.trackable.createAnchor(newPose));
+            Log.i("capsule","moved anchor BY " + newPose+ " with rotaytion "+rotation);
+        }else {
+            Log.i("capsule", "tried to move anchor BY pose");
+        }
+    }
+
+
+    @Override
+    @SimpleFunction(description = "Changes the node's position by (x,y,z).")
+    public void MoveTo(float x, float y, float z) {
+        float[] position = {x, y, z};
+        float[] rotation = {0, 0, 0, 1};
+
+        float[] currentAnchorPoseRotation = rotation;
+        if (this.Anchor() != null) {
+            //currentAnchorPoseRotation = Anchor().getPose().getRotationQuaternion(); or getTranslation() not working yet
+        }
+        Pose newPose = new Pose(position, rotation);
+        if (this.trackable != null){
+            Anchor(this.trackable.createAnchor(newPose));
+            Log.i("webview","moved anchor to pose: " + newPose+ " with rotaytion "+currentAnchorPoseRotation);
+        }else {
+            Log.i("webview", "tried to move anchor to pose");
+        }
+    }
+
+    @Override
+    @SimpleFunction(description = "move a capsule node properties to detectedplane.")
+    public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
+      this.trackable = (Trackable) targetPlane.DetectedPlane();
+      if (this.anchor != null) {
+        this.anchor.detach();
+      }
+      Anchor(this.trackable.createAnchor((Pose) p));
+
+    }
+
+
+    @Override
+    @SimpleProperty(description = "How far, in centimeters, the BoxNode extends along the x-axis.  " +
+      "Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode " +
+      "will not appear.")
+    public float WidthInCentimeters() { return width; }
+
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    public void WidthInCentimeters(float widthInCentimeters) {}
+
+    @Override
+    @SimpleProperty(description = "How far, in centimeters, the BoxNode extends along the y-axis.  " +
+      "Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode " +
+      "will not appear.")
+    public float HeightInCentimeters() { return height; }
+
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    public void HeightInCentimeters(float heightInCentimeters) {}
+
+    @Override
+    @SimpleProperty(description = "How far, in centimeters, the BoxNode extends along the z-axis.  " +
+      "Values less than zero will be treated as their absolute value.  When set to zero, the BoxNode " +
+      "will not appear.")
+    public float LengthInCentimeters() { return length; }
+
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    public void LengthInCentimeters(float lengthInCentimeters) {}
+
+    @Override
+    @SimpleProperty(description = "This determines how rounded the boxes corners will be.  " +
+      "A value of zero specifies no rounded corners, and a value of half the length, " +
+      "height, or width of the BoxNode (whichever is greater) makes it fully rounded, with " +
+      "no straight edges.  Values less than zero will be set to zero.")
+    public float CornerRadius() { return 0f; }
+
+    @Override
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "0")
+    @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    public void CornerRadius(float cornerRadius) {}
+
+  }
