@@ -90,6 +90,10 @@ import javax.net.ssl.X509TrustManager;
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "protobuf-java-3.0.0.jar")
 @SimpleObject
+
+
+
+
 public final class ChatBot extends AndroidNonvisibleComponent {
 
   private static final String COMODO_ROOT =
@@ -239,6 +243,10 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   private String uuid = "";     // The UUID for continuing conversations
   private int size = 256;
 
+  private int maxRetries = 3;
+  private int retryDelayMs = 1000;
+  private boolean enableRetry = true;
+
   /**
    * Creates a new component.
    *
@@ -281,88 +289,110 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   }
 
   private void performRequest(String uuid, String question, Bitmap image, boolean doImage) {
-    // languageToTransateTo is provided either as a two letter code, or two
-    // two letter codes separated by a dash. If only one two letter code is
-    // provided, it is the target language and we set the source language to auto
-    // which tells the service to detect the language
 
-    /* Convert Bitmap to an image String suitable to send to the ChatBot proxy */
-    ByteString imageString = null;
-    if (image != null) {
-      ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream();
-      image.compress(Bitmap.CompressFormat.PNG, 100, imageBuffer);
-      imageString = ByteString.copyFrom(imageBuffer.toByteArray());
-    }
+  int attempt = 0;
+  int delay = retryDelayMs;
+
+  while (attempt <= maxRetries) {
 
     HttpsURLConnection connection = null;
-    ensureSslSockFactory();
-    String iToken;
-    int responseCode = -1;   // A reasonable default
+    int responseCode = -1;
+
     try {
-      Log.d(LOG_TAG, "performRequest: apiKey = " + apiKey);
+
+      ByteString imageString = null;
+      if (image != null) {
+        ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, imageBuffer);
+        imageString = ByteString.copyFrom(imageBuffer.toByteArray());
+      }
+
+      ensureSslSockFactory();
+
+      String iToken;
       if (token != null && !token.equals("") && token.substring(0, 1).equals("%")) {
         iToken = token.substring(1);
       } else {
         iToken = token;
       }
-      byte [] decodedToken = Base58Util.decode(iToken);
-      ChatBotToken.token token = ChatBotToken.token.parseFrom(decodedToken);
+
+      byte[] decodedToken = Base58Util.decode(iToken);
+      ChatBotToken.token tokenObj = ChatBotToken.token.parseFrom(decodedToken);
+
       ChatBotToken.request.Builder builder = ChatBotToken.request.newBuilder()
-        .setToken(token)
-        .setUuid(uuid)
-        .setDoimage(doImage)
-        .setProvider(provider)
-        .setQuestion(question);
+          .setToken(tokenObj)
+          .setUuid(uuid)
+          .setDoimage(doImage)
+          .setProvider(provider)
+          .setQuestion(question);
+
       if (!system.equals("") && uuid.equals("")) {
-        builder = builder.setSystem(system);
+        builder.setSystem(system);
       }
+
       if (apiKey != null && !apiKey.equals("")) {
-        builder = builder.setApikey(apiKey);
+        builder.setApikey(apiKey);
       }
+
       if (!model.isEmpty()) {
         builder.setModel(model);
       }
+
       if (imageString != null) {
         builder.setInputimage(imageString);
       }
+
       ChatBotToken.request request = builder.build();
 
       URL url = new URL(CHATBOT_SERVICE_URL);
       connection = (HttpsURLConnection) url.openConnection();
-      if (connection != null) {
-        try {
-          connection.setSSLSocketFactory(sslSockFactory);
-          connection.setRequestMethod("POST");
-          connection.setDoOutput(true);
-          request.writeTo(connection.getOutputStream());
-          responseCode = connection.getResponseCode();
-          ChatBotToken.response response = ChatBotToken.response.parseFrom(connection.getInputStream());
-          if (responseCode == 200) {
-            this.uuid = response.getUuid();
-            parseResponse(response, doImage);
-          } else {
-            String returnText = getResponseContent(connection, true);
-            ErrorOccurred(responseCode, returnText);
-          }
-        } finally {
-          connection.disconnect();
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      if (e instanceof FileNotFoundException && connection != null) {
-        String returnText;
-        try {
-          returnText = getResponseContent(connection, true);
-        } catch  (IOException ee) {
-          returnText = "Error Fetching from ChatBot";
-        }
-        ErrorOccurred(responseCode, returnText);
+      connection.setSSLSocketFactory(sslSockFactory);
+      connection.setRequestMethod("POST");
+      connection.setDoOutput(true);
+
+      request.writeTo(connection.getOutputStream());
+
+      responseCode = connection.getResponseCode();
+
+      if (responseCode == 200) {
+        ChatBotToken.response response =
+            ChatBotToken.response.parseFrom(connection.getInputStream());
+        this.uuid = response.getUuid();
+        parseResponse(response, doImage);
+        return;
       } else {
-        ErrorOccurred(responseCode, "Error talking to ChatBot proxy: " + e.toString());
+        String returnText = getResponseContent(connection, true);
+
+        if (enableRetry && isRetryable(responseCode, null) && attempt < maxRetries) {
+          throw new RetryableException("Retryable HTTP Error: " + responseCode);
+        }
+
+        ErrorOccurred(responseCode, returnText);
+        return;
+      }
+
+    } catch (Exception e) {
+
+      if (enableRetry && isRetryable(responseCode, e) && attempt < maxRetries) {
+        try {
+          Thread.sleep(delay);
+        } catch (InterruptedException ignored) {}
+        delay *= 2;
+        attempt++;
+        continue;
+      }
+
+      ErrorOccurred(responseCode,
+          "Error talking to ChatBot proxy: " + e.getMessage());
+      return;
+
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
       }
     }
   }
+}
 
   @SimpleFunction(description = "Ask a question of the Chat Bot using an Image. Successive calls will " +
     "remember information from earlier in the conversation. Use the \"ResetConversation\" " +
@@ -519,6 +549,45 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     return model;
   }
 
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+    defaultValue = "3")
+@SimpleProperty(category = PropertyCategory.ADVANCED,
+    description = "Maximum number of retry attempts for temporary network errors.")
+public void MaxRetries(int retries) {
+  this.maxRetries = Math.max(0, retries);
+}
+
+@SimpleProperty
+public int MaxRetries() {
+  return this.maxRetries;
+}
+
+@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_INTEGER,
+    defaultValue = "1000")
+@SimpleProperty(category = PropertyCategory.ADVANCED,
+    description = "Initial delay (in milliseconds) before retrying a failed request.")
+public void RetryDelay(int delay) {
+  this.retryDelayMs = Math.max(100, delay);
+}
+
+@SimpleProperty
+public int RetryDelay() {
+  return this.retryDelayMs;
+}
+
+@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "True")
+@SimpleProperty(category = PropertyCategory.ADVANCED,
+    description = "Enable or disable automatic retry on temporary network failures.")
+public void EnableRetry(boolean enable) {
+  this.enableRetry = enable;
+}
+
+@SimpleProperty
+public boolean EnableRetry() {
+  return this.enableRetry;
+}
+
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHATBOT_MODEL,
     defaultValue = "")
   @SimpleProperty(description = "Set the name of the model to use. " +
@@ -536,6 +605,25 @@ public final class ChatBot extends AndroidNonvisibleComponent {
    * @return the contents of the stream
    * @throws IOException if it cannot read from the http connection
    */
+
+  private static class RetryableException extends Exception {
+  RetryableException(String message) {
+    super(message);
+  }
+}
+
+  private boolean isRetryable(int responseCode, Exception e) {
+  if (e instanceof IOException) {
+    return true;
+  }
+
+  return responseCode == 500 ||
+         responseCode == 502 ||
+         responseCode == 503 ||
+         responseCode == 504 ||
+         responseCode == -1;
+}
+
   private static String getResponseContent(HttpsURLConnection connection, boolean error) throws IOException {
     // Use the content encoding to convert bytes to characters.
     String encoding = connection.getContentEncoding();
