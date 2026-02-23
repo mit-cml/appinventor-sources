@@ -355,6 +355,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private static final String PROPERTY_NAME_ICON = "Icon";
   private static final String PROPERTY_NAME_VCODE = "VersionCode";
   private static final String PROPERTY_NAME_VNAME = "VersionName";
+  private static final String PROPERTY_NAME_ANDROID_MIN_SDK = "AndroidMinSdk";
   private static final String PROPERTY_NAME_ANAME = "AppName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   private static final String PROPERTY_NAME_TITLEVISIBLE = "TitleVisible";
@@ -1120,7 +1121,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
 
   @Override
   protected boolean isPropertyforYail(String propertyName) {
-    if (IOS_PERMISSION_PROPERTIES.contains(propertyName)) {
+    if (IOS_PERMISSION_PROPERTIES.contains(propertyName)
+        || propertyName.equals(PROPERTY_NAME_ANDROID_MIN_SDK)) {
       // These are project-level properties, not per form.
       return false;
     }
@@ -1365,6 +1367,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_BUILD_NUMBER)) {
       setBuildNumber(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_ANDROID_MIN_SDK)) {
+        if (editor.isScreen1()) {
+            editor.getProjectEditor().changeProjectSettingsProperty(
+                SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+                SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
+                newValue);
+      } 
     } else if (
         propertyName.equals(PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION)
         || propertyName.equals(PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION)
@@ -1423,6 +1432,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,

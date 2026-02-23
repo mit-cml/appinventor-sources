@@ -9,7 +9,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
@@ -170,69 +169,31 @@ public class ProjectPropertiesDialogBox {
     List<EditableProperty> properties = categoryToProperties.get(category);
 
     for (EditableProperty property : properties) {
-
-      // container for displaying one editable property
+      // container for displaing one editable property
       FlowPanel propertyContainer = new FlowPanel();
       propertyContainer.setStyleName("ode-propertyDialogPropertyContainer");
 
-      // name
-      Label name = new Label(
-          ComponentTranslationTable.getPropertyName(property.getName()));
+      // name of the EditableProperty
+      Label name = new Label(ComponentTranslationTable.getPropertyName(property.getName()));
       name.setStyleName("ode-propertyDialogPropertyTitle");
 
-      // description
-      HTML description = new HTML(
-          ComponentTranslationTable.getPropertyDescription(property.getDescription()));
+      // Description of the property
+      HTML description = new HTML(ComponentTranslationTable.getPropertyDescription(property.getDescription()));
       description.setStyleName("ode-propertyDialogPropertyDescription");
 
+      // editor of the editor
+      PropertyEditor editor = property.getEditor();
+      editor.setStyleName("ode-propertyDialogPropertyEditor");
+
+      // add to the container
       propertyContainer.add(name);
       propertyContainer.add(description);
+      propertyContainer.add(editor);
 
-      // SPECIAL HANDLING FOR AndroidMinSdk
-      if (property.getName().equals(
-          SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK)) {
-
-        ListBox minSdkDropdown = new ListBox();
-        minSdkDropdown.setStyleName("ode-propertyDialogPropertyEditor");
-
-        String[] options = {"14","16","19","21","23","26","29","33"};
-
-        for (String opt : options) {
-          minSdkDropdown.addItem(opt);
-        }
-
-        // set current value safely
-        int index = java.util.Arrays.asList(options)
-            .indexOf(property.getValue());
-
-        if (index >= 0) {
-          minSdkDropdown.setSelectedIndex(index);
-        }
-
-        minSdkDropdown.addChangeHandler(e -> {
-          String selected = minSdkDropdown.getSelectedValue();
-
-          // 1️ Update UI property
-          property.setValue(selected);
-
-          // 2️ Update actual project settings
-          projectEditor.changeProjectSettingsProperty(
-              SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-              SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
-              selected);
-        });
-        propertyContainer.add(minSdkDropdown);
-      } else {
-
-        // default editor
-        PropertyEditor editor = property.getEditor();
-        editor.setStyleName("ode-propertyDialogPropertyEditor");
-        propertyContainer.add(editor);
-      }
-
+      // add to the main container
       propertiesContainer.add(propertyContainer);
-    }
-
+    }  
+    
     return propertiesContainer;
   }
 

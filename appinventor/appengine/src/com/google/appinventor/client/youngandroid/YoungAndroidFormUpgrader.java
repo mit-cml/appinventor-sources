@@ -1251,6 +1251,11 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 31;
     }
+    if (srcCompVersion < 32) {
+      // The AndroidMinSdk property was added.
+      // No migration required. Default value will be applied automatically.
+      srcCompVersion = 32;
+    }
 
     return srcCompVersion;
   }

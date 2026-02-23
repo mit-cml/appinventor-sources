@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 /**
  * Context menu widget implementation.
@@ -32,6 +33,8 @@ public final class ContextMenu {
     popupPanel.setGlassStyleName("none"); //No style is passed (the default grays out the window)
     menuBar = new MenuBar(true);
     menuBar.setStylePrimaryName("ode-ContextMenu");
+    menuBar.getElement().getStyle().setProperty("maxHeight", "250px");
+    menuBar.getElement().getStyle().setProperty("overflowY", "auto");
     popupPanel.add(menuBar);
   }
 

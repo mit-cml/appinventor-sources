@@ -10,6 +10,7 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET;
@@ -33,7 +34,6 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
-import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
 
 import com.google.appinventor.shared.settings.Settings;
@@ -50,7 +50,7 @@ public class YoungAndroidSettingsBuilder {
   private String qualifiedFormName = "";
   private String icon = "";
   private String versionCode = "1"; 
-  private String androidMinSdk = "14";
+  private String androidMinSdk;
   private String versionName = "1.0";
   private String usesLocation = "false";
   private String appName = "";
@@ -210,6 +210,12 @@ public class YoungAndroidSettingsBuilder {
     this.versionName = versionName;
     return this;
   }
+
+  public YoungAndroidSettingsBuilder setAndroidMinSdk(String androidMinSdk) {
+    this.androidMinSdk = androidMinSdk;
+    return this;
+  }
+
 
   public YoungAndroidSettingsBuilder setUsesLocation(String usesLocation) {
     this.usesLocation = usesLocation;
