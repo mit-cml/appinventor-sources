@@ -382,14 +382,6 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     return map;
   }
 
-  public Map<String, MockComponent> getComponentsByUUID() {
-    Map<String, MockComponent> map = Maps.newHashMap();
-    if (loadComplete) {
-      populateComponentsMapUUID(root.asMockComponent(), map);
-    }
-    return map;
-  }
-
   @Override
   public List<String> getComponentNames() {
     return new ArrayList<>(getComponents().keySet());
@@ -587,15 +579,6 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     }
   }
 
-  private void populateComponentsMapUUID(MockComponent component, Map<String, MockComponent> map) {
-    EditableProperties properties = component.getProperties();
-    map.put(properties.getPropertyValue("Uuid"), component);
-    List<MockComponent> children = component.getChildren();
-    for (MockComponent child : children) {
-      populateComponentsMapUUID(child, map);
-    }
-  }
-
   protected void onFileLoaded(String content) {
     // Set loadCompleted to true.
     // From now on, all change events will be taken seriously.
@@ -605,6 +588,8 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   public V getComponentDatabase() {
     return componentDatabase;
   }
+
+  public abstract Map<String, MockComponent> getComponentsDb();
 
   protected MockComponent createMockComponent(JSONObject properties, MockContainer container, String rootType) {
     return createMockComponent(properties, container, rootType, null);
@@ -617,6 +602,13 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   protected MockComponent createMockComponent(JSONObject propertiesObject, MockContainer parent,
       String rootType, Map<String, String> substitution) {
     Map<String, JSONValue> properties = propertiesObject.getProperties();
+
+    // Update componentsDb with new component
+    Map<String, MockComponent> componentsDb = getComponentsDb();
+    String uuid = properties.get("Uuid").asString().getString();
+    if (componentsDb.containsKey(uuid)) {
+      throw new IllegalStateException("Component with UUID \"" + uuid + "\" already exists.");
+    }
 
     // Component name and type
     String componentType = properties.get("$Type").asString().getString();
@@ -691,6 +683,7 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
         mockComponent.changeProperty(name, properties.get(name).asString().getString());
       }
     }
+    componentsDb.put(mockComponent.getUuid(), mockComponent);
 
     // Add component type to the blocks editor
     BlocksEditor<?, ?> blockEditor = (BlocksEditor<?, ?>) projectEditor.getFileEditor(sourceNode.getEntityName(), BlocksEditor.EDITOR_TYPE);

@@ -1211,6 +1211,15 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   
   @JsMethod
   public void delete() {
+    
+    // Removes component from componentsDb
+    if (editor instanceof YaFormEditor) {
+      YaFormEditor formEditor = (YaFormEditor) editor;
+      Map<String, MockComponent> componentsDb = formEditor.getComponentsDb();
+      String uuid = this.getUuid();
+      componentsDb.remove(uuid);
+    }
+
     this.editor.getProjectEditor().clearLocation(getName());
     getRoot().select(null);
     // Pass true to indicate that the component is being permanently deleted.

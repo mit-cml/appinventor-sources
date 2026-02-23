@@ -128,6 +128,11 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   }
 
   @Override
+  public Map<String, MockComponent> getComponentsDb() {
+    return componentsDb;
+  }
+
+  @Override
   public AbstractPalettePanel.Filter getPaletteFilter() {
     return paletteFilter;
   }
@@ -318,6 +323,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         content, JSON_PARSER);
     try {
       root = createMockForm(propertiesObject.getProperties().get("Properties").asObject());
+      componentsDb.put("0", root);
     } catch(ComponentNotFoundException e) {
       Ode.getInstance().recordCorruptProject(getProjectId(), getProjectRootNode().getName(),
           e.getMessage());
@@ -536,15 +542,18 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   /**
    * Gets the mock component of the given UUID.
    * 
-   * Note: a little hacky, creating a new component map each time
    * 
    * @param UUID the component UUID
    * @return the MockComponent of the specified UUID
    */
   @JsMethod
-  public MockComponent getComponent(String uuid) {
-    Map<String, MockComponent> componentMap = getComponentsByUUID();
-    return componentMap.get(uuid);
+  public MockComponent getComponentByUuid(String uuid) {
+    LOG.info("componentsDb keys: " + componentsDb.keySet());
+    MockComponent component = componentsDb.get(uuid);
+    if (component == null) {
+      throw new IllegalStateException("No component exists with UUID \"" + uuid + "\"");
+    }
+    return component;
   }
 
   /**
