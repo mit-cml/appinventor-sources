@@ -5823,4 +5823,16 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
   @Description("Message shown in the info popup when the user first opens the Neo UI.")
   String neoWelcomeMessage();
+
+  // Below, branding branch only
+  // Donation Related Messages
+  @DefaultMessage("Donate to App Inventor")
+  @Description("Button used to start a donation to MIT App Inventor")
+  String donateButton();
+
+  @DefaultMessage("Please Donate to MIT App Inventor to help keep it available to all for free!")
+  @Description("Tooltip for button used to start a donation to MIT App Inventor")
+  String donateTooltip();
+  // End of Donate Related Messages
+
 }
