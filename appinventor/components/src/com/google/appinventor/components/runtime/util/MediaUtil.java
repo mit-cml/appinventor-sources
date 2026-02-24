@@ -15,9 +15,11 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -550,10 +552,13 @@ public class MediaUtil {
         buf = null;
         try {
           bis.mark(read);
+          int exifOrientation = getExifOrientation(bis);
           BitmapFactory.Options options = getBitmapOptions(form, bis, mediaPath);
           bis.reset();
+          Bitmap decodedBitmap = decodeStream(bis, null, options);
+          Bitmap orientedBitmap = applyExifRotation(decodedBitmap, exifOrientation);
           BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(),
-              decodeStream(bis, null, options));
+              orientedBitmap);
           // If options.inSampleSize == 1, then the image was not unreasonably large and may represent
           // the actual size the user intended for the image. However we still have to scale it by
           // the device density.
@@ -679,6 +684,116 @@ public class MediaUtil {
       " display width = " + display.getWidth() + " display height = " + display.getHeight());
     options.inSampleSize = sampleSize;
     return options;
+  }
+
+  /**
+   * Reads the EXIF orientation tag from the given image stream.
+   *
+   * <p>The stream is marked before reading and reset afterward so that subsequent
+   * reads (e.g. bitmap decoding) see the full image data from the beginning.
+   *
+   * <p>On API 24+, uses the {@link ExifInterface#ExifInterface(InputStream)} constructor directly.
+   * On older devices, writes the stream contents to a temporary file and uses
+   * {@link ExifInterface#ExifInterface(String)} since the InputStream constructor is unavailable
+   * before API 24.
+   *
+   * @param bis a {@link ByteArrayInputStream} containing the image data, already marked by the
+   *            caller so that it can be reset after EXIF reading
+   * @return one of the ExifInterface.ORIENTATION_* constants
+   */
+  private static int getExifOrientation(ByteArrayInputStream bis) {
+    File tempFile = null;
+    try {
+      ExifInterface exif;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        // API 24+ supports the ExifInterface(InputStream) constructor, so we can
+        // read directly from the stream without a temp file.
+        exif = new ExifInterface(bis);
+      } else {
+        // Prior to API 24, ExifInterface only accepts a file path. Write the
+        // stream contents to a temporary file so we can still read the EXIF data
+        // on devices running API 14–23.
+        tempFile = File.createTempFile("exif_", null);
+        java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile);
+        try {
+          byte[] buffer = new byte[4096];
+          int len;
+          while ((len = bis.read(buffer)) != -1) {
+            fos.write(buffer, 0, len);
+          }
+        } finally {
+          fos.close();
+        }
+        exif = new ExifInterface(tempFile.getAbsolutePath());
+      }
+      return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+          ExifInterface.ORIENTATION_UNDEFINED);
+    } catch (IOException e) {
+      Log.w(LOG_TAG, "Failed to read EXIF orientation", e);
+    } finally {
+      // Reset the stream so the caller can read from the beginning for bitmap decoding.
+      bis.reset();
+      // Clean up the temporary file after we are completely done with it.
+      if (tempFile != null) {
+        tempFile.delete();
+      }
+    }
+    return ExifInterface.ORIENTATION_UNDEFINED;
+  }
+
+  /**
+   * Applies the rotation/flip indicated by the EXIF orientation value to the given bitmap.
+   *
+   * <p>If the orientation is normal/undefined or the transformation fails, the original bitmap
+   * is returned unchanged.
+   *
+   * @param bitmap the source bitmap
+   * @param orientation one of the ExifInterface.ORIENTATION_* constants
+   * @return a correctly oriented bitmap (may be the same instance if no transform was needed)
+   */
+  private static Bitmap applyExifRotation(Bitmap bitmap, int orientation) {
+    if (bitmap == null) {
+      return null;
+    }
+    Matrix matrix = new Matrix();
+    switch (orientation) {
+      case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+        matrix.setScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_180:
+        matrix.setRotate(180);
+        break;
+      case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+        matrix.setScale(1, -1);
+        break;
+      case ExifInterface.ORIENTATION_TRANSPOSE:
+        matrix.setRotate(90);
+        matrix.postScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_90:
+        matrix.setRotate(90);
+        break;
+      case ExifInterface.ORIENTATION_TRANSVERSE:
+        matrix.setRotate(-90);
+        matrix.postScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_270:
+        matrix.setRotate(-90);
+        break;
+      case ExifInterface.ORIENTATION_NORMAL:
+      case ExifInterface.ORIENTATION_UNDEFINED:
+      default:
+        return bitmap;
+    }
+    try {
+      Bitmap oriented = Bitmap.createBitmap(bitmap, 0, 0,
+          bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+      bitmap.recycle();
+      return oriented;
+    } catch (OutOfMemoryError e) {
+      Log.w(LOG_TAG, "Out of memory applying EXIF rotation; returning original bitmap", e);
+      return bitmap;
+    }
   }
 
   // SoundPool related methods
