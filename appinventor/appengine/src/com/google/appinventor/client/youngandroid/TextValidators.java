@@ -88,12 +88,12 @@ public final class TextValidators {
     if (existing != null) {
       if (existing.isInTrash()) {
         Window.alert(MESSAGES.duplicateTrashProjectNameError(canonicalName));
-      return ProjectNameStatus.DUPLICATEINTRASH;
-  }
-  if (!quietly) {
-    Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
-  }
-      return ProjectNameStatus.DUPLICATE;
+        return ProjectNameStatus.DUPLICATEINTRASH;
+      }
+        if (!quietly) {
+          Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
+        }
+        return ProjectNameStatus.DUPLICATE;
     }
     return ProjectNameStatus.SUCCESS;
   }
@@ -155,7 +155,7 @@ public final class TextValidators {
    */
   public static ProjectNameStatus checkNewFolderName(String folderName, ProjectFolder parent) {
     // Check the format of the folder name
-     if (!isValidIdentifier(folderName)) {
+    if (!isValidIdentifier(folderName)) {
       // TODO: Decide whether to use new strings
       Window.alert(MESSAGES.malformedProjectNameError());
       return ProjectNameStatus.INVALIDFORMAT;
