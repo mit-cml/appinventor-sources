@@ -441,7 +441,7 @@ public final class ListView extends AndroidViewComponent {
     // Now, we need to change SelectionIndex to correspond to Selection.
     boolean found = false;
 
-for (int i = 0; i < items.size(); i++) {
+  for (int i = 0; i < items.size(); i++) {
   Object item = items.get(i);
   if (item instanceof YailDictionary) {
     YailDictionary dict = (YailDictionary) item;
@@ -1200,10 +1200,10 @@ for (int i = 0; i < items.size(); i++) {
     if (itemsList == null || itemsList.isEmpty()) {
       return;
     } 
-      int positionStart = items.size();
-      int itemCount = itemsList.size();
-      items.addAll(itemsList);
-      updateAdapterData();
+    int positionStart = items.size();
+    int itemCount = itemsList.size();
+    items.addAll(itemsList);
+    updateAdapterData();
     if (listAdapterWithRecyclerView != null) {
       listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
@@ -1254,10 +1254,10 @@ for (int i = 0; i < items.size(); i++) {
     if (itemsList == null || itemsList.isEmpty()) {
       return;
     }
-      int positionStart = index - 1;
-      int itemCount = itemsList.size();
-      items.addAll(positionStart, itemsList);
-      updateAdapterData();
+    int positionStart = index - 1;
+    int itemCount = itemsList.size();
+    items.addAll(positionStart, itemsList);
+    updateAdapterData();
     if (listAdapterWithRecyclerView != null) {
       listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
