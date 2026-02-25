@@ -1188,7 +1188,7 @@ for (int i = 0; i < items.size(); i++) {
     }
     updateAdapterData();
     if (listAdapterWithRecyclerView != null) {
-    listAdapterWithRecyclerView.notifyItemInserted(insertedIndex);
+      listAdapterWithRecyclerView.notifyItemInserted(insertedIndex);
     }
   }
 
@@ -1205,7 +1205,7 @@ for (int i = 0; i < items.size(); i++) {
       items.addAll(itemsList);
       updateAdapterData();
     if (listAdapterWithRecyclerView != null) {
-    listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
+      listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
   }
 
@@ -1259,7 +1259,7 @@ for (int i = 0; i < items.size(); i++) {
       items.addAll(positionStart, itemsList);
       updateAdapterData();
     if (listAdapterWithRecyclerView != null) {
-    listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
+      listAdapterWithRecyclerView.notifyItemRangeInserted(positionStart, itemCount);
     }
   }
 
