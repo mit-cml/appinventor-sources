@@ -63,6 +63,5 @@ public class TextValidatorsTest extends TestCase {
     ProjectNameStatus status =
     TextValidators.checkNewProjectName("  MyApp  ", false);
     assertEquals(ProjectNameStatus.DUPLICATE, status);
-}
-
+  }
 }
