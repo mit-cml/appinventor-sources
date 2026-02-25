@@ -1368,12 +1368,12 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     } else if (propertyName.equals(PROPERTY_NAME_BUILD_NUMBER)) {
       setBuildNumber(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ANDROID_MIN_SDK)) {
-        if (editor.isScreen1()) {
-            editor.getProjectEditor().changeProjectSettingsProperty(
-                SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-                SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
-                newValue);
-      } 
+      if (editor.isScreen1()) {
+        editor.getProjectEditor().changeProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
+            newValue);
+      }
     } else if (
         propertyName.equals(PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION)
         || propertyName.equals(PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION)

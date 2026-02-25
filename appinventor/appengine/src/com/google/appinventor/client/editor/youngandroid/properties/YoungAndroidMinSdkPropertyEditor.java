@@ -1,3 +1,8 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2026 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
@@ -5,18 +10,20 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 public class YoungAndroidMinSdkPropertyEditor extends ChoicePropertyEditor {
-    public YoungAndroidMinSdkPropertyEditor() {
-        super(buildChoices());
-    }
-    private static Choice[] buildChoices() {
-        int min = ComponentConstants.APP_INVENTOR_MIN_SDK;
-        int max = YaVersion.TARGET_SDK_VERSION;
 
-        Choice[] choices = new Choice[max - min + 1];
+  public YoungAndroidMinSdkPropertyEditor() {
+    super(buildChoices());
+  }
 
-        for (int i = min; i <= max; i++) {
-            choices[i - min] = new Choice(String.valueOf(i), String.valueOf(i));
-        }
-        return choices;
+  private static Choice[] buildChoices() {
+    int min = ComponentConstants.APP_INVENTOR_MIN_SDK;
+    int max = YaVersion.TARGET_SDK_VERSION;
+
+    Choice[] choices = new Choice[max - min + 1];
+
+    for (int i = min; i <= max; i++) {
+      choices[i - min] = new Choice(String.valueOf(i), String.valueOf(i));
     }
+    return choices;
+  }
 }

@@ -8,10 +8,10 @@ package com.google.appinventor.client.settings.project;
 
 import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
 
-import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
 /**
