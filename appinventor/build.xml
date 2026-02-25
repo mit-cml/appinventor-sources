@@ -115,6 +115,30 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
   </target>
 
+  <target name="package">
+    <mkdir dir="package"/>
+    <jar destfile="package/appinventor.war">
+      <fileset dir="appengine/build/war">
+        <include name="**"/>
+      </fileset>
+    </jar>
+    <mkdir dir="package/buildserver"/>
+    <copy todir="package/buildserver">
+      <fileset dir="buildserver/build/run/lib">
+        <include name="**"/>
+      </fileset>
+    </copy>
+    <copy tofile="package/appinventor.tpl" file="../jettybase/appinventor.tpl" />
+    <copy tofile="package/appinventor.ini.sample" file="../jettybase/appinventor.ini.sample"/>
+    <copy tofile="package/starter.jar" file="build/starter.jar" />
+    <copy tofile="package/README.txt" file="starter/README.txt" />
+    <jar destfile="standalone.zip">
+      <fileset dir="package">
+        <include name="**"/>
+      </fileset>
+    </jar>
+  </target>
+
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>

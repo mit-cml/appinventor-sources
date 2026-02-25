@@ -37,7 +37,45 @@
 
   <!-- Servlets -->
 
-  <!-- Generate Login Page for OpenID -->
+  <servlet>
+    <servlet-name>nocache</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <init-param>
+      <param-name>cacheControl</param-name>
+      <param-value>no-cache, must-revalidate</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>nocache</servlet-name>
+    <url-pattern>/ode/ode.nocache.js</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>longcache</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <init-param>
+      <param-name>cacheControl</param-name>
+      <param-value>public, max-age=31536000</param-value> <!-- 365 days -->
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>longcache</servlet-name>
+    <url-pattern>*.cache.js</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <init-param>
+      <param-name>cacheControl</param-name>
+      <param-value>public, max-age=3600</param-value>
+    </init-param>
+  </servlet>
+
+  <!-- Generate Login Page -->
 
   <servlet>
     <servlet-name>LoginServlet</servlet-name>
@@ -48,17 +86,6 @@
     <url-pattern>/login/*</url-pattern>
   </servlet-mapping>
 
-  <!-- Remote API -->
-  <servlet>
-    <display-name>Remote API Servlet</display-name>
-    <servlet-name>RemoteApiServlet</servlet-name>
-    <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>RemoteApiServlet</servlet-name>
-    <url-pattern>/remote_api</url-pattern>
-  </servlet-mapping>
 
   <!-- REST interface Servlet -->
 
@@ -229,6 +256,10 @@
     <servlet-name>firebaseAuthService</servlet-name>
   </filter-mapping>
 
+  <mime-mapping>
+    <extension>js</extension>
+    <mime-type>application/javascript; charset=utf-8</mime-type>
+  </mime-mapping>
   <!-- TODO: Optionally add a <welcome-file-list> tag to display a welcome file. -->
 
   <!-- components -->

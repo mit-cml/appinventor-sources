@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<project name="starter" default="all">
+  <description>
+    Starter Program for Packaged App Inventor Server.
+    This code starts the main server and the build server.
+  </description>
+
+  <import file="../build-common.xml" />
+
+  <property name="locallib.dir" location="${appinventor.dir}/starter/lib" />
+  <property name="starter.pkg" value="edu/mit/appinventor" />
+
+  <target name="all"
+          depends="init">
+    <javac destdir="${class.dir}"
+           sourcepath=""
+           srcdir="${src.dir}"
+           debug="true"
+           debuglevel="lines,vars,source"
+           includeantruntime="false">
+      <include name="${starter.pkg}/*.java" />
+      <classpath>
+        <pathelement location="${locallib.dir}/ini4j-0.5.2.jar" />
+        <pathelement location="${locallib.dir}/KeyczarTool.jar" />
+      </classpath>
+    </javac>
+
+    <manifest file="${build.dir}/manifest.mf">
+      <attribute name="Main-class" value="edu.mit.appinventor.StartSystem"/>
+    </manifest>
+
+    <jar destfile="${build.dir}/starter.jar"
+         manifest="${build.dir}/manifest.mf">
+      <fileset dir="${class.dir}"/>
+      <zipgroupfileset dir="${locallib.dir}" includes="*.jar" />
+    </jar>
+  </target>
+
+</project>

@@ -24,6 +24,8 @@ message token {
     DELETEACCOUNT = 21;                       // Delete the account identified by uuid and name
                                               // Note: Purposely using a high number as this is an
                                               // infrequent event
+    GETPROJECTS = 22;                         // Get information on user's projects (name, id, dates)
+    CHECKACCOUNT = 23;                        // Check the validity of the account in the uuid field
   }
 
   required CommandType command = 1;
@@ -49,4 +51,10 @@ message token {
   optional bool anon = 28;                    // Alexa Account is anonymous
 }
 
+message envelope {
+  optional uint64 version = 1 [default = 1];
+  optional uint64 keyid = 2 [default = 1];
+  optional bytes unsigned = 3;  // The serialized token from above
+  optional bytes signature = 4; // HMAC-SHA256 of unsigned
+}
 

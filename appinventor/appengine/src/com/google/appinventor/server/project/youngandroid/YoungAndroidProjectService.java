@@ -15,8 +15,6 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 import static com.google.appinventor.server.ios.ProvisioningProfileUtil.validateProvisioningProfile;
 
-import com.google.appengine.api.utils.SystemProperty;
-import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
@@ -120,8 +118,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+
+  // host[:port] to use to contact us from the buildserver to return apk
+  // and build.out
+  private static final Flag<String> buildServerReturn =
+      Flag.createFlag("build.server.return", "localhost:8888");
+
   private static final Flag<String> buildServerPassword =
       Flag.createFlag("build.server.password", "");
+
   // host[:port] to use for connecting to the second build server
   private static final Flag<String> buildServerHost2 =
       Flag.createFlag("build2.server.host", "");
@@ -287,7 +292,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
 
   @Override
-  public long copyProject(String userId, long oldProjectId, String newName) {
+  public long copyProject(String userId, long oldProjectId, String newName, String newUserId) {
+    // By default we assume that the project ownership doesn't change
+    if (newUserId == null) {
+      newUserId = userId;
+    }
     String oldName = storageIo.getProjectName(userId, oldProjectId);
     String oldProjectSettings = storageIo.loadProjectSettings(userId, oldProjectId);
     String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
@@ -297,6 +306,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
     newProject.setProjectHistory(oldProjectHistory);
+
+    String qualifiedFormName = StringUtils.getQualifiedFormName(
+      storageIo.getUser(newUserId).getUserEmail(), newName);
+    String newsrcDirectory = getSourceDirectory(qualifiedFormName);
 
     // Get the old project's source files and add them to new project, modifying where necessary.
     for (String oldSourceFileName : storageIo.getProjectSourceFiles(userId, oldProjectId)) {
@@ -309,16 +322,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         newSourceFileName = oldSourceFileName;
         // For the contents of the project properties file, generate the file with the new project
         // name and qualified name.
-        String qualifiedFormName = StringUtils.getQualifiedFormName(
-            storageIo.getUser(userId).getUserEmail(), newName);
         builder.setProjectName(newName).setQualifiedFormName(qualifiedFormName);
         newContents = builder.toProperties();
-      } else {
+      } else if (oldSourceFileName.startsWith(SRC_FOLDER)) {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
         // Replace the old name with the new name.
-        newSourceFileName = StringUtils.replaceLastOccurrence(oldSourceFileName,
-            "/" + oldName + "/", "/" + newName + "/");
+        newSourceFileName = newsrcDirectory + "/" + StorageUtil.basename(oldSourceFileName);
+      } else {
+        newSourceFileName = oldSourceFileName;
       }
 
       if (newContents != null) {
@@ -335,7 +347,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Create the new project and return the new project's id.
-    return storageIo.createProject(userId, newProject, builder.build());
+    return storageIo.createProject(newUserId, newProject, builder.build());
   }
 
   @Override
@@ -638,22 +650,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (RuntimeException e) {
-      // In particular, we often see RequestTooLargeException (if the zip is too
-      // big) and ApiProxyException. There may be others.
       Throwable wrappedException = e;
-      if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
-        int zipFileLength = zipFile.getContent().length;
-        if (zipFileLength >= MAX_PROJECT_SIZE.get() * MB) {
-          return fileTooBigResult(zipFileLength);
-        } else {
-          wrappedException = new IllegalArgumentException(
-              "Sorry, project was too large to package (" + zipFileLength + " bytes)");
-        }
-      } else {
-        // Unexpected runtime error
-        CrashReport.createAndLogError(LOG, null,
-            buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
-      }
+      CrashReport.createAndLogError(LOG, null,
+          buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
       return new RpcResult(false, "", wrappedException.getMessage());
     }
     return new RpcResult(true, "Building " + projectName, "");
@@ -840,18 +839,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   private String getCurrentHost() {
-    if (Server.isProductionServer()) {
-      if (StringUtils.isNullOrEmpty(appengineHost.get())) {
-        String applicationVersionId = SystemProperty.applicationVersion.get();
-        String applicationId = SystemProperty.applicationId.get();
-        return applicationVersionId + "." + applicationId + ".appspot.com";
-      } else {
-        return appengineHost.get();
-      }
-    } else {
-      // TODO(user): Figure out how to make this more generic
-      return "localhost:8888";
-    }
+    return buildServerReturn.get();
   }
 
   /*
