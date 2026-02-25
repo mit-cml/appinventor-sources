@@ -1034,7 +1034,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             context.runtimeError.hide();
             context.runtimeError = null;
         }
-        context.runtimeError = BlocklyPanel_createDialog(Blockly.Msg.REPL_RUNTIME_ERROR, message, Blockly.Msg.REPL_DISMISS, false, null, 1, function() {
+        context.runtimeError = new Blockly.Util.Dialog(Blockly.Msg.REPL_RUNTIME_ERROR, message, Blockly.Msg.REPL_DISMISS, false, null, 1, function() {
             context.runtimeError.hide();
             context.runtimeError = null;
         });
