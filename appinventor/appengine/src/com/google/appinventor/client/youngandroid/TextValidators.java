@@ -12,10 +12,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Window;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectManager;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 
 import java.util.Arrays;
 import java.util.List;
@@ -90,10 +90,10 @@ public final class TextValidators {
         Window.alert(MESSAGES.duplicateTrashProjectNameError(canonicalName));
         return ProjectNameStatus.DUPLICATEINTRASH;
       }
-        if (!quietly) {
-          Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
-        }
-        return ProjectNameStatus.DUPLICATE;
+      if (!quietly) {
+        Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
+      }
+      return ProjectNameStatus.DUPLICATE;
     }
     return ProjectNameStatus.SUCCESS;
   }
