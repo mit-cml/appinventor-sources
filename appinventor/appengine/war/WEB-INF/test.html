@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Global Asset Upload Tester</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input[type="file"] {
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .note {
+      margin-bottom: 15px;
+      font-size: 0.95em;
+      color: #444;
+    }
+    code {
+      background-color: #eee;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Global Asset Upload Tester</h2>
+
+  <p class="note">
+    ⚠️ <strong>Important:</strong> Edit the form <code>action</code> URL in this file before each upload.<br>
+    The upload will go to the path:
+    <br><br>
+    <code>http://localhost:8888/ode/upload/globalasset/_global_/your_folder/your_file.ext</code>
+  </p>
+
+  <!-- ✅ Change this action before uploading -->
+  <form id="uploadForm"
+        action="http://localhost:8888/ode/upload/globalasset/_global_/test_folder/test_image.png"
+        method="post"
+        enctype="multipart/form-data">
+        
+    <div>
+      <label for="uploadUserFile">Choose File:</label><br>
+      <input type="file" name="uploadUserFile" id="uploadUserFile" required>
+    </div>
+
+    <button type="submit">Upload to Global Asset Store</button>
+  </form>
+
+  <p class="note">
+    This sends a POST request with the file field named <code>uploadUserFile</code> as required by UploadServlet.
+  </p>
+
+  <p>
+    <strong>Currently uploading to path:</strong><br>
+    <code id="currentActionPath">(loading...)</code>
+  </p>
+
+  <script>
+    try {
+      const formEl = document.getElementById('uploadForm');
+      const actionUrl = new URL(formEl.action);
+      const segments = actionUrl.pathname.split('/');
+      const globalAssetIndex = segments.indexOf('globalasset');
+      if (globalAssetIndex !== -1 && globalAssetIndex < segments.length - 1) {
+        const globalPath = segments.slice(globalAssetIndex + 1).join('/');
+        document.getElementById('currentActionPath').textContent = globalPath;
+      }
+    } catch (e) {
+      document.getElementById('currentActionPath').textContent = 'Error parsing path';
+    }
+  </script>
+</body>
+</html>

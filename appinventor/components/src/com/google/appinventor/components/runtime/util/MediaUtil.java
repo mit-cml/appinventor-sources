@@ -108,16 +108,23 @@ public class MediaUtil {
    */
   @SuppressLint("SdCardPath")
   private static MediaSource determineMediaSource(Form form, String mediaPath) {
+    Log.d(LOG_TAG, "*** MEDIA SOURCE DEBUG *** mediaPath: " + mediaPath);
+    Log.d(LOG_TAG, "Form type: " + form.getClass().getSimpleName());
+    
     if (mediaPath.startsWith(QUtil.getExternalStoragePath(form))
         || mediaPath.startsWith("/sdcard/")) {
+      Log.d(LOG_TAG, "Determined source: SDCARD");
       return MediaSource.SDCARD;
 
     } else if (mediaPath.startsWith("content://contacts/")) {
+      Log.d(LOG_TAG, "Determined source: CONTACT_URI");
       return MediaSource.CONTACT_URI;
 
     } else if (mediaPath.startsWith("content://")) {
+      Log.d(LOG_TAG, "Determined source: CONTENT_URI");
       return MediaSource.CONTENT_URI;
     } else if (mediaPath.startsWith("/data/")) {
+      Log.d(LOG_TAG, "Determined source: PRIVATE_DATA");
       return MediaSource.PRIVATE_DATA;
     }
 
@@ -126,11 +133,14 @@ public class MediaUtil {
       // It's a well formed URL.
       if (mediaPath.startsWith("file:")) {
         if (url.getPath().startsWith("/android_asset/")) {
+          Log.d(LOG_TAG, "Determined source: ASSET");
           return MediaSource.ASSET;
         }
+        Log.d(LOG_TAG, "Determined source: FILE_URL");
         return MediaSource.FILE_URL;
       }
 
+      Log.d(LOG_TAG, "Determined source: URL");
       return MediaSource.URL;
 
     } catch (MalformedURLException e) {
@@ -138,12 +148,16 @@ public class MediaUtil {
     }
 
     if (form instanceof ReplForm) {
-      if (((ReplForm)form).isAssetsLoaded())
+      if (((ReplForm)form).isAssetsLoaded()) {
+        Log.d(LOG_TAG, "Determined source: REPL_ASSET (assets loaded) ***");
         return MediaSource.REPL_ASSET;
-      else
+      } else {
+        Log.d(LOG_TAG, "Determined source: ASSET (assets not loaded) ***");
         return MediaSource.ASSET;
+      }
     }
 
+    Log.d(LOG_TAG, "Determined source: ASSET (default) ***");
     return MediaSource.ASSET;
   }
 
@@ -295,7 +309,13 @@ public class MediaUtil {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
         try {
-          return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
+          // Strip "assets/" prefix if present, since getAssetPath() will add the appropriate path
+          String assetName = mediaPath;
+          if (mediaPath.startsWith("assets/")) {
+            assetName = mediaPath.substring("assets/".length());
+            Log.d(LOG_TAG, "Stripped assets/ prefix from " + mediaPath + " -> " + assetName);
+          }
+          return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(assetName))));
         } catch (Exception e) {
           // URI.create can throw IllegalArgumentException under certain cirumstances
           // on certain platforms. This crashes the Companion, which makes our crash
@@ -728,7 +748,12 @@ public class MediaUtil {
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
-        return soundPool.load(fileUrlToFilePath(form.getAssetPath(mediaPath)), 1);
+        // Strip "assets/" prefix if present, since getAssetPath() will add the appropriate path
+        String assetName = mediaPath;
+        if (mediaPath.startsWith("assets/")) {
+          assetName = mediaPath.substring("assets/".length());
+        }
+        return soundPool.load(fileUrlToFilePath(form.getAssetPath(assetName)), 1);
 
       case SDCARD:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
@@ -788,7 +813,12 @@ public class MediaUtil {
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
-        mediaPlayer.setDataSource(fileUrlToFilePath(form.getAssetPath(mediaPath)));
+        // Strip "assets/" prefix if present, since getAssetPath() will add the appropriate path
+        String assetName = mediaPath;
+        if (mediaPath.startsWith("assets/")) {
+          assetName = mediaPath.substring("assets/".length());
+        }
+        mediaPlayer.setDataSource(fileUrlToFilePath(form.getAssetPath(assetName)));
         return;
 
       case SDCARD:
@@ -852,7 +882,12 @@ public class MediaUtil {
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
-        videoView.setVideoPath(fileUrlToFilePath(form.getAssetPath(mediaPath)));
+        // Strip "assets/" prefix if present, since getAssetPath() will add the appropriate path
+        String assetName = mediaPath;
+        if (mediaPath.startsWith("assets/")) {
+          assetName = mediaPath.substring("assets/".length());
+        }
+        videoView.setVideoPath(fileUrlToFilePath(form.getAssetPath(assetName)));
         return;
 
       case SDCARD:

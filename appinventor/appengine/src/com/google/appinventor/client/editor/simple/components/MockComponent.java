@@ -40,8 +40,10 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.ComponentDefinition;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
@@ -948,11 +950,43 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Returns null if the image property value is blank or not recognized as an
    * asset.
    */
-  protected String convertImagePropertyValueToUrl(String text) {
-    if (text.length() > 0) {
-      ProjectNode asset = getAssetNode(text);
-      if (asset != null) {
-        return StorageUtil.getFileUrl(asset.getProjectId(), asset.getFileId());
+  protected String convertImagePropertyValueToUrl(String fileIdOrName) {
+    if (fileIdOrName != null && !fileIdOrName.isEmpty()) {
+      long projectId = editor.getProjectId(); // Needed for project assets
+
+      if (fileIdOrName.startsWith("_global_/")) {
+        // It's a global asset. Use the DOWNLOAD_USERFILE endpoint.
+        // The path is already the full path needed by DOWNLOAD_USERFILE.
+        // UploadServlet now routes /ode/upload/globalasset/* to use importUserFile,
+        // so downloads should also use the userfile path.
+        // Add cache-busting parameter to prevent stale asset display
+        // Uses the same pattern as StorageUtil.getFileUrl() for consistency
+        return ServerLayout.ODE_BASEURL + ServerLayout.DOWNLOAD_SERVLET_BASE +
+               ServerLayout.DOWNLOAD_USERFILE + "/" + URL.encodePathSegment(fileIdOrName) +
+               "?t=" + System.currentTimeMillis();
+      } else if (fileIdOrName.startsWith("assets/_global_/")) {
+        // It's a global asset that was imported into the project.
+        // It should be treated as a regular project asset, not a global asset.
+        // Use the same method as regular project assets.
+        return StorageUtil.getFileUrl(projectId, fileIdOrName);
+      } else {
+        // Assume it's a project asset.
+        // It could be a full path like "assets/image.png" or a simple name "image.png".
+        // StorageUtil.getFileUrl expects the path relative to the project root (e.g., "assets/image.png").
+
+        String effectivePath = fileIdOrName;
+        if (!fileIdOrName.contains("/")) {
+          // Simple name, attempt to resolve to a full project asset path.
+          ProjectNode asset = getAssetNode(fileIdOrName); // getAssetNode matches by simple name
+          if (asset != null) {
+            effectivePath = asset.getFileId(); // This is typically "assets/image.png"
+          } else {
+            // Simple name, not found as a project asset. Cannot form a URL.
+            return null;
+          }
+        }
+        // At this point, effectivePath should be like "assets/image.png"
+        return StorageUtil.getFileUrl(projectId, effectivePath);
       }
     }
     return null;
