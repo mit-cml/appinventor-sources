@@ -5823,4 +5823,19 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
   @Description("Message shown in the info popup when the user first opens the Neo UI.")
   String neoWelcomeMessage();
+
+  @DefaultMessage("On change (0 ms)")
+  String timeIntervalOnChange();
+
+  @DefaultMessage("30 seconds")
+  String timeInterval30Seconds();
+
+  @DefaultMessage("1 minute")
+  String timeInterval1Minute();
+
+  @DefaultMessage("5 minutes")
+  String timeInterval5Minutes();
+
+  @DefaultMessage("10 minutes")
+  String timeInterval10Minutes();
 }

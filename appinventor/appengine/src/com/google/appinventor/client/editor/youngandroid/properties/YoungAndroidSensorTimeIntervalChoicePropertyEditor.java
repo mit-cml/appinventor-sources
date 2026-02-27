@@ -14,16 +14,14 @@ import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor.Cho
  *
  * @author abhagi@mit.edu (Anshul Bhagi)
  */
-public class YoungAndroidSensorTimeIntervalChoicePropertyEditor extends ChoicePropertyEditor{
+public class YoungAndroidSensorTimeIntervalChoicePropertyEditor extends ChoicePropertyEditor {
   // sensor time interval choices
   private static final Choice[] timeIntervalChoices = new Choice[] {
-    // To avoid confusion, we only show a subset of the available 
-    // sensor time interval values.
-    new Choice("0", "0"),
-    new Choice("1000", "1000"),
-    new Choice("10000", "10000"),
-    new Choice("60000", "60000"),
-    new Choice("300000", "300000"),
+      new Choice(MESSAGES.timeIntervalOnChange(), "0"),
+      new Choice(MESSAGES.timeInterval30Seconds(), "30000"),
+      new Choice(MESSAGES.timeInterval1Minute(), "60000"),
+      new Choice(MESSAGES.timeInterval5Minutes(), "300000"),
+      new Choice(MESSAGES.timeInterval10Minutes(), "600000"),
   };
 
   public YoungAndroidSensorTimeIntervalChoicePropertyEditor() {
