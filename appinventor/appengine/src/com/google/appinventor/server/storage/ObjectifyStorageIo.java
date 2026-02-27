@@ -2026,7 +2026,7 @@ public class ObjectifyStorageIo implements StorageIo {
                     fileCount.t++;
                   } else if (forAppStore && ufd.fileName.equals(APPSTORE_CREDENTIALS_FILENAME)
                       && ufd.content.length > 0) {
-                    out.putNextEntry(new ZipEntry(APPSTORE_CREDENTIALS_FILENAME));;
+                    out.putNextEntry(new ZipEntry(APPSTORE_CREDENTIALS_FILENAME));
                     out.write(ufd.content, 0, ufd.content.length);
                     out.closeEntry();
                     fileCount.t++;
