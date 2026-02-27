@@ -113,5 +113,8 @@ public final class YoungAndroidSettings extends Settings {
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "",
         EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, "",
+        EditableProperty.TYPE_INVISIBLE));
   }
 }

@@ -78,6 +78,7 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE = "NSCameraUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE = "NSSpeechRecognitionUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE = "NSLocationWhenInUseUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK = "IosMinSdk";
 
   /**
    * Settings for the Blocks editor.

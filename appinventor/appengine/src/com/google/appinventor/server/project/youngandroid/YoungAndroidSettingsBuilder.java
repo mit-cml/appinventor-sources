@@ -33,6 +33,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
 
 import com.google.appinventor.shared.settings.Settings;
@@ -73,6 +74,7 @@ public class YoungAndroidSettingsBuilder {
   private String nsCameraUsage = "";
   private String nsSpeechRecognitionUsage = "";
   private String nsLocationUsage = "";
+  private String iosMinSdk = "";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -136,6 +138,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE));
     nsLocationUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE));
+    iosMinSdk = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK));
     if (buildNumber.isEmpty()) {
       buildNumber = "1";
     }
@@ -175,6 +179,7 @@ public class YoungAndroidSettingsBuilder {
     nsCameraUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, "");
     nsSpeechRecognitionUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, "");
     nsLocationUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "");
+    iosMinSdk = properties.getProperty(YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -315,6 +320,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, iosMinSdk);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -357,6 +363,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, iosMinSdk);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
@@ -414,6 +421,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.nsCameraUsage.equals(nsCameraUsage);
       result &= other.nsSpeechRecognitionUsage.equals(nsSpeechRecognitionUsage);
       result &= other.nsLocationUsage.equals(nsLocationUsage);
+      result &= other.iosMinSdk.equals(iosMinSdk);
       return result;
     }
     return false;
