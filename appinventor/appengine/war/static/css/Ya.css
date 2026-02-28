@@ -34,7 +34,8 @@ they get cut off in Windows.
   src: url('../fonts/OpenDyslexic-Bold.otf');
 }
 
-body, html {
+body,
+html {
   height: 100%;
   width: 100%;
   padding: 0;
@@ -44,10 +45,12 @@ body, html {
   min-height: 100vh;
 }
 
-/* Standardization of icon sizes to 16px */	
-.gwt-Tree img, .ode-Icon img, .ode-Icon-selected img {	
-  width: 16px;	
-  height: 16px;	
+/* Standardization of icon sizes to 16px */
+.gwt-Tree img,
+.ode-Icon img,
+.ode-Icon-selected img {
+  width: 16px;
+  height: 16px;
 }
 
 /* Needed for Safari to position comments correctly */
@@ -73,7 +76,7 @@ body {
   height: 250px;
   background-color: white;
   position: absolute;
-  top:0;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -105,10 +108,7 @@ body {
   white-space: nowrap;
 }
 
-.gwt-ButtonLeft {
-  border-radius: 4px 0 0 4px;
-}
-
+/* Fix: Removed duplicate .gwt-ButtonLeft rule */
 .gwt-ButtonLeft {
   border-radius: 4px 0 0 4px;
 }
@@ -182,12 +182,12 @@ div.StatusPanel {
 .ode-ContextMenuItem {
   min-width: 50px;
   padding: 4px 12px;
-  -o-transition:color .1s ease-out, background .1s ease-in;
-  -ms-transition:color .1s ease-out, background .1s ease-in;
-  -moz-transition:color .1s ease-out, background .1s ease-in;
-  -webkit-transition:color .1s ease-out, background .1s ease-in;
+  -o-transition: color .1s ease-out, background .1s ease-in;
+  -ms-transition: color .1s ease-out, background .1s ease-in;
+  -moz-transition: color .1s ease-out, background .1s ease-in;
+  -webkit-transition: color .1s ease-out, background .1s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .1s ease-out, background .1s ease-in;
+  transition: color .1s ease-out, background .1s ease-in;
 }
 
 .ode-ContextMenuItem-needsChromebook,
@@ -203,12 +203,12 @@ div.StatusPanel {
   color: #ff0000;
   min-width: 50px;
   padding: 4px 12px;
-  -o-transition:color .1s ease-out, background .1s ease-in;
-  -ms-transition:color .1s ease-out, background .1s ease-in;
-  -moz-transition:color .1s ease-out, background .1s ease-in;
-  -webkit-transition:color .1s ease-out, background .1s ease-in;
+  -o-transition: color .1s ease-out, background .1s ease-in;
+  -ms-transition: color .1s ease-out, background .1s ease-in;
+  -moz-transition: color .1s ease-out, background .1s ease-in;
+  -webkit-transition: color .1s ease-out, background .1s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .1s ease-out, background .1s ease-in;
+  transition: color .1s ease-out, background .1s ease-in;
 }
 
 .ode-ContextMenuItemSeparator {
@@ -258,7 +258,7 @@ div.StatusPanel {
   border-right: 1px solid #d2d2d2;
   margin: 4px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.065);
-  flex-grow:1;
+  flex-grow: 1;
   display: flex;
   flex-flow: column;
 }
@@ -283,16 +283,16 @@ div.StatusPanel {
 }
 
 .ode-Box-header-caption-highlighted {
-  color: red; /* too strong, but use red for now */
+  color: red;
+  /* too strong, but use red for now */
 }
 
-.ode-Box-body {
-}
+.ode-Box-body {}
 
 .ode-Box-body-padding {
   padding: 6px;
   flex-grow: 1;
-  display:flex;
+  display: flex;
 }
 
 .ode-Box-body-padding>* {
@@ -303,8 +303,10 @@ div.StatusPanel {
 .ode-BoxResizeControl {
   background-color: darkgray !important;
   /* Override glass panel to 90% opacity (= 10% transparency) */
-  filter: alpha(opacity = 90) !important; /* IE */
-  opacity: 0.9 !important; /* non-IE */
+  filter: alpha(opacity=90) !important;
+  /* IE */
+  opacity: 0.9 !important;
+  /* non-IE */
   padding: 10px;
 }
 
@@ -369,14 +371,24 @@ div.StatusPanel {
   background-color: white;
   width: 100%;
   vertical-align: center;
+  transition: background-color 0.15s ease-in;
+}
+
+/* Improvement: added hover feedback for better UX */
+.ode-ProjectRow:hover {
+  background-color: #f0f4e8;
 }
 
 .ode-ProjectRow-Highlighted {
   background-color: #fff6c3;
 }
 
+.ode-ProjectRow-Highlighted:hover {
+  background-color: #ffe98a;
+}
+
 .ode-ProjectRowHidden {
-  display:none;
+  display: none;
 }
 
 .ode-ProjectElementHidden {
@@ -384,7 +396,7 @@ div.StatusPanel {
 }
 
 .ode-ProjectRowList {
-  display:contents;
+  display: contents;
 }
 
 .ode-ProjectFolderList {
@@ -562,10 +574,10 @@ div.StatusPanel {
 
 .ode-LogoText {
   font-size: 16px;
-  color: grey;
+  color: #555;
   font-weight: 500;
-  text-shadow: 0 0 0 #404040;
   margin-bottom: 15px;
+  /* Removed non-functional text-shadow: 0 0 0 */
 }
 
 .ode-TopToolbar {
@@ -601,10 +613,12 @@ div.StatusPanel {
   text-decoration: none;
 }
 
+/* Improvement: replaced blurry text-shadow hover with a clear color change for better readability */
 .ode-TopPanelLinks .gwt-Label:hover,
 .ode-TopPanelLinks .gwt-Anchor:hover,
 .ode-TopPanelLinks .gwt-TitleLabel:hover {
-  text-shadow: 0 0 1px #BABABA;
+  color: #333333;
+  text-decoration: underline;
 }
 
 .ode-TopPanelWarningLabel {
@@ -628,12 +642,10 @@ div.StatusPanel {
 
 .ode-TopPanelIconButton:hover {
   -webkit-filter: drop-shadow(0px 0px 3px #222);
-  filter:         drop-shadow(0px 0px 3px #222);
+  filter: drop-shadow(0px 0px 3px #222);
 }
 
-.ode-TopPanelIconButton:active {
-
-}
+.ode-TopPanelIconButton:active {}
 
 .ode-TopPanelButton,
 .ActionDropDown-Default,
@@ -648,12 +660,12 @@ div.StatusPanel {
   border: transparent;
   background: transparent;
   color: grey;
-  -o-transition:color .2s ease-out, background .2s ease-in;
-  -ms-transition:color .2s ease-out, background .2s ease-in;
-  -moz-transition:color .2s ease-out, background .2s ease-in;
-  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  -o-transition: color .2s ease-out, background .2s ease-in;
+  -ms-transition: color .2s ease-out, background .2s ease-in;
+  -moz-transition: color .2s ease-out, background .2s ease-in;
+  -webkit-transition: color .2s ease-out, background .2s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out, background .2s ease-in;
+  transition: color .2s ease-out, background .2s ease-in;
 }
 
 .ode-TopPanelButton:hover,
@@ -667,10 +679,12 @@ div.StatusPanel {
   outline: none;
 }
 
+/* Improvement: added visible active/pressed state for toolbar buttons */
 .ode-TopPanelButton:active,
 .ActionDropDown-Default:active,
 .ActionDropDown-Options:active {
-
+  background: #D0D0D0;
+  color: #444444;
 }
 
 .ActionDropDown-Default {
@@ -756,12 +770,13 @@ div.StatusPanel {
 .ode-NavArrow {
   border: transparent;
   background: #C2C2C2;
-  -o-transition:color .2s ease-out, background .2s ease-in;
-  -ms-transition:color .2s ease-out, background .2s ease-in;
-  -moz-transition:color .2s ease-out, background .2s ease-in;
-  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  -o-transition: color .2s ease-out, background .2s ease-in;
+  -ms-transition: color .2s ease-out, background .2s ease-in;
+  -moz-transition: color .2s ease-out, background .2s ease-in;
+  -webkit-transition: color .2s ease-out, background .2s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out, background .2s ease-in;}
+  transition: color .2s ease-out, background .2s ease-in;
+}
 
 .ode-NavArrow:hover {
   background-color: darkgray;
@@ -810,7 +825,8 @@ div.StatusPanel {
   color: #555;
 }
 
-.ode-Icon, .ode-Icon-selected {
+.ode-Icon,
+.ode-Icon-selected {
   font-size: small;
   padding: 2px 4px 2px 4px;
 }
@@ -849,7 +865,8 @@ div.StatusPanel {
   font-size: small;
 }
 
-.gwt-VerticalSplitPanel, .gwt-HorizontalSplitPanel {
+.gwt-VerticalSplitPanel,
+.gwt-HorizontalSplitPanel {
   background: white;
 }
 
@@ -1126,7 +1143,8 @@ div.StatusPanel {
 }
 
 .ode-SimplePaletteItem {
-  background-color: white; /* needed on Firefox */
+  background-color: white;
+  /* needed on Firefox */
   height: 15px;
   cursor: pointer;
   padding: 5px;
@@ -1241,12 +1259,12 @@ div.StatusPanel {
   display: inline-block;
   white-space: nowrap;
 
-  -o-transition:color .2s ease-out, background-color .2s ease-in;
-  -ms-transition:color .2s ease-out, background-color .2s ease-in;
-  -moz-transition:color .2s ease-out, background-color .2s ease-in;
-  -webkit-transition:color .2s ease-out, background-color .2s ease-in;
+  -o-transition: color .2s ease-out, background-color .2s ease-in;
+  -ms-transition: color .2s ease-out, background-color .2s ease-in;
+  -moz-transition: color .2s ease-out, background-color .2s ease-in;
+  -webkit-transition: color .2s ease-out, background-color .2s ease-in;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out, background .2s ease-in;
+  transition: color .2s ease-out, background .2s ease-in;
 }
 
 .ode-ChoicePropertyEditor:hover {
@@ -1352,11 +1370,13 @@ select.ode-PropertyEditor[disabled] {
   background-size: 100% 100%;
   padding: 15px 56px 12px 64px;
 }
+
 .ode-SimpleMockFormPhonePortraitTablet {
   background: url(../images/phonePortraitTablet.png) no-repeat right top;
   background-size: 100% 100%;
   padding: 64px 13px 55px 13px;
 }
+
 .ode-SimpleMockFormPhoneLandscapeMonitor {
   background: url(../images/phoneLandscapeMonitor.png) no-repeat right top;
   background-size: 100% 100%;
@@ -1368,6 +1388,7 @@ select.ode-PropertyEditor[disabled] {
   background-size: 100% 100%;
   padding: 99px 36px 75px 34px;
 }
+
 /* ==== end: skins for Android */
 
 .ode-SimpleMockForm-selected {
@@ -1502,17 +1523,17 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location {
-    position: relative;
-    width: 32px;
-    height: 32px;
+  position: relative;
+  width: 32px;
+  height: 32px;
 }
 
 .ode-SimpleMockContainer .leaflet-container .ai2-user-mock-location img {
-    position: relative;
-    top: -50%;
-    left: -50%;
-    width: 32px;
-    height: 32px;
+  position: relative;
+  top: -50%;
+  left: -50%;
+  width: 32px;
+  height: 32px;
 }
 
 .ode-SimpleMockContainer-centerContents {
@@ -1564,15 +1585,15 @@ path.ode-SimpleMockMapFeature-selected {
   box-sizing: border-box;
 }
 
-.listViewHorizontalItemStyle {  
+.listViewHorizontalItemStyle {
   display: inline-flex;
   vertical-align: top;
 }
 
-.listViewImageStyle {  
+.listViewImageStyle {
   display: inline-block;
   padding-right: 5px;
-  vertical-align: middle; 
+  vertical-align: middle;
 }
 
 /* class for the Spinner Mock component */
@@ -1622,11 +1643,12 @@ path.ode-SimpleMockMapFeature-selected {
   font-size: 12px;
 
 }
+
 .ode-ComponentHelpPopup-Link a {
   color: #8fc202;
 }
 
-.ode-ComponentHelpPopup > .popupContent > table {
+.ode-ComponentHelpPopup>.popupContent>table {
   width: 100%;
   word-break: break-word;
 }
@@ -1643,7 +1665,8 @@ path.ode-SimpleMockMapFeature-selected {
   text-align: center;
 }
 
-.hsplitter, .vsplitter {
+.hsplitter,
+.vsplitter {
   background-color: #D6E9F8;
 }
 
@@ -1717,7 +1740,7 @@ path.ode-SimpleMockMapFeature-selected {
   position: absolute;
   left: -9999px;
   width: 1px;
-  height: 1px; 
+  height: 1px;
   opacity: 0;
   overflow: hidden;
   border: none;
@@ -1886,7 +1909,7 @@ path.ode-SimpleMockMapFeature-selected {
 /* End of NoProjectsDialogBox. */
 
 /* Start Of ProjectPropertiesDialogBox. */
-.ode-propertyDialogContainer  {
+.ode-propertyDialogContainer {
   margin-bottom: 10px;
   overflow: hidden;
 }
@@ -1936,7 +1959,7 @@ path.ode-SimpleMockMapFeature-selected {
   margin-top: 18px;
 }
 
-.ode-projectPropertyCategoryTitlePanel option { 
+.ode-projectPropertyCategoryTitlePanel option {
   font-size: 14px;
   font-weight: 500;
   padding: 10px;
@@ -1944,7 +1967,7 @@ path.ode-SimpleMockMapFeature-selected {
   border-radius: 10px;
 }
 
-.ode-projectPropertyCategoryTitlePanel:focus  { 
+.ode-projectPropertyCategoryTitlePanel:focus {
   outline: none;
 }
 
@@ -2003,22 +2026,22 @@ path.ode-SimpleMockMapFeature-selected {
   width: 100%;
 }
 
- .ode-DialogRow .gwt-Label {
-   color: #000;
-   font-weight: 500;
-   font-size: 1.2em;
-   padding-bottom: 2px;
-   text-shadow: none;
- }
+.ode-DialogRow .gwt-Label {
+  color: #000;
+  font-weight: 500;
+  font-size: 1.2em;
+  padding-bottom: 2px;
+  text-shadow: none;
+}
 
- .ode-DialogBox .ExtendedText {
-   padding-left: 10px;
-   font-weight: normal;
-   font-size: 14px;
-   color: #555;
-   padding-bottom: 20px;
-   padding-top: 10px;
- }
+.ode-DialogBox .ExtendedText {
+  padding-left: 10px;
+  font-weight: normal;
+  font-size: 14px;
+  color: #555;
+  padding-bottom: 20px;
+  padding-top: 10px;
+}
 
 .ode-DialogRow .gwt-RadioButton input[type="radio"] {
   margin-right: 5px;
@@ -2060,9 +2083,9 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .buttonRow {
   display: inline-flex;
-  justify-content: space-around ;
+  justify-content: space-around;
   width: 95%;
-  margin-top:10px;
+  margin-top: 10px;
 }
 
 .ode-DialogBox .contentRow {
@@ -2087,12 +2110,12 @@ a.ode-ExtensionAnchor {
   padding-bottom: 8px;
   font-style: italic;
   color: grey;
-  -o-transition:color .2s ease-out;
-  -ms-transition:color .2s ease-out;
-  -moz-transition:color .2s ease-out;
-  -webkit-transition:color .2s ease-out;
+  -o-transition: color .2s ease-out;
+  -ms-transition: color .2s ease-out;
+  -moz-transition: color .2s ease-out;
+  -webkit-transition: color .2s ease-out;
   /* ...and now override with proper CSS property */
-  transition:color .2s ease-out;
+  transition: color .2s ease-out;
 }
 
 a.ode-ExtensionAnchor:hover {
@@ -2145,17 +2168,20 @@ a.ode-ExtensionAnchor:hover {
   height: 30pt;
   width: 100%;
 }
+
 .gwt-ProgressBar-shell .gwt-ProgressBar-bar {
   background-color: #8fc202;
 }
+
 .gwt-ProgressBar-shell .gwt-ProgressBar-text {
   position: absolute;
-  top:0; left:0;
+  top: 0;
+  left: 0;
   padding-top: 10px;
   color: #fff;
   text-align: center;
   width: 100%;
-  font-size:large;
+  font-size: large;
 }
 
 /*
@@ -2226,8 +2252,7 @@ input[type="color"],
 
 input,
 textarea,
-.uneditable-input {
-}
+.uneditable-input {}
 
 textarea {
   height: auto;
@@ -2385,8 +2410,8 @@ textarea::-webkit-input-placeholder {
   margin-left: -20px;
 }
 
-.controls > .radio:first-child,
-.controls > .checkbox:first-child {
+.controls>.radio:first-child,
+.controls>.checkbox:first-child {
   padding-top: 5px;
 }
 
@@ -2398,8 +2423,8 @@ textarea::-webkit-input-placeholder {
   vertical-align: middle;
 }
 
-.radio.inline + .radio.inline,
-.checkbox.inline + .checkbox.inline {
+.radio.inline+.radio.inline,
+.checkbox.inline+.checkbox.inline {
   margin-left: 10px;
 }
 
@@ -2430,26 +2455,26 @@ textarea::-webkit-input-placeholder {
   margin: 0;
 }
 
-.ode-PropertiesPanel .gwt-DisclosurePanel > tbody > tr > td {
+.ode-PropertiesPanel .gwt-DisclosurePanel>tbody>tr>td {
   height: 16px;
   font-size: 12px;
 }
 
-.ode-PropertiesPanel .gwt-DisclosurePanel > tbody > tr > td > a {
+.ode-PropertiesPanel .gwt-DisclosurePanel>tbody>tr>td>a {
   background-color: #ceda91;
 }
 
-.ode-PropertiesPanel .gwt-DisclosurePanel-closed > tbody > tr+tr > td {
+.ode-PropertiesPanel .gwt-DisclosurePanel-closed>tbody>tr+tr>td {
   margin: 0;
   padding: 0;
   height: 0;
 }
 
-.gwt-DisclosurePanel > tbody > tr > td > a > table {
+.gwt-DisclosurePanel>tbody>tr>td>a>table {
   border-spacing: 0;
 }
 
-.gwt-DisclosurePanel > tbody > tr > td img {
+.gwt-DisclosurePanel>tbody>tr>td img {
   margin-top: 3px;
 }
 
@@ -2461,7 +2486,7 @@ textarea::-webkit-input-placeholder {
 }
 
 .search-compontent {
-  margin:5px 0 5px 0;
+  margin: 5px 0 5px 0;
 }
 
 /* Gallery-specific styles */
@@ -2470,6 +2495,7 @@ textarea::-webkit-input-placeholder {
   width: 950px;
   margin: 0 auto;
 }
+
 .gallery-page-single,
 .gallery-app-single {
   width: 100%;
@@ -2477,10 +2503,11 @@ textarea::-webkit-input-placeholder {
   margin: 20px 10px;
 }
 
-.gallery-page-single > tbody > tr {
-  display:inline-table;
+.gallery-page-single>tbody>tr {
+  display: inline-table;
   vertical-align: top;
 }
+
 .gallery-container {
   float: left;
   position: relative;
@@ -2488,18 +2515,21 @@ textarea::-webkit-input-placeholder {
   background: #fff;
   vertical-align: top;
   text-decoration: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.gwt-TabPanelBottom .gallery-page-single { /* profile page under "My stuff" */
+.gwt-TabPanelBottom .gallery-page-single {
+  /* profile page under "My stuff" */
   margin: 20px 0;
 }
+
 .ode-UserProfileWrapper .app-title {
   margin-bottom: 15px;
 }
+
 /*
 .ode-UserProfileWrapper .gallery-card {
   height: 160px;
@@ -2529,14 +2559,17 @@ textarea::-webkit-input-placeholder {
   margin-bottom: 20px;
   display: inline-block;
 }
+
 .ode-UserProfileWrapper .profile-textdisplay {
   width: 50%;
   color: #555;
 }
+
 .ode-UserProfileWrapper .profile-textlabel {
   width: 150px;
   color: #999;
 }
+
 .ode-UserProfileWrapper .profile-textbox {
   display: inline-block;
   width: 50%;
@@ -2547,6 +2580,7 @@ textarea::-webkit-input-placeholder {
   -moz-border-radius: 0;
   border-radius: 0;
 }
+
 .ode-UserProfileWrapper .profile-textbox-small {
   display: inline-block;
   width: 5%;
@@ -2558,6 +2592,7 @@ textarea::-webkit-input-placeholder {
   border-radius: 0;
   margin-right: 8px;
 }
+
 .profile-textlabel-emaildescription {
   width: 385px;
   color: #999;
@@ -2566,55 +2601,66 @@ textarea::-webkit-input-placeholder {
 
 
 /* Gallery app collections, or app cards related styles */
-.gallery > table {
+.gallery>table {
   border: none;
   width: 100%;
 }
-.gallery .gwt-TabPanel {
-}
+
+.gallery .gwt-TabPanel {}
+
 .gallery .gwt-TabBar {
   margin: 0;
   border: none;
 }
+
 .gallery .gwt-TabBar .gwt-TabBarItem,
 .gallery .gwt-TabBar .gwt-TabBarItem-selected {
   font-size: 28px;
-  font-family: "Roboto",Arial,sans-serif;
+  font-family: "Roboto", Arial, sans-serif;
   text-transform: uppercase;
   padding: 5px;
   border: none;
   background: none;
   margin: 0 10px 0 0;
 }
+
 .gallery-app-details .gwt-TabBar .gwt-TabBarItem,
 .gallery-app-details .gwt-TabBar .gwt-TabBarItem-selected {
   padding: 5px 5px 5px 0;
 }
+
 .gallery .gwt-TabBar .gwt-TabBarItem {
   color: #999;
   font-weight: 100;
 }
+
 .gallery .gwt-TabBar .gwt-TabBarItem-selected {
   color: #333;
   font-weight: 300;
 }
-.gallery .gwt-TabPanelBottom { /* GWT wrapper for the selected tab content */
+
+.gallery .gwt-TabPanelBottom {
+  /* GWT wrapper for the selected tab content */
   border: none;
   padding: 0;
 }
+
 .gallery-app-details .gwt-TabPanelBottom {
   margin: 15px 0;
 }
+
 .gallery-nav-prev,
 .gallery-nav-next {
   padding: 0;
   display: inline-block;
   width: 425px;
 }
+
 .gallery-nav-prev,
 .gallery-nav-next {
   text-align: left;
 }
+
 .gallery-nav-prev .gwt-Label,
 .gallery-nav-next .gwt-Label {
   display: inline-block;
@@ -2622,51 +2668,61 @@ textarea::-webkit-input-placeholder {
   padding: 5px;
   width: 100px;
 }
+
 .gallery-nav-prev .gwt-Label,
-.gallery-nav-next .gwt-Label  {
+.gallery-nav-next .gwt-Label {
   margin-left: 5px;
 }
-.gallery-report-next .gwt-Label{
-  width:100px;
+
+.gallery-report-next .gwt-Label {
+  width: 100px;
 }
+
 .gallery-nav-prev .active,
 .gallery-nav-next .active,
 .gallery-report-next .active {
   color: #777;
 }
+
 .gallery-nav-prev .disabled,
 .gallery-nav-next .disabled,
 .gallery-report-next .disabled {
   color: #ddd;
 }
+
 .gallery-nav-prev .active:hover,
 .gallery-nav-next .active:hover,
 .gallery-report-next .active:hover {
   cursor: pointer;
   background-color: #FFF;
 }
+
 .gallery-nav-prev .disabled:hover,
 .gallery-nav-next .disabled:hover,
-.gallery-report-next .disabled:hover  {
+.gallery-report-next .disabled:hover {
   cursor: default;
   background: none;
 }
+
 .gallery-nav-return {
   padding: 30px 0 0;
   float: right;
 }
+
 .gallery-nav-return .gwt-Label {
   color: #b3c833;
 }
+
 .gallery-nav-return:hover {
   cursor: pointer;
 }
-.gallery-app-collection {
 
-}
+.gallery-app-collection {}
+
 .gallery-card {
   width: 160px;
 }
+
 .gallery-app-collection .gallery-card {
   margin: 5px;
   float: left;
@@ -2674,11 +2730,12 @@ textarea::-webkit-input-placeholder {
   text-decoration: none;
   vertical-align: top;
   background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .gallery-app-collection .gallery-card:hover,
 .gallery-app-showcase .gallery-card:hover {
   background-color: #EEE;
@@ -2687,30 +2744,36 @@ textarea::-webkit-input-placeholder {
   -o-transition: background-color 1s ease;
   cursor: pointer;
 }
+
 .gallery-app-showcase .gallery-card {
   clear: both;
   width: 100%;
 }
+
 .gallery-card-cover {
   height: 130px;
   width: 130px;
   margin: 15px;
 }
+
 .gallery-app-showcase .gallery-card-cover {
   float: left;
   height: 75px;
   width: 75px;
 }
+
 .gallery-card-content {
   padding: 0 15px 15px;
   overflow: hidden;
 }
+
 .gallery-app-showcase .gallery-card-content {
   overflow: hidden;
   width: 140px;
   margin-left: 90px;
   padding: 15px 15px 15px 0;
 }
+
 .gallery-card-content .gallery-title {
   color: #333;
   display: block;
@@ -2726,23 +2789,26 @@ textarea::-webkit-input-placeholder {
   white-space: nowrap;
   cursor: auto;
 }
-.gallery-card-content .gallery-title:after {
-}
+
+.gallery-card-content .gallery-title:after {}
+
 .paragraph-end-block {
   max-height: 100%;
-  height: 17px; /* Same as line-height of .gallery-title */
+  height: 17px;
+  /* Same as line-height of .gallery-title */
   width: 50px;
   bottom: 0;
   right: 0;
   position: absolute;
-  background-image: -webkit-gradient(linear,left top,right top,color-stop(0%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,1)));
-  background-image: -webkit-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background-image: -moz-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background-image: -ms-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background-image: -o-linear-gradient(left,rgba(255,255,255,0),rgba(255,255,255,1));
-  background: linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,1));
-  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#00ffffff',EndColorStr='#ffffff');
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(100%, rgba(255, 255, 255, 1)));
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  background-image: -moz-linear-gradient(left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  background-image: -ms-linear-gradient(left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  background-image: -o-linear-gradient(left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, StartColorStr='#00ffffff', EndColorStr='#ffffff');
 }
+
 .gallery-card-content .gallery-subtitle {
   font-size: 12px;
   line-height: 15px;
@@ -2758,6 +2824,7 @@ textarea::-webkit-input-placeholder {
   white-space: nowrap;
   cursor: auto;
 }
+
 .gallery-meta {
   font-size: 12px;
   font-weight: 900;
@@ -2767,13 +2834,16 @@ textarea::-webkit-input-placeholder {
   padding: 10px 10px 0 0;
   color: #999;
 }
+
 .gallery-card-content .gwt-Image,
-.app-stats .gwt-Image { /* Mini meta images */
+.app-stats .gwt-Image {
+  /* Mini meta images */
   display: inline;
   padding: 10px 5px 0 0;
   width: 12px;
   height: 12px;
 }
+
 .section-divider {
   border-bottom: 1px solid #d6d6d6;
   max-width: 1360px;
@@ -2785,9 +2855,11 @@ textarea::-webkit-input-placeholder {
 .gallery-search {
   margin: 0 0 20px;
 }
+
 .gallery-search-panel {
   margin: 10px 5px;
 }
+
 .gallery-search-textarea {
   display: block;
   color: #333;
@@ -2804,6 +2876,7 @@ textarea::-webkit-input-placeholder {
   border-radius: 0;
   margin-right: 15px;
 }
+
 .gallery-search .gwt-Button {
   border-radius: 0;
 }
@@ -2814,13 +2887,15 @@ textarea::-webkit-input-placeholder {
   width: 430px;
   float: left;
 }
+
 .gallery-editbox {
-  border: 1px dashed #ccc!important;
-  background-color: #fff!important;
+  border: 1px dashed #ccc !important;
+  background-color: #fff !important;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }
+
 .gallery-editprompt {
   text-align: center;
   color: #333;
@@ -2828,26 +2903,32 @@ textarea::-webkit-input-placeholder {
   font-size: 16px;
   padding: 40px 20px;
 }
+
 .app-info-container .gallery-editbox {
   width: 100%;
 }
+
 .app-info-container .gallery-editprompt {
   padding: 10px;
 }
+
 .app-info-container .app-userimage {
   width: 25px;
   height: 25px;
   margin: 0 5px;
   vertical-align: bottom;
 }
+
 .gallery-editprompt input {
   width: 90%;
 }
+
 .gallery-app-single .gallery-app-showcase,
 .gallery-page-single .gallery-app-showcase {
   width: 260px;
   padding: 15px 0;
 }
+
 .gallery-page-single .gallery-app-showcase .gwt-TabBarItem,
 .gallery-app-single .gallery-app-showcase .gwt-TabBarItem {
   margin: 0 15px;
@@ -2856,6 +2937,7 @@ textarea::-webkit-input-placeholder {
   font-weight: 300;
   padding: 0;
 }
+
 .gallery-showcase-desc,
 .gallery-showcase-title {
   margin: 10px 15px 0;
@@ -2866,6 +2948,7 @@ textarea::-webkit-input-placeholder {
   font-weight: 300;
   color: #666;
 }
+
 .gallery-content-details,
 .gallery-app-details {
   width: 600px;
@@ -2873,32 +2956,40 @@ textarea::-webkit-input-placeholder {
   height: auto;
   overflow: hidden;
 }
+
 .app-header {
   margin: 0 30px 0 0;
   float: left;
   overflow: hidden;
 }
+
 .app-header .app-image {
   width: 130px;
   height: 130px;
 }
+
 .app-header .status-updating {
   opacity: 0.6;
 }
+
 .app-header .app-image-uploadbox {
   width: 128px;
   height: 128px;
 }
+
 .app-header .app-image-uploadprompt {
   margin: -90px 0;
   padding: 0;
 }
+
 .app-image-upload {
   display: none;
 }
+
 .app-header .app-action-button {
   width: 130px;
 }
+
 .gallery-app-details .app-action-html {
   width: 130px;
 }
@@ -2920,11 +3011,13 @@ textarea::-webkit-input-placeholder {
   box-shadow: none;
   border: none;
 }
+
 .gallery-app-details .app-action-button,
-.gallery-app-details .app-comments-submit{
+.gallery-app-details .app-comments-submit {
   margin: 15px 0;
   display: block;
 }
+
 .projectRenameTitle,
 .InboxTitle,
 .app-title,
@@ -2934,10 +3027,12 @@ textarea::-webkit-input-placeholder {
   font-weight: 300;
   margin-bottom: 5px;
 }
+
 .app-title-container .app-desc-textarea,
 .app-meta .app-desc-textarea {
-/*  height: 20px; */
+  /*  height: 20px; */
 }
+
 .gallery-app-details .app-comments-textarea,
 .app-desc-textarea {
   height: 50px;
@@ -2948,6 +3043,7 @@ textarea::-webkit-input-placeholder {
   border: 1px dashed;
   resize: none;
 }
+
 .app-otherinfo-textlabel,
 .app-otherinfo-textdisplay,
 .app-otherinfo-textlink {
@@ -2955,25 +3051,31 @@ textarea::-webkit-input-placeholder {
   display: inline-block;
   margin-bottom: 5px;
 }
+
 .app-otherinfo-textdisplay {
   width: 50%;
   color: #555;
-  vertical-align:top;
+  vertical-align: top;
 }
+
 .app-otherinfo-textlink {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 14px;
+  font-weight: 300;
+  font-size: 14px;
 }
+
 .app-otherinfo-textlink:hover {
   background-color: #b3c833;
   color: white;
   cursor: pointer;
 }
+
 .app-otherinfo-textlabel {
   width: 110px;
   color: #999;
 }
+
 .app-otherinfo-textbox {
   width: 100%;
   height: 50px;
@@ -2984,54 +3086,68 @@ textarea::-webkit-input-placeholder {
   border: 1px dashed;
   resize: none;
 }
+
 .app-otherinfo-textbox::-webkit-input-placeholder {
   font-size: 13px;
-  padding-left:10px;
+  padding-left: 10px;
 }
+
 .app-otherinfo-textbox:focus {
   border: 1px solid;
   color: #444;
   font-size: 14px;
 }
+
 .gallery-app-details .app-comments-textarea {
-  width: 580px; /* 600-10-10 */
+  width: 580px;
+  /* 600-10-10 */
 }
+
 .app-desc-textarea {
-  width: 410px; /* 430-10-10 */
+  width: 410px;
+  /* 430-10-10 */
 }
+
 .gallery-app-details .app-comments-textarea:focus,
 .app-desc-textarea:focus {
   border: 1px solid;
   color: #444;
   font-size: 14px;
 }
+
 .gallery-app-details .app-comments-submit {
   width: 30%;
   margin: 10px 0;
 }
+
 .gallery-app-details .app-subtitle {
   font-size: 16px;
   margin: 0;
   display: inline;
 }
+
 .gallery-app-details .app-username {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
 }
+
 .gallery-app-details .app-username:hover {
   background-color: #b3c833;
   color: white;
   cursor: pointer;
 }
+
 .gallery-app-details .app-attributor-username {
   margin-right: 5px;
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
   display: inline;
 }
+
 .gallery-app-details .app-attributor-label {
   display: inline;
 }
+
 .app-stats {
   font-size: 12px;
   font-weight: 600;
@@ -3041,21 +3157,26 @@ textarea::-webkit-input-placeholder {
   padding: 10px 0 0 15px;
   color: #999;
 }
-.app-stats .gwt-Image { /* Mini meta images */
+
+.app-stats .gwt-Image {
+  /* Mini meta images */
   display: inline;
   padding: 10px 5px 0 0;
   width: 12px;
   height: 12px;
 }
+
 .app-stats .gwt-Label {
   display: inline;
   padding-right: 5px;
 }
+
 .app-meta {
   font-size: 14px;
   display: block;
   margin: 10px 0;
 }
+
 .app-meta .gwt-Label {
   line-height: 175%;
   font-weight: 300;
@@ -3065,6 +3186,7 @@ textarea::-webkit-input-placeholder {
   display: inline-block;
   vertical-align: top;
 }
+
 .app-meta .gwt-Label-auto {
   line-height: 175%;
   font-weight: 300;
@@ -3074,15 +3196,18 @@ textarea::-webkit-input-placeholder {
   display: inline-block;
   vertical-align: top;
 }
+
 .app-meta .app-meta-label {
   display: inline-block;
   width: 110px;
 }
+
 .gallery-app-details .app-tags {
   max-width: 100%;
   display: block;
   margin: 10px 0 0;
 }
+
 .gallery-app-details .app-tags .gwt-Label {
   display: inline-block;
   background-color: #EEE;
@@ -3090,6 +3215,7 @@ textarea::-webkit-input-placeholder {
   padding: 2px 10px;
   margin: 5px 8px 5px 0;
 }
+
 .gallery-app-details .app-tags .gwt-Label:hover {
   background-color: #999;
   color: #FFF;
@@ -3098,10 +3224,12 @@ textarea::-webkit-input-placeholder {
   -o-transition: background-color 1s ease;
   transition: background-color 1s ease;
 }
+
 .app-stats .note-header {
   display: block;
   font-weight: 900;
 }
+
 .app-stats .note-content {
   display: block;
   font-weight: 100;
@@ -3111,44 +3239,56 @@ textarea::-webkit-input-placeholder {
 
 /* Gallery app comment related styles */
 .gallery-app-details .app-comments-wrapper {
-  display: none; /* We are not showing comments before initial launch */
+  display: none;
+  /* We are not showing comments before initial launch */
 }
+
 .gallery-app-details .app-comments {
   width: 100%;
   font-weight: 300;
 }
+
 .app-comments .comment-item {
   margin: 10px 0;
 }
+
 .comment-item {
   padding: 10px 0 0;
 }
+
 .comment-person {
   float: left;
   margin: 0 20px 0 0;
   position: absolute;
   height: 100%;
 }
+
 .comment-person .gwt-Image {
   height: 48px;
   width: 48px;
 }
+
 .comment-content {
-  padding-left: 68px; /* width of the left side + margin */
+  padding-left: 68px;
+  /* width of the left side + margin */
 }
+
 .comment-meta {
   font-size: 12px;
   margin: 0 0 5px;
 }
+
 .comment-meta .comment-author {
   display: inline-block;
   font-size: 14px;
 }
+
 .comment-meta .comment-date {
   display: inline-block;
   margin-left: 5px;
   color: #999;
 }
+
 .comment-item .comment-text {
   font-size: 14px;
   font-weight: 300;
@@ -3161,11 +3301,13 @@ textarea::-webkit-input-placeholder {
   display: block;
   width: 100%;
 }
+
 .gallery-page-single .gwt-TabBar .gwt-TabBarItem-selected,
 .gallery-app-single .gwt-TabBar .gwt-TabBarItem-selected {
   color: #b3c833;
   font-weight: 300;
 }
+
 .gallery-nav-return .gwt-Label,
 .app-description,
 .app-actions .gwt-TabPanelBottom .gwt-Label,
@@ -3176,24 +3318,33 @@ textarea::-webkit-input-placeholder {
   line-height: 1.75;
   color: #666;
 }
+
 .app-stats .primary-link {
   font-size: 12px;
 }
+
 .primary-link-small {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 11.5px; line-height: 1.75;
+  font-weight: 300;
+  font-size: 11.5px;
+  line-height: 1.75;
 }
+
 .primary-link,
 .moderator-link {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 14px; line-height: 1.75;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.75;
 }
+
 .moderator-link {
-  display:inline;
-  margin-right:5px;
+  display: inline;
+  margin-right: 5px;
 }
+
 .ode-ProjectGalleryLink:hover,
 .primary-link:hover,
 .primary-link-small:hover,
@@ -3203,8 +3354,9 @@ textarea::-webkit-input-placeholder {
   cursor: pointer;
   width: auto;
 }
-.app-actions .action-button {
-}
+
+.app-actions .action-button {}
+
 .app-actions .action-textarea {
   width: 99%;
   height: 75px;
@@ -3213,6 +3365,7 @@ textarea::-webkit-input-placeholder {
   -moz-border-radius: 0;
   border-radius: 0;
 }
+
 .app-actions .action-textbox {
   width: 99%;
   margin: 15px 0;
@@ -3225,34 +3378,38 @@ textarea::-webkit-input-placeholder {
 .all-reports {
   float: right;
 }
-.ode-ModerationTable {
 
-}
+.ode-ModerationTable {}
+
 .ode-ModerationTable .primary-link {
   color: black;
 }
-.inline-label{
-  display:inline;
-  margin-right:5px;
+
+.inline-label {
+  display: inline;
+  margin-right: 5px;
 }
 
-.time-label{
-  display:inline;
-  margin-right:15px;
-  font-style:italic;
+.time-label {
+  display: inline;
+  margin-right: 15px;
+  font-style: italic;
 }
+
 .seemore-link {
   color: #333399;
   border-bottom: 1px dotted #b3c833;
-  font-weight: 300; font-size: 14px; line-height: 1.75;
-  display:inline;
-  margin-right:5px;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.75;
+  display: inline;
+  margin-right: 5px;
 }
 
 .seemore-link:hover {
   color: #980000;
   cursor: pointer;
-  text-decoration:underline;
+  text-decoration: underline;
 }
 
 
@@ -3262,15 +3419,19 @@ textarea::-webkit-input-placeholder {
   border: 1px solid lightgrey;
   padding: 20px;
 }
+
 .block {
   display: block;
 }
+
 .inline {
   display: inline;
 }
+
 .inline-block {
   display: inline-block;
 }
+
 .clearfix:after {
   content: ".";
   visibility: hidden;
@@ -3297,13 +3458,16 @@ textarea::-webkit-input-placeholder {
   height: 294px;
   overflow: auto;
 }
+
 .ac-row {
   cursor: pointer;
   padding: .4em;
 }
+
 .ac-highlighted {
   font-weight: bold;
 }
+
 .ac-active {
   background-color: #b2b4bf;
 }
@@ -3313,11 +3477,13 @@ textarea::-webkit-input-placeholder {
   z-index: 2000;
 }
 
-.goog-hsva-palette, .goog-hsva-palette-sm {
+.goog-hsva-palette,
+.goog-hsva-palette-sm {
   border: 0;
 }
 
-div.vector-marker>svg, div.leaflet-marker-icon>img {
+div.vector-marker>svg,
+div.leaflet-marker-icon>img {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -3463,7 +3629,7 @@ div.dropdiv p {
   transition: border-color 0.2s ease-in-out;
 }
 
-.hidden-radio:checked + div img {
+.hidden-radio:checked+div img {
   border-color: #7D9D36;
 }
 
@@ -3471,11 +3637,11 @@ div.dropdiv p {
   border-color: #b3c833;
 }
 
-.hidden-radio:focus div + img {
+.hidden-radio:focus div+img {
   box-shadow: 0 0 0 2px rgba(186, 238, 86, 0.6);
 }
 
-.image-label > .gwt-Label {
+.image-label>.gwt-Label {
   flex-grow: 1;
   align-content: flex-end;
 }
@@ -3486,6 +3652,7 @@ div.dropdiv p {
     max-width: 360px;
     flex-direction: column;
   }
+
   .image-radio-group {
     flex-direction: column;
   }
@@ -3521,7 +3688,9 @@ div.dropdiv p {
   color: #fff;
   text-decoration: underline;
 }
-.ode-DialogBox-light .dark, .ode-DialogBox-dark .light {
+
+.ode-DialogBox-light .dark,
+.ode-DialogBox-dark .light {
   display: none;
 }
 
