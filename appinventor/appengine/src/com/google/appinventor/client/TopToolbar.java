@@ -157,14 +157,14 @@ public class TopToolbar extends Composite {
     }
     buildDropDown.removeUnneededSeparators();
 
- if (!Ode.getUserAutoloadProject()) {
-  settingsDropDown.setItemHtmlById(WIDGET_NAME_AUTOLOAD, MESSAGES.enableAutoload());
-  settingsDropDown.setCommandById(WIDGET_NAME_AUTOLOAD, new EnableAutoloadAction());
-}
-if (!Ode.getUserDyslexicFont()) {
-  settingsDropDown.setItemHtmlById(WIDGET_NAME_DYSLEXIC_FONT, MESSAGES.enableOpenDyslexic());
-  settingsDropDown.setCommandById(WIDGET_NAME_DYSLEXIC_FONT, new SetFontDyslexicAction());
-}
+    if (!Ode.getUserAutoloadProject()) {
+      settingsDropDown.setItemHtmlById(WIDGET_NAME_AUTOLOAD, MESSAGES.enableAutoload());
+      settingsDropDown.setCommandById(WIDGET_NAME_AUTOLOAD, new EnableAutoloadAction());
+    }
+    if (!Ode.getUserDyslexicFont()) {
+      settingsDropDown.setItemHtmlById(WIDGET_NAME_DYSLEXIC_FONT, MESSAGES.enableOpenDyslexic());
+      settingsDropDown.setCommandById(WIDGET_NAME_DYSLEXIC_FONT, new SetFontDyslexicAction());
+    }
 
     if (!Ode.getInstance().getUser().getIsAdmin()) {
       adminDropDown.removeFromParent();
