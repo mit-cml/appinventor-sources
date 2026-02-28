@@ -252,6 +252,14 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
       that.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::projectColorDeleted(Ljava/lang/String;)(color);
     };
 
+    $wnd.addEventListener('message', function(event) {
+      if (event.data.type === 'addProjectColor') {
+        that.@com.google.appinventor.client.widgets.properties.ColorChoicePropertyEditor::addProjectColor(Ljava/lang/String;)(event.data.color);
+      }
+    });
+
+    $wnd.projectColors = JSON.parse(projectColors);
+
     pickr.on('save', function (instance) {
       var color = pickr.getColor().toHEXA().toString();
       if (color.length === 7) {
@@ -269,6 +277,13 @@ public abstract class ColorChoicePropertyEditor extends PropertyEditor {
     YaProjectEditor projectEditor = (YaProjectEditor) Ode.getCurrentProjectEditor();
     if (projectEditor != null) {
       projectEditor.removeColor(color.substring(1));
+    }
+  }
+
+  private void addProjectColor(String color) {
+    YaProjectEditor projectEditor = (YaProjectEditor) Ode.getCurrentProjectEditor();
+    if (projectEditor != null) {
+      projectEditor.addColor(color.substring(1));
     }
   }
 

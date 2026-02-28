@@ -918,6 +918,8 @@
   "LANG_TEXT_SEGMENT_INPUT_START": "התחלה",
   "LISTS_CREATE_WITH_ITEM_TOOLTIP": "הוסף פריט לרשימה.",
   "LANG_COLOUR_YELLOW": "צהוב",
+  "LANG_COLOUR_NONE": "אין",
+  "LANG_COLOUR_DEFAULT": "ברירת מחדל",
   "LANG_COLOUR_MAKE_COLOUR_TOOLTIP": "צור צבע באמצעות הבלוק האדום, הירוק, הכחול ואלפא האופציונליים הנתונים.",
   "LISTS_CREATE_WITH_CONTAINER_TOOLTIP": "תוסיף, תמחק, או תסדר מחדש כדי להגדיר מחדש את הבלוק If.",
   "LANG_LISTS_APPEND_LIST_TITLE_APPEND": "הוסף לרשימה",
