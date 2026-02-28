@@ -34,6 +34,10 @@
         	text-decoration:none;
         	text-shadow:0px 1px 0px #283966;
         }
+		button:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
     </style>
   </head>
   <body style="margin-top: 10px;">
@@ -43,12 +47,15 @@
 
 
   	<div id="controls" style="display: flex; justify-content: center;">
-  	 <button id="recordButton" class="not_recording">Record</button>
+  	 <button id="recordButton" class="not_recording" aria-label="Start recording audio"
+  aria-pressed="false">Record</button>
   	 <!-- <button id="pauseButton" disabled>Pause</button> -->
      <!-- <button id="stopButton" disabled>Stop</button> -->
     </div>
   	<p><strong>Recording:</strong></p>
-  	<div id="recordingsList"></div>
+  	<div id="recordingsList" role="region"
+  aria-live="polite"
+  aria-label="Recorded audio clips"></div>
 
     <script src="tfjs-1.5.2.js"></script>
     <script src="personal_audio_classifier1.js"></script>
