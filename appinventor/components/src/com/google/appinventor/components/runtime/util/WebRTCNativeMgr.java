@@ -464,6 +464,10 @@ public class WebRTCNativeMgr {
   }
 
   public void send(String output) {
+    if (output.length() > 10000) {
+      sendChunked(output);
+      return;
+    }
     try {
       if (dataChannel == null) {
         Log.w(LOG_TAG, "No Data Channel in Send");
@@ -476,5 +480,37 @@ public class WebRTCNativeMgr {
       Log.e(LOG_TAG, "While encoding data to send to companion", e);
     }
   }
+
+  private void sendChunked(String output) {
+    int chunkSize = 8000;
+    int len = output.length();
+    int chunks = (len + chunkSize - 1) / chunkSize;
+    String id = String.valueOf(random.nextInt(1000000));
+
+    for (int i = 0; i < chunks; i++) {
+      int start = i * chunkSize;
+      int end = Math.min(len, start + chunkSize);
+      String substr = output.substring(start, end);
+
+      try {
+        JSONObject envelope = new JSONObject();
+        envelope.put("wrtc_chunk", true);
+        envelope.put("id", id);
+        envelope.put("i", i);
+        envelope.put("n", chunks);
+        envelope.put("data", substr);
+
+        String msg = envelope.toString();
+        ByteBuffer bbuffer = ByteBuffer.wrap(msg.getBytes("UTF-8"));
+        Buffer buffer = new Buffer(bbuffer, false);
+        dataChannel.send(buffer);
+      } catch (JSONException e) {
+        Log.e(LOG_TAG, "Error building chunk", e);
+      } catch (UnsupportedEncodingException e) {
+        Log.e(LOG_TAG, "Encoding error", e);
+      }
+    }
+  }
+
 
 }

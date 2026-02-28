@@ -345,6 +345,7 @@ Blockly.ReplMgr.putYail = (function() {
     var sentMacros = false;
     var webrtcdata;
     var seennonce = {};
+    var chunksBuffer = {};
     var fixchrome89 = function(desc) {
         var sdp = desc.sdp;
         sdp = sdp.replace("a=extmap-allow-mixed\r\n", "")
@@ -527,9 +528,34 @@ Blockly.ReplMgr.putYail = (function() {
                 console.log('webrtc data connection open!');
                 webrtcdata.onmessage = function(ev) {
                     console.log("webrtc(onmessage): " + ev.data);
-                    var json = goog.json.parse(ev.data);
-                    if (json.status == 'OK') {
-                        context.processRetvals(json.values);
+                    var data = JSON.parse(ev.data);
+                    if (data.wrtc_chunk) {
+                        var id = data.id;
+                        if (!chunksBuffer[id]) {
+                            chunksBuffer[id] = new Array(data.n);
+                        }
+                        chunksBuffer[id][data.i] = data.data;
+                        // Check if we have all chunks
+                        var complete = true;
+                        for (var chunk_i = 0; chunk_i < data.n; chunk_i++) {
+                            if (chunksBuffer[id][chunk_i] === undefined) {
+                                complete = false;
+                                break;
+                            }
+                        }
+                        if (complete) {
+                            var fullData = chunksBuffer[id].join('');
+                            delete chunksBuffer[id];
+                            var json = JSON.parse(fullData);
+                            if (json.status == 'OK') {
+                                context.processRetvals(json.values);
+                            }
+                        }
+                    } else {
+                        var json = JSON.parse(ev.data);
+                        if (json.status == 'OK') {
+                            context.processRetvals(json.values);
+                        }
                     }
                 };
                 // Ready to actually exchange data
