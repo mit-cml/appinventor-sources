@@ -670,13 +670,19 @@ div.StatusPanel {
 
 .ode-TopPanelButton:hover,
 .ActionDropDown-Default:hover,
-.ActionDropDown-Options:hover,
+.ActionDropDown-Options:hover {
+  background: #E6E6E6;
+  color: #5B5B5B;
+}
+
+/* Accessibility: separate :focus selector so keyboard users get a visible focus ring (WCAG 2.1 SC 2.4.7) */
 .ode-TopPanelButton:focus,
 .ActionDropDown-Default:focus,
 .ActionDropDown-Options:focus {
   background: #E6E6E6;
   color: #5B5B5B;
-  outline: none;
+  outline: 2px solid #669900;
+  outline-offset: -2px;
 }
 
 /* Improvement: added visible active/pressed state for toolbar buttons */
@@ -1921,7 +1927,7 @@ path.ode-SimpleMockMapFeature-selected {
   border: 0px;
   border-right: 2px solid black;
   padding-right: 20px;
-  outline: none;
+  /* Removed outline:none — see :focus rule below for accessible focus style */
   overflow: auto;
 }
 
@@ -1967,8 +1973,10 @@ path.ode-SimpleMockMapFeature-selected {
   border-radius: 10px;
 }
 
+/* Accessibility: replaced outline:none with a visible focus ring (WCAG 2.1 SC 2.4.7) */
 .ode-projectPropertyCategoryTitlePanel:focus {
-  outline: none;
+  outline: 2px solid #669900;
+  outline-offset: 1px;
 }
 
 .ode-propertyDialogVerticalPanel {
