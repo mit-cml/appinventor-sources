@@ -3397,6 +3397,12 @@ div.dropdiv p {
   height: 130px;
 }
 
+.download-button span {
+  color: #000;
+  text-shadow: none;
+  font-weight: 600;
+}
+
 .download-icon {
   height: 110px;
   width: 110px;
