@@ -302,11 +302,6 @@ function getPropertyBlockPresentedName(block) {
   }
 }
 
-function shift(type) {
-  const workspace = Blockly.common.getMainWorkspace();
-  workspace.getCanvas().dispatchEvent(new KeyboardEvent(type, { key: 'shift', bubbles: true }));
-}
-
 function ctrl(key) {
   const workspace = Blockly.common.getMainWorkspace();
   const keyCode = key.toUpperCase().charCodeAt(0);
@@ -315,37 +310,22 @@ function ctrl(key) {
   workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', options));
 }
 
-function del() {
+async function act(action) {
+  const result = action();
   const workspace = Blockly.common.getMainWorkspace();
-  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', keyCode: 46, bubbles: true }));
-  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', { key: 'Delete', keyCode: 46, bubbles: true }));
-}
-
-function select(block) {
-  const blockPath = block.getSvgRoot().querySelector('path.blocklyPath');
-  const blockRect = blockPath.getBoundingClientRect();
-  const blockCenter = {
-    clientX: blockRect.left + blockRect.width / 2,
-    clientY: blockRect.top + blockRect.height / 2
-  };
-
-  blockPath.dispatchEvent(new PointerEvent('pointerdown', { ...blockCenter, bubbles: true }));
-  blockPath.dispatchEvent(new PointerEvent('pointerup', { ...blockCenter, bubbles: true }));
-}
-
-async function until(type, count) {
-  const workspace = Blockly.common.getMainWorkspace();
-  return new Promise(resolve => {
-    let received = 0;
-    const listener = (event) => {
-      if (event.type === type) {
-        received++;
-        if (received === count) {
-          workspace.removeChangeListener(listener);
-          resolve();
-        }
-      }
-    };
-    workspace.addChangeListener(listener);
+  let eventFired = false;
+  const listener = workspace.addChangeListener(() => {
+    eventFired = true;
   });
+  try {
+    do {
+      eventFired = false;
+      await new Promise(resolve =>
+        requestAnimationFrame(() => setTimeout(resolve, 0))
+      );
+    } while (eventFired);
+  } finally {
+    workspace.removeChangeListener(listener);
+  }
+  return result;
 }
