@@ -302,35 +302,12 @@ function getPropertyBlockPresentedName(block) {
   }
 }
 
-function shift(type) {
-  const workspace = Blockly.common.getMainWorkspace();
-  workspace.getCanvas().dispatchEvent(new KeyboardEvent(type, { key: 'shift', bubbles: true }));
-}
-
 function ctrl(key) {
   const workspace = Blockly.common.getMainWorkspace();
   const keyCode = key.toUpperCase().charCodeAt(0);
   const options = { key: key, keyCode: keyCode, ctrlKey: true, bubbles: true };
   workspace.getCanvas().dispatchEvent(new KeyboardEvent('keydown', options));
   workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', options));
-}
-
-function del() {
-  const workspace = Blockly.common.getMainWorkspace();
-  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', keyCode: 46, bubbles: true }));
-  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', { key: 'Delete', keyCode: 46, bubbles: true }));
-}
-
-function select(block) {
-  const blockPath = block.getSvgRoot().querySelector('path.blocklyPath');
-  const blockRect = blockPath.getBoundingClientRect();
-  const blockCenter = {
-    clientX: blockRect.left + blockRect.width / 2,
-    clientY: blockRect.top + blockRect.height / 2
-  };
-
-  blockPath.dispatchEvent(new PointerEvent('pointerdown', { ...blockCenter, bubbles: true }));
-  blockPath.dispatchEvent(new PointerEvent('pointerup', { ...blockCenter, bubbles: true }));
 }
 
 async function until(type, count) {
