@@ -310,19 +310,22 @@ function ctrl(key) {
   workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', options));
 }
 
-async function until(type, count) {
+async function act(action) {
+  const result = action();
   const workspace = Blockly.common.getMainWorkspace();
-  return new Promise(resolve => {
-    let received = 0;
-    const listener = (event) => {
-      if (event.type === type) {
-        received++;
-        if (received === count) {
-          workspace.removeChangeListener(listener);
-          resolve();
-        }
-      }
-    };
-    workspace.addChangeListener(listener);
+  let eventFired = false;
+  const listener = workspace.addChangeListener(() => {
+    eventFired = true;
   });
+  try {
+    do {
+      eventFired = false;
+      await new Promise(resolve =>
+        requestAnimationFrame(() => setTimeout(resolve, 0))
+      );
+    } while (eventFired);
+  } finally {
+    workspace.removeChangeListener(listener);
+  }
+  return result;
 }
