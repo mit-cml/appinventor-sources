@@ -584,6 +584,25 @@ yail_set_current_form(pic_state *pic, pic_value form) {
   pic_set(pic, "yail", "*this-form*", form);
 }
 
+/**
+ * Returns YES if the given native class value has at least one initializer
+ * available, i.e. the component is implemented on iOS.
+ */
+static pic_value
+yail_class_available(pic_state *pic) {
+  pic_value native_class;
+  pic_get_args(pic, "o", &native_class);
+  if (!yail_native_class_p(pic, native_class)) {
+    return pic_false_value(pic);
+  }
+  Class clazz = yail_native_class_ptr(pic, native_class)->class_;
+  if (clazz == nil) {
+    return pic_false_value(pic);
+  }
+  SCMMethod *init = [SCMNameResolver naryInitializerForClass:clazz withName:"init" argCount:1];
+  return init ? pic_true_value(pic) : pic_false_value(pic);
+}
+
 pic_value
 yail_make_instance(pic_state *pic) {
   pic_value native_class, *args;
@@ -599,6 +618,15 @@ yail_make_instance(pic_state *pic) {
   selector[4+argc] = '\0';
 
   Class clazz = yail_native_class_ptr(pic, native_class)->class_;
+
+  // Guard: if the class itself is nil, this component doesn't exist on iOS.
+  // Return undef gracefully instead of crashing the Companion.
+  if (clazz == nil) {
+    NSLog(@"[AppInventor] Unsupported component: class not found on iOS. Skipping.");
+    free(selector);
+    return pic_undef_value(pic);
+  }
+
   SCMMethod *init = [SCMNameResolver naryInitializerForClass:clazz withName:"init" argCount:argc];
   if (init) {
     free(selector);
@@ -643,9 +671,20 @@ yail_make_instance(pic_state *pic) {
       return pic_undef_value(pic);
     }
   } else {
-    pic_value str = pic_cstr_value(pic, selector);
+    // No initializer found — this component is not implemented on iOS.
+    // Log a clear warning and return undef instead of crashing.
+    NSLog(@"[AppInventor] Unsupported component: '%s' has no initializer on iOS. Skipping.",
+          class_getName(clazz));
+    // Notify the active Form so it can show a user-visible warning.
+    NSString *className = NSStringFromClass(clazz);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[NSNotificationCenter defaultCenter]
+          postNotificationName:@"AIUnsupportedComponentNotification"
+          object:nil
+          userInfo:@{@"componentName": className}];
+    });
     free(selector);
-    pic_error(pic, "undefined initializer", 2, native_class, str);
+    return pic_undef_value(pic);
   }
   
   return pic_undef_value(pic);
@@ -1678,6 +1717,7 @@ pic_init_yail(pic_state *pic)
   pic_defun(pic, "yail:call-instance-method", pic_yail_call_instance_method);
   pic_defun(pic, "yail:call-static-method", pic_yail_call_static_method);
   pic_defun(pic, "yail:make-instance", yail_make_instance);
+  pic_defun(pic, "yail:class-available?", yail_class_available);
   pic_defun(pic, "yail:invoke", yail_invoke);
   pic_defun(pic, "invoke", yail_invoke);
   pic_defun(pic, "yail:isa", yail_isa);
