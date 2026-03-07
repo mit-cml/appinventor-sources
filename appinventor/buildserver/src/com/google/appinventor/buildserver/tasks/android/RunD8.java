@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -39,34 +39,30 @@ public class RunD8 extends DexTask implements AndroidTask {
     final List<File> inputs = new ArrayList<>();
     try {
       recordForMainDex(context.getPaths().getClassesDir(), mainDexClasses);
-      inputs.add(preDexLibrary(context, recordForMainDex(
-          new File(context.getResources().getSimpleAndroidRuntimeJar()), mainDexClasses)));
-      inputs.add(preDexLibrary(context, recordForMainDex(
-          new File(context.getResources().getKawaRuntime()), mainDexClasses)));
+      inputs.add(recordForMainDex(new File(context.getResources().getSimpleAndroidRuntimeJar()), mainDexClasses));
+      inputs.add(recordForMainDex(new File(context.getResources().getKawaRuntime()), mainDexClasses));
 
       final Set<String> criticalJars = getCriticalJars(context);
 
       for (String jar : criticalJars) {
-        inputs.add(preDexLibrary(context, recordForMainDex(
-            new File(context.getResource(jar)), mainDexClasses)));
+        inputs.add(recordForMainDex(new File(context.getResource(jar)), mainDexClasses));
       }
 
       // Only include ACRA for the companion app
       if (context.isForCompanion()) {
-        inputs.add(preDexLibrary(context, recordForMainDex(
-            new File(context.getResources().getAcraRuntime()), mainDexClasses)));
+        inputs.add(recordForMainDex(new File(context.getResources().getAcraRuntime()), mainDexClasses));
       }
 
       for (String jar : context.getResources().getSupportJars()) {
         if (criticalJars.contains(jar)) {  // already covered above
           continue;
         }
-        inputs.add(preDexLibrary(context, new File(context.getResource(jar))));
+        inputs.add(new File(context.getResource(jar)));
       }
 
       // Add the rest of the libraries in any order
       for (String lib : context.getComponentInfo().getUniqueLibsNeeded()) {
-        inputs.add(preDexLibrary(context, new File(lib)));
+        inputs.add(new File(lib));
       }
 
       // Add extension libraries
@@ -91,7 +87,7 @@ public class RunD8 extends DexTask implements AndroidTask {
         @Override
         public FileVisitResult visitFile(Path file,
             BasicFileAttributes attrs) {
-          if (file.toString().endsWith(".class")) {
+          if (file.toString().endsWith(".class") || file.toString().endsWith(".jar")) {
             inputs.add(file.toFile());
           }
           return FileVisitResult.CONTINUE;
@@ -130,6 +126,13 @@ public class RunD8 extends DexTask implements AndroidTask {
       // Run the final DX step to include user's compiled screens
       if (!runD8(context, inputs, mainDexClasses)) {
         return TaskResult.generateError("d8 failed.");
+      }
+
+      // Bundle the desugar_jdk_libs.dex
+      if (context.isCoreLibraryDesugaring()) {
+        Files.copy(new File(context.getResources().getDesugarJdkLibs()).toPath(),
+            resolveNextClassesDex(context.getPaths().getTmpDir()));
+        context.getReporter().info("Core-Library desugaring is requested.");
       }
 
       // Aggregate all classes.dex files output by dx
@@ -187,9 +190,13 @@ public class RunD8 extends DexTask implements AndroidTask {
     }
     javaArgs.add("--lib");
     javaArgs.add(context.getResources().getAndroidRuntime());
-    if (intermediateFileName == null) {
-      javaArgs.add("--classpath");
-      javaArgs.add(context.getPaths().getClassesDir().getAbsolutePath());
+    // if (intermediateFileName == null) {
+    //   javaArgs.add("--classpath");
+    //   javaArgs.add(context.getPaths().getClassesDir().getAbsolutePath());
+    // }
+    if (context.isCoreLibraryDesugaring()) {
+      javaArgs.add("--desugared-lib");
+      javaArgs.add(context.getResources().getDesugarJdkConfig());
     }
     javaArgs.add("--output");
     javaArgs.add(outputDir);
@@ -251,6 +258,19 @@ public class RunD8 extends DexTask implements AndroidTask {
         }
       }
       return dexedLib;
+    }
+  }
+
+  private Path resolveNextClassesDex(File dir) {
+    Path dirPath = dir.toPath();
+    // classes2.dex, classes3.dex, ... — find first gap
+    int index = 2;
+    while (true) {
+      Path candidate = dirPath.resolve("classes" + index + ".dex");
+      if (!Files.exists(candidate)) {
+        return candidate;
+      }
+      index++;
     }
   }
 }
