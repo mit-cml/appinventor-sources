@@ -1875,6 +1875,8 @@ Blockly.Versioning.AllUpgradeMaps =
     3: "noUpgrade",
     // Added CreateImage and GotResponseWithImage
     4: "noUpgrade",
+    // Added ServiceURL property
+    5: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
