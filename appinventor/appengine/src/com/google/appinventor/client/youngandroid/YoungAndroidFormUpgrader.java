@@ -906,6 +906,10 @@ public final class YoungAndroidFormUpgrader {
       // The CreateImage and GotResponseWithImage block added
       srcCompVersion = 4;
     }
+    if  (srcCompVersion < 5) {
+      // The ServiceURL property was added.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 

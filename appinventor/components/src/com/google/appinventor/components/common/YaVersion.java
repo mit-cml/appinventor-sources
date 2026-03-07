@@ -915,7 +915,9 @@ public class YaVersion {
   // - The ConverseWithImage method was added
   // For CHATBOT_COMPONENT_VERSION 4:
   // - Added CreateImage and GotResponseWithImage blocks
-  public static final int CHATBOT_COMPONENT_VERSION = 4;
+  // For CHATBOT_COMPONENT_VERSION 5:
+  // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot API.
+  public static final int CHATBOT_COMPONENT_VERSION = 5;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
