@@ -130,11 +130,6 @@ public class CompilerContext<P extends Paths> {
       return this;
     }
 
-    public Builder<R, T> withCoreLibraryDesugaring(boolean isCoreLibraryDesugaring) {
-      this.isCoreLibraryDesugaring = isCoreLibraryDesugaring;
-      return this;
-    }
-
     public Builder<R, T> withKeystore(String keystoreFilePath) {
       this.keystoreFilePath = keystoreFilePath;
       return this;
@@ -194,7 +189,6 @@ public class CompilerContext<P extends Paths> {
       context.isForCompanion = isForCompanion;
       context.isForEmulator = isForEmulator;
       context.includeDangerousPermissions = includeDangerousPermissions;
-      context.isCoreLibraryDesugaring = isCoreLibraryDesugaring;
       context.keystoreFilePath = keystoreFilePath;
       context.dexCacheDir = dexCacheDir;
       context.outputFileName = outputFileName;

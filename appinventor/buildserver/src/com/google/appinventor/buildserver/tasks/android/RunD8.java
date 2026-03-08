@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -28,41 +30,57 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 @BuildType(aab = true, apk = true)
 public class RunD8 extends DexTask implements AndroidTask {
   private static final boolean USE_D8_PROGUARD_RULES = true;
+  private static Path configJson;
 
   @Override
   public TaskResult execute(AndroidCompilerContext context) {
     Set<String> mainDexClasses = new HashSet<>();
     final List<File> inputs = new ArrayList<>();
     try {
+      if (context.isCoreLibraryDesugaring()) {
+        // Extract the desugar.json file for later use.
+        configJson = extractConfigJson(context);
+      }
+
       recordForMainDex(context.getPaths().getClassesDir(), mainDexClasses);
-      inputs.add(recordForMainDex(new File(context.getResources().getSimpleAndroidRuntimeJar()), mainDexClasses));
-      inputs.add(recordForMainDex(new File(context.getResources().getKawaRuntime()), mainDexClasses));
+      inputs.add(preDexLibrary(context, recordForMainDex(
+          new File(context.getResources().getSimpleAndroidRuntimeJar()), mainDexClasses)));
+      inputs.add(preDexLibrary(context, recordForMainDex(
+          new File(context.getResources().getKawaRuntime()), mainDexClasses)));
 
       final Set<String> criticalJars = getCriticalJars(context);
 
       for (String jar : criticalJars) {
-        inputs.add(recordForMainDex(new File(context.getResource(jar)), mainDexClasses));
+        inputs.add(preDexLibrary(context, recordForMainDex(
+            new File(context.getResource(jar)), mainDexClasses)));
       }
 
       // Only include ACRA for the companion app
       if (context.isForCompanion()) {
-        inputs.add(recordForMainDex(new File(context.getResources().getAcraRuntime()), mainDexClasses));
+        inputs.add(preDexLibrary(context, recordForMainDex(
+            new File(context.getResources().getAcraRuntime()), mainDexClasses)));
       }
 
       for (String jar : context.getResources().getSupportJars()) {
-        if (criticalJars.contains(jar)) {  // already covered above
+        if (criticalJars.contains(jar)) { // already covered above
           continue;
         }
-        inputs.add(new File(context.getResource(jar)));
+        inputs.add(preDexLibrary(context, new File(context.getResource(jar))));
       }
 
       // Add the rest of the libraries in any order
       for (String lib : context.getComponentInfo().getUniqueLibsNeeded()) {
-        inputs.add(new File(lib));
+        if (context.isCoreLibraryDesugaring()) {
+          inputs.add(new File(lib));
+        } else {
+          inputs.add(preDexLibrary(context, new File(lib)));
+        }
       }
 
       // Add extension libraries
@@ -128,11 +146,13 @@ public class RunD8 extends DexTask implements AndroidTask {
         return TaskResult.generateError("d8 failed.");
       }
 
-      // Bundle the desugar_jdk_libs.dex
+      // Run L8 to dex desugar_jdk_libs library
       if (context.isCoreLibraryDesugaring()) {
-        Files.copy(new File(context.getResources().getDesugarJdkLibs()).toPath(),
-            resolveNextClassesDex(context.getPaths().getTmpDir()));
-        context.getReporter().info("Core-Library desugaring is requested.");
+        if (new RunL8().execute(context, configJson)) {
+          context.getReporter().info("L8 is successful.");
+        } else {
+          return TaskResult.generateError(new Exception("L8 Error!"));
+        }
       }
 
       // Aggregate all classes.dex files output by dx
@@ -148,14 +168,17 @@ public class RunD8 extends DexTask implements AndroidTask {
   }
 
   /**
-   * Runs Android SDK's d8 program to create a dex file for the given collection of inputs. The
+   * Runs Android SDK's d8 program to create a dex file for the given collection
+   * of inputs. The
    * classes.dex file(s) will be output to the active context's build directory.
    *
    * @param context the build context
-   * @param inputs collection of input files. For a complete list of supported input types see
-   *               <a href="https://developer.android.com/tools/d8">d8</a>.
+   * @param inputs  collection of input files. For a complete list of supported
+   *                input types see
+   *                <a href="https://developer.android.com/tools/d8">d8</a>.
    * @return true if the process succeeded
-   * @throws IOException if the dex file is unable to be moved to the {@code intermediateFileName}
+   * @throws IOException if the dex file is unable to be moved to the
+   *                     {@code intermediateFileName}
    */
   private static boolean runD8(AndroidCompilerContext context, Collection<File> inputs,
       Set<String> mainDexClasses) throws IOException {
@@ -164,15 +187,20 @@ public class RunD8 extends DexTask implements AndroidTask {
   }
 
   /**
-   * Run Android SDK's d8 program to create a dex file for the given collection of inputs.
+   * Run Android SDK's d8 program to create a dex file for the given collection of
+   * inputs.
    *
-   * @param context the build context
-   * @param inputs collection of input files. For a complete list of supported input types see
-   *               <a href="https://developer.android.com/tools/d8">d8</a>.
-   * @param outputDir the destination for the classes.dex file
-   * @param intermediateFileName an alternative name to use for the dex file when pre-dexing
+   * @param context              the build context
+   * @param inputs               collection of input files. For a complete list of
+   *                             supported input types see
+   *                             <a href=
+   *                             "https://developer.android.com/tools/d8">d8</a>.
+   * @param outputDir            the destination for the classes.dex file
+   * @param intermediateFileName an alternative name to use for the dex file when
+   *                             pre-dexing
    * @return true if the process succeeded
-   * @throws IOException if the dex file is unable to be moved to the {@code intermediateFileName}
+   * @throws IOException if the dex file is unable to be moved to the
+   *                     {@code intermediateFileName}
    */
   private static boolean runD8(AndroidCompilerContext context, Collection<File> inputs,
       Set<String> mainDexClasses, String outputDir, String intermediateFileName)
@@ -190,13 +218,14 @@ public class RunD8 extends DexTask implements AndroidTask {
     }
     javaArgs.add("--lib");
     javaArgs.add(context.getResources().getAndroidRuntime());
-    // if (intermediateFileName == null) {
-    //   javaArgs.add("--classpath");
-    //   javaArgs.add(context.getPaths().getClassesDir().getAbsolutePath());
-    // }
-    if (context.isCoreLibraryDesugaring()) {
+    if (intermediateFileName == null) {
+      javaArgs.add("--classpath");
+      javaArgs.add(context.getPaths().getClassesDir().getAbsolutePath());
+    }
+    if (context.isCoreLibraryDesugaring() && mainDexClasses != null && configJson != null) {
+      // D8 skips coreLibraryDesugaring when --intermediate flag is used.
       javaArgs.add("--desugared-lib");
-      javaArgs.add(context.getResources().getDesugarJdkConfig());
+      javaArgs.add(configJson.toString());
     }
     javaArgs.add("--output");
     javaArgs.add(outputDir);
@@ -239,8 +268,9 @@ public class RunD8 extends DexTask implements AndroidTask {
    * Dex the given {@code input} file and cache the results.
    *
    * @param context the build context
-   * @param input the input JAR file
-   * @return the path of the library to use as an input to the downstream d8 process
+   * @param input   the input JAR file
+   * @return the path of the library to use as an input to the downstream d8
+   *         process
    * @throws IOException if the d8 process fails due to an I/O issue
    */
   private static File preDexLibrary(AndroidCompilerContext context, File input) throws IOException {
@@ -261,16 +291,31 @@ public class RunD8 extends DexTask implements AndroidTask {
     }
   }
 
-  private Path resolveNextClassesDex(File dir) {
-    Path dirPath = dir.toPath();
-    // classes2.dex, classes3.dex, ... — find first gap
-    int index = 2;
-    while (true) {
-      Path candidate = dirPath.resolve("classes" + index + ".dex");
-      if (!Files.exists(candidate)) {
-        return candidate;
+  private Path extractConfigJson(AndroidCompilerContext context) throws IOException {
+    try (JarFile jarFile = new JarFile(new File(context.getResources().getDesugarJdkConfig()))) {
+      String jsonPath = "META-INF/desugar/d8/desugar.json";
+      JarEntry entry = jarFile.getJarEntry(jsonPath);
+      if (entry == null) {
+        throw new FileNotFoundException(
+            "desugar.json not found in jar: " + context.getResources().getDesugarJdkConfig());
       }
-      index++;
+      try (InputStream is = jarFile.getInputStream(entry)) {
+        // Write to temp json file
+        File tempFile = new File(context.getPaths().getTmpDir(), "desugar.json");
+        if (tempFile.exists()) {
+          tempFile.delete();
+        }
+        tempFile.deleteOnExit();
+
+        try (OutputStream os = new FileOutputStream(tempFile)) {
+          byte[] buffer = new byte[8192];
+          int read;
+          while ((read = is.read(buffer)) != -1) {
+            os.write(buffer, 0, read);
+          }
+        }
+        return tempFile.toPath();
+      }
     }
   }
 }

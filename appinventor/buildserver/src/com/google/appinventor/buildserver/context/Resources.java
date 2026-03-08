@@ -41,8 +41,8 @@ public class Resources {
   private static final String DX_JAR = RUNTIME_TOOLS_DIR + "dx.jar";
   private static final String D8_JAR = RUNTIME_TOOLS_DIR + "d8.jar";
   private static final String APKSIGNER_JAR = RUNTIME_TOOLS_DIR + "apksigner.jar";
-  private static final String DESUGAR_JDK_CONFIG = RUNTIME_TOOLS_DIR + "desugar.json";
-  private static final String DESUGAR_JDK_LIBS = RUNTIME_TOOLS_DIR + "desugar_jdk_libs.dex";
+  private static final String DESUGAR_JDK_CONFIG = RUNTIME_TOOLS_DIR + "desugar_jdk_libs_configuration.jar";
+  private static final String DESUGAR_JDK_LIBS = RUNTIME_TOOLS_DIR + "desugar_jdk_libs.jar";
 
   public static final String YAIL_RUNTIME = RUNTIME_FILES_DIR + "runtime.scm";
   private static final String DEFAULT_ICON = RUNTIME_FILES_DIR + "ya.png";
