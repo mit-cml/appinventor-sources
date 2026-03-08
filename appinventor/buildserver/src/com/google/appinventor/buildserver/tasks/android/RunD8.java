@@ -146,10 +146,12 @@ public class RunD8 extends DexTask implements AndroidTask {
         return TaskResult.generateError("d8 failed.");
       }
 
-      // Run L8 to dex desugar_jdk_libs library
+      // Run L8 to dex `desugar_jdk_libs` library
       if (context.isCoreLibraryDesugaring()) {
+        long startTime = System.currentTimeMillis();
         if (new RunL8().execute(context, configJson)) {
-          context.getReporter().info("L8 is successful.");
+          long seconds = (System.currentTimeMillis() - startTime) / 1000;
+          context.getReporter().info("L8 succeeded in " + seconds + " seconds");
         } else {
           return TaskResult.generateError(new Exception("L8 Error!"));
         }
@@ -222,8 +224,7 @@ public class RunD8 extends DexTask implements AndroidTask {
       javaArgs.add("--classpath");
       javaArgs.add(context.getPaths().getClassesDir().getAbsolutePath());
     }
-    if (context.isCoreLibraryDesugaring() && mainDexClasses != null && configJson != null) {
-      // D8 skips coreLibraryDesugaring when --intermediate flag is used.
+    if (context.isCoreLibraryDesugaring() && configJson != null) {
       javaArgs.add("--desugared-lib");
       javaArgs.add(configJson.toString());
     }
