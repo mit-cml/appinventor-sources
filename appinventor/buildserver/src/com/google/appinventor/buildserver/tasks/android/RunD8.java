@@ -68,7 +68,7 @@ public class RunD8 extends DexTask implements AndroidTask {
       }
 
       for (String jar : context.getResources().getSupportJars()) {
-        if (criticalJars.contains(jar)) { // already covered above
+        if (criticalJars.contains(jar)) {  // already covered above
           continue;
         }
         inputs.add(preDexLibrary(context, new File(context.getResource(jar))));
@@ -170,17 +170,14 @@ public class RunD8 extends DexTask implements AndroidTask {
   }
 
   /**
-   * Runs Android SDK's d8 program to create a dex file for the given collection
-   * of inputs. The
+   * Runs Android SDK's d8 program to create a dex file for the given collection of inputs. The
    * classes.dex file(s) will be output to the active context's build directory.
    *
    * @param context the build context
-   * @param inputs  collection of input files. For a complete list of supported
-   *                input types see
-   *                <a href="https://developer.android.com/tools/d8">d8</a>.
+   * @param inputs collection of input files. For a complete list of supported input types see
+   *               <a href="https://developer.android.com/tools/d8">d8</a>.
    * @return true if the process succeeded
-   * @throws IOException if the dex file is unable to be moved to the
-   *                     {@code intermediateFileName}
+   * @throws IOException if the dex file is unable to be moved to the {@code intermediateFileName}
    */
   private static boolean runD8(AndroidCompilerContext context, Collection<File> inputs,
       Set<String> mainDexClasses) throws IOException {
@@ -189,20 +186,15 @@ public class RunD8 extends DexTask implements AndroidTask {
   }
 
   /**
-   * Run Android SDK's d8 program to create a dex file for the given collection of
-   * inputs.
+   * Run Android SDK's d8 program to create a dex file for the given collection of inputs.
    *
-   * @param context              the build context
-   * @param inputs               collection of input files. For a complete list of
-   *                             supported input types see
-   *                             <a href=
-   *                             "https://developer.android.com/tools/d8">d8</a>.
-   * @param outputDir            the destination for the classes.dex file
-   * @param intermediateFileName an alternative name to use for the dex file when
-   *                             pre-dexing
+   * @param context the build context
+   * @param inputs collection of input files. For a complete list of supported input types see
+   *               <a href="https://developer.android.com/tools/d8">d8</a>.
+   * @param outputDir the destination for the classes.dex file
+   * @param intermediateFileName an alternative name to use for the dex file when pre-dexing
    * @return true if the process succeeded
-   * @throws IOException if the dex file is unable to be moved to the
-   *                     {@code intermediateFileName}
+   * @throws IOException if the dex file is unable to be moved to the {@code intermediateFileName}
    */
   private static boolean runD8(AndroidCompilerContext context, Collection<File> inputs,
       Set<String> mainDexClasses, String outputDir, String intermediateFileName)
@@ -269,9 +261,8 @@ public class RunD8 extends DexTask implements AndroidTask {
    * Dex the given {@code input} file and cache the results.
    *
    * @param context the build context
-   * @param input   the input JAR file
-   * @return the path of the library to use as an input to the downstream d8
-   *         process
+   * @param input the input JAR file
+   * @return the path of the library to use as an input to the downstream d8 process
    * @throws IOException if the d8 process fails due to an I/O issue
    */
   private static File preDexLibrary(AndroidCompilerContext context, File input) throws IOException {
