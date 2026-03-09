@@ -747,7 +747,7 @@ Blockly.WarningHandler.prototype.checkDisposedBlock = function(block) {
 Blockly.WarningHandler.prototype['checkEmptySetterSocket'] = function(block) {
   if (block.setOrGet === 'set') {
     var value = block.getInputTargetBlock('VALUE');
-    if (!value) {
+    if (!value || !value.isEnabled()) {
       block.setErrorIconText(Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE);
       return true;
     }
