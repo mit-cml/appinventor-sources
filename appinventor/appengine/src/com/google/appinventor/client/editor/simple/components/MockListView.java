@@ -106,8 +106,8 @@ public final class MockListView extends MockVisibleComponent {
     mainFontSize = "22.0";
     detailFontSize = "14.0";
     // TODO (Jose) extract magic numbers as ComponentConstants.java
-    imageHeight = ComponentConstants.LISTVIEW_DEFAULT_IMAGE_HEIGHT;
-    imageWidth = ComponentConstants.LISTVIEW_DEFAULT_IMAGE_WIDTH;
+    imageHeight = ComponentConstants.LISTVIEW_DEFAULT_IMAGE_HEIGHT; // (200 / 5)
+    imageWidth = ComponentConstants.LISTVIEW_DEFAULT_IMAGE_WIDTH;  // (200 / 5)
 
     initComponent(listViewWidget);
     MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, DEFAULT_BACKGROUND_COLOR);
