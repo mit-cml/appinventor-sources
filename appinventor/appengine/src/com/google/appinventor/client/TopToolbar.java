@@ -217,23 +217,23 @@ public class TopToolbar extends Composite {
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
       boolean isUsbRunning) {
     if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_WIRELESS_BUTTON, true);
       if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_CHROMEBOOK, true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, false);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, false);
       } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_CHROMEBOOK, false);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, true);
       }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_REFRESHCOMPANION_BUTTON, false);
     } else {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
-      if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
-      } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
-      }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_WIRELESS_BUTTON, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_CHROMEBOOK, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, false);
+      connectDropDown.setItemEnabledById(WIDGET_NAME_REFRESHCOMPANION_BUTTON, true);
     }
   }
 
@@ -316,7 +316,7 @@ public class TopToolbar extends Composite {
     // TODO: This code will work only so long as these menu items stay located in the file/build
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
-    if (view == 0) {  // We are in the Projects view
+    if (view == Ode.PROJECTS) {  // We are in the Projects view
       if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(false);
       }
@@ -344,7 +344,7 @@ public class TopToolbar extends Composite {
           buildDropDown.setItemEnabledById(WIDGET_NAME_BUILD_IOS_APPSTORE, false);
         }
       }
-    } else { // We have to be in the Designer/Blocks view
+    } else if (view == Ode.DESIGNER) { // We have to be in the Designer/Blocks view
       if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(true);
       }
