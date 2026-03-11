@@ -45,11 +45,9 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   private float radius = 0.05f; // stored in meters
 
   // Drag system properties
-  private DragMode currentDragMode = DragMode.ROLLING;
-  private float[] dragStartPosition;
-  private long dragStartTime;
+
   private float[] lastFingerPosition;
-  private float pickupStartHeight = 0.0f;
+
   private boolean isBeingDragged = false;
 
   // Physics constants
@@ -59,11 +57,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   // Speed thresholds for different behaviors
   private static final float NORMAL_ROLLING_SPEED = 1200f;
   private static final float FAST_ROLLING_SPEED = 2500f;
-  private static final float FLING_THRESHOLD_SPEED = 3500f;
-  private static final float PICKUP_FLING_SPEED = 2000f;
 
-  private long lastUpdateTime = System.currentTimeMillis();
-  private boolean isActivelyRolling = false;
 
   // Surface behavior system
   private EnumSet<SurfaceBehaviorFlags> behaviorFlags = EnumSet.of(SurfaceBehaviorFlags.ROLLING);
@@ -138,7 +132,571 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     // Implementation would depend on your 3D rendering system
   }
 
-  // MARK: - Surface Behavior Properties
+  // MARK: - Enhanced Collision Handling
+
+
+  @Override
+  @SimpleEvent(description = "This event is triggered when a sphereNode collides with another object. Note: physics must be enabled")
+  public void ObjectCollidedWithObject(ARNode otherNode) {
+    showCollisionEffect();
+
+    // Restore color after delay
+    new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
+      if (!isBeingDragged) {
+        restoreOriginalAppearance();
+      }
+    }, 800);
+    Log.i("SphereNode", name + " collided with " + otherNode.getClass().getSimpleName());
+    // Dispatch event to app level
+  }
+
+  private void showCollisionEffect() {
+    isCurrentlyColliding = true;
+    // Store original material if not already stored
+    // Change appearance to show collision - green for default
+    // Implementation depends on your material/rendering system
+    Log.i("SphereNode", "Showing collision effect");
+  }
+
+  private void restoreOriginalAppearance() {
+    isCurrentlyColliding = false;
+    // Restore original material
+    Log.i("SphereNode", "Restored original appearance after dragging or collision");
+  }
+
+  // MARK: - Enhanced Scaling with Physics Correction
+
+  @Override
+  public float[] getModelBounds() {
+    float radiusInMeters = RadiusInCentimeters() * 0.01f; // Convert cm to meters
+    float diameter = 2 * radiusInMeters * 10;  //try this
+    return new float[]{diameter, diameter, diameter};
+  }
+
+  @Override
+  @SimpleFunction(description = "Changes the sphere's scale by the given scalar, maintaining bottom position if physics enabled.")
+  public void ScaleBy(float scalar) {
+    Log.i("SphereNode", "Scaling sphere " + name + " by " + scalar);
+
+    float oldScale = Scale();
+    float newScale = oldScale * Math.abs(scalar);
+
+    // Update physics immediately if enabled to maintain bottom position
+    if (EnablePhysics()) {
+      float previousSize = radius * Scale();
+      // Adjust Y position to maintain ground contact
+      float[] currentPos = getCurrentPosition();
+      currentPos[1] = currentPos[1] - previousSize + (radius * newScale);
+      setCurrentPosition(currentPos);
+    }
+
+    Scale(newScale);
+    Log.i("SphereNode", "Scale complete - bottom position maintained");
+  }
+
+  @SimpleFunction(description = "Scale sphere by pinch gesture while maintaining physics accuracy")
+  public void ScaleByPinch(float scalar) {
+    Log.i("SphereNode", "Pinch scaling sphere " + name + " by " + scalar);
+
+    float oldScale = Scale();
+    float newScale = oldScale * Math.abs(scalar);
+    float newActualRadius = radius * newScale;
+
+    float minRadius = 0.01f;
+    float maxRadius = 20.0f;
+
+    if (newActualRadius < minRadius || newActualRadius > maxRadius) {
+      Log.i(LOG_TAG, "Pinch scale rejected - radius would be " + newActualRadius + "m");
+      return;
+    }
+
+    boolean hadPhysics = EnablePhysics();
+    Log.i(LOG_TAG, "has physics?" + hadPhysics);
+    if (hadPhysics) {
+      // Store physics properties
+      float savedMass = Mass();
+      float savedFriction = StaticFriction();
+      float savedRestitution = Restitution();
+
+      // Temporarily disable physics
+      EnablePhysics(false);
+
+      // Update position to maintain bottom contact
+      float previousSize = radius * Scale();
+      float[] currentPos = getCurrentPosition();
+      currentPos[1] = currentPos[1] - previousSize + (radius * newScale);
+      setCurrentPosition(currentPos);
+
+      // Apply scaling
+      Scale(newScale);
+
+      // Restore physics
+      Mass(savedMass);
+      StaticFriction(savedFriction);
+      Restitution(savedRestitution);
+      EnablePhysics(true);
+
+      Log.i("SphereNode", "Physics recreated with correct collision shape");
+    } else {
+      Scale(newScale);
+    }
+
+    Log.i("SphereNode", "Pinch scale complete: " + oldScale + " → " + newScale +
+        ", collision radius: " + newActualRadius + "m");
+    debugCollisionShape();
+  }
+
+  @SimpleFunction(description = "Debug information about the sphere's collision shape")
+  public void DebugCollisionShape() {
+    debugCollisionShape();
+  }
+
+  private void debugCollisionShape() {
+    float visualScale = Scale();
+    float calculatedRadius = radius * visualScale;
+
+    Log.i("SphereNode", "=== COLLISION SHAPE DEBUG ===");
+    Log.i("SphereNode", "Internal radius: " + radius + "m");
+    Log.i("SphereNode", "Visual scale: " + visualScale);
+    Log.i("SphereNode", "Calculated collision radius: " + calculatedRadius + "m");
+    Log.i("SphereNode", "Has physics: " + EnablePhysics());
+    Log.i("SphereNode", "==========================");
+  }
+
+  // MARK: - Enhanced Drag System
+
+  @SimpleFunction(description = "Start dragging the sphere with enhanced physics control")
+  public void StartDrag() {
+    startDrag(new PointF());
+  }
+
+  @Override
+  public void startDrag(PointF fingerLocation) {
+    super.startDrag(fingerLocation);
+    Log.i("SphereNode", "Starting optimized drag for " + name);
+
+    isBeingDragged = true;
+
+    if (EnablePhysics()) {
+      adjustPhysicsForDrag();
+    }
+
+    showDragEffect();
+  }
+
+  private void adjustPhysicsForDrag() {
+    // Android-specific physics adjustment during drag
+    // Reduce physics responsiveness for better control
+    dragStartDamping = 0.85f;
+    dragStartAngularDamping = 0.9f;
+  }
+
+  @Override
+  public void updateDrag(float[] groundProjection){
+    if (!isBeingDragged) return;
+
+    float[] currentAnchorPos = getCurrentPosition();
+    Log.i("SphereNode", "Current anchor pos: " + arrayToString(currentAnchorPos));
+
+    if (lastFingerPosition != null) {
+      float[] movement = subtractVectors(groundProjection, lastFingerPosition);
+      float distance = vectorLength(movement);
+
+      if (distance > 0.75f) { // 50cm threshold
+        Log.w("SphereNode", "Rejecting extreme jump: " + distance + "m - using previous position");
+        return; // Skip this frame entirely
+      }
+
+      // Apply movement based on behavior
+      updateDragPosition(currentAnchorPos, groundProjection, movement);
+
+      Log.i("SphereNode", "Applied movement: " + arrayToString(movement) + " (distance: " + distance + ")");
+    } else {
+      Log.i("SphereNode", "DRAG UPDATE: Initial position " + arrayToString(groundProjection));
+    }
+
+    lastFingerPosition = groundProjection.clone();
+  }
+
+  private void updateDragPosition(float[] currentPos, float[] targetPos, float[] movement) {
+    // Direct position control for immediate feedback
+    float[] constrainedPos = {
+        targetPos[0],
+        currentPos[1],
+        targetPos[2]
+    };
+    Log.i("SphereNode", "Current constrainedPos pos: " + arrayToString(constrainedPos));
+
+    applyRealisticRolling(movement);
+    setCurrentPosition(constrainedPos);
+
+    // Add physics assistance if enabled
+    if (EnablePhysics()) {
+      float responsiveness = getResponsivenessForMass() * DragSensitivity();
+      float forceScale = 2.0f;
+      float[] assistForce = multiplyVector(movement, responsiveness * forceScale);
+
+      // Apply horizontal force only
+      applyForce(assistForce[0], 0, assistForce[2]);
+    }
+  }
+
+  @SimpleFunction(description = "End drag with release velocity for momentum")
+  public void endDrag(String pos) {
+    PointF velocity = parsePointF(pos);
+    //CSB todo
+    endDrag(velocity, null);
+  }
+
+  @Override
+  public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
+    if (!isBeingDragged) return;
+
+    Log.i("SphereNode", "Ending optimized drag for " + name);
+    isBeingDragged = false;
+
+    if (EnablePhysics()) {
+      applyReleaseVelocity(fingerVelocity, cameraVectors);
+    }
+
+    // Restore physics settings
+    restorePhysicsAfterDrag();
+
+    // Restore visual appearance
+    restoreOriginalAppearance();
+  }
+
+  /* enable sphereNodes to roll */
+  private void applyRealisticRolling(float[] movement) {
+    float[] horizontalMovement = {movement[0], 0, movement[2]};
+    float distance = vectorLength(horizontalMovement);
+    float[] rotation = getCurrentRotation(); //CSB check this
+    Log.d("SphereNode", "Going to roll: " + arrayToString(rotation));
+    if (distance <= 0.0001f) return;
+
+    // Physics-accurate rolling: distance = radius × angle
+    float ballRadius = RadiusInCentimeters() * Scale();
+    float rollAngle = distance / ballRadius;
+
+    // Rotation axis perpendicular to movement
+    float[] direction = normalizeVector(horizontalMovement);
+    float[] rollAxis = {direction[2], 0, -direction[0]};
+
+    // Apply incremental rotation
+    float[] rollRotation = createQuaternionFromAxisAngle(rollAxis, rollAngle);
+
+    Log.d("SphereNode", "Before rolling: " + arrayToString(rotation));
+    rotation = multiplyQuaternions(rollRotation, rotation);
+    Log.d("SphereNode", "After rolling: " + arrayToString(rotation));;
+  }
+
+
+  /**
+   * Apply camera-aware release velocity
+   */
+  @Override
+  public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
+    float releaseSpeed = (float) Math.sqrt(
+        releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y
+    );
+
+    if (releaseSpeed <= NORMAL_ROLLING_SPEED) {
+      Log.d("SphereNode", "Release speed too low: " + releaseSpeed);
+      return;
+    }
+
+    // Use default camera vectors if none provided
+    float[] right = (cameraVectors != null) ? cameraVectors.right : new float[]{1, 0, 0};
+    float[] forward = (cameraVectors != null) ? cameraVectors.forward : new float[]{0, 0, -1};
+
+    float baseScale = 0.002f;
+
+    // CONSISTENT mapping: screen X → camera right, screen Y → camera forward
+    // Screen Y is negative because screen coordinates have Y=0 at top
+    float screenX = releaseVelocity.x * baseScale;
+    float screenY = -releaseVelocity.y * baseScale; // Flip screen Y
+    // let worldVelocity = (right * screenX) + (forward * screenY)
+    // Calculate world velocity from camera-relative movement
+    float[] worldVelocity = {
+        (right[0] * screenX) + (forward[0] * screenY),
+        0, // Keep Y velocity as is (no vertical component from horizontal drag)
+        (right[2] * screenX) + (forward[2] * screenY)
+    };
+
+    Log.d("SphereNode", "Screen: (" + releaseVelocity.x + ", " + releaseVelocity.y +
+        ") → World: (" + worldVelocity[0] + ", " + worldVelocity[1] + ", " + worldVelocity[2] + ")");
+    Log.d("SphereNode", "Camera right: (" + right[0] + ", " + right[1] + ", " + right[2] +
+        "), forward: (" + forward[0] + ", " + forward[1] + ", " + forward[2] + ")");
+
+    // Apply the world velocity as impulse, preserving any existing Y velocity
+    if (enablePhysics) {
+      // Get current Y velocity to preserve it
+      float currentYVelocity = 0;
+
+      // Apply behavior-modified impulse
+      float behaviorMultiplier = getBehaviorMomentumMultiplier();
+
+      applyForce(
+          UnitHelper.metersToCentimeters(worldVelocity[0] * behaviorMultiplier),
+          UnitHelper.metersToCentimeters(currentYVelocity), // Keep existing Y velocity
+          UnitHelper.metersToCentimeters(worldVelocity[2] * behaviorMultiplier)
+      );
+    }
+  }
+
+  private void applyForce(float x, float y, float z) {
+    // Apply physics force - implementation depends on physics system
+    Log.i("SphereNode", "Applying force: " + arrayToString(new float[]{x, y, z}));
+  }
+
+
+
+  private void restorePhysicsAfterDrag() {
+    // Restore original physics damping after drag
+    new android.os.Handler().postDelayed(() -> {
+      // Reset damping values to normal
+      Log.i("SphereNode", "Physics restored after drag");
+    }, 100);
+  }
+
+
+  @Override
+  protected void showDragEffect() {
+    // Color based on behavior for visual feedback
+    String effectColor = "yellow"; // default
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) {
+      effectColor = "blue";
+    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) {
+      effectColor = "orange";
+    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.BOUNCY)) {
+      effectColor = "white";
+    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING)) {
+      effectColor = "cyan";
+    }
+
+    Log.i("SphereNode", "Showing " + effectColor + " drag effect");
+    // Implementation depends on your material/rendering system
+  }
+
+  // MARK: - Helper Methods
+
+  private float getBehaviorMomentumMultiplier() {
+    float multiplier = 1.0f;
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) multiplier *= 0.7f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) multiplier *= 1.0f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.STICKY)) multiplier *= 0.2f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY)) multiplier *= 1.5f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.WET)) multiplier *= 0.6f;
+
+    return multiplier;
+  }
+
+  private float getResponsivenessForMass() {
+    float baseMass = 0.2f;
+    float massRatio = Mass() / baseMass;
+    float responsiveness = 1.0f / (float) Math.sqrt(massRatio);
+
+    float finalResponsiveness = responsiveness;
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) finalResponsiveness *= 0.6f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) finalResponsiveness *= 1.4f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.STICKY)) finalResponsiveness *= 0.4f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING)) finalResponsiveness *= 1.6f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY)) finalResponsiveness *= 1.2f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.WET)) finalResponsiveness *= 0.8f;
+
+    return finalResponsiveness;
+  }
+
+  // MARK: - vector maths
+
+  private float[] normalizeVector(float[] vector) {
+    float length = vectorLength(vector);
+    if (length == 0) return new float[]{0, 0, 0};
+    return new float[]{vector[0] / length, vector[1] / length, vector[2] / length};
+  }
+
+  private float[] createQuaternionFromAxisAngle(float[] axis, float angle) {
+    float halfAngle = angle * 0.5f;
+    float sin = (float) Math.sin(halfAngle);
+    float cos = (float) Math.cos(halfAngle);
+
+    return new float[]{
+        axis[0] * sin,  // x
+        axis[1] * sin,  // y
+        axis[2] * sin,  // z
+        cos             // w
+    };
+  }
+
+  private float[] multiplyQuaternions(float[] q1, float[] q2) {
+    return new float[]{
+        q1[3] * q2[0] + q1[0] * q2[3] + q1[1] * q2[2] - q1[2] * q2[1], // x
+        q1[3] * q2[1] - q1[0] * q2[2] + q1[1] * q2[3] + q1[2] * q2[0], // y
+        q1[3] * q2[2] + q1[0] * q2[1] - q1[1] * q2[0] + q1[2] * q2[3], // z
+        q1[3] * q2[3] - q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2]  // w
+    };
+  }
+
+  private float[] subtractVectors(float[] a, float[] b) {
+    return new float[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
+  }
+
+  private float[] multiplyVector(float[] vector, float scalar) {
+    return new float[]{vector[0] * scalar, vector[1] * scalar, vector[2] * scalar};
+  }
+
+
+  // MARK: - Enhanced Physics Methods
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void EnablePhysics(boolean isDynamic) {
+    super.EnablePhysics(isDynamic);
+
+    if (isDynamic) {
+      setupSpherePhysics();
+      Log.i("SphereNode", "Physics enabled - ARCore will handle all ground/floor collisions");
+      debugPhysicsState();
+    } else {
+      Log.i("SphereNode", "Physics disabled");
+    }
+  }
+
+  private void setupSpherePhysics() {
+    // Create sphere collision shape with current radius and scale
+    float actualRadius = radius * Scale();
+
+    // Setup physics body with calculated properties
+    // Implementation depends on your physics system (ARCore/Sceneform)
+
+    Log.i("SphereNode", "Setup sphere physics - radius: " + actualRadius + "m, mass: " + Mass());
+  }
+
+  @SimpleFunction(description = "Debug current physics state of the sphere")
+  public void DebugPhysicsState() {
+    debugPhysicsState();
+  }
+
+  private void debugPhysicsState() {
+    float[] currentPos = getCurrentPosition();
+
+    Log.i("SphereNode", "=== PHYSICS STATE DEBUG ===");
+    Log.i("SphereNode", "Position: " + arrayToString(currentPos));
+    Log.i("SphereNode", "Has physics: " + EnablePhysics());
+    Log.i("SphereNode", "Mass: " + Mass());
+    Log.i("SphereNode", "Ball radius: " + radius);
+    Log.i("SphereNode", "Ball radius * scale: " + (radius * Scale()));
+    Log.i("SphereNode", "Scale: " + Scale());
+    Log.i("SphereNode", "Static Friction: " + StaticFriction());
+    Log.i("SphereNode", "Dynamic Friction: " + DynamicFriction());
+    Log.i("SphereNode", "Restitution: " + Restitution());
+    Log.i("SphereNode", "Drag Sensitivity: " + DragSensitivity());
+    Log.i("SphereNode", "Behaviors: " + getBehaviorNames());
+    Log.i("SphereNode", "==========================");
+  }
+
+
+  // MARK: - Enhanced Move Methods
+
+  @Override
+  @SimpleFunction(description = "Move sphere by offset, maintaining physics if enabled")
+  public void MoveBy(float x, float y, float z) {
+    float[] position = {0, 0, 0};
+    float[] rotation = {0, 0, 0, 1};
+
+    TrackingState trackingState = null;
+    if (this.Anchor() != null) {
+      float[] translations = this.Anchor().getPose().getTranslation();
+      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
+      trackingState = this.Anchor().getTrackingState();
+    }
+
+    // Maintain bottom contact for physics-enabled spheres
+    if (EnablePhysics() && y != 0) {
+      float ballRadius = radius * Scale();
+      position[1] = Math.max(position[1], ballRadius); // Don't go below ground
+    }
+
+    Pose newPose = new Pose(position, rotation);
+    if (this.trackable != null) {
+      Anchor(this.trackable.createAnchor(newPose));
+      Log.i("SphereNode", "Moved anchor BY " + newPose + " with physics correction");
+    } else {
+      if (trackingState == TrackingState.TRACKING) {
+        if (session != null) {
+          Log.i("SphereNode", "Moved anchor BY with SESSION");
+          Anchor(session.createAnchor(newPose));
+        }
+      }
+    }
+  }
+
+  @Override
+  @SimpleFunction(description = "Move sphere to absolute position")
+  public void MoveTo(float x, float y, float z) {
+
+    float xMeters = x / 100.0f;
+    float yMeters = y / 100.0f;
+    float zMeters = z / 100.0f;
+
+    float[] position = {xMeters, yMeters, zMeters};
+    float[] rotation = {0, 0, 0, 1};
+
+    TrackingState trackingState = null;
+    if (this.Anchor() != null) {
+      float[] translations = this.Anchor().getPose().getTranslation();
+      position = new float[]{translations[0] + xMeters, translations[1] + yMeters, translations[2] + zMeters};
+      trackingState = this.Anchor().getTrackingState();
+    }
+
+    // Maintain physics constraints
+    if (EnablePhysics()) {
+      //float ballRadius = radius * Scale();
+      //position[1] = Math.max(position[1], ballRadius); // Don't go below ground
+    }
+
+    Pose newPose = new Pose(position, rotation);
+    if (this.trackable != null) {
+      Log.i("SphereNode", "Moving anchor to pose: " + newPose + " with physics correction");
+      Anchor(this.trackable.createAnchor(newPose));
+    } else {
+      if (trackingState == TrackingState.TRACKING) {
+        if (session != null) {
+          Log.i("SphereNode", "Moved anchor to with SESSION " + xMeters + " " + yMeters + " " + zMeters);
+          Anchor(session.createAnchor(newPose));
+        }
+      }
+    }
+  }
+
+  @Override
+  @SimpleFunction(description = "Move sphere to detected plane with physics considerations")
+  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
+    this.trackable = (Trackable) targetPlane.DetectedPlane();
+    if (this.anchor != null) {
+      this.anchor.detach();
+    }
+
+    Pose targetPose = (Pose) p;
+
+    // Adjust Y position for sphere physics
+    if (EnablePhysics()) {
+      float ballRadius = radius * Scale();
+      float[] translation = targetPose.getTranslation();
+      translation[1] += ballRadius; // Place sphere on surface, not embedded
+      targetPose = new Pose(translation, targetPose.getRotationQuaternion());
+    }
+
+    Anchor(this.trackable.createAnchor(targetPose));
+    Log.i("SphereNode", "Moved to detected plane with physics adjustment");
+  }
+
+
+  // MARK: - Surface Behavior Properties. Not fully tested CSB 1/26
 
   @SimpleProperty(description = "Whether the sphere rolls when on the ground")
   public boolean IsRolling() {
@@ -467,585 +1025,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     float frictionEffect = (float) Math.sqrt(massRatio);
     float dampingEffect = 1.0f / (float) Math.sqrt(massRatio);
     return new MassEffect(frictionEffect, dampingEffect);
-  }
-
-  // MARK: - Enhanced Collision Handling
-
-
-  @Override
-  @SimpleEvent(description = "This event is triggered when a sphereNode collides with another object. Note: physics must be enabled")
-  public void ObjectCollidedWithObject(ARNode otherNode) {
-    showCollisionEffect();
-
-    // Restore color after delay
-    new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
-      if (!isBeingDragged) {
-        restoreOriginalAppearance();
-      }
-    }, 800);
-    Log.i("SphereNode", name + " collided with " + otherNode.getClass().getSimpleName());
-    // Dispatch event to app level
-
-  }
-
-  private void showCollisionEffect() {
-    isCurrentlyColliding = true;
-    // Store original material if not already stored
-    // Change appearance to show collision - green for default
-    // Implementation depends on your material/rendering system
-    Log.i("SphereNode", "Showing collision effect");
-  }
-
-  private void restoreOriginalAppearance() {
-    isCurrentlyColliding = false;
-    // Restore original material
-    Log.i("SphereNode", "Restored original appearance after dragging or collision");
-  }
-
-  // MARK: - Enhanced Scaling with Physics Correction
-
-  @Override
-  public float[] getModelBounds() {
-    float radiusInMeters = RadiusInCentimeters() * 0.01f; // Convert cm to meters
-    float diameter = 2 * radiusInMeters * 10;  //try this
-    return new float[]{diameter, diameter, diameter};
-  }
-
-  @Override
-  @SimpleFunction(description = "Changes the sphere's scale by the given scalar, maintaining bottom position if physics enabled.")
-  public void ScaleBy(float scalar) {
-    Log.i("SphereNode", "Scaling sphere " + name + " by " + scalar);
-
-    float oldScale = Scale();
-    float newScale = oldScale * Math.abs(scalar);
-
-    // Update physics immediately if enabled to maintain bottom position
-    if (EnablePhysics()) {
-      float previousSize = radius * Scale();
-      // Adjust Y position to maintain ground contact
-      float[] currentPos = getCurrentPosition();
-      currentPos[1] = currentPos[1] - previousSize + (radius * newScale);
-      setCurrentPosition(currentPos);
-    }
-
-    Scale(newScale);
-    Log.i("SphereNode", "Scale complete - bottom position maintained");
-  }
-
-  @SimpleFunction(description = "Scale sphere by pinch gesture while maintaining physics accuracy")
-  public void ScaleByPinch(float scalar) {
-    Log.i("SphereNode", "Pinch scaling sphere " + name + " by " + scalar);
-
-    float oldScale = Scale();
-    float newScale = oldScale * Math.abs(scalar);
-    float newActualRadius = radius * newScale;
-
-    float minRadius = 0.01f;
-    float maxRadius = 20.0f;
-
-    if (newActualRadius < minRadius || newActualRadius > maxRadius) {
-      Log.i(LOG_TAG, "Pinch scale rejected - radius would be " + newActualRadius + "m");
-      return;
-    }
-
-    boolean hadPhysics = EnablePhysics();
-    Log.i(LOG_TAG, "has physics?" + hadPhysics);
-    if (hadPhysics) {
-      // Store physics properties
-      float savedMass = Mass();
-      float savedFriction = StaticFriction();
-      float savedRestitution = Restitution();
-
-      // Temporarily disable physics
-      EnablePhysics(false);
-
-      // Update position to maintain bottom contact
-      float previousSize = radius * Scale();
-      float[] currentPos = getCurrentPosition();
-      currentPos[1] = currentPos[1] - previousSize + (radius * newScale);
-      setCurrentPosition(currentPos);
-
-      // Apply scaling
-      Scale(newScale);
-
-      // Restore physics
-      Mass(savedMass);
-      StaticFriction(savedFriction);
-      Restitution(savedRestitution);
-      EnablePhysics(true);
-
-      Log.i("SphereNode", "Physics recreated with correct collision shape");
-    } else {
-      Scale(newScale);
-    }
-
-    Log.i("SphereNode", "Pinch scale complete: " + oldScale + " → " + newScale +
-        ", collision radius: " + newActualRadius + "m");
-    debugCollisionShape();
-  }
-
-  @SimpleFunction(description = "Debug information about the sphere's collision shape")
-  public void DebugCollisionShape() {
-    debugCollisionShape();
-  }
-
-  private void debugCollisionShape() {
-    float visualScale = Scale();
-    float calculatedRadius = radius * visualScale;
-
-    Log.i("SphereNode", "=== COLLISION SHAPE DEBUG ===");
-    Log.i("SphereNode", "Internal radius: " + radius + "m");
-    Log.i("SphereNode", "Visual scale: " + visualScale);
-    Log.i("SphereNode", "Calculated collision radius: " + calculatedRadius + "m");
-    Log.i("SphereNode", "Has physics: " + EnablePhysics());
-    Log.i("SphereNode", "==========================");
-  }
-
-  // MARK: - Enhanced Drag System
-
-  @SimpleFunction(description = "Start dragging the sphere with enhanced physics control")
-  public void StartDrag() {
-    startDrag(new PointF());
-  }
-
-  @Override
-  public void startDrag(PointF fingerLocation) {
-    super.startDrag(fingerLocation);
-    Log.i("SphereNode", "Starting optimized drag for " + name);
-
-    isBeingDragged = true;
-    //lastFingerPosition = null;
-
-    // Store physics settings for restoration
-    if (EnablePhysics()) {
-      adjustPhysicsForDrag();
-    }
-
-    showDragEffect();
-  }
-
-  private void adjustPhysicsForDrag() {
-    // Android-specific physics adjustment during drag
-    // Reduce physics responsiveness for better control
-    dragStartDamping = 0.85f;
-    dragStartAngularDamping = 0.9f;
-  }
-
- /* @SimpleFunction(description = "Update drag position based on finger world position")
-  public void UpdateDrag(String fingerWorldPositionStr) {
-    if (!isBeingDragged) return;
-
-    float[] fingerWorldPosition = parseVector3(fingerWorldPositionStr);
-    updateDrag(fingerWorldPosition);
-  }*/
-
-  @Override
-  public void updateDrag(float[] groundProjection){
-    if (!isBeingDragged) return;
-
-    float[] currentAnchorPos = getCurrentPosition();
-    Log.i("SphereNode", "Current anchor pos: " + arrayToString(currentAnchorPos));
-
-    if (lastFingerPosition != null) {
-      float[] movement = subtractVectors(groundProjection, lastFingerPosition);
-      float distance = vectorLength(movement);
-
-      if (distance > 0.75f) { // 50cm threshold
-        Log.w("SphereNode", "Rejecting extreme jump: " + distance + "m - using previous position");
-        return; // Skip this frame entirely
-      }
-
-      // Apply movement based on behavior
-      updateDragPosition(currentAnchorPos, groundProjection, movement);
-
-
-      Log.i("SphereNode", "Applied movement: " + arrayToString(movement) + " (distance: " + distance + ")");
-    } else {
-      Log.i("SphereNode", "DRAG UPDATE: Initial position " + arrayToString(groundProjection));
-    }
-
-    lastFingerPosition = groundProjection.clone();
-  }
-
-  private void updateDragPosition(float[] currentPos, float[] targetPos, float[] movement) {
-    // Direct position control for immediate feedback
-    float[] constrainedPos = {
-        targetPos[0],
-        currentPos[1],
-        targetPos[2]
-    };
-    Log.i("SphereNode", "Current constrainedPos pos: " + arrayToString(constrainedPos));
-
-    applyRealisticRolling(movement);
-    setCurrentPosition(constrainedPos);
-
-    // Add physics assistance if enabled
-    if (EnablePhysics()) {
-      float responsiveness = getResponsivenessForMass() * DragSensitivity();
-      float forceScale = 2.0f;
-      float[] assistForce = multiplyVector(movement, responsiveness * forceScale);
-
-      // Apply horizontal force only
-      applyForce(assistForce[0], 0, assistForce[2]);
-    }
-  }
-
-
-  @SimpleFunction(description = "End drag with release velocity for momentum")
-  public void endDrag(String pos) {
-    PointF velocity = parsePointF(pos);
-    //CSB todo
-    endDrag(velocity, null);
-
-  }
-
-  @Override
-  public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
-    if (!isBeingDragged) return;
-
-    Log.i("SphereNode", "Ending optimized drag for " + name);
-    isBeingDragged = false;
-
-    if (EnablePhysics()) {
-      applyReleaseVelocity(fingerVelocity, cameraVectors);
-    }
-
-    // Restore physics settings
-    restorePhysicsAfterDrag();
-
-    // Restore visual appearance
-    restoreOriginalAppearance();
-  }
-
-  private void applyRealisticRolling(float[] movement) {
-    float[] horizontalMovement = {movement[0], 0, movement[2]};
-    float distance = vectorLength(horizontalMovement);
-    float[] rotation = getCurrentRotation(); //CSB check this
-    Log.d("SphereNode", "Going to roll: " + arrayToString(rotation));
-    if (distance <= 0.0001f) return;
-
-    // Physics-accurate rolling: distance = radius × angle
-    float ballRadius = RadiusInCentimeters() * Scale();
-    float rollAngle = distance / ballRadius;
-
-    // Rotation axis perpendicular to movement
-    float[] direction = normalizeVector(horizontalMovement);
-    float[] rollAxis = {direction[2], 0, -direction[0]};
-
-    // Apply incremental rotation
-    float[] rollRotation = createQuaternionFromAxisAngle(rollAxis, rollAngle);
-
-    Log.d("SphereNode", "Before rolling: " + arrayToString(rotation));
-    rotation = multiplyQuaternions(rollRotation, rotation);
-    Log.d("SphereNode", "After rolling: " + arrayToString(rotation));;
-
-
-
-  }
-
-
-  private float[] normalizeVector(float[] vector) {
-    float length = vectorLength(vector);
-    if (length == 0) return new float[]{0, 0, 0};
-    return new float[]{vector[0] / length, vector[1] / length, vector[2] / length};
-  }
-
-  private float[] createQuaternionFromAxisAngle(float[] axis, float angle) {
-    float halfAngle = angle * 0.5f;
-    float sin = (float) Math.sin(halfAngle);
-    float cos = (float) Math.cos(halfAngle);
-
-    return new float[]{
-        axis[0] * sin,  // x
-        axis[1] * sin,  // y
-        axis[2] * sin,  // z
-        cos             // w
-    };
-  }
-
-  private float[] multiplyQuaternions(float[] q1, float[] q2) {
-    return new float[]{
-        q1[3] * q2[0] + q1[0] * q2[3] + q1[1] * q2[2] - q1[2] * q2[1], // x
-        q1[3] * q2[1] - q1[0] * q2[2] + q1[1] * q2[3] + q1[2] * q2[0], // y
-        q1[3] * q2[2] + q1[0] * q2[1] - q1[1] * q2[0] + q1[2] * q2[3], // z
-        q1[3] * q2[3] - q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2]  // w
-    };
-  }
-  /**
-   * Apply camera-aware release velocity
-   */
-  @Override
-  public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
-    float releaseSpeed = (float) Math.sqrt(
-        releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y
-    );
-
-    if (releaseSpeed <= NORMAL_ROLLING_SPEED) {
-      Log.d("SphereNode", "Release speed too low: " + releaseSpeed);
-      return;
-    }
-
-    //debugReleaseDirection(releaseVelocity, cameraVectors);
-
-    // Use default camera vectors if none provided
-    float[] right = (cameraVectors != null) ? cameraVectors.right : new float[]{1, 0, 0};
-    float[] forward = (cameraVectors != null) ? cameraVectors.forward : new float[]{0, 0, -1};
-
-    float baseScale = 0.002f;
-
-    // CONSISTENT mapping: screen X → camera right, screen Y → camera forward
-    // Screen Y is negative because screen coordinates have Y=0 at top
-    float screenX = releaseVelocity.x * baseScale;
-    float screenY = -releaseVelocity.y * baseScale; // Flip screen Y
-    // let worldVelocity = (right * screenX) + (forward * screenY)
-    // Calculate world velocity from camera-relative movement
-    float[] worldVelocity = {
-        (right[0] * screenX) + (forward[0] * screenY),
-        0, // Keep Y velocity as is (no vertical component from horizontal drag)
-        (right[2] * screenX) + (forward[2] * screenY)
-    };
-
-    Log.d("SphereNode", "Screen: (" + releaseVelocity.x + ", " + releaseVelocity.y +
-        ") → World: (" + worldVelocity[0] + ", " + worldVelocity[1] + ", " + worldVelocity[2] + ")");
-    Log.d("SphereNode", "Camera right: (" + right[0] + ", " + right[1] + ", " + right[2] +
-        "), forward: (" + forward[0] + ", " + forward[1] + ", " + forward[2] + ")");
-
-    // Apply the world velocity as impulse, preserving any existing Y velocity
-    if (enablePhysics) {
-      // Get current Y velocity to preserve it
-      float currentYVelocity = 0;
-
-
-      // Apply behavior-modified impulse
-      float behaviorMultiplier = getBehaviorMomentumMultiplier();
-
-      applyForce(
-          UnitHelper.metersToCentimeters(worldVelocity[0] * behaviorMultiplier),
-          UnitHelper.metersToCentimeters(currentYVelocity), // Keep existing Y velocity
-          UnitHelper.metersToCentimeters(worldVelocity[2] * behaviorMultiplier)
-      );
-    }
-  }
-
-  private void applyForce(float x, float y, float z) {
-    // Apply physics force - implementation depends on physics system
-    Log.i("SphereNode", "Applying force: " + arrayToString(new float[]{x, y, z}));
-  }
-
-  private float[] subtractVectors(float[] a, float[] b) {
-    return new float[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
-  }
-
-  private float[] multiplyVector(float[] vector, float scalar) {
-    return new float[]{vector[0] * scalar, vector[1] * scalar, vector[2] * scalar};
-  }
-
-
-  private void restorePhysicsAfterDrag() {
-    // Restore original physics damping after drag
-    new android.os.Handler().postDelayed(() -> {
-      // Reset damping values to normal
-      Log.i("SphereNode", "Physics restored after drag");
-    }, 100);
-  }
-
-
-  @Override
-  protected void showDragEffect() {
-    // Color based on behavior for visual feedback
-    String effectColor = "yellow"; // default
-
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) {
-      effectColor = "blue";
-    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) {
-      effectColor = "orange";
-    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.BOUNCY)) {
-      effectColor = "white";
-    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING)) {
-      effectColor = "cyan";
-    }
-
-    Log.i("SphereNode", "Showing " + effectColor + " drag effect");
-    // Implementation depends on your material/rendering system
-  }
-
-  // MARK: - Helper Methods
-
-  private float getBehaviorMomentumMultiplier() {
-    float multiplier = 1.0f;
-
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) multiplier *= 0.7f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) multiplier *= 1.0f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.STICKY)) multiplier *= 0.2f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY)) multiplier *= 1.5f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.WET)) multiplier *= 0.6f;
-
-    return multiplier;
-  }
-
-  private float getResponsivenessForMass() {
-    float baseMass = 0.2f;
-    float massRatio = Mass() / baseMass;
-    float responsiveness = 1.0f / (float) Math.sqrt(massRatio);
-
-    float finalResponsiveness = responsiveness;
-
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) finalResponsiveness *= 0.6f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) finalResponsiveness *= 1.4f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.STICKY)) finalResponsiveness *= 0.4f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING)) finalResponsiveness *= 1.6f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY)) finalResponsiveness *= 1.2f;
-    if (behaviorFlags.contains(SurfaceBehaviorFlags.WET)) finalResponsiveness *= 0.8f;
-
-    return finalResponsiveness;
-  }
-
-  // MARK: - Preset Sphere Configurations
-
-  // MARK: - Enhanced Physics Methods
-
-  @Override
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public void EnablePhysics(boolean isDynamic) {
-    super.EnablePhysics(isDynamic);
-
-    if (isDynamic) {
-      setupSpherePhysics();
-      Log.i("SphereNode", "Physics enabled - ARCore will handle all ground/floor collisions");
-      debugPhysicsState();
-    } else {
-      Log.i("SphereNode", "Physics disabled");
-    }
-  }
-
-  private void setupSpherePhysics() {
-    // Create sphere collision shape with current radius and scale
-    float actualRadius = radius * Scale();
-
-    // Setup physics body with calculated properties
-    // Implementation depends on your physics system (ARCore/Sceneform)
-
-    Log.i("SphereNode", "Setup sphere physics - radius: " + actualRadius + "m, mass: " + Mass());
-  }
-
-  @SimpleFunction(description = "Debug current physics state of the sphere")
-  public void DebugPhysicsState() {
-    debugPhysicsState();
-  }
-
-  private void debugPhysicsState() {
-    float[] currentPos = getCurrentPosition();
-
-    Log.i("SphereNode", "=== PHYSICS STATE DEBUG ===");
-    Log.i("SphereNode", "Position: " + arrayToString(currentPos));
-    Log.i("SphereNode", "Has physics: " + EnablePhysics());
-    Log.i("SphereNode", "Mass: " + Mass());
-    Log.i("SphereNode", "Ball radius: " + radius);
-    Log.i("SphereNode", "Ball radius * scale: " + (radius * Scale()));
-    Log.i("SphereNode", "Scale: " + Scale());
-    Log.i("SphereNode", "Static Friction: " + StaticFriction());
-    Log.i("SphereNode", "Dynamic Friction: " + DynamicFriction());
-    Log.i("SphereNode", "Restitution: " + Restitution());
-    Log.i("SphereNode", "Drag Sensitivity: " + DragSensitivity());
-    Log.i("SphereNode", "Behaviors: " + getBehaviorNames());
-    Log.i("SphereNode", "==========================");
-  }
-
-
-  // MARK: - Enhanced Move Methods
-
-  @Override
-  @SimpleFunction(description = "Move sphere by offset, maintaining physics if enabled")
-  public void MoveBy(float x, float y, float z) {
-    float[] position = {0, 0, 0};
-    float[] rotation = {0, 0, 0, 1};
-
-    TrackingState trackingState = null;
-    if (this.Anchor() != null) {
-      float[] translations = this.Anchor().getPose().getTranslation();
-      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
-      trackingState = this.Anchor().getTrackingState();
-    }
-
-    // Maintain bottom contact for physics-enabled spheres
-    if (EnablePhysics() && y != 0) {
-      float ballRadius = radius * Scale();
-      position[1] = Math.max(position[1], ballRadius); // Don't go below ground
-    }
-
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null) {
-      Anchor(this.trackable.createAnchor(newPose));
-      Log.i("SphereNode", "Moved anchor BY " + newPose + " with physics correction");
-    } else {
-      if (trackingState == TrackingState.TRACKING) {
-        if (session != null) {
-          Log.i("SphereNode", "Moved anchor BY with SESSION");
-          Anchor(session.createAnchor(newPose));
-        }
-      }
-    }
-  }
-
-  @Override
-  @SimpleFunction(description = "Move sphere to absolute position")
-  public void MoveTo(float x, float y, float z) {
-
-    float xMeters = x / 100.0f;
-    float yMeters = y / 100.0f;
-    float zMeters = z / 100.0f;
-
-    float[] position = {xMeters, yMeters, zMeters};
-    float[] rotation = {0, 0, 0, 1};
-
-    TrackingState trackingState = null;
-    if (this.Anchor() != null) {
-      float[] translations = this.Anchor().getPose().getTranslation();
-      position = new float[]{translations[0] + xMeters, translations[1] + yMeters, translations[2] + zMeters};
-      trackingState = this.Anchor().getTrackingState();
-    }
-
-    // Maintain physics constraints
-    if (EnablePhysics()) {
-      //float ballRadius = radius * Scale();
-      //position[1] = Math.max(position[1], ballRadius); // Don't go below ground
-    }
-
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null) {
-      Log.i("SphereNode", "Moving anchor to pose: " + newPose + " with physics correction");
-      Anchor(this.trackable.createAnchor(newPose));
-    } else {
-      if (trackingState == TrackingState.TRACKING) {
-        if (session != null) {
-          Log.i("SphereNode", "Moved anchor to with SESSION " + xMeters + " " + yMeters + " " + zMeters);
-          Anchor(session.createAnchor(newPose));
-        }
-      }
-    }
-  }
-
-  @Override
-  @SimpleFunction(description = "Move sphere to detected plane with physics considerations")
-  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
-    this.trackable = (Trackable) targetPlane.DetectedPlane();
-    if (this.anchor != null) {
-      this.anchor.detach();
-    }
-
-    Pose targetPose = (Pose) p;
-
-    // Adjust Y position for sphere physics
-    if (EnablePhysics()) {
-      float ballRadius = radius * Scale();
-      float[] translation = targetPose.getTranslation();
-      translation[1] += ballRadius; // Place sphere on surface, not embedded
-      targetPose = new Pose(translation, targetPose.getRotationQuaternion());
-    }
-
-    Anchor(this.trackable.createAnchor(targetPose));
-    Log.i("SphereNode", "Moved to detected plane with physics adjustment");
   }
 
   // MARK: - Existing Functions (keep unchanged)
