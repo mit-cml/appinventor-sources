@@ -3,16 +3,15 @@
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { VariableModel } from '../variable_model.js';
-import { VarBase, VarBaseJson } from './events_var_base.js';
+import type { IVariableModel, IVariableState } from '../interfaces/i_variable_model.js';
 import type { Workspace } from '../workspace.js';
+import { VarBase, VarBaseJson } from './events_var_base.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners that a variable model was renamed.
- *
- * @class
  */
 export declare class VarRename extends VarBase {
-    type: string;
+    type: EventType;
     /** The previous name of the variable. */
     oldName?: string;
     /** The new name of the variable. */
@@ -21,7 +20,7 @@ export declare class VarRename extends VarBase {
      * @param opt_variable The renamed variable. Undefined for a blank event.
      * @param newName The new name the variable will be changed to.
      */
-    constructor(opt_variable?: VariableModel, newName?: string);
+    constructor(opt_variable?: IVariableModel<IVariableState>, newName?: string);
     /**
      * Encode the event as JSON.
      *

@@ -5,17 +5,12 @@
  */
 import type { BlockSvg } from '../../block_svg.js';
 import { Connection } from '../../connection.js';
-import { PreviewType } from '../../insertion_marker_manager.js';
 import type { IRegistrable } from '../../interfaces/i_registrable.js';
-import type { Marker } from '../../keyboard_nav/marker.js';
-import type { RenderedConnection } from '../../rendered_connection.js';
 import type { BlockStyle, Theme } from '../../theme.js';
-import type { WorkspaceSvg } from '../../workspace_svg.js';
 import { ConstantProvider } from './constants.js';
 import { Drawer } from './drawer.js';
 import type { IPathObject } from './i_path_object.js';
 import { RenderInfo } from './info.js';
-import { MarkerSvg } from './marker_svg.js';
 /**
  * The base class for a block renderer.
  */
@@ -49,20 +44,30 @@ export declare class Renderer implements IRegistrable {
     /**
      * Create any DOM elements that this renderer needs.
      * If you need to create additional DOM elements, override the
-     * {@link ConstantProvider#createDom} method instead.
+     * {@link blockRendering#ConstantProvider.createDom} method instead.
      *
      * @param svg The root of the workspace's SVG.
      * @param theme The workspace theme object.
+     * @param injectionDivIfIsParent The div containing the parent workspace and
+     *   all related workspaces and block containers, if this renderer is for the
+     *   parent workspace. CSS variables representing SVG patterns will be scoped
+     *   to this container. Child workspaces should not override the CSS variables
+     *   created by the parent and thus do not need access to the injection div.
      * @internal
      */
-    createDom(svg: SVGElement, theme: Theme): void;
+    createDom(svg: SVGElement, theme: Theme, injectionDivIfIsParent?: HTMLElement): void;
     /**
      * Refresh the renderer after a theme change.
      *
      * @param svg The root of the workspace's SVG.
      * @param theme The workspace theme object.
+     * @param injectionDivIfIsParent The div containing the parent workspace and
+     *   all related workspaces and block containers, if this renderer is for the
+     *   parent workspace. CSS variables representing SVG patterns will be scoped
+     *   to this container. Child workspaces should not override the CSS variables
+     *   created by the parent and thus do not need access to the injection div.
      */
-    refreshDom(svg: SVGElement, theme: Theme): void;
+    refreshDom(svg: SVGElement, theme: Theme, injectionDivIfIsParent?: HTMLElement): void;
     /**
      * Dispose of this renderer.
      * Delete all DOM elements that this renderer and its constants created.
@@ -90,14 +95,6 @@ export declare class Renderer implements IRegistrable {
      * @returns The drawer.
      */
     protected makeDrawer_(block: BlockSvg, info: RenderInfo): Drawer;
-    /**
-     * Create a new instance of the renderer's marker drawer.
-     *
-     * @param workspace The workspace the marker belongs to.
-     * @param marker The marker.
-     * @returns The object in charge of drawing the marker.
-     */
-    makeMarkerDrawer(workspace: WorkspaceSvg, marker: Marker): MarkerSvg;
     /**
      * Create a new instance of a renderer path object.
      *
@@ -133,16 +130,6 @@ export declare class Renderer implements IRegistrable {
      * @returns Whether there is a home for the orphan or not.
      */
     protected orphanCanConnectAtEnd(topBlock: BlockSvg, orphanBlock: BlockSvg, localType: number): boolean;
-    /**
-     * Chooses a connection preview method based on the available connection, the
-     * current dragged connection, and the block being dragged.
-     *
-     * @param closest The available connection.
-     * @param local The connection currently being dragged.
-     * @param topBlock The block currently being dragged.
-     * @returns The preview type to display.
-     */
-    getConnectionPreviewMethod(closest: RenderedConnection, local: RenderedConnection, topBlock: BlockSvg): PreviewType;
     /**
      * Render the block.
      *

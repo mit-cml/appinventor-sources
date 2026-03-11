@@ -5,6 +5,7 @@
  */
 import type { Rect } from './utils/rect.js';
 import type { Size } from './utils/size.js';
+import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Returns the HTML container for editor widgets.
  *
@@ -29,8 +30,14 @@ export declare function createDom(): void;
  * @param rtl Right-to-left (true) or left-to-right (false).
  * @param newDispose Optional cleanup function to be run when the widget is
  *     closed.
+ * @param workspace The workspace associated with the widget owner.
+ * @param manageEphemeralFocus Whether ephemeral focus should be managed
+ *     according to the widget div's lifetime. Note that if a false value is
+ *     passed in here then callers should manage ephemeral focus directly
+ *     otherwise focus may not properly restore when the widget closes. Defaults
+ *     to true.
  */
-export declare function show(newOwner: unknown, rtl: boolean, newDispose: () => void): void;
+export declare function show(newOwner: unknown, rtl: boolean, newDispose: () => void, workspace?: WorkspaceSvg | null, manageEphemeralFocus?: boolean): void;
 /**
  * Destroy the widget and hide the div.
  */
@@ -48,6 +55,13 @@ export declare function isVisible(): boolean;
  * @param oldOwner The object that was using this container.
  */
 export declare function hideIfOwner(oldOwner: unknown): void;
+/**
+ * Destroy the widget and hide the div if it is being used by an object in the
+ * specified workspace, or if it is used by an unknown workspace.
+ *
+ * @param workspace The workspace that was using this container.
+ */
+export declare function hideIfOwnerIsInWorkspace(workspace: WorkspaceSvg): void;
 /**
  * Position the widget div based on an anchor rectangle.
  * The widget should be placed adjacent to but not overlapping the anchor

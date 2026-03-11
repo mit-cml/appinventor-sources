@@ -9,6 +9,7 @@
  * @class
  */
 import './events/events_var_create.js';
+import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
 /**
  * Class for a variable model.
@@ -16,11 +17,11 @@ import type { Workspace } from './workspace.js';
  *
  * @see {Blockly.FieldVariable}
  */
-export declare class VariableModel {
-    workspace: Workspace;
-    name: string;
-    type: string;
-    private readonly id_;
+export declare class VariableModel implements IVariableModel<IVariableState> {
+    private readonly workspace;
+    private name;
+    private type;
+    private readonly id;
     /**
      * @param workspace The variable's workspace.
      * @param name The name of the variable.  This is the user-visible name (e.g.
@@ -33,15 +34,40 @@ export declare class VariableModel {
     constructor(workspace: Workspace, name: string, opt_type?: string, opt_id?: string);
     /** @returns The ID for the variable. */
     getId(): string;
+    /** @returns The name of this variable. */
+    getName(): string;
     /**
-     * A custom compare function for the VariableModel objects.
+     * Updates the user-visible name of this variable.
      *
-     * @param var1 First variable to compare.
-     * @param var2 Second variable to compare.
-     * @returns -1 if name of var1 is less than name of var2, 0 if equal, and 1 if
-     *     greater.
-     * @internal
+     * @returns The newly-updated variable.
      */
-    static compareByName(var1: VariableModel, var2: VariableModel): number;
+    setName(newName: string): this;
+    /** @returns The type of this variable. */
+    getType(): string;
+    /**
+     * Updates the type of this variable.
+     *
+     * @returns The newly-updated variable.
+     */
+    setType(newType: string): this;
+    /**
+     * Returns the workspace this VariableModel belongs to.
+     *
+     * @returns The workspace this VariableModel belongs to.
+     */
+    getWorkspace(): Workspace;
+    /**
+     * Serializes this VariableModel.
+     *
+     * @returns a JSON representation of this VariableModel.
+     */
+    save(): IVariableState;
+    /**
+     * Loads the persisted state into a new variable in the given workspace.
+     *
+     * @param state The serialized state of a variable model from save().
+     * @param workspace The workspace to create the new variable in.
+     */
+    static load(state: IVariableState, workspace: Workspace): void;
 }
 //# sourceMappingURL=variable_model.d.ts.map

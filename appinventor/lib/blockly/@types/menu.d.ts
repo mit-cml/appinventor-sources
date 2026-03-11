@@ -3,7 +3,8 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { MenuItem } from './menuitem.js';
+import type { MenuSeparator } from './menu_separator.js';
+import { MenuItem } from './menuitem.js';
 import * as aria from './utils/aria.js';
 import { Coordinate } from './utils/coordinate.js';
 import type { Size } from './utils/size.js';
@@ -12,14 +13,12 @@ import type { Size } from './utils/size.js';
  */
 export declare class Menu {
     /**
-     * Array of menu items.
-     * (Nulls are never in the array, but typing the array as nullable prevents
-     * the compiler from objecting to .indexOf(null))
+     * Array of menu items and separators.
      */
     private readonly menuItems;
     /**
-     * Coordinates of the mousedown event that caused this menu to open. Used to
-     * prevent the consequent mouseup event due to a simple click from
+     * Coordinates of the pointerdown event that caused this menu to open. Used to
+     * prevent the consequent pointerup event due to a simple click from
      * activating a menu item immediately.
      */
     openingCoords: Coordinate | null;
@@ -28,14 +27,14 @@ export declare class Menu {
      * A value of null means no menu item is highlighted.
      */
     private highlightedItem;
-    /** Mouse over event data. */
-    private mouseOverHandler;
+    /** Pointer over event data. */
+    private pointerMoveHandler;
     /** Click event data. */
     private clickHandler;
-    /** Mouse enter event data. */
-    private mouseEnterHandler;
-    /** Mouse leave event data. */
-    private mouseLeaveHandler;
+    /** Pointer enter event data. */
+    private pointerEnterHandler;
+    /** Pointer leave event data. */
+    private pointerLeaveHandler;
     /** Key down event data. */
     private onKeyDownHandler;
     /** The menu's root DOM element. */
@@ -47,10 +46,10 @@ export declare class Menu {
     /**
      * Add a new menu item to the bottom of this menu.
      *
-     * @param menuItem Menu item to append.
+     * @param menuItem Menu item or separator to append.
      * @internal
      */
-    addChild(menuItem: MenuItem): void;
+    addChild(menuItem: MenuItem | MenuSeparator): void;
     /**
      * Creates the menu DOM.
      *
@@ -124,11 +123,12 @@ export declare class Menu {
      */
     private highlightHelper;
     /**
-     * Handles mouseover events. Highlight menuitems as the user hovers over them.
+     * Handles pointermove events. Highlight menu items as the user hovers over
+     * them.
      *
-     * @param e Mouse event to handle.
+     * @param e Pointer event to handle.
      */
-    private handleMouseOver;
+    private handlePointerMove;
     /**
      * Handles click events. Pass the event onto the child menuitem to handle.
      *
@@ -136,21 +136,19 @@ export declare class Menu {
      */
     private handleClick;
     /**
-     * Handles mouse enter events. Focus the element.
+     * Handles pointer enter events. Focus the element.
      *
-     * @param _e Mouse event to handle.
+     * @param _e Pointer event to handle.
      */
-    private handleMouseEnter;
+    private handlePointerEnter;
     /**
-     * Handles mouse leave events. Blur and clear highlight.
+     * Handles pointer leave events by clearing the active highlight.
      *
-     * @param _e Mouse event to handle.
+     * @param _e Pointer event to handle.
      */
-    private handleMouseLeave;
+    private handlePointerLeave;
     /**
-     * Attempts to handle a keyboard event, if the menu item is enabled, by
-     * calling
-     * {@link Menu#handleKeyEventInternal_}.
+     * Attempts to handle a keyboard event.
      *
      * @param e Key event to handle.
      */
@@ -162,5 +160,11 @@ export declare class Menu {
      * @internal
      */
     getSize(): Size;
+    /**
+     * Returns the action menu items (omitting separators) in this menu.
+     *
+     * @returns The MenuItem objects displayed in this menu.
+     */
+    private getMenuItems;
 }
 //# sourceMappingURL=menu.d.ts.map

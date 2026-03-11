@@ -39,8 +39,8 @@ export interface PuzzleTab {
     type: number;
     width: number;
     height: number;
-    pathDown: string | ((p1: number) => string);
-    pathUp: string | ((p1: number) => string);
+    pathDown: string;
+    pathUp: string;
 }
 /**
  * An object containing sizing and path information about collapsed block
@@ -78,6 +78,10 @@ export type Shape = BaseShape | DynamicShape;
  * @returns Whether the shape is a dynamic shape or not.
  */
 export declare function isDynamicShape(shape: Shape): shape is DynamicShape;
+/** Returns whether the shape is a puzzle tab or not. */
+export declare function isPuzzleTab(shape: Shape): shape is PuzzleTab;
+/** Returns whether the shape is a notch or not. */
+export declare function isNotch(shape: Shape): shape is Notch;
 /**
  * An object that provides constants for rendering blocks.
  */
@@ -420,8 +424,13 @@ export declare class ConstantProvider {
      * @param svg The root of the workspace's SVG.
      * @param tagName The name to use for the CSS style tag.
      * @param selector The CSS selector to use.
+     * @param injectionDivIfIsParent The div containing the parent workspace and
+     *   all related workspaces and block containers, if this renderer is for the
+     *   parent workspace. CSS variables representing SVG patterns will be scoped
+     *   to this container. Child workspaces should not override the CSS variables
+     *   created by the parent and thus do not need access to the injection div.
      */
-    createDom(svg: SVGElement, tagName: string, selector: string): void;
+    createDom(svg: SVGElement, tagName: string, selector: string, injectionDivIfIsParent?: HTMLElement): void;
     /**
      * Create a filter for highlighting the currently rendering block during
      * render debugging.

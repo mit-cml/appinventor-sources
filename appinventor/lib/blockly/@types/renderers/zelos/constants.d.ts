@@ -5,8 +5,8 @@
  */
 import type { RenderedConnection } from '../../rendered_connection.js';
 import type { Theme } from '../../theme.js';
-import { ConstantProvider as BaseConstantProvider } from '../common/constants.js';
 import type { Shape } from '../common/constants.js';
+import { ConstantProvider as BaseConstantProvider } from '../common/constants.js';
 /** An object containing sizing and path information about inside corners. */
 export interface InsideCorners {
     width: number;
@@ -102,7 +102,13 @@ export declare class ConstantProvider extends BaseConstantProvider {
      * rectangular reporter block. Null before init is called.
      */
     SQUARED: Shape | null;
-    constructor();
+    /**
+     * Creates a new ConstantProvider.
+     *
+     * @param gridUnit If set, defines the base unit used to calculate other
+     *     constants.
+     */
+    constructor(gridUnit?: number);
     setFontConstants_(theme: Theme): void;
     init(): void;
     setDynamicProperties_(theme: Theme): void;
@@ -153,7 +159,7 @@ export declare class ConstantProvider extends BaseConstantProvider {
     };
     generateSecondaryColour_(colour: string): string;
     generateTertiaryColour_(colour: string): string;
-    createDom(svg: SVGElement, tagName: string, selector: string): void;
+    createDom(svg: SVGElement, tagName: string, selector: string, injectionDivIfIsParent?: HTMLElement): void;
     getCSS_(selector: string): string[];
 }
 //# sourceMappingURL=constants.d.ts.map

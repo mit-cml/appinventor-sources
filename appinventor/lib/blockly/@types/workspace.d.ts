@@ -10,21 +10,21 @@
  */
 import './connection_checker.js';
 import type { Block } from './block.js';
+import { WorkspaceComment } from './comments/workspace_comment.js';
 import type { ConnectionDB } from './connection_db.js';
 import type { Abstract } from './events/events_abstract.js';
-import type { IASTNodeLocation } from './interfaces/i_ast_node_location.js';
+import type { IBoundedElement } from './interfaces/i_bounded_element.js';
 import type { IConnectionChecker } from './interfaces/i_connection_checker.js';
+import { IProcedureMap } from './interfaces/i_procedure_map.js';
+import type { IVariableMap } from './interfaces/i_variable_map.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import { Options } from './options.js';
 import type * as toolbox from './utils/toolbox.js';
-import { VariableMap } from './variable_map.js';
-import type { VariableModel } from './variable_model.js';
-import type { WorkspaceComment } from './workspace_comment.js';
-import { IProcedureMap } from './interfaces/i_procedure_map.js';
 /**
  * Class for a workspace.  This is a data structure that contains blocks.
  * There is no UI, and can be created headlessly.
  */
-export declare class Workspace implements IASTNodeLocation {
+export declare class Workspace {
     /**
      * Angle away from the horizontal to sweep for blocks.  Order of execution is
      * generally top to bottom, but a small angle changes the scan to give a bit
@@ -82,6 +82,7 @@ export declare class Workspace implements IASTNodeLocation {
     private readonly typedBlocksDB;
     private variableMap;
     private procedureMap;
+    private readOnly;
     /**
      * Blocks in the flyout can refer to variables that don't exist in the main
      * workspace.  For instance, the "get item in list" block refers to an
@@ -107,7 +108,16 @@ export declare class Workspace implements IASTNodeLocation {
      * @returns The comparison value. This tells Array.sort() how to change object
      *     a's index.
      */
-    private sortObjects_;
+    private sortObjects;
+    /**
+     * Sorts bounded elements on the workspace by their relative position, top to
+     * bottom (with slight LTR or RTL bias).
+     *
+     * @param a The first element to sort.
+     * @param b The second elment to sort.
+     * @returns -1, 0 or 1 depending on the sort order.
+     */
+    protected sortByOrigin(a: IBoundedElement, b: IBoundedElement): number;
     /**
      * Adds a block to the list of top blocks.
      *
@@ -183,9 +193,10 @@ export declare class Workspace implements IASTNodeLocation {
     /** Dispose of all blocks and comments in workspace. */
     clear(): void;
     /**
-     * Rename a variable by updating its name in the variable map. Identify the
-     * variable to rename with the given ID.
+     * Rename a variable by updating its name in the variable
+     * map. Identify the variable to rename with the given ID.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().renameVariable
      * @param id ID of the variable to rename.
      * @param newName New variable name.
      */
@@ -193,6 +204,7 @@ export declare class Workspace implements IASTNodeLocation {
     /**
      * Create a variable with a given name, optional type, and optional ID.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().createVariable.
      * @param name The name of the variable. This must be unique across variables
      *     and procedures.
      * @param opt_type The type of the variable like 'int' or 'string'.
@@ -201,10 +213,11 @@ export declare class Workspace implements IASTNodeLocation {
      * @param opt_id The unique ID of the variable. This will default to a UUID.
      * @returns The newly created variable.
      */
-    createVariable(name: string, opt_type?: string | null, opt_id?: string | null): VariableModel;
+    createVariable(name: string, opt_type?: string | null, opt_id?: string | null): IVariableModel<IVariableState>;
     /**
      * Find all the uses of the given variable, which is identified by ID.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().getVariableUsesById
      * @param id ID of the variable to find.
      * @returns Array of block usages.
      */
@@ -213,6 +226,7 @@ export declare class Workspace implements IASTNodeLocation {
      * Delete a variables by the passed in ID and all of its uses from this
      * workspace. May prompt the user for confirmation.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().deleteVariable.
      * @param id ID of variable to delete.
      */
     deleteVariableById(id: string): void;
@@ -220,44 +234,42 @@ export declare class Workspace implements IASTNodeLocation {
      * Find the variable by the given name and return it. Return null if not
      * found.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().getVariable.
      * @param name The name to check for.
      * @param opt_type The type of the variable.  If not provided it defaults to
      *     the empty string, which is a specific type.
      * @returns The variable with the given name.
      */
-    getVariable(name: string, opt_type?: string): VariableModel | null;
+    getVariable(name: string, opt_type?: string): IVariableModel<IVariableState> | null;
     /**
      * Find the variable by the given ID and return it. Return null if not found.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().getVariableById.
      * @param id The ID to check for.
      * @returns The variable with the given ID.
      */
-    getVariableById(id: string): VariableModel | null;
+    getVariableById(id: string): IVariableModel<IVariableState> | null;
     /**
      * Find the variable with the specified type. If type is null, return list of
      *     variables with empty string type.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().getVariablesOfType.
      * @param type Type of the variables to find.
      * @returns The sought after variables of the passed in type. An empty array
      *     if none are found.
      */
-    getVariablesOfType(type: string | null): VariableModel[];
-    /**
-     * Return all variable types.
-     *
-     * @returns List of variable types.
-     * @internal
-     */
-    getVariableTypes(): string[];
+    getVariablesOfType(type: string | null): IVariableModel<IVariableState>[];
     /**
      * Return all variables of all types.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().getAllVariables.
      * @returns List of variable models.
      */
-    getAllVariables(): VariableModel[];
+    getAllVariables(): IVariableModel<IVariableState>[];
     /**
      * Returns all variable names of all types.
      *
+     * @deprecated v12: use Blockly.Workspace.getVariableMap().getAllVariables.
      * @returns List of all variable names of all types.
      */
     getAllVariableNames(): string[];
@@ -279,6 +291,14 @@ export declare class Workspace implements IASTNodeLocation {
      * @returns The created block.
      */
     newBlock(prototypeName: string, opt_id?: string): Block;
+    /**
+     * Obtain a newly created comment.
+     *
+     * @param id Optional ID.  Use this ID if provided, otherwise create a new
+     *     ID.
+     * @returns The created comment.
+     */
+    newComment(id?: string): WorkspaceComment;
     /**
      * The number of blocks that may be added to the workspace before reaching
      *     the maxBlocks.
@@ -345,13 +365,13 @@ export declare class Workspace implements IASTNodeLocation {
      * @param func Function to call.
      * @returns Obsolete return value, ignore.
      */
-    addChangeListener(func: (e: Abstract) => void): Function;
+    addChangeListener(func: (e: Abstract) => void): (e: Abstract) => void;
     /**
      * Stop listening for this workspace's changes.
      *
      * @param func Function to stop calling.
      */
-    removeChangeListener(func: Function): void;
+    removeChangeListener(func: (e: Abstract) => void): void;
     /**
      * Fire a change event.
      *
@@ -385,7 +405,6 @@ export declare class Workspace implements IASTNodeLocation {
      *
      * @param id ID of comment to find.
      * @returns The sought after comment, or null if not found.
-     * @internal
      */
     getCommentById(id: string): WorkspaceComment | null;
     /**
@@ -402,9 +421,8 @@ export declare class Workspace implements IASTNodeLocation {
      * These exist in the flyout but not in the workspace.
      *
      * @returns The potential variable map.
-     * @internal
      */
-    getPotentialVariableMap(): VariableMap | null;
+    getPotentialVariableMap(): IVariableMap<IVariableModel<IVariableState>> | null;
     /**
      * Create and store the potential variable map for this workspace.
      *
@@ -416,14 +434,14 @@ export declare class Workspace implements IASTNodeLocation {
      *
      * @returns The variable map.
      */
-    getVariableMap(): VariableMap;
+    getVariableMap(): IVariableMap<IVariableModel<IVariableState>>;
     /**
      * Set the map of all variables on the workspace.
      *
      * @param variableMap The variable map.
      * @internal
      */
-    setVariableMap(variableMap: VariableMap): void;
+    setVariableMap(variableMap: IVariableMap<IVariableModel<IVariableState>>): void;
     /** Returns the map of all procedures on the workpace. */
     getProcedureMap(): IProcedureMap;
     /**
@@ -447,5 +465,18 @@ export declare class Workspace implements IASTNodeLocation {
      * @returns Array of workspaces.
      */
     static getAll(): Workspace[];
+    protected getVariableMapClass(): new (...p1: any[]) => IVariableMap<IVariableModel<IVariableState>>;
+    /**
+     * Returns whether or not this workspace is in readonly mode.
+     *
+     * @returns True if the workspace is readonly, otherwise false.
+     */
+    isReadOnly(): boolean;
+    /**
+     * Sets whether or not this workspace is in readonly mode.
+     *
+     * @param readOnly True to make the workspace readonly, otherwise false.
+     */
+    setIsReadOnly(readOnly: boolean): void;
 }
 //# sourceMappingURL=workspace.d.ts.map

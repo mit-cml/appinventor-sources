@@ -11,7 +11,7 @@
  */
 export type TipInfo = string | {
     tooltip: any;
-} | (() => TipInfo | string | Function);
+} | (() => TipInfo | string);
 /**
  * A function that renders custom tooltip UI.
  * 1st parameter: the div element to render content into.

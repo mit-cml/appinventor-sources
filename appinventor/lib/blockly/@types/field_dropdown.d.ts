@@ -10,13 +10,10 @@ import { MenuItem } from './menuitem.js';
  * Class for an editable dropdown field.
  */
 export declare class FieldDropdown extends Field<string> {
-    /** Horizontal distance that a checkmark overhangs the dropdown. */
-    static CHECKMARK_OVERHANG: number;
     /**
-     * Maximum height of the dropdown menu, as a percentage of the viewport
-     * height.
+     * Magic constant used to represent a separator in a list of dropdown items.
      */
-    static MAX_MENU_HEIGHT_VH: number;
+    static readonly SEPARATOR = "separator";
     static ARROW_CHAR: string;
     /** A reference to the currently selected menu item. */
     private selectedMenuItem;
@@ -35,8 +32,6 @@ export declare class FieldDropdown extends Field<string> {
      * are not. Editable fields should also be serializable.
      */
     SERIALIZABLE: boolean;
-    /** Mouse cursor style when over the hotspot that initiates the editor. */
-    CURSOR: string;
     protected menuGenerator_?: MenuGenerator;
     /** A cache of the most recently generated options. */
     private generatedOptions;
@@ -54,6 +49,13 @@ export declare class FieldDropdown extends Field<string> {
     suffixField: string | null;
     private selectedOption;
     clickTarget_: SVGElement | null;
+    /**
+     * The y offset from the top of the field to the top of the image, if an image
+     * is selected.
+     */
+    protected static IMAGE_Y_OFFSET: number;
+    /** The total vertical padding above and below an image. */
+    protected static IMAGE_Y_PADDING: number;
     /**
      * @param menuGenerator A non-empty array of options for a dropdown list, or a
      *     function which generates these options. Also accepts Field.SKIP_SETUP
@@ -143,11 +145,19 @@ export declare class FieldDropdown extends Field<string> {
      */
     getOptions(useCache?: boolean): MenuOption[];
     /**
+     * Update the options on this dropdown. This will reset the selected item to
+     * the first item in the list.
+     *
+     * @param menuGenerator The array of options or a generator function.
+     */
+    setOptions(menuGenerator: MenuGenerator): void;
+    /**
      * Ensure that the input value is a valid language-neutral option.
      *
      * @param newValue The input value.
      * @returns A valid language-neutral option, or null if invalid.
      */
+    protected doClassValidation_(newValue: string): string | null | undefined;
     protected doClassValidation_(newValue?: string): string | null;
     /**
      * Update the value of this dropdown field.
@@ -181,7 +191,13 @@ export declare class FieldDropdown extends Field<string> {
     /**
      * Use the `getText_` developer hook to override the field's text
      * representation.  Get the selected option text.  If the selected option is
-     * an image we return the image alt text.
+     * an image we return the image alt text. If the selected option is
+     * an HTMLElement, return the title, ariaLabel, or innerText of the
+     * element.
+     *
+     * If you use HTMLElement options in Node.js and call this function,
+     * ensure that you are supplying an implementation of HTMLElement,
+     * such as through jsdom-global.
      *
      * @returns Selected option text.
      */
@@ -195,6 +211,33 @@ export declare class FieldDropdown extends Field<string> {
      * @internal
      */
     static fromJson(options: FieldDropdownFromJsonConfig): FieldDropdown;
+    /**
+     * Factor out common words in statically defined options.
+     * Create prefix and/or suffix labels.
+     */
+    protected trimOptions(options: MenuOption[]): {
+        options: MenuOption[];
+        prefix?: string;
+        suffix?: string;
+    };
+    /**
+     * Use the calculated prefix and suffix lengths to trim all of the options in
+     * the given array.
+     *
+     * @param options Array of option tuples:
+     *     (human-readable text or image, language-neutral name).
+     * @param prefixLength The length of the common prefix.
+     * @param suffixLength The length of the common suffix
+     * @returns A new array with all of the option text trimmed.
+     */
+    private applyTrim;
+    /**
+     * Validates the data structure to be processed as an options list.
+     *
+     * @param options The proposed dropdown options.
+     * @throws {TypeError} If proposed options are incorrectly structured.
+     */
+    protected validateOptions(options: MenuOption[]): void;
 }
 /**
  * Definition of a human-readable image dropdown option.
@@ -206,11 +249,13 @@ export interface ImageProperties {
     height: number;
 }
 /**
- * An individual option in the dropdown menu. The first element is the human-
- * readable value (text or image), and the second element is the language-
- * neutral value.
+ * An individual option in the dropdown menu. Can be either the string literal
+ * `separator` for a menu separator item, or an array for normal action menu
+ * items. In the latter case, the first element is the human-readable value
+ * (text, ImageProperties object, or HTML element), and the second element is
+ * the language-neutral value.
  */
-export type MenuOption = [string | ImageProperties, string];
+export type MenuOption = [string | ImageProperties | HTMLElement, string] | 'separator';
 /**
  * A function that generates an array of menu options for FieldDropdown
  * or its descendants.

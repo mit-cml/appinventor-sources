@@ -216,7 +216,7 @@ Blockly.ComponentBlock.addGenericOption = function(block, options) {
  */
 Blockly.ComponentBlock.checkDeprecated = function(block, data) {
   if (data && data.deprecated && block.workspace == Blockly.common.getMainWorkspace()) {
-    block.setEnabled(false);
+    block.setDisabledReason(true, 'deprecated');
   }
 }
 
@@ -266,8 +266,6 @@ Blockly.Blocks.component_event = {
     // used here due to a previous call to mutationToDom. Reusing the dropdown is not
     // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    var oldRendered = this.rendered;
-    this.rendered = false;
     var oldDo = null;
     for (var i = 0, input; input = this.inputList[i]; i++) {
       if (input.connection) {
@@ -355,8 +353,6 @@ Blockly.Blocks.component_event = {
     this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, eventType);
-
-    this.rendered = oldRendered;
   },
 
   getTypeName: function() {
@@ -722,8 +718,6 @@ Blockly.Blocks.component_method = {
     // used here due to a previous call to mutationToDom. Reusing the dropdown is not
     // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    var oldRendered = this.rendered;
-    this.rendered = false;
     var oldInputValues = [];
     for (var i = 0, input; input = this.inputList[i]; i++) {
       if (input.connection) {
@@ -839,7 +833,7 @@ Blockly.Blocks.component_method = {
           .setCheck(check);
 
       if (oldInputValues[i] && input.connection) {
-        Blockly.icons.MutatorIcon.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
+        oldInputValues[i].outputConnection.reconnect(this, 'ARG' + i);
       }
     }
 
@@ -877,8 +871,6 @@ Blockly.Blocks.component_method = {
     this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, this.getMethodTypeObject());
-
-    this.rendered = oldRendered;
   },
 
   getTypeName: function() {
@@ -888,8 +880,6 @@ Blockly.Blocks.component_method = {
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
-      //var title = this.inputList[0].titleRow[0];
-      //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1137,8 +1127,6 @@ Blockly.Blocks.component_set_get = {
   },
 
   domToMutation : function(xmlElement) {
-    var oldRendered = this.rendered;
-    this.rendered = false;
     var oldInput = this.setOrGet == "set" && this.getInputTargetBlock('VALUE');
     for (var i = 0, input; input = this.inputList[i]; i++) {
       if (input.connection) {
@@ -1258,7 +1246,7 @@ Blockly.Blocks.component_set_get = {
 
     if (oldInput) {
       this.getInput('VALUE').init();
-      Blockly.icons.MutatorIcon.reconnect(oldInput.outputConnection, this, 'VALUE');
+      oldInput.outputConnection.reconnect(this, 'VALUE');
     }
 
     //for non-generic blocks, set the value of the component drop down
@@ -1285,8 +1273,6 @@ Blockly.Blocks.component_set_get = {
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();
     }
-
-    this.rendered = oldRendered;
   },
 
   getTypeName: function() {
@@ -1365,8 +1351,6 @@ Blockly.Blocks.component_set_get = {
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
-      //var title = this.inputList[0].titleRow[0];
-      //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1529,8 +1513,6 @@ Blockly.Blocks.component_component_block = {
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
-      //var title = this.inputList[0].titleRow[0];
-      //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1604,9 +1586,11 @@ Blockly.Blocks['component_all_component_block'] = {
   typeblock : function() {
     var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
+    const seenTypes = new Set();
 
     componentDb.forEachInstance(function(instance) {
-      if (instance.typeName != "Form") {
+      if (instance.typeName != "Form" && !seenTypes.has(instance.typeName)) {
+        seenTypes.add(instance.typeName);
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY +
               " " + componentDb.getInternationalizedComponentType(instance.typeName),
@@ -1617,9 +1601,6 @@ Blockly.Blocks['component_all_component_block'] = {
       }
     });
 
-    goog.array.removeDuplicates(tb, null, function(t) {
-      return t.mutatorAttributes.component_type;
-    });
     return tb;
   },
 

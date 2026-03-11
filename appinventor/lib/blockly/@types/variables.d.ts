@@ -3,7 +3,9 @@
  * Copyright 2012 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { VariableModel } from './variable_model.js';
+import type { Block } from './block.js';
+import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
+import type { BlockInfo, FlyoutItemInfo } from './utils/toolbox.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -17,15 +19,17 @@ export declare const CATEGORY_NAME = "VARIABLE";
 /**
  * Find all user-created variables that are in use in the workspace.
  * For use by generators.
+ *
  * To get a list of all variables on a workspace, including unused variables,
- * call Workspace.getAllVariables.
+ * call getAllVariables.
  *
  * @param ws The workspace to search for variables.
  * @returns Array of variable models.
  */
-export declare function allUsedVarModels(ws: Workspace): VariableModel[];
+export declare function allUsedVarModels(ws: Workspace): IVariableModel<IVariableState>[];
 /**
  * Find all developer variables used by blocks in the workspace.
+ *
  * Developer variables are never shown to the user, but are declared as global
  * variables in the generated code.
  * To declare developer variables, define the getDeveloperVariables function on
@@ -37,13 +41,26 @@ export declare function allUsedVarModels(ws: Workspace): VariableModel[];
  */
 export declare function allDeveloperVariables(workspace: Workspace): string[];
 /**
- * Construct the elements (blocks and button) required by the flyout for the
- * variable category.
+ * Internal wrapper that returns the contents of the variables category.
  *
- * @param workspace The workspace containing variables.
- * @returns Array of XML elements.
+ * @internal
+ * @param workspace The workspace to populate variable blocks for.
  */
-export declare function flyoutCategory(workspace: WorkspaceSvg): Element[];
+export declare function internalFlyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
+export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: true): Element[];
+export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: false): FlyoutItemInfo[];
+/**
+ * Construct the blocks required by the flyout for the variable category.
+ *
+ * @internal
+ * @param workspace The workspace containing variables.
+ * @param variables List of variables to create blocks for.
+ * @param includeChangeBlocks True to include `change x by _` blocks.
+ * @param getterType The type of the variable getter block to generate.
+ * @param setterType The type of the variable setter block to generate.
+ * @returns JSON list of blocks.
+ */
+export declare function jsonFlyoutCategoryBlocks(workspace: Workspace, variables: IVariableModel<IVariableState>[], includeChangeBlocks: boolean, getterType?: string, setterType?: string): BlockInfo[];
 /**
  * Construct the blocks required by the flyout for the variable category.
  *
@@ -104,7 +121,7 @@ export declare function createVariableButtonHandler(workspace: Workspace, opt_ca
  *     name, or null if change is to be aborted (cancel button), or undefined if
  *     an existing variable was chosen.
  */
-export declare function renameVariable(workspace: Workspace, variable: VariableModel, opt_callback?: (p1?: string | null) => void): void;
+export declare function renameVariable(workspace: Workspace, variable: IVariableModel<IVariableState>, opt_callback?: (p1?: string | null) => void): void;
 /**
  * Prompt the user for a new variable name.
  *
@@ -121,7 +138,7 @@ export declare function promptName(promptText: string, defaultText: string, call
  * @param workspace The workspace to search for the variable.
  * @returns The variable with the given name, or null if none was found.
  */
-export declare function nameUsedWithAnyType(name: string, workspace: Workspace): VariableModel | null;
+export declare function nameUsedWithAnyType(name: string, workspace: Workspace): IVariableModel<IVariableState> | null;
 /**
  * Returns the name of the procedure with a conflicting parameter name, or null
  * if one does not exist.
@@ -141,7 +158,7 @@ export declare function nameUsedWithConflictingParam(oldName: string, newName: s
  * @param variableModel The variable model to represent.
  * @returns The generated DOM.
  */
-export declare function generateVariableFieldDom(variableModel: VariableModel): Element;
+export declare function generateVariableFieldDom(variableModel: IVariableModel<IVariableState>): Element;
 /**
  * Helper function to look up or create a variable on the given workspace.
  * If no variable exists, creates and returns it.
@@ -154,7 +171,7 @@ export declare function generateVariableFieldDom(variableModel: VariableModel): 
  * @returns The variable corresponding to the given ID or name + type
  *     combination.
  */
-export declare function getOrCreateVariablePackage(workspace: Workspace, id: string | null, opt_name?: string, opt_type?: string): VariableModel;
+export declare function getOrCreateVariablePackage(workspace: Workspace, id: string | null, opt_name?: string, opt_type?: string): IVariableModel<IVariableState>;
 /**
  * Look up  a variable on the given workspace.
  * Always looks in the main workspace before looking in the flyout workspace.
@@ -170,7 +187,7 @@ export declare function getOrCreateVariablePackage(workspace: Workspace, id: str
  * @returns The variable corresponding to the given ID or name + type
  *     combination, or null if not found.
  */
-export declare function getVariable(workspace: Workspace, id: string | null, opt_name?: string, opt_type?: string): VariableModel | null;
+export declare function getVariable(workspace: Workspace, id: string | null, opt_name?: string, opt_type?: string): IVariableModel<IVariableState> | null;
 /**
  * Helper function to get the list of variables that have been added to the
  * workspace after adding a new block, using the given list of variables that
@@ -184,7 +201,36 @@ export declare function getVariable(workspace: Workspace, id: string | null, opt
  *     workspace.
  * @internal
  */
-export declare function getAddedVariables(workspace: Workspace, originalVariables: VariableModel[]): VariableModel[];
+export declare function getAddedVariables(workspace: Workspace, originalVariables: IVariableModel<IVariableState>[]): IVariableModel<IVariableState>[];
+/**
+ * A custom compare function for the VariableModel objects.
+ *
+ * @param var1 First variable to compare.
+ * @param var2 Second variable to compare.
+ * @returns -1 if name of var1 is less than name of var2, 0 if equal, and 1 if
+ *     greater.
+ * @internal
+ */
+export declare function compareByName(var1: IVariableModel<IVariableState>, var2: IVariableModel<IVariableState>): number;
+/**
+ * Find all the uses of a named variable.
+ *
+ * @param workspace The workspace to search for the variable.
+ * @param id ID of the variable to find.
+ * @returns Array of block usages.
+ */
+export declare function getVariableUsesById(workspace: Workspace, id: string): Block[];
+/**
+ * Delete a variable and all of its uses from the given workspace. May prompt
+ * the user for confirmation.
+ *
+ * @param workspace The workspace from which to delete the variable.
+ * @param variable The variable to delete.
+ * @param triggeringBlock The block from which this deletion was triggered, if
+ *     any. Used to exclude it from checking and warning about blocks
+ *     referencing the variable being deleted.
+ */
+export declare function deleteVariable(workspace: Workspace, variable: IVariableModel<IVariableState>, triggeringBlock?: Block): void;
 export declare const TEST_ONLY: {
     generateUniqueNameInternal: typeof generateUniqueNameInternal;
 };

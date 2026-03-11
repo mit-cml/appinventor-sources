@@ -75,7 +75,7 @@ export declare function getOwner(): Field | null;
  *
  * @returns Div to populate with content.
  */
-export declare function getContentDiv(): Element;
+export declare function getContentDiv(): HTMLDivElement;
 /** Clear the content of the drop-down. */
 export declare function clearContent(): void;
 /**
@@ -95,9 +95,14 @@ export declare function setColour(backgroundColour: string, borderColour: string
  * @param block Block to position the drop-down around.
  * @param opt_onHide Optional callback for when the drop-down is hidden.
  * @param opt_secondaryYOffset Optional Y offset for above-block positioning.
+ * @param manageEphemeralFocus Whether ephemeral focus should be managed
+ *     according to the drop-down div's lifetime. Note that if a false value is
+ *     passed in here then callers should manage ephemeral focus directly
+ *     otherwise focus may not properly restore when the widget closes. Defaults
+ *     to true.
  * @returns True if the menu rendered below block; false if above.
  */
-export declare function showPositionedByBlock<T>(field: Field<T>, block: BlockSvg, opt_onHide?: Function, opt_secondaryYOffset?: number): boolean;
+export declare function showPositionedByBlock<T>(field: Field<T>, block: BlockSvg, opt_onHide?: () => void, opt_secondaryYOffset?: number, manageEphemeralFocus?: boolean): boolean;
 /**
  * Shortcut to show and place the drop-down with positioning determined
  * by a particular field. The primary position will be below the field,
@@ -107,9 +112,14 @@ export declare function showPositionedByBlock<T>(field: Field<T>, block: BlockSv
  * @param field The field to position the dropdown against.
  * @param opt_onHide Optional callback for when the drop-down is hidden.
  * @param opt_secondaryYOffset Optional Y offset for above-block positioning.
+ * @param manageEphemeralFocus Whether ephemeral focus should be managed
+ *     according to the drop-down div's lifetime. Note that if a false value is
+ *     passed in here then callers should manage ephemeral focus directly
+ *     otherwise focus may not properly restore when the widget closes. Defaults
+ *     to true.
  * @returns True if the menu rendered below block; false if above.
  */
-export declare function showPositionedByField<T>(field: Field<T>, opt_onHide?: Function, opt_secondaryYOffset?: number): boolean;
+export declare function showPositionedByField<T>(field: Field<T>, opt_onHide?: () => void, opt_secondaryYOffset?: number, manageEphemeralFocus?: boolean): boolean;
 /**
  * Show and place the drop-down.
  * The drop-down is placed with an absolute "origin point" (x, y) - i.e.,
@@ -126,10 +136,12 @@ export declare function showPositionedByField<T>(field: Field<T>, opt_onHide?: F
  * @param secondaryX Secondary/alternative origin point x, in absolute px.
  * @param secondaryY Secondary/alternative origin point y, in absolute px.
  * @param opt_onHide Optional callback for when the drop-down is hidden.
+ * @param manageEphemeralFocus Whether ephemeral focus should be managed
+ *     according to the widget div's lifetime.
  * @returns True if the menu rendered at the primary origin point.
  * @internal
  */
-export declare function show<T>(newOwner: Field<T>, rtl: boolean, primaryX: number, primaryY: number, secondaryX: number, secondaryY: number, opt_onHide?: Function): boolean;
+export declare function show<T>(newOwner: Field<T>, rtl: boolean, primaryX: number, primaryY: number, secondaryX: number, secondaryY: number, manageEphemeralFocus: boolean, opt_onHide?: () => void): boolean;
 /**
  * Get the x positions for the left side of the DropDownDiv and the arrow,
  * accounting for the bounds of the workspace.

@@ -8,7 +8,7 @@
  *
  * @class
  */
-import type { Cursor } from './keyboard_nav/cursor.js';
+import { LineCursor } from './keyboard_nav/line_cursor.js';
 import type { Marker } from './keyboard_nav/marker.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -19,13 +19,9 @@ export declare class MarkerManager {
     /** The name of the local marker. */
     static readonly LOCAL_MARKER = "local_marker_1";
     /** The cursor. */
-    private cursor_;
-    /** The cursor's SVG element. */
-    private cursorSvg_;
+    private cursor;
     /** The map of markers for the workspace. */
     private markers;
-    /** The marker's SVG element. */
-    private markerSvg_;
     /**
      * @param workspace The workspace for the marker manager.
      * @internal
@@ -49,7 +45,7 @@ export declare class MarkerManager {
      *
      * @returns The cursor for this workspace.
      */
-    getCursor(): Cursor | null;
+    getCursor(): LineCursor;
     /**
      * Get a single marker that corresponds to the given ID.
      *
@@ -64,29 +60,7 @@ export declare class MarkerManager {
      *
      * @param cursor The cursor used to move around this workspace.
      */
-    setCursor(cursor: Cursor): void;
-    /**
-     * Add the cursor SVG to this workspace SVG group.
-     *
-     * @param cursorSvg The SVG root of the cursor to be added to the workspace
-     *     SVG group.
-     * @internal
-     */
-    setCursorSvg(cursorSvg: SVGElement | null): void;
-    /**
-     * Add the marker SVG to this workspaces SVG group.
-     *
-     * @param markerSvg The SVG root of the marker to be added to the workspace
-     *     SVG group.
-     * @internal
-     */
-    setMarkerSvg(markerSvg: SVGElement | null): void;
-    /**
-     * Redraw the attached cursor SVG if needed.
-     *
-     * @internal
-     */
-    updateMarkers(): void;
+    setCursor(cursor: LineCursor): void;
     /**
      * Dispose of the marker manager.
      * Go through and delete all markers associated with this marker manager.

@@ -3,17 +3,14 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * Toolbox from whence to create blocks.
- *
- * @class
- */
-import '../events/events_toolbox_item_select.js';
 import * as browserEvents from '../browser_events.js';
 import { DeleteArea } from '../delete_area.js';
-import type { IAutoHideable } from '../interfaces/i_autohideable.js';
+import '../events/events_toolbox_item_select.js';
+import { type IAutoHideable } from '../interfaces/i_autohideable.js';
 import type { IDraggable } from '../interfaces/i_draggable.js';
 import type { IFlyout } from '../interfaces/i_flyout.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
+import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
 import type { IKeyboardAccessible } from '../interfaces/i_keyboard_accessible.js';
 import type { ISelectableToolboxItem } from '../interfaces/i_selectable_toolbox_item.js';
 import type { IStyleable } from '../interfaces/i_styleable.js';
@@ -27,32 +24,29 @@ import type { WorkspaceSvg } from '../workspace_svg.js';
  * Class for a Toolbox.
  * Creates the toolbox's DOM.
  */
-export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeyboardAccessible, IStyleable, IToolbox {
+export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeyboardAccessible, IStyleable, IToolbox, IFocusableNode {
     /**
      * The unique ID for this component that is used to register with the
      * ComponentManager.
      */
     id: string;
     protected toolboxDef_: toolbox.ToolboxInfo;
-    private readonly horizontalLayout_;
+    private readonly horizontalLayout;
     /** The HTML container for the toolbox. */
     HtmlDiv: HTMLDivElement | null;
     /** The HTML container for the contents of a toolbox. */
     protected contentsDiv_: HTMLDivElement | null;
     /** Whether the Toolbox is visible. */
     protected isVisible_: boolean;
-    /** The list of items in the toolbox. */
-    protected contents_: IToolboxItem[];
     /** The width of the toolbox. */
     protected width_: number;
     /** The height of the toolbox. */
     protected height_: number;
     RTL: boolean;
     /** The flyout for the toolbox. */
-    private flyout_;
-    protected contentMap_: {
-        [key: string]: IToolboxItem;
-    };
+    private flyout;
+    /** Map from ID to the corresponding toolbox item. */
+    protected contents: Map<string, IToolboxItem>;
     toolboxPosition: toolbox.Position;
     /** The currently selected item. */
     protected selectedItem_: ISelectableToolboxItem | null;
@@ -66,6 +60,8 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
     protected boundEvents_: browserEvents.Data[];
     /** The workspace this toolbox is on. */
     protected readonly workspace_: WorkspaceSvg;
+    /** Whether the mouse is currently being clicked. */
+    private mouseDown;
     /** @param workspace The workspace in which to create new blocks. */
     constructor(workspace: WorkspaceSvg);
     /**
@@ -145,7 +141,7 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
      *     the toolbox.
      * @param fragment The document fragment to add the child toolbox elements to.
      */
-    private createToolboxItem_;
+    private createToolboxItem;
     /**
      * Adds an item to the toolbox.
      *
@@ -187,11 +183,10 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
      * before onDragEnter/onDragOver/onDragExit.
      *
      * @param element The block or bubble currently being dragged.
-     * @param _couldConnect Whether the element could could connect to another.
      * @returns Whether the element provided would be deleted if dropped on this
      *     area.
      */
-    wouldDelete(element: IDraggable, _couldConnect: boolean): boolean;
+    wouldDelete(element: IDraggable): boolean;
     /**
      * Handles when a cursor with a block or bubble enters this drag target.
      *
@@ -370,33 +365,55 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
      * @param oldItem The previously selected toolbox item.
      * @param newItem The newly selected toolbox item.
      */
-    private fireSelectEvent_;
+    private fireSelectEvent;
     /**
      * Closes the current item if it is expanded, or selects the parent.
      *
      * @returns True if a parent category was selected, false otherwise.
      */
-    private selectParent_;
+    private selectParent;
     /**
      * Selects the first child of the currently selected item, or nothing if the
      * toolbox item has no children.
      *
      * @returns True if a child category was selected, false otherwise.
      */
-    private selectChild_;
+    private selectChild;
     /**
      * Selects the next visible toolbox item.
      *
      * @returns True if a next category was selected, false otherwise.
      */
-    private selectNext_;
+    private selectNext;
     /**
      * Selects the previous visible toolbox item.
      *
      * @returns True if a previous category was selected, false otherwise.
      */
-    private selectPrevious_;
+    private selectPrevious;
     /** Disposes of this toolbox. */
     dispose(): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
+    /** See IFocusableTree.getRootFocusableNode. */
+    getRootFocusableNode(): IFocusableNode;
+    /** See IFocusableTree.getRestoredFocusableNode. */
+    getRestoredFocusableNode(previousNode: IFocusableNode | null): IFocusableNode | null;
+    /** See IFocusableTree.getNestedTrees. */
+    getNestedTrees(): Array<IFocusableTree>;
+    /** See IFocusableTree.lookUpFocusableNode. */
+    lookUpFocusableNode(id: string): IFocusableNode | null;
+    /** See IFocusableTree.onTreeFocus. */
+    onTreeFocus(node: IFocusableNode, _previousTree: IFocusableTree | null): void;
+    /** See IFocusableTree.onTreeBlur. */
+    onTreeBlur(nextTree: IFocusableTree | null): void;
 }
 //# sourceMappingURL=toolbox.d.ts.map

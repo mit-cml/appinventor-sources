@@ -30,6 +30,7 @@ export declare class FieldTextInput extends FieldInput<string> {
      * for a list of properties this parameter supports.
      */
     constructor(value?: string | typeof Field.SKIP_SETUP, validator?: FieldTextInputValidator | null, config?: FieldTextInputConfig);
+    initView(): void;
     /**
      * Ensure that the input value casts to a valid string.
      *

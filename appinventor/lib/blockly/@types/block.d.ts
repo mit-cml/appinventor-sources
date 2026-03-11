@@ -15,22 +15,20 @@ import { Connection } from './connection.js';
 import { ConnectionType } from './connection_type.js';
 import type { Abstract } from './events/events_abstract.js';
 import type { Field } from './field.js';
-import { Input } from './inputs/input.js';
-import type { IASTNodeLocation } from './interfaces/i_ast_node_location.js';
-import type { IDeletable } from './interfaces/i_deletable.js';
-import type { IIcon } from './interfaces/i_icon.js';
+import { IconType } from './icons/icon_types.js';
 import type { MutatorIcon } from './icons/mutator_icon.js';
+import { Input } from './inputs/input.js';
+import { type IIcon } from './interfaces/i_icon.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import * as Tooltip from './tooltip.js';
 import { Coordinate } from './utils/coordinate.js';
 import { Size } from './utils/size.js';
-import type { VariableModel } from './variable_model.js';
 import type { Workspace } from './workspace.js';
-import { IconType } from './icons/icon_types.js';
 /**
  * Class for one block.
  * Not normally called directly, workspace.newBlock() is preferred.
  */
-export declare class Block implements IASTNodeLocation, IDeletable {
+export declare class Block {
     /**
      * An optional callback method to use whenever the block's parent workspace
      * changes. This is usually only called from the constructor, the block type
@@ -56,7 +54,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * Colour of the block as HSV hue value (0-360)
      * This may be null if the block colour was not set via a hue number.
      */
-    private hue_;
+    private hue;
     /** Colour of the block in '#RRGGBB' format. */
     protected colour_: string;
     /** Name of the block style. */
@@ -101,22 +99,28 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      */
     suppressPrefixSuffix: boolean | null;
     /**
-     * An optional property for declaring developer variables.  Return a list of
-     * variable names for use by generators.  Developer variables are never
-     * shown to the user, but are declared as global variables in the generated
-     * code.
+     * An optional method for declaring developer variables, to be used
+     * by generators.  Developer variables are never shown to the user,
+     * but are declared as global variables in the generated code.
+     *
+     * @returns a list of developer variable names.
      */
     getDeveloperVariables?: () => string[];
     /**
-     * An optional function that reconfigures the block based on the contents of
-     * the mutator dialog.
+     * An optional method that reconfigures the block based on the
+     * contents of the mutator dialog.
+     *
+     * @param rootBlock The root block in the mutator flyout.
      */
-    compose?: (p1: Block) => void;
+    compose?: (rootBlock: Block) => void;
     /**
-     * An optional function that populates the mutator's dialog with
-     * this block's components.
+     * An optional function that populates the mutator flyout with
+     * blocks representing this block's configuration.
+     *
+     * @param workspace The mutator flyout's workspace.
+     * @returns The root block created in the flyout's workspace.
      */
-    decompose?: (p1: Workspace) => Block;
+    decompose?: (workspace: Workspace) => Block;
     id: string;
     outputConnection: Connection | null;
     nextConnection: Connection | null;
@@ -124,22 +128,28 @@ export declare class Block implements IASTNodeLocation, IDeletable {
     inputList: Input[];
     inputsInline?: boolean;
     icons: IIcon[];
-    private disabled;
+    private disabledReasons;
     tooltip: Tooltip.TipInfo;
     contextMenu: boolean;
     protected parentBlock_: this | null;
     protected childBlocks_: this[];
-    private deletable_;
-    private movable_;
-    private editable_;
-    private isShadow_;
+    private deletable;
+    private movable;
+    private editable;
+    private shadow;
     protected collapsed_: boolean;
     protected outputShape_: number | null;
     /**
      * Is the current block currently in the process of being disposed?
      */
-    private disposing;
-    private readonly xy_;
+    protected disposing: boolean;
+    /**
+     * Has this block been fully initialized? E.g. all fields initailized.
+     *
+     * @internal
+     */
+    initialized: boolean;
+    private readonly xy;
     isInFlyout: boolean;
     isInMutator: boolean;
     RTL: boolean;
@@ -147,13 +157,14 @@ export declare class Block implements IASTNodeLocation, IDeletable {
     protected isInsertionMarker_: boolean;
     /** Name of the type of hat. */
     hat?: string;
-    rendered: boolean | null;
+    /** Is this block a BlockSVG? */
+    readonly rendered: boolean;
     /**
      * String for block help, or function that returns a URL. Null for no help.
      */
-    helpUrl: string | Function | null;
+    helpUrl: string | (() => string) | null;
     /** A bound callback function to use when the parent workspace changes. */
-    private onchangeWrapper_;
+    private onchangeWrapper;
     /**
      * A count of statement inputs on the block.
      *
@@ -181,7 +192,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      *     statement with the previous statement.  Otherwise, dispose of all
      *     children of this block.
      */
-    dispose(healStack: boolean): void;
+    dispose(healStack?: boolean): void;
     /**
      * Disposes of this block without doing things required by the top block.
      * E.g. does not fire events, unplug the block, etc.
@@ -218,7 +229,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param opt_healStack Disconnect right-side block and connect to left-side
      *     block.  Defaults to false.
      */
-    private unplugFromRow_;
+    private unplugFromRow;
     /**
      * Returns the connection on the value input that is connected to another
      * block. When an insertion marker is connected to a connection with a block
@@ -228,7 +239,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      *
      * @returns The connection on the value input, or null.
      */
-    private getOnlyValueConnection_;
+    private getOnlyValueConnection;
     /**
      * Unplug this statement block from its superior block.  Optionally reconnect
      * the block underneath with the block on top.
@@ -236,7 +247,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param opt_healStack Disconnect child statement and reconnect stack.
      *     Defaults to false.
      */
-    private unplugFromStack_;
+    private unplugFromStack;
     /**
      * Returns all connections originating from this block.
      *
@@ -465,7 +476,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param url URL string for block help, or function that returns a URL.  Null
      *     for no help.
      */
-    setHelpUrl(url: string | Function): void;
+    setHelpUrl(url: string | (() => string)): void;
     /**
      * Sets the tooltip for this block.
      *
@@ -529,6 +540,12 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      */
     getField(name: string): Field | null;
     /**
+     * Returns a generator that provides every field on the block.
+     *
+     * @returns A generator that can be used to iterate the fields on the block.
+     */
+    getFields(): Generator<Field, undefined, void>;
+    /**
      * Return all variables referenced by this block.
      *
      * @returns List of variable ids.
@@ -540,7 +557,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @returns List of variable models.
      * @internal
      */
-    getVarModels(): VariableModel[];
+    getVarModels(): IVariableModel<IVariableState>[];
     /**
      * Notification that a variable is renaming but keeping the same ID.  If the
      * variable is in use on this block, rerender to show the new name.
@@ -548,7 +565,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param variable The variable being renamed.
      * @internal
      */
-    updateVarName(variable: VariableModel): void;
+    updateVarName(variable: IVariableModel<IVariableState>): void;
     /**
      * Notification that a variable is renaming.
      * If the ID matches one of this block's variables, rename it.
@@ -621,17 +638,29 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      */
     getOutputShape(): number | null;
     /**
-     * Get whether this block is enabled or not.
+     * Get whether this block is enabled or not. A block is considered enabled
+     * if there aren't any reasons why it would be disabled. A block may still
+     * be disabled for other reasons even if the user attempts to manually
+     * enable it, such as when the block is in an invalid location.
      *
      * @returns True if enabled.
      */
     isEnabled(): boolean;
     /**
-     * Set whether the block is enabled or not.
+     * Add or remove a reason why the block might be disabled. If a block has
+     * any reasons to be disabled, then the block itself will be considered
+     * disabled. A block could be disabled for multiple independent reasons
+     * simultaneously, such as when the user manually disables it, or the block
+     * is invalid.
      *
-     * @param enabled True if enabled.
+     * @param disabled If true, then the block should be considered disabled for
+     *     at least the provided reason, otherwise the block is no longer disabled
+     *     for that reason.
+     * @param reason A language-neutral identifier for a reason why the block
+     *     could be disabled. Call this method again with the same identifier to
+     *     update whether the block is currently disabled for this reason.
      */
-    setEnabled(enabled: boolean): void;
+    setDisabledReason(disabled: boolean, reason: string): void;
     /**
      * Get whether the block is disabled or not due to parents.
      * The block's own disabled property is not considered.
@@ -639,6 +668,21 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @returns True if disabled.
      */
     getInheritedDisabled(): boolean;
+    /**
+     * Get whether the block is currently disabled for the provided reason.
+     *
+     * @param reason A language-neutral identifier for a reason why the block
+     *     could be disabled.
+     * @returns Whether the block is disabled for the provided reason.
+     */
+    hasDisabledReason(reason: string): boolean;
+    /**
+     * Get a set of reasons why the block is currently disabled, if any. If the
+     * block is enabled, this set will be empty.
+     *
+     * @returns The set of reasons why the block is disabled, if any.
+     */
+    getDisabledReasons(): ReadonlySet<string>;
     /**
      * Get whether the block is collapsed or not.
      *
@@ -729,14 +773,14 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param json Structured data describing the block.
      * @param warningPrefix Warning prefix string identifying block.
      */
-    private jsonInitColour_;
+    private jsonInitColour;
     /**
      * Initialize the style of this block from the JSON description.
      *
      * @param json Structured data describing the block.
      * @param warningPrefix Warning prefix string identifying block.
      */
-    private jsonInitStyle_;
+    private jsonInitStyle;
     /**
      * Add key/values from mixinObj to this block object. By default, this method
      * will check that the keys in mixinObj will not overwrite existing values in
@@ -758,7 +802,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      *     of newline tokens, how should it be aligned?
      * @param warningPrefix Warning prefix string identifying block.
      */
-    private interpolate_;
+    private interpolate;
     /**
      * Validates that the tokens are within the correct bounds, with no
      * duplicates, and that all of the arguments are referred to. Throws errors if
@@ -767,7 +811,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param tokens An array of tokens to validate
      * @param argsCount The number of args that need to be referred to.
      */
-    private validateTokens_;
+    private validateTokens;
     /**
      * Inserts args in place of numerical tokens. String args are converted to
      * JSON that defines a label field. Newline characters are converted to
@@ -780,7 +824,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      *     or dummy inputs, if necessary.
      * @returns The JSON definitions of field and inputs to add to the block.
      */
-    private interpolateArguments_;
+    private interpolateArguments;
     /**
      * Creates a field from the JSON definition of a field. If a field with the
      * given type cannot be found, this attempts to create a different field using
@@ -789,7 +833,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param element The element to try to turn into a field.
      * @returns The field defined by the JSON, or null if one couldn't be created.
      */
-    private fieldFromJson_;
+    private fieldFromJson;
     /**
      * Creates an input from the JSON definition of an input. Sets the input's
      * check and alignment if they are provided.
@@ -800,7 +844,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @returns The input that has been created, or null if one could not be
      *     created for some reason (should never happen).
      */
-    private inputFromJson_;
+    private inputFromJson;
     /**
      * Returns true if the given string matches one of the input keywords.
      *
@@ -808,7 +852,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @returns True if the given string matches one of the input keywords, false
      *     otherwise.
      */
-    private isInputKeyword_;
+    private isInputKeyword;
     /**
      * Turns a string into the JSON definition of a label field. If the string
      * becomes an empty string when trimmed, this returns null.
@@ -816,7 +860,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      * @param str String to turn into the JSON definition of a label field.
      * @returns The JSON definition or null.
      */
-    private stringToFieldJson_;
+    private stringToFieldJson;
     /**
      * Move a named input to a different location on this block.
      *
@@ -945,7 +989,7 @@ export declare class Block implements IASTNodeLocation, IDeletable {
      *
      * Intended to on be used in console logs and errors. If you need a string
      * that uses the user's native language (including block text, field values,
-     * and child blocks), use [toString()]{@link Block#toString}.
+     * and child blocks), use {@link (Block:class).toString | toString()}.
      *
      * @returns The description.
      */

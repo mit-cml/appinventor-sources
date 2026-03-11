@@ -4,18 +4,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Block } from '../block.js';
+import type { IContextMenu } from '../interfaces/i_contextmenu.js';
+import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
 import type { IIcon } from '../interfaces/i_icon.js';
+import * as tooltip from '../tooltip.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Size } from '../utils/size.js';
 import type { IconType } from './icon_types.js';
-import * as tooltip from '../tooltip.js';
 /**
  * The abstract icon class. Icons are visual elements that live in the top-start
  * corner of the block. Usually they provide more "meta" information about a
  * block (such as warnings or comments) as opposed to fields, which provide
  * "actual" information, related to how a block functions.
  */
-export declare abstract class Icon implements IIcon {
+export declare abstract class Icon implements IIcon, IContextMenu {
     protected sourceBlock: Block;
     /**
      * The position of this icon relative to its blocks top-start,
@@ -28,6 +30,8 @@ export declare abstract class Icon implements IIcon {
     protected svgRoot: SVGGElement | null;
     /** The tooltip for this icon. */
     protected tooltip: tooltip.TipInfo;
+    /** The unique ID of this icon. */
+    private id;
     constructor(sourceBlock: Block);
     getType(): IconType<IIcon>;
     initView(pointerdownListener: (e: PointerEvent) => void): void;
@@ -59,11 +63,22 @@ export declare abstract class Icon implements IIcon {
      * @returns Whether the icon should be clickable while the block is in a flyout.
      */
     isClickableInFlyout(autoClosingFlyout: boolean): boolean;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
     /**
-     * Sets the visibility of the icon's bubble if one exists.
+     * Returns the block that this icon is attached to.
      *
-     * @deprecated Use `setBubbleVisible` instead. To be removed in v11.
+     * @returns The block this icon is attached to.
      */
-    setVisible(visibility: boolean): void;
+    getSourceBlock(): Block;
+    showContextMenu(e: PointerEvent): void;
 }
 //# sourceMappingURL=icon.d.ts.map

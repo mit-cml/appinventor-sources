@@ -8,20 +8,22 @@
  *
  * @class
  */
-import type { Block } from './block.js';
 import type { BlockSvg } from './block_svg.js';
 import { Connection } from './connection.js';
+import { IContextMenu } from './interfaces/i_contextmenu.js';
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
+import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import { Coordinate } from './utils/coordinate.js';
 /**
  * Class for a connection between blocks that may be rendered on screen.
  */
-export declare class RenderedConnection extends Connection {
+export declare class RenderedConnection extends Connection implements IContextMenu, IFocusableNode {
     sourceBlock_: BlockSvg;
     private readonly db;
     private readonly dbOpposite;
     private readonly offsetInBlock;
     private trackedState;
-    private highlightPath;
+    private highlighted;
     /** Connection this connection connects to.  Null if not connected. */
     targetConnection: RenderedConnection | null;
     /**
@@ -60,10 +62,15 @@ export declare class RenderedConnection extends Connection {
      * Move the block(s) belonging to the connection to a point where they don't
      * visually interfere with the specified connection.
      *
-     * @param staticConnection The connection to move away from.
+     * @param superiorConnection The connection to move away from. The provided
+     *     connection should be the superior connection and should not be
+     *     connected to this connection.
+     * @param initiatedByThis Whether or not the block group that was manipulated
+     *     recently causing bump checks is associated with the inferior
+     *     connection. Defaults to false.
      * @internal
      */
-    bumpAwayFrom(staticConnection: RenderedConnection): void;
+    bumpAwayFrom(superiorConnection: RenderedConnection, initiatedByThis?: boolean): void;
     /**
      * Change the connection's coordinates.
      *
@@ -130,6 +137,8 @@ export declare class RenderedConnection extends Connection {
     highlight(): void;
     /** Remove the highlighting around this connection. */
     unhighlight(): void;
+    /** Returns true if this connection is highlighted, false otherwise. */
+    isHighlighted(): boolean;
     /**
      * Set whether this connections is tracked in the database or not.
      *
@@ -154,17 +163,17 @@ export declare class RenderedConnection extends Connection {
      *
      * @returns List of blocks to render.
      */
-    startTrackingAll(): Block[];
+    startTrackingAll(): BlockSvg[];
     /**
      * Behaviour after a connection attempt fails.
      * Bumps this connection away from the other connection. Called when an
      * attempted connection fails.
      *
-     * @param otherConnection Connection that this connection failed to connect
-     *     to.
+     * @param superiorConnection Connection that this connection failed to connect
+     *     to. The provided connection should be the superior connection.
      * @internal
      */
-    onFailedConnect(otherConnection: Connection): void;
+    onFailedConnect(superiorConnection: Connection): void;
     /**
      * Disconnect two blocks that are connected by this connection.
      *
@@ -209,6 +218,26 @@ export declare class RenderedConnection extends Connection {
      * @returns The connection being modified (to allow chaining).
      */
     setCheck(check: string | string[] | null): RenderedConnection;
+    /**
+     * Handles showing the context menu when it is opened on a connection.
+     * Note that typically the context menu can't be opened with the mouse
+     * on a connection, because you can't select a connection. But keyboard
+     * users may open the context menu with a keyboard shortcut.
+     *
+     * @param e Event that triggered the opening of the context menu.
+     */
+    showContextMenu(e: Event): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
+    private findHighlightSvg;
 }
 export declare namespace RenderedConnection {
     /**
