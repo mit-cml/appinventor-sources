@@ -366,6 +366,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("SpeechRecognizer")) {
         srcCompVersion = upgradeSpeechRecognizerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Spinner")) {
+        srcCompVersion = upgradeSpinnerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Spreadsheet")) {
         srcCompVersion = upgradeSpreadsheetProperties(componentProperties, srcCompVersion);
 
@@ -1756,6 +1759,16 @@ public final class YoungAndroidFormUpgrader {
       // The Language property was added.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeSpinnerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The BackgroundColor, Enabled, FontBold, FontSize, Height, Image, ShowFeedback, TextAlignment, and
+      // TextColor properties were added.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
