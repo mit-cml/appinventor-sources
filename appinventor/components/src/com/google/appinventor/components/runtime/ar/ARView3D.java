@@ -2,8 +2,6 @@ package com.google.appinventor.components.runtime.ar;
 
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
-import static java.lang.Double.parseDouble;
-import static java.lang.Float.parseFloat;
 
 import android.app.Activity;
 import android.opengl.GLES30;
@@ -24,7 +22,6 @@ import android.graphics.PointF;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.ar.core.*;
 import com.google.ar.core.Camera;
-import kawa.standard.let;
 import org.json.JSONException;
 
 
@@ -49,8 +46,6 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARNodeContaine
 import com.google.appinventor.components.runtime.util.CameraVectors;
 
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.YailList;
-import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.ar.core.Config.InstantPlacementMode;
 import com.google.ar.core.exceptions.*;
 
@@ -501,10 +496,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void setDefaultPositions(List<ARNode> nodes) {
         for (ARNode node : nodes) {
             if (node != null && node.Anchor() == null) {
-                Log.d(LOG_TAG, "Creating default anchor for " + Arrays.toString(node.PoseFromPropertyPosition()));
+                Log.d(LOG_TAG, "Creating default anchor for " + Arrays.toString(node.InitialPosition()));
                 // TBD handle if anchor is loaded from a db
                 node.Session(session);
-                node.Anchor(CreateDefaultAnchor(node.PoseFromPropertyPosition())); // assign an anchor if there isn't one
+                node.Anchor(CreateDefaultAnchor(node.InitialPosition())); // assign an anchor if there isn't one
             }
         }
     }

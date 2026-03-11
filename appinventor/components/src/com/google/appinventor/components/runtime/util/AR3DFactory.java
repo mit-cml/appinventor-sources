@@ -5,7 +5,6 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.ComponentContainer;
 
@@ -13,10 +12,8 @@ import android.graphics.PointF;
 
 import java.util.List;
 
-import com.google.appinventor.components.runtime.util.YailList;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Plane;
-import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 
@@ -63,8 +60,8 @@ public final class AR3DFactory {
 
      Object Pose();
      void Pose(Object o);
-     void PoseFromPropertyPosition(String positionFromProperty) ;
-     float[] PoseFromPropertyPosition();
+     void InitialPosition(String positionFromProperty) ;
+     float[] InitialPosition();
 
      YailDictionary PoseToYailDictionary();
      YailDictionary ARNodeToYail();

@@ -727,27 +727,35 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
   }
 
-  public float[] PoseFromPropertyPosition() {
-    return fromPropertyPosition;
+  /* return inital position in centimeters (pose works with meters, so need to convert back */
+  public float[] InitialPosition() {
+    float[] positionFloatArray = fromPropertyPosition;
+    float[] position = {0f, 0f, 0f};
+    for (int i = 0; i < positionFloatArray.length; i++) {
+      try {
+        position[i] = UnitHelper.metersToCentimeters(positionFloatArray[i]);
+      } catch (NumberFormatException e) {
+        Log.w("ARNodeBase", "Invalid number in position: " + positionFloatArray[i]);
+      }
+    }
+    return position;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Set the current pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 1 places the object at x of 0, y of 0 and z of 1",
+  @SimpleProperty(description = "Set the initial position pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 10 places the object at x of 0, y of 0 and z of 10 centimeters",
       category = PropertyCategory.APPEARANCE)
-  public void PoseFromPropertyPosition(String positionFromProperty) {
+  public void InitialPosition(String positionFromProperty) {
     String[] positionArray = positionFromProperty.split(",");
     float[] position = {0f, 0f, 0f};
 
     for (int i = 0; i < positionArray.length; i++) {
       try {
-        position[i] = Float.parseFloat(positionArray[i]);
+        position[i] = UnitHelper.centimetersToMeters(Float.parseFloat(positionArray[i]));
       } catch (NumberFormatException e) {
         Log.w("ARNodeBase", "Invalid number in position: " + positionArray[i]);
       }
     }
-
     fromPropertyPosition = position;
-
 
     if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, fromPropRotation)); //CSB check
@@ -759,7 +767,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
     Log.i("ARNodeBase", "Stored pose with position " + positionFromProperty);
   }
-
 
 // MARK: - Enhanced Material and Texture System
 
@@ -1101,33 +1108,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     return dragSensitivity;
   }
 
-// New enhanced physics properties
-
-  /*@SimpleProperty(description = "The gravity scale affecting this node. 1.0 = normal gravity, 0.0 = no gravity")
-  public float GravityScale() {
-    return gravityScale;
-  }
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.5")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public void GravityScale(float gravityScale) {
-    this.gravityScale = Math.max(0.0f, gravityScale);
-    updatePhysicsBody();
-  }*/
-
-  /* @SimpleProperty(description = "Multiplier for release force when drag ends")
-  public float ReleaseForceMultiplier() {
-    return releaseForceMultiplier;
-  }
-
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "0.0")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public void ReleaseForceMultiplier(float multiplier) {
-    this.releaseForceMultiplier = multiplier;
-  }
-  */
-
-
   @SimpleProperty(description = "Linear damping for physics body (air resistance)")
   public float LinearDamping() {
     return linearDamping;
@@ -1362,11 +1342,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
   }
 
-  public float[] FromPropertyRotation() { return fromPropRotation; }
+  public float[] InitialRotation() { return fromPropRotation; }
 
-  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Set the current rotation of the object from property. The rotation of the node in the form of rotation of degrees eg 45,0,0.")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Set the initial rotation of the object from property. The rotation of the node in the form of rotation of degrees eg 45,0,0.")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  public void FromPropertyRotation(String rFromProperty) {
+  public void InitialRotation(String rFromProperty) {
     String[] rotationAray = rFromProperty.split(",");
     float[] rotation = {0f, 0f, 0f};
 
