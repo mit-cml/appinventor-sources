@@ -124,7 +124,7 @@
     <script type="text/javascript" src="static/js/workspace-search-9.1.10.min.js"></script>
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.7.16.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
-    <script type="text/javascript" src="static/js/workspace-multiselect-pr125-a25cfb2.min.js"></script>
+    <script type="text/javascript" src="static/js/workspace-multiselect-pr126-e813d3a.min.js"></script>
     <script type="text/javascript" src="static/js/keyboard-navigation-0.7.0.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>
