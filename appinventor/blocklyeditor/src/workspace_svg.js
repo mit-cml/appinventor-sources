@@ -286,6 +286,17 @@ Blockly.WorkspaceSvg.prototype.isDrawerShowing = function() {
 };
 
 /**
+ * Reset the drawer's cached language tree so that it will be rebuilt
+ * from the current BlocksToolkit property on the next drawer open.
+ */
+Blockly.WorkspaceSvg.prototype.resetDrawerLanguageTree = function() {
+  if (this.drawer_) {
+    this.drawer_.resetLanguageTree();
+  }
+  return this;
+};
+
+/**
  * Render the workspace.
  * @param {Array.<Blockly.BlockSvg>=} blocks
  */
