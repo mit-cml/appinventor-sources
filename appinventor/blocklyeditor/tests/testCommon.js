@@ -1,3 +1,14 @@
+// For test environment compatibility, ensure FieldColour is available
+// The plugin registration happens via the loaded plugin file
+if (typeof window.FieldColour === 'function') {
+  Blockly.FieldColour = window.FieldColour;
+  console.log('Using real FieldColour plugin from window.FieldColour');
+} else if (typeof registerFieldColour === 'function') {
+  registerFieldColour();
+  console.log('Registered FieldColour plugin via registerFieldColour');
+} else {
+  console.log('Note: FieldColour plugin should be loaded via plugin file');
+}
 
 var componentTypes = {};
 var YOUNG_ANDROID_VERSION;
@@ -202,6 +213,10 @@ function compareDefinitions(expected, given) {
   for (var i = expectedDefs.length - 1; i >= 0; i--) {
     if (smoosh(expectedDefs[i]) != smoosh(givenDefs[i])) {
       console.log("Failed to match: " + findDefName(expectedDefs[i]), (smoosh(expectedDefs[i]) == smoosh(givenDefs[i])));
+      console.log("EXPECTED: " + expectedDefs[i]);
+      console.log("ACTUAL:   " + givenDefs[i]);
+      console.log("EXPECTED SMOOSHED: " + smoosh(expectedDefs[i]));
+      console.log("ACTUAL SMOOSHED:   " + smoosh(givenDefs[i]));
       flag = false;
     }
   }
@@ -285,4 +300,52 @@ function getPropertyBlockPresentedName(block) {
   } else {
     return block.inputList[0].fieldRow[2].getText();
   }
+}
+
+function shift(type) {
+  const workspace = Blockly.common.getMainWorkspace();
+  workspace.getCanvas().dispatchEvent(new KeyboardEvent(type, { key: 'shift', bubbles: true }));
+}
+
+function ctrl(key) {
+  const workspace = Blockly.common.getMainWorkspace();
+  const keyCode = key.toUpperCase().charCodeAt(0);
+  const options = { key: key, keyCode: keyCode, ctrlKey: true, bubbles: true };
+  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keydown', options));
+  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', options));
+}
+
+function del() {
+  const workspace = Blockly.common.getMainWorkspace();
+  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', keyCode: 46, bubbles: true }));
+  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', { key: 'Delete', keyCode: 46, bubbles: true }));
+}
+
+function select(block) {
+  const blockPath = block.getSvgRoot().querySelector('path.blocklyPath');
+  const blockRect = blockPath.getBoundingClientRect();
+  const blockCenter = {
+    clientX: blockRect.left + blockRect.width / 2,
+    clientY: blockRect.top + blockRect.height / 2
+  };
+
+  blockPath.dispatchEvent(new PointerEvent('pointerdown', { ...blockCenter, bubbles: true }));
+  blockPath.dispatchEvent(new PointerEvent('pointerup', { ...blockCenter, bubbles: true }));
+}
+
+async function until(type, count) {
+  const workspace = Blockly.common.getMainWorkspace();
+  return new Promise(resolve => {
+    let received = 0;
+    const listener = (event) => {
+      if (event.type === type) {
+        received++;
+        if (received === count) {
+          workspace.removeChangeListener(listener);
+          resolve();
+        }
+      }
+    };
+    workspace.addChangeListener(listener);
+  });
 }

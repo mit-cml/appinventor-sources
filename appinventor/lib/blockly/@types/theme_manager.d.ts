@@ -19,7 +19,7 @@ export declare class ThemeManager {
     private readonly workspace;
     private theme;
     /** A list of workspaces that are subscribed to this theme. */
-    private subscribedWorkspaces_;
+    private subscribedWorkspaces;
     private componentDB;
     /**
      * @param workspace The main workspace.

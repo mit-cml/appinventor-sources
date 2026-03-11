@@ -24,10 +24,10 @@ goog.require('AI.Blockly.Msg');
  * @param {!Blockly.Connection} otherConn The child connection.
  */
 AI.BlockUtils.InstantInTime = function (myConn, otherConn) {
-  if (!myConn.sourceBlock_.rendered ||
-      !otherConn.sourceBlock_.rendered) {
+  if (!myConn.getSourceBlock().rendered ||
+      !otherConn.getSourceBlock().rendered) {
     if (otherConn.getCheck() && !otherConn.getCheck().includes('InstantInTime')) {
-      otherConn.sourceBlock_.badBlock();
+      otherConn.getSourceBlock().badBlock();
     }
     return true;
   }
@@ -66,6 +66,10 @@ AI.BlockUtils.YailTypeToBlocklyTypeMap = {
     'input': ['InstantInTime', AI.BlockUtils.InstantInTime],
     'output': ['InstantInTime', AI.BlockUtils.InstantInTime],
   },
+  'procedure' : {
+    'input': ['YailProcedure'],
+    'output': ['YailProcedure']
+  },
   'any': {
     'input': null,
     'output': null
@@ -86,6 +90,7 @@ AI.BlockUtils.YailTypeToBlocklyTypeMap = {
     'input': null,
     'output': ['Key']
   }
+
 };
 
 AI.BlockUtils.OUTPUT = 'output';

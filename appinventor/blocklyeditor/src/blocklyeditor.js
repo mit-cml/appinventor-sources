@@ -28,7 +28,7 @@ goog.require('AI.Blockly.ExportBlocksImage');
 goog.require('AI.Blockly.Flydown');
 goog.require('AI.Blockly.ProcedureDatabase');
 goog.require('AI.Blockly.ReplMgr');
-goog.require('AI.Blockly.TypeBlock');
+goog.require('AI.Blockly.TypeBlockPluginAdapter');
 goog.require('AI.Blockly.VariableDatabase');
 goog.require('AI.Blockly.WorkspaceSvg');
 goog.require('AI.Events');
@@ -57,12 +57,6 @@ if (Blockly.BlocklyEditor === undefined) {
 }
 
 Blockly.allWorkspaces = {};
-
-Blockly.configForTypeBlock = {
-  frame: 'ai_frame',
-  typeBlockDiv: 'ai_type_block',
-  inputText: 'ac_input_text'
-};
 
 Blockly.BlocklyEditor.HELP_IFRAME = null;
 
@@ -401,9 +395,9 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
     if (block.category === 'Procedures') {
       // sort procedure definitions before calls
       if (block.type.indexOf('procedures_def') === 0) {
-        return ('b,a:' + (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+        return ('b,a:' + (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME') || block.category));
       } else {
-        return ('b,b:'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME')));
+        return ('b,b:'+ (block.getFieldValue('NAME') || block.getFieldValue('PROCNAME') || block.category));
       }
     }
     if (block.category == 'Component') {
@@ -590,7 +584,7 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
         case AI.Blockly.BLKS_HORIZONTAL:
           if (x < wsRight) {
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             x = snap(x + blkWidth + SPACER);
             if (blkHgt > maxHgt) // Remember highest block
               maxHgt = blkHgt;
@@ -599,14 +593,14 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
             maxHgt = blkHgt;
             x = viewLeft;
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             x = snap(x + blkWidth + SPACER);
           }
           break;
         case AI.Blockly.BLKS_VERTICAL:
           if (y < wsBottom) {
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             y = snap(y + blkHgt + SPACER);
             if (blkWidth > maxWidth)  // Remember widest block
               maxWidth = blkWidth;
@@ -615,7 +609,7 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
             maxWidth = blkWidth;
             y = viewTop;
             blk.moveBy(x - blkXY.x, y - blkXY.y);
-            blk.select();
+            Blockly.common.setSelected(blk);
             y = snap(y + blkHgt + SPACER);
           }
           break;
@@ -999,12 +993,11 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
     'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
     'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
     plugins: {
-      blockDragger: MultiselectBlockDragger,
+      blockDragger: ScrollBlockDragger,
       metricsManager: ScrollMetricsManager,
       connectionPreviewer: decoratePreviewer(Blockly.InsertionMarkerPreviewer),
       [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
     },
-    baseBlockDragger: ScrollBlockDragger,
     useDoubleClick: true,
     bumpNeighbours: true,
     multiselectIcon: {
@@ -1053,21 +1046,26 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   workspace.blocksNeedingRendering = [];
   workspace.addWarningHandler();
   if (!readOnly) {
-    var ai_type_block = goog.dom.createElement('div'),
-      p = goog.dom.createElement('p'),
-      ac_input_text = goog.dom.createElement('input'),
-      typeblockOpts = {
-        frame: container,
-        typeBlockDiv: ai_type_block,
-        inputText: ac_input_text
-      };
-    // build dom for typeblock (adapted from blocklyframe.html)
-    goog.style.setElementShown(ai_type_block, false);
-    goog.dom.classlist.add(ai_type_block, "ai_type_block");
-    goog.dom.insertChildAt(container, ai_type_block, 0);
-    goog.dom.appendChild(ai_type_block, p);
-    goog.dom.appendChild(p, ac_input_text);
-    workspace.typeBlock_ = new AI.Blockly.TypeBlock(typeblockOpts, workspace);
+    const typeBlockPluginAdapter = AI.Blockly.TypeBlockPluginAdapter.create(workspace);
+    workspace.typeBlock_ = new TypeBlocking(workspace);
+    workspace.typeBlock_.needsReload = typeBlockPluginAdapter.needsReload;
+    workspace.typeBlock_.init({
+      matcher: typeBlockPluginAdapter.matcher,
+      optionGenerator: typeBlockPluginAdapter.optionGenerator,
+      workspaceStateTracker: {
+        get needsReload() { return true; },
+        invalidate() {},
+        dispose() {}
+      },
+      connectionConfig: {
+        strategies: [typeBlockPluginAdapter.connectionStrategy]
+      },
+      enablePatternRecognition: false,
+      inputPositioning: {
+        mode: 'fixed',
+        fixedPosition: { x: 10, y: 10 }
+      }
+    });
     var workspaceChanged = function() {
       if (this.workspace && !this.workspace.isDragging()) {
         var metrics = workspace.getMetrics();
@@ -1138,7 +1136,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   workspace.flyout_ = workspace.getFlyout();
   workspace.addWarningIndicator();
   workspace.addBackpack();
-  Blockly.browserEvents.bind(workspace.svgGroup_, 'focus', workspace, workspace.markFocused);
+  Blockly.browserEvents.bind(workspace.getSvgGroup(), 'focus', workspace, workspace.markFocused);
   // Hide scrollbars by default (otherwise ghost rectangles intercept mouse events)
   workspace.flyout_.scrollbar_ && workspace.flyout_.scrollbar_.setContainerVisible(false);
   workspace.backpack_.flyout_.scrollbar_ && workspace.backpack_.flyout_.scrollbar_.setContainerVisible(false);
