@@ -73,7 +73,7 @@ open class Texting: NonvisibleComponent, MFMessageComposeViewControllerDelegate 
     let messageVC = MFMessageComposeViewController()
     messageVC.messageComposeDelegate = self
     messageVC.body = _message
-    messageVC.recipients = [_phoneNumber]
+    messageVC.recipients = _phoneNumber.split(",")
     _form?.present(messageVC, animated: true, completion: nil)
   }
 

@@ -156,6 +156,7 @@ public abstract class AbstractPalettePanel<
     searchText.setWidth("100%");
     searchText.getElement().setPropertyString("placeholder", MESSAGES.searchComponents());
     searchText.getElement().setAttribute("style", "width: 100%; box-sizing: border-box;");
+    searchText.getElement().setAttribute("aria-label", MESSAGES.paletteSearchAriaLabel());
 
     searchText.addKeyUpHandler(new SearchKeyUpHandler());
     searchText.addKeyPressHandler(new ReturnKeyHandler());
@@ -197,6 +198,8 @@ public abstract class AbstractPalettePanel<
     stackPalette.setWidth("100%");
 
     initWidget(panel);
+    panel.getElement().setAttribute("role", "region");
+    panel.getElement().setAttribute("aria-label", MESSAGES.paletteAriaLabel());
     panel.add(searchResults);
     panel.add(stackPalette);
 

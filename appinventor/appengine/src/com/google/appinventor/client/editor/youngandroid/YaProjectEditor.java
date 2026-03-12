@@ -845,6 +845,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   private boolean isLastOpened(String formName) {
     String lastOpened = this.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED);
+    if (lastOpened.isEmpty()) { // This happens sometimes when a screen is deleted
+      lastOpened = "Screen1";   // Haven't found the cause, so this is a workaround
+    }
     return lastOpened.equals(formName);
   }
 

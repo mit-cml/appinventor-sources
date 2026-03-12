@@ -29,6 +29,7 @@ import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
 import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
@@ -245,7 +246,9 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty(description = "The ID for the Google Sheets file you want to edit. You can "
-      + "find the spreadsheetID in the URL of the Google Sheets file.")
+      + "find the spreadsheetID in the URL of the Google Sheets file. Look for the part between "
+      + "'/d/' and '/edit' in the URL, e.g. in "
+      + "https://docs.google.com/spreadsheets/d/1234abcd/edit the ID is '1234abcd'.")
   public void SpreadsheetID(String spreadsheetID) {
     if (spreadsheetID.startsWith("https:")) {
       // URL: https://docs.google.com/spreadsheets/d/<id>/edit#gid=0
@@ -797,6 +800,53 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       + "values on the table have been updated.")
   public void FinishedDeleteSheet(final String sheetName) {
     EventDispatcher.dispatchEvent(this, "FinishedDeleteSheet", sheetName);
+  }
+
+  @SimpleFunction(
+    description="Lists the names of all sheets in the spreadsheet. Triggers the " +
+      "GotSheetList callback event with a list of sheet names.")
+  public void ListSheets() {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
+      ErrorOccurred("ListSheets: " + "SpreadsheetID is empty.");
+      return;
+    }
+    // Run the API call asynchronously
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Sheets sheetsService = getSheetsService();
+          com.google.api.services.sheets.v4.model.Spreadsheet spreadsheet = sheetsService.spreadsheets().get(spreadsheetID).execute();
+          List<String> sheetNames = new ArrayList<>();
+          for (Sheet sheet : spreadsheet.getSheets()) {
+            sheetNames.add(sheet.getProperties().getTitle());
+            sheetIdMap.put(sheet.getProperties().getTitle(), sheet.getProperties().getSheetId());
+          }
+          final YailList sheetNamesList = YailList.makeList(sheetNames);
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              GotSheetList(sheetNamesList);
+            }
+          });
+        } catch (final Exception e) {
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              Log.e(LOG_TAG, "Error occurred in ListSheets", e);
+              ErrorOccurred("ListSheets: " + e.getMessage());
+            }
+          });
+
+        }
+      }
+    });
+  }
+
+  @SimpleEvent(description = "The callback event for the ListSheets block, called once the "
+      + "list of sheets has been retrieved.")
+  public void GotSheetList(final YailList sheetNames) {
+    EventDispatcher.dispatchEvent(this, "GotSheetList", sheetNames);
   }
 
   /**

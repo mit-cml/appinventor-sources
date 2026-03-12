@@ -3184,8 +3184,10 @@ Blockly.Versioning.AllUpgradeMaps =
       Blockly.Versioning.changeEventParameterName("Spreadsheet", "GotColumnData", "colDataList", "columnData")
     ],
 
-    3: "noUpgrade"
-    
+    3: "noUpgrade",
+
+    // The ListSheets and GotSheetList blocks were added.
+    4: "noUpgrade"
   },
 
   "TableArrangement": {
