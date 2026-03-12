@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -54,6 +56,10 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
     outerPanel.add(panel);
 
     initWidget(outerPanel);
+    outerPanel.getElement().setAttribute("role", "region");
+    outerPanel.getElement().setAttribute("aria-label", MESSAGES.propertiesAriaLabel());
+    componentName.getElement().setAttribute("aria-live", "polite");
+    componentName.getElement().setAttribute("aria-atomic", "true");
   }
 
   boolean hasValidDescription(EditableProperty p) {

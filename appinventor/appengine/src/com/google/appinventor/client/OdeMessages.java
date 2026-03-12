@@ -99,7 +99,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String GallerySendingError();
 
   @DefaultMessage("This project contains extensions and cannot be published to gallery.")
-  @Description("Error Message for displaying error when user tries to publish the project" + 
+  @Description("Error Message for displaying error when user tries to publish the project" +
     "containing extensions")
   String ProjectContainsExtensions();
 
@@ -936,6 +936,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for asset list box.")
   String assetListBoxCaption();
 
+  @DefaultMessage("Media")
+  @Description("ARIA label for media/asset list region landmark.")
+  String assetListAriaLabel();
+
   // Used in boxes/MessagesOutputBox.java
 
   @DefaultMessage("Messages")
@@ -954,11 +958,35 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for palette box.")
   String paletteBoxCaption();
 
+  @DefaultMessage("Component Palette")
+  @Description("ARIA label for palette region landmark.")
+  String paletteAriaLabel();
+
+  @DefaultMessage("Search components")
+  @Description("ARIA label for palette search box.")
+  String paletteSearchAriaLabel();
+
   // Used in boxes/ProjectListBox.java
 
   @DefaultMessage("Projects")
   @Description("Caption for project list box.")
   String projectListBoxCaption();
+
+  @DefaultMessage("Project List")
+  @Description("ARIA label for project list region landmark.")
+  String projectListAriaLabel();
+
+  @DefaultMessage("Sort by project name")
+  @Description("ARIA label for project name column header.")
+  String projectNameColumnAriaLabel();
+
+  @DefaultMessage("Sort by date created")
+  @Description("ARIA label for date created column header.")
+  String projectDateCreatedColumnAriaLabel();
+
+  @DefaultMessage("Sort by date modified")
+  @Description("ARIA label for date modified column header.")
+  String projectDateModifiedColumnAriaLabel();
 
   // Used in boxes/TrashProjectListBox.java
 
@@ -971,6 +999,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Properties")
   @Description("Caption for properties box.")
   String propertiesBoxCaption();
+
+  @DefaultMessage("Properties Panel")
+  @Description("ARIA label for properties region landmark.")
+  String propertiesAriaLabel();
 
   // Used in boxes/SourceStructureBox.java
 
@@ -990,6 +1022,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for source structure box.")
   String sourceStructureBoxCaptionNonVisible();
 
+  @DefaultMessage("Source Tree")
+  @Description("ARIA label for source structure/component tree region landmark.")
+  String sourceStructureAriaLabel();
+
   @DefaultMessage("{0} components selected")
   @Description("Component multi-select caption.")
   String componentsSelected(int componentCount);
@@ -1005,6 +1041,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Blocks")
   @Description("Caption for block selector box.")
   String blockSelectorBoxCaption();
+
+  @DefaultMessage("Blocks")
+  @Description("ARIA label for blocks selector region landmark.")
+  String blockSelectorAriaLabel();
 
   @DefaultMessage("Built-in")
   @Description("Label on built-in-blocks branch of block selector tree")
@@ -1078,6 +1118,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Viewer")
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
+
+  @DefaultMessage("Designer Viewer")
+  @Description("ARIA label for viewer/design canvas region landmark.")
+  String viewerAriaLabel();
 
   // Used in SaveAllEditorsCommand.java
 
@@ -5791,7 +5835,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Mark Origin")
   @Description("")
   String markOriginButton();
-  
+
   @DefaultMessage("Place the Marker on the Origin")
   @Description("Caption for Mark Origin Wizard")
   String markOriginWizardCaption();
