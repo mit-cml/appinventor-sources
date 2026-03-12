@@ -29,7 +29,7 @@
             } else {
               html += "<table border=1>\n";
               for (let i=0; i < projects.length; i++) {
-                html += "<tr><td>" + projects[i] + "</td><td><button onClick=\"loadproject('" + projects[i] + "');\">Run</button></td><td>&nbsp;</td><td><button onClick=\"deleteproject('" + projects[i] + "');\">Delete</button></td></tr>\n"
+                html += "<tr><td>" + projects[i] + "</td><td><button onClick=\"loadproject('" + projects[i] + "');\">Run</button></td><td>&nbsp;-&nbsp;</td><td><button onClick=\"deleteproject('" + projects[i] + "');\">Delete</button></td></tr>\n"
               }
               html += "</table>\n";
             }
