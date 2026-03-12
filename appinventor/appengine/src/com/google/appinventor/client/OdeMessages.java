@@ -678,6 +678,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Refresh the companion screen.")
   String refreshCompanionMenuItem();
 
+  @DefaultMessage("Save Project to Companion")
+  @Description("Save the current project to the connected Companion")
+  String saveProjectToCompanionMenuItem();
+
   //Build
   @DefaultMessage("Build")
   @Description("Label of the button leading to build related cascade items")
