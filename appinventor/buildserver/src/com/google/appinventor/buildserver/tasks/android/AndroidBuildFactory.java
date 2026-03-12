@@ -71,7 +71,7 @@ public class AndroidBuildFactory extends BuildFactory<AndroidPaths, AndroidCompi
     super.processAssets(compiler);
     compiler.add(MergeResources.class);
     compiler.add(SetupLibs.class);
-    compiler.add(isAab ? RunAapt2.class : RunAapt.class);
+    compiler.add(isAab ? RunAapt2.class : RunAapt2ForApk.class);
   }
 
   @Override
