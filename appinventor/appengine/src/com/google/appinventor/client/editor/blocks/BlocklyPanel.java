@@ -927,6 +927,15 @@ public class BlocklyPanel extends HTMLPanel {
       .isDrawerShowing();
   }-*/;
 
+  /**
+   * Reset the drawer's cached language tree so built-in blocks
+   * are rebuilt from the current BlocksToolkit property.
+   */
+  public native void resetDrawerLanguageTree()/*-{
+    this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
+      .resetDrawerLanguageTree();
+  }-*/;
+
   public native void render()/*-{
     this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
       .resize()

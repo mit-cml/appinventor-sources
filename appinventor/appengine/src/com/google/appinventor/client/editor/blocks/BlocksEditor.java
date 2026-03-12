@@ -385,7 +385,16 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   // Note: our companion designer adds us as a listener on the form
   @Override
   public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
-    // nothing to do here
+    if ("BlocksToolkit".equals(propertyName) && loadComplete) {
+      // Clear the cached built-in blocks tree in BlockSelectorBox
+      BlockSelectorBox.getBlockSelectorBox().clearBuiltInBlocksCache();
+      // Clear the cached language tree in the Blockly drawer
+      blocksArea.resetDrawerLanguageTree();
+      // Rebuild the blocks tree in the source structure explorer
+      updateSourceStructureExplorer();
+      // Close any open drawer since its contents may have changed
+      hideBlocksDrawer();
+    }
   }
 
   @Override

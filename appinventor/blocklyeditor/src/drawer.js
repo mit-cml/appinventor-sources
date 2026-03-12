@@ -201,6 +201,14 @@ Blockly.Drawer.prototype.isShowing = function() {
   return this.flyout_.isVisible();
 };
 
+/**
+ * Reset the cached language tree so that it will be rebuilt on the next
+ * call to showBuiltin. This is needed when the BlocksToolkit property changes.
+ */
+Blockly.Drawer.prototype.resetLanguageTree = function() {
+  this.options.languageTree = null;
+};
+
 Blockly.Drawer.prototype.blockListToXMLArray = function(blockList) {
   var xmlArray = [];
   for (var i = 0; i < blockList.length; i++) {
