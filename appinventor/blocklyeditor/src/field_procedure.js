@@ -20,7 +20,7 @@ AI.Blockly.FieldProcedure.defaultValue = ["",""];
 
 AI.Blockly.FieldProcedure.onChange = function(procedureId) {
   const workspace = this.block.getTopWorkspace();
-  if(!this.block.editable_){ // [lyn, 10/14/13] .editable is undefined on blocks. Changed to .editable_
+  if(!this.block.isEditable()){
     return;
   }
 
@@ -38,7 +38,6 @@ AI.Blockly.FieldProcedure.onChange = function(procedureId) {
       // return;
     }
   }
-  this.doValueUpdate_(text);
   // If we're just in the midst of renaming the procedure, we don't have (or want) to
   // add the new arguments
   if (!this.block.isRenaming) {
@@ -134,7 +133,7 @@ AI.Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
  * @returns {string} The new, validated name of the block
  */
 AI.Blockly.AIProcedure.renameProcedure = function (newName) {
-  if (this.sourceBlock_ && this.sourceBlock_.isInFlyout) {
+  if (this.getSourceBlock && this.getSourceBlock() && this.getSourceBlock().isInFlyout) {
     // Do not rename procedures in flyouts
     return newName;
   }
@@ -145,11 +144,11 @@ AI.Blockly.AIProcedure.renameProcedure = function (newName) {
   newName = Blockly.LexicalVariable.makeLegalIdentifier(newName);
 
   // [lyn, 10/28/13] Prevent two procedures from having the same name.
-  var procBlocks = AI.Blockly.AIProcedure.getAllProcedureDeclarationBlocksExcept(this.sourceBlock_);
+  var procBlocks = AI.Blockly.AIProcedure.getAllProcedureDeclarationBlocksExcept(this.getSourceBlock());
   var procNames = procBlocks.map(function (decl) { return decl.getFieldValue('NAME'); });
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, procNames);
   // Rename any callers.
-  var blocks = this.sourceBlock_.workspace.getAllBlocks();
+  var blocks = this.getSourceBlock().workspace.getAllBlocks();
   for (var x = 0; x < blocks.length; x++) {
     var func = blocks[x].renameProcedure;
     if (func) {
