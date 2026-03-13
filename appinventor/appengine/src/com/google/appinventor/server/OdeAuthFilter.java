@@ -213,7 +213,6 @@ public class OdeAuthFilter implements Filter {
     user.setReadOnly(isReadOnly);
     user.setOneProjectId(oneProjectId);
     user.setFauxProjectName(projectName);
-    LOG.severe("OdeAuthFilter: displayAccountName = " + displayAccountName);
     if (displayAccountName != null && !displayAccountName.isEmpty()) {
       user.setUserEmail(displayAccountName);
     }
