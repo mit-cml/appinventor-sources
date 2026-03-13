@@ -733,7 +733,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
             var encoder = new URLSearchParams();
             console.log('Low Level Sending: ' + work.code)
-            encoder.append('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
+            encoder.append('mac', await Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
             encoder.append('seq', rs.seq_count);
             encoder.append('code', work.code);
             encoder.append('blockid', blockid);
