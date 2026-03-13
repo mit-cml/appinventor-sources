@@ -3,27 +3,26 @@
 // Copyright 2011-2018 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
-
 package com.google.appinventor.components.runtime;
 
+import java.io.File;
+
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
-
 import android.net.Uri;
-
 import android.webkit.MimeTypeMap;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.UsesPermissions;
-
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
-
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.NougatUtil;
 
-import java.io.File;
 
 /**
  * Sharing is a non-visible component that enables sharing files and/or messages between your app
@@ -88,6 +87,25 @@ public class Sharing extends AndroidNonvisibleComponent {
     // oversized pop up sharing window.
     this.form.startActivity(shareIntent);
   }
+
+  /**
+   * Copies the given text to the system clipboard.
+   */
+  @SimpleFunction(description = "Copies the given text to the system clipboard.")
+  public void CopyToClipboard(String text) {
+    ClipboardManager clipboard =
+        (ClipboardManager) form.getSystemService(Context.CLIPBOARD_SERVICE);
+
+    if (clipboard != null) {
+      String label = form.getApplication().getApplicationInfo()
+       .loadLabel(form.getApplication().getPackageManager())
+       .toString();
+
+      ClipData clip = ClipData.newPlainText(label, text);
+      clipboard.setPrimaryClip(clip);
+    }
+  }
+
 
   /**
    * Shares a file using Android' built-in sharing.
