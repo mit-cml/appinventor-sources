@@ -12,6 +12,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 
@@ -70,20 +72,26 @@ public final class TextValidators {
       }
       return ProjectNameStatus.INVALIDFORMAT;
     }
+    ValidationResult result = validateName(projectName);
+    String canonicalName = result.modifiedName;
 
     // Check for names that reserved words
-    if (isReservedName(projectName)) {
+    if (isReservedName(canonicalName)) {
       Window.alert(MESSAGES.reservedNameError());
       return ProjectNameStatus.RESERVED;
     }
 
     // Check that project does not already exist
-    if (Ode.getInstance().getProjectManager().getProject(projectName) != null) {
-      if (Ode.getInstance().getProjectManager().getProject(projectName).isInTrash()) {
-        Window.alert(MESSAGES.duplicateTrashProjectNameError(projectName));
+    ProjectManager pm = Ode.getInstance().getProjectManager();
+    Project existing = pm.getProject(canonicalName);
+
+    if (existing != null) {
+      if (existing.isInTrash()) {
+        Window.alert(MESSAGES.duplicateTrashProjectNameError(canonicalName));
         return ProjectNameStatus.DUPLICATEINTRASH;
-      } else if (!quietly) {
-        Window.alert(MESSAGES.duplicateProjectNameError(projectName));
+      }
+      if (!quietly) {
+        Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
       }
       return ProjectNameStatus.DUPLICATE;
     }
@@ -101,6 +109,8 @@ public final class TextValidators {
       Window.alert(MESSAGES.malformedComponentNameError());
       return false;
     }
+    ValidationResult result = validateName(componentName);
+    String canonicalName = result.modifiedName; 
 
     long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     if ( projectId == 0) { // Check we have a current Project
@@ -111,20 +121,20 @@ public final class TextValidators {
 
     // Check that it's unique.
     final List<String> names = editor.getComponentInstances();
-    if (names.contains(componentName)) {
+    if (names.contains(canonicalName)) {
       Window.alert(MESSAGES.sameAsComponentInstanceNameError());
       return false;
     }
 
     // Check that it is a variable name used in the Yail code
-    if (TextValidators.isReservedName(componentName)) {
+    if (TextValidators.isReservedName(canonicalName)) {
       Window.alert(MESSAGES.reservedNameError());
       return false;
     }
 
     //Check that it is not a Component type name
     SimpleComponentDatabase COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(projectId);
-    if (COMPONENT_DATABASE.isComponent(componentName)) {
+    if (COMPONENT_DATABASE.isComponent(canonicalName)) {
       Window.alert(MESSAGES.duplicateComponentNameError());
       return false;
     }
@@ -150,17 +160,19 @@ public final class TextValidators {
       Window.alert(MESSAGES.malformedProjectNameError());
       return ProjectNameStatus.INVALIDFORMAT;
     }
+    ValidationResult result = validateName(folderName);
+    String canonicalName = result.modifiedName;
 
     // Check for names that reserved words
-    if (isReservedName(folderName)) {
+    if (isReservedName(canonicalName)) {
       Window.alert(MESSAGES.reservedNameError());
       return ProjectNameStatus.RESERVED;
     }
 
     // Check that folder does not already exist
     for (ProjectFolder folder : parent.getChildFolders()) {
-      if (folderName.equals(folder.getName())) {
-        Window.alert(MESSAGES.duplicateProjectNameError(folderName));
+      if (canonicalName.equals(folder.getName())) {
+        Window.alert(MESSAGES.duplicateProjectNameError(canonicalName));
         return ProjectNameStatus.DUPLICATE;
       }
     }
