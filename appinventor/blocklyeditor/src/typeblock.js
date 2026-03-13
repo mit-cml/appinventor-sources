@@ -11,8 +11,6 @@
 
 goog.provide('AI.Blockly.TypeBlock');
 
-goog.require('goog.ui.ac.ArrayMatcher');
-
 /**
  * Main Type Block function for configuration.
  * @param {Blockly.WorkspaceSvg} workspace The workspace targeted by the TypeBlock
@@ -100,7 +98,7 @@ AI.Blockly.TypeBlock.prototype.generateOptions = function() {
 
     function createOption(tb, canonicName){
       if (tb){
-        goog.array.forEach(tb, function(dd){
+        for (const dd of tb) {
           var dropDownValues = {};
           var mutatorAttributes = {};
           if (dd.dropDown){
@@ -121,7 +119,7 @@ AI.Blockly.TypeBlock.prototype.generateOptions = function() {
             dropDown: dropDownValues,
             mutatorAttributes: mutatorAttributes
           };
-        });
+        }
       }
     }
 
@@ -140,27 +138,26 @@ AI.Blockly.TypeBlock.prototype.generateOptions = function() {
  */
 AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
   // Clean up any previous procedures in the list.
-  this.TBOptions_ = goog.object.filter(this.TBOptions_,
-      function(opti){ return !opti.isProcedure;});
+  this.TBOptions_ = Object.fromEntries(
+      Object.entries(this.TBOptions_).filter(([_, option]) => !option.isProcedure));
 
   var procsNoReturn = createTypeBlockForProcedures_.call(this, false);
-  var self = this;
-  goog.array.forEach(procsNoReturn, function(pro){
-    self.TBOptions_[pro.translatedName] = {
+  for (const pro of procsNoReturn) {
+    this.TBOptions_[pro.translatedName] = {
       canonicName: 'procedures_callnoreturn',
       dropDown: pro.dropDown,
       isProcedure: true // this attribute is used to clean up before reloading
     };
-  });
+  }
 
   var procsReturn = createTypeBlockForProcedures_.call(this, true);
-  goog.array.forEach(procsReturn, function(pro){
-    self.TBOptions_[pro.translatedName] = {
+  for (const pro of procsReturn) {
+    this.TBOptions_[pro.translatedName] = {
       canonicName: 'procedures_callreturn',
       dropDown: pro.dropDown,
       isProcedure: true
     };
-  });
+  }
 
   /**
    * Procedure names can be collected for both 'with return' and 'no return' varieties from
@@ -175,7 +172,7 @@ AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
     if (procNames.length == 1 && procNames[0][0] == '') {
       procNames = [];
     }
-    goog.array.forEach(procNames, function(proc){
+    for (const proc of procNames) {
       options.push(
           {
             translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL + proc[0],
@@ -185,7 +182,7 @@ AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
             }
           }
       );
-    });
+    }
     return options;
   }
 };
@@ -196,12 +193,11 @@ AI.Blockly.TypeBlock.prototype.loadProcedures_ = function(){
  */
 AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
   // Remove any global vars from the list so that we can re-add them.
-  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
-    return !option.isGlobalvar;
-  });
+  this.TBOptions_ = Object.fromEntries(
+      Object.entries(this.TBOptions_).filter(([_, option]) => !option.isGlobalvar));
 
   var globalVarNames = Blockly.FieldLexicalVariable.getGlobalNames();
-  goog.array.forEach(globalVarNames, function(varName) {
+  for (const varName of globalVarNames) {
     var prefixedName = Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX  +
         ' ' + varName;
     var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET +
@@ -226,7 +222,7 @@ AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
       },
       isGlobalvar: true
     }
-  }.bind(this));
+  }
 };
 
 /**
@@ -236,9 +232,8 @@ AI.Blockly.TypeBlock.prototype.loadGlobalVariables_ = function () {
  */
 AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
   // Remove any local vars from the list so that we can re-add them.
-  this.TBOptions_ = goog.object.filter(this.TBOptions_, function(option) {
-    return !option.isLocalVar;
-  });
+  this.TBOptions_ = Object.fromEntries(
+      Object.entries(this.TBOptions_).filter(([_, option]) => !option.isLocalVar));
 
   var selected = Blockly.common.getSelected();
   if (!selected) {
@@ -261,7 +256,7 @@ AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
               .getInternationalizedParameterName(varName);
         }));
   }
-  goog.array.forEach(localVarNames, function(varName) {
+  for (const varName of localVarNames) {
     var translatedGet = Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET + ' ' + varName;
     this.TBOptions_[translatedGet] = {
       canonicName: 'lexical_variable_get',
@@ -280,7 +275,7 @@ AI.Blockly.TypeBlock.prototype.loadLocalVariables_ = function() {
       },
       isLocalVar: true
     }
-  }.bind(this));
+  }
 };
 
 AI.Blockly.TypeBlock.matchNumberOrTextBlock = function(blockName) {
@@ -303,7 +298,7 @@ AI.Blockly.TypeBlock.matchNumberOrTextBlock = function(blockName) {
       canonicName: 'text',
       dropDown: {
         titleName: 'TEXT',
-        value: goog.string.endsWith(blockName, '"') ? blockName.substring(1, blockName.length - 1) : blockName.substring(1)
+        value: blockName.endsWith('"') ? blockName.substring(1, blockName.length - 1) : blockName.substring(1)
       }
     };
   }
@@ -382,8 +377,6 @@ AI.Blockly.TypeBlock.prototype.connectIfPossible = function(blockSelected, creat
 // functionality of goog.ui.ac.ArrayMatcher
 goog.provide('AI.Blockly.TypeBlock.ac.AIArrayMatcher');
 
-goog.require('goog.string');
-
 /**
  * Extension of goog.ui.ac.ArrayMatcher so that it can handle any number typed in.
  * @constructor
@@ -391,14 +384,111 @@ goog.require('goog.string');
  * have a toString method that returns the value to match against.
  * @param {boolean=} opt_noSimilar if true, do not do similarity matches for the
  * input token against the dictionary.
- * @extends {goog.ui.ac.ArrayMatcher}
  */
 AI.Blockly.TypeBlock.ac.AIArrayMatcher = function(rows, opt_noSimilar) {
-  goog.ui.ac.ArrayMatcher.call(rows, opt_noSimilar);
   this.rows_ = rows;
   this.useSimilar_ = !opt_noSimilar;
 };
-goog.inherits(AI.Blockly.TypeBlock.ac.AIArrayMatcher, goog.ui.ac.ArrayMatcher);
+
+// From goog.string.regExpEscape
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.regExpEscape_ = function(s) {
+  'use strict';
+  return String(s)
+      .replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1')
+      .replace(/\x08/g, '\\x08');
+};
+
+// From goog.ui.ac.ArrayMatcher.getPrefixMatchesForRows
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.getPrefixMatchesForRows_ = function(
+    token, maxMatches, rows) {
+  'use strict';
+  var matches = [];
+
+  if (token != '') {
+    var escapedToken = AI.Blockly.TypeBlock.ac.AIArrayMatcher.regExpEscape_(token);
+    var matcher = new RegExp('(^|\\W+)' + escapedToken, 'i');
+
+    for (var i = 0; i < rows.length && matches.length < maxMatches; i++) {
+      var row = rows[i];
+      if (String(row).match(matcher)) {
+        matches.push(row);
+      }
+    }
+  }
+  return matches;
+};
+
+// From goog.ui.ac.ArrayMatcher.getSimilarMatchesForRows
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.getSimilarMatchesForRows_ = function(
+    token, maxMatches, rows) {
+  'use strict';
+  var results = [];
+
+  for (var index = 0; index < rows.length; index++) {
+    var row = rows[index];
+    var str = token.toLowerCase();
+    var txt = String(row).toLowerCase();
+    var score = 0;
+
+    if (txt.indexOf(str) != -1) {
+      score = parseInt((txt.indexOf(str) / 4).toString(), 10);
+    } else {
+      var arr = str.split('');
+      var lastPos = -1;
+      var penalty = 10;
+
+      for (var i = 0, c; c = arr[i]; i++) {
+        var pos = txt.indexOf(c);
+        if (pos > lastPos) {
+          var diff = pos - lastPos - 1;
+          if (diff > penalty - 5) {
+            diff = penalty - 5;
+          }
+          score += diff;
+          lastPos = pos;
+        } else {
+          score += penalty;
+          penalty += 5;
+        }
+      }
+    }
+
+    if (score < str.length * 6) {
+      results.push({str: row, score: score, index: index});
+    }
+  }
+
+  results.sort(function(a, b) {
+    'use strict';
+    var diff = a.score - b.score;
+    if (diff != 0) {
+      return diff;
+    }
+    return a.index - b.index;
+  });
+
+  var matches = [];
+  for (var i = 0; i < maxMatches && i < results.length; i++) {
+    matches.push(results[i].str);
+  }
+
+  return matches;
+};
+
+// From goog.ui.ac.ArrayMatcher.prototype.getPrefixMatches
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.prototype.getPrefixMatches = function(
+    token, maxMatches) {
+  'use strict';
+  return AI.Blockly.TypeBlock.ac.AIArrayMatcher.getPrefixMatchesForRows_(
+      token, maxMatches, this.rows_);
+};
+
+// From goog.ui.ac.ArrayMatcher.prototype.getSimilarRows
+AI.Blockly.TypeBlock.ac.AIArrayMatcher.prototype.getSimilarRows = function(token, maxMatches) {
+  'use strict';
+  return AI.Blockly.TypeBlock.ac.AIArrayMatcher.getSimilarMatchesForRows_(
+      token, maxMatches, this.rows_);
+};
 
 /**
  * @inheritDoc
@@ -411,15 +501,16 @@ AI.Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(
   //Because we allow for similar matches, Button.Text will always appear before Text
   //So we handle the 'text' case as a special case here
   if (token === 'text' || token === 'Text'){
-    goog.array.remove(matches, 'Text');
-    goog.array.insertAt(matches, 'Text', 0);
+    const index = matches.indexOf('Text');
+    if (index > -1) matches.splice(index, 1);
+    matches.unshift('Text');
   }
 
   // Added code to handle any number typed in the widget (including negatives and decimals)
   var reg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
   if (match && match.length > 0){
-    goog.array.insertAt(matches, token, 0);
+    matches.unshift(token);
   }
 
   // Added code to handle default values for text fields (they start with " or ')

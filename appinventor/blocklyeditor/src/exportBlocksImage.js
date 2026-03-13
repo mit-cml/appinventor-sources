@@ -12,8 +12,6 @@
 'use strict';
 
 goog.provide('AI.Blockly.ExportBlocksImage');
-goog.require('goog.Timer');
-
 
 /**
  * saveSvgAsPng
@@ -583,7 +581,7 @@ function showMissingExtensionDialog(missingExtensions) {
 /**
  * Imports a block from a PNG file if the code chunk is present.
  * @param {!Blockly.WorkspaceSvg} workspace the target workspace for the block
- * @param {goog.math.Coordinate} xy the coordinate to place the block
+ * @param {{x: number, y: number}} xy the coordinate to place the block
  * @param {Blob} png the blob representing the PNG file
  */
 Blockly.importPngAsBlock = function(workspace, xy, png) {

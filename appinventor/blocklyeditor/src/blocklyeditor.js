@@ -15,8 +15,6 @@
 
 goog.provide('AI.Blockly.BlocklyEditor');
 
-goog.require('goog.ui.HsvaPalette');
-
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly');
 goog.require('AI.Blockly.Backpack');
@@ -189,14 +187,11 @@ AI.Blockly.ContextMenuItems.registerDoItOption = function() {
       const connectedToRepl =
           top.ReplState.state === Blockly.ReplMgr.rsState.CONNECTED;
       if (!connectedToRepl) {
-        const dialog = new goog.ui.Dialog(
-            null, true, new goog.dom.DomHelper(top.document));
-        dialog.setTitle(Blockly.Msg['CAN_NOT_DO_IT']);
-        dialog.setTextContent(Blockly.Msg['CONNECT_TO_DO_IT']);
-        dialog.setButtonSet(new goog.ui.Dialog.ButtonSet()
-            .addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
-                false, true));
-        dialog.setVisible(true);
+        const dialog = new Blockly.Util.Dialog(Blockly.Msg['CAN_NOT_DO_IT'],
+            Blockly.Msg['CONNECT_TO_DO_IT'], Blockly.Msg['REPL_OK'], false,
+            null, 1, function() {
+          dialog.hide();
+        });
       } else {
         // AI.Yail.blockToCode1 returns a string if the block is a statement
         // and an array if the block is a value
@@ -1170,10 +1165,10 @@ AI.inject = function(container, workspace, isDarkMode=false, animationDelayMs=0)
   workspace.setGridSettings(gridEnabled, gridSnap);
   // Update the workspace size in case the window was resized while we were hidden
   setTimeout(function() {
-    goog.array.forEach(workspace.blocksNeedingRendering, function(block) {
+    for (const block of workspace.blocksNeedingRendering) {
       workspace.getWarningHandler().checkErrors(block);
       block.render();
-    });
+    }
     workspace.blocksNeedingRendering.splice(0);  // clear the array of pending blocks
     workspace.resizeContents();
     Blockly.common.svgResize(workspace);

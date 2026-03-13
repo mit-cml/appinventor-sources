@@ -17,7 +17,7 @@ module.exports = function(config) {
     files: [
         'blocklyeditor/tests/index.js',
       'build/blocklyeditor/msg/messages.nocache.js',
-      'lib/closure-library/closure/goog/base.js',
+      'lib/closure-compiler/base.js',
       'build/blocklyeditor/blockly-all.js',
       'build/blocklyeditor/component-types.js',
       'appengine/war/static/js/scroll-options-6.0.16.min.js',
