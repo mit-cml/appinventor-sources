@@ -330,7 +330,8 @@ AI.Yail.math_on_list2.OPERATORS = {
   //MODE: ['mode', AI.Yail.ORDER_NONE],
   GM: ['gm', AI.Yail.ORDER_NONE],
   SD: ['std-dev', AI.Yail.ORDER_NONE],
-  SE: ['std-err', AI.Yail.ORDER_NONE]
+  SE: ['std-err', AI.Yail.ORDER_NONE],
+  MED: ['yail-median', AI.Yail.ORDER_NONE]
 };
 
 AI.Yail['math_mode_of_list'] = function() {
