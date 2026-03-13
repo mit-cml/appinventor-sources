@@ -16,11 +16,15 @@ suite('ExportBlocksImage', function() {
       }
     }, workspace);
     const exportPromise = new Promise(resolve => {
-      const original = URL.createObjectURL;
+      const originalCreateObjectURL = URL.createObjectURL;
+      const originalClick = HTMLAnchorElement.prototype.click;
       URL.createObjectURL = png => {
-        URL.createObjectURL = original;
+        URL.createObjectURL = originalCreateObjectURL;
         resolve(png);
-        return original(png);
+        return originalCreateObjectURL(png);
+      };
+      HTMLAnchorElement.prototype.click = function() {
+        HTMLAnchorElement.prototype.click = originalClick;
       };
     });
     Blockly.exportBlockAsPng(block);
