@@ -389,6 +389,11 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   }
 
   @Override
+  public void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    // No action needed in BlocksEditor before component removal.
+  }
+
+  @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
     if (permanentlyDeleted) {
       removeComponent(component.getType(), component.getName(), component.getUuid());

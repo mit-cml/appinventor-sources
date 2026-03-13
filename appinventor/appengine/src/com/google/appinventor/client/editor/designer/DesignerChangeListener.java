@@ -32,6 +32,17 @@ public interface DesignerChangeListener {
       String propertyName, String propertyValue);
 
   /**
+   * Invoked just before a component is removed from its container.
+   * At this point, the component is still in the container's children list
+   * and all properties are still intact.
+   *
+   * @param component  the component about to be removed
+   * @param permanentlyDeleted true if the component is being permanently
+   *        deleted, false if it is being moved to another container
+   */
+  void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted);
+
+  /**
    * Invoked when a component is removed.
    *
    * @param component  the component that was removed

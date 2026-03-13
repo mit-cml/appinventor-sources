@@ -42,6 +42,14 @@
         tooltip="{messages.projectPropertiesText}" align="center" styleName="ode-ProjectListButton inline left-spacer">
       <ya:ProjectPropertiesAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="Undo" icon="undo" ui:field="undoItem"
+        tooltip="{messages.undoButton}" align="center" styleName="ode-ProjectListButton inline left-spacer bleft" enabled="false">
+      <ya:UndoAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Redo" icon="redo" ui:field="redoItem"
+        tooltip="{messages.redoButton}" align="center" styleName="ode-ProjectListButton inline bright" enabled="false">
+      <ya:RedoAction />
+    </ai:ToolbarItem>
 
     <ai:ToolbarItem name="Gallery" icon="public" tooltip="{messages.publishToGalleryButton}"
                     ui:field="sendToGalleryItem" align="center"  styleName="ode-ProjectListButton inline">

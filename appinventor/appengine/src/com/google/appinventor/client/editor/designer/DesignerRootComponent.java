@@ -109,6 +109,8 @@ public interface DesignerRootComponent {
 
   void fireComponentRenamed(MockComponent component, String oldName);
 
+  void fireBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted);
+
   void fireComponentRemoved(MockComponent component, boolean permanentlyDeleted);
 
   void select(NativeEvent event);

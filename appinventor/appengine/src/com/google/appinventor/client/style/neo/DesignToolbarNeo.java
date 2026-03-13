@@ -25,6 +25,8 @@ public class DesignToolbarNeo extends DesignToolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected ToolbarItem undoItem;
+  @UiField protected ToolbarItem redoItem;
 
   @Override
   public void bindUI() {
@@ -36,5 +38,7 @@ public class DesignToolbarNeo extends DesignToolbar {
     super.switchToDesign = switchToDesign;
     super.switchToBlocks = switchToBlocks;
     super.sendToGalleryItem = sendToGalleryItem;
+    super.undoItem = undoItem;
+    super.redoItem = redoItem;
   }
 }

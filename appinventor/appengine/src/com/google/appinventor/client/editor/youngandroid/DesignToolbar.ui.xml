@@ -35,6 +35,14 @@
                     align="center">
       <ya:ProjectPropertiesAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="Undo" caption="{messages.undoButton}" ui:field="undoItem"
+                    align="center" enabled="false">
+      <ya:UndoAction />
+    </ai:ToolbarItem>
+    <ai:ToolbarItem name="Redo" caption="{messages.redoButton}" ui:field="redoItem"
+                    align="center" enabled="false">
+      <ya:RedoAction />
+    </ai:ToolbarItem>
     <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
        ui:field="sendToGalleryItem" align="center">
       <actions:SendToGalleryAction />
