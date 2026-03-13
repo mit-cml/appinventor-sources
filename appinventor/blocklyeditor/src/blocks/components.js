@@ -772,7 +772,7 @@ Blockly.Blocks.component_method = {
         this.appendDummyInput()
           .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL)
           .appendField(this.componentDropDown, Blockly.ComponentBlock.COMPONENT_SELECTOR)
-          .appendField('.Add')
+          .appendField('.' + Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD)
           .appendField(timeUnitDropDown, "TIME_UNIT");
         switch (this.methodName){
           case "AddYears":

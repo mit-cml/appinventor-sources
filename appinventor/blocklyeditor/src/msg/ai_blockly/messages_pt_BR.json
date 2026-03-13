@@ -445,6 +445,7 @@
 	"Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP": "passo",
 	"Blockly.Msg.LANG_MATH_COMPARE_GTE": "≥",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "chamar ",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD": "Adicionar",
 	"Blockly.Msg.LANG_MATH_TRIG_ACOS": "arccos",
 	"Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN": "Dado um valor da tangente trigonométrica, informa o\nângulo correspondente em graus no intervalo (-90, +90].",
 	"Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE": "para",

@@ -443,6 +443,7 @@
     "Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP": "bij",
     "Blockly.Msg.LANG_MATH_COMPARE_GTE": "≥",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "aanroep ",
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD": "Toevoegen",
     "Blockly.Msg.LANG_MATH_TRIG_ACOS": "acos",
     "Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN": "Geeft een hoek tussen [-90, +90]\ngraden met de gegeven tangens.",
     "Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE": "tot",
