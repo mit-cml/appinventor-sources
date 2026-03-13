@@ -2,6 +2,7 @@ package edu.mills.feeney.thesis.aimerger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,14 +44,17 @@ public class AIProject {
     try {
       this.projectPath = projectPath;
       // Create screens list.
-      this.screensList = new LinkedList<AIScreen>();
-      // Create assets list.
-      this.assetsList = new LinkedList<AIAsset>();
-      // Go through each file in the project and create the appropriate classes.
-      Enumeration<? extends ZipEntry> e = new ZipFile(new File(projectPath)).entries();
-      while (e.hasMoreElements()) {
-        // fileName is the path of the file in the project file.
-        String fileName = (new ZipEntry(e.nextElement())).getName();
+      // Using ArrayList for faster access and reduced memory overhead
+    this.screensList = new ArrayList<>();
+   // Create assets list.
+    this.assetsList = new ArrayList<>();
+    // Using try-with-resources ensures that the ZipFile is properly closed
+    try (ZipFile zipFile = new ZipFile(new File(projectPath))) {  
+  Enumeration<? extends ZipEntry> entries = zipFile.entries();
+  while (entries.hasMoreElements()) {
+      ZipEntry entry = entries.nextElement(); // Get current entry
+      String fileName = entry.getName(); // Extract file name
+
         // Create an AIScreen from any screen file in the project's src folder.
         if (fileName.startsWith("src") && fileName.endsWith(".scm")) {
           AIScreen screen = new AIScreen(fileName);
