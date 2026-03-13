@@ -82,6 +82,8 @@ public class ComponentConstants {
   public static final int LISTVIEW_PREFERRED_WIDTH = 315;
   public static final int LISTVIEW_PREFERRED_HEIGHT = 40;
   public static final int LISTVIEW_FILTER_PREFERRED_HEIGHT = 30;
+  public static final int LISTVIEW_DEFAULT_IMAGE_WIDTH = 40;
+  public static final int LISTVIEW_DEFAULT_IMAGE_HEIGHT = 40;
 
   /**
    * Scrollable Arrangements
