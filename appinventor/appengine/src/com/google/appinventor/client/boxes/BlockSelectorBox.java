@@ -86,7 +86,7 @@ public final class BlockSelectorBox extends Box {
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
 
   private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(
-      Arrays.asList("Control", "Logic", "Math", "Text", "Lists", "Dictionaries", "Colors",
+      Arrays.asList("Control", "Logic", "Math", "Matrices", "Text", "Lists", "Dictionaries", "Colors",
           "Variables", "Procedures"));
 
   private static final Images images = Ode.getImageBundle();
