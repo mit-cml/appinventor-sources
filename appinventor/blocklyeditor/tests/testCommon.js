@@ -301,3 +301,31 @@ function getPropertyBlockPresentedName(block) {
     return block.inputList[0].fieldRow[2].getText();
   }
 }
+
+function ctrl(key) {
+  const workspace = Blockly.common.getMainWorkspace();
+  const keyCode = key.toUpperCase().charCodeAt(0);
+  const options = { key: key, keyCode: keyCode, ctrlKey: true, bubbles: true };
+  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keydown', options));
+  workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', options));
+}
+
+async function act(action) {
+  const result = action();
+  const workspace = Blockly.common.getMainWorkspace();
+  let eventFired = false;
+  const listener = workspace.addChangeListener(() => {
+    eventFired = true;
+  });
+  try {
+    do {
+      eventFired = false;
+      await new Promise(resolve =>
+        requestAnimationFrame(() => setTimeout(resolve, 0))
+      );
+    } while (eventFired);
+  } finally {
+    workspace.removeChangeListener(listener);
+  }
+  return result;
+}

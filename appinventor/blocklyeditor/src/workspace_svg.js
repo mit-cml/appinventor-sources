@@ -43,7 +43,7 @@ Blockly.WorkspaceSvg.prototype.componentDb_ = null;
 
 /**
  * The workspace's typeblock instance.
- * @type {AI.Blockly.TypeBlock}
+ * @type {TypeBlocking}
  * @private
  */
 Blockly.WorkspaceSvg.prototype.typeBlock_ = null;
@@ -62,37 +62,10 @@ Blockly.WorkspaceSvg.prototype.flydown_ = null;
 Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
 
 /**
- * latest clicked position is used to open the type blocking suggestions window
- * Initial position is 0,0
- * @type {{x: number, y: number}}
- */
-Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
-
-/**
  * Whether the workspace elements are hidden
  * @type {boolean}
  */
 Blockly.WorkspaceSvg.prototype.chromeHidden = false;
-
-/**
- * Wrap the onMouseDown event to handle additional behaviors.
- */
-Blockly.WorkspaceSvg.prototype.onMouseDown = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var f = function(e) {
-      var metrics = Blockly.common.getMainWorkspace().getMetrics();
-      var point = Blockly.utils.browserEvents.mouseToSvg(e, this.getParentSvg(), this.getInverseScreenCTM());
-      point.x = (point.x + metrics.viewLeft) / this.scale;
-      point.y = (point.y + metrics.viewTop) / this.scale;
-      this.latestClick = point;
-      return func.call(this, e);
-    };
-    f.isWrapper = true;
-    return f;
-  }
-})(Blockly.WorkspaceSvg.prototype.onMouseDown);
 
 Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
   if (func.isWrapped) {
@@ -627,7 +600,6 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
 Blockly.WorkspaceSvg.prototype.hideChaff = (function(func) {
   return function(opt_allowToolbox) {
     this.flydown_ && this.flydown_.hide();
-    this.typeBlock_ && this.typeBlock_.hide();
     if (!opt_allowToolbox) {  // Fixes #1269
       this.backpack_ && this.backpack_.hide();
     }

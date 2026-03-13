@@ -28,7 +28,7 @@ goog.require('AI.Blockly.ExportBlocksImage');
 goog.require('AI.Blockly.Flydown');
 goog.require('AI.Blockly.ProcedureDatabase');
 goog.require('AI.Blockly.ReplMgr');
-goog.require('AI.Blockly.TypeBlock');
+goog.require('AI.Blockly.TypeBlockPluginAdapter');
 goog.require('AI.Blockly.VariableDatabase');
 goog.require('AI.Blockly.WorkspaceSvg');
 goog.require('AI.Events');
@@ -57,12 +57,6 @@ if (Blockly.BlocklyEditor === undefined) {
 }
 
 Blockly.allWorkspaces = {};
-
-Blockly.configForTypeBlock = {
-  frame: 'ai_frame',
-  typeBlockDiv: 'ai_type_block',
-  inputText: 'ac_input_text'
-};
 
 Blockly.BlocklyEditor.HELP_IFRAME = null;
 
@@ -1052,21 +1046,26 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
   workspace.blocksNeedingRendering = [];
   workspace.addWarningHandler();
   if (!readOnly) {
-    var ai_type_block = goog.dom.createElement('div'),
-      p = goog.dom.createElement('p'),
-      ac_input_text = goog.dom.createElement('input'),
-      typeblockOpts = {
-        frame: container,
-        typeBlockDiv: ai_type_block,
-        inputText: ac_input_text
-      };
-    // build dom for typeblock (adapted from blocklyframe.html)
-    goog.style.setElementShown(ai_type_block, false);
-    goog.dom.classlist.add(ai_type_block, "ai_type_block");
-    goog.dom.insertChildAt(container, ai_type_block, 0);
-    goog.dom.appendChild(ai_type_block, p);
-    goog.dom.appendChild(p, ac_input_text);
-    workspace.typeBlock_ = new AI.Blockly.TypeBlock(typeblockOpts, workspace);
+    const typeBlockPluginAdapter = AI.Blockly.TypeBlockPluginAdapter.create(workspace);
+    workspace.typeBlock_ = new TypeBlocking(workspace);
+    workspace.typeBlock_.needsReload = typeBlockPluginAdapter.needsReload;
+    workspace.typeBlock_.init({
+      matcher: typeBlockPluginAdapter.matcher,
+      optionGenerator: typeBlockPluginAdapter.optionGenerator,
+      workspaceStateTracker: {
+        get needsReload() { return true; },
+        invalidate() {},
+        dispose() {}
+      },
+      connectionConfig: {
+        strategies: [typeBlockPluginAdapter.connectionStrategy]
+      },
+      enablePatternRecognition: false,
+      inputPositioning: {
+        mode: 'fixed',
+        fixedPosition: { x: 10, y: 10 }
+      }
+    });
     var workspaceChanged = function() {
       if (this.workspace && !this.workspace.isDragging()) {
         var metrics = workspace.getMetrics();

@@ -3286,31 +3286,31 @@ textarea::-webkit-input-placeholder {
   overflow: hidden;
 }
 
-.ac-renderer {
-  font: normal 13px Arial, sans-serif;
-  position: absolute;
+/* TypeBlocking plugin autocomplete styles */
+.fi-input {
+  font-family: monospace;
+  min-width: 200px;
+  padding: 2px 4px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+.fi-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
   background: #fff;
-  border: 1px solid #666;
-  -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  width: 300px;
-  height: 294px;
-  overflow: auto;
+  min-width: 200px;
+  font-family: monospace;
 }
-.ac-row {
+.fi-list li {
+  padding: 2px 6px;
   cursor: pointer;
-  padding: .4em;
 }
-.ac-highlighted {
-  font-weight: bold;
-}
-.ac-active {
-  background-color: #b2b4bf;
-}
-
-.ai_type_block {
-  position: absolute;
-  z-index: 2000;
+.fi-hl {
+  background: #bde4ff;
 }
 
 .goog-hsva-palette, .goog-hsva-palette-sm {
