@@ -56,6 +56,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   private YailList items = new YailList();
   private int oldAdapterCount;
   private int oldSelectionIndex;
+  private int savedWidth;
+  private int savedHeight;
 
   public Spinner(ComponentContainer container) {
     super(container);
@@ -78,6 +80,8 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     container.$add(this);
 
     Prompt("");
+    Width(LENGTH_PREFERRED);
+    Height(LENGTH_PREFERRED);
     oldSelectionIndex = SelectionIndex();
   }
 
@@ -191,6 +195,56 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
       category = PropertyCategory.APPEARANCE)
   public void Prompt(String str){
     view.setPrompt(str);
+  }
+
+  @Override
+  @SimpleProperty
+  public void Width(int width) {
+    savedWidth = width;
+    if (view.getVisibility() == View.VISIBLE) {
+      super.Width(width);
+    }
+  }
+
+  @Override
+  @SimpleProperty
+  public void WidthPercent(int pCent) {
+    savedWidth = -1000 - pCent;
+    if (view.getVisibility() == View.VISIBLE) {
+      super.WidthPercent(pCent);
+    }
+  }
+
+  @Override
+  @SimpleProperty
+  public void Height(int height) {
+    savedHeight = height;
+    if (view.getVisibility() == View.VISIBLE) {
+      super.Height(height);
+    }
+  }
+
+  @Override
+  @SimpleProperty
+  public void HeightPercent(int pCent) {
+    savedHeight = -1000 - pCent;
+    if (view.getVisibility() == View.VISIBLE) {
+      super.HeightPercent(pCent);
+    }
+  }
+
+  @Override
+  @SimpleProperty
+  public void Visible(boolean visible) {
+    if (visible) {
+      view.setVisibility(View.VISIBLE);
+      Width(savedWidth);
+      Height(savedHeight);
+    } else {
+      container.setChildWidth(this, 0);
+      container.setChildHeight(this, 0);
+      view.setVisibility(View.INVISIBLE);
+    }
   }
 
   @SimpleFunction(description = "Displays the dropdown list for selection, " +

@@ -107,6 +107,7 @@ public class TopPanel extends Composite {
       try {
         Image wpr = Image.wrap(logo);
         wpr.addClickHandler(new WindowOpenClickHandler(logoUrl));
+        logo.setAttribute("alt", "MIT App Inventor");
       } catch (AssertionError e) {
         LOG.warning("assertion error in getting Image from logo url");
       }

@@ -10,6 +10,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -72,6 +73,12 @@ public class NoProjectDialogBox extends DialogBox {
     this.setAnimationEnabled(true);
     this.setAutoHideEnabled(true);
     this.setModal(false);
+
+    // Add ARIA attributes for accessibility
+    Roles.getDialogRole().set(getElement());
+    getElement().setAttribute("aria-modal", "false"); // Not truly modal (auto-hide enabled)
+    getElement().setAttribute("aria-label", "Welcome to MIT App Inventor - Get Started");
+
     noDialogNewProject.setFocus(true);
     lastDialog = this;
   }
@@ -111,7 +118,7 @@ public class NoProjectDialogBox extends DialogBox {
 
   public static void closeIfOpen() {
     if (lastDialog != null) {
-      lastDialog.removeFromParent();;
+      lastDialog.removeFromParent();
       lastDialog = null;
     }
   }

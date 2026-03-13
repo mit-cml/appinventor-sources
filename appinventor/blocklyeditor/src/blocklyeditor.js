@@ -1157,7 +1157,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Element|string} container
  * @param {!Blockly.WorkspaceSvg} workspace
  */
-AI.inject = function(container, workspace, isDarkMode=false) {
+AI.inject = function(container, workspace, isDarkMode=false, animationDelayMs=0) {
   if (isDarkMode) {
     Blockly.common.getMainWorkspace().setTheme(Blockly.Themes.darkTheme);
   }
@@ -1182,7 +1182,7 @@ AI.inject = function(container, workspace, isDarkMode=false) {
       workspace.scrollCenter();
     }
     //AI.Blockly.navigationController.enable(workspace);
-  });
+  }, animationDelayMs);
 };
 
 // Preserve Blockly during Closure and GWT optimizations

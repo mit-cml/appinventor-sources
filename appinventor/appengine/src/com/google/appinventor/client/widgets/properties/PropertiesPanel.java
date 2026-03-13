@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.widgets.properties;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -54,6 +56,10 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
     outerPanel.add(panel);
 
     initWidget(outerPanel);
+    outerPanel.getElement().setAttribute("role", "region");
+    outerPanel.getElement().setAttribute("aria-label", MESSAGES.propertiesAriaLabel());
+    componentName.getElement().setAttribute("aria-live", "polite");
+    componentName.getElement().setAttribute("aria-atomic", "true");
   }
 
   boolean hasValidDescription(EditableProperty p) {
@@ -114,6 +120,9 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
       HorizontalPanel header = new HorizontalPanel();
       Label label = new Label(property.getCaption());
       label.setStyleName("ode-PropertyLabel");
+      // Generate unique ID for the label to enable aria-labelledby association
+      String labelId = "prop-label-" + property.getName() + "-" + System.currentTimeMillis();
+      label.getElement().setId(labelId);
       header.add(label);
       header.setStyleName("ode-PropertyHeader");
       if ( hasValidDescription(property) ) {
@@ -128,6 +137,8 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
       if (!editor.getStyleName().contains("PropertyEditor")) {
         editor.setStyleName("ode-PropertyEditor");
       }
+      // Set aria-labelledby on the form control to associate it with the label
+      editor.setAriaLabelledBy(labelId);
       parent.add(editor);
       parent.setWidth("100%");
     }

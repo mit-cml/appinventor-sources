@@ -88,7 +88,7 @@ public class UISettingsWizard {
       uiDialog.center();
       classicRadioButton.focus();
       return false;
-    }, 350);
+    }, Ode.getInstance().isDeckPanelAnimating() ? Ode.DECKPANEL_ANIMATION_DURATION_MS : 0);
   }
 
   public void hide() {
