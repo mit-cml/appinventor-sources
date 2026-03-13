@@ -1,3 +1,9 @@
+/* -*- mode: javascript; js-indent-level 2; -*- */
+/**
+ * @license
+ * Copyright © 2025-2026 Massachusetts Institute of Technology. All rights reserved.
+ */
+
 goog.provide('AI.Blockly.TypeBlockPluginAdapter');
 
 goog.require('AI.Blockly.TypeBlock');
