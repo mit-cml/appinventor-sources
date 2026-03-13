@@ -171,7 +171,7 @@ if /i "%ERRORLEVEL%" equ "0" (
     set /a pass=pass+1
     echo [PASS] Git is installed.
     :: Check if git submodules are present
-    git submodule status lib/blockly lib/closure-library > nul 2>&1
+    git submodule status lib/blockly > nul 2>&1
     if /i "%ERRORLEVEL%" equ "0" (
         set /a pass=pass+1
         echo [PASS] Git submodules are properly set up.

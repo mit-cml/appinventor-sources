@@ -341,14 +341,14 @@ public class Texting extends AndroidNonvisibleComponent
    * The number that the message will be sent to when the SendMessage method is called.  The 
    * number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, 
    * and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces
-   * should not be included.
+   * should not be included. Multiple numbers can be included if separated by commas.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
     description =  "The number that the message will be sent to when the SendMessage method " +
     "is called. The "  +
     "number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, " +
     "and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces " +
-    "should not be included.")
+    "should not be included. Multiple numbers can be included if separated by commas.")
   public String PhoneNumber() {
     return phoneNumber;
   }
@@ -391,6 +391,10 @@ public class Texting extends AndroidNonvisibleComponent
   public void SendMessage() {
     String phoneNumber = this.phoneNumber;
     String message = this.message;
+
+    if (this.phoneNumber.contains(",")) {
+      this.phoneNumber.replaceAll(",", ";");
+    }
 
     Uri uri = Uri.parse("smsto:" + phoneNumber);
     Intent i = new Intent(Intent.ACTION_SENDTO, uri);
@@ -1114,9 +1118,9 @@ public class Texting extends AndroidNonvisibleComponent
       final Form form = container.$form();
       final Texting me = this;
       form.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            form.askPermission(Manifest.permission.SEND_SMS,
+        @Override
+        public void run() {
+          form.askPermission(Manifest.permission.SEND_SMS,
               new PermissionResultHandler() {
                 @Override
                 public void HandlePermissionResponse(String permission, boolean granted) {
@@ -1128,19 +1132,40 @@ public class Texting extends AndroidNonvisibleComponent
                   }
                 }
               });
-          }
-        });
+        }
+      });
       return;
     }
 
-    ArrayList<String> parts = smsManager.divideMessage(message);
+    List<String> phoneNumbers = new ArrayList<String>();
+    if (phoneNumber.contains(",")) {
+      String[] numbers = phoneNumber.split(",");
+      for (String number : numbers) {
+        phoneNumbers.add(number.trim());
+      }
+    } else {
+      phoneNumbers.add(phoneNumber.trim());
+    }
+    final ArrayList<String> parts = smsManager.divideMessage(message);
+    for (final String phoneNumber : phoneNumbers) {
+      form.androidUIHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          transmitMessage(phoneNumber, parts);
+        }
+      });
+    }
+  }
+
+  private void transmitMessage(final String phoneNumber, ArrayList<String> parts) {
+    // Receiver for when the SMS is sent
     int numParts = parts.size();
     ArrayList<PendingIntent> pendingIntents = new ArrayList<PendingIntent>();
+    final int requestCode = (int)(Math.floor(Math.random() * 32767)) + 32768;
     for (int i = 0; i < numParts; i++)
-      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT),
+      pendingIntents.add(PendingIntent.getBroadcast(activity, requestCode, new Intent(SENT),
           PendingIntent.FLAG_IMMUTABLE));
 
-    // Receiver for when the SMS is sent
     BroadcastReceiver sendReceiver = new BroadcastReceiver() {
       @Override
       public synchronized void onReceive(Context arg0, Intent arg1) {
@@ -1149,15 +1174,17 @@ public class Texting extends AndroidNonvisibleComponent
           activity.unregisterReceiver(this);
         } catch (Exception e) {
           Log.e("BroadcastReceiver",
-              "Error in onReceive for msgId "  + arg1.getAction());
-          Log.e("BroadcastReceiver", e.getMessage());
-          e.printStackTrace();
+              "Error in onReceive for msgId "  + arg1.getAction(), e);
         }
       }
     };
     // This may result in an error -- a "sent" or "error" message will be displayed
-    ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT),
-        Context.RECEIVER_EXPORTED);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT),
+          Context.RECEIVER_EXPORTED);
+    } else {
+      ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT), 0);
+    }
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
   }
 

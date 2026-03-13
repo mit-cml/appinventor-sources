@@ -105,9 +105,7 @@ Blockly.WarningHandler.prototype.toggleWarning = function() {
 Blockly.WarningHandler.prototype.hideWarnings = function() {
   var blockArray = this.workspace.getAllBlocks();
   for(var i=0;i<blockArray.length;i++) {
-    if(blockArray[i].warning) {
-      blockArray[i].setWarningText(null);
-    }
+    blockArray[i].setWarningText(null);
   }
 };
 
@@ -302,9 +300,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
     if(errorFunc.call(this,block,errorObj)){
 
       //remove warning marker, if present
-      if(block.warning) {
-        block.setWarningText(null);
-      }
+      block.setWarningText(null);
       //If the block doesn't have an error already,
       //add one to the error count
       if(!block.hasError) {
@@ -354,9 +350,7 @@ Blockly.WarningHandler.prototype.checkErrors = function(block) {
   }
 
   //remove the warning icon, if there is one
-  if(block.warning) {
-    block.setWarningText(null);
-  }
+  block.setWarningText(null);
   if(block.hasWarning) {
     block.hasWarning = false;
     this.warningCount--;
@@ -411,7 +405,7 @@ Blockly.WarningHandler.prototype['checkIfUndefinedBlock'] = function(block) {
 Blockly.WarningHandler.prototype['checkDropDownContainsValidValue'] = function(block, params){
   for(var i=0;i<params.dropDowns.length;i++){
     var dropDown = block.getField(params.dropDowns[i]);
-    var dropDownList = dropDown.menuGenerator_();
+    var dropDownList = dropDown.getOptions(false);
     var text = dropDown.getText();
     var value = dropDown.getValue();
     var textInDropDown = false;
@@ -673,9 +667,7 @@ Blockly.WarningHandler.checkDuplicateErrorHandler = function(params){
 
 //This is the error that can be set from the REPL. It will be removed when the block changes.
 Blockly.WarningHandler.prototype.setBlockError = function(block, message){
-  if(block.warning) {
-    block.setWarningText(null);
-  }
+  block.setWarningText(null);
   if(block.hasWarning) {
     block.hasWarning = false;
     this.warningCount--;
@@ -747,7 +739,7 @@ Blockly.WarningHandler.prototype.checkDisposedBlock = function(block) {
 Blockly.WarningHandler.prototype['checkEmptySetterSocket'] = function(block) {
   if (block.setOrGet === 'set') {
     var value = block.getInputTargetBlock('VALUE');
-    if (!value) {
+    if (!value || !value.isEnabled()) {
       block.setErrorIconText(Blockly.Msg.ERROR_PROPERTY_SETTER_NEEDS_VALUE);
       return true;
     }
@@ -777,7 +769,7 @@ Blockly.WarningHandler.prototype['checkEmptySockets'] = function(block){
   var containsEmptySockets = false;
   for(var i=0;i<block.inputList.length;i++){
     var inputName = block.inputList[i].name;
-    if(block.inputList[i].type == Blockly.INPUT_VALUE && block.inputList[i].connection && !block.getInputTargetBlock(inputName)){
+    if(block.inputList[i].type == Blockly.inputs.inputTypes.VALUE && block.inputList[i].connection && !block.getInputTargetBlock(inputName)){
       containsEmptySockets = true;
       break;
     }
