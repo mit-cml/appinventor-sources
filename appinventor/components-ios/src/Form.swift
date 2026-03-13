@@ -677,7 +677,11 @@ let kMinimumToastWait = 10.0
           UIDevice.current.setValue(UIDeviceOrientation.unknown.rawValue, forKey: "orientation")
         }
       }
-      UINavigationController.attemptRotationToDeviceOrientation()
+      if #available(iOS 16, *) {
+        self.setNeedsUpdateOfSupportedInterfaceOrientations()
+      } else {
+        UINavigationController.attemptRotationToDeviceOrientation()
+      }
     }
   }
 

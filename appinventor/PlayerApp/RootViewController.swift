@@ -78,18 +78,18 @@ class RootViewController: UINavigationController {
     }
   }
 
-  open override var shouldAutorotate: Bool {
-    guard let form = self.topViewController as? Form else {
-      return false
-    }
+  // open override var shouldAutorotate: Bool {
+  //   guard let form = self.topViewController as? Form else {
+  //     return false
+  //   }
 
-    switch form.ScreenOrientation {
-    case "portrait", "landscape":
-      return false
-    default:
-      return true
-    }
-  }
+  //   switch form.ScreenOrientation {
+  //   case "portrait", "landscape":
+  //     return false
+  //   default:
+  //     return true
+  //   }
+  // }
 
   override public var childForStatusBarStyle: UIViewController? {
     return self.topViewController
