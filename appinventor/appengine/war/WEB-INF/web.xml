@@ -152,6 +152,104 @@
     <servlet-name>userInfoService</servlet-name>
   </filter-mapping>
 
+  <!-- /rest/v1/user/account -->
+  <servlet>
+    <servlet-name>userAccountRestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.rest.user.UserAccountRestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userAccountRestServlet</servlet-name>
+    <url-pattern>/rest/v1/user/account</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>userAccountRestServlet</servlet-name>
+  </filter-mapping>
+
+  <!-- /rest/v1/user/backpack -->
+  <servlet>
+    <servlet-name>userBackpackRestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.rest.user.UserBackpackRestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userBackpackRestServlet</servlet-name>
+    <url-pattern>/rest/v1/user/backpack</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>userBackpackRestServlet</servlet-name>
+  </filter-mapping>
+
+  <!-- /rest/v1/user/files/* -->
+  <servlet>
+    <servlet-name>userFileRestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.rest.user.UserFilesRestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userFileRestServlet</servlet-name>
+    <url-pattern>/rest/v1/user/files/*</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>userFileRestServlet</servlet-name>
+  </filter-mapping>
+
+  <!-- /rest/v1/user/noop -->
+  <servlet>
+    <servlet-name>userNoopRestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.rest.user.UserNoopRestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userNoopRestServlet</servlet-name>
+    <url-pattern>/rest/v1/user/noop</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>userNoopRestServlet</servlet-name>
+  </filter-mapping>
+
+  <!-- /rest/v1/user/settings -->
+  <servlet>
+    <servlet-name>userSettingsRestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.rest.user.UserSettingsRestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userSettingsRestServlet</servlet-name>
+    <url-pattern>/rest/v1/user/settings</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>userSettingsRestServlet</servlet-name>
+  </filter-mapping>
+
+  <!-- /rest/v1/user/shared-backpacks/* -->
+  <servlet>
+    <servlet-name>userSharedBackpackRestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.rest.user.UserSharedBackpacksRestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userSharedBackpackRestServlet</servlet-name>
+    <url-pattern>/rest/v1/user/shared-backpacks/*</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>userSharedBackpackRestServlet</servlet-name>
+  </filter-mapping>
+
+  <!-- /rest/v1/user/system-config -->
+  <servlet>
+    <servlet-name>userSystemConfigRestServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.rest.user.UserSystemConfigRestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userSystemConfigRestServlet</servlet-name>
+    <url-pattern>/rest/v1/user/system-config</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>userSystemConfigRestServlet</servlet-name>
+  </filter-mapping>
+
   <!-- TokenAuth -->
   <servlet>
     <servlet-name>tokenAuthService</servlet-name>

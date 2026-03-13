@@ -104,7 +104,7 @@ public class OdeAuthFilter implements Filter {
       if (DEBUG) {
         LOG.info("uinfo is null on login.");
       }
-      // If the URI starts with /ode, then we are being invoked through
+      // If the URI starts with /ode or /rest/v, then we are being invoked through
       // the App Inventor client. In that case we are in an XMLHttpRequest
       // (aka ajax) so we cannot send a redirect to the login page
       // instead we return SC_PRECONDITION_FAILED which tips off the
@@ -113,7 +113,7 @@ public class OdeAuthFilter implements Filter {
       if (DEBUG) {
         LOG.info("Not Logged In: uri = " + uri);
       }
-      if (uri.startsWith("/ode")) {
+      if (uri.startsWith("/ode") || uri.startsWith("/rest/v")) {
         httpResponse.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
       } else {
         httpResponse.sendRedirect("/login?redirect=" + uri);
