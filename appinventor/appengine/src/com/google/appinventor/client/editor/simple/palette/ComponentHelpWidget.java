@@ -127,7 +127,7 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
             lastClosureTime = System.currentTimeMillis();
           }
         });
-      
+
       showRelativeTo(ComponentHelpWidget.this);
     }
   }
@@ -144,5 +144,10 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
         MINIMUM_MS_BETWEEN_SHOWS) {
       new ComponentHelpPopup();
     }
+  }
+
+  @Override
+  public String getAltText() {
+    return scd.getName() + " help";
   }
 }

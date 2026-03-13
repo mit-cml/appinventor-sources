@@ -8,8 +8,8 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <wiz:Dialog ui:field="dialog" styleName="ode-DialogBox" animationEnabled="true"
-              width="350px" height="150px">
+  <wiz:Dialog ui:field="dialog" role="alertdialog" ariaModal="true" ariaLabel="Error"
+              styleName="ode-DialogBox" animationEnabled="true" width="350px" height="150px">
     <g:FlowPanel>
       <g:HTML ui:field="errorMessage" />
       <g:FlowPanel styleName="buttonRow" >

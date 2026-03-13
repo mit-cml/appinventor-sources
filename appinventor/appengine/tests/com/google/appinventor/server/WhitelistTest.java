@@ -24,7 +24,7 @@ public class WhitelistTest {
   public static final String ID = "dummyId";
 
   Whitelist whitelist;
-  LocalUser user = LocalUser.getInstance();;
+  LocalUser user = LocalUser.getInstance();
 
   @Test
   public void testValidWhitelist() throws Exception {

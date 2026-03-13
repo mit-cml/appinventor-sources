@@ -7,6 +7,7 @@ package com.google.appinventor.client.widgets;
 
 import com.google.appinventor.client.components.Icon;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -50,6 +51,11 @@ public class DropDownButton extends TextButton {
   private Icon icon = null;
   private String caption = "";
   private MenuItemSeparator separator = null;
+  private String ariaRole = null;
+  // Type-ahead navigation state
+  private char lastTypeAheadChar = 0;
+  private long lastTypeAheadTime = 0;
+  private static final long TYPE_AHEAD_TIMEOUT = 1000; // 1 second
 
   /**
    * A subclass of PZAwarePositionCallback designed to position the ContextMenu
@@ -115,14 +121,24 @@ public class DropDownButton extends TextButton {
   public DropDownButton() {
     super();
 
+    // Generate unique ID for menu and set aria-controls
+    String menuId = Document.get().createUniqueId();
+    menu.setId(menuId);
+    getElement().setAttribute("aria-controls", menuId);
+
     addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         if (menu.isShowing()) {
           menu.hide();
+          updateAriaExpanded(false);
         } else {
           menu.resetSelection();
           menu.setPopupPositionAndShow(new DropDownPositionCallback(getElement()));
+          updateAriaExpanded(true);
+          // Move focus to first menu item for accessibility
+          menu.moveSelectionDown();
+          menu.focus();
         }
       }
     });
@@ -130,15 +146,65 @@ public class DropDownButton extends TextButton {
     addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN && menu.isShowing()) {
+        if (!menu.isShowing()) {
+          return;
+        }
+
+        int keyCode = event.getNativeKeyCode();
+
+        if (keyCode == KeyCodes.KEY_DOWN) {
           event.preventDefault();
           menu.moveSelectionDown();
           menu.focus();
-        } else if (event.getNativeKeyCode() == KeyCodes.KEY_UP && menu.isShowing()) {
+        } else if (keyCode == KeyCodes.KEY_UP) {
           event.preventDefault();
           menu.moveSelectionUp();
           menu.focus();
         }
+      }
+    });
+
+    // Add native preview handler for Home/End/Letter keys
+    // These need to be handled globally because focus is on the menu when it's open
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        if (event.getTypeInt() != Event.ONKEYDOWN || !menu.isShowing()) {
+          return;
+        }
+
+        NativeEvent nativeEvent = event.getNativeEvent();
+        int keyCode = nativeEvent.getKeyCode();
+
+        if (keyCode == KeyCodes.KEY_HOME) {
+          // Jump to first menu item
+          nativeEvent.preventDefault();
+          menu.selectFirstItem();
+          menu.focus();
+        } else if (keyCode == KeyCodes.KEY_END) {
+          // Jump to last menu item
+          nativeEvent.preventDefault();
+          menu.selectLastItem();
+          menu.focus();
+        } else if (isLetterKey(keyCode)) {
+          // Type-ahead navigation
+          nativeEvent.preventDefault();
+          char typedChar = (char) keyCode;
+
+          long now = System.currentTimeMillis();
+          boolean repeated = (typedChar == lastTypeAheadChar) &&
+                            (now - lastTypeAheadTime < TYPE_AHEAD_TIMEOUT);
+
+          lastTypeAheadChar = typedChar;
+          lastTypeAheadTime = now;
+
+          menu.selectItemStartingWith(typedChar, repeated);
+          menu.focus();
+        }
+      }
+
+      private boolean isLetterKey(int keyCode) {
+        return (keyCode >= KeyCodes.KEY_A && keyCode <= KeyCodes.KEY_Z);
       }
     });
 
@@ -149,10 +215,29 @@ public class DropDownButton extends TextButton {
         if (event.getTypeInt() == Event.ONKEYDOWN && nativeEvent.getKeyCode() == KeyCodes.KEY_TAB && menu.isShowing()) {
           nativeEvent.preventDefault();
           menu.hide();
+          updateAriaExpanded(false);
           setFocus(true);
         }
       }
     });
+
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (event.getTypeInt() == Event.ONKEYDOWN &&
+            nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE &&
+            menu.isShowing()) {
+          nativeEvent.preventDefault();
+          menu.hide();
+          updateAriaExpanded(false);
+          setFocus(true);
+        }
+      }
+    });
+
+    // Initialize with collapsed state
+    updateAriaExpanded(false);
   }
 
   // Create a new drop-down menu button (with text), initially populated with items. Null
@@ -302,6 +387,8 @@ public class DropDownButton extends TextButton {
     MenuItem item = itemsById.get(id);
     if (item != null) {
       item.setEnabled(enabled);
+      // Set aria-disabled attribute for accessibility
+      item.getElement().setAttribute("aria-disabled", String.valueOf(!enabled));
     }
   }
 
@@ -309,6 +396,8 @@ public class DropDownButton extends TextButton {
     for (MenuItem item : items) {
       if (item.getText().equals(itemName)) {
         item.setEnabled(enabled);
+        // Set aria-disabled attribute for accessibility
+        item.getElement().setAttribute("aria-disabled", String.valueOf(!enabled));
         break;
       }
     }
@@ -444,5 +533,60 @@ public class DropDownButton extends TextButton {
     for (DropDownItem item : items) {
       addItem(item);
     }
+  }
+
+  /**
+   * Sets the ARIA role for this widget.
+   * @param role The ARIA role (e.g., "button", "menubar")
+   */
+  public void setRole(String role) {
+    this.ariaRole = role;
+    if ("button".equals(role)) {
+      Roles.getButtonRole().set(getElement());
+    } else if ("menubar".equals(role)) {
+      Roles.getMenubarRole().set(getElement());
+    }
+  }
+
+  /**
+   * Sets the aria-label attribute.
+   * @param label The accessible label
+   */
+  public void setAriaLabel(String label) {
+    getElement().setAttribute("aria-label", label);
+  }
+
+  /**
+   * Sets the aria-haspopup attribute.
+   * @param value "true", "false", or "menu"
+   */
+  public void setAriaHaspopup(String value) {
+    getElement().setAttribute("aria-haspopup", value);
+  }
+
+  /**
+   * Sets the aria-controls attribute.
+   * Note: This is automatically set in the constructor, but can be overridden.
+   * @param controlsId The ID of the element this button controls
+   */
+  public void setAriaControls(String controlsId) {
+    getElement().setAttribute("aria-controls", controlsId);
+  }
+
+  /**
+   * Sets initial aria-expanded state.
+   * @param expanded "true" or "false"
+   */
+  public void setAriaExpanded(String expanded) {
+    updateAriaExpanded("true".equals(expanded));
+  }
+
+  /**
+   * Updates aria-expanded state dynamically.
+   *
+   * @param expanded true if expanded, false if collapsed
+   */
+  protected void updateAriaExpanded(boolean expanded) {
+    getElement().setAttribute("aria-expanded", String.valueOf(expanded));
   }
 }

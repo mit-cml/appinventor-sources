@@ -24,10 +24,10 @@ goog.require('AI.Blockly.Msg');
  * @param {!Blockly.Connection} otherConn The child connection.
  */
 AI.BlockUtils.InstantInTime = function (myConn, otherConn) {
-  if (!myConn.sourceBlock_.rendered ||
-      !otherConn.sourceBlock_.rendered) {
+  if (!myConn.getSourceBlock().rendered ||
+      !otherConn.getSourceBlock().rendered) {
     if (otherConn.getCheck() && !otherConn.getCheck().includes('InstantInTime')) {
-      otherConn.sourceBlock_.badBlock();
+      otherConn.getSourceBlock().badBlock();
     }
     return true;
   }

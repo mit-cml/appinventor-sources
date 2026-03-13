@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -21,6 +22,8 @@ public final class ContextMenu {
   // UI elements
   private final PopupPanel popupPanel;
   private final MenuBar menuBar;
+  // Track menu items for type-ahead navigation
+  private final java.util.List<MenuItem> menuItems = new java.util.ArrayList<MenuItem>();
 
   /**
    * Creates a new context menu.
@@ -51,7 +54,9 @@ public final class ContextMenu {
       }
     });
     menuItem.setStylePrimaryName("ode-ContextMenuItem");
+    Roles.getMenuitemRole().set(menuItem.getElement());
     menuBar.addItem(menuItem);
+    menuItems.add(menuItem); // Track for type-ahead
     return menuItem;
   }
 
@@ -89,7 +94,9 @@ public final class ContextMenu {
     } else {
       menuItem.setStylePrimaryName("ode-ContextMenuItem");
     }
+    Roles.getMenuitemRole().set(menuItem.getElement());
     menuBar.addItem(menuItem);
+    menuItems.add(menuItem); // Track for type-ahead
     return menuItem;
   }
 
@@ -100,6 +107,7 @@ public final class ContextMenu {
    */
   public void removeItem(MenuItem item) {
     menuBar.removeItem(item);
+    menuItems.remove(item); // Remove from our tracking list
   }
 
   /**
@@ -163,6 +171,145 @@ public final class ContextMenu {
 
   public void resetSelection() {
     menuBar.selectItem(null);
+  }
+
+  /**
+   * Selects the first enabled menu item.
+   * Used for Home key navigation.
+   */
+  public void selectFirstItem() {
+    if (menuItems.isEmpty()) {
+      return;
+    }
+    // Find first enabled item
+    for (MenuItem item : menuItems) {
+      if (item.isEnabled()) {
+        menuBar.selectItem(item);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Selects the last enabled menu item.
+   * Used for End key navigation.
+   */
+  public void selectLastItem() {
+    if (menuItems.isEmpty()) {
+      return;
+    }
+    // Find last enabled item (search backwards)
+    for (int i = menuItems.size() - 1; i >= 0; i--) {
+      MenuItem item = menuItems.get(i);
+      if (item.isEnabled()) {
+        menuBar.selectItem(item);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Selects the next menu item starting with the given character.
+   * Used for type-ahead navigation.
+   *
+   * @param startChar The character to search for (uppercase)
+   * @param findNext If true, find next match; if false, find first match
+   */
+  public void selectItemStartingWith(char startChar, boolean findNext) {
+    if (menuItems.isEmpty()) {
+      return;
+    }
+
+    // Simple approach: just search through all items
+    // If findNext is true, we'll cycle through matches
+    MenuItem firstMatch = null;
+    boolean foundCurrent = false;
+
+    for (MenuItem item : menuItems) {
+      if (item.isEnabled() && itemStartsWith(item, startChar)) {
+        if (firstMatch == null) {
+          firstMatch = item;
+        }
+
+        if (findNext && !foundCurrent) {
+          if (item.getStyleName().contains("-selected")) {
+            foundCurrent = true;
+            continue;
+          }
+        } else {
+          selectItem(item);
+          return;
+        }
+      }
+    }
+
+    // If we get here and findNext was true, wrap to first match
+    if (firstMatch != null) {
+      selectItem(firstMatch);
+    }
+  }
+
+  /**
+   * Selects a specific menu item.
+   */
+  private void selectItem(MenuItem target) {
+    menuBar.selectItem(target);
+  }
+
+  /**
+   * Checks if a menu item's text starts with the given character.
+   *
+   * @param item The menu item to check
+   * @param startChar The character to match (case-insensitive)
+   * @return true if the item's text starts with the character
+   */
+  private boolean itemStartsWith(MenuItem item, char startChar) {
+    String text = item.getText().trim();
+    if (text.isEmpty()) {
+      return false;
+    }
+    // Remove HTML tags if present (items might have HTML content)
+    text = text.replaceAll("<[^>]*>", "").trim();
+    if (text.isEmpty()) {
+      return false;
+    }
+    char firstChar = Character.toUpperCase(text.charAt(0));
+    return firstChar == startChar;
+  }
+
+  /**
+   * Sets the ARIA role for this menu.
+   * @param role The ARIA role (should be "menu")
+   */
+  public void setRole(String role) {
+    if ("menu".equals(role)) {
+      Roles.getMenuRole().set(menuBar.getElement());
+    }
+  }
+
+  /**
+   * Sets the aria-label attribute.
+   * @param label The accessible label
+   */
+  public void setAriaLabel(String label) {
+    menuBar.getElement().setAttribute("aria-label", label);
+  }
+
+  /**
+   * Sets a unique ID on this menu's popup element.
+   * Used for aria-controls relationships.
+   * @param id The unique ID to set
+   */
+  public void setId(String id) {
+    popupPanel.getElement().setId(id);
+  }
+
+  /**
+   * Gets the ID of this menu's popup element.
+   * @return The ID, or null if not set
+   */
+  public String getId() {
+    return popupPanel.getElement().getId();
   }
 
 }

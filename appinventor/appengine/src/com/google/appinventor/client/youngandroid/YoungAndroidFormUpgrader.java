@@ -366,6 +366,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("SpeechRecognizer")) {
         srcCompVersion = upgradeSpeechRecognizerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Spinner")) {
+        srcCompVersion = upgradeSpinnerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Spreadsheet")) {
         srcCompVersion = upgradeSpreadsheetProperties(componentProperties, srcCompVersion);
 
@@ -902,6 +905,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       // The CreateImage and GotResponseWithImage block added
       srcCompVersion = 4;
+    }
+    if  (srcCompVersion < 5) {
+      // The ServiceURL property was added.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1760,6 +1767,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeSpinnerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The BackgroundColor, Enabled, FontBold, FontSize, Height, Image, ShowFeedback, TextAlignment, and
+      // TextColor properties were added.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeSpreadsheetProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -1769,6 +1786,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // added an add sheet block and a delete sheet block
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // added a get sheet names block
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

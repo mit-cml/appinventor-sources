@@ -3,16 +3,22 @@
  * Copyright 2016 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+/**
+ * Class for a button in the flyout.
+ *
+ * @class
+ */
+import type { IASTNodeLocationSvg } from './blockly.js';
 import { Coordinate } from './utils/coordinate.js';
 import type * as toolbox from './utils/toolbox.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Class for a button or label in the flyout.
  */
-export declare class FlyoutButton {
+export declare class FlyoutButton implements IASTNodeLocationSvg {
     private readonly workspace;
     private readonly targetWorkspace;
-    private readonly isLabel_;
+    private readonly isFlyoutLabel;
     /** The horizontal margin around the text in the button. */
     static TEXT_MARGIN_X: number;
     /** The vertical margin around the text in the button. */
@@ -35,13 +41,18 @@ export declare class FlyoutButton {
     /** The SVG element with the text of the label or button. */
     private svgText;
     /**
+     * Holds the cursors svg element when the cursor is attached to the button.
+     * This is null if there is no cursor on the button.
+     */
+    cursorSvg: SVGElement | null;
+    /**
      * @param workspace The workspace in which to place this button.
      * @param targetWorkspace The flyout's target workspace.
      * @param json The JSON specifying the label/button.
-     * @param isLabel_ Whether this button should be styled as a label.
+     * @param isFlyoutLabel Whether this button should be styled as a label.
      * @internal
      */
-    constructor(workspace: WorkspaceSvg, targetWorkspace: WorkspaceSvg, json: toolbox.ButtonOrLabelInfo, isLabel_: boolean);
+    constructor(workspace: WorkspaceSvg, targetWorkspace: WorkspaceSvg, json: toolbox.ButtonOrLabelInfo, isFlyoutLabel: boolean);
     /**
      * Create the button elements.
      *
@@ -76,8 +87,27 @@ export declare class FlyoutButton {
      * @returns The target workspace of the flyout where this button resides.
      */
     getTargetWorkspace(): WorkspaceSvg;
+    /**
+     * Get the button's workspace.
+     *
+     * @returns The workspace in which to place this button.
+     */
+    getWorkspace(): WorkspaceSvg;
     /** Dispose of this button. */
     dispose(): void;
+    /**
+     * Add the cursor SVG to this buttons's SVG group.
+     *
+     * @param cursorSvg The SVG root of the cursor to be added to the button SVG
+     *     group.
+     */
+    setCursorSvg(cursorSvg: SVGElement): void;
+    /**
+     * Required by IASTNodeLocationSvg, but not used. A marker cannot be set on a
+     * button. If the 'mark' shortcut is used on a button, its associated callback
+     * function is triggered.
+     */
+    setMarkerSvg(): void;
     /**
      * Do something when the button is clicked.
      *
