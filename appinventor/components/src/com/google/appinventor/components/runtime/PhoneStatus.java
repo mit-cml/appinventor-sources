@@ -215,6 +215,9 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     if (!useWebRTC) {
       return;
     }
+    if (firstSeed == null || firstSeed.equals("") || firstSeed.length() != 6) {
+      new Notifier(form).ShowAlert("Code must be 6 characters");
+    }
     WebRTCNativeMgr webRTCNativeMgr = new WebRTCNativeMgr(rendezvousServer, iceServers);
     webRTCNativeMgr.initiate((ReplForm) form, (Context)activity, firstSeed);
     ((ReplForm)form).setWebRTCMgr(webRTCNativeMgr);
