@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
@@ -19,6 +20,7 @@ import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.ToolbarItem;
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.shared.rpc.project.ShareResponse;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Lists;
@@ -34,6 +36,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -153,6 +156,18 @@ public class DesignToolbar extends Toolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected ToolbarItem shareProjectButton;
+  @UiField protected Label permissionLabel;
+
+  private OdeAsyncCallback<String> callback =
+    new OdeAsyncCallback<String>("could not get permission") {
+      @Override
+      public void onSuccess(String result) {
+        LOG.info("updating permision when getting latest " + result);
+        Ode.getInstance().setPermission(result);
+        permissionLabel.setText(result + " Access");      
+      }
+  };
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -160,7 +175,8 @@ public class DesignToolbar extends Toolbar {
   public DesignToolbar() {
     super();
     bindUI();
-
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    Ode.getInstance().getLatestPermissionForProject(projectId, callback);
     if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
       setVisibleItem(addFormItem, false);
       setVisibleItem(removeFormItem, false);
@@ -199,6 +215,7 @@ public class DesignToolbar extends Toolbar {
           + ". Ignoring SwitchScreenAction.execute().");
       return;
     }
+    Ode.getInstance().getLatestPermissionForProject(projectId, callback);
     DesignProject project = projectMap.get(projectId);
     if (currentProject != project) {
       // need to switch projects first. this will not switch screens.
