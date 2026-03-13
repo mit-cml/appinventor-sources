@@ -182,6 +182,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
      */
     PhoneBar() {
       Image phoneBarImage = new Image(images.phonebar());
+      phoneBarImage.setAltText("Android status bar");
       bar = new DockPanel();
       bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       bar.add(phoneBarImage, DockPanel.EAST);
@@ -193,6 +194,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
 
     PhoneBar(String color) {
       Image phoneBarAndroidMaterial = new Image(images.phonebarAndroidMaterial());
+      phoneBarAndroidMaterial.setAltText("Android status bar");
 
       bar = new DockPanel();
       bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
@@ -207,9 +209,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     PhoneBar(boolean blackIcons, int size, String color) {
       // icons for iPhone
       blackIconsLeft = new Image(images.phonebariPhoneLeftBlack());
+      blackIconsLeft.setAltText("iOS status bar left");
       blackIconsRight = new Image(images.phonebariPhoneRightBlack());
+      blackIconsRight.setAltText("iOS status bar right");
       whiteIconsLeft = new Image(images.phonebariPhoneLeftWhite());
+      whiteIconsLeft.setAltText("iOS status bar left");
       whiteIconsRight = new Image(images.phonebariPhoneRightWhite());
+      whiteIconsRight.setAltText("iOS status bar right");
 
       phoneBarLeftPanel = new HorizontalPanel();
       phoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeft");
@@ -218,9 +224,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
 
       //icons for iPad
       iPadWhiteIconsLeft = new Image(images.phonebariPadLeftWhite());
+      iPadWhiteIconsLeft.setAltText("iOS status bar left");
       iPadWhiteIconsRight = new Image(images.phonebariPadRightWhite());
+      iPadWhiteIconsRight.setAltText("iOS status bar right");
       iPadBlackIconsLeft = new Image(images.phonebariPadLeftBlack());
+      iPadBlackIconsLeft.setAltText("iOS status bar left");
       iPadBlackIconsRight = new Image(images.phonebariPadRightBlack());
+      iPadBlackIconsRight.setAltText("iOS status bar right");
 
       iPadPhoneBarLeftPanel = new HorizontalPanel();
       iPadPhoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeftIPad");

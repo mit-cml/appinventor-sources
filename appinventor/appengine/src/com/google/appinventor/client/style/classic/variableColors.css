@@ -1197,23 +1197,6 @@ textarea::-webkit-input-placeholder {
 }
 
 
-.ac-renderer {
-    font: normal 13px Arial, sans-serif;
-    background: v-white;
-    border: 1px solid gray-700;
-    color: v-black;
-}
-
-.ac-row {
-    cursor: pointer;
-    padding: .4em;
-    background: v-white;
-}
-
-.ac-active {
-    background-color: gray-200;
-}
-
 .blocklySvg text {
     fill: gray-450;
 }

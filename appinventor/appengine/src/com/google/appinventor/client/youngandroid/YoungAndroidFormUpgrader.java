@@ -1787,6 +1787,10 @@ public final class YoungAndroidFormUpgrader {
       // added an add sheet block and a delete sheet block
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // added a get sheet names block
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 

@@ -17,6 +17,7 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.client.widgets.Validator;
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -84,6 +85,12 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
 
       String oldName = oldProjectNode.getName();
       setText(checkpoint ? MESSAGES.checkpointTitle(oldName) : MESSAGES.saveAsTitle(oldName));
+
+      // Add ARIA attributes for accessibility
+      Roles.getDialogRole().set(getElement());
+      getElement().setAttribute("aria-modal", "true");
+      getElement().setAttribute("aria-label",
+          checkpoint ? "Save Checkpoint - " + oldName : "Save Project As - " + oldName);
 
       VerticalPanel contentPanel = new VerticalPanel();
       contentPanel.setSpacing(10);

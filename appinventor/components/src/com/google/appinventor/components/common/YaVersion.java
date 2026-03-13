@@ -1440,14 +1440,14 @@ public class YaVersion {
   // - The FinishedAddCol event was renamed to FinishedAddColumn
   // - The RemoveCol method was renamed to RemoveColumn
   // - The FinishedRemoveCol event was renamed to FinishedRemoveColumn
-
   // For SPREADSHEET_COMPONENT_VERSION 3:
   // - Added the AddSheet block
   // - Added the FinishedAddSheet event
   // - Added the DeleteSheet block
   // - Added the FinishedDeleteSheet event
-
-  public static final int SPREADSHEET_COMPONENT_VERSION = 3;
+  // For SPREADSHEET_COMPONNET_VERSION 4:
+  // - The ListSheets and GotSheetList blocks were added.
+  public static final int SPREADSHEET_COMPONENT_VERSION = 4;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
