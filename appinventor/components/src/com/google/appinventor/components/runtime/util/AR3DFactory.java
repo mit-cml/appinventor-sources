@@ -10,8 +10,10 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 
 import android.graphics.PointF;
 
+import java.util.Collection;
 import java.util.List;
 
+import com.google.appinventor.components.runtime.ar.NearestPlaneFinder;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Session;
@@ -140,8 +142,10 @@ public final class AR3DFactory {
      float ZRotation();
      void ZRotation(float zRotation);
 
-     float[] FromPropertyRotation();
-     void FromPropertyRotation(String r);
+     void tryCreateAnchorIfNeeded(NearestPlaneFinder finder);
+
+     float[] InitialRotation();
+     void InitialRotation(String r);
 
      float Scale();
      void Scale(float scalar);
