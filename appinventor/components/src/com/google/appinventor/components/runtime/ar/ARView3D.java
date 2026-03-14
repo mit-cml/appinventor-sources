@@ -17,6 +17,10 @@ import android.view.ScaleGestureDetector;
 import android.content.Context;
 import android.graphics.PointF;
 
+import android.graphics.PixelFormat;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.FrameLayout;
 
 
 import com.google.appinventor.components.runtime.util.YailDictionary;
@@ -127,9 +131,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private static final int CUBE_MAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
 
-    private final GLSurfaceView glview;
-    private final SurfaceView view;
-    private ARViewRender arViewRender;
 
     // ARCore components
     private boolean installRequested;
@@ -151,15 +152,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private ObjectRenderer objRenderer;
     private PlaneRenderer planeRenderer;
     private PointCloudRenderer pointCloudRenderer;
-    private Framebuffer virtualSceneFramebuffer;
-    private Framebuffer filamentFramebuffer;
+
+    private final GLSurfaceView glSurfaceView;       // camera feed + sphere/box/capsule
+    private final SurfaceView   filamentSurfaceView; // glTF models (Filament-owned)
+    private final FrameLayout   frameLayout;         // returned by getView()
+    private ARViewRender arViewRender;
+
     private int quadShader = 0;
     private Shader virtualObjectShader;
 
     private Texture dfgTexture;
     private SpecularCubeMapFilter cubeMapFilter;
-    int filamentTextureId = 0;
-    Texture currentFilamentTexture = null;
 
     // Matrices and math components
     private final float[] viewMatrix = new float[16];
@@ -192,61 +195,74 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     public ARView3D(final ComponentContainer container) {
         super(container);
-        this.trackingStateHelper = new TrackingStateHelper(container.$context());
+        this.trackingStateHelper   = new TrackingStateHelper(container.$context());
         this.displayRotationHelper = new DisplayRotationHelper(container.$context());
-        this.tapHelper = new TapHelper(container.$context());
+        this.tapHelper             = new TapHelper(container.$context());
 
+        // --- Bottom layer: GLSurfaceView for camera feed + ObjectRenderer ---
+        glSurfaceView = new GLSurfaceView(container.$form());
+        glSurfaceView.setPreserveEGLContextOnPause(true);
+        glSurfaceView.setEGLContextClientVersion(3);
+        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
-        this.glview = new GLSurfaceView(container.$form());
-        this.glview.setPreserveEGLContextOnPause(true);
-        this.glview.setEGLContextClientVersion(3);
-        this.glview.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        // --- Top layer: plain SurfaceView for Filament glTF rendering ---
+        filamentSurfaceView = new SurfaceView(container.$form());
+        // TRANSLUCENT format tells SurfaceFlinger this surface has an alpha
+        // channel — pixels with alpha=0 reveal the GLSurfaceView below.
+        filamentSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        // Place above the GLSurfaceView in the compositor stack.
+        filamentSurfaceView.setZOrderMediaOverlay(true);
 
-        // glSurfaceView.setEGLContextClientVersion(3);
-        // glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-        // Create SurfaceView instead of GLSurfaceView
-        this.view = new SurfaceView(container.$form());
-
-
-        // Add a callback to handle Surface creation and changes
-        view.getHolder().addCallback(new SurfaceHolder.Callback() {
+        filamentSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                Log.d(LOG_TAG, "Surface created");
-                // Don't initialize Filament here - wait until ARCore session is ready
+                Log.d(LOG_TAG, "Filament surface created");
+                // Engine may not be ready yet — initializeSwapChain handles that guard
             }
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                Log.d(LOG_TAG, "Surface changed: " + width + "x" + height);
+                Log.d(LOG_TAG, "Filament surface changed: " + width + "x" + height);
                 if (arFilamentRenderer != null) {
-                    arFilamentRenderer.updateSurfaceDimensions(width, height);
+                    // This is the trigger for Phase 2 of Filament initialization.
+                    // Safe to call even if the engine isn't ready yet — the method
+                    // guards on engineReady internally.
+                    arFilamentRenderer.initializeSwapChain(
+                        holder.getSurface(), width, height);
                 }
             }
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-                Log.d(LOG_TAG, "Surface destroyed");
+                Log.d(LOG_TAG, "Filament surface destroyed");
                 if (arFilamentRenderer != null) {
-                    arFilamentRenderer.destroy();
+                    arFilamentRenderer.destroySwapChain();
                 }
             }
         });
 
+        // --- FrameLayout wraps both — this is what App Inventor sees ---
+        frameLayout = new FrameLayout(container.$context());
+        FrameLayout.LayoutParams fullscreen = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        );
+        frameLayout.addView(glSurfaceView,       fullscreen);
+        frameLayout.addView(filamentSurfaceView, fullscreen);
 
+        // Touch events hit filamentSurfaceView first (it's on top).
+        // We wire our gesture detectors to it.
         setupGestureDetectors(container.$context());
 
-        //arViewRender = new ARViewRender(this.view, this, container.$form());
-        arViewRender = new ARViewRender(this.glview, this, container.$form());
-
+        // ARViewRender drives the GLSurfaceView render loop (onSurfaceCreated,
+        // onSurfaceChanged, onDrawFrame). This is unchanged.
+        arViewRender = new ARViewRender(glSurfaceView, this, container.$form());
 
         installRequested = false;
         depthSettings.onCreate(container.$context());
         instantPlacementSettings.onCreate(container.$context());
-
         depthSettings.setUseDepthForOcclusion(true);
 
-        // Register with container and form lifecycle events
         container.$add(this);
         container.$form().registerForOnClear(this);
         container.$form().registerForOnResume(this);
@@ -349,39 +365,28 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
         });
 
-        this.glview.setOnTouchListener(new View.OnTouchListener() {
+        this.filamentSurfaceView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 boolean handled = false;
-                Log.i(LOG_TAG, "on touch");
-                // Process in priority order
                 handled |= scaleGestureDetector.onTouchEvent(event);
                 if (!scaleGestureDetector.isInProgress()) {
-                    Log.i(LOG_TAG, "pass to gestureDetector");
                     handled |= gestureDetector.onTouchEvent(event);
                 }
-
-                // Handle drag end
                 if (event.getAction() == MotionEvent.ACTION_UP ||
                     event.getAction() == MotionEvent.ACTION_CANCEL) {
-
                     if (currentlyDraggedNode != null) {
-                        Log.i(LOG_TAG, "stopping DRAG");
                         if (currentlyDraggedNode instanceof ARNodeBase) {
                             ((ARNodeBase) currentlyDraggedNode).handleAdvancedGestureUpdate(
                                 new PointF(event.getX(), event.getY()),
-                                new PointF(0, 0),
-                                new PointF(0, 0),
-                                null,
-                                getCurrentCameraVectors(),
-                                "ended"
+                                new PointF(0, 0), new PointF(0, 0),
+                                null, getCurrentCameraVectors(), "ended"
                             );
                         }
                         currentlyDraggedNode = null;
                         handled = true;
                     }
                 }
-
                 return handled || tapHelper.onTouch(v, event);
             }
         });
@@ -420,55 +425,15 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @Override
     public void onSurfaceChanged(ARViewRender render, int width, int height) {
         displayRotationHelper.onSurfaceChanged(width, height);
-        Log.d(LOG_TAG, "ARView3D.onSurfaceChanged: " + width + "x" + height);
+        if (width <= 0 || height <= 0) return;
 
-        if (width <= 0 || height <= 0) {
-            Log.w(LOG_TAG, "Invalid surface dimensions: " + width + "x" + height);
-            return;
-        }
-
-        // Create or resize framebuffer
-        if (virtualSceneFramebuffer != null) {
-            Log.d(LOG_TAG, "resize virtualSceneFramebuffer: " + virtualSceneFramebuffer);
-            //filamentFramebuffer.resize(width, height);
-        } else {
-            // Create the virtual scene framebuffer
-            try {
-                virtualSceneFramebuffer = new Framebuffer(render, width, height);
-                Log.d(LOG_TAG, "Created virtualSceneFramebuffer: " +
-                    virtualSceneFramebuffer.getFramebufferId() + " " + width + "x" + height);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to create framebuffer: " + e.getMessage());
-            }
-        }
-
-
-        // Create or resize framebuffer
-        if (filamentFramebuffer != null) {
-            Log.d(LOG_TAG, "resize virtualSceneFramebuffer: " + virtualSceneFramebuffer);
-            //filamentFramebuffer.resize(width, height);
-        } else {
-            // Create the virtual scene framebuffer
-            try {
-                filamentFramebuffer = new Framebuffer(render, width, height);
-                Log.d(LOG_TAG, "Created filamentFramebuffer: " +
-                    filamentFramebuffer.getFramebufferId() + " " + width + "x" + height);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to create filamentFramebuffer: " + e.getMessage());
-            }
-        }
-
-        currentViewportWidth = width;
+        currentViewportWidth  = width;
         currentViewportHeight = height;
 
-        // Update ARFilamentRenderer dimensions if available
-        if (arFilamentRenderer != null) {
-            Log.d(LOG_TAG, "Loading onsurface changed for  arfilamentrenderer");
-            arFilamentRenderer.updateSurfaceDimensions(width, height);
-        }
+        // Filament viewport is updated via filamentSurfaceView's surfaceChanged
+        // callback — no Framebuffer to create here.
 
-        Log.d(LOG_TAG, "Surface changed processin" +
-            "g complete");
+        Log.d(LOG_TAG, "Surface changed: " + width + "x" + height);
     }
 
     // Filter ARNodes by type and ensure they have anchors
@@ -504,6 +469,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
+
+
+
     public void emitPlaneDetectedEvent() {
         Collection<Plane> planes = session.getAllTrackables(Plane.class);
         Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
@@ -534,58 +502,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     }
 
-    public void drawObjects(ARViewRender render, List<ARNode> objectNodes, float[] viewMatrix, float[] projectionMatrix) {
-
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, virtualSceneFramebuffer.getFramebufferId());
-        GLES30.glViewport(0, 0, virtualSceneFramebuffer.getWidth(), virtualSceneFramebuffer.getHeight());
-
-        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-
-        GLES30.glDisable(GLES30.GL_BLEND);        // No blending between objects
-        //GLES30.glEnable(GLES30.GL_DEPTH_TEST);    // Enable depth testing
-        // GLES30.glDepthFunc(GLES30.GL_LESS);       // Closer objects win
-        // GLES30.glDepthMask(true);
-
-        // Draw the Filament texture to the framebuffer
-        Log.d(LOG_TAG, "Drawing virtualSceneFramebuffer texture " + virtualSceneFramebuffer.getColorTexture().getTextureId() +
-            " to framebuffer " + virtualSceneFramebuffer.getFramebufferId());
-
-       // updatePhysics();
-
-        objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, null); //virtualSceneFramebuffer);
-    }
-
-
-    public void drawAnimatedObjects(ARViewRender render, Camera camera, List<ARNode> modelNodes, float[] viewMatrix, float[] projectionMatrix) {
-        arFilamentRenderer.draw(modelNodes, viewMatrix, projectionMatrix);
-        filamentTextureId = arFilamentRenderer.getDisplayTextureId();
-
-        try {
-            if (filamentTextureId > 0 && currentFilamentTexture == null) {
-                currentFilamentTexture = Texture.createFromId(render, filamentTextureId);
-                Log.d(LOG_TAG, "create texture from filament texture id  " + filamentTextureId + " and should match:" + currentFilamentTexture.getTextureId());
-            }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception in createFromId in onDrawFrame: " + e.getMessage(), e);
-        }
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, filamentFramebuffer.getFramebufferId());
-        GLES30.glViewport(0, 0, filamentFramebuffer.getWidth(), filamentFramebuffer.getHeight());
-
-        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-
+    public void drawObjects(ARViewRender render, List<ARNode> objectNodes,
+                            float[] viewMatrix, float[] projectionMatrix) {
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+        GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
         GLES30.glDepthFunc(GLES30.GL_LESS);
-
-        GLES30.glDisable(GLES30.GL_BLEND);        // No blending between objects
-        // Draw the Filament texture to the framebuffer
-        Log.d(LOG_TAG, "Drawing Filament texture " + filamentTextureId +
-            " to framebuffer " + filamentFramebuffer.getFramebufferId());
-
-
-        quadRenderer.draw(render, modelNodes, currentFilamentTexture, filamentFramebuffer, camera.getDisplayOrientedPose(), projectionMatrix);
+        GLES30.glDepthMask(true);
+        GLES30.glDisable(GLES30.GL_BLEND);
+        objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, null);
     }
+
+
 
     private ByteBuffer convertDepthImageToBuffer(android.media.Image depthImage) {
         // ARCore depth is 16-bit, stored as DEPTH16 format
@@ -600,57 +528,32 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return result;
     }
 
-    private void updateFilamentWithARCoreDepth(Frame frame, android.media.Image depthImage) {
+    private void updateFilamentWithARCoreDepth(Frame frame,
+                                               android.media.Image depthImage) {
         try {
-
-            // Get actual depth image dimensions
-            int depthWidth = depthImage.getWidth();
+            int depthWidth  = depthImage.getWidth();
             int depthHeight = depthImage.getHeight();
 
-            Log.d(LOG_TAG, "ARCore depth image size: " + depthWidth + "x" + depthHeight);
-            // Convert ARCore depth image to ByteBuffer
             ByteBuffer depthBuffer = convertDepthImageToBuffer(depthImage);
 
-            // Get depth UV transform from ARCore
-            // Define 4 corner points in NDC coordinates (8 floats = 4 coordinate pairs)
-            float[] ndcQuad = {
-                -1f, -1f,  // bottom-left
-                1f, -1f,  // bottom-right
-                -1f, 1f,  // top-left
-                1f, 1f   // top-right
-            };
+            float[] ndcQuad = { -1f,-1f, 1f,-1f, -1f,1f, 1f,1f };
             float[] textureCoords = new float[8];
-
-
-            // Transform coordinates from NDC to texture space - also see background renderer which does the same thing
             frame.transformCoordinates2d(
-                Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
-                ndcQuad,           // Input: 8 floats (4 coordinate pairs)
-                Coordinates2d.TEXTURE_NORMALIZED,
-                textureCoords      // Output: 8 floats (4 coordinate pairs)
-            );
+                Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES, ndcQuad,
+                Coordinates2d.TEXTURE_NORMALIZED, textureCoords);
 
-            // Convert the 4 corner points to a transformation matrix
             float[] depthUvTransform = calculateTransformMatrix(textureCoords);
 
-
-            // Pass to Filament renderer
             if (arFilamentRenderer != null) {
+                // Non-blocking — stores for FilamentRenderThread to consume
                 arFilamentRenderer.updateARCoreDepth(
-                    depthBuffer,
-                    depthUvTransform,
-                    Z_NEAR,
-                    Z_FAR,
-                    depthWidth,
-                    depthHeight
-                );
+                    depthBuffer, depthUvTransform,
+                    Z_NEAR, Z_FAR, depthWidth, depthHeight);
             }
-
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Error updating Filament with ARCore depth", e);
+            Log.e(LOG_TAG, "updateFilamentWithARCoreDepth: " + e.getMessage(), e);
         }
     }
-
     /**
      * Calculate transformation matrix from 4 corner texture coordinates
      */
@@ -703,193 +606,170 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
+    public Plane getNearestPlane(float posX, float posZ) {
+        Collection<Plane> planes = session.getAllTrackables(Plane.class);
+        Plane nearest = null;
+        float nearestDist = Float.MAX_VALUE;
+        for (Plane plane : planes) {
+            if (plane.getTrackingState() != TrackingState.TRACKING) continue;
+            float[] center = plane.getCenterPose().getTranslation();
+            float dx = center[0] - posX;
+            float dz = center[2] - posZ;
+            float dist = dx*dx + dz*dz;
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearest = plane;
+            }
+        }
+        return nearest;
+    }
+
     @Override
     public void onDrawFrame(ARViewRender render) {
-        if (session == null) {
-            return;
-        }
+        if (session == null) return;
 
         try {
-
-
-            try {
-
-                // as soon as this is set up, it seems it grabs the surface from the filament renderer
-                // may need to explicitly bind some how
-                if (!hasSetTextureNames) {
-
-                    if (backgroundRenderer != null && backgroundRenderer.getCameraColorTexture() != null) {
-                        int textureId = backgroundRenderer.getCameraColorTexture().getTextureId();
-                        if (textureId != 0) {
-                            Log.d(LOG_TAG, "onDrawFrame  has CAMERA texture " + textureId);
-                            session.setCameraTextureNames(new int[]{textureId});
-                            hasSetTextureNames = true;
-                        }
-                    }
-
-                    if (!hasSetTextureNames) {
-                        Log.d(LOG_TAG, "no texture");
-                        return;
+            // Register camera texture (unchanged)
+            if (!hasSetTextureNames) {
+                if (backgroundRenderer != null
+                    && backgroundRenderer.getCameraColorTexture() != null) {
+                    int textureId =
+                        backgroundRenderer.getCameraColorTexture().getTextureId();
+                    if (textureId != 0) {
+                        session.setCameraTextureNames(new int[]{textureId});
+                        hasSetTextureNames = true;
                     }
                 }
+                if (!hasSetTextureNames) return;
+            }
 
-                // Update ARCore frame and camera
-
-                lastFrame = session.update();
+            // Update ARCore frame (unchanged)
+            try {
+                lastFrame  = session.update();
                 lastCamera = lastFrame.getCamera();
-
                 lastCamera.getViewMatrix(lastViewMatrix, 0);
                 lastCamera.getProjectionMatrix(lastProjMatrix, 0, Z_NEAR, Z_FAR);
-
             } catch (CameraNotAvailableException e) {
-                Log.e(LOG_TAG, "onDrawframe Camera not available: " + e.getMessage(), e);
+                Log.e(LOG_TAG, "Camera not available: " + e.getMessage());
                 return;
             }
 
-
+            // OpenGL draws — camera feed, planes, sphere/box/capsule
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
             GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-            // DISABLE depth for camera background
             GLES30.glDisable(GLES30.GL_DEPTH_TEST);
-            GLES30.glDepthMask(false); // Don't write to screen depth buffer    // DISABLE depth for camera background
+            GLES30.glDepthMask(false);
             GLES30.glEnable(GLES30.GL_BLEND);
 
-            // Update display rotation and geometry for rendering
             displayRotationHelper.updateSessionIfNeeded(session);
             if (backgroundRenderer != null) {
                 backgroundRenderer.updateDisplayGeometry(lastFrame);
                 try {
                     backgroundRenderer.setUseDepthVisualization(render, false);
-                    backgroundRenderer.setUseOcclusion(render, depthSettings.useDepthForOcclusion());
+                    backgroundRenderer.setUseOcclusion(render,
+                        depthSettings.useDepthForOcclusion());
                 } catch (IOException e) {
-                    Log.e(LOG_TAG, "Failed to read a required asset file", e);
+                    Log.e(LOG_TAG, "BackgroundRenderer setup: " + e.getMessage());
+                    return;
+                }
+                if (lastFrame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+                    // Don't update matrices — keep last known good pose
+                    // Don't call updateFrame() — Filament holds its last position
+                    backgroundRenderer.drawBackground(render, 0,
+                        currentViewportWidth, currentViewportHeight);// still draw camera
                     return;
                 }
                 if (lastFrame.getTimestamp() != 0) {
-                    backgroundRenderer.drawBackground(render, 0, currentViewportWidth, currentViewportHeight);
+                    backgroundRenderer.drawBackground(render, 0,
+                        currentViewportWidth, currentViewportHeight);
                 }
             }
 
-            if (lastCamera.getTrackingState() == TrackingState.PAUSED) {
-                return;
-            }
+            if (lastCamera.getTrackingState() == TrackingState.PAUSED) return;
 
+            // Depth (unchanged)
             if (lastCamera.getTrackingState() == TrackingState.TRACKING
                 && (depthSettings.useDepthForOcclusion()
                 || depthSettings.depthColorVisualizationEnabled())) {
-                try (android.media.Image depthImage = lastFrame.acquireDepthImage16Bits()) {
+                try (android.media.Image depthImage =
+                         lastFrame.acquireDepthImage16Bits()) {
                     useSimulatedDepth = false;
                     backgroundRenderer.updateCameraDepthTexture(depthImage);
                     if (arFilamentRenderer != null) {
                         updateFilamentWithARCoreDepth(lastFrame, depthImage);
                     }
                 } catch (NotYetAvailableException e) {
-                    // This normally means that depth data is not available yet. This is normal so we will not
-                    // spam the logcat with this.
-                } catch (IllegalStateException ie) {
-                    // if we can't acquire depth data, that is ok
+                    // normal
+                } catch (IllegalStateException e) {
                     useSimulatedDepth = true;
-                    Log.i(LOG_TAG," no depth camera");
                 }
             }
 
-            int error = GLES30.glGetError();
-            if (error != GLES30.GL_NO_ERROR) {
-                Log.e(LOG_TAG, "GL error after [draw bakcground]: 0x" + Integer.toHexString(error));
-            }
-            // Get camera matrices for 3D rendering
             lastCamera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             lastCamera.getViewMatrix(viewMatrix, 0);
 
             setDefaultPositions(arNodes);
-
-            String[] modelNodeType = new String[]{"ModelNode"};
-            List<ARNode> modelNodes = sort(arNodes, modelNodeType);
-
-
-            //Framebuffer A
-            if (arFilamentRenderer != null && modelNodes.size() > 0) {
-                drawAnimatedObjects(render, lastCamera, modelNodes, viewMatrix, projectionMatrix);
-            }
-
-
-            error = GLES30.glGetError();
-            if (error != GLES30.GL_NO_ERROR) {
-                Log.e(LOG_TAG, "GL error before [draw arfilament]: 0x" + Integer.toHexString(error));
-            }
-            GLES30.glFinish();
-
-
-            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-            GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
-            // DISABLE depth for camera background
-            GLES30.glDisable(GLES30.GL_DEPTH_TEST);
-            GLES30.glDepthMask(false); // Don't write to screen depth buffer
-            GLES30.glEnable(GLES30.GL_BLEND);
-            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-
-            drawPlanesAndPoints(render, lastCamera, lastFrame, viewMatrix, projectionMatrix);
-            //emitPlaneDetectedEvent();
-
-
+            drawPlanesAndPoints(render, lastCamera, lastFrame,
+                viewMatrix, projectionMatrix);
+            updatePhysics();
             updateCollisions();
-            String[] genObjectTypes = new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"};
-            List<ARNode> objectNodes = sort(arNodes, genObjectTypes);
 
-            //Framebuffer B
-           // if (virtualSceneFramebuffer != null) {
-                if (objRenderer != null && objectNodes.size() > 0) {
-                    Log.d(LOG_TAG, "objects " + objectNodes);
-                    drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
-                }
-           // }
-            GLES30.glFinish();
 
-            GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-            GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
-
-            //backgroundRenderer.drawVirtualSceneComposite(render, filamentFramebuffer, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
-
-            error = GLES30.glGetError();
-            if (error != GLES30.GL_NO_ERROR) {
-                Log.e(LOG_TAG, "GL error afger [draw objects]: 0x" + Integer.toHexString(error));
+            // Let pending InitialPosition nodes and scaled acquire anchors
+            for (ARNode node : arNodes) {
+                node.tryCreateAnchorIfNeeded(this::getNearestPlane);
             }
 
+            // Sphere/box/capsule via ObjectRenderer (unchanged)
+            List<ARNode> objectNodes = sort(arNodes,
+                new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"});
+            if (objRenderer != null && !objectNodes.isEmpty()) {
+                drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
+            }
 
-            GLES30.glDisable(GLES30.GL_BLEND);
             GLES30.glFinish();
 
-            // Note: we don't need to extract texture or draw composed scene manually
-            // Filament renders directly to the swapchain
+            // ---------------------------------------------------------------
+            // Hand off to Filament — NON-BLOCKING.
+            // updateFrame() does a lock+copy of matrices and node list.
+            // Returns immediately. FilamentRenderThread picks this up on its
+            // next vsync via Choreographer. The GL thread is never blocked
+            // by anything Filament does.
+            // ---------------------------------------------------------------
+            if (arFilamentRenderer != null) {
+                List<ARNode> modelNodes = sort(arNodes,
+                    new String[]{"ModelNode"});
+                if (!modelNodes.isEmpty()) {
+                    arFilamentRenderer.updateFrame(
+                        modelNodes, viewMatrix, projectionMatrix);
+                }
+            }
+
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception in onDrawFrame: " + e.getMessage(), e);
+            Log.e(LOG_TAG, "onDrawFrame error: " + e.getMessage(), e);
         }
     }
 
-    // Initialize renderers
     private void initializeFilamentAndRenderers() {
         try {
+            backgroundRenderer  = new BackgroundRenderer(arViewRender);
+            planeRenderer       = new PlaneRenderer(arViewRender);
+            pointCloudRenderer  = new PointCloudRenderer(arViewRender);
+            objRenderer         = new ObjectRenderer(arViewRender);
+            // QuadRenderer REMOVED — no composite pass needed
 
-            // Initialize background renderer
-            backgroundRenderer = new BackgroundRenderer(arViewRender);
+            // ARFilamentRenderer no longer takes a GLSurfaceView.
+            // It manages its own EGL context via Engine.create().
+            arFilamentRenderer = new ARFilamentRenderer(this.container);
+            arFilamentRenderer.initializeEngine(); // Phase 1
 
-            planeRenderer = new PlaneRenderer(arViewRender);
+            // Phase 2 (SwapChain creation) happens automatically when
+            // filamentSurfaceView fires surfaceChanged — see constructor.
 
-            // Initialize point cloud renderer for showing feature points
-            pointCloudRenderer = new PointCloudRenderer(arViewRender);
-
-            objRenderer = new ObjectRenderer(arViewRender);
-
-            quadRenderer = new QuadRenderer(arViewRender);
-            // Create and initialize ARFilamentRenderer
-            Log.d(LOG_TAG, "instantiating new arfilamentrenderer" + this.glview);
-            arFilamentRenderer = new ARFilamentRenderer(this.container, this.glview);
-            arFilamentRenderer.initialize();
-
-            Log.d(LOG_TAG, "ARFilamentRenderer initialized successfully");
+            Log.d(LOG_TAG, "Renderers initialized");
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Failed to initialize Filament and renderers", e);
+            Log.e(LOG_TAG, "Failed to initialize renderers: " + e.getMessage(), e);
         }
     }
 
@@ -942,11 +822,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 */
 
                 Log.i("hit is, pose is, trackable is ", hit.toString() + " " + a.getPose() + " " + mostRecentTrackable);
-                if (mostRecentTrackable instanceof Plane) {
+                if (mostRecentTrackable instanceof Plane) { //most reliably tracked
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
-
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), false, true);
-
 
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
@@ -1488,6 +1366,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             // Resume display rotation helper
             displayRotationHelper.onResume();
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Failed to create AR session", e);
         }
@@ -1496,9 +1375,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     public View getView() {
-
-        Log.d(LOG_TAG, "get glview not surface view");
-        return glview;
+        return frameLayout; // FrameLayout containing both surfaces
     }
 
     @Override

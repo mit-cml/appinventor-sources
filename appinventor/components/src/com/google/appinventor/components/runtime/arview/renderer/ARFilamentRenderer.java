@@ -1,17 +1,15 @@
 package com.google.appinventor.components.runtime.arview.renderer;
 
-import android.opengl.EGL14;
-import android.opengl.EGLContext;
-import android.opengl.GLES30;
-import android.opengl.GLSurfaceView;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.view.Choreographer;
+import android.view.Surface;
 
-import com.google.android.filament.Box;
 import com.google.android.filament.Camera;
 import com.google.android.filament.Engine;
 import com.google.android.filament.EntityManager;
-import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.LightManager;
 import com.google.android.filament.Material;
 import com.google.android.filament.MaterialInstance;
@@ -22,7 +20,6 @@ import com.google.android.filament.SwapChain;
 import com.google.android.filament.Texture;
 import com.google.android.filament.TextureSampler;
 import com.google.android.filament.TransformManager;
-import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.View;
 import com.google.android.filament.Viewport;
 
@@ -40,10 +37,8 @@ import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -53,165 +48,439 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * ARFilamentRenderer — renders animated glTF models using Filament 1.9.11.
  *
- * Architecture:
- *   Pass 1 — BackgroundRenderer (OpenGL, handled by ARView3D) draws camera feed.
- *   Pass 2 — Filament renders 3D nodes transparently on top via a SwapChain
- *             created directly from the GLSurfaceView's Surface.
+ * THREADING MODEL:
  *
- * No pixel readback. No intermediate framebuffers. No CPU/GPU sync points.
+ *   FilamentRenderThread — a dedicated HandlerThread that owns all Filament
+ *   objects and the render loop. Choreographer is obtained from this thread's
+ *   looper so its vsync callbacks fire here, never on the main thread or the
+ *   GL thread.
+ *
+ *   GL thread (GLSurfaceView) — calls updateFrame() each frame to hand off
+ *   fresh ARCore matrices and the current node list. This is a non-blocking
+ *   write under a lock. The GL thread never calls any Filament API.
+ *
+ *   Main thread — calls initializeEngine(), initializeSwapChain(),
+ *   destroySwapChain(), and destroy(). These post work to FilamentRenderThread
+ *   where needed and return immediately.
+ *
+ * WHY THIS FIXES THE FREEZE:
+ *   renderer.beginFrame() can block waiting for Filament's backend to finish
+ *   the previous frame. On the GL thread that stalls camera feed presentation.
+ *   On the main thread it freezes the entire UI. On FilamentRenderThread it
+ *   blocks nothing that matters — camera and UI run freely at full frame rate.
+ *
+ * CHOREOGRAPHER NOTE:
+ *   Choreographer.getInstance() returns the instance for the calling thread's
+ *   looper. By calling it from FilamentRenderThread, vsync callbacks fire
+ *   on that thread, giving Filament its own vsync-locked render cadence with
+ *   no interference from other threads.
  */
 public class ARFilamentRenderer {
 
     private static final String LOG_TAG = "ARFilamentRenderer";
 
     // -------------------------------------------------------------------------
-    // Filament core
+    // Dedicated render thread
     // -------------------------------------------------------------------------
 
-    private Engine engine;
-    private Renderer renderer;
-    private Scene scene;
-    private View view;
-    private Camera camera;
+    private HandlerThread filamentThread;
+    private Handler       filamentHandler;
+
+    // -------------------------------------------------------------------------
+    // Filament core — only touched on FilamentRenderThread
+    // -------------------------------------------------------------------------
+
+    private Engine    engine;
+    private Renderer  renderer;
+    private Scene     scene;
+    private View      view;
+    private Camera    camera;
     private SwapChain swapChain;
-
-    private int cameraEntity;
-    private int mainLightEntity;
+    private int       cameraEntity;
+    private int       mainLightEntity;
 
     // -------------------------------------------------------------------------
-    // Model loading
+    // glTF loading — only touched on FilamentRenderThread
     // -------------------------------------------------------------------------
 
-    private AssetLoader assetLoader;
-    private ResourceLoader resourceLoader;
+    private AssetLoader      assetLoader;
+    private ResourceLoader   resourceLoader;
     private MaterialProvider materialProvider;
 
-    // Maps ARNode → its loaded glTF asset
     private final Map<ARNode, FilamentAsset> nodeAssetMap = new ConcurrentHashMap<>();
 
     // -------------------------------------------------------------------------
-    // Depth occlusion
+    // Depth occlusion — only touched on FilamentRenderThread
     // -------------------------------------------------------------------------
 
-    private Texture arDepthTexture;
+    private Texture          arDepthTexture;
     private MaterialInstance occlusionMaterialInstance;
-
-    // Only apply occlusion materials once per asset load
-    private boolean occlusionMaterialApplied = false;
-    private boolean depthDataReceived = false;
+    private boolean depthDataReceived           = false;
+    private boolean occlusionAppliedToAllAssets = false;
 
     // -------------------------------------------------------------------------
-    // State
+    // Shared state — written by GL thread, read by FilamentRenderThread
+    // Guarded by matrixLock
     // -------------------------------------------------------------------------
 
-    private int viewportWidth = 1;
+    private final Object  matrixLock    = new Object();
+    private final float[] sharedView    = new float[16];
+    private final float[] sharedProj    = new float[16];
+    private List<ARNode>  sharedNodes   = new ArrayList<>();
+    private boolean       matricesReady = false;
+
+    // Depth update — written by GL thread, consumed by FilamentRenderThread
+    private static final class DepthUpdate {
+        final ByteBuffer data;
+        final float[]    uvTransform;
+        final float      near, far;
+        final int        width, height;
+
+        DepthUpdate(ByteBuffer data, float[] uvTransform,
+                    float near, float far, int width, int height) {
+            this.data        = data;
+            this.uvTransform = uvTransform;
+            this.near        = near;
+            this.far         = far;
+            this.width       = width;
+            this.height      = height;
+        }
+    }
+
+    private final Object      depthLock        = new Object();
+    private       DepthUpdate pendingDepthUpdate = null;
+
+    // -------------------------------------------------------------------------
+    // State flags — volatile, read across threads
+    // -------------------------------------------------------------------------
+
+    private volatile boolean engineReady    = false;
+    private volatile boolean swapChainReady = false;
+    private volatile boolean destroyed      = false;
+    private volatile boolean animationEnabled = true;
+
+    private float animationTime = 0f; // only on FilamentRenderThread
+
+    private int viewportWidth  = 1;
     private int viewportHeight = 1;
-    private boolean isInitialized = false;
-    private boolean animationEnabled = true;
-    private float animationTime = 0f;
-
-    // Frame rate throttle — avoid submitting faster than display vsync
-    private long lastFrameTimeNs = 0;
-    private static final long MIN_FRAME_INTERVAL_NS = 8_000_000L; // ~8ms
-
-    private final GLSurfaceView glSurfaceView;
-    private final Form formCopy;
 
     private static final float Z_NEAR = 0.085f;
-    private static final float Z_FAR = 20f;
+    private static final float Z_FAR  = 20f;
 
-    private final float[] viewMatrix = new float[16];
-    private final float[] projectionMatrix = new float[16];
+    private final Form form;
+
+    // -------------------------------------------------------------------------
+    // Choreographer render loop — runs on FilamentRenderThread
+    // -------------------------------------------------------------------------
+
+    private final Choreographer.FrameCallback renderCallback =
+        new Choreographer.FrameCallback() {
+            @Override
+            public void doFrame(long frameTimeNanos) {
+                // Reschedule immediately — keep the vsync loop alive
+                Choreographer.getInstance().postFrameCallback(this);
+
+                if (!engineReady || !swapChainReady || destroyed) return;
+
+                // Consume any pending depth update
+                DepthUpdate depth;
+                synchronized (depthLock) {
+                    depth = pendingDepthUpdate;
+                    pendingDepthUpdate = null;
+                }
+                if (depth != null) {
+                    applyDepthUpdate(depth);
+                }
+
+                float[] viewMatrix;
+                float[] projMatrix;
+                List<ARNode> nodes;
+
+                synchronized (matrixLock) {
+                    if (!matricesReady) return;
+                    viewMatrix = new float[16];
+                    projMatrix = new float[16];
+                    System.arraycopy(sharedView, 0, viewMatrix, 0, 16);
+                    System.arraycopy(sharedProj, 0, projMatrix, 0, 16);
+                    nodes = new ArrayList<>(sharedNodes);
+                }
+
+                updateCameraFromARCore(viewMatrix, projMatrix);
+
+                if (!nodes.isEmpty()) {
+                    loadAndPositionNodes(nodes);
+                    updateAnimations();
+                }
+
+                long timestamp = System.nanoTime();
+                try {
+                    if (renderer.beginFrame(swapChain, timestamp)) {
+                        renderer.render(view);
+                        renderer.endFrame();
+                    }
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Render error: " + e.getMessage(), e);
+                    safeEndFrame();
+                }
+            }
+        };
 
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
 
-    public ARFilamentRenderer(ComponentContainer container,
-                              GLSurfaceView glSurfaceView) {
-        this.glSurfaceView = glSurfaceView;
-        this.formCopy = container.$form();
-        Log.d(LOG_TAG, "ARFilamentRenderer created");
+    public ARFilamentRenderer(ComponentContainer container) {
+        this.form = container.$form();
     }
 
-    // -------------------------------------------------------------------------
-    // Initialization
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // PUBLIC API — safe to call from any thread
+    // =========================================================================
 
-    public void initialize() {
-        if (isInitialized) return;
-        // Queue onto the GL thread where the EGL context is current
-        glSurfaceView.queueEvent(() -> {
-            loadNativeLibraries();
-            initializeFilament();
+    /**
+     * Phase 1. Starts FilamentRenderThread and initializes the Engine.
+     * Call once — from onSurfaceCreated or onCreate.
+     * Returns immediately; initialization runs on FilamentRenderThread.
+     */
+    public void initializeEngine() {
+        if (engineReady || filamentThread != null) return;
+
+        filamentThread = new HandlerThread("FilamentRenderThread");
+        filamentThread.start();
+        filamentHandler = new Handler(filamentThread.getLooper());
+
+        filamentHandler.post(() -> {
+            try {
+                loadNativeLibraries();
+
+                // Engine.create() with no args — Filament manages its own
+                // EGL context internally on its backend thread
+                engine = Engine.create();
+                Log.d(LOG_TAG, "Engine created on FilamentRenderThread");
+
+                renderer = engine.createRenderer();
+                scene    = engine.createScene();
+                view     = engine.createView();
+
+                cameraEntity = EntityManager.get().create();
+                camera = engine.createCamera(cameraEntity);
+                view.setCamera(camera);
+                view.setScene(scene);
+                view.setViewport(new Viewport(0, 0, viewportWidth, viewportHeight));
+
+                // Transparent clear — GLSurfaceView camera feed shows through
+                Renderer.ClearOptions opts = new Renderer.ClearOptions();
+                opts.clear           = true;
+                opts.clearColor[0]   = 0f;
+                opts.clearColor[1]   = 0f;
+                opts.clearColor[2]   = 0f;
+                opts.clearColor[3]   = 0f;
+                renderer.setClearOptions(opts);
+
+                materialProvider = new MaterialProvider(engine);
+                assetLoader      = new AssetLoader(engine, materialProvider,
+                    EntityManager.get());
+                resourceLoader   = new ResourceLoader(engine);
+
+                setupLighting();
+                loadOcclusionMaterial();
+
+                engineReady = true;
+                Log.d(LOG_TAG, "Engine initialization complete");
+
+                // Start Choreographer loop ON FilamentRenderThread
+                // Choreographer.getInstance() returns the instance for this
+                // thread's looper — callbacks fire here, not on main thread
+                Choreographer.getInstance().postFrameCallback(renderCallback);
+                Log.d(LOG_TAG, "Choreographer started on FilamentRenderThread");
+
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Engine init failed: " + e.getMessage(), e);
+            }
         });
     }
 
-    private synchronized void loadNativeLibraries() {
-        try {
-            System.loadLibrary("filament-jni");
-            System.loadLibrary("gltfio-jni");
-            Log.d(LOG_TAG, "Filament native libraries loaded");
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(LOG_TAG, "Failed to load Filament libraries", e);
-            throw e;
+    /**
+     * Phase 2. Creates the SwapChain from the filamentSurfaceView's Surface.
+     * Call from SurfaceHolder.Callback.surfaceChanged.
+     * Safe to call before engineReady — will wait for engine then proceed.
+     */
+    public void initializeSwapChain(final Surface surface,
+                                    final int width, final int height) {
+        if (filamentHandler == null) {
+            Log.w(LOG_TAG, "initializeSwapChain called before thread started");
+            return;
+        }
+        filamentHandler.post(() -> {
+            if (!engineReady) {
+                Log.w(LOG_TAG, "Engine not ready when SwapChain requested");
+                return;
+            }
+            if (swapChain != null) {
+                engine.destroySwapChain(swapChain);
+                swapChain = null;
+                swapChainReady = false;
+            }
+            swapChain = engine.createSwapChain(
+                surface, SwapChain.CONFIG_TRANSPARENT);
+            viewportWidth  = width;
+            viewportHeight = height;
+            view.setViewport(new Viewport(0, 0, width, height));
+            swapChainReady = true;
+            Log.d(LOG_TAG, "SwapChain ready: " + width + "x" + height);
+        });
+    }
+
+    /**
+     * Called when filamentSurfaceView's surface is destroyed.
+     * Destroys SwapChain but keeps engine alive for recreation.
+     */
+    public void destroySwapChain() {
+        if (filamentHandler == null) return;
+        filamentHandler.post(() -> {
+            if (swapChain != null && engine != null) {
+                engine.destroySwapChain(swapChain);
+                swapChain = null;
+            }
+            swapChainReady = false;
+            Log.d(LOG_TAG, "SwapChain destroyed");
+        });
+    }
+
+    /**
+     * Called every frame from ARView3D.onDrawFrame (GL thread).
+     * Non-blocking — writes shared state under lock and returns immediately.
+     * Never calls any Filament API.
+     */
+    public void updateFrame(List<ARNode> modelNodes,
+                            float[] viewMatrix,
+                            float[] projMatrix) {
+        synchronized (matrixLock) {
+            System.arraycopy(viewMatrix, 0, sharedView, 0, 16);
+            System.arraycopy(projMatrix, 0, sharedProj, 0, 16);
+            sharedNodes   = new ArrayList<>(modelNodes);
+            matricesReady = true;
         }
     }
 
-    private void initializeFilament() {
-        try {
-            // Must be called on the GL thread so EGL context is current
-            EGLContext eglContext = EGL14.eglGetCurrentContext();
-            Log.d(LOG_TAG, "Initializing Filament with EGL context: " + eglContext);
+    /**
+     * Called from ARView3D when new ARCore depth data is available.
+     * Non-blocking — stores pending update for FilamentRenderThread to consume.
+     */
+    public void updateARCoreDepth(ByteBuffer depthData, float[] uvTransform,
+                                  float near, float far,
+                                  int depthWidth, int depthHeight) {
+        // Copy the buffer — ARCore may reclaim it after this call returns
+        ByteBuffer copy = ByteBuffer.allocateDirect(depthData.remaining());
+        copy.put(depthData);
+        copy.rewind();
 
-            // Engine.create(Object) accepts an EGLContext directly in 1.9.11
-            engine = Engine.create(eglContext);
-            Log.d(LOG_TAG, "Filament Engine created");
-
-            renderer = engine.createRenderer();
-            scene    = engine.createScene();
-            view     = engine.createView();
-
-            cameraEntity = EntityManager.get().create();
-            camera = engine.createCamera(cameraEntity);
-
-            view.setCamera(camera);
-            view.setScene(scene);
-            view.setViewport(new Viewport(0, 0, viewportWidth, viewportHeight));
-
-            // Transparent clear so BackgroundRenderer's camera feed shows through.
-            // SwapChain.CONFIG_TRANSPARENT tells Filament the window surface has
-            // an alpha channel and compositing is expected.
-            Renderer.ClearOptions clearOptions = new Renderer.ClearOptions();
-            clearOptions.clear = true;
-            clearOptions.clearColor[0] = 0f;
-            clearOptions.clearColor[1] = 0f;
-            clearOptions.clearColor[2] = 0f;
-            clearOptions.clearColor[3] = 0f; // fully transparent
-            renderer.setClearOptions(clearOptions);
-
-            // createSwapChain(Object, long) confirmed in Engine.java for 1.9.11.
-            // Passing the real Surface means Filament renders directly to screen —
-            // no readback ever needed.
-            android.view.Surface surface = glSurfaceView.getHolder().getSurface();
-            swapChain = engine.createSwapChain(surface, SwapChain.CONFIG_TRANSPARENT);
-            Log.d(LOG_TAG, "SwapChain created on real Surface with CONFIG_TRANSPARENT");
-
-            // Asset loading infrastructure
-            materialProvider = new MaterialProvider(engine);
-            assetLoader = new AssetLoader(engine, materialProvider,
-                EntityManager.get());
-            resourceLoader = new ResourceLoader(engine);
-
-            setupLighting();
-            loadOcclusionMaterial();
-
-            isInitialized = true;
-            Log.d(LOG_TAG, "Filament initialized successfully — direct surface rendering");
-
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Filament initialization failed: " + e.getMessage(), e);
+        synchronized (depthLock) {
+            pendingDepthUpdate = new DepthUpdate(
+                copy, uvTransform, near, far, depthWidth, depthHeight);
         }
+    }
+
+    /**
+     * Viewport update — called when surface dimensions change.
+     */
+    public void updateSurfaceDimensions(int width, int height) {
+        if (width <= 0 || height <= 0) return;
+        viewportWidth  = width;
+        viewportHeight = height;
+        if (filamentHandler != null) {
+            filamentHandler.post(() -> {
+                if (view != null) {
+                    view.setViewport(new Viewport(0, 0, width, height));
+                }
+            });
+        }
+    }
+
+    public void setAnimationEnabled(boolean enabled) {
+        animationEnabled = enabled;
+    }
+
+    /**
+     * Remove a node from the scene.
+     * Posts to FilamentRenderThread — safe to call from any thread.
+     */
+    public void removeNode(ARNode node) {
+        if (filamentHandler == null) return;
+        filamentHandler.post(() -> {
+            FilamentAsset asset = nodeAssetMap.remove(node);
+            if (asset == null) return;
+            scene.remove(asset.getRoot());
+            for (int e : asset.getEntities()) scene.remove(e);
+            assetLoader.destroyAsset(asset);
+            Log.d(LOG_TAG, "Removed: " + node.NodeType());
+        });
+    }
+
+    /**
+     * Full cleanup. Posts all Filament destruction to FilamentRenderThread,
+     * then shuts the thread down cleanly.
+     */
+    public void destroy() {
+        if (destroyed) return;
+        destroyed = true;
+
+        if (filamentHandler == null) return;
+
+        filamentHandler.post(() -> {
+            // Stop Choreographer first — no more render calls after this
+            Choreographer.getInstance().removeFrameCallback(renderCallback);
+
+            if (engine == null) return;
+
+            for (FilamentAsset asset : nodeAssetMap.values()) {
+                scene.remove(asset.getRoot());
+                for (int e : asset.getEntities()) scene.remove(e);
+                assetLoader.destroyAsset(asset);
+            }
+            nodeAssetMap.clear();
+
+            if (mainLightEntity != 0) {
+                scene.remove(mainLightEntity);
+                engine.destroyEntity(mainLightEntity);
+            }
+            if (arDepthTexture != null)  engine.destroyTexture(arDepthTexture);
+            if (resourceLoader  != null) resourceLoader.destroy();
+            if (assetLoader     != null) assetLoader.destroy();
+            if (materialProvider != null) {
+                materialProvider.destroyMaterials();
+                materialProvider.destroy();
+            }
+            if (cameraEntity != 0) {
+                engine.destroyCamera(camera);
+                engine.destroyEntity(cameraEntity);
+            }
+            engine.destroyRenderer(renderer);
+            engine.destroyView(view);
+            engine.destroyScene(scene);
+            if (swapChain != null) engine.destroySwapChain(swapChain);
+            engine.destroy();
+            engine = null;
+
+            engineReady    = false;
+            swapChainReady = false;
+            Log.d(LOG_TAG, "Filament destroyed");
+        });
+
+        // Give the destruction post a moment to execute, then stop thread
+        filamentThread.quitSafely();
+        filamentThread = null;
+        filamentHandler = null;
+    }
+
+    // =========================================================================
+    // PRIVATE — all methods below run exclusively on FilamentRenderThread
+    // =========================================================================
+
+    private void loadNativeLibraries() {
+        System.loadLibrary("filament-jni");
+        System.loadLibrary("gltfio-jni");
+        Log.d(LOG_TAG, "Native libraries loaded");
     }
 
     // -------------------------------------------------------------------------
@@ -227,7 +496,6 @@ public class ARFilamentRenderer {
             .castShadows(false)
             .build(engine, mainLightEntity);
         scene.addEntity(mainLightEntity);
-        Log.d(LOG_TAG, "Directional light added");
     }
 
     // -------------------------------------------------------------------------
@@ -245,263 +513,143 @@ public class ARFilamentRenderer {
                 Log.d(LOG_TAG, "Occlusion material loaded");
             }
         } catch (Exception e) {
-            Log.w(LOG_TAG, "Could not load occlusion material: " + e.getMessage());
-            // Non-fatal — nodes will render without depth occlusion
+            Log.w(LOG_TAG, "Occlusion material unavailable: " + e.getMessage());
         }
     }
 
     // -------------------------------------------------------------------------
-    // ARCore depth — called from ARView3D each frame when depth is available
+    // Depth — called on FilamentRenderThread from renderCallback
     // -------------------------------------------------------------------------
 
-    public void updateARCoreDepth(ByteBuffer depthData, float[] uvTransform,
-                                  float near, float far,
-                                  int depthWidth, int depthHeight) {
-        if (!isInitialized) return;
+    private void applyDepthUpdate(DepthUpdate depth) {
+        try {
+            if (arDepthTexture == null
+                || arDepthTexture.getWidth(0)  != depth.width
+                || arDepthTexture.getHeight(0) != depth.height) {
 
-        glSurfaceView.queueEvent(() -> {
-            try {
-                // Create or recreate depth texture if dimensions changed
-                if (arDepthTexture == null
-                    || arDepthTexture.getWidth(0) != depthWidth
-                    || arDepthTexture.getHeight(0) != depthHeight) {
+                if (arDepthTexture != null) engine.destroyTexture(arDepthTexture);
 
-                    if (arDepthTexture != null) {
-                        engine.destroyTexture(arDepthTexture);
-                    }
-                    arDepthTexture = new Texture.Builder()
-                        .width(depthWidth)
-                        .height(depthHeight)
-                        .levels(1)
-                        .format(Texture.InternalFormat.RG8)
-                        .sampler(Texture.Sampler.SAMPLER_2D)
-                        .usage(Texture.Usage.SAMPLEABLE)
-                        .build(engine);
+                arDepthTexture = new Texture.Builder()
+                    .width(depth.width).height(depth.height).levels(1)
+                    .format(Texture.InternalFormat.RG8)
+                    .sampler(Texture.Sampler.SAMPLER_2D)
+                    .usage(Texture.Usage.SAMPLEABLE)
+                    .build(engine);
 
-                    Log.d(LOG_TAG, "ARCore depth texture created: "
-                        + depthWidth + "x" + depthHeight);
-                    // New texture means we need to re-apply to materials
-                    occlusionMaterialApplied = false;
-                }
-
-                // Upload depth data
-                depthData.rewind();
-                Texture.PixelBufferDescriptor descriptor =
-                    new Texture.PixelBufferDescriptor(
-                        depthData,
-                        Texture.Format.RG,
-                        Texture.Type.UBYTE,
-                        4,           // alignment
-                        0,           // left padding
-                        0,           // top padding
-                        depthWidth,  // stride
-                        null,
-                        null
-                    );
-                arDepthTexture.setImage(engine, 0, descriptor);
-
-                // Wire occlusion material parameters once depth arrives
-                if (!depthDataReceived) {
-                    depthDataReceived = true;
-                    Log.d(LOG_TAG, "First depth data received — enabling occlusion");
-                }
-
-                updateOcclusionParameters(near, far, uvTransform);
-
-                // Apply occlusion material to any already-loaded assets
-                if (!occlusionMaterialApplied && occlusionMaterialInstance != null
-                    && !nodeAssetMap.isEmpty()) {
-                    applyOcclusionToAllAssets();
-                    occlusionMaterialApplied = true;
-                }
-
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Depth update error: " + e.getMessage(), e);
+                occlusionAppliedToAllAssets = false;
+                Log.d(LOG_TAG, "Depth texture: "
+                    + depth.width + "x" + depth.height);
             }
-        });
+
+            depth.data.rewind();
+            arDepthTexture.setImage(engine, 0,
+                new Texture.PixelBufferDescriptor(
+                    depth.data,
+                    Texture.Format.RG, Texture.Type.UBYTE,
+                    4, 0, 0, depth.width, null, null));
+
+            if (!depthDataReceived) {
+                depthDataReceived = true;
+                Log.d(LOG_TAG, "First depth frame");
+            }
+
+            updateOcclusionParameters(depth.near, depth.far, depth.uvTransform);
+
+            if (!occlusionAppliedToAllAssets
+                && occlusionMaterialInstance != null
+                && !nodeAssetMap.isEmpty()) {
+                applyOcclusionToAllAssets();
+                occlusionAppliedToAllAssets = true;
+            }
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Depth apply failed: " + e.getMessage(), e);
+        }
     }
 
-    private void updateOcclusionParameters(float near, float far,
-                                           float[] uvTransform) {
-        if (occlusionMaterialInstance == null) return;
+    private void updateOcclusionParameters(float near, float far, float[] t) {
+        if (occlusionMaterialInstance == null || arDepthTexture == null) return;
         try {
             occlusionMaterialInstance.setParameter("nearPlane", near);
-            occlusionMaterialInstance.setParameter("farPlane", far);
+            occlusionMaterialInstance.setParameter("farPlane",  far);
             occlusionMaterialInstance.setParameter("occlusionBias", 0.01f);
+            occlusionMaterialInstance.setParameter(
+                "uvTransformRow0", t[0],  t[1],  t[2],  t[3]);
+            occlusionMaterialInstance.setParameter(
+                "uvTransformRow1", t[4],  t[5],  t[6],  t[7]);
+            occlusionMaterialInstance.setParameter(
+                "uvTransformRow2", t[8],  t[9],  t[10], t[11]);
+            occlusionMaterialInstance.setParameter(
+                "uvTransformRow3", t[12], t[13], t[14], t[15]);
 
-            // Pass as rows — confirmed safe for Filament 1.9.11
-            occlusionMaterialInstance.setParameter("uvTransformRow0",
-                uvTransform[0], uvTransform[1], uvTransform[2], uvTransform[3]);
-            occlusionMaterialInstance.setParameter("uvTransformRow1",
-                uvTransform[4], uvTransform[5], uvTransform[6], uvTransform[7]);
-            occlusionMaterialInstance.setParameter("uvTransformRow2",
-                uvTransform[8], uvTransform[9], uvTransform[10], uvTransform[11]);
-            occlusionMaterialInstance.setParameter("uvTransformRow3",
-                uvTransform[12], uvTransform[13], uvTransform[14], uvTransform[15]);
-
-            if (arDepthTexture != null) {
-                TextureSampler sampler = new TextureSampler(
-                    TextureSampler.MinFilter.LINEAR,
-                    TextureSampler.MagFilter.LINEAR,
-                    TextureSampler.WrapMode.CLAMP_TO_EDGE
-                );
-                occlusionMaterialInstance.setParameter(
-                    "depthTexture", arDepthTexture, sampler);
-            }
+            TextureSampler sampler = new TextureSampler(
+                TextureSampler.MinFilter.LINEAR,
+                TextureSampler.MagFilter.LINEAR,
+                TextureSampler.WrapMode.CLAMP_TO_EDGE);
+            occlusionMaterialInstance.setParameter(
+                "depthTexture", arDepthTexture, sampler);
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Occlusion parameter update failed: " + e.getMessage());
+            Log.e(LOG_TAG, "Occlusion params: " + e.getMessage());
         }
     }
 
     private void applyOcclusionToAllAssets() {
-        if (occlusionMaterialInstance == null) return;
         RenderableManager rm = engine.getRenderableManager();
         for (FilamentAsset asset : nodeAssetMap.values()) {
             applyOcclusionToAsset(asset, rm);
         }
-        Log.d(LOG_TAG, "Occlusion material applied to all loaded assets");
+        Log.d(LOG_TAG, "Occlusion applied to all assets");
     }
 
-    private void applyOcclusionToAsset(FilamentAsset asset,
-                                       RenderableManager rm) {
-        for (int entityId : asset.getEntities()) {
-            if (rm.hasComponent(entityId)) {
-                int instance = rm.getInstance(entityId);
-                int count = rm.getPrimitiveCount(instance);
-                for (int i = 0; i < count; i++) {
-                    rm.setMaterialInstanceAt(
-                        instance, i, occlusionMaterialInstance);
-                }
+    private void applyOcclusionToAsset(FilamentAsset asset, RenderableManager rm) {
+        for (int entity : asset.getEntities()) {
+            if (!rm.hasComponent(entity)) continue;
+            int instance = rm.getInstance(entity);
+            for (int i = 0; i < rm.getPrimitiveCount(instance); i++) {
+                rm.setMaterialInstanceAt(instance, i, occlusionMaterialInstance);
             }
         }
     }
 
     // -------------------------------------------------------------------------
-    // Surface / viewport changes — called from ARView3D.onSurfaceChanged
+    // Camera
     // -------------------------------------------------------------------------
 
-    public void updateSurfaceDimensions(int width, int height) {
-        if (width <= 0 || height <= 0) return;
-        viewportWidth  = width;
-        viewportHeight = height;
-        if (view != null) {
-            view.setViewport(new Viewport(0, 0, width, height));
-            Log.d(LOG_TAG, "Viewport updated: " + width + "x" + height);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Camera — mirrors ARCore camera exactly
-    // -------------------------------------------------------------------------
-
-    private void updateCameraFromARCore(float[] arcoreViewMatrix,
-                                        float[] arcoreProjectionMatrix) {
+    private void updateCameraFromARCore(float[] viewMatrix, float[] projMatrix) {
         if (camera == null) return;
-
-        System.arraycopy(arcoreViewMatrix,     0, viewMatrix,      0, 16);
-        System.arraycopy(arcoreProjectionMatrix, 0, projectionMatrix, 0, 16);
-
-        float[] invView = new float[16];
-        if (!Matrix.invertM(invView, 0, arcoreViewMatrix, 0)) return;
-
-        float camX = invView[12];
-        float camY = invView[13];
-        float camZ = invView[14];
-
-        // Forward = -Z column of inverted view
-        float fwdX = -invView[8];
-        float fwdY = -invView[9];
-        float fwdZ = -invView[10];
-
-        // Up = +Y column of inverted view
-        float upX = invView[4];
-        float upY = invView[5];
-        float upZ = invView[6];
+        float[] inv = new float[16];
+        if (!Matrix.invertM(inv, 0, viewMatrix, 0)) return;
 
         camera.lookAt(
-            camX, camY, camZ,
-            camX + fwdX, camY + fwdY, camZ + fwdZ,
-            upX, upY, upZ
+            inv[12], inv[13], inv[14],
+            inv[12] - inv[8], inv[13] - inv[9], inv[14] - inv[10],
+            inv[4],  inv[5],  inv[6]
         );
 
-        // Use ARCore's exact projection matrix
         double[] proj64 = new double[16];
-        for (int i = 0; i < 16; i++) proj64[i] = arcoreProjectionMatrix[i];
+        for (int i = 0; i < 16; i++) proj64[i] = projMatrix[i];
         camera.setCustomProjection(proj64, Z_NEAR, Z_FAR);
     }
 
     // -------------------------------------------------------------------------
-    // Main draw — called every frame from ARView3D.onDrawFrame
-    //
-    // BackgroundRenderer has already drawn the camera feed to the screen.
-    // Filament draws 3D nodes on top via its transparent SwapChain.
-    // -------------------------------------------------------------------------
-
-    public void draw(List<ARNode> nodes, float[] arcoreViewMatrix,
-                     float[] arcoreProjectionMatrix) {
-
-        if (!isInitialized) {
-            Log.d(LOG_TAG, "Skipping draw — not yet initialized");
-            return;
-        }
-
-        // Frame rate throttle
-        long now = System.nanoTime();
-        if (lastFrameTimeNs > 0
-            && (now - lastFrameTimeNs) < MIN_FRAME_INTERVAL_NS) {
-            return;
-        }
-
-        updateCameraFromARCore(arcoreViewMatrix, arcoreProjectionMatrix);
-
-        if (nodes != null && !nodes.isEmpty()) {
-            loadAndPositionNodes(nodes);
-            updateAnimations();
-        }
-
-        // Single render pass — directly to the screen surface
-        try {
-            if (renderer.beginFrame(swapChain, now)) {
-                renderer.render(view);
-                renderer.endFrame();
-                lastFrameTimeNs = now;
-            }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Render error: " + e.getMessage(), e);
-            safeEndFrame();
-        }
-    }
-
-    private void safeEndFrame() {
-        try {
-            if (renderer != null) renderer.endFrame();
-        } catch (Exception ignored) { }
-    }
-
-    // -------------------------------------------------------------------------
-    // Node processing — load models and position them from ARCore anchors
+    // Node processing
     // -------------------------------------------------------------------------
 
     private void loadAndPositionNodes(Collection<ARNode> nodes) {
         for (ARNode node : nodes) {
             if (!shouldRender(node)) continue;
-
-            // Load model if not yet loaded
             if (!nodeAssetMap.containsKey(node)) {
                 try {
                     loadModelForNode(node);
                 } catch (IOException e) {
-                    Log.e(LOG_TAG, "Failed to load model for "
-                        + node.NodeType() + ": " + e.getMessage());
+                    Log.e(LOG_TAG, "Load failed: " + node.NodeType()
+                        + " — " + e.getMessage());
                     continue;
                 }
             }
-
             FilamentAsset asset = nodeAssetMap.get(node);
-            if (asset == null) continue;
-
-            // Position the model at its ARCore anchor
-            if (node.Anchor() != null
+            if (asset != null
+                && node.Anchor() != null
                 && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
                 applyNodeTransform(node, asset);
             }
@@ -509,11 +657,10 @@ public class ARFilamentRenderer {
     }
 
     private boolean shouldRender(ARNode node) {
-        if (node == null)                          return false;
-        if (!node.Visible())                       return false;
-        if (node.Model() == null)                  return false;
-        if (node.Model().isEmpty())                return false;
-        return true;
+        return node != null
+            && node.Visible()
+            && node.Model() != null
+            && !node.Model().isEmpty();
     }
 
     private void applyNodeTransform(ARNode node, FilamentAsset asset) {
@@ -521,27 +668,21 @@ public class ARFilamentRenderer {
         int rootInstance = tm.getInstance(asset.getRoot());
         if (rootInstance == 0) return;
 
-        Pose pose = node.Anchor().getPose();
-        float[] anchorPos = pose.getTranslation();
+        Pose   pose = node.Anchor().getPose();
+        float[] t   = pose.getTranslation();
 
-        float[] modelMatrix = new float[16];
-        Matrix.setIdentityM(modelMatrix, 0);
+        float[] m = new float[16];
+        Matrix.setIdentityM(m, 0);
+        m[12] = t[0]; m[13] = t[1]; m[14] = t[2];
 
-        // Translation
-        modelMatrix[12] = anchorPos[0];
-        modelMatrix[13] = anchorPos[1];
-        modelMatrix[14] = anchorPos[2];
+        float[] r = new float[16];
+        quaternionToMatrix(pose.getRotationQuaternion(), r);
+        Matrix.multiplyMM(m, 0, m, 0, r, 0);
 
-        // Rotation from ARCore pose quaternion
-        float[] rotMatrix = new float[16];
-        quaternionToMatrix(pose.getRotationQuaternion(), rotMatrix);
-        Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, rotMatrix, 0);
-
-        // Scale
         float s = node.Scale();
-        Matrix.scaleM(modelMatrix, 0, s, s, s);
+        Matrix.scaleM(m, 0, s, s, s);
 
-        tm.setTransform(rootInstance, modelMatrix);
+        tm.setTransform(rootInstance, m);
     }
 
     // -------------------------------------------------------------------------
@@ -549,38 +690,27 @@ public class ARFilamentRenderer {
     // -------------------------------------------------------------------------
 
     private void loadModelForNode(ARNode node) throws IOException {
-        String modelPath = node.Model();
-        Log.d(LOG_TAG, "Loading model: " + modelPath);
+        String path = node.Model();
+        Log.d(LOG_TAG, "Loading: " + path);
 
-        ByteBuffer buffer = readAsset(modelPath, false);
-        if (buffer == null) {
-            throw new IOException("Could not read asset: " + modelPath);
-        }
+        ByteBuffer buffer = readAsset(path, false);
+        if (buffer == null) throw new IOException("Not found: " + path);
 
         FilamentAsset asset = assetLoader.createAssetFromBinary(buffer);
-        if (asset == null) {
-            throw new IOException("AssetLoader failed for: " + modelPath);
-        }
+        if (asset == null) throw new IOException("AssetLoader failed: " + path);
 
-        // Add all entities to scene
         scene.addEntity(asset.getRoot());
-        for (int entityId : asset.getEntities()) {
-            if (entityId != asset.getRoot()) {
-                scene.addEntity(entityId);
-            }
+        for (int e : asset.getEntities()) {
+            if (e != asset.getRoot()) scene.addEntity(e);
         }
-
-        // Load textures and buffers
         resourceLoader.loadResources(asset);
-
         nodeAssetMap.put(node, asset);
-        Log.d(LOG_TAG, "Loaded model: " + modelPath
+
+        Log.d(LOG_TAG, "Loaded: " + path
             + " (" + asset.getEntities().length + " entities)");
 
-        // Apply occlusion if depth data already arrived
         if (depthDataReceived && occlusionMaterialInstance != null) {
             applyOcclusionToAsset(asset, engine.getRenderableManager());
-            Log.d(LOG_TAG, "Occlusion applied to freshly loaded: " + modelPath);
         }
     }
 
@@ -599,136 +729,47 @@ public class ARFilamentRenderer {
         }
     }
 
-    public void setAnimationEnabled(boolean enabled) {
-        this.animationEnabled = enabled;
-    }
-
-    // -------------------------------------------------------------------------
-    // Node removal — called when ARView3D removes a node
-    // -------------------------------------------------------------------------
-
-    public void removeNode(ARNode node) {
-        FilamentAsset asset = nodeAssetMap.remove(node);
-        if (asset == null) return;
-
-        // Remove entities from scene before destroying
-        scene.remove(asset.getRoot());
-        for (int entityId : asset.getEntities()) {
-            scene.remove(entityId);
-        }
-        assetLoader.destroyAsset(asset);
-        Log.d(LOG_TAG, "Removed node: " + node.NodeType());
-    }
-
     // -------------------------------------------------------------------------
     // Asset reading
     // -------------------------------------------------------------------------
 
-    /**
-     * @param assetName  file name
-     * @param isInternal true → read from app's internal assets (e.g. shaders),
-     *                   false → read from App Inventor project assets
-     */
-    private ByteBuffer readAsset(String assetName,
-                                 boolean isInternal) throws IOException {
-        try {
-            java.io.InputStream is = isInternal
-                ? MediaUtil.getAssetsIgnoreCaseInputStream(formCopy, assetName)
-                : formCopy.openAsset(assetName);
-
-            if (is == null) {
-                throw new IOException("Asset not found: " + assetName);
-            }
-
-            byte[] bytes = new byte[is.available()];
-            is.read(bytes);
-            is.close();
-
-            ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
-            buf.put(bytes);
-            buf.rewind();
-            return buf;
-
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IOException("Failed to read asset: " + assetName, e);
-        }
+    private ByteBuffer readAsset(String name, boolean isInternal)
+        throws IOException {
+        InputStream is = isInternal
+            ? MediaUtil.getAssetsIgnoreCaseInputStream(form, name)
+            : form.openAsset(name);
+        if (is == null) throw new IOException("Not found: " + name);
+        byte[] bytes = new byte[is.available()];
+        is.read(bytes);
+        is.close();
+        ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
+        buf.put(bytes);
+        buf.rewind();
+        return buf;
     }
 
     // -------------------------------------------------------------------------
-    // Math helpers
+    // Math
     // -------------------------------------------------------------------------
 
-    /** Converts a quaternion [x, y, z, w] to a column-major 4x4 rotation matrix. */
     private void quaternionToMatrix(float[] q, float[] m) {
-        float x = q[0], y = q[1], z = q[2], w = q[3];
-        float x2 = x + x, y2 = y + y, z2 = z + z;
-        float xx = x * x2, xy = x * y2, xz = x * z2;
-        float yy = y * y2, yz = y * z2, zz = z * z2;
-        float wx = w * x2, wy = w * y2, wz = w * z2;
-
-        m[0]  = 1f - (yy + zz); m[1]  = xy + wz;       m[2]  = xz - wy;       m[3]  = 0f;
-        m[4]  = xy - wz;        m[5]  = 1f - (xx + zz); m[6]  = yz + wx;       m[7]  = 0f;
-        m[8]  = xz + wy;        m[9]  = yz - wx;        m[10] = 1f - (xx + yy); m[11] = 0f;
-        m[12] = 0f;             m[13] = 0f;             m[14] = 0f;            m[15] = 1f;
+        float x=q[0], y=q[1], z=q[2], w=q[3];
+        float x2=x+x, y2=y+y, z2=z+z;
+        float xx=x*x2, xy=x*y2, xz=x*z2;
+        float yy=y*y2, yz=y*z2, zz=z*z2;
+        float wx=w*x2, wy=w*y2, wz=w*z2;
+        m[0]=1-(yy+zz); m[1]=xy+wz;     m[2]=xz-wy;     m[3]=0;
+        m[4]=xy-wz;     m[5]=1-(xx+zz); m[6]=yz+wx;     m[7]=0;
+        m[8]=xz+wy;     m[9]=yz-wx;     m[10]=1-(xx+yy); m[11]=0;
+        m[12]=0;        m[13]=0;        m[14]=0;          m[15]=1;
     }
 
     // -------------------------------------------------------------------------
-    // Cleanup
+    // Safety
     // -------------------------------------------------------------------------
 
-    public void destroy() {
-        if (engine == null) return;
-
-        Log.d(LOG_TAG, "Destroying Filament resources");
-
-        // Destroy all loaded assets
-        for (FilamentAsset asset : nodeAssetMap.values()) {
-            scene.remove(asset.getRoot());
-            for (int e : asset.getEntities()) scene.remove(e);
-            assetLoader.destroyAsset(asset);
-        }
-        nodeAssetMap.clear();
-
-        // Destroy lights
-        if (mainLightEntity != 0) {
-            scene.remove(mainLightEntity);
-            engine.destroyEntity(mainLightEntity);
-        }
-
-        // Destroy depth texture
-        if (arDepthTexture != null) {
-            engine.destroyTexture(arDepthTexture);
-        }
-
-        // Destroy asset loading infrastructure
-        if (resourceLoader != null)  resourceLoader.destroy();
-        if (assetLoader != null)     assetLoader.destroy();
-        if (materialProvider != null) {
-            materialProvider.destroyMaterials();
-            materialProvider.destroy();
-        }
-
-        // Destroy camera entity
-        if (cameraEntity != 0) {
-            engine.destroyCamera(camera);
-            engine.destroyEntity(cameraEntity);
-        }
-
-        // Destroy core Filament objects
-        engine.destroyRenderer(renderer);
-        engine.destroyView(view);
-        engine.destroyScene(scene);
-
-        if (swapChain != null) {
-            engine.destroySwapChain(swapChain);
-        }
-
-        engine.destroy();
-        engine = null;
-        isInitialized = false;
-
-        Log.d(LOG_TAG, "Filament resources destroyed");
+    private void safeEndFrame() {
+        try { if (renderer != null) renderer.endFrame(); }
+        catch (Exception ignored) { }
     }
 }

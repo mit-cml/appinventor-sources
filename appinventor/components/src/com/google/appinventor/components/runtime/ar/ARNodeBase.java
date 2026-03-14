@@ -17,13 +17,12 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.YailDictionary;
-import com.google.ar.core.Anchor;
-import com.google.ar.core.Pose;
-import com.google.ar.core.Session;
-import com.google.ar.core.Trackable;
+import com.google.ar.core.*;
 import android.util.Log;
 import android.graphics.PointF;
 import android.view.MotionEvent;
+import com.google.ar.core.exceptions.NotTrackingException;
+import com.google.ar.core.exceptions.ResourceExhaustedException;
 
 import java.util.List;
 import java.util.Collection;
@@ -36,7 +35,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected ARView3D arView = null;
   protected Anchor anchor = null;
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
-  protected float[] fromPropRotation = {0,0,0,1};
+  protected float[] fromPropertyRotation = {0,0,0,1};
+  protected float[] pendingPosition = {0f, 0f, 0f};
+  protected float[] pendingRotation = {0,0,0,1};
   protected float scale = 1.0f;
   protected Session session = null;
   protected String texture = "";
@@ -186,6 +187,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     setCurrentPosition(currentPos);
   }
 
+  /* note, in meters */
   public float[] getCurrentPosition() {
     // Get current position from anchor or trackable
     if (anchor != null) {
@@ -202,6 +204,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     return new float[]{0, 0, 0};
   }
 
+  /* note, in meters */
   public void setCurrentPosition(float[] position) {
     // Set position via anchor system
 
@@ -211,35 +214,40 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
         return; // Don't recreate anchor with invalid position
       }
     }
+    if (session == null) return;
 
     // Check if values are reasonable (within ~100m of origin)
     if (Math.abs(position[0]) > 100 || Math.abs(position[1]) > 100 || Math.abs(position[2]) > 100) {
       Log.e("SphereNode", "Position too far from origin: " + arrayToString(position));
       return;
     }
+    position[1] = 1f;
     float[] rotation = {0, 0, 0, 1};
     Log.i("SphereNode", "setting position " + arrayToString(position));
-
-    try {
-        if (trackable != null) {
-
-          Pose newPose = new Pose(position, rotation);
-          Anchor(trackable.createAnchor(newPose));
-        } else if (session != null) {
-
-          Pose newPose = new Pose(position, rotation);
-          Anchor(session.createAnchor(newPose));
-        }
-      } catch (Exception e) {
-      Log.e("SphereNode", "Failed to create anchor: " + e.getMessage());
-      Log.e("SphereNode", "Position: " + arrayToString(position));
-      Log.e("SphereNode", "Session: " + (session != null));
-      Log.e("SphereNode", "Trackable: " + (trackable != null));
-
-    }
+    pendingPosition = position;
+    pendingRotation = rotation;
   }
 
+  public void tryCreateAnchorIfNeeded(NearestPlaneFinder planeFinder) {
 
+    Plane bestDetectedPlane = planeFinder.find(pendingPosition[0], pendingPosition[2]);
+    if (Anchor() != null || pendingPosition == null) return;
+    if (bestDetectedPlane == null) return;
+
+    try {
+
+        Pose newPose = new Pose(pendingPosition, pendingRotation);
+        Anchor(bestDetectedPlane.createAnchor(newPose));
+
+    } catch (com.google.ar.core.exceptions.NotTrackingException e) {
+      // Normal during VIO reset — silent, no log
+    } catch (com.google.ar.core.exceptions.ResourceExhaustedException e) {
+      Log.w("SphereNode", "Anchor limit reached");
+    } catch (Exception e) {
+      Log.e("SphereNode", "Anchor creation failed: "
+          + e.getClass().getSimpleName() + " " + e.getMessage());
+    }
+  }
 
   @Override
   @SimpleFunction(description = "Rotates the node to look at the DetectedPlane.")
@@ -758,10 +766,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     fromPropertyPosition = position;
 
     if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, fromPropRotation)); //CSB check
+      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, fromPropertyRotation)); //CSB check
       Anchor(myAnchor);
     } else if (session != null) {
-      Anchor myAnchor = session.createAnchor(new Pose(position, fromPropRotation));
+      Anchor myAnchor = session.createAnchor(new Pose(position, fromPropertyRotation));
       Anchor(myAnchor);
     }
 
@@ -1325,7 +1333,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     setRotationComponent(2, (float) Math.toRadians(zRotation));
   }
 
-  private void setRotationComponent(int component, float radians) {
+
+  public void setRotationComponent(int component, float radians) { //CSB flag for name changes?
     if (anchor != null) {
       float[] euler = quaternionToEulerAngles(anchor.getPose().getRotationQuaternion());
       euler[component] = radians;
@@ -1342,7 +1351,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
   }
 
-  public float[] InitialRotation() { return fromPropRotation; }
+  public float[] InitialRotation() { return fromPropertyRotation; }
 
   @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Set the initial rotation of the object from property. The rotation of the node in the form of rotation of degrees eg 45,0,0.")
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
@@ -1357,7 +1366,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
         Log.w("ARNodeBase", "Invalid number in position: " + rotationAray[i]);
       }
     }
-    fromPropRotation = rotation; // Ensure positive scale
+    fromPropertyRotation = rotation; // Ensure positive scale
   }
 
   @Override
