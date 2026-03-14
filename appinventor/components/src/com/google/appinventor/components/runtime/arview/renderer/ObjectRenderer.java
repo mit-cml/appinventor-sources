@@ -263,7 +263,7 @@ public class ObjectRenderer {
       // Calculate matrices
       float[] anchorMatrix = new float[16];
       anchor.getPose().toMatrix(anchorMatrix, 0);
-      float[] modelMatrix = updateModelMatrix(anchorMatrix, arNode.Scale(), arNode.FromPropertyRotation());
+      float[] modelMatrix = updateModelMatrix(anchorMatrix, arNode.Scale(), arNode.InitialRotation());
       float[] localModelViewMatrix = new float[16];
       float[] localModelViewProjectionMatrix = new float[16];
 
