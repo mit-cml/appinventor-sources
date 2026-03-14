@@ -2223,6 +2223,20 @@ public class Form extends AppInventorCompatActivity
     // project properties file
   }
 
+  /**
+   * The minimum Android API level required to install this app. The build system may automatically raise this value if selected components require a higher APIlevel.   
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ANDROID_MIN_SDK, 
+    defaultValue = "" + ComponentConstants.APP_INVENTOR_MIN_SDK)
+  @SimpleProperty(userVisible = false, 
+    description = "The minimum Android SDK required to install the app. " +
+        "The system may automatically increase this value if components " +
+        "require a higher SDK.", 
+    category = PropertyCategory.GENERAL)
+  public void AndroidMinSdk(String value) {
+    // Stored automatically in project properties
+  }
+  
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
     defaultValue = "")
   @SimpleProperty(userVisible = false,

@@ -11,6 +11,7 @@ import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_V
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
 /**
@@ -40,6 +41,10 @@ public final class YoungAndroidSettings extends Settings {
         "False", EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE, "1",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
+        String.valueOf(ComponentConstants.APP_INVENTOR_MIN_SDK),
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME, "1.0",
