@@ -1284,6 +1284,9 @@ Top-level component containing all other components in the program.
  up to 1024x1024 pixels. Larger images may cause compiling or installing the app to fail.
  The build server will generate images of standard dimensions for Android devices.
 
+{:id="Screen.IosMinSdk" .text .wo .do} *IosMinSdk*
+: Specifies the minimum iOS SDK version required to run the app.
+
 {:id="Screen.NSBluetoothAlwaysUsageDescription" .text .wo .do} *NSBluetoothAlwaysUsageDescription*
 : Specifies the iOS privacy explanation of why the app needs access to
  Bluetooth on iOS 13 and later.

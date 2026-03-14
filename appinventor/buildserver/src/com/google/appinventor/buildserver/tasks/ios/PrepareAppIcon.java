@@ -199,7 +199,7 @@ public class PrepareAppIcon implements IosTask {
         "--development-region", "en",
         "--target-device", "iphone",
         "--target-device", "ipad",
-        "--minimum-deployment-target", "12.0",
+        "--minimum-deployment-target", context.getProject().getIosMinSdk(),
         "--platform", "iphoneos",
         "--product-type", "com.apple.product-type.application",
         "--compile", context.getPaths().getAppDir().getAbsolutePath(),
