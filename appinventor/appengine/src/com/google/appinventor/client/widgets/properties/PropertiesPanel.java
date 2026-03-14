@@ -11,10 +11,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,28 +28,27 @@ import java.util.TreeSet;
 public class PropertiesPanel extends Composite implements ComponentDatabaseChangeListener {
 
   // UI elements
-  private final VerticalPanel panel;
+  private final FlowPanel panel;
   private final Label componentName;
-  private final Map<String, VerticalPanel> propertyPanels;
-  private final Map<String, DisclosurePanel> headers;
+  private final Map<String, FlowPanel> propertyPanels;
+  private final Map<String, CollapsibleCategoryPanel> headers;
 
   /**
    * Creates a new properties panel.
    */
   public PropertiesPanel() {
     // Initialize UI
-    VerticalPanel outerPanel = new VerticalPanel();
-    outerPanel.setWidth("100%");
+    FlowPanel outerPanel = new FlowPanel();
+    outerPanel.setStylePrimaryName("ode-PropertiesPanelOuter");
 
-    propertyPanels = new HashMap<String, VerticalPanel>();
-    headers = new HashMap<String, DisclosurePanel>();
+    propertyPanels = new HashMap<String, FlowPanel>();
+    headers = new HashMap<String, CollapsibleCategoryPanel>();
 
     componentName = new Label("");
     componentName.setStyleName("ode-PropertiesComponentName");
     outerPanel.add(componentName);
 
-    panel = new VerticalPanel();
-    panel.setWidth("100%");
+    panel = new FlowPanel();
     panel.setStylePrimaryName("ode-PropertiesPanel");
     outerPanel.add(panel);
 
@@ -68,19 +65,18 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
         !p.getDescription().equals(p.getName());
   }
 
-  private final VerticalPanel getContainer(String category) {
+  private final FlowPanel getContainer(String category) {
     if ( category == null || category.equals( "Internal" ) ) {
       return null;
     }
     if ( !propertyPanels.containsKey( category ) ) {
-      VerticalPanel child = new VerticalPanel();
-      child.setWidth( "100%" );
+      FlowPanel child = new FlowPanel();
+      child.setStylePrimaryName("ode-PropertyCategoryContentInner");
       propertyPanels.put( category, child );
-      DisclosurePanel disclosure = new DisclosurePanel( category );
-      disclosure.add( child );
-      disclosure.setOpen( !"Advanced".equals(category) );
-      disclosure.setWidth( "100%" );
-      headers.put( category, disclosure );
+
+      CollapsibleCategoryPanel categoryPanel = new CollapsibleCategoryPanel( category );
+      categoryPanel.addToContent( child );
+      headers.put( category, categoryPanel );
     }
     return propertyPanels.get( category );
   }
@@ -115,22 +111,28 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
    * @param property  new property to be shown
    */
   void addProperty(EditableProperty property) {
-    VerticalPanel parent = getContainer(property.getCategory());
+    FlowPanel parent = getContainer(property.getCategory());
     if ( parent != null ) {
-      HorizontalPanel header = new HorizontalPanel();
+      FlowPanel propertyRow = new FlowPanel();
+      propertyRow.setStylePrimaryName("ode-PropertyRow");
+
+      FlowPanel header = new FlowPanel();
+      header.setStylePrimaryName("ode-PropertyHeader");
+
       Label label = new Label(property.getCaption());
       label.setStyleName("ode-PropertyLabel");
       // Generate unique ID for the label to enable aria-labelledby association
       String labelId = "prop-label-" + property.getName() + "-" + System.currentTimeMillis();
       label.getElement().setId(labelId);
       header.add(label);
-      header.setStyleName("ode-PropertyHeader");
+
       if ( hasValidDescription(property) ) {
         PropertyHelpWidget helpImage = new PropertyHelpWidget(property);
         header.add(helpImage);
         helpImage.setStylePrimaryName("ode-PropertyHelpWidget");
       }
-      parent.add(header);
+
+      propertyRow.add(header);
       // Since UIObject#setStyleName(String) clears existing styles, only
       // style the editor if it hasn't already been styled during instantiation.
       PropertyEditor editor = property.getEditor();
@@ -139,8 +141,8 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
       }
       // Set aria-labelledby on the form control to associate it with the label
       editor.setAriaLabelledBy(labelId);
-      parent.add(editor);
-      parent.setWidth("100%");
+      propertyRow.add(editor);
+      parent.add(propertyRow);
     }
   }
 
