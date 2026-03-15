@@ -59,18 +59,50 @@ public class ObjectRenderer {
   private final float[] defaultColorCorrectionParameters = {1.0f, 1.0f, 1.0f, 1.0f};
   private final float[] defaultObjectColor = {1.0f, 1.0f, 1.0f, 1.0f}; // White
 
-
+  // Depth occlusion
+  private int depthTextureGlId = 0;
+  private Texture depthTexture = null;
+  private final float[] depthUvTransform = new float[16];
+  private boolean occlusionEnabled = false;
 
   public ObjectRenderer(ARViewRender render) throws IOException {
-    // Create the shader once during initialization
     Texture defaultTexture = createOrGetTexture(render, DEFAULT_TEXTURE_NAME);
     shader = Shader.createFromAssets(
-            render,
-            VERTEX_SHADER_NAME,
-            FRAGMENT_SHADER_NAME,
-            /*defines=*/ null
+        render,
+        VERTEX_SHADER_NAME,
+        FRAGMENT_SHADER_NAME,
+        null
     ).setTexture("u_Texture", defaultTexture);
+
+    // Create depth texture — RG8 format matches ARCore depth packing
+    int[] ids = new int[1];
+    GLES30.glGenTextures(1, ids, 0);
+    depthTextureGlId = ids[0];
+    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, depthTextureGlId);
+    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D,
+        GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D,
+        GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D,
+        GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D,
+        GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+
+    // Wrap in Texture object so Shader can manage the texture unit
+    // Use the constructor that accepts an existing GL ID
+    depthTexture = new Texture(render, Texture.Target.TEXTURE_2D,
+        Texture.WrapMode.CLAMP_TO_EDGE, /*useMipmaps=*/ false, depthTextureGlId);
+
+    // Register with shader — texture unit assigned automatically by Shader
+    shader.setTexture("u_DepthTexture", depthTexture);
+
+    // Identity UV transform until first depth frame arrives
+    android.opengl.Matrix.setIdentityM(depthUvTransform, 0);
+    shader.setMat4("u_UvTransform", depthUvTransform);
+    shader.setFloat("u_OcclusionEnabled", 0.0f);
   }
+
 
   /**
    * Updates the object model matrix and applies scaling.
@@ -243,15 +275,48 @@ public class ObjectRenderer {
       }
       shader = null;
     }
+
+    if (depthTexture != null) {
+      depthTexture.close();
+      depthTexture = null;
+      depthTextureGlId = 0;
+    }
+  }
+
+  /**
+   * Upload a new ARCore depth image to the depth texture.
+   * Call this from onDrawFrame inside the acquireDepthImage16Bits() block,
+   * BEFORE drawObjects().
+   */
+  public void updateDepthTexture(android.media.Image depthImage, float[] uvTransform) {
+    if (depthTextureGlId == 0) return;
+
+    System.arraycopy(uvTransform, 0, depthUvTransform, 0, 16);
+    occlusionEnabled = true;
+
+    android.media.Image.Plane plane = depthImage.getPlanes()[0];
+    java.nio.ByteBuffer buffer = plane.getBuffer();
+
+    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, depthTextureGlId);
+    GLES30.glTexImage2D(
+        GLES30.GL_TEXTURE_2D, 0,
+        GLES30.GL_RG8,
+        depthImage.getWidth(),
+        depthImage.getHeight(),
+        0,
+        GLES30.GL_RG,
+        GLES30.GL_UNSIGNED_BYTE,
+        buffer
+    );
+    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
   }
 
   private void renderSingleObject(ARViewRender render, ARNode arNode,
-                                  float[] viewMatrix, float[] cameraProjection, Framebuffer virtualFrameBuffer) {
+                                  float[] viewMatrix, float[] cameraProjection) {
     try {
       Anchor anchor = arNode.Anchor();
-      if (anchor == null || anchor.getTrackingState() != TrackingState.TRACKING) {
-        return;
-      }
+      if (anchor == null ||
+          anchor.getTrackingState() != TrackingState.TRACKING) return;
 
       Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
       Texture nodeTexture = createOrGetTexture(render, arNode.Texture());
@@ -267,20 +332,28 @@ public class ObjectRenderer {
       float[] localModelViewMatrix = new float[16];
       float[] localModelViewProjectionMatrix = new float[16];
 
-      Matrix.multiplyMM(localModelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
-      Matrix.multiplyMM(localModelViewProjectionMatrix, 0, cameraProjection, 0, localModelViewMatrix, 0);
+      android.opengl.Matrix.multiplyMM(
+          localModelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+      android.opengl.Matrix.multiplyMM(
+          localModelViewProjectionMatrix, 0, cameraProjection, 0, localModelViewMatrix, 0);
 
-      // Set shader uniforms
       shader.setTexture("u_Texture", nodeTexture);
-     // shader.setVec4("u_ObjColor", defaultObjectColor);
-
-      // CRITICAL: Set the transformation matrices
-      //Log.d(TAG, "Setting matrices for " + arNode.Model());
-      //shader.setMat4("u_ModelView", localModelViewMatrix);
+      shader.setMat4("u_ModelView", localModelViewMatrix);
       shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
-      //Log.d(TAG, "Matrices set successfully");
 
-      render.draw(nodeMesh, shader, virtualFrameBuffer);
+      // Depth occlusion uniforms — updated once per frame via updateDepthTexture(),
+      // set here per-object so shader has current values
+      shader.setMat4("u_UvTransform", depthUvTransform);
+      shader.setFloat("u_OcclusionEnabled", occlusionEnabled ? 1.0f : 0.0f);
+
+      // depthTexture is already registered with the shader via setTexture()
+      // in the constructor — no need to set it again unless it changed
+      Log.d(TAG, "renderSingleObject: anchor=" + anchor
+          + " tracking=" + anchor.getTrackingState()
+          + " mesh=" + nodeMesh
+          + " texture=" + nodeTexture);
+
+      render.draw(nodeMesh, shader);
 
     } catch (Exception e) {
       Log.e(TAG, "Error rendering single object: " + e.toString(), e);
@@ -300,8 +373,7 @@ public class ObjectRenderer {
           Collection<ARNode> allObjectNodes,
           /*Pose cameraPose,*/
           float [] viewMatrix,
-          float[] cameraProjection,
-          Framebuffer virtualFrameBuffer
+          float[] cameraProjection
   ) {
     if (allObjectNodes == null || allObjectNodes.isEmpty()) {
       return;
@@ -318,7 +390,7 @@ public class ObjectRenderer {
     //ARNode arNode = (ARNode) ((ArrayList) allObjectNodes).get(0);
     for (ARNode arNode : allObjectNodes) {
       try {
-        renderSingleObject(render, arNode, viewMatrix, cameraProjection, virtualFrameBuffer);
+        renderSingleObject(render, arNode, viewMatrix, cameraProjection);
       } catch (Exception e) {
         Log.e(TAG, "Error rendering object: " + e.toString(), e);
       }

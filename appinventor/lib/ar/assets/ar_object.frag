@@ -1,3 +1,4 @@
+#version 300 es
 /*
  * Copyright 2017 Google LLC
  *
@@ -13,37 +14,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define USE_DEPTH_FOR_OCCLUSION 0
 precision mediump float;
 
 uniform sampler2D u_Texture;
-
 uniform vec4 u_LightingParameters;
 uniform vec4 u_MaterialParameters;
 uniform vec4 u_ColorCorrectionParameters;
-
-//not currently useing
-varying vec3 v_ViewPosition;
-varying vec3 v_ViewNormal;
-varying vec2 v_TexCoord;
-varying vec3 v_ScreenSpacePosition;
 uniform vec4 u_ObjColor;
 
+// Depth occlusion uniforms
+uniform sampler2D u_DepthTexture;
+uniform mat4 u_UvTransform;
+uniform float u_OcclusionEnabled;
+
+in vec3 v_ViewPosition;
+in vec3 v_ViewNormal;
+in vec2 v_TexCoord;
+in vec3 v_ScreenSpacePosition;
+
+layout(location = 0) out vec4 o_FragColor;
+
+// Unpack depth from RG channels — millimeters
+// Matches background_show_depth_color_visualization.frag packing
+float getDepthMillimeters(sampler2D depthTexture, vec2 uv) {
+    vec3 packed = texture(depthTexture, uv).xyz;
+    return dot(packed.xy, vec2(255.0, 256.0 * 255.0));
+}
 
 void main() {
-    // We support approximate sRGB gamma.
-    const float kGamma = 0.4545454;
-    const float kInverseGamma = 2.2;
-    const float kMiddleGrayGamma = 0.466;
-    
+    // Flip y to address texture from top-left
+    vec4 objectColor = texture(u_Texture,
+        vec2(v_TexCoord.x, 1.0 - v_TexCoord.y));
 
-    // Flip the y-texture coordinate to address the texture from top-left.
-    vec4 objectColor = texture2D(u_Texture, vec2(v_TexCoord.x, 1.0 - v_TexCoord.y));
+    vec3 color = objectColor.rgb;
 
-    vec3 color = objectColor.rgb ;
+    // Depth occlusion
+    if (u_OcclusionEnabled > 0.5) {
+        // Convert screen-space position to normalized device coords
+        // v_ScreenSpacePosition is in [-1,1] range
+        vec2 screenUv = v_ScreenSpacePosition.xy * 0.5 + 0.5;
 
-    gl_FragColor= vec4(color, objectColor.a > .1 ? 1.0 : 0.0);
-    //gl_FragColor= vec4(color, objectColor.a);
-    
+        // Apply ARCore UV transform to match depth texture orientation
+        vec2 depthUv = (u_UvTransform * vec4(screenUv, 0.0, 1.0)).xy;
 
+        // Clamp to valid range
+        depthUv = clamp(depthUv, 0.0, 1.0);
+
+        // Get real-world depth at this screen position
+        float depthMm = getDepthMillimeters(u_DepthTexture, depthUv);
+
+        // Get virtual object depth — v_ViewPosition.z is negative in view space
+        float objectDepthMm = -v_ViewPosition.z * 1000.0;
+
+        // Discard if real world is closer than virtual object
+        // Small bias (15mm) prevents z-fighting at surface contact
+        if (depthMm > 0.0 && objectDepthMm > depthMm + 15.0) {
+            discard;
+        }
+    }
+
+    o_FragColor = vec4(color, objectColor.a > 0.1 ? 1.0 : 0.0);
 }
