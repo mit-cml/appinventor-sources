@@ -41,4 +41,9 @@ public class ComponentRemoveWidget extends AbstractPaletteItemWidget {
       }
     }
   }
+
+  @Override
+  public String getAltText() {
+    return "Remove " + name + " component";
+  }
 }

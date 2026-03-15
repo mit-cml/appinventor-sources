@@ -88,6 +88,7 @@ public class TopToolbar extends Composite {
   @UiField protected DropDownButton settingsDropDown;
   @UiField protected DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
+  @UiField (provided = true) protected Boolean isAvailable;
 
   protected boolean readOnly;
 
@@ -114,6 +115,10 @@ public class TopToolbar extends Composite {
     // UIBinder can't negate the boolean itself.
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
+
+    boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
+
+    isAvailable = !oneProjectMode && hasWriteAccess;
 
     bindUI();
     if (iamChromebook) {
@@ -225,6 +230,7 @@ public class TopToolbar extends Composite {
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
       }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), false);
     } else {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
       if (iamChromebook) {
@@ -234,6 +240,7 @@ public class TopToolbar extends Composite {
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
       }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), true);
     }
   }
 

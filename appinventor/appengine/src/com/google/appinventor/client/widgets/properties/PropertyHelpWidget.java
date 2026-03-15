@@ -77,6 +77,11 @@ public final class PropertyHelpWidget extends Image {
       imageResource = images.help();
     }
     AbstractImagePrototype.create(imageResource).applyTo(this);
+
+    // Add alt text for accessibility - helps screen readers describe the help button
+    String altText = ComponentTranslationTable.getPropertyName(prop.getName()) + " help";
+    getElement().setAttribute("alt", altText);
+
     addClickListener(new ClickListener() {
         @Override
         public void onClick(Widget sender) {

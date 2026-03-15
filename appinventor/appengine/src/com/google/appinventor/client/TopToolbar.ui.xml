@@ -11,35 +11,37 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
+  <ui:with field="isAvailable" type="java.lang.Boolean"/>
 
   <g:FlowPanel styleName="ode-TopToolbar">
     <!-- Projects Menu -->
     <ai:DropDownButton name="Project" caption="{messages.projectsTabName}"
+                       role="button" ariaLabel="Project menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="fileDropDown">
       <ai:DropDownItem name="MyProjects" caption="{messages.projectMenuItem}">
         <actions:SwitchToProjectAction/>
       </ai:DropDownItem>
       <hr/>
-      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="New" caption="{messages.newProjectMenuItem}" visible="{isAvailable}">
         <actions:NewProjectAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="ImportProject" caption="{messages.importProjectMenuItem}" visible="{isAvailable}">
         <actions:ImportProjectAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="ImportTemplate" caption="{messages.importTemplateButton}" visible="{isAvailable}">
         <actions:ImportTemplateAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="Delete" caption="{messages.trashProjectMenuItem}" visible="{isAvailable}">
         <actions:DeleteAction/>
       </ai:DropDownItem>
-      <hr/>
+      <hr />
       <ai:DropDownItem name="Save" caption="{messages.saveMenuItem}" visible="{hasWriteAccess}">
         <actions:SaveAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="SaveAs" caption="{messages.saveAsMenuItem}" visible="{isAvailable}">
         <actions:SaveAsAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{hasWriteAccess}">
+      <ai:DropDownItem name="Checkpoint" caption="{messages.checkpointMenuItem}" visible="{isAvailable}">
         <actions:CheckpointAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="ProjectProperties" caption="{messages.projectPropertiesMenuItem}"
@@ -70,6 +72,7 @@
 
     <!-- Connect Menu -->
     <ai:DropDownButton name="ConnectTo" caption="{messages.connectTabName}"
+                       role="button" ariaLabel="Connect menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="connectDropDown">
       <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
         <yaactions:WirelessAction/>
@@ -90,17 +93,21 @@
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
         <yaactions:RefreshCompanionAction/>
       </ai:DropDownItem>
-      <hr/>
       <ai:DropDownItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
         <yaactions:ResetAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
         <yaactions:HardResetAction/>
       </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="SaveProjectToCompanion" caption="{messages.saveProjectToCompanionMenuItem}">
+        <yaactions:SaveProjectToCompanionAction/>
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Build Menu -->
     <ai:DropDownButton name="Build" caption="{messages.buildTabName}"
+                       role="button" ariaLabel="Build menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="buildDropDown"
                        visible="{hasWriteAccess}">
       <ai:DropDownItem name="BuildApk" caption="{messages.showExportAndroidApk}">
@@ -133,6 +140,7 @@
 
     <!-- Settings Menu -->
     <ai:DropDownButton name="Settings" caption="{messages.settingsTabName}"
+                       role="button" ariaLabel="Settings menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="settingsDropDown">
       <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
         <actions:UISettingsAction/>
@@ -152,6 +160,7 @@
 
     <!-- Help Menu -->
     <ai:DropDownButton name="Help" caption="{messages.helpTabName}"
+                       role="button" ariaLabel="Help menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="helpDropDown">
       <ai:DropDownItem name="About" caption="{messages.aboutMenuItem}">
         <actions:AboutAction/>
@@ -196,6 +205,7 @@
 
     <!-- Admin Menu -->
     <ai:DropDownButton name="Admin" caption="{messages.adminTabName}"
+                       role="button" ariaLabel="Admin menu" ariaHaspopup="menu" ariaExpanded="false"
                        styleName="ode-TopPanelButton" ui:field="adminDropDown">
       <ai:DropDownItem name="DownloadUserSource" caption="{messages.downloadUserSourceMenuItem}">
         <actions:DownloadUserSourceAction/>

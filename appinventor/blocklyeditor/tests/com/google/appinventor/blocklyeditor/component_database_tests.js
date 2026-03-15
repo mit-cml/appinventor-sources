@@ -6,6 +6,7 @@
 suite('Component Database Tests', function() {
   setup(function() {
     Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
+    Blockly.common.setSelected(null);
     initComponentTypes();
   })
   test('TranslationTests', function() {

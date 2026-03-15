@@ -178,6 +178,15 @@ public class Ode implements EntryPoint {
 
   private boolean isReadOnly;
 
+  // oneProjectMode == true if we have been logged in with a token that
+  // includes a projectId. In this case we just open the one specified
+  // project.
+
+  private boolean oneProjectMode;
+  private long oneProjectId;    // The ID of the one project we open
+
+  private String fauxProjectName; // Fake Project Name provided by login token
+
   private String sessionId = generateUuid(); // Create new session id
 
   private Random random = new Random(); // For generating random nonce
@@ -195,6 +204,11 @@ public class Ode implements EntryPoint {
   private FileEditor currentFileEditor;
 
   private AssetManager assetManager = AssetManager.getInstance();
+  private boolean isAnon = false;
+  private boolean displayedCodes = false; // True means we have displayed the dialog box
+                                          // with the four word codes for an anonymous account
+                                          // to revisit us. Only used if we are an anonymous
+                                          // account. I.e. isAnon is true
 
   private DropTargetProvider dragDropTargets;
 
@@ -204,9 +218,6 @@ public class Ode implements EntryPoint {
   public static final int USERADMIN = 2;
   public static final int TRASHCAN = 3;
   public static int currentView = PROJECTS;
-
-  // GWT DeckPanel animation is 350ms but we add a small buffer
-  public static final int DECKPANEL_ANIMATION_DURATION_MS = 375;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -251,7 +262,6 @@ public class Ode implements EntryPoint {
   private boolean tutorialVisible = false;
 
   private boolean consoleVisible = false;
-  private boolean isDeckPanelAnimating = false;
 
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
@@ -587,6 +597,11 @@ public class Ode implements EntryPoint {
       LOG.warning("Ignoring openPreviousProject() since userSettings is null");
       return;
     }
+    if (oneProjectMode) {
+      openProject("" + oneProjectId);
+      return;
+    }
+
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
     if (value.isEmpty()) {
@@ -761,6 +776,14 @@ public class Ode implements EntryPoint {
           }
           user = result.getUser();
           isReadOnly = user.isReadOnly();
+          oneProjectId = user.getOneProjectId();
+          fauxProjectName = user.getFauxProjectName();
+          if (oneProjectId != 0) {
+            oneProjectMode = true;
+          }
+          if (user.getUserId().startsWith("anon-")) { // We are a anonymous user
+            isAnon = true;
+          }
           registerIosExtensions(config.getIosExtensions());
           return resolve(null);
         })
@@ -839,7 +862,7 @@ public class Ode implements EntryPoint {
 
   private Promise<Object> checkTos() {
     // If user hasn't accepted terms of service, ask them to.
-    if (!user.getUserTosAccepted() && !isReadOnly) {
+    if (!user.getUserTosAccepted() && !isReadOnly && !oneProjectMode) {
       // We expect that the redirect to the TOS page should be handled
       // by the onFailure method below. The server should return a
       // "forbidden" error if the TOS wasn't accepted.
@@ -1006,18 +1029,6 @@ public class Ode implements EntryPoint {
 
     // Create tab panel for subsequent tabs
     deckPanel = new DeckPanel() {
-      @Override
-      public void showWidget(int index) {
-        if (isAnimationEnabled() && getVisibleWidget() != index) {
-          isDeckPanelAnimating = true;
-          Scheduler.get().scheduleFixedDelay(() -> {
-            isDeckPanelAnimating = false;
-            return false;
-          }, DECKPANEL_ANIMATION_DURATION_MS);
-        }
-        super.showWidget(index);
-      }
-
       @Override
       public final void onBrowserEvent(Event event) {
         switch (event.getTypeInt()) {
@@ -1446,8 +1457,10 @@ public class Ode implements EntryPoint {
     }
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    if (value == null) {        // Default to NEO
+      return true;
+    }
     return Boolean.parseBoolean(value);
-    // return true;
   }
 
   /**
@@ -1467,9 +1480,13 @@ public class Ode implements EntryPoint {
             "" + value);
   }
 
-  public static boolean getShowUIPicker() {
-    return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+  private boolean getShowUIPicker() {
+    if (oneProjectMode) {
+      return false;
+    } else {
+      return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+    }
   }
 
   public static void saveUserDesignSettings() {
@@ -1617,39 +1634,25 @@ public class Ode implements EntryPoint {
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
-    Grid mainGrid = new Grid(2, 2);
-    mainGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(0,
-            1,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(1,
-            1,
-            HasHorizontalAlignment.ALIGN_RIGHT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
+    HorizontalPanel mainPanel = new HorizontalPanel();
+    mainPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    mainPanel.setSpacing(10);
 
     Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 
-    Grid messageGrid = new Grid(2, 1);
-    messageGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_JUSTIFY,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    messageGrid.getCellFormatter().setAlignment(1,
-            0,
-            HasHorizontalAlignment.ALIGN_LEFT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-
+    VerticalPanel messagePanel = new VerticalPanel();
+    messagePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 
     Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
-    messageGrid.setWidget(1, 0, messageChunk2);
-    mainGrid.setWidget(0, 0, dialogImage);
-    mainGrid.setWidget(0, 1, messageGrid);
+    messagePanel.add(messageChunk2);
 
-    dialogBox.setWidget(mainGrid);
+    mainPanel.add(dialogImage);
+    mainPanel.add(messagePanel);
+
+    mainPanel.setCellHorizontalAlignment(dialogImage, HasHorizontalAlignment.ALIGN_CENTER);
+    mainPanel.setCellVerticalAlignment(dialogImage, HasVerticalAlignment.ALIGN_MIDDLE);
+
+    dialogBox.setWidget(mainPanel);
     dialogBox.center();
 
     if (showDialog) {
@@ -2379,6 +2382,14 @@ public class Ode implements EntryPoint {
     isReadOnly = true;
   }
 
+  public boolean getOneProjectMode() {
+    return oneProjectMode;
+  }
+
+  public String getFauxProjectName() {
+    return fauxProjectName;
+  }
+
   // Code to lock out certain screen and project switching code
   // These are locked out while files are being saved
   // lockScreens(true) is called from EditorManager when it
@@ -2530,10 +2541,6 @@ public class Ode implements EntryPoint {
 
   public boolean isConsoleVisible() {
     return consoleVisible;
-  }
-
-  public boolean isDeckPanelAnimating() {
-    return isDeckPanelAnimating;
   }
 
   public void setTutorialURL(String newURL) {
@@ -2708,7 +2715,7 @@ public class Ode implements EntryPoint {
   public interface Resources extends ClientBundle {
 
     public static final Resources INSTANCE =  GWT.create(Resources.class);
-    
+
     @Source({
       "com/google/appinventor/client/style/classic/light.css",
       "com/google/appinventor/client/style/classic/variableColors.css"

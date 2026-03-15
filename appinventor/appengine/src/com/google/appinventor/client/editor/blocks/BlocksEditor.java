@@ -566,7 +566,7 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
               var connections = block.getConnections_(false);
               for (var i = 0, connection; connection = connections[i]; i++) {
                 var neighbour = connection.closest($wnd.Blockly.config.snapRadius,
-                  new $wnd.goog.math.Coordinate(blockX, blockY));
+                  new $wnd.Blockly.utils.Coordinate(blockX, blockY));
                 if (neighbour.connection) {
                   collide = true;
                   break;
@@ -636,8 +636,7 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
       Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
       BlockSelectorBox.getBlockSelectorBox().setVisible(true);
       AssetListBox.getAssetListBox().setVisible(true);
-      blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled(),
-          Ode.getInstance().isDeckPanelAnimating() ? Ode.DECKPANEL_ANIMATION_DURATION_MS : 0);
+      blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled());
       hideBlocksDrawer();
     } else {
       LOG.warning("Can't get designer for blocks: " + getFileId());
