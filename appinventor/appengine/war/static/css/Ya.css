@@ -3395,6 +3395,9 @@ div.dropdiv p {
   margin-top: 12px !important;
   margin-left: -3px !important;
   height: 130px;
+  background-color:#095C71;
+  color:#ffffff;
+  border-radius:6px;
 }
 
 .download-icon {
