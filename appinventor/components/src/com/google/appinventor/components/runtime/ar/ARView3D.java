@@ -510,7 +510,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         GLES30.glDepthFunc(GLES30.GL_LESS);
         GLES30.glDepthMask(true);
         GLES30.glDisable(GLES30.GL_BLEND);
-        objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix, null);
+        objRenderer.draw(render, objectNodes, viewMatrix, projectionMatrix);
     }
 
 
@@ -692,12 +692,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (lastCamera.getTrackingState() == TrackingState.TRACKING
                 && (depthSettings.useDepthForOcclusion()
                 || depthSettings.depthColorVisualizationEnabled())) {
+
                 try (android.media.Image depthImage =
                          lastFrame.acquireDepthImage16Bits()) {
                     useSimulatedDepth = false;
                     backgroundRenderer.updateCameraDepthTexture(depthImage);
                     if (arFilamentRenderer != null) {
                         updateFilamentWithARCoreDepth(lastFrame, depthImage);
+                    }
+                    if (objRenderer != null) {
+                        float[] ndcQuad = { -1f,-1f, 1f,-1f, -1f,1f, 1f,1f };
+                        float[] texCoords = new float[8];
+                        lastFrame.transformCoordinates2d(
+                            Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES, ndcQuad,
+                            Coordinates2d.TEXTURE_NORMALIZED, texCoords);
+                        objRenderer.updateDepthTexture(depthImage,
+                            calculateTransformMatrix(texCoords));
                     }
                 } catch (NotYetAvailableException e) {
                     // normal
