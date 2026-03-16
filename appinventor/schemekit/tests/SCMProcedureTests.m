@@ -40,4 +40,22 @@
   XCTAssertEqual(4, result.intValue);
 }
 
+- (void)testNumArgs {
+  [interpreter evalForm:@"(yail:invoke *test-environment* 'setObject:forKey: (lambda (x y) (+ x y)) \"proc3\")"];
+  XCTAssertNil(interpreter.exception);
+  SCMProcedure *proc = (SCMProcedure *) env[@"proc3"];
+  XCTAssertNotNil(proc);
+  XCTAssertEqual(2, proc.numberOfArguments);
+  XCTAssertFalse(proc.variadic);
+}
+
+- (void)testVariadic {
+  [interpreter evalForm:@"(yail:invoke *test-environment* 'setObject:forKey: (lambda (x y . z) #f) \"proc4\")"];
+  XCTAssertNil(interpreter.exception);
+  SCMProcedure *proc = (SCMProcedure *) env[@"proc4"];
+  XCTAssertNotNil(proc);
+  XCTAssertEqual(2, proc.numberOfArguments);
+  XCTAssertTrue([proc variadic]);
+}
+
 @end

@@ -705,7 +705,12 @@ public class YaVersion {
   // - Added "every component" block.
   // For BLOCKS_LANGUAGE_VERSION 37
   // - Add pull-downs for the ChatBot provider and model
-  public static final int BLOCKS_LANGUAGE_VERSION = 37;
+  // For BLOCKS_LANGUAGE_VERSION 37
+  // - Added matrices and its operations
+  // For BLOCKS_LANGUAGE_VERSION 38
+  // - Control: run-in-background & run-after-period were added.
+  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 38;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -915,7 +920,9 @@ public class YaVersion {
   // - The ConverseWithImage method was added
   // For CHATBOT_COMPONENT_VERSION 4:
   // - Added CreateImage and GotResponseWithImage blocks
-  public static final int CHATBOT_COMPONENT_VERSION = 4;
+  // For CHATBOT_COMPONENT_VERSION 5:
+  // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot API.
+  public static final int CHATBOT_COMPONENT_VERSION = 5;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1401,7 +1408,12 @@ public class YaVersion {
   public static final int SLIDER_COMPONENT_VERSION = 3;
 
   // For SPINNER_COMPONENT_VERSION 1:
-  public static final int SPINNER_COMPONENT_VERSION = 1;
+  // - Initial version.
+  // For SPINNER_COMPONENT_VERSION 2:
+  // - Added BackgroundColor, Enabled, Image, ShowFeedback properties
+  // - Added TextSize, TextColor, TextAlignment, TextBold, TextItalic, TextTypeface properties
+  // - Added TouchUp and TouchDown events
+  public static final int SPINNER_COMPONENT_VERSION = 2;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.

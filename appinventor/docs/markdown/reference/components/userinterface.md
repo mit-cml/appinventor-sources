@@ -1560,11 +1560,34 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 
 {:.properties}
 
+{:id="Spinner.BackgroundColor" .color} *BackgroundColor*
+: Specifies the `Spinner`'s background color as an alpha-red-green-blue
+ integer.  If an [`Image`](#Spinner.Image) has been set, the color
+ change will not be visible until the [`Image`](#Spinner.Image) is removed.
+
 {:id="Spinner.Elements" .list .bo} *Elements*
 : Specifies the list of choices to display.
 
 {:id="Spinner.ElementsFromString" .text .wo} *ElementsFromString*
 : Set the list of choices from a string of comma-separated values.
+
+{:id="Spinner.Enabled" .boolean} *Enabled*
+: Specifies whether the `Spinner` should be active and clickable.
+
+{:id="Spinner.FontBold" .boolean} *FontBold*
+: Specifies whether the spinner's text should be bold.
+ Some fonts do not support bold.
+
+{:id="Spinner.FontItalic" .boolean} *FontItalic*
+: Specifies whether the spinner's text should be italic.
+ Some fonts do not support italic.
+
+{:id="Spinner.FontSize" .number} *FontSize*
+: Specifies the spinner's text's font size, measured in sp(scale-independent pixels).
+
+{:id="Spinner.FontTypeface" .text .do} *FontTypeface*
+: Specifies the spinner's text's font face as default, serif, sans
+ serif, or monospace.
 
 {:id="Spinner.Height" .number .bo} *Height*
 : Specifies the `Spinner`'s vertical height, measured in pixels.
@@ -1572,6 +1595,10 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 {:id="Spinner.HeightPercent" .number .wo .bo} *HeightPercent*
 : Specifies the `Spinner`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
+
+{:id="Spinner.Image" .text} *Image*
+: Specifies the path of the `Spinner`'s image. If there is both an `Image` and a
+ [`BackgroundColor`](#Spinner.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="Spinner.Left" .number} *Left*
 : Specifies the position of the Left edge of the component relative to an
@@ -1588,6 +1615,19 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
  If an attempt is made to set this to a number less than `1` or greater than the number of
  items in the `Spinner`, `SelectionIndex` will be set to `0`, and [`Selection`](#Spinner.Selection)
  will be set to the empty text.
+
+{:id="Spinner.ShowFeedback" .boolean} *ShowFeedback*
+: Specifies if a visual feedback should be shown when a `Spinner` with an assigned
+ [`Image`](#Spinner.Image) is pressed.
+
+{:id="Spinner.TextAlignment" .number .do} *TextAlignment*
+: Specifies the alignment of the spinner's text: center, normal
+ (e.g., left-justified if text is written left to right), or
+ opposite (e.g., right-justified if text is written left to right).
+
+{:id="Spinner.TextColor" .color} *TextColor*
+: Specifies the spinner's text color as an alpha-red-green-blue
+ integer.
 
 {:id="Spinner.Top" .number} *Top*
 : Specifies the position of the Top edge of the component relative to an
@@ -1610,6 +1650,12 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 
 {:id="Spinner.AfterSelecting"} AfterSelecting(*selection*{:.text})
 : Event called after the user selects an item from the dropdown list.
+
+{:id="Spinner.TouchDown"} TouchDown()
+: Indicates that the `Spinner` was pressed down.
+
+{:id="Spinner.TouchUp"} TouchUp()
+: Indicates that the `Spinner` has been released.
 
 ### Methods  {#Spinner-Methods}
 

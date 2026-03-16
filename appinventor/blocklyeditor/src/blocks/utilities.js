@@ -46,6 +46,10 @@ AI.BlockUtils.YailTypeToBlocklyTypeMap = {
     'input': ['Number'],
     'output': ['Number', 'String', 'Key']
   },
+  'matrix': {
+    'input': ['Matrix'],
+    'output': ['Matrix', 'String', 'Array']
+  },
   'text': {
     'input': ['String'],
     'output': ['Number', 'String', 'Key']
@@ -65,6 +69,10 @@ AI.BlockUtils.YailTypeToBlocklyTypeMap = {
   'InstantInTime': {
     'input': ['InstantInTime', AI.BlockUtils.InstantInTime],
     'output': ['InstantInTime', AI.BlockUtils.InstantInTime],
+  },
+  'procedure' : {
+    'input': ['YailProcedure'],
+    'output': ['YailProcedure']
   },
   'any': {
     'input': null,

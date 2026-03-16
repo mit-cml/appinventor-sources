@@ -663,6 +663,19 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '</block>' +
   '</xml>' },
 
+  controls_run_in_background: {xmlString:
+  '<xml>' +
+    '<block type="controls_run_in_background">' +
+      '<value name="PROCEDURE"><block type="procedures_defanonreturn"></block></value>' +
+      '<value name="CALLBACK">' +
+        '<block type="procedures_defanonnoreturn">' +
+          '<mutation><arg name="result"></arg></mutation>' +
+          '<field name="VAR0">result</field>' +
+        '</block>' +
+      '</value>' +
+    '</block>' +
+  '</xml>' },
+
    math_random_int: {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
@@ -725,6 +738,13 @@ Blockly.Drawer.defaultBlockXMLStrings = {
   '<xml>' +
     '<block type="dictionaries_recursive_lookup">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
+  matrices_create: {xmlString:
+  '<xml>' +
+    '<block type="matrices_create">' +
+      '<value name="ROWS"><block type="math_number"><title name="NUM">2</title></block></value>' +
+      '<value name="COLS"><block type="math_number"><title name="NUM">2</title></block></value>' +
     '</block>' +
   '</xml>'},
 
