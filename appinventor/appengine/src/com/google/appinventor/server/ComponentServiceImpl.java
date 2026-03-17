@@ -168,6 +168,13 @@ public class ComponentServiceImpl extends OdeRemoteServiceServlet
     Set<String> sourceFiles = new HashSet<>(storageIo.getProjectSourceFiles(userInfoProvider.getUserId(), projectId));
     Map<String, String> nameMap = buildExtensionPathnameMap(contents.keySet());
 
+    // Reject if uploaded file is actually an App Inventor project (.aia)
+    if (contents.containsKey("youngandroidproject/project.properties")) {
+      response.setStatus(Status.FAILED);
+      response.setMessage("Uploaded file is an App Inventor project archive, not an extension.");
+      return;
+    }
+
     // Does the extension contain a file that could be a component descriptor file?
     if (!nameMap.containsKey("component.json") && !nameMap.containsKey("components.json")) {
       response.setMessage("Uploaded file does not contain any component definition files.");
