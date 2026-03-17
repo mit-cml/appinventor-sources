@@ -6,7 +6,7 @@ Learn more about [MIT App Inventor](http://appinventor.mit.edu).
 
 This code is designed to be run in Google's App Engine. MIT runs a
 public instance that all are welcome to use to build App Inventor
-Applications. You do not need to compile or use this code if you wish
+applications. You do not need to compile or use this code if you wish
 to build MIT App Inventor applications.
 
 We provide this code for reference and for experienced people who wish
