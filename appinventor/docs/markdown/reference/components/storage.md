@@ -307,8 +307,9 @@ Spreadsheet is a non-visible component for storing and receiving data from
  Service Account for the Sheets API.
 
  Instructions on how to create the Service Account, as well as where to find
- other relevant information for using the Google Sheets Component, can be
- found <a href='/reference/other/googlesheets-api-setup.html'>here</a>.
+other relevant information for using the Google Sheets Component, can be
+found in the official MIT App Inventor Google Sheets guide:
+<a href='https://appinventor.mit.edu/explore/ai2/google-sheets'>Google Sheets Setup Guide</a>.
 
  Row and column numbers are 1-indexed.
 
